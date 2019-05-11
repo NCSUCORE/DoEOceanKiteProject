@@ -4,10 +4,10 @@ function param = simulinkProperty(value,varargin)
 % Parse varargin
 p = inputParser;
 addRequired(p,'Value'      ,@isnumeric);
-addOptional(p,'Description','',@ischar)
-addOptional(p,'Unit'       ,'',@ischar)
-addOptional(p,'Min'        ,[],@isnumeric)
-addOptional(p,'Max'        ,[],@isnumeric)
+addParameter(p,'Description','',@ischar)
+addParameter(p,'Unit'       ,'',@ischar)
+addParameter(p,'Min'        ,[],@isnumeric)
+addParameter(p,'Max'        ,[],@isnumeric)
 parse(p,value,varargin{:})
 % Create simulink parameter object with specified values
 param = Simulink.Parameter(value);
