@@ -125,14 +125,14 @@ classdef allActuatorCtrlClass < handle
             obj.altitudeFilterTimeConst  = simulinkProperty(1/(0.0005*2*pi),'Unit','s','Description','altitude controller time constant');
             
             % Pitch controller gains
-            obj.pitchKp              = simulinkProperty(1,'Unit','m/(rad*s)','Description','pitch controller proportional gain');
-            obj.pitchKi              = simulinkProperty(0,'Unit','m/(rad*s^2)','Description','pitch controller integral gain');
-            obj.pitchKd              = simulinkProperty(2.5,'Unit','m/rad','Description','pitch controller derivative gain');
+            obj.pitchKp              = simulinkProperty(1,'Unit','m/(deg*s)','Description','pitch controller proportional gain');
+            obj.pitchKi              = simulinkProperty(0,'Unit','m/(deg*s^2)','Description','pitch controller integral gain');
+            obj.pitchKd              = simulinkProperty(2.5,'Unit','m/deg','Description','pitch controller derivative gain');
             obj.pitchFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s','Description','pitch controller time constant');
             
             % Roll controller gains
-            obj.rollKp              = simulinkProperty(1,'Unit','m/(rad*s)','Description','roll controller proportional gain');
-            obj.rollKi              = simulinkProperty(0,'Unit','m/(rad*s^2)','Description','roll controller integral gain');
+            obj.rollKp              = simulinkProperty(1,'Unit','m/(deg*s)','Description','roll controller proportional gain');
+            obj.rollKi              = simulinkProperty(0,'Unit','m/(deg*s^2)','Description','roll controller integral gain');
             obj.rollKd              = simulinkProperty(2,'m/rad','Description','roll controller derivative gain');
             obj.rollFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s','Description','roll controller time constant');
             
