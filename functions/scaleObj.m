@@ -1,28 +1,33 @@
-function obj = scaleObj(obj,val)
-% function that uses the listed units to automatically scale the quantity
+function obj = scaleObj(obj,lengthScaleFactor,densityScaleFactor)
+% function that uses the listed units to automatically scale up/down
 p = properties(obj);
-unitList = '_mPs|_m|_radPs|_degPs|_rad|_deg|_s|_mPsrad|_mPsdeg|_Ps|_mPsdeg|_mPrad|_mPdeg|_mPrads3|_mPs2|_Ps3|_na';
+scaleUnitList = {'m','s','kg','rad','deg'}; % units that impact how to scale things
+
+scaleFactors  = {num2str(lengthScaleFactor),...
+    num2str(sqrt(lengthScaleFactor)),...
+    num2str(densityScaleFactor),...
+    '1',...
+    '1'};
+
 for ii = 1:length(p)
-    unit = regexp(p{ii},unitList,'match');
+    unit = obj.(p{ii}).Unit;
     if ~isempty(unit)
-        switch unit{1}
-            case {'_rad','_deg','_mPs2','_na'}
-                scaleFactor = 1;
-            case {'_s'}
-                scaleFactor = sqrt(val);
-            case {'_radPs','_degPs','_Ps','_mPrads3'}
-                scaleFactor = 1/sqrt(val);
-            case {'_m','_mPrad','_mPdeg'}
-                scaleFactor = val;
-            case {'_mPs','_mPsrad','_mPsdeg'}
-                scaleFactor = val/sqrt(val);
-            case {'_Ps3'}
-                scaleFactor = 1/(val^(3.2));
-            otherwise
-                % Don't know how to scale this
-                scaleFactor = 1;
+        for jj = 1:length(scaleUnitList)
+            if jj == 1
+                unit = strrep(unit, scaleUnitList{jj},scaleFactors{jj});
+            else
+                unit = strrep(unit, scaleUnitList{jj},['*' scaleFactors{jj}]);
+            end
         end
-        obj.(p{ii}) = obj.(p{ii})*scaleFactor;
+        unit = strrep(unit,'/*','/');
+        if strcmp(unit(1),'*')
+            unit = unit(2:end);
+        end
+        if strcmp(unit(1),'/')
+            unit = ['1' unit];
+        end
+        scaleFactor = eval(unit);
+        obj.(p{ii}).Value = obj.(p{ii}).Value*scaleFactor;
     end
 end
 end

@@ -153,8 +153,8 @@ classdef allActuatorCtrlClass < handle
             
         end
         % Function to scale all parameters
-        function obj = scale(obj,scaleFactor)
-            obj = scaleObj(obj,scaleFactor);
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
+            obj = scaleObj(obj,lengthScaleFactor,densityScaleFactor);
         end
     end
     
