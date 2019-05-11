@@ -116,9 +116,19 @@ classdef allActuatorCtrlClass < handle
         
         %         P_inv = inv(P_mat);
         elevonMaxDeflection_deg = 30;
+        
+        % Define dependent variables here 
+        x
     end
-    
+
     methods
+        % Constructor
+        function obj = allActuatorCtrlClass()
+            % Calculate default value of dependent variables here, can be
+            % overwritten later
+            obj.x = 1;
+        end
+        % Function to scale all parameters
         function obj = scale(obj,scaleFactor)
             obj = scaleObj(obj,scaleFactor);
         end
