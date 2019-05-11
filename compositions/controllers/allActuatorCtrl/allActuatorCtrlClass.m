@@ -1,7 +1,8 @@
 classdef allActuatorCtrlClass < handle
     
     properties
-        %% nominal set points
+        % Origional values used by Ayaz
+        % nominal set points
         % nominal altitude setpoint
         % set alti
         %         set_alti = k_scale*set_alti_nom;

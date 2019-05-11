@@ -392,7 +392,7 @@ elevon_max_deflection = max_deflection*ones(2,1);
 
 elevon_gain = 0.4;
 
-% nominal CM and other gains
+% nominal CM and other gainselevator_control
 CM_nom = -0.1;
 k_CM = 0.6;
 

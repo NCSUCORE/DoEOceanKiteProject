@@ -1,0 +1,9 @@
+For documentation about how to use units in Matlab/Simulink, see here
+
+https://www.mathworks.com/help/physmod/simscape/ug/how-to-specify-units-in-block-dialog-boxes.html
+
+For the list of allowed units, see here:
+https://www.mathworks.com/help/symbolic/units-list.html#mw_e5f0cd14-f87e-4a76-93c4-8bcf9dd9c883
+
+Note that you can combine units with mathematical operations, *, /, ^, +, - and ()
+So meters per second is 'm/s'
