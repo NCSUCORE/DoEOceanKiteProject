@@ -1,8 +1,7 @@
 classdef allActuatorCtrlClass < handle
     
     properties
-        % Origional values used by Ayaz
-        % nominal set points
+        %% nominal set points
         % nominal altitude setpoint
         % set alti
         %         set_alti = k_scale*set_alti_nom;
@@ -103,51 +102,51 @@ classdef allActuatorCtrlClass < handle
             % Constructor method that sets the "default" property values
             
             % Setpoints
-            obj.altitudeSetpoint = simulinkProperty(200,'Unit','m');
-            obj.pitchSetpoint    = simulinkProperty(7,'Unit','deg');
-            obj.rollSetpoint     = simulinkProperty(0,'Unit','deg');
+            obj.altitudeSetpoint = simulinkProperty(200,'Unit','m','Description','altitude setpoint');
+            obj.pitchSetpoint    = simulinkProperty(7,'Unit','deg','Description','pitch setpoint');
+            obj.rollSetpoint     = simulinkProperty(0,'Unit','deg','Description','roll setpoint');
 
             % Elevator controller gains
-            obj.elevatorKp              = simulinkProperty(10);
-            obj.elevatorKi              = simulinkProperty(0);
-            obj.elevatorKd              = simulinkProperty(30);
-            obj.elevatorFilterTimeConst = simulinkProperty(0.05,'Unit','s');
+            obj.elevatorKp              = simulinkProperty(10,'Description','elevator controller proportional gain');
+            obj.elevatorKi              = simulinkProperty(0,'Unit','1/s','Description','elevator controller integral gain');
+            obj.elevatorKd              = simulinkProperty(30,'Unit','s','Description','elevator controller derivative gain');
+            obj.elevatorFilterTimeConst = simulinkProperty(0.05,'Unit','s','Description','elevator controller time constant');
             
             % Aileron controller gains
-            obj.aileronKp              = simulinkProperty(4);
-            obj.aileronKi              = simulinkProperty(0);
-            obj.aileronKd              = simulinkProperty(8);
-            obj.aileronFilterTimeConst = simulinkProperty(0.2,'Unit','s');
+            obj.aileronKp              = simulinkProperty(4,'Description','aileron controller proportional gain');
+            obj.aileronKi              = simulinkProperty(0,'Unit','1/s','Description','aileron controller integral gain');
+            obj.aileronKd              = simulinkProperty(8,'Unit','s','Description','aileron controller derivative gain');
+            obj.aileronFilterTimeConst = simulinkProperty(0.2,'Unit','s','Description','aileron controller time constant');
             
             % Altitude controller gains
-            obj.altitudeKp               = simulinkProperty(1,'Unit','Ps');
-            obj.altitudeKi               = simulinkProperty(0);
-            obj.altitudeKd               = simulinkProperty(5);
-            obj.altitudeFilterTimeConst  = simulinkProperty(1/(0.0005*2*pi),'Unit','s');
+            obj.altitudeKp               = simulinkProperty(1,'Unit','1/s','Description','altitude controller proportional gain');
+            obj.altitudeKi               = simulinkProperty(0,'Unit','1/s^2','Description','altitude controller integral gain');
+            obj.altitudeKd               = simulinkProperty(5,'Description','altitude derivative controller gain');
+            obj.altitudeFilterTimeConst  = simulinkProperty(1/(0.0005*2*pi),'Unit','s','Description','altitude controller time constant');
             
             % Pitch controller gains
-            obj.pitchKp              = simulinkProperty(1);
-            obj.pitchKi              = simulinkProperty(0);
-            obj.pitchKd              = simulinkProperty(2.5);
-            obj.pitchFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s');
+            obj.pitchKp              = simulinkProperty(1,'Unit','m/(rad*s)','Description','pitch controller proportional gain');
+            obj.pitchKi              = simulinkProperty(0,'Unit','m/(rad*s^2)','Description','pitch controller integral gain');
+            obj.pitchKd              = simulinkProperty(2.5,'Unit','m/rad','Description','pitch controller derivative gain');
+            obj.pitchFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s','Description','pitch controller time constant');
             
             % Roll controller gains
-            obj.rollKp              = simulinkProperty(1);
-            obj.rollKi              = simulinkProperty(0);
-            obj.rollKd              = simulinkProperty(2);
-            obj.rollFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s');
+            obj.rollKp              = simulinkProperty(1,'Unit','m/(rad*s)','Description','roll controller proportional gain');
+            obj.rollKi              = simulinkProperty(0,'Unit','m/(rad*s^2)','Description','roll controller integral gain');
+            obj.rollKd              = simulinkProperty(2,'m/rad','Description','roll controller derivative gain');
+            obj.rollFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s','Description','roll controller time constant');
             
             % Actuator command saturations
-            obj.winchSpeedCmdLim    = simulinkProperty(0.4,'Unit','mps');
-            obj.elevonMaxDeflection = simulinkProperty(30,'Unit','deg');
+            obj.winchSpeedCmdLim    = simulinkProperty(0.4,'Unit','m/s','Description','winch speed command limit');
+            obj.elevonMaxDeflection = simulinkProperty(30,'Unit','deg','Description', 'elevon max deflection limit');
             
             % Matrix to combine controllers for tethers
             obj.pMat = simulinkProperty(...
                 [1.0000    0.5000   -0.5000;...
                 1.0000   -0.5000         0;...
-                1.0000    0.5000    0.5000]);
+                1.0000    0.5000    0.5000],'Description', 'matrix to combine controllers for tethers');
             % Matrix to combine controllers for ctrl surfaces
-            obj.pCSMat = simulinkProperty([-1 -1; -1 1]);
+            obj.pCSMat = simulinkProperty([-1 -1; -1 1],'Description', 'matrix to combine controllers for control surfaces');
             
             
             
