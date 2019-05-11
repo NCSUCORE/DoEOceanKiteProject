@@ -9,7 +9,3 @@ ctrl = allActuatorCtrlClass;
 ctrl.altitudeSetpoint.Value
 ctrl.scale(0.5,1)
 ctrl.altitudeSetpoint.Value
-
-% sim('allActuatorCtrl_th')
-% 
-% simout

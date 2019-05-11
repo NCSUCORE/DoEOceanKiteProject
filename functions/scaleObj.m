@@ -15,13 +15,6 @@ for ii = 1:length(p)
         for jj = 1:length(scaleUnitList)
             unit = strrep(unit, scaleUnitList{jj},scaleFactors{jj});
         end
-        unit = strrep(unit,'/*','/');
-        if strcmp(unit(1),'*')
-            unit = unit(2:end);
-        end
-        if strcmp(unit(1),'/')
-            unit = ['1' unit];
-        end
         scaleFactor = eval(unit);
         obj.(p{ii}).Value = obj.(p{ii}).Value*scaleFactor;
     end
