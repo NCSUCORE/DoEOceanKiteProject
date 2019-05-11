@@ -133,7 +133,7 @@ classdef allActuatorCtrlClass < handle
             % Roll controller gains
             obj.rollKp              = simulinkProperty(1,'Unit','m/(deg*s)','Description','roll controller proportional gain');
             obj.rollKi              = simulinkProperty(0,'Unit','m/(deg*s^2)','Description','roll controller integral gain');
-            obj.rollKd              = simulinkProperty(2,'m/rad','Description','roll controller derivative gain');
+            obj.rollKd              = simulinkProperty(2,'Unit','m/rad','Description','roll controller derivative gain');
             obj.rollFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s','Description','roll controller time constant');
             
             % Actuator command saturations

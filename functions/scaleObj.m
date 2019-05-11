@@ -13,11 +13,7 @@ for ii = 1:length(p)
     unit = obj.(p{ii}).Unit;
     if ~isempty(unit)
         for jj = 1:length(scaleUnitList)
-            if jj == 1
-                unit = strrep(unit, scaleUnitList{jj},scaleFactors{jj});
-            else
-                unit = strrep(unit, scaleUnitList{jj},['*' scaleFactors{jj}]);
-            end
+            unit = strrep(unit, scaleUnitList{jj},scaleFactors{jj});
         end
         unit = strrep(unit,'/*','/');
         if strcmp(unit(1),'*')
