@@ -119,22 +119,22 @@ classdef allActuatorCtrlClass < handle
             obj.aileronFilterTimeConst = simulinkProperty(0.2,'Unit','s','Description','aileron controller time constant');
             
             % Altitude controller gains
-            obj.altitudeKp               = simulinkProperty(1,'Unit','1/s','Description','altitude controller proportional gain');
+            obj.altitudeKp               = simulinkProperty(.05,'Unit','1/s','Description','altitude controller proportional gain');
             obj.altitudeKi               = simulinkProperty(0,'Unit','1/s^2','Description','altitude controller integral gain');
-            obj.altitudeKd               = simulinkProperty(5,'Description','altitude derivative controller gain');
-            obj.altitudeFilterTimeConst  = simulinkProperty(1/(0.0005*2*pi),'Unit','s','Description','altitude controller time constant');
+            obj.altitudeKd               = simulinkProperty(.25,'Description','altitude derivative controller gain');
+            obj.altitudeFilterTimeConst  = simulinkProperty(1/(0.005),'Unit','s','Description','altitude controller time constant');
             
             % Pitch controller gains
             obj.pitchKp              = simulinkProperty(1,'Unit','m/(deg*s)','Description','pitch controller proportional gain');
             obj.pitchKi              = simulinkProperty(0,'Unit','m/(deg*s^2)','Description','pitch controller integral gain');
             obj.pitchKd              = simulinkProperty(2.5,'Unit','m/deg','Description','pitch controller derivative gain');
-            obj.pitchFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s','Description','pitch controller time constant');
+            obj.pitchFilterTimeConst = simulinkProperty(1/(0.2),'Unit','s','Description','pitch controller time constant');
             
             % Roll controller gains
             obj.rollKp              = simulinkProperty(1,'Unit','m/(deg*s)','Description','roll controller proportional gain');
             obj.rollKi              = simulinkProperty(0,'Unit','m/(deg*s^2)','Description','roll controller integral gain');
             obj.rollKd              = simulinkProperty(2,'Unit','m/rad','Description','roll controller derivative gain');
-            obj.rollFilterTimeConst = simulinkProperty(1/(0.2*2*pi),'Unit','s','Description','roll controller time constant');
+            obj.rollFilterTimeConst = simulinkProperty(1/(0.2),'Unit','s','Description','roll controller time constant');
             
             % Actuator command saturations
             obj.winchSpeedCmdLim    = simulinkProperty(0.4,'Unit','m/s','Description','winch speed command limit');

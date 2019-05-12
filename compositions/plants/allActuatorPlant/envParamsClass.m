@@ -7,10 +7,10 @@ classdef envParamsClass < handle
     end
     methods
         function obj = envParamsClass
-            obj.density = simulinkProperty(1000);
-            obj.grav    = simulinkProperty(9.81);
-            obj.mu      = simulinkProperty(1e-3);
-            obj.flow    = simulinkProperty([1 0  0]');
+            obj.density = simulinkProperty(1000,'Unit','(g*1000)/m^3','Description','water density');
+            obj.grav    = simulinkProperty(9.81,'Unit','m/s^2','Description','gravity');
+            obj.mu      = simulinkProperty(1e-3,'Unit','Pa*s','Description','water dynamic viscosity');
+            obj.flow    = simulinkProperty([1 0  0]','Description','initial flow condition');
         end
     end
 end

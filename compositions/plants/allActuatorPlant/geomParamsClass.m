@@ -19,23 +19,23 @@ classdef geomParamsClass < handle
         % Constructor method to define parameters that are independent of
         % the environment
         function obj = geomParamsClass
-            obj.chord = simulinkProperty(5);
-            obj.x_cm  = simulinkProperty(0.5*obj.chord.Value);
-            obj.x_ac  = simulinkProperty(0.8*obj.chord.Value);
-            obj.AR    = simulinkProperty(8);
-            obj.span  = simulinkProperty(obj.AR.Value*obj.chord.Value);
-            obj.vol   = simulinkProperty(1.117e11*(1e-9));
-            obj.buoy_factor    = simulinkProperty(1.25);
-            obj.center_of_buoy = simulinkProperty([0;0;0.0]);
-            obj.aero_center    = simulinkProperty([obj.x_ac.Value-obj.x_cm.Value;0;0]);
-            obj.MI = simulinkProperty(diag([1.433*1e13*(1e-6),1.432*1e11*(1e-6),1.530*1e13*(1e-6)]));
+            obj.chord = simulinkProperty(5,'Unit','m','Description','lifting body chord');
+            obj.x_cm  = simulinkProperty(0.5*obj.chord.Value,'Unit','m','Description','lifting body center of gravity');
+            obj.x_ac  = simulinkProperty(0.8*obj.chord.Value,'Unit','m','Description','lifting body aerodynamic center');
+            obj.AR    = simulinkProperty(8,'Description','lifting body Aspect Ratio');
+            obj.span  = simulinkProperty(obj.AR.Value*obj.chord.Value,'Unit','m','Description','lifting body span');
+            obj.vol   = simulinkProperty(1.117e11*(1e-9),'Unit','m^3','Description','lifting body volume');
+            obj.buoy_factor    = simulinkProperty(1.25,'Description','lifting body bouyancy factor');
+            obj.center_of_buoy = simulinkProperty([0;0;0.0],'Unit','m','Description','lifting body center of bouyancy');
+            obj.aero_center    = simulinkProperty([obj.x_ac.Value-obj.x_cm.Value;0;0],'Unit','m','Description','lifting body aerodynamic center with respect to center of mass');
+            obj.MI = simulinkProperty(diag([1.433*1e13*(1e-6),1.432*1e11*(1e-6),1.530*1e13*(1e-6)]),'Unit','1000*g*m^2','Description','lifting body moment of inertia');
         end
         
         % Method to calculate inertial properties that depend on
         % environment
         function obj = setupInertial(obj,aeroParam,envParam)
-            obj.F_buoy = simulinkProperty(envParam.density.Value*obj.vol.Value*envParam.grav.Value);
-            obj.mass   = simulinkProperty(obj.F_buoy.Value/(obj.buoy_factor.Value*envParam.grav.Value));
+            obj.F_buoy = simulinkProperty(envParam.density.Value*obj.vol.Value*envParam.grav.Value,'Unit','N','Description','lifting body bouyancy');
+            obj.mass   = simulinkProperty(obj.F_buoy.Value/(obj.buoy_factor.Value*envParam.grav.Value),'Unit','g*1000','Description','lifting body mass');
             
             span    = obj.span.Value;
             chord   = obj.chord.Value;
@@ -51,8 +51,8 @@ classdef geomParamsClass < handle
             m_added_y = pi*density*(1.98*span*(chord/2)^2 + 1.98*HS_span*(HS_chord/2)^2 + VS_span*(VS_chord/2)^2);
             m_added_z = pi*density*(span*(chord/2)^2 + HS_span*(HS_chord/2)^2 + 1.98*VS_span*(VS_chord/2)^2);
             
-            obj.m_added = simulinkProperty([m_added_x;m_added_y;m_added_z]);
-            obj.Izz_added = simulinkProperty(0);
+            obj.m_added = simulinkProperty([m_added_x;m_added_y;m_added_z],'Unit','g*1000','Description','lifting body added mass');
+            obj.Izz_added = simulinkProperty(0,'Unit','kg*1000*m^2','Description','lifting body added moment of inertia');
         end
         
     end

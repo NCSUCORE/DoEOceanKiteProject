@@ -10,7 +10,7 @@ classdef elevonParamClass < handle
     end
     methods
         function obj = elevonParamsClass
-            obj.elevon_max_deflection   = simulinkProperty(30*ones(2,1));
+            obj.elevon_max_deflection   = simulinkProperty(30*ones(2,1),'Description','elevon max deflection');
             obj.elevon_gain             = simulinkProperty(0.4);
             obj.elevator_control        = simulinkProperty()
             obj.aileron_control

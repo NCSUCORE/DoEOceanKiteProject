@@ -10,10 +10,10 @@ classdef turbineParamClass
     end
     methods
         function obj = turbineParamClass
-            obj.d_turbine = simulinkProperty(8.7);
-            obj.A_turbine = simulinkProperty((pi/4)*obj.d_turbine.Value^2);
-            obj.Cp_turb   = simulinkProperty(0.5);
-            obj.CD_turb   = simulinkProperty(0.8);
+            obj.d_turbine = simulinkProperty(8.7,'Unit','m','Description','turbine diameter');
+            obj.A_turbine = simulinkProperty((pi/4)*obj.d_turbine.Value^2,'Unit','m^2','Description','turbine area');
+            obj.Cp_turb   = simulinkProperty(0.5,'Description','pressure coefficent turbine');
+            obj.CD_turb   = simulinkProperty(0.8,'Description','drag coefficent turbine');
         end
         function obj = setupTurbines(obj,envParam,geomParam)
             rated_flow = 1.5;
@@ -24,10 +24,10 @@ classdef turbineParamClass
             span = geomParam.span.Value;
             turb_offset = geomParam.chord.Value/20;
             
-            obj.R1turb_cm = simulinkProperty([(chord - x_cm);-(span/2 + turb_offset);0]);
-            obj.R2turb_cm = simulinkProperty([(chord - x_cm); (span/2 + turb_offset);0]);
+            obj.R1turb_cm = simulinkProperty([(chord - x_cm);-(span/2 + turb_offset);0],'Unit','m','Description','turbine');
+            obj.R2turb_cm = simulinkProperty([(chord - x_cm); (span/2 + turb_offset);0],'Unit','m','Description','turbine');
             
-            obj.rated_power = simulinkProperty(2*req_power);
+            obj.rated_power = simulinkProperty(2*req_power,'Unit','N*m/s','Description','turbine rated power');
         end
     end
 end
