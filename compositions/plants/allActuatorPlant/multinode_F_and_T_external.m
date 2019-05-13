@@ -363,7 +363,15 @@ for i = 1:N
         
     end
     
-    
+    if abs(sum_1_f(1,1)) > 10e5 || abs(sum_1_f(2,1)) > 10e5 || abs(sum_1_f(3,1)) > 10e5
+        z1 = 0;
+    end
+    if abs(sum_2_f(1,1)) > 10e5 || abs(sum_2_f(2,1)) > 10e5 || abs(sum_2_f(3,1)) > 10e5
+        z2 = 0;
+    end
+    if abs(sum_3_f(1,1)) > 10e5 || abs(sum_3_f(2,1)) > 10e5 || abs(sum_3_f(3,1)) > 10e5
+        z3 = 0;
+    end
 end
 
 %% forces acting on the center of mass
@@ -393,6 +401,9 @@ T_o_ext = cross(R11_g,(pCo*sum_1_f(1:3,1))) + ...
     cross(R31_g,(pCo*sum_3_f(1:3,1)));
     
 T_o_ext = T_o_ext(3);
+if abs(T_o_ext) > 10e10
+    y = 0;
+end
 
 %% store in structure
 % important forces which are used for states calculations
