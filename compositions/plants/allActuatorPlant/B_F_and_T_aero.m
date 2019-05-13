@@ -101,16 +101,16 @@ else
 end
 
 %% MAIN WING FORCES
-% dynamic viscosity
-dyn_visco = (1/2)*rho*norm(B_Vrel)^2;
+% dynamic pressure
+dyn_press = (1/2)*rho*norm(B_Vrel)^2;
 
 % wing force
-Fd_mw_app = CD_mw*dyn_visco*Sref;
-Fl_mw_app = CL_mw*dyn_visco*Sref;
+Fd_mw_app = CD_mw*dyn_press*Sref;
+Fl_mw_app = CL_mw*dyn_press*Sref;
 
 % HS force
-Fd_hs_app = CD_mw*dyn_visco*HS_Sref;
-Fl_hs_app = CL_mw*dyn_visco*HS_Sref;
+Fd_hs_app = CD_mw*dyn_press*HS_Sref;
+Fl_hs_app = CL_mw*dyn_press*HS_Sref;
 
 % drag direction
 mw_drag_dir = B_Vrel/norm(B_Vrel);
@@ -128,8 +128,8 @@ B_F_aero_mw = B_F_drag_mw + B_F_lift_mw;
 
 %% VERTICAL STABILIZER FORCES
 % aerodynamic forces in the apparent flow frame
-Fd_VS_app = CD_VS*dyn_visco*VS_Sref;
-Fl_VS_app = CL_VS*dyn_visco*VS_Sref;
+Fd_VS_app = CD_VS*dyn_press*VS_Sref;
+Fl_VS_app = CL_VS*dyn_press*VS_Sref;
 
 % lift direction
 vs_ly = sqrt(1/(1 + (vyb/vxb)^2));
@@ -144,8 +144,8 @@ B_F_aero_VS = B_F_drag_VS + B_F_lift_VS;
 
 %% TURBINE FORCES
 
-Fd_turb1 = CD_turb*dyn_visco*A_turbine;
-Fd_turb2 = CD_turb*dyn_visco*A_turbine;
+Fd_turb1 = CD_turb*dyn_press*A_turbine;
+Fd_turb2 = CD_turb*dyn_press*A_turbine;
 
 B_F_turb1 = Fd_turb1*mw_drag_dir;
 B_F_turb2 = Fd_turb2*mw_drag_dir;
@@ -160,10 +160,10 @@ end
 
 %% TORQUES
 % torque about roll axis due to aileron
-T_roll = [(CM_nom*k_CM*delta_roll)*dyn_visco*Sref*chord;0;0];
+T_roll = [(CM_nom*k_CM*delta_roll)*dyn_press*Sref*chord;0;0];
 
 % torque about pitch axis due to aileron
-T_pitch = [0;(CM_nom*k_CM*delta_pitch)*dyn_visco*Sref*chord;0];
+T_pitch = [0;(CM_nom*k_CM*delta_pitch)*dyn_press*Sref*chord;0];
 
 % torque due to aero forces on main wing about CM in the B frame
 B_T_aero_mw = cross(Rac_cm,B_F_aero_mw) + T_roll + T_pitch;

@@ -19,6 +19,8 @@ classdef aeroParamsClass < handle
         pcl_VS
         pcd_VS
         pcm_VS
+        CM_nom
+        k_CM
         t_max
     end
     methods
@@ -48,7 +50,9 @@ classdef aeroParamsClass < handle
             obj.pcd_VS = obj.pcd_mw;
             obj.pcm_VS = obj.pcm_mw;
             
-            obj.t_max = simulinkProperty(0.15);
+            obj.CM_nom = simulinkProperty(-0.1,'Description','Roll moment coefficient');
+            obj.k_CM   = simulinkProperty(0.6,'Description','No idea, WTF is this? - MC');
+            obj.t_max  = simulinkProperty(0.15);
             
         end
         % Method to calculate aerodynamic parameters that depend on
