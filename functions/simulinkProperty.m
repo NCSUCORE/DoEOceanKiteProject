@@ -1,19 +1,16 @@
-function param = simulinkProperty(value,varargin)
-% Function to create class properties of the type Simulink.Parameter
+function h = simulinkProperty(Value,varargin)
 
-% Parse varargin
 p = inputParser;
-addRequired(p,'Value'      ,@isnumeric);
+addRequired(p,'Value',@isnumeric)
+addParameter(p,'Unit','',@ischar)
 addParameter(p,'Description','',@ischar)
-addParameter(p,'Unit'       ,'',@ischar)
-addParameter(p,'Min'        ,[],@isnumeric)
-addParameter(p,'Max'        ,[],@isnumeric)
-parse(p,value,varargin{:})
-% Create simulink parameter object with specified values
-param = Simulink.Parameter(value);
-param.Value       = p.Results.Value;
-param.Description = p.Results.Description;
-param.Min         = p.Results.Min;
-param.Max         = p.Results.Max;
-param.Unit        = p.Results.Unit;
+addParameter(p,'Min',[],@isnumeric)
+addParameter(p,'Max',[],@isnumeric)
+parse(p,Value,varargin{:});
+
+h = Simulink.Parameter(Value);
+fieldNames = fields(p.Results);
+for ii = 1:length(fieldNames)
+    h.(fieldNames{ii}) = p.Results.(fieldNames{ii});
+end
 end
