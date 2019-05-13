@@ -28,14 +28,14 @@ classdef geomParamsClass < handle
             obj.buoy_factor    = simulinkProperty(1.25,'Description','lifting body bouyancy factor');
             obj.center_of_buoy = simulinkProperty([0;0;0.0],'Unit','m','Description','lifting body center of bouyancy');
             obj.aero_center    = simulinkProperty([obj.x_ac.Value-obj.x_cm.Value;0;0],'Unit','m','Description','lifting body aerodynamic center with respect to center of mass');
-            obj.MI = simulinkProperty(diag([1.433*1e13*(1e-6),1.432*1e11*(1e-6),1.530*1e13*(1e-6)]),'Unit','1000*g*m^2','Description','lifting body moment of inertia');
+            obj.MI = simulinkProperty(diag([1.433*1e13*(1e-6),1.432*1e11*(1e-6),1.530*1e13*(1e-6)]),'Unit','kg*m^2','Description','lifting body moment of inertia');
         end
         
         % Method to calculate inertial properties that depend on
         % environment
         function obj = setupInertial(obj,aeroParam,envParam)
             obj.F_buoy = simulinkProperty(envParam.density.Value*obj.vol.Value*envParam.grav.Value,'Unit','N','Description','lifting body bouyancy');
-            obj.mass   = simulinkProperty(obj.F_buoy.Value/(obj.buoy_factor.Value*envParam.grav.Value),'Unit','g*1000','Description','lifting body mass');
+            obj.mass   = simulinkProperty(obj.F_buoy.Value/(obj.buoy_factor.Value*envParam.grav.Value),'Unit','kg','Description','lifting body mass');
             
             span    = obj.span.Value;
             chord   = obj.chord.Value;
@@ -51,8 +51,8 @@ classdef geomParamsClass < handle
             m_added_y = pi*density*(1.98*span*(chord/2)^2 + 1.98*HS_span*(HS_chord/2)^2 + VS_span*(VS_chord/2)^2);
             m_added_z = pi*density*(span*(chord/2)^2 + HS_span*(HS_chord/2)^2 + 1.98*VS_span*(VS_chord/2)^2);
             
-            obj.m_added = simulinkProperty([m_added_x;m_added_y;m_added_z],'Unit','g*1000','Description','lifting body added mass');
-            obj.Izz_added = simulinkProperty(0,'Unit','kg*1000*m^2','Description','lifting body added moment of inertia');
+            obj.m_added = simulinkProperty([m_added_x;m_added_y;m_added_z],'Unit','kg','Description','lifting body added mass');
+            obj.Izz_added = simulinkProperty(0,'Unit','kg*m^2','Description','lifting body added moment of inertia');
         end
         
     end

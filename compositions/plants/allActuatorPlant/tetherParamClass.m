@@ -10,7 +10,7 @@ classdef tetherParamClass < handle
     end
     methods
         function obj = tetherParamClass
-            obj.tether_actual_density = simulinkProperty(1300,'Unit','(1000*g)/(m^3)','Description','tether actual density');
+            obj.tether_actual_density = simulinkProperty(1300,'Unit','(kg)/(m^3)','Description','tether actual density');
             obj.tether_diameter       = simulinkProperty([0.055; 0.076; 0.055],'Unit','m','Description','tether diameter');
             obj.tether_youngs         = simulinkProperty(3.8e9,'Unit','Pa','Description','tether youngs modulus');
             obj.tether_CS             = simulinkProperty((pi/4)*obj.tether_diameter.Value.^2,'Unit','m^2','Description','tether cross sectional area');
@@ -19,7 +19,7 @@ classdef tetherParamClass < handle
         end
         function obj = setupTether(obj,envParam)
             obj.tether_density = simulinkProperty(...
-                obj.tether_actual_density.Value - envParam.density.Value,'Unit','(1000*g)/(m^3)','Description','tether density');
+                obj.tether_actual_density.Value - envParam.density.Value,'Unit','(kg)/(m^3)','Description','tether density');
         end
     end
 end

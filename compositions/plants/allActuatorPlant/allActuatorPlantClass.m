@@ -91,8 +91,14 @@ classdef allActuatorPlantClass < handle
         end
         
         % Function to scale all parameters
-        function obj = scale(obj,scaleFactor)
-            obj = scaleObj(obj,scaleFactor);
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
+            obj.aero_param      = scaleObj(obj.aero_param,lengthScaleFactor,densityScaleFactor);
+            obj.geom_param      = scaleObj(obj.geom_param,lengthScaleFactor,densityScaleFactor);
+            obj.env_param       = scaleObj(obj.env_param,lengthScaleFactor,densityScaleFactor);
+            obj.turbine_param   = scaleObj(obj.turbine_param,lengthScaleFactor,densityScaleFactor);
+            obj.tether_param    = scaleObj(obj.tether_param,lengthScaleFactor,densityScaleFactor);
+            obj.tether_imp_nodes= scaleObj(obj.tether_imp_nodes,lengthScaleFactor,densityScaleFactor);
+            obj.platform_param  = scaleObj(obj.platform_param,lengthScaleFactor,densityScaleFactor);
         end
     end
 end

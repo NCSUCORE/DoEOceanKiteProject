@@ -1,4 +1,4 @@
-classdef turbineParamClass
+classdef turbineParamClass < handle
     properties
         d_turbine
         A_turbine
@@ -28,6 +28,7 @@ classdef turbineParamClass
             obj.R2turb_cm = simulinkProperty([(chord - x_cm); (span/2 + turb_offset);0],'Unit','m','Description','turbine');
             
             obj.rated_power = simulinkProperty(2*req_power,'Unit','N*m/s','Description','turbine rated power');
+%             objOut = obj;
         end
     end
 end
