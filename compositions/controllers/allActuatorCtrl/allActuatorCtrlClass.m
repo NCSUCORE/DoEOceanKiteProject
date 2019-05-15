@@ -149,7 +149,6 @@ classdef allActuatorCtrlClass < handle
             obj.pCSMat = simulinkProperty([-1 -1; -1 1],'Description', 'matrix to combine controllers for control surfaces');
             
             
-            
         end
         % Function to scale all parameters
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
