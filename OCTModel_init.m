@@ -1,6 +1,6 @@
 % Script to initilize the OCTModel
 fprintf('\nInitializing OCTModel')
-close all;bdclose all;clear;clc;
+close all;clear;clc;
 
 fprintf('\nInitializing Plant')
 plant_init
@@ -14,7 +14,7 @@ environment_init
 fprintf('\nInitializing Simulation Parameters')
 simParameters_init
 
-fprintf('\nOpening main model')
-open('OCTModel.slx')
+% fprintf('\nOpening main model')
+% open('OCTModel.slx')
 
 fprintf('\nDone\n')

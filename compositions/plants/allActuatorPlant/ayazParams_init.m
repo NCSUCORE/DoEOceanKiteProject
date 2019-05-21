@@ -14,6 +14,7 @@ cd = airfoil_data(:,3);
 cm = airfoil_data(:,5);
 
 pcl_mw = polyfit(alp,0.9*cl,4);
+pcl_mw(5) = 0; %JLD
 pcd_mw = polyfit(alp,cd,4);
 pcm_mw = polyfit(alp,cm,4);
 
@@ -31,7 +32,7 @@ pcm_VS = pcm_mw;
 cd_at_clmax = pcd_n(i_clmax);
 
 %% master scaling parameters
-k_scale = 0.1/1       % length scale
+k_scale = 1/1       % length scale changed .1 to 1 JLD
 rho_scale = 1/1      % density scale
 
 
@@ -100,7 +101,7 @@ vol = (k_scale^3)*1.117e11*(1e-9);
 % buoyant force
 F_buoy = density*vol*grav;
 % factor of buoyancy
-buoy_factor = 1.25;
+buoy_factor = 1.05; %1.25 to 1.05 JLD
 % F_gravity
 F_grav = F_buoy/buoy_factor;
 % balloon mass
@@ -197,7 +198,7 @@ Cp_turb = 0.5;
 nominal_rated_flow = 1.5;
 rated_flow = nominal_rated_flow;
 
-d_turbine_nom = 8.7;
+d_turbine_nom = 8.7*0;   %   Multiply by 0 to eliminate the rotors JLD
 d_turbine = k_scale*d_turbine_nom;
 
 A_turbine = (pi/4)*d_turbine^2;
@@ -229,7 +230,7 @@ set_alti_nom = 200;
 % set alti
 set_alti = k_scale*set_alti_nom;
 % set pitch
-set_pitch = 7;
+set_pitch = 15;             %   Original Ayaz value = 7 deg JLD
 set_pitch = set_pitch*(pi/180);
 
 % set roll

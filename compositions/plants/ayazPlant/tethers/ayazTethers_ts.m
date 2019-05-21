@@ -9,7 +9,7 @@ ayazParams_init
 model_obj = get_param(bdroot,'Object');
 model_obj.refreshModelBlocks
 
-flow = [1 0 0]';
+flow = [1.5 0 0]';
 
 eulAng = [0 0 0]';
 
