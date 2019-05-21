@@ -13,12 +13,12 @@ files = files(3:end); % Delete first two which are always '.' and '..'
 for ii = 1:length(files)
     % Create the Simulink.Variant object
     evalin('base',...
-        sprintf('VSS_%s_%s = Simulink.Variant(''%s==%d'');',...
-        name(1:end-1),files(ii).name,upper(name(1:end-1)),ii));
+        sprintf('VSS_%s_%s = Simulink.Variant(''strcmpi(%s,''''%s'''')'');',...
+        name(1:end-1),files(ii).name,upper(name(1:end-1)),files(ii).name));
     % If statement that sets the "default" active controller to the example
     % controller
-    if strcmpi(files(ii).name,'example')
-       evalin('base',sprintf('%s = %d;',upper(name(1:end-1)),ii))
+    if ii == 1
+       evalin('base',sprintf('%s = ''%s'';',upper(name(1:end-1)),files(ii).name))
     end
 end
 
