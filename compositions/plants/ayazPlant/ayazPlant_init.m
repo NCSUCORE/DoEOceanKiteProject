@@ -26,14 +26,14 @@ pcm_n = polyval(pcm_mw,alp_n);
 % use same rudder
 pcl_VS = pcl_mw;
 pcd_VS = pcd_mw;
-pcm_VS = pcm_mw;
+pcm_VS = pcm_mw*0;
 
 [cl_max,i_clmax] = max(pcl_n);
 cd_at_clmax = pcd_n(i_clmax);
 
 %% master scaling parameters
-k_scale = 1/1       % length scale changed .1 to 1 JLD
-rho_scale = 1/1      % density scale
+k_scale = 1/1;       % length scale changed .1 to 1 JLD
+rho_scale = 1/1;      % density scale
 
 
 %% simulation parameters
@@ -42,7 +42,7 @@ sim_time = nom_sim_time*sqrt(k_scale);
 
 %% number of nodes on each tether
 % number of nodes
-N = 5;
+N = 2;
 sim_param.N = N;
 
 %% turbulence input parameters
@@ -230,11 +230,11 @@ set_alti_nom = 200;
 % set alti
 set_alti = k_scale*set_alti_nom;
 % set pitch
-set_pitch = 15;             %   Original Ayaz value = 7 deg JLD
+set_pitch = 10;             %   Original Ayaz value = 7 deg JLD
 set_pitch = set_pitch*(pi/180);
 
 % set roll
-set_roll = 0;
+set_roll = 20;
 set_roll = set_roll*(pi/180);
 
 %% tether parameters
@@ -326,7 +326,7 @@ nom_t_winch = 1;
 t_winch = sqrt(k_scale)*nom_t_winch;
 
 % Gains and time constants altitude
-Kp_z = 1*sqrt(k_scale)*0.05;
+Kp_z = 1*sqrt(k_scale)*0.05; % EB Turned off altitude control
 Ki_z = 0;
 Kd_z = 5*Kp_z;
 
@@ -340,8 +340,9 @@ alti_control.wce_z = wce_z;
 
 % Gains pitch
 Kp_p = 1*sqrt(k_scale)*1.5*0.5;
+Kp_p = 2; % EB Control
 Ki_p = 0.0;
-Kd_p = 2.5*sqrt(k_scale)*Kp_p;
+Kd_p = 1*sqrt(k_scale)*Kp_p;
 
 cut_off_f_p = 0.2/sqrt(k_scale);
 wce_p = 2*pi*cut_off_f_p;
@@ -355,6 +356,7 @@ pitch_control.wce_p = wce_p;
 
 % Gains roll
 Kp_r = 1*(k_scale)*(Kp_p/(0.5*AR));
+Kp_r = 4; % EB Control
 Ki_r = 0.0;
 Kd_r = 2*sqrt(k_scale)*Kp_r;
 
@@ -392,7 +394,7 @@ CM_nom = -0.1;
 k_CM = 0.6;
 
 % elevator gaines
-kp_elev = 1*10;
+kp_elev = 1*10*0; % EB Control off
 ki_elev = 0.0*kp_elev;
 kd_elev = sqrt(k_scale)*3*kp_elev;
 
@@ -406,7 +408,7 @@ elevator_control.kd_elev = kd_elev;
 elevator_control.t_elev = t_elev;
 
 % aileron gains
-kp_aileron = 1*4;
+kp_aileron = 1*4*0; % EB Control Off
 ki_aileron = 0.0*kp_aileron;
 kd_aileron = 2*sqrt(k_scale)*kp_aileron;
 
@@ -439,6 +441,7 @@ ini_delta_alpha = [0;0];
 % initial conditions
 ini_Rcm_o = gnd_station;
 ini_Rcm_o(3) = set_alti;
+ini_Rcm_o(1) = 17.5;
 
 ini_O_Vcm_o = [0;0;0.0];
 ini_O_Vcm_o(1) = 0;
