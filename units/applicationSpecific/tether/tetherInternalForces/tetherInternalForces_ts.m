@@ -22,5 +22,3 @@ end
 
 Ri_o = [R1_o;Ri_o;Rn_o];
 Vi_o = zeros(size(Ri_o));
-
-
