@@ -32,16 +32,16 @@ set_pitch = timeseries(set_pitch,time);
 set_roll  = timeseries(set_roll, time);
 set_alt   = timeseries(set_alt,time);
 
-
+% sim_param.platform_param.platform_Izz =sim_param.geom_param.MI(3);
 
 try
-sim('origionalPlant_th')
+    sim('origionalPlant_th')
 catch
 end
 tscAyaz = parseLogsout;
 
 try
-sim('groundStationVerify_th')
+    sim('groundStationVerify_th')
 catch
 end
 tscMod = parseLogsout;
@@ -122,10 +122,86 @@ ylabel('Yaw [deg]')
 
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
+%%
+figure
+subplot(4,1,1)
+tscMod.platformAngle.plot
+hold on
+tscAyaz.platformAngle.plot
+
+subplot(4,1,2)
+plot(tscMod.tether1Moment.Time,tscMod.tether1Moment.Data(:,3))
+hold on
+plot(tscMod.tether3Moment.Time,tscMod.tether3Moment.Data(:,3))
+
+subplot(4,1,3)
+plot(tscMod.tether3Moment.Time,tscMod.tether1Moment.Data(:,3)+tscMod.tether3Moment.Data(:,3))
+
+subplot(4,1,4)
+tscMod.netTetherMoment.plot
+
+linkaxes(findall(gcf,'Type','axes'),'x')
+
+figure
+tscMod.platformAngle.plot
+hold on
+tscAyaz.platformAngle.plot
+
+
+%%
+figure
+subplot(2,1,1)
+tscMod.netTetherMoment.plot
+subplot(2,1,2)
+tscMod.platformAngle.plot
+hold on
+tscAyaz.platformAngle.plot
+linkaxes(findall(gcf,'Type','axes'),'x')
+
+%%
+% close all
+figure
+indices = [1 length(tscMod.eulerAngles.Time)];
+for ii = 1:length(indices)
+    idx = indices(ii);
+    thr1 = reshape(tscMod.thr1NodePositions.data(idx,:),[3 2]);
+    thr2 = reshape(tscMod.thr2NodePositions.data(idx,:),[3 2]);
+    thr3 = reshape(tscMod.thr3NodePositions.data(idx,:),[3 2]);
+    plot3(thr1(1,:),thr1(2,:),thr1(3,:),'Color',[1 0 0])
+    hold on
+    plot3(thr2(1,:),thr2(2,:),thr2(3,:),'Color',[0 1 0])
+    plot3(thr3(1,:),thr3(2,:),thr3(3,:),'Color',[0 0 1])
+    scatter3(tscMod.thr1AttachPt.data(idx,1),tscMod.thr1AttachPt.data(idx,2),tscMod.thr1AttachPt.data(idx,3))
+    scatter3(tscMod.thr2AttachPt.data(idx,1),tscMod.thr2AttachPt.data(idx,2),tscMod.thr2AttachPt.data(idx,3))
+    scatter3(tscMod.thr3AttachPt.data(idx,1),tscMod.thr3AttachPt.data(idx,2),tscMod.thr3AttachPt.data(idx,3))
+    axis square
+    axis equal
+    grid on   
+
+end
+%%
+% close all
+figure
+plot(tscMod.thr1AttachPt.data(:,1),tscMod.thr1AttachPt.data(:,2))
+hold on
+grid on
+plot(tscMod.thr2AttachPt.data(:,1),tscMod.thr2AttachPt.data(:,2))
+plot(tscMod.thr3AttachPt.data(:,1),tscMod.thr3AttachPt.data(:,2))
+
+plot(tscMod.thr1NodePositions.data(:,1),tscMod.thr1NodePositions.data(:,2))
+plot(tscMod.thr2NodePositions.data(:,1),tscMod.thr2NodePositions.data(:,2))
+plot(tscMod.thr3NodePositions.data(:,1),tscMod.thr3NodePositions.data(:,2))
+
+
+scatter(sim_param.tether_imp_nodes.R11_g(1),sim_param.tether_imp_nodes.R11_g(2))
+scatter(sim_param.tether_imp_nodes.R21_g(1),sim_param.tether_imp_nodes.R21_g(2))
+scatter(sim_param.tether_imp_nodes.R31_g(1),sim_param.tether_imp_nodes.R31_g(2))
+axis square
+axis equal
+grid on
 
 
 
 
 
-
-
+    

@@ -401,9 +401,6 @@ T_o_ext = cross(R11_g,(pCo*sum_1_f(1:3,1))) + ...
     cross(R31_g,(pCo*sum_3_f(1:3,1)));
     
 T_o_ext = T_o_ext(3);
-if abs(T_o_ext) > 10e10
-    y = 0;
-end
 
 %% store in structure
 % important forces which are used for states calculations
