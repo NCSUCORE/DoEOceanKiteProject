@@ -23,7 +23,7 @@ zeta = 0.05;
 rho_fluid = 1000;
 rho_tether = 1300;
 Cd = 0.5;
-flow = [1.0 0 0];
+flow = [0.0 0 0];
 L = 100;
 
 m_i = 2;
