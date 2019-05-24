@@ -25,3 +25,9 @@ RBody2Surf = [xUnitVec(:)';...
      zUnitvec(:)'];
  
  RSurf2Body = inv(RBody2Surf);
+ 
+ % Populate the list of airfoils
+ maskObj = Simulink.Mask.get(gcb);
+ airfoilSelectionObj = maskObj.Parameters(strcmpi({maskObj.Parameters.Name},'airfoilSelection'));
+ files = dir(fullfile(fileparts(which(mfilename)),'library','*.txt'));
+ airfoilSelectionObj.TypeOptions = {files.name};

@@ -18,7 +18,7 @@ uAppBody = uAppBody/sqrt(sum(uAppBody.^2));
 chord = 0.2;
 span = 1;
 
-defAng = -1*pi/180;
+defAng = 0*pi/180;
 
 panel(:,1) = aeroCenterVec(:) + chord*chordDirectionVec(:)/2 + span*spanRotationVec(:)/2;
 panel(:,2) = aeroCenterVec(:) + chord*chordDirectionVec(:)/2 - span*spanRotationVec(:)/2;
