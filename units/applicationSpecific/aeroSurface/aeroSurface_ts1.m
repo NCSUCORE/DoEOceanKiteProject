@@ -54,6 +54,7 @@ plot3([aeroCenterVec(1) aeroCenterVec(1) + dragVec.Data(1)],...
 quiver3(aeroCenterVec(1),aeroCenterVec(2),aeroCenterVec(3),spanRotationVec(1),spanRotationVec(2),spanRotationVec(3))
   
   
-  
+FNetVec.Data
+FNetVec1.Data
   
   
