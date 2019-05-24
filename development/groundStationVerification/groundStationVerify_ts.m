@@ -54,21 +54,21 @@ figure
 subplot(3,1,1)
 plot(tscAyaz.posVec.Time,tscAyaz.posVec.Data(:,1),'LineWidth',2)
 hold on
-plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(1,:,:)),'LineWidth',2,'LineStyle','--')
+plot(tscMod.posVec.Time,tscMod.posVec.Data(:,1),'LineWidth',2,'LineStyle','--')
 xlabel('Time [s]')
 ylabel('x pos [m]')
 
 subplot(3,1,2)
 plot(tscAyaz.posVec.Time,tscAyaz.posVec.Data(:,2),'LineWidth',2)
 hold on
-plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(2,:,:)),'LineWidth',2,'LineStyle','--')
+plot(tscMod.posVec.Time,tscMod.posVec.Data(:,2),'LineWidth',2,'LineStyle','--')
 xlabel('Time [s]')
 ylabel('y pos [m]')
 
 subplot(3,1,3)
 plot(tscAyaz.posVec.Time,tscAyaz.posVec.Data(:,3),'LineWidth',2)
 hold on
-plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(3,:,:)),'LineWidth',2,'LineStyle','--')
+plot(tscMod.posVec.Time,tscMod.posVec.Data(:,3),'LineWidth',2,'LineStyle','--')
 xlabel('Time [s]')
 ylabel('z pos [m]')
 
@@ -78,21 +78,21 @@ figure
 subplot(3,1,1)
 plot(tscAyaz.velocityVec.Time,tscAyaz.velocityVec.Data(:,1),'LineWidth',2)
 hold on
-plot(tscMod.velocityVec.Time,squeeze(tscMod.velocityVec.Data(1,:,:)),'LineWidth',2,'LineStyle','--')
+plot(tscMod.velocityVec.Time,tscMod.velocityVec.Data(:,1),'LineWidth',2,'LineStyle','--')
 xlabel('Time [s]')
 ylabel('x vel [m]')
 
 subplot(3,1,2)
 plot(tscAyaz.velocityVec.Time,tscAyaz.velocityVec.Data(:,2),'LineWidth',2)
 hold on
-plot(tscMod.velocityVec.Time,squeeze(tscMod.velocityVec.Data(2,:,:)),'LineWidth',2,'LineStyle','--')
+plot(tscMod.velocityVec.Time,tscMod.velocityVec.Data(:,2),'LineWidth',2,'LineStyle','--')
 xlabel('Time [s]')
 ylabel('y vel [m]')
 
 subplot(3,1,3)
 plot(tscAyaz.velocityVec.Time,tscAyaz.velocityVec.Data(:,3),'LineWidth',2)
 hold on
-plot(tscMod.velocityVec.Time,squeeze(tscMod.velocityVec.Data(3,:,:)),'LineWidth',2,'LineStyle','--')
+plot(tscMod.velocityVec.Time,tscMod.velocityVec.Data(:,3),'LineWidth',2,'LineStyle','--')
 xlabel('Time [s]')
 ylabel('z vel [m]')
 
