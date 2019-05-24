@@ -515,3 +515,7 @@ sim_param.controller_param = controller_param;
 X0 = cat(1,ini_Rcm_o,ini_O_Vcm_o,ini_euler_ang,ini_OwB,ini_platform_ang,ini_platform_vel,...
     ini_R1i_o,ini_R2i_o,ini_R3i_o,ini_O_V1i_o,ini_O_V2i_o,ini_O_V3i_o);
 
+
+% Extra parameters that I've added that weren't in the origional
+maxWinchSpeed = sim_param.controller_param.winc_vel_up_lims(1);
+maxWinchAccel = maxWinchSpeed*2;
