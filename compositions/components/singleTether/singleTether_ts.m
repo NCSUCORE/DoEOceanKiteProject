@@ -41,7 +41,8 @@ ini_Vi_o = zeros(size(Vi_o));
 
 dt = 1/1000;
 
-sim('tetherComposition_th');
+% sim('tetherComposition_th');
+sim('sinlgeTether_th')
 
 
 %% post process
@@ -110,6 +111,8 @@ Sy = Sy(1)-1; Ly = Ly(1)+1;
 [Sz,Lz] = bounds(p3z,'all');
 Sz = Sz(1); Lz = Lz(1);
 
+axis square
+axis equal
 
 for ii = 1:n_steps
     
