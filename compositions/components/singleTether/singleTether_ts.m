@@ -4,7 +4,7 @@ format compact
 ini_Rn_o = [0 0 100];
 ini_R1_o = [0 0 0];
 
-amp = 1;
+amp = 10;
 omega = 1;
 sim_time = 20;
 
@@ -16,6 +16,7 @@ V1_o = [0 0 0];
 N = 20;
 Ri_o =  zeros(N-2,3);
 
+g = 9.81;
 mass = 100;
 dia_t = 0.05;
 E = 3.8e9;
@@ -111,8 +112,8 @@ Sy = Sy(1)-1; Ly = Ly(1)+1;
 [Sz,Lz] = bounds(p3z,'all');
 Sz = Sz(1); Lz = Lz(1);
 
-axis square
-axis equal
+% axis square
+% axis equal
 
 for ii = 1:n_steps
     
