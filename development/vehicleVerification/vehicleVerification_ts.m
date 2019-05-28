@@ -32,8 +32,6 @@ set_pitch = timeseries(set_pitch,time);
 set_roll  = timeseries(set_roll, time);
 set_alt   = timeseries(set_alt,time);
 
-% sim_param.platform_param.platform_Izz =sim_param.geom_param.MI(3);
-
 try
     sim('origionalPlant_th')
 catch
@@ -41,7 +39,7 @@ end
 tscAyaz = parseLogsout;
 
 try
-    sim('groundStationVerify_th')
+    sim('vehicleVerification_th')
 catch
 end
 tscMod = parseLogsout;
