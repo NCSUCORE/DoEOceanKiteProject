@@ -14,7 +14,7 @@ createAyazFlowEnvironmentBus
 createaAyazCtrlBus
 
 % Set simulation duration
-duration_s = 500;
+duration_s = 300;
 
 % Set active variants
 ENVIRONMENT = 'ayazFlow';

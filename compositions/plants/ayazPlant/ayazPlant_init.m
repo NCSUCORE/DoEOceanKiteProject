@@ -239,12 +239,12 @@ set_roll = set_roll*(pi/180);
 
 %% tether parameters
 % drag over cylinder for tether drag Re~1.2 e6
-CD_cylinder = 0.5;
+CD_cylinder = 0.5; % Origional
 % youngs modulus
 nom_tether_youngs = 1*3.8e9;
 tether_youngs = k_scale*nom_tether_youngs;
 % tether density in working fluid
-tether_actual_density = 1300*rho_scale;       
+tether_actual_density = 1300*rho_scale;   % Origional
 tether_density = tether_actual_density - density;
 % tether_density = 0.1*rho_scale;
 
@@ -394,7 +394,7 @@ CM_nom = -0.1;
 k_CM = 0.6;
 
 % elevator gaines
-kp_elev = 1*10*0; % EB Control off
+kp_elev = 1*10*0; 
 ki_elev = 0.0*kp_elev;
 kd_elev = sqrt(k_scale)*3*kp_elev;
 
