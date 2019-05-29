@@ -121,5 +121,96 @@ ylabel('Yaw [deg]')
 
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
-%%
+%% Plot tether tensions
+figure
+plot(tscMod.thr1AirTenVec.Time,squeeze(tscMod.thr1AirTenVec.Data(3,1,:)))
+hold on
+grid on
+plot(tscMod.thr3AirTenVec.Time,squeeze(tscMod.thr3AirTenVec.Data(3,1,:)))
+
+
+%% Plot body frame moments from tethers
+figure
+subplot(3,1,1)
+plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,1))
+grid on
+hold on
+plot(tscMod.B_Tt1_Mod.Time,tscMod.B_Tt1_Mod.Data(:,1))
+xlabel('Time, [s]')
+ylabel('X Comp.')
+title('Tether 1')
+
+subplot(3,1,2)
+plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,2))
+grid on
+hold on
+plot(tscMod.B_Tt1_Mod.Time,tscMod.B_Tt1_Mod.Data(:,2))
+xlabel('Time, [s]')
+ylabel('Y Comp.')
+
+subplot(3,1,3)
+plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,3))
+grid on
+hold on
+plot(tscMod.B_Tt1_Mod.Time,tscMod.B_Tt1_Mod.Data(:,3))
+xlabel('Time, [s]')
+ylabel('Z Comp.')
+
+set(findall(gcf,'Type','axes'),'FontSize',24)
+linkaxes(findall(gcf,'Type','axes'),'x')
+
+figure
+subplot(3,1,1)
+plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,1))
+grid on
+hold on
+plot(tscMod.B_Tt3_Mod.Time,tscMod.B_Tt3_Mod.Data(:,1))
+xlabel('Time, [s]')
+ylabel('X Comp.')
+title('Tether 3')
+
+subplot(3,1,2)
+plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,2))
+grid on
+hold on
+plot(tscMod.B_Tt3_Mod.Time,tscMod.B_Tt3_Mod.Data(:,2))
+xlabel('Time, [s]')
+ylabel('Y Comp.')
+
+subplot(3,1,3)
+plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,3))
+grid on
+hold on
+plot(tscMod.B_Tt3_Mod.Time,tscMod.B_Tt3_Mod.Data(:,3))
+xlabel('Time, [s]')
+ylabel('Z Comp.')
+
+
+set(findall(gcf,'Type','axes'),'FontSize',24)
+linkaxes(findall(gcf,'Type','axes'),'x')
+
+
+% 
+% subplot(3,1,2)
+% plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,2))
+% grid on
+% hold on
+% plot(tscAyaz.B_Tt2.Time,tscAyaz.B_Tt2.Data(:,2))
+% plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,2))
+% xlabel('Time, [s]')
+% ylabel('Y Comp.')
+% 
+% subplot(3,1,3)
+% plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,3))
+% grid on
+% hold on
+% plot(tscAyaz.B_Tt2.Time,tscAyaz.B_Tt2.Data(:,3))
+% plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,3))
+% xlabel('Time, [s]')
+% ylabel('Z Comp.')
+
+
+
+
+%% Animate the simulation
 animateSim

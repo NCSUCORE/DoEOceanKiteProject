@@ -180,6 +180,9 @@ for i = 1:N-1
     
     Ft1i(:,i) = (Ts1i(i) + Td1i(i))* ((R1i_o((3*i + 1):(3*i + 3),1) - R1i_o((3*i - 2):(3*i),1))/...
         norm(R1i_o((3*i + 1):(3*i + 3),1) - R1i_o((3*i - 2):(3*i),1)) );
+%      if (Ts1i(i) + Td1i(i))<0
+%          x = 1;
+%      end
     
     Ft2i(:,i) = (Ts2i(i) + Td2i(i))* ((R2i_o((3*i + 1):(3*i + 3),1) - R2i_o((3*i - 2):(3*i),1))/...
         norm(R2i_o((3*i + 1):(3*i + 3),1) - R2i_o((3*i - 2):(3*i),1)) );
@@ -373,7 +376,6 @@ for i = 1:N
         z3 = 0;
     end
 end
-
 %% forces acting on the center of mass
 O_F_ext = O_F_buoy + O_F_grav + O_F_aero_mw + O_F_aero_VS + O_F_turb1 + O_F_turb2 +...
     sum_1_f(:,end) + sum_2_f(:,end) + sum_3_f(:,end);
@@ -410,6 +412,9 @@ op.sum_3_f = sum_3_f;
 op.O_F_ext = O_F_ext;
 op.B_T_ext = B_T_ext;
 op.T_o_ext = T_o_ext;
+op.B_Tt1 = B_Tt1;
+op.B_Tt2 = B_Tt2;
+op.B_Tt3 = B_Tt3;
 
 op.B_T_buoy = B_T_buoy;
 op.B_T_aero_mw = B_T_aero_mw;
