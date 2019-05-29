@@ -1,20 +1,22 @@
 clear
 format compact
 
-ini_Rn_o = [0 0 100];
-ini_R1_o = [0 0 0];
+ini_Rn_o = [0 0 100]';
+ini_R1_o = [0 0 0]';
 
 amp = 10;
 omega = 1;
 sim_time = 20;
 
-Rn_o = [0 0 100];
-Vn_o = [0 0 0];
-R1_o = [0 0 0];
-V1_o = [0 0 0];
+Rn_o = [0 0 100]';
+Vn_o = [0 0 0]';
+R1_o = [0 0 0]';
+V1_o = [0 0 0]';
 
-N = 20;
-Ri_o =  zeros(N-2,3);
+sim_param.N = 20;
+N = sim_param.N;
+
+Ri_o =  zeros(3,N-2);
 
 g = 9.81;
 mass = 100;
@@ -24,17 +26,17 @@ zeta = 0.05;
 rho_fluid = 1000;
 rho_tether = 1300;
 Cd = 0.5;
-flow = [0.0 0 0];
+flow = [1 0 0]';
 L = 100;
 
 m_i = 2;
 
 for ii = 2:N-1
-    Ri_o(ii-1,:) = (Rn_o - R1_o)*(ii-1)/(N-1);
+    Ri_o(:,ii-1) = (Rn_o - R1_o)*(ii-1)/(N-1);
     
 end
 
-Ri_o = [R1_o;Ri_o;Rn_o];
+Ri_o = [R1_o Ri_o Rn_o];
 Vi_o = zeros(size(Ri_o));
 
 ini_Ri_o = Ri_o;
@@ -65,7 +67,7 @@ s_R = cell(N,1);
 
 for jj = 1:N
     for ii = 1:length(time)
-        s_R_int(ii,:) =  sol_Ri_o(jj,:,ii);
+        s_R_int(ii,:) =  sol_Ri_o(:,jj,ii)';
     end
     s_R{jj} =  s_R_int;
 end
