@@ -394,8 +394,8 @@ CM_nom = -0.1;
 k_CM = 0.6;
 
 % elevator gaines
-kp_elev = 1*10*0; 
-ki_elev = 0.0*kp_elev;
+kp_elev = 1; 
+ki_elev = 0.0;
 kd_elev = sqrt(k_scale)*3*kp_elev;
 
 t_elev = sqrt(k_scale)*0.05;
@@ -408,8 +408,8 @@ elevator_control.kd_elev = kd_elev;
 elevator_control.t_elev = t_elev;
 
 % aileron gains
-kp_aileron = 1*4*0; % EB Control Off
-ki_aileron = 0.0*kp_aileron;
+kp_aileron = 1; % EB Control Off
+ki_aileron = 0.0;
 kd_aileron = 2*sqrt(k_scale)*kp_aileron;
 
 t_aileron = sqrt(k_scale)*0.2;
