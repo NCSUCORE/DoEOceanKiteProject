@@ -2,7 +2,7 @@ clear
 clc
 
 ip_file_name = 'test';
-result_file_name = 'something';
+result_file_name = 'res_ft';
 
 alpha = 5;
 beta = 0;

@@ -58,7 +58,6 @@ fclose(fileID_run);
 
 %% run avl and get results
 fileName_exe = 'txt_exe';
-filePath = which('avl.exe');
 
 fileID_exe = fopen(fileName_exe,'w');
 
@@ -95,9 +94,11 @@ fprintf(fileID_exe,'quit\n');
 
 fclose(fileID_exe);
 % 
-cmd_str = strcat(filePath,'<',fileName_exe);
-
-dos(cmd_str);
+prevDir = cd;
+cd(fileparts(which('avl.exe')))
+cmd_str = strcat('avl.exe','<',fileName_exe);
+system(cmd_str);
+cd(prevDir);
 
 delete(fileName_exe);
 
