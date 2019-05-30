@@ -101,6 +101,6 @@ system(cmd_str);
 cd(prevDir);
 
 delete(fileName_exe);
-fileName_run(fileName_run);
+delete(fileName_run);
 
 end
