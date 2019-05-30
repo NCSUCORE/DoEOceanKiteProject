@@ -97,7 +97,7 @@ fclose(fileID_exe);
 prevDir = cd;
 cd(fileparts(which('avl.exe')))
 cmd_str = strcat('avl.exe','<',fileName_exe);
-system(cmd_str);
+[status,result]=system(cmd_str);
 cd(prevDir);
 
 delete(fileName_exe);
