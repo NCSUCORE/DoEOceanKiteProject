@@ -1,4 +1,4 @@
-function calc_ft(ip_file_name,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
+function avlRunCase(ip_file_name,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
 
 %% file name
 fileName_run = 'RunFile';
@@ -101,5 +101,6 @@ system(cmd_str);
 cd(prevDir);
 
 delete(fileName_exe);
+fileName_run(fileName_run);
 
 end

@@ -12,4 +12,4 @@ elevator = 0;
 rudder = 0;
 
 
-calc_ft(ip_file_name,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
+avlRunCase(ip_file_name,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
