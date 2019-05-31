@@ -13,7 +13,7 @@ function results = loadAVLResults(fileName)
 % Get base path to directory containing results
 basePath = fileparts(which('avl.exe'));
 % Open the file
-fid = fopen(fullfile(basePath,'designLibrary',fileName),'r');
+fid = fopen(fullfile(basePath,fileName),'r');
 % Read in all the text
 file = textscan(fid,...
     '%s', 'delimiter', {'\n','\t',' '},'whitespace', '');
