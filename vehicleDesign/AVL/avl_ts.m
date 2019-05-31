@@ -1,8 +1,8 @@
 clear
 clc
 
-ip_file_name = 'test';
-result_file_name = 'res_ft';
+ip_file_name = 'test_ip_func';
+result_file_name = 'res_ft_ip';
 
 alpha = 5;
 beta = 0;
