@@ -1,5 +1,10 @@
 function avlRunCase(ip_file_name,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
 
+prevPath = cd;
+basePath = fileparts(which('avl.exe'));
+cd(basePath)
+inputFilePath = fullfile(pwd,'designLibrary');
+
 %% file name
 fileName_run = 'RunFile.run';
 fileID_run = fopen(fileName_run,'w');
@@ -57,12 +62,13 @@ fprintf(fileID_run,' visc CM_u =   0.00000                                     \
 fclose(fileID_run);
 
 %% run avl and get results
-fileName_exe = 'txt_exe';
 
+
+fileName_exe = 'txt_exe';
 fileID_exe = fopen(fileName_exe,'w');
 
 % load input file
-fprintf(fileID_exe,'load %s\n',ip_file_name);
+fprintf(fileID_exe,'load %s\n',fullfile(inputFilePath,ip_file_name));
 
 % load run file
 fprintf(fileID_exe,'case %s\n',fileName_run);
@@ -81,7 +87,7 @@ fprintf(fileID_exe,'%s\n',result_file_name);
 
 % check if the results file exists
 if isfile(result_file_name)
-fprintf(fileID_exe,'o\n');
+    fprintf(fileID_exe,'o\n');
 end
 
 % exit oper menu
@@ -90,17 +96,17 @@ fprintf(fileID_exe,'\n');
 % quit avl
 fprintf(fileID_exe,'quit\n');
 
-% dos('load test &');
-
 fclose(fileID_exe);
-% 
-prevDir = cd;
-cd(fileparts(which('avl.exe')))
-cmd_str = strcat('avl.exe','<',fileName_exe);
-[status,result]=system(cmd_str);
-cd(prevDir);
-
+ 
+% Run AVL
+cmd_str = strcat('avl.exe','<','txt_exe');
+[status,result] = system(cmd_str);
+movefile(result_file_name,fullfile(pwd,'designLibrary'),'f');
+% Delete temporary files
+fclose('all');
 delete(fileName_exe);
 delete(fileName_run);
+
+cd(prevPath);
 
 end

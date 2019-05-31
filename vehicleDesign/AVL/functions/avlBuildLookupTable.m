@@ -1,5 +1,5 @@
 function [CLtotTbl,CDtotTbl,CltotTbl,CmtotTbl,CntotTbl] =...
-    buildAVLLookupTable(saveFile,inputFileName,resultsFileName,...
+    avlBuildLookupTable(saveFile,inputFileName,resultsFileName,...
     alphas,betas,flaps,ailerons,elevators,rudders)
 % Initialize lookup tables for all the aero coefficients
 % Lift coefficient
@@ -88,7 +88,7 @@ for ii = 1:length(alphas)
                         % Run AVL
                         avlRunCase(inputFileName,resultsFileName,...
                             alpha,beta,flap,aileron,elevator,rudder)
-                        rslt = loadAVLResults(resultsFileName);
+                        rslt = avlLoadResults(resultsFileName);
                         CLtotData(ii,jj,kk,mm,nn,pp) = rslt.CLtot;
                         CDtotData(ii,jj,kk,mm,nn,pp) = rslt.CDtot;
                         CltotData(ii,jj,kk,mm,nn,pp) = rslt.Cltot;
@@ -106,6 +106,6 @@ CDtotTbl.Table.Value = CDtotData;
 CltotTbl.Table.Value = CltotData;
 CmtotTbl.Table.Value = CmtotData;
 CntotTbl.Table.Value = CntotData;
-
+saveFile = fullfile(fileparts(which('avl.exe')),'designLibrary',saveFile);
 save(saveFile,'CLtotTbl','CDtotTbl','CltotTbl','CmtotTbl','CntotTbl')
 end
