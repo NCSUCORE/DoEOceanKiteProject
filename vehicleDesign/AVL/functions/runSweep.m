@@ -8,7 +8,7 @@ close all
 dsgn_test = avlDesignGeometryClass;
 dsgn_test.input_file_name = 'desTest1';
 dsgn_test.result_file_name = 'resTest1';
-dsgn_test.lookup_table_file_name = 'lookupTables1';
+dsgn_test.lookup_table_file_name = 'lookupTable1';
 
 % plot it
 % dsgn_test.plot;
@@ -19,7 +19,7 @@ dsgn_test.writeInputFile;
 % number of steps
 n_alpha = 21;
 n_beta = 21;
-n_flap = 3;
+n_flap = 2;
 n_aileron = 3;
 n_elevator = 3;
 n_rudder = 3;
