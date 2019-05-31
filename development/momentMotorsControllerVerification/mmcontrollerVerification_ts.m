@@ -9,244 +9,52 @@ OCTModel_init
 ayazPlant_init
 
 % Create the bus objects in the workspace
-createAyazPlantBus
-createAyazFlowEnvironmentBus
-createaAyazCtrlBus
+createModAyazPlantBus
+createModAyazFlowEnvironmentBus
+createModAyazCtrlBus
 
 % Set simulation duration
 duration_s = 1000;
 
 % Set active variants
-ENVIRONMENT = 'ayazFlow';
-CONTROLLER  = 'ayazController';
-PLANT       = 'ayazPlant';
+% ENVIRONMENT = 'ayazFlow';
+% CONTROLLER  = 'ayazController';
+% PLANT       = 'ayazPlant';
 
-% Setup setpoint timeseries
-time = 0:0.1:duration_s;
-set_pitch = set_pitch*ones(size(time));
-set_roll = 20*(pi/180)*sign(sin(2*pi*time./200));
-set_roll(time<200) = 0;
-set_alt = set_alti*ones(size(time));
-
-set_pitch = timeseries(set_pitch,time);
-set_roll  = timeseries(set_roll, time);
-set_alt   = timeseries(set_alt,time);
+%% Overwrite AyazPlant_init Vars
+ini_Rcm_o = ini_Rcm_o;
+ini_O_Vcm_o = [0;0;0.0];
+ini_euler_ang = [0;ini_pitch;0];
+%% Assign neccessary vars for Josh's Part
+controlmat=[[-.5;0;.5;] [.5;-.5;.5] [0; 0; 0;]];
+controlmax=[.4;.4;.4;];
+max_bank=45*pi/180;
+kp_chi=max_bank/(pi/2); %max bank divided by large error
+kd_chi=kp_chi;
+tau_chi=.1;
+kp_L=.8/max_bank;
+kd_L=2*kp_L;
+tau_L=.1;
+kp_M=.8/max_bank;
+kd_M=2*kp_M;
+tau_M=.1;
+kp_N=.8/max_bank;
+kd_N=2*kp_N;
+tau_N=.1;
 %%
-try
-    sim('origionalPlant_th')
-catch
-end
-tscAyaz = parseLogsout;
 
 try
-    sim('controllerVerification_th')
-catch
+    sim_monitor_start('mmcontrollerVerification_th')
+    sim('mmcontrollerVerification_th')
+    sim_monitor_end('mmcontrollerVerification_th')
+catch e
+    sim_monitor_end('mmcontrollerVerification_th')
+    fprintf(2,'There was an error!')
+    fprintf(2,'The identifier was:\n     %s\n',e.identifier);
+    fprintf(2,'The message was:\n     %s\n',e.message);
+    if ~isempty(e.cause)
+        fprintf(2,'The cause was:\n     %s\n',e.cause{1}.message);
+    end
 end
+
 tscMod = parseLogsout;
-
-tsc = parseLogsout;
-clearvars logsout
-
-%%
-close all
-figure
-subplot(3,1,1)
-plot(tscAyaz.posVec.Time,tscAyaz.posVec.Data(:,1),'LineWidth',2)
-hold on
-try
-    plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(1,:,:)),'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.posVec.Time,tscMod.posVec.Data(:,1),'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('x pos [m]')
-
-subplot(3,1,2)
-plot(tscAyaz.posVec.Time,tscAyaz.posVec.Data(:,2),'LineWidth',2)
-hold on
-try
-    plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(2,:,:)),'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.posVec.Time,tscMod.posVec.Data(:,2),'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('y pos [m]')
-
-subplot(3,1,3)
-plot(tscAyaz.posVec.Time,tscAyaz.posVec.Data(:,3),'LineWidth',2)
-hold on
-try
-    plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(3,:,:)),'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.posVec.Time,tscMod.posVec.Data(:,3),'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('z pos [m]')
-
-set(findall(gcf,'Type','axes'),'FontSize',24)
-
-figure
-subplot(3,1,1)
-plot(tscAyaz.velocityVec.Time,tscAyaz.velocityVec.Data(:,1),'LineWidth',2)
-hold on
-try
-    plot(tscMod.velocityVec.Time,squeeze(tscMod.velocityVec.Data(1,:,:)),'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.velocityVec.Time,tscMod.velocityVec.Data(:,1),'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('x vel [m]')
-
-subplot(3,1,2)
-plot(tscAyaz.velocityVec.Time,tscAyaz.velocityVec.Data(:,2),'LineWidth',2)
-hold on
-try
-    plot(tscMod.velocityVec.Time,squeeze(tscMod.velocityVec.Data(2,:,:)),'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.velocityVec.Time,tscMod.velocityVec.Data(:,2),'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('y vel [m]')
-
-subplot(3,1,3)
-plot(tscAyaz.velocityVec.Time,tscAyaz.velocityVec.Data(:,3),'LineWidth',2)
-hold on
-try
-    plot(tscMod.velocityVec.Time,squeeze(tscMod.velocityVec.Data(3,:,:)),'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.velocityVec.Time,tscMod.velocityVec.Data(:,3),'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('z vel [m]')
-
-set(findall(gcf,'Type','axes'),'FontSize',24)
-
-figure
-subplot(3,1,1)
-plot(tscAyaz.eulerAngles.Time,tscAyaz.eulerAngles.Data(:,1)*180/pi,'LineWidth',2)
-hold on
-try
-    plot(tscMod.eulerAngles.Time,squeeze(tscMod.eulerAngles.Data(1,:,:))*180/pi,'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.eulerAngles.Time,tscMod.eulerAngles.Data(:,1)*180/pi,'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('Roll [deg]')
-
-subplot(3,1,2)
-plot(tscAyaz.eulerAngles.Time,tscAyaz.eulerAngles.Data(:,2)*180/pi,'LineWidth',2)
-hold on
-try
-    plot(tscMod.eulerAngles.Time,squeeze(tscMod.eulerAngles.Data(2,:,:))*180/pi,'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.eulerAngles.Time,tscMod.eulerAngles.Data(:,2)*180/pi,'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('Pitch [deg]')
-
-subplot(3,1,3)
-plot(tscAyaz.eulerAngles.Time,tscAyaz.eulerAngles.Data(:,3)*180/pi,'LineWidth',2)
-hold on
-try
-    plot(tscMod.eulerAngles.Time,squeeze(tscMod.eulerAngles.Data(3,:,:))*180/pi,'LineWidth',2,'LineStyle','--')
-catch
-    plot(tscMod.eulerAngles.Time,tscMod.eulerAngles.Data(:,3)*180/pi,'LineWidth',2,'LineStyle','--')
-end
-xlabel('Time [s]')
-ylabel('Yaw [deg]')
-
-set(findall(gcf,'Type','axes'),'FontSize',24)
-
-%% Plot tether tensions
-figure
-plot(tscMod.thr1AirTenVec.Time,squeeze(tscMod.thr1AirTenVec.Data(3,1,:)))
-hold on
-grid on
-plot(tscMod.thr3AirTenVec.Time,squeeze(tscMod.thr3AirTenVec.Data(3,1,:)))
-
-
-%% Plot body frame moments from tethers
-figure
-subplot(3,1,1)
-plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,1))
-grid on
-hold on
-plot(tscMod.B_Tt1_Mod.Time,tscMod.B_Tt1_Mod.Data(:,1))
-xlabel('Time, [s]')
-ylabel('X Comp.')
-title('Tether 1')
-
-subplot(3,1,2)
-plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,2))
-grid on
-hold on
-plot(tscMod.B_Tt1_Mod.Time,tscMod.B_Tt1_Mod.Data(:,2))
-xlabel('Time, [s]')
-ylabel('Y Comp.')
-
-subplot(3,1,3)
-plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,3))
-grid on
-hold on
-plot(tscMod.B_Tt1_Mod.Time,tscMod.B_Tt1_Mod.Data(:,3))
-xlabel('Time, [s]')
-ylabel('Z Comp.')
-
-set(findall(gcf,'Type','axes'),'FontSize',24)
-linkaxes(findall(gcf,'Type','axes'),'x')
-
-figure
-subplot(3,1,1)
-plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,1))
-grid on
-hold on
-plot(tscMod.B_Tt3_Mod.Time,tscMod.B_Tt3_Mod.Data(:,1))
-xlabel('Time, [s]')
-ylabel('X Comp.')
-title('Tether 3')
-
-subplot(3,1,2)
-plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,2))
-grid on
-hold on
-plot(tscMod.B_Tt3_Mod.Time,tscMod.B_Tt3_Mod.Data(:,2))
-xlabel('Time, [s]')
-ylabel('Y Comp.')
-
-subplot(3,1,3)
-plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,3))
-grid on
-hold on
-plot(tscMod.B_Tt3_Mod.Time,tscMod.B_Tt3_Mod.Data(:,3))
-xlabel('Time, [s]')
-ylabel('Z Comp.')
-
-
-set(findall(gcf,'Type','axes'),'FontSize',24)
-linkaxes(findall(gcf,'Type','axes'),'x')
-
-
-%
-% subplot(3,1,2)
-% plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,2))
-% grid on
-% hold on
-% plot(tscAyaz.B_Tt2.Time,tscAyaz.B_Tt2.Data(:,2))
-% plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,2))
-% xlabel('Time, [s]')
-% ylabel('Y Comp.')
-%
-% subplot(3,1,3)
-% plot(tscAyaz.B_Tt1.Time,tscAyaz.B_Tt1.Data(:,3))
-% grid on
-% hold on
-% plot(tscAyaz.B_Tt2.Time,tscAyaz.B_Tt2.Data(:,3))
-% plot(tscAyaz.B_Tt3.Time,tscAyaz.B_Tt3.Data(:,3))
-% xlabel('Time, [s]')
-% ylabel('Z Comp.')
-
-
-
-
-%% Animate the simulation
-animateSim
