@@ -1,9 +1,9 @@
 classdef avlDesignGeometryClass < handle
     properties
-        input_file_name        = 'mitchellInputFile.avl'; % File name for .avl file
-        design_name            = 'mitchellDesignFile'; % String at top of input file defining the name
-        result_file_name       = 'mitchellResultsFile';
-        lookup_table_file_name = 'mitchellLookupTable';
+        input_file_name        = 'inputFile.avl'; % File name for .avl file
+        design_name            = 'designName'; % String at top of input file defining the name
+        result_file_name       = 'resultsFile';
+        lookup_table_file_name = 'lookupTablesFile';
                 
         reference_point = [1;0;0];
         
@@ -14,16 +14,16 @@ classdef avlDesignGeometryClass < handle
         wing_TR = 0.8;
         wing_incidence_angle = 1;
         
-        h_stab_LE
-        h_stab_chord
-        h_stab_AR
+        h_stab_LE = 20;
+        h_stab_chord = 0.75;
+        h_stab_AR = 5;
         h_stab_sweep = 5;
         h_stab_dihedral = 0;
         h_stab_TR = 0.9;
         
-        v_stab_LE
-        v_stab_chord
-        v_stab_AR
+        v_stab_LE = 20;
+        v_stab_chord = 0.75;
+        v_stab_AR = 2.5;
         v_stab_sweep = 10;
         v_stab_TR = 0.6;
         
@@ -53,11 +53,7 @@ classdef avlDesignGeometryClass < handle
         % Class constructor to get initial values
         function obj = avlDesignGeometryClass
             obj.h_stab_LE = 5*obj.wing_chord;
-            obj.h_stab_chord = 0.25*obj.wing_chord;
-            obj.h_stab_AR = obj.wing_AR;
             obj.v_stab_LE = obj.h_stab_LE;
-            obj.v_stab_chord = obj.h_stab_chord;
-            obj.v_stab_AR = obj.wing_AR/2;
         end
         
         % Funtion defining how wing span depends on chord and AR
