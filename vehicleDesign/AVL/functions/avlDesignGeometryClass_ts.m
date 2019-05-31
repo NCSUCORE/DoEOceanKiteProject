@@ -14,8 +14,12 @@ dsgn_test.result_file_name = 'resTest1';
 % create design avl input file
 dsgn_test.writeInputFile;
 
+t_alp = -15:1:15;
+
+for ii = 1:length(t_alp)
+
 % operating conditions
-singleCase.alpha = 5;
+singleCase.alpha = t_alp(ii);
 singleCase.beta = 0;
 singleCase.flap = 0;
 singleCase.aileron = 0;
@@ -26,5 +30,13 @@ dsgn_test.singleCase = singleCase;
 
 % run avl and generate results
 dsgn_test.runCase;
+
+results = avlLoadResults(dsgn_test.result_file_name);
+
+
+CL(ii) = results.CLtot;
+CD(ii) = results.CDtot;
+
+end
 
 

@@ -12,7 +12,7 @@ classdef avlDesignGeometryClass < handle
         wing_sweep = 5;
         wing_dihedral = 2;
         wing_TR = 0.75;
-        wing_incidence_angle = 1;
+        wing_incidence_angle = 0;
         wing_naca_airfoil = '2412';
         
         h_stab_LE = 4.5;
