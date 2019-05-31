@@ -1,7 +1,7 @@
 function avlRunCase(ip_file_name,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
 
 %% file name
-fileName_run = 'RunFile';
+fileName_run = 'RunFile.run';
 fileID_run = fopen(fileName_run,'w');
 
 % create run file
