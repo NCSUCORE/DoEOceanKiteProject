@@ -1,4 +1,4 @@
-function results = loadAVLResults(fileName)
+function results = avlLoadResults(fileName)
 %% loadAVLResults(fileName) file to load output files from AVL
 % Returns output as a structure with fieldnames that match the fieldnames
 % of the file, subject to variable naming conventions.  Note that
@@ -11,9 +11,9 @@ function results = loadAVLResults(fileName)
 % the ST or SB commands from AVL. -MC
 
 % Get base path to directory containing results
-basePath = fileparts(which('avl.exe'));
+basePath = fullfile(fileparts(which('avl.exe')),'designLibrary');
 % Open the file
-fid = fopen(fullfile(basePath,'designLibrary',fileName),'r');
+fid = fopen(fullfile(basePath,fileName),'r');
 % Read in all the text
 file = textscan(fid,...
     '%s', 'delimiter', {'\n','\t',' '},'whitespace', '');
