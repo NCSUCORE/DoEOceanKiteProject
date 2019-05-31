@@ -1,8 +1,8 @@
 % test script to make input file
 clear
 
-ipFileName = 'test_ip_func2.avl';
-result_file_name = 'newFile2';
+ipFileName = 'ip_file.avl';
+result_file_name = 'op_file';
 
 % design parameters
 reference_point = [1;0;0];
@@ -35,13 +35,24 @@ aileron = 0;
 elevator = 0;
 rudder = 0;
 
-% create file
+% create avl input file in designLibrary folder
 avlCreateInputFile(ipFileName,reference_point,wing_chord,wing_AR,wing_sweep,wing_dihedral,wing_TR,wing_incidence_angle,...
     h_stab_LE,h_stab_chord,h_stab_AR,h_stab_sweep,h_stab_dihedral,h_stab_TR,...
-    v_stab_LE,v_stab_chord,v_stab_AR,v_stab_sweep,v_stab_TR)
+    v_stab_LE,v_stab_chord,v_stab_AR,v_stab_sweep,v_stab_TR);
 
-% run file
-avlRunCase(ipFileName,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
+% run avl using the input and operating parameters and output results to
+% desginLibrary folder
+avlRunCase(ipFileName,result_file_name,alpha,beta,flap,aileron,elevator,rudder);
+
+%% print
+avlFilePath = fileparts(which('avl.exe'));
+libFilePath = fullfile(avlFilePath,'designLibrary');
+
+fprintf('Results stored in %s\n',libFilePath);
+
+
+
+
 
 
 
