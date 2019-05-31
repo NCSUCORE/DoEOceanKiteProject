@@ -17,12 +17,12 @@ dsgn_test.lookup_table_file_name = 'lookupTable1';
 dsgn_test.writeInputFile;
 
 % number of steps
-n_alpha = 2;
-n_beta = 2;
+n_alpha = 21;
+n_beta = 21;
 n_flap = 2;
-n_aileron = 2;
-n_elevator = 2;
-n_rudder = 2;
+n_aileron = 3;
+n_elevator = 3;
+n_rudder = 3;
 
 nCases = n_alpha*n_beta*n_flap*n_aileron*n_elevator*n_rudder;
 
