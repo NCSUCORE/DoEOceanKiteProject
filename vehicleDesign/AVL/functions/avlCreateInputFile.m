@@ -40,8 +40,8 @@ y_t_w = (b_w/2);
 z_t_w = (b_w/2)*tand(di_w);
 
 % spacing parameters
-N_c_w = c_r_w*8;
-N_b_w = b_w*4;
+N_c_w = c_r_w*10;
+N_b_w = b_w*10;
 
 % error messages
 if mod(N_c_w,1) ~= 0 || N_c_w <= 0

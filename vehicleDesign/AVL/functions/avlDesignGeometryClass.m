@@ -5,7 +5,7 @@ classdef avlDesignGeometryClass < handle
         result_file_name       = 'resultsFile';
         lookup_table_file_name = 'lookupTablesFile';
                 
-        reference_point = [1;0;0];
+        reference_point = [0.6;0;0];
         
         wing_chord = 0.8;
         wing_AR = 10;
@@ -16,7 +16,7 @@ classdef avlDesignGeometryClass < handle
         
         h_stab_LE = 4.5;
         h_stab_chord = 0.5;
-        h_stab_AR = 5;
+        h_stab_AR = 4;
         h_stab_sweep = 10;
         h_stab_dihedral = 0;
         h_stab_TR = 0.8;
