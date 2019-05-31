@@ -6,9 +6,9 @@ close all
 
 % create sample design
 dsgn_test = avlDesignGeometryClass;
-dsgn_test.input_file_name = 'desTest1';
-dsgn_test.result_file_name = 'resTest1';
-dsgn_test.lookup_table_file_name = 'lookupTable1';
+dsgn_test.input_file_name = 'desRun1';
+dsgn_test.result_file_name = 'resRun1';
+dsgn_test.lookup_table_file_name = 'lookupFinTable1';
 
 % plot it
 % dsgn_test.plot;
