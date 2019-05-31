@@ -84,8 +84,8 @@ y_t_vs = 0;
 z_t_vs = b_vs;
 
 % spacing parameters
-N_c_vs = c_r_vs*8;
-N_b_vs = b_vs*4;
+N_c_vs = c_r_vs*10;
+N_b_vs = b_vs*10;
 % error messages
 if mod(N_c_vs,1) ~= 0 || N_c_vs <= 0
     error('The calculated values of number of chordwise elements will lead to errors in AVL')
