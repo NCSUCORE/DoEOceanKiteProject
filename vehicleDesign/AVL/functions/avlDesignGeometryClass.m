@@ -182,6 +182,9 @@ classdef avlDesignGeometryClass < handle
             % Plot the fuselage line
             plot3([0 obj.v_stab_LE],[0 0],[0 0],'LineWidth',2,'Color','k','LineStyle','-')
             
+            scatter3(obj.reference_point(1),obj.reference_point(2),obj.reference_point(3),...
+                'Marker','x','SizeData',72,'CData',[1 0 0]);
+            
             axis equal
             grid on
         end
