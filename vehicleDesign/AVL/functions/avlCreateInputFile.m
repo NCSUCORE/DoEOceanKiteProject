@@ -1,32 +1,29 @@
 % function that creates input file
-
-function avlCreateInputFile(ipFileName,reference_point,wing_chord,wing_AR,wing_sweep,wing_dihedral,wing_TR,wing_incidence_angle,...
-    h_stab_LE,h_stab_chord,h_stab_AR,h_stab_sweep,h_stab_dihedral,h_stab_TR,...
-    v_stab_LE,v_stab_chord,v_stab_AR,v_stab_sweep,v_stab_TR)
+function avlCreateInputFile(obj)
 
 % simplify variable names
-c_r_w = wing_chord;
-AR_w = wing_AR;
-sw_w =  wing_sweep;
-di_w = wing_dihedral;
-tr_w = wing_TR;
-w_inc_angle = wing_incidence_angle;
+c_r_w = obj.wing_chord;
+AR_w = obj.wing_AR;
+sw_w =  obj.wing_sweep;
+di_w = obj.wing_dihedral;
+tr_w = obj.wing_TR;
+w_inc_angle = obj.wing_incidence_angle;
 
-le_hs = h_stab_LE;
-c_r_hs = h_stab_chord;
-AR_hs = h_stab_AR;
-sw_hs = h_stab_sweep;
-di_hs = h_stab_dihedral;
-tr_hs = h_stab_TR;
+le_hs = obj.h_stab_LE;
+c_r_hs = obj.h_stab_chord;
+AR_hs = obj.h_stab_AR;
+sw_hs = obj.h_stab_sweep;
+di_hs = obj.h_stab_dihedral;
+tr_hs = obj.h_stab_TR;
 
-le_vs = v_stab_LE;
-c_r_vs = v_stab_chord;
-AR_vs = v_stab_AR;
-sw_vs = v_stab_sweep;
-tr_vs = v_stab_TR;
+le_vs = obj.v_stab_LE;
+c_r_vs = obj.v_stab_chord;
+AR_vs = obj.v_stab_AR;
+sw_vs = obj.v_stab_sweep;
+tr_vs = obj.v_stab_TR;
 
 % cm cordinates
-R_ref = reference_point;
+R_ref = obj.reference_point;
 
 
 %% calculations
@@ -99,17 +96,17 @@ end
 
 
 %% AVL input file
-if endsWith(ipFileName,'.avl')
-    fileName = ipFileName;
+if endsWith(obj.input_file_name,'.avl')
+    fileName = obj.input_file_name;
 else
-    fileName = strcat(ipFileName,'.avl');
+    fileName = strcat(obj.input_file_name,'.avl');
 end
 filePath = fileparts(which('avl.exe'));
 fileID = fopen(fullfile(filePath,'designLibrary',fileName),'w');
 
 % design name % Plane Vanilla
-des_Name = 'Plane Vanilla test';
-fprintf(fileID,'%s\n',des_Name);
+% des_Name = 'Plane Vanilla test';
+fprintf(fileID,'%s\n',obj.design_name);
 
 % Mach
 Mach = 0.0;

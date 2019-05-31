@@ -1,4 +1,5 @@
-function avlRunCase(ip_file_name,result_file_name,alpha,beta,flap,aileron,elevator,rudder)
+function avlRunCase(ip_file_name,result_file_name,...
+    alpha,beta,flap,aileron,elevator,rudder)
 
 prevPath = cd;
 basePath = fileparts(which('avl.exe'));
