@@ -98,6 +98,11 @@ classdef avlDesignGeometryClass < handle
                 obj.sweepCase.elevator,obj.sweepCase.rudder);
         end
         
+        % Function to plot polars
+        function plotPolars(obj)
+           avlPlotPolars(obj.lookup_table_file_name); 
+        end
+        
         % Function to plot the geometry
         function plot(obj,varargin)
             % Function to plot the design
