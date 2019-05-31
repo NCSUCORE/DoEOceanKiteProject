@@ -8,6 +8,7 @@ sw_w =  obj.wing_sweep;
 di_w = obj.wing_dihedral;
 tr_w = obj.wing_TR;
 w_inc_angle = obj.wing_incidence_angle;
+w_afile =  obj.wing_naca_airfoil;
 
 le_hs = obj.h_stab_LE;
 c_r_hs = obj.h_stab_chord;
@@ -15,12 +16,14 @@ AR_hs = obj.h_stab_AR;
 sw_hs = obj.h_stab_sweep;
 di_hs = obj.h_stab_dihedral;
 tr_hs = obj.h_stab_TR;
+hs_afile =  obj.h_stab_naca_airfoil;
 
 le_vs = obj.v_stab_LE;
 c_r_vs = obj.v_stab_chord;
 AR_vs = obj.v_stab_AR;
 sw_vs = obj.v_stab_sweep;
 tr_vs = obj.v_stab_TR;
+vs_afile =  obj.v_stab_naca_airfoil;
 
 % cm cordinates
 R_ref = obj.reference_point;
@@ -180,8 +183,8 @@ fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t %d\n',...
     Sspace_w_s1);
 
 % airfoil name
-fprintf(fileID,'\nAFILE\n'); % AFILE
-fprintf(fileID,'sd7037.dat\n\n'); % filename
+fprintf(fileID,'\nNACA\n'); % AFILE
+fprintf(fileID,'%s\n\n',w_afile); % filename
 
 % flap and aileron
 fprintf(fileID,'#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -232,13 +235,13 @@ Ainc_w_s2 = 0;
 Nspanwise_w_s2 = 0;
 Sspace_w_s2 = 0;
 fprintf(fileID,'#Xle \t Yle \t Zle \t Chord \t Ainc \t Nspanwise \t Sspace\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t %d\n\n',...
+fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t %d\n',...
     Xle_w_s2, Yle_w_s2, Zle_w_s2, chord_w_s2, Ainc_w_s2, Nspanwise_w_s2,...
     Sspace_w_s2);
 
 % airfoil name
-fprintf(fileID,'AFILE\n'); % AFILE
-fprintf(fileID,'sd7037.dat\n\n'); % filename
+fprintf(fileID,'\nNACA\n'); % AFILE
+fprintf(fileID,'%s\n',w_afile); % filename
 
 % flap and aileron
 fprintf(fileID,'\n#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -296,9 +299,13 @@ Ainc_hs_s1 = 0;
 Nspanwise_hs_s1 = 0;
 Sspace_hs_s1 = 0;
 fprintf(fileID,'#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace\n');
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n\n',...
+fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Xle_hs_s1, Yle_hs_s1, Zle_hs_s1, chord_hs_s1, Ainc_hs_s1, Nspanwise_hs_s1,...
     Sspace_hs_s1);
+
+% horizontal stabilizer airfoil
+fprintf(fileID,'\nNACA\n'); % AFILE
+fprintf(fileID,'%s\n\n',hs_afile); % filename
 
 % elevator
 fprintf(fileID,'#Cname   Cgain  Xhinge  HingeVec     SgnDup\n');
@@ -316,6 +323,7 @@ fprintf(fileID,'elevator %0.1f %0.2f %0.1f %0.1f %0.1f %0.1f\n',...
     Cgain_elev, Xhinge_elev, HingeVec_x_elev, HingeVec_y_elev, HingeVec_z_elev,...
     SgnDup_elev);
 fprintf(fileID,'#-------------------------------------------------------------\n');
+
 % SECTION 2
 fprintf(fileID,'SECTION\n'); % SECTION
 fprintf(fileID,'#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace\n');
@@ -328,9 +336,13 @@ Ainc_hs_s2 = 0;
 Nspanwise_hs_s2 = 0;
 Sspace_hs_s2 = 0;
 
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n\n',...
+fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Xle_hs_s2, Yle_hs_s2, Zle_hs_s2, chord_hs_s2, Ainc_hs_s2, Nspanwise_hs_s2,...
     Sspace_hs_s2);
+
+% horizontal stabilizer airfoil
+fprintf(fileID,'\nNACA\n'); % AFILE
+fprintf(fileID,'%s\n\n',hs_afile); % filename
 
 % elevator
 fprintf(fileID,'#Cname   Cgain  Xhinge  HingeVec     SgnDup\n');
@@ -373,9 +385,13 @@ Ainc_vs_s1 = 0;
 Nspanwise_vs_s1 = 0;
 Sspace_vs_s1 = 0;
 
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n\n',...
+fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Xle_vs_s1, Yle_vs_s1, Zle_vs_s1, chord_vs_s1, Ainc_vs_s1, Nspanwise_vs_s1,...
     Sspace_vs_s1);
+
+% vertical stabilizer airfoil
+fprintf(fileID,'\nNACA\n'); % AFILE
+fprintf(fileID,'%s\n\n',vs_afile); % filename
 
 % rudder
 fprintf(fileID,'#Cname   Cgain  Xhinge  HingeVec     SgnDup\n');
@@ -393,6 +409,7 @@ fprintf(fileID,'rudder %0.1f %0.2f %0.1f %0.1f %0.1f %0.1f\n',...
     Cgain_rud, Xhinge_rud, HingeVec_x_rud, HingeVec_y_rud, HingeVec_z_rud,...
     SgnDup_rud);
 fprintf(fileID,'#-------------------------------------------------------------\n');
+
 % SECTION 2
 fprintf(fileID,'SECTION\n'); % SECTION
 fprintf(fileID,'#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace\n');
@@ -405,9 +422,13 @@ Ainc_vs_s2 = 0;
 Nspanwise_vs_s2 = 0;
 Sspace_vs_s2 = 0;
 
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n\n',...
+fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Xle_vs_s2, Yle_vs_s2, Zle_vs_s2, chord_vs_s2, Ainc_vs_s2, Nspanwise_vs_s2,...
     Sspace_vs_s2);
+
+% vertical stabilizer airfoil
+fprintf(fileID,'\nNACA\n'); % AFILE
+fprintf(fileID,'%s\n\n',vs_afile); % filename
 
 % rudder
 fprintf(fileID,'#Cname   Cgain  Xhinge  HingeVec     SgnDup\n');
