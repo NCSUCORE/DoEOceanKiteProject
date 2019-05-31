@@ -23,7 +23,7 @@ singleCase.beta = 0;
 singleCase.flap = 0;
 singleCase.aileron = 0;
 singleCase.elevator = 0;
-singleCase.rudder = 0;
+singleCase.rudder = 4;
 
 dsgn_test.singleCase = singleCase;
 
