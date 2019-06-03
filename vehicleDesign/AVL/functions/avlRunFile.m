@@ -13,6 +13,18 @@ fprintf(fileID_exe,'case %s\n',obj.run_file_name);
 % enter oper menu
 fprintf(fileID_exe,'oper\n');
 
+% enter options menu
+fprintf(fileID_exe,'O\n');
+
+% Enter print menu
+fprintf(fileID_exe,'P\n');
+
+% Change default output to screen options
+fprintf(fileID_exe,'T F T F\n');
+
+% Back out to oper menu
+fprintf(fileID_exe,'\n');
+
 % run case
 fprintf(fileID_exe,'xx\n');
 

@@ -18,6 +18,6 @@ dsgn.sweep.rudders     = [-1 1];
 dsgn_test.writeInputFile
 
 tic
-dsgn_test.process('single')
+dsgn_test.process('sweep')
 toc
 
