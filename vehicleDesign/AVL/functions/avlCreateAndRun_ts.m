@@ -42,7 +42,7 @@ avlCreateInputFile(ipFileName,reference_point,wing_chord,wing_AR,wing_sweep,wing
 
 % run avl using the input and operating parameters and output results to
 % desginLibrary folder
-avlRunCase(ipFileName,result_file_name,alpha,beta,flap,aileron,elevator,rudder);
+avlRunFile(ipFileName,result_file_name,alpha,beta,flap,aileron,elevator,rudder);
 
 %% print
 avlFilePath = fileparts(which('avl.exe'));

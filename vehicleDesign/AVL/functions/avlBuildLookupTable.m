@@ -73,11 +73,9 @@ CntotTbl.Breakpoints(5).Value = elevators;
 CntotTbl.Breakpoints(6).Value = rudders;
 CntotData = CntotTbl.Table.Value;
 
-tic
-cc = 1;
-nCases = length(alphas)*length(betas)*length(flaps)*length(ailerons)*...
-    length(elevators)*length(rudders);
+numCases = length(alphas)*length(betas)*length(flaps)*length(elevators)*length(ailerons)*length(rudders);
 
+indicies = 1:25:numCases;
 
 for ii = 1:length(alphas)
     alpha = alphas(ii);
@@ -91,24 +89,9 @@ for ii = 1:length(alphas)
                     elevator = elevators(nn);
                     for pp = 1:length(rudders)
                         rudder = rudders(pp);
-                        % Run AVL
+                        avlCreateRunFile(dsgn_test,alpha,beta,flap,aileron,elevator,rudder,...
+                            'WriteMode','a','RunCaseNum',ii,'RunFileName')
                         
-                        
-                        avlRunCase(inputFileName,resultsFileName,...
-                            alpha,beta,flap,aileron,elevator,rudder)
-                        rslt = avlLoadResults(resultsFileName);
-                        CLtotData(ii,jj,kk,mm,nn,pp) = rslt.CLtot;
-                        CDtotData(ii,jj,kk,mm,nn,pp) = rslt.CDtot;
-                        CltotData(ii,jj,kk,mm,nn,pp) = rslt.Cltot;
-                        CmtotData(ii,jj,kk,mm,nn,pp) = rslt.Cmtot;
-                        CntotData(ii,jj,kk,mm,nn,pp) = rslt.Cntot;
-                        
-                        t_elapsed = toc;
-                        t_estimate = (t_elapsed/cc)*nCases;
-                        clc
-                        fprintf('Case %d of %d. Elapsed time = %0.2f s. Estimated time required: %0.2f s\n',...
-                            cc,nCases,t_elapsed,t_estimate);
-                        cc = cc + 1;
                     end
                 end
             end

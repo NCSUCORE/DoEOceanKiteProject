@@ -8,37 +8,16 @@ dsgn_test.result_file_name       = 'dsgn1Results';
 dsgn_test.lookup_table_file_name = 'dsgn1Lookup';
 dsgn_test.exe_file_name          = 'dsgn1Exe';
 
+dsgn.sweep.alphas      = [-10 10];
+dsgn.sweep.betas       = [-5 5];
+dsgn.sweep.flaps       = [-1 1];
+dsgn.sweep.ailerons    = [-1 1];
+dsgn.sweep.elevators   = [-1 1];
+dsgn.sweep.rudders     = [-1 1];
 
 dsgn_test.writeInputFile
 
-% alphas = [-10];
-% 
-% for ii = 1:length(alphas)
-%     alpha = alphas(ii);
-%     beta = 0;
-%     flap = 0;
-%     aileron = 0;
-%     elevator = 0;
-%     rudder = 0;
-%     avlCreateRunFile(dsgn_test,alpha,beta,flap,aileron,elevator,rudder,...
-%         'WriteMode','a','RunCaseNum',ii)
-% end
-% tic
-% avlRunCase(dsgn_test)
-% toc
-
-alphas = -10:10:10;
-
-for ii = 1:length(alphas)
-    alpha = alphas(ii);
-    beta = 0;
-    flap = 0;
-    aileron = 0;
-    elevator = 0;
-    rudder = 0;
-    avlCreateRunFile(dsgn_test,alpha,beta,flap,aileron,elevator,rudder,...
-        'WriteMode','a','RunCaseNum',ii)
-end
 tic
-avlRunCase(dsgn_test)
+dsgn_test.process('single')
 toc
+

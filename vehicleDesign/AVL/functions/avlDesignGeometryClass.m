@@ -68,9 +68,9 @@ classdef avlDesignGeometryClass < handle
         % Make sure the input file has the right file extension
         function val = get.input_file_name(obj)
             val = obj.input_file_name;
-           if ~endsWith(obj.input_file_name,'.avl')
-              val = [val '.avl'] ;
-           end
+            if ~endsWith(obj.input_file_name,'.avl')
+                val = [val '.avl'] ;
+            end
         end
         
         % Make sure the run file has the right extension
@@ -104,26 +104,14 @@ classdef avlDesignGeometryClass < handle
             avlCreateInputFile(obj)
         end
         
-        % Function to run single case using data stored in singleCase
-        function runCase(obj)
-            avlRunCase(obj.input_file_name,obj.result_file_name,...
-                obj.singleCase.alpha,obj.singleCase.beta,...
-                obj.singleCase.flap,obj.singleCase.aileron,...
-                obj.singleCase.elevator,obj.singleCase.rudder)
-        end
-        
-        % Function to build lookup table using data stored in sweepCase
-        function buildLookupTable(obj)
-            avlBuildLookupTable(obj.lookup_table_file_name,...
-                obj.input_file_name,obj.result_file_name,...
-                obj.sweepCase.alpha,obj.sweepCase.beta,...
-                obj.sweepCase.flap,obj.sweepCase.aileron,...
-                obj.sweepCase.elevator,obj.sweepCase.rudder);
+        % Function to process the operating points
+        function process(obj,type)
+            avlProcess(obj,lower(type))
         end
         
         % Function to plot polars
         function plotPolars(obj)
-           avlPlotPolars(obj.lookup_table_file_name); 
+            avlPlotPolars(obj.lookup_table_file_name);
         end
         
         % Function to plot the geometry
@@ -141,7 +129,7 @@ classdef avlDesignGeometryClass < handle
             elseif strcmpi(p.Results.hold,'off')
                 figure
             end
-                
+            
             
             % Plot the main wing
             % Port wing x and y points
