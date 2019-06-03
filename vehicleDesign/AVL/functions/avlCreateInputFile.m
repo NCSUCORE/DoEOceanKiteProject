@@ -99,13 +99,8 @@ end
 
 
 %% AVL input file
-if endsWith(obj.input_file_name,'.avl')
-    fileName = obj.input_file_name;
-else
-    fileName = strcat(obj.input_file_name,'.avl');
-end
-filePath = fileparts(which('avl.exe'));
-fileID = fopen(fullfile(filePath,'designLibrary',fileName),'w');
+% filePath = fileparts(which('avl.exe'));
+fileID = fopen(fullfile(fileparts(which('avl.exe')),obj.input_file_name),'w');
 
 % design name % Plane Vanilla
 % des_Name = 'Plane Vanilla test';

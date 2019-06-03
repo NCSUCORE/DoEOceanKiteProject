@@ -1,10 +1,16 @@
 classdef avlDesignGeometryClass < handle
     properties
+        % Input file names
         input_file_name        = 'inputFile.avl'; % File name for .avl file
-        design_name            = 'designName'; % String at top of input file defining the name
+        run_file_name          = 'testRunFile.run';
+        exe_file_name          = 'exeFile';
+        % Output file names
         result_file_name       = 'resultsFile';
         lookup_table_file_name = 'lookupTablesFile';
-                
+        
+        % Name for design in the input file
+        design_name            = 'designName'; % String at top of input file defining the name
+        
         reference_point = [0.6;0;0];
         
         wing_chord = 0.8;
@@ -58,6 +64,23 @@ classdef avlDesignGeometryClass < handle
             obj.h_stab_LE = 5*obj.wing_chord;
             obj.v_stab_LE = obj.h_stab_LE;
         end
+        
+        % Make sure the input file has the right file extension
+        function val = get.input_file_name(obj)
+            val = obj.input_file_name;
+           if ~endsWith(obj.input_file_name,'.avl')
+              val = [val '.avl'] ;
+           end
+        end
+        
+        % Make sure the run file has the right extension
+        function val = get.run_file_name(obj)
+            val = obj.run_file_name;
+            if ~endsWith(obj.run_file_name,'.run')
+                val = [val '.run'] ;
+            end
+        end
+        
         
         % Funtion defining how wing span depends on chord and AR
         function val = get.wing_span(obj)

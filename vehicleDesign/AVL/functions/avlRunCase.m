@@ -1,95 +1,44 @@
-function avlRunCase(ip_file_name,result_file_name,...
-    alpha,beta,flap,aileron,elevator,rudder)
+function avlRunCase(obj,varargin)
+
+p = inputParser;
+addParameter(p,'InputFileName',obj.input_file_name,@ischar);
+parse(p,varargin{:})
 
 prevPath = cd;
 basePath = fileparts(which('avl.exe'));
 cd(basePath)
-inputFilePath = fullfile(pwd,'designLibrary');
+inputFilePath = fileparts(which(obj.input_file_name));
 
-%% file name
-fileName_run = 'RunFile.run';
-fileID_run = fopen(fileName_run,'w');
-
-% create run file
-fprintf(fileID_run,'\n');
-fprintf(fileID_run,' ---------------------------------------------\n');
-fprintf(fileID_run,' Run case  1:   -unnamed-                              \n');
-fprintf(fileID_run,'\n');
-
-% parameters
-fprintf(fileID_run,' alpha        ->  alpha       =   %0.5f    \n',alpha);
-fprintf(fileID_run,' beta         ->  beta        =   %0.5f    \n',beta);
-fprintf(fileID_run,' pb/2V        ->  pb/2V       =   0.00000    \n');
-fprintf(fileID_run,' qc/2V        ->  qc/2V       =   0.00000    \n');
-fprintf(fileID_run,' rb/2V        ->  rb/2V       =   0.00000    \n');
-fprintf(fileID_run,' flap         ->  flap        =   %0.5f    \n',flap);
-fprintf(fileID_run,' aileron      ->  aileron     =   %0.5f    \n',aileron);
-fprintf(fileID_run,' elevator     ->  elevator    =   %0.5f    \n',elevator);
-fprintf(fileID_run,' rudder       ->  rudder      =   %0.5f    \n',rudder);
-fprintf(fileID_run,'\n');
-
-% copy paste stuff
-fprintf(fileID_run,' alpha     =   0.00000     deg                             \n');
-fprintf(fileID_run,' beta      =   0.00000     deg                             \n');
-fprintf(fileID_run,' pb/2V     =   0.00000                                     \n');
-fprintf(fileID_run,' qc/2V     =   0.00000                                     \n');
-fprintf(fileID_run,' rb/2V     =   0.00000                                     \n');
-fprintf(fileID_run,' CL        =   0.00000                                     \n');
-fprintf(fileID_run,' CDo       =   0.00000                                     \n');
-fprintf(fileID_run,' bank      =   0.00000     deg                             \n');
-fprintf(fileID_run,' elevation =   0.00000     deg                             \n');
-fprintf(fileID_run,' heading   =   0.00000     deg                             \n');
-fprintf(fileID_run,' Mach      =   0.00000                                     \n');
-fprintf(fileID_run,' velocity  =   0.00000     Lunit/Tunit                     \n');
-fprintf(fileID_run,' density   =   1.00000     Munit/Lunit^3                   \n');
-fprintf(fileID_run,' grav.acc. =   1.00000     Lunit/Tunit^2                   \n');
-fprintf(fileID_run,' turn_rad. =   0.00000     Lunit                           \n');
-fprintf(fileID_run,' load_fac. =   0.00000                                     \n');
-fprintf(fileID_run,' X_cg      =  0.500000     Lunit                           \n');
-fprintf(fileID_run,' Y_cg      =   0.00000     Lunit                           \n');
-fprintf(fileID_run,' Z_cg      =   0.00000     Lunit                           \n');
-fprintf(fileID_run,' mass      =   1.00000     Munit                           \n');
-fprintf(fileID_run,' Ixx       =   1.00000     Munit-Lunit^2                   \n');
-fprintf(fileID_run,' Iyy       =   1.00000     Munit-Lunit^2                   \n');
-fprintf(fileID_run,' Izz       =   1.00000     Munit-Lunit^2                   \n');
-fprintf(fileID_run,' Ixy       =   0.00000     Munit-Lunit^2                   \n');
-fprintf(fileID_run,' Iyz       =   0.00000     Munit-Lunit^2                   \n');
-fprintf(fileID_run,' Izx       =   0.00000     Munit-Lunit^2                   \n');
-fprintf(fileID_run,' visc CL_a =   0.00000                                     \n');
-fprintf(fileID_run,' visc CL_u =   0.00000                                     \n');
-fprintf(fileID_run,' visc CM_a =   0.00000                                     \n');
-fprintf(fileID_run,' visc CM_u =   0.00000                                     \n');
-
-fclose(fileID_run);
-
-%% run avl and get results
-
-
-fileName_exe = 'txt_exe';
-fileID_exe = fopen(fileName_exe,'w');
+% Create temporary file to hold commands typed into exe
+fileID_exe = fopen(obj.exe_file_name,'w');
 
 % load input file
-fprintf(fileID_exe,'load %s\n',fullfile(inputFilePath,ip_file_name));
+fprintf(fileID_exe,'load %s\n',obj.input_file_name);
 
 % load run file
-fprintf(fileID_exe,'case %s\n',fileName_run);
+fprintf(fileID_exe,'case %s\n',obj.run_file_name);
 
-% enter oper menu
-fprintf(fileID_exe,'oper\n');
+% Find all the run case numbers in the run file
+data = fileread(obj.run_file_name);
+runNumbers = regexp(regexp(data,'Run case  \d*:','match'),'\d*','Match');
+runNumbers = str2double([runNumbers{:}]);
 
-% run case
-fprintf(fileID_exe,'x\n');
-
-% get total force output
-fprintf(fileID_exe,'ft\n');
-
-% enter file name
-fprintf(fileID_exe,'%s\n',result_file_name);
-
-% check if the results file exists
-if isfile(result_file_name)
-    fprintf(fileID_exe,'o\n');
-end
+% for ii = 1:length(runNumbers)
+    % enter oper menu
+    fprintf(fileID_exe,'oper\n');
+    
+    % Set the case number
+%     fprintf(fileID_exe,'%d\n',runNumbers(ii));
+    
+    % run case
+    fprintf(fileID_exe,'xx\n');
+    
+%     % get total force output
+%     fprintf(fileID_exe,'ft\n');
+%     
+%     % enter file name
+%     fprintf(fileID_exe,'%s\n',[obj.result_file_name '_' num2str(runNumbers(ii))]);
+% end
 
 % exit oper menu
 fprintf(fileID_exe,'\n');
@@ -100,14 +49,17 @@ fprintf(fileID_exe,'quit\n');
 fclose(fileID_exe);
  
 % Run AVL
-cmd_str = strcat('avl.exe','<','txt_exe');
-[status,result] = system(cmd_str);
-movefile(result_file_name,fullfile(pwd,'designLibrary'),'f');
-% Delete temporary files
-fclose('all');
-delete(fileName_exe);
-delete(fileName_run);
+cmd_str = strcat('avl.exe','<',obj.exe_file_name);
+[~,result] = system(cmd_str);
 
-cd(prevPath);
+% Save the results to a file
+fid = fopen([obj.result_file_name sprintf('_%dTo%d',runNumbers(1),runNumbers(end))],'w');
+fprintf(fid,result);
+fclose(fid);
+
+fclose('all');
+delete(obj.exe_file_name);
+
+% cd(prevPath);
 
 end
