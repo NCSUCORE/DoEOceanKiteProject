@@ -2,7 +2,7 @@
 clc
 format compact
 
-uAppBdy = [5 0 -1];
+uAppBdy = [5 0 1];
 dynPress = 1;
 flpDefl_deg = 0;
 ailDefl_deg = 0;
