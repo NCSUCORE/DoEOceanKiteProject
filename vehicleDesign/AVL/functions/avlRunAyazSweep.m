@@ -48,6 +48,10 @@ tic
 avlProcess(dsgn_test,'sweep','Parallel',true)
 toc
 
+load(dsgn_test.result_file_name);
+
+avlBuildLookupTable(dsgn_test.lookup_table_file_name,results)
+
 
 
 
