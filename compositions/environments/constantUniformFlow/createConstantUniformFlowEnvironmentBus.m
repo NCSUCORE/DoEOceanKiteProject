@@ -1,4 +1,4 @@
-function createAyazFlowEnvironmentBus()
+function createConstantUniformFlowEnvironmentBus()
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'windSpeed';

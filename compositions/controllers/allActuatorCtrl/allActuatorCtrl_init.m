@@ -1,2 +1,0 @@
-createAllActuatorCtrlBus
-ctrl = allActuatorCtrlClass;

@@ -10,7 +10,7 @@ ayazPlant_init
 
 % Create the bus objects in the workspace
 createAyazPlantBus
-createAyazFlowEnvironmentBus
+createUniformFlowEnvironmentBus
 createaAyazCtrlBus
 
 % Set simulation duration

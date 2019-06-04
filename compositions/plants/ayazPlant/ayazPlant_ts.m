@@ -8,7 +8,7 @@ ayazParams_init
 
 createAyazPlantBus
 createaAyazCtrlBus
-createAyazFlowEnvironmentBus
+createUniformFlowEnvironmentBus
 
 elevonDeflection = [0 0]'*pi/180;
 winchSpeeds      = 0.1*[1 1 1]';
