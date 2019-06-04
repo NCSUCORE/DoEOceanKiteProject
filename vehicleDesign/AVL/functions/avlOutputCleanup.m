@@ -16,8 +16,8 @@ end
 % Step 2: process each of those sections
 for ii = 1:length(sections)
    % Get all data from the total forces output
-   clean(ii).FTOut = avlParseFT(sections{ii});
-   clean(ii).STOut = avlParseST(sections{ii});
+   clean(ii).FT = avlParseFT(sections{ii});
+   clean(ii).ST = avlParseST(sections{ii});
 end
 
 end

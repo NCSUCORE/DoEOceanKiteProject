@@ -26,11 +26,7 @@ for ii = 1:length(subSect)
    
    % Create the field name and surface number property in the output
    % structure
-   try
    results.(surfaceName).surfaceNumber = surfaceNumber;
-   catch
-       x = 1;
-   end
    
    % Pull out data from the first chunk of info
    startIdx = regexp(subSect{ii},'# Chordwise =');

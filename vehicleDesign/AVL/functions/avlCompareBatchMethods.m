@@ -8,16 +8,16 @@ dsgn_test.result_file_name       = 'dsgn1Results';
 dsgn_test.lookup_table_file_name = 'dsgn1Lookup';
 dsgn_test.exe_file_name          = 'dsgn1Exe';
 
-dsgn.sweep.alphas      = [-10 10];
-dsgn.sweep.betas       = [-5 5];
-dsgn.sweep.flaps       = [-1 1];
-dsgn.sweep.ailerons    = [-1 1];
-dsgn.sweep.elevators   = [-1 1];
-dsgn.sweep.rudders     = [-1 1];
+dsgn_test.sweepCase.alpha      = [-10 10];
+dsgn_test.sweepCase.beta       = [-10 10];
+dsgn_test.sweepCase.flap       = [-10 10];
+dsgn_test.sweepCase.aileron    = [-10 10];
+dsgn_test.sweepCase.elevator   = [-10 10];
+dsgn_test.sweepCase.rudder     = [-10 10];
 
 dsgn_test.writeInputFile
 
 tic
-dsgn_test.process('sweep')
+avlProcess(dsgn_test,'sweep','Parallel',false)
 toc
 
