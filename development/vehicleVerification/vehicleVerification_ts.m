@@ -3,9 +3,9 @@ clear all;clc;
 
 OCTModel_init
 
-ayazParams_init;
+modularPlant_init;
 
-duration_s = 1000;
+duration_s = 200;
 
 CONTROLLER = 'threeTetherThreeSurfaceCtrl';
 createThreeTetherThreeSurfaceCtrlBus;
@@ -23,75 +23,46 @@ set_alt = timeseries(set_alti*ones(size(timeVec)),timeVec);
 set_pitch = timeseries(set_pitch*ones(size(timeVec))*180/pi,timeVec);
 set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
 
-try
-    sim('OCTModel')
-catch message
-    rethrow(message)
-end
-try
+sim('OCTModel')
 tscOrig = parseLogsout;
-catch
-end
+
 PLANT = 'modularPlant';
 createModularPlantBus;
-try
-    sim('OCTModel')
-catch message
-    rethrow(message)
-end
-try
+
+sim('OCTModel')
 tscMod = parseLogsout;
-catch
-end
+
 
 %% Plot Positions
 figure('Position',[ 0.5005    0.0380    0.4990    0.8833])
 subplot(3,1,1)
-try
-    plot(tscOrig.posVec.Time,squeeze(tscOrig.posVec.Data(1,:,:)),...
-        'LineWidth',1.5,'Color','k','LineStyle','-')
-catch
-end
+plot(tscOrig.posVec.Time,squeeze(tscOrig.posVec.Data(1,:,:)),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
 hold on
 grid on
-try
 plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(1,:,:)),...
     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-catch
-end
 xlabel('Time, [s]')
 ylabel('x Pos. [m]')
 
 subplot(3,1,2)
-try
-    plot(tscOrig.posVec.Time,squeeze(tscOrig.posVec.Data(2,:,:)),...
-        'LineWidth',1.5,'Color','k','LineStyle','-')
-catch
-end
+plot(tscOrig.posVec.Time,squeeze(tscOrig.posVec.Data(2,:,:)),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
 hold on
 grid on
-try
 plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(2,:,:)),...
     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-catch
-end
 xlabel('Time, [s]')
 ylabel('y Pos. [m]')
 
 subplot(3,1,3)
-try
-    plot(tscOrig.posVec.Time,squeeze(tscOrig.posVec.Data(3,:,:)),...
-        'LineWidth',1.5,'Color','k','LineStyle','-')
-catch
-end
-
+plot(tscOrig.posVec.Time,squeeze(tscOrig.posVec.Data(3,:,:)),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
 hold on
 grid on
-try
-    plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(3,:,:)),...
-        'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-catch
-end
+plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(3,:,:)),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+
 plot(set_alt.Time,squeeze(set_alt.Data),...
     'LineWidth',1.5,'Color',[1 0 0],'LineStyle','--')
 xlabel('Time, [s]')
@@ -140,4 +111,40 @@ ylabel('Yaw, [deg]')
 set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
 
+%% Plot tether lenghts
+figure
+subplot(3,1,1)
+plot(tscOrig.tetherLengths.Time,squeeze(tscOrig.tetherLengths.Data(1,:,:)),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.tetherLengths.Time,tscMod.tetherLengths.Data(:,1),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Tether 1 Length, [m]')
+
+subplot(3,1,2)
+plot(tscOrig.tetherLengths.Time,squeeze(tscOrig.tetherLengths.Data(2,:,:)),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.tetherLengths.Time,tscMod.tetherLengths.Data(:,2),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Tether 2 Length, [m]')
+
+subplot(3,1,3)
+plot(tscOrig.tetherLengths.Time,squeeze(tscOrig.tetherLengths.Data(3,:,:)),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.tetherLengths.Time,tscMod.tetherLengths.Data(:,3),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Tether 3 Length, [m]')
+
+set(findall(gcf,'Type','axes'),'FontSize',24)
+linkaxes(findall(gcf,'Type','axes'),'x')
+
+%% Plot platform angle
 

@@ -18,8 +18,10 @@ outputDirectory = fullfile(pwd,'output');
 
 % If the output directory doesn't exist, create it
 if ~exist(outputDirectory, 'dir')
+    fprintf('Creating output directory\n')
     mkdir(outputDirectory);
 else
+    fprintf('Deleting and recreating output directory\n')
     rmdir(outputDirectory,'s');
     mkdir(outputDirectory);
 end
@@ -40,18 +42,24 @@ caseNums = caseNums(1:numCases);
 cnt = 0;
 
 % Preallocate vector to hold run file IDs
-runFileID = zeros([1 max(batchNums)]);
+% runFileID = zeros([1 max(batchNums)]);
 
-% Preallocate vector to hold run file names and open all those files
-runFileNames = cell(size(runFileID));
+% Preallocate vector to hold run file names and open all those files\
+fprintf('Creating .run files\n')
+runFileNames = cell([1 batchNums(end)]);
 for ii = 1:length(runFileNames)
-    exeFileName  = strrep(obj.run_file_name,'.run','');
-    exeFileName  = strcat(exeFileName,sprintf('_Batch%d.run',ii));
-    exeFileName  = fullfile('.','output',exeFileName);
-    runFileNames{ii} = exeFileName;
-    runFileIDs(ii) = fopen(exeFileName,'a');
+    runFileName  = strrep(obj.run_file_name,'.run','');
+    runFileName  = strcat(runFileName,sprintf('_Batch%d.run',ii));
+    runFileName  = fullfile('.','output',runFileName);
+    runFileNames{ii} = runFileName;
 end
 
+for ii = 1:length(runFileNames)
+    fid = fopen(runFileNames{ii},'w');
+    fclose(fid);
+end
+
+fprintf('Filling in .run files\n')
 for ii = 1:length(alphas)
     alpha = alphas(ii);
     for jj = 1:length(betas)
@@ -64,13 +72,13 @@ for ii = 1:length(alphas)
                     elevator = elevators(nn);
                     for pp = 1:length(rudders)
                         rudder = rudders(pp);
-                        
-                        % Update
                         cnt = cnt+1;
                         
-                        % Append case number to run file
-                        avlAppendRunFile(runFileIDs(batchNums(cnt)),caseNums(cnt),...
+                        
+                        fid = fopen(runFileNames{batchNums(cnt)},'a');
+                        avlAppendRunFile(fid,caseNums(cnt),...
                             alpha,beta,flap,aileron,elevator,rudder)
+                        fclose(fid);
                         
                     end
                 end
@@ -84,12 +92,12 @@ fclose('all');
 rsltFiles = dir('output');
 rsltFiles = rsltFiles(~[rsltFiles.isdir]);
 for ii = 1:length(rsltFiles)
-    exeFileName = rsltFiles(ii).name;
-    exeFileName = strrep(exeFileName,'.run','_exe');
-    exeFileName = fullfile('.','output',exeFileName);
+    runFileName = rsltFiles(ii).name;
+    runFileName = strrep(runFileName,'.run','_exe');
+    runFileName = fullfile('.','output',runFileName);
     inputFileName = obj.input_file_name;
     runFileName = fullfile('.','output',rsltFiles(ii).name);
-    avlCreateExeFile(exeFileName,inputFileName,runFileName)
+    avlCreateExeFile(runFileName,inputFileName,runFileName)
 end
 
 % run each _exe file on each .run file
@@ -97,8 +105,8 @@ exeFiles = dir(fullfile('output','*_exe'));
 if p.Results.Parallel % Then run in parallel
     parfor ii = 1:length(exeFiles)
         % Form the relative path to the exe file
-        exeFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
-        cmd_str = strcat('avl.exe','<',exeFileName);
+        runFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
+        cmd_str = strcat('avl.exe','<',runFileName);
         
         % Run AVL
         [~,raw] = system(cmd_str);
@@ -111,13 +119,13 @@ if p.Results.Parallel % Then run in parallel
         
         % Save the results
         parsave(['.',filesep,'output',filesep, strrep(exeFiles(ii).name,'_exe','.mat')],aero)
-        delete(exeFileName);
+        delete(runFileName);
     end
 else % Else run in series
     for ii = 1:length(exeFiles)
         % Form the relative path to the exe file
-        exeFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
-        cmd_str = strcat('avl.exe','<',exeFileName);
+        runFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
+        cmd_str = strcat('avl.exe','<',runFileName);
         
         % Run AVL
         [~,raw] = system(cmd_str);
@@ -130,7 +138,7 @@ else % Else run in series
         
         % Save the results
         parsave(['.',filesep,'output',filesep, strrep(exeFiles(ii).name,'_exe','.mat')],aero)
-        delete(exeFileName);
+        delete(runFileName);
     end
 end
 

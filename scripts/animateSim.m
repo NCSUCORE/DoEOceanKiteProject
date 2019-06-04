@@ -1,6 +1,6 @@
 % Script to animate simulation
 % sim('threeTetherVerification_th')
-% tsc = parseLogsout;
+tsc = parseLogsout;
 % close all
 resampleDataRate = 0.5;
 filename = 'testAnimated.gif';

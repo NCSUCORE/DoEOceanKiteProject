@@ -3,7 +3,7 @@ format compact
 % Initialize the highest level model
 % OCTModel_init
 % Initialize all the parameters that Ayaz's model needs to run
-ayazParams_init
+modularPlant_init
 
 
 createModularPlantBus
