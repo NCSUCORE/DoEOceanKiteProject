@@ -1,4 +1,4 @@
-function createaAyazCtrlBus()
+function createThreeTetherThreeSurfaceCtrlBus()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
