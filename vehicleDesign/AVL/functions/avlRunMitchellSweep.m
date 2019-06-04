@@ -1,4 +1,4 @@
-close all;clear;clc;format compact
+close all;clear;clc;format compact;fclose all
 % create sample design
 dsgn_test = avlDesignGeometryClass;
 
@@ -44,8 +44,12 @@ estRunTime = ...
 
 fprintf('\nEstimated runtime %0.3f hours\n',estRunTime)
 
-% tic
+tic
 % avlProcess(dsgn_test,'sweep','Parallel',true)
-% toc
+toc
+
+load(dsgn_test.result_file_name)
+
+avlBuildLookupTable(dsgn_test.lookup_table_file_name,results)
 
 
