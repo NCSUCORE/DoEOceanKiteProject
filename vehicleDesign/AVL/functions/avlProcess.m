@@ -71,6 +71,7 @@ for ii = 1:length(alphas)
                         % Append case number to run file
                         avlAppendRunFile(runFileIDs(batchNums(cnt)),caseNums(cnt),...
                             alpha,beta,flap,aileron,elevator,rudder)
+                        
                     end
                 end
             end

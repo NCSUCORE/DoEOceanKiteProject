@@ -97,24 +97,10 @@ classdef avlDesignGeometryClass < handle
         function val = get.v_stab_span(obj)
             val = obj.v_stab_AR*obj.v_stab_chord;
         end
-        % Function to load results from a run
-        function val = get.runResults(obj)
-            val = avlLoadResults(obj.result_file_name);
-        end
         
         % Function to write geometry to an input file
         function writeInputFile(obj)
             avlCreateInputFile(obj)
-        end
-        
-        % Function to process the operating points
-        function process(obj,type)
-            avlProcess(obj,lower(type))
-        end
-        
-        % Function to plot polars
-        function plotPolars(obj)
-            avlPlotPolars(obj.lookup_table_file_name);
         end
         
         % Function to plot the geometry

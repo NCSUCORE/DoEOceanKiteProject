@@ -10,7 +10,7 @@ sectionEndIndices = regexp(raw,outputEndIndicator);
 sectionEnds = [sectionEnds sectionEndIndices(end)];
 
 for ii = 1:length(sectionEnds)
-    sections{ii} = raw(sectionStarts:sectionEnds);
+    sections{ii} = raw(sectionStarts(ii):sectionEnds(ii));
 end
 
 % Step 2: process each of those sections

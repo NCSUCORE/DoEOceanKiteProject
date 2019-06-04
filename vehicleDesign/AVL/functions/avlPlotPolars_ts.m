@@ -2,4 +2,4 @@ clear
 close all
 clc
 
-avlPlotPolars('testLookupTableResults')
+avlPlotPolars('design1LookupTables')
