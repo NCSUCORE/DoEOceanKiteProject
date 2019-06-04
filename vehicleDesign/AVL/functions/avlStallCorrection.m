@@ -49,7 +49,7 @@ for ii = 1:n_cases
     
     % calculate chord*Cl and CLtot
     w_cCl = w_chord_cat.*w_cl_cat;
-    w_CL = tustins_integration(w_yle_cat,w_cCl)/Sref;
+    w_CL = trapz(w_yle_cat,w_cCl)/Sref;
     
     % get right HS and left HS data and process it
     right_hs_yle = [batch_res(ii).ST.H_stab.tabular.Yle; hs_span/2];
@@ -75,7 +75,7 @@ for ii = 1:n_cases
     % calculate chord*Cl and CLtot
     hs_cCl = hs_chord_cat.*hs_cl_cat;
 
-    hs_CL = tustins_integration(hs_yle_cat,hs_cCl)/Sref;
+    hs_CL = trapz(hs_yle_cat,hs_cCl)/Sref;
     
     % total lift
     CL = w_CL + hs_CL;
