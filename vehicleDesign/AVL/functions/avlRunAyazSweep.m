@@ -1,16 +1,30 @@
-close all;clear;clc;format compact
+close all;clear;clc;format compact;fclose all;
+
 % create sample design
 dsgn_test = avlDesignGeometryClass;
 
-dsgn_test.wing_sweep = 0;
+% wing parameters
+dsgn_test.wing_chord = 2;
+dsgn_test.wing_sweep = 15;
 dsgn_test.wing_dihedral = 0;
 dsgn_test.wing_TR = 0.8;
+dsgn_test.wing_naca_airfoil = '0015';
 
-dsgn_test.h_stab_sweep = 0;
-dsgn_test.h_stab_TR = 1;
+% horizontal stabilizer
+dsgn_test.h_stab_LE = 4*dsgn_test.wing_chord;
+dsgn_test.h_stab_chord = 0.75;
+dsgn_test.h_stab_AR = 8;
+dsgn_test.h_stab_sweep = 15;
+dsgn_test.h_stab_TR = 0.8;
+dsgn_test.h_stab_naca_airfoil = '0015';
 
-dsgn_test.v_stab_sweep = 0;
-dsgn_test.v_stab_TR = 1;
+% vertical stabilizer
+dsgn_test.v_stab_LE = 4*dsgn_test.wing_chord;
+dsgn_test.v_stab_chord = dsgn_test.h_stab_chord;
+dsgn_test.v_stab_sweep = 15;
+dsgn_test.v_stab_TR = 0.75;
+
+dsgn_test.plot
 
 
 dsgn_test.input_file_name        = 'dsgnAyaz1.avl'; % File name for .avl file
@@ -22,13 +36,12 @@ dsgn_test.exe_file_name          = 'dsgnAyaz1Exe';
 
 % dsgn_test.singleCase.alpha = 15;
 
-
-dsgn_test.sweepCase.alpha      = linspace(-20,20,3);
-dsgn_test.sweepCase.beta       = linspace(-20,20,3);
-dsgn_test.sweepCase.flap       = linspace(0,10,3);
-dsgn_test.sweepCase.aileron    = linspace(-15,15,3);
-dsgn_test.sweepCase.elevator   = linspace(-15,15,3);
-dsgn_test.sweepCase.rudder     = linspace(-1,10,3);
+dsgn_test.sweepCase.alpha      = linspace(-20,20,21);
+dsgn_test.sweepCase.beta       = linspace(-20,20,21);
+dsgn_test.sweepCase.flap       = linspace(0,10,5);
+dsgn_test.sweepCase.aileron    = linspace(-15,15,5);
+dsgn_test.sweepCase.elevator   = linspace(-15,15,5);
+dsgn_test.sweepCase.rudder     = linspace(-1,10,5);
 
 dsgn_test.writeInputFile
 
@@ -51,6 +64,8 @@ toc
 load(dsgn_test.result_file_name);
 
 avlBuildLookupTable(dsgn_test.lookup_table_file_name,results)
+
+avlPlotPolars(dsgn_test.lookup_table_file_name);
 
 
 
