@@ -13,14 +13,14 @@ classdef avlDesignGeometryClass < handle
         
         reference_point = [0.6;0;0];
         
-        wing_chord = 0.8;
+        wing_chord = 1;
         wing_AR = 10;
         wing_sweep = 5;
         wing_dihedral = 2;
-        wing_TR = 0.75;
+        wing_TR = 0.8;
         wing_incidence_angle = 0;
         wing_naca_airfoil = '2412';
-        wing_airfoil_ClMax = 2;
+        wing_airfoil_ClLimits = [-1.5 1.5];
         
         h_stab_LE = 4.5;
         h_stab_chord = 0.5;
@@ -29,15 +29,15 @@ classdef avlDesignGeometryClass < handle
         h_stab_dihedral = 0;
         h_stab_TR = 0.8;
         h_stab_naca_airfoil = '2412';
-        h_stab_airfoil_ClMax = 2;
+        h_stab_airfoil_ClLimits = [-1.5 1.5];
         
         v_stab_LE = 4.5;
-        v_stab_chord = 0.4;
-        v_stab_AR = 2.5;
+        v_stab_chord = 0.5;
+        v_stab_AR = 2;
         v_stab_sweep = 10;
         v_stab_TR = 0.9;
         v_stab_naca_airfoil = '0015';
-        v_stab_airfoil_ClMax = 2;
+        v_stab_airfoil_ClLimits = [-2 2];
         
         singleCase = struct(...
             'alpha',0,....
