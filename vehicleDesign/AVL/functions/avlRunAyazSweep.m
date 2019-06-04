@@ -24,8 +24,7 @@ dsgn_test.v_stab_chord = dsgn_test.h_stab_chord;
 dsgn_test.v_stab_sweep = 15;
 dsgn_test.v_stab_TR = 0.75;
 
-dsgn_test.plot
-
+% dsgn_test.plot
 
 dsgn_test.input_file_name        = 'dsgnAyaz1.avl'; % File name for .avl file
 dsgn_test.run_file_name          = 'dsgnAyaz1.run';
@@ -45,8 +44,7 @@ dsgn_test.sweepCase.rudder     = linspace(-1,10,5);
 
 dsgn_test.writeInputFile
 
-% 11.5 for 64
-
+% estimate run time
 estRunTime = ...
     numel(dsgn_test.sweepCase.alpha)*...
     numel(dsgn_test.sweepCase.beta)*...
