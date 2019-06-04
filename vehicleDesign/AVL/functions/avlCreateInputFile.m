@@ -44,7 +44,7 @@ z_t_w = (b_w/2)*tand(di_w);
 
 % spacing parameters
 N_c_w = c_r_w*4;
-N_b_w = b_w*2;
+N_b_w = b_w*4;
 
 % error messages
 if mod(N_c_w,1) ~= 0 || N_c_w <= 0
@@ -88,7 +88,7 @@ z_t_vs = b_vs;
 
 % spacing parameters
 N_c_vs = c_r_vs*4;
-N_b_vs = b_vs*2;
+N_b_vs = b_vs*4;
 
 % error messages
 if mod(N_c_vs,1) ~= 0 || N_c_vs <= 0
