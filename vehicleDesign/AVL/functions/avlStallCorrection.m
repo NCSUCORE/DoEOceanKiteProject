@@ -74,6 +74,7 @@ for ii = 1:n_cases
     
     % calculate chord*Cl and CLtot
     hs_cCl = hs_chord_cat.*hs_cl_cat;
+
     hs_CL = tustins_integration(hs_yle_cat,hs_cCl)/Sref;
     
     % total lift

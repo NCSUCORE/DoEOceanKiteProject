@@ -4,9 +4,9 @@ clear all;clc;
 
 OCTModel_init
 
-modularPlant_init
+ayazParams_init;
 
-duration_s = 100;
+duration_s = 1000;
 
 CONTROLLER = 'threeTetherThreeSurfaceCtrl';
 createThreeTetherThreeSurfaceCtrlBus;
@@ -24,16 +24,18 @@ set_alt = timeseries(set_alti*ones(size(timeVec)),timeVec);
 set_pitch = timeseries(set_pitch*ones(size(timeVec))*180/pi,timeVec);
 set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
 
-
-sim('OCTModel')
-
+% try
+    sim('OCTModel')
+% catch
+% end
 tscOrig = parseLogsout;
 
 PLANT = 'modularPlant';
 createModularPlantBus;
-
-sim('OCTModel')
-
+try
+    sim('OCTModel')
+catch
+end
 tscMod = parseLogsout;
 
 %% Plot Positions
@@ -65,7 +67,7 @@ hold on
 grid on
 plot(tscMod.posVec.Time,squeeze(tscMod.posVec.Data(3,:,:)),...
     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-plot(set_alt.Time,set_alt.Data,...
+plot(set_alt.Time,squeeze(set_alt.Data),...
     'LineWidth',1.5,'Color',[1 0 0],'LineStyle','--')
 xlabel('Time, [s]')
 ylabel('z Setpoint. [m]')
@@ -83,6 +85,8 @@ hold on
 grid on
 plot(tscMod.eulerAngles.Time,squeeze(tscMod.eulerAngles.Data(1,:,:))*180/pi,...
     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+plot(set_roll.Time,squeeze(set_roll.Data),...
+    'LineWidth',1.5,'Color',[1 0 0],'LineStyle','--')
 xlabel('Time, [s]')
 ylabel('Roll, [deg]')
 
@@ -93,6 +97,8 @@ hold on
 grid on
 plot(tscMod.eulerAngles.Time,squeeze(tscMod.eulerAngles.Data(2,:,:))*180/pi,...
     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+plot(set_pitch.Time,squeeze(set_pitch.Data),...
+    'LineWidth',1.5,'Color',[1 0 0],'LineStyle','--')
 xlabel('Time, [s]')
 ylabel('Pitch, [deg]')
 
