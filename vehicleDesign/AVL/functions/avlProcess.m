@@ -48,10 +48,10 @@ cnt = 0;
 fprintf('Creating .run files\n')
 runFileNames = cell([1 batchNums(end)]);
 for ii = 1:length(runFileNames)
-    runFileName  = strrep(obj.run_file_name,'.run','');
-    runFileName  = strcat(runFileName,sprintf('_Batch%d.run',ii));
-    runFileName  = fullfile('.','output',runFileName);
-    runFileNames{ii} = runFileName;
+    exeFileName  = strrep(obj.run_file_name,'.run','');
+    exeFileName  = strcat(exeFileName,sprintf('_Batch%d.run',ii));
+    exeFileName  = fullfile('.','output',exeFileName);
+    runFileNames{ii} = exeFileName;
 end
 
 for ii = 1:length(runFileNames)
@@ -86,27 +86,27 @@ for ii = 1:length(alphas)
         end
     end
 end
-fclose('all');
-
+% fclose('all');
+fprintf('Creating _exe files.\n')
 % Create exe file for each .run batch file
-rsltFiles = dir('output');
-rsltFiles = rsltFiles(~[rsltFiles.isdir]);
-for ii = 1:length(rsltFiles)
-    runFileName = rsltFiles(ii).name;
-    runFileName = strrep(runFileName,'.run','_exe');
-    runFileName = fullfile('.','output',runFileName);
-    inputFileName = obj.input_file_name;
-    runFileName = fullfile('.','output',rsltFiles(ii).name);
-    avlCreateExeFile(runFileName,inputFileName,runFileName)
+runFiles = dir('output'); % Gets all files in output folder
+runFiles = runFiles(~[runFiles.isdir]); % Removes . and .. from list
+for ii = 1:length(runFiles)
+    exeFileName = runFiles(ii).name; % Get the file name
+    exeFileName = strrep(exeFileName,'.run','_exe'); % Replace the file extension
+    exeFileName = fullfile('.','output',exeFileName); % Concatenate relative path to exe file
+    runFileName = fullfile('.','output',runFiles(ii).name); % Concatenate relative path to run file
+    avlCreateExeFile(exeFileName,obj.input_file_name,runFileName)
 end
 
+fprintf('Running AVL\n')
 % run each _exe file on each .run file
 exeFiles = dir(fullfile('output','*_exe'));
 if p.Results.Parallel % Then run in parallel
     parfor ii = 1:length(exeFiles)
         % Form the relative path to the exe file
-        runFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
-        cmd_str = strcat('avl.exe','<',runFileName);
+        exeFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
+        cmd_str = strcat('avl.exe','<',exeFileName);
         
         % Run AVL
         [~,raw] = system(cmd_str);
@@ -119,13 +119,13 @@ if p.Results.Parallel % Then run in parallel
         
         % Save the results
         parsave(['.',filesep,'output',filesep, strrep(exeFiles(ii).name,'_exe','.mat')],aero)
-        delete(runFileName);
+        delete(exeFileName);
     end
 else % Else run in series
     for ii = 1:length(exeFiles)
         % Form the relative path to the exe file
-        runFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
-        cmd_str = strcat('avl.exe','<',runFileName);
+        exeFileName = ['.',filesep,'output',filesep,exeFiles(ii).name];
+        cmd_str = strcat('avl.exe','<',exeFileName);
         
         % Run AVL
         [~,raw] = system(cmd_str);
@@ -138,16 +138,16 @@ else % Else run in series
         
         % Save the results
         parsave(['.',filesep,'output',filesep, strrep(exeFiles(ii).name,'_exe','.mat')],aero)
-        delete(runFileName);
+        delete(exeFileName);
     end
 end
 
 
 % Concatenate all the resulting output files
-rsltFiles = dir([outputDirectory,filesep,'*.mat']);
-for ii = 1:length(rsltFiles)
-    load(fullfile(rsltFiles(ii).folder,rsltFiles(ii).name))
-    batchNum = regexp(regexp(rsltFiles(ii).name,'Batch\d*.mat','match'),'\d*','match');
+runFiles = dir([outputDirectory,filesep,'*.mat']);
+for ii = 1:length(runFiles)
+    load(fullfile(runFiles(ii).folder,runFiles(ii).name))
+    batchNum = regexp(regexp(runFiles(ii).name,'Batch\d*.mat','match'),'\d*','match');
     batchNum = str2double(batchNum{1});
     results{batchNum} = aero;
 end
