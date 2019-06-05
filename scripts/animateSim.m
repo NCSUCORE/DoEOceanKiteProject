@@ -2,7 +2,7 @@
 % sim('threeTetherVerification_th')
 tsc = parseLogsout;
 % close all
-resampleDataRate = 0.5;
+resampleDataRate = 0.1;
 filename = 'testAnimated.gif';
 signals = fieldnames(tsc);
 
