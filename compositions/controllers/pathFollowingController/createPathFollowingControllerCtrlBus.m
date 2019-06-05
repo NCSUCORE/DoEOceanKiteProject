@@ -1,4 +1,4 @@
-function createModAyazCtrlBus()
+function createPathFollowingControllerCtrlBus()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;

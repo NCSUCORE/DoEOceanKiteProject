@@ -11,7 +11,7 @@ ayazPlant_init
 % Create the bus objects in the workspace
 createModAyazPlantBus
 createModAyazFlowEnvironmentBus
-createModAyazCtrlBus
+createPathFollowingControllerCtrlBus
 
 % Set simulation duration
 duration_s = 1000;
