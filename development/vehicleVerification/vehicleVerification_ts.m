@@ -5,7 +5,7 @@ OCTModel_init
 
 modularPlant_init;
 
-duration_s = 900;
+duration_s = 1000;
 
 CONTROLLER = 'threeTetherThreeSurfaceCtrl';
 createThreeTetherThreeSurfaceCtrlBus;
@@ -23,7 +23,11 @@ set_alt = timeseries(set_alti*ones(size(timeVec)),timeVec);
 set_pitch = timeseries(set_pitch*ones(size(timeVec))*180/pi,timeVec);
 set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
 
+set_roll.Data = 10*sign(sin(timeVec/(2*pi*200)));
+set_roll.Data(timeVec<200) = 0;
+
 % Set controller gains and time constants
+% Uncomment this code to disable the controller
 % sim_param.elevons_param.elevator_control.kp_elev    = 0;
 % sim_param.elevons_param.elevator_control.ki_elev    = 0;
 % sim_param.elevons_param.elevator_control.kd_elev    = 0;
@@ -48,18 +52,20 @@ set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
 % sim_param.controller_param.roll_control.Ki_r    = 0;
 % sim_param.controller_param.roll_control.Kd_r    = 0;
 % sim_param.controller_param.roll_control.wce_r   = 1;
-%
 
+% Run the origional plant model
 fprintf('Running Origional Model\n')
 sim('OCTModel')
-tscOrig = parseLogsout;
+tscOrig = parseLogsout; % Log the output data
 
+% Switch to modular plant model
 PLANT = 'modularPlant';
 createModularPlantBus;
 
+% Run the modular plant model
 fprintf('Running Modular Model\n')
 sim('OCTModel')
-tscMod = parseLogsout;
+tscMod = parseLogsout; % Log the output data
 
 
 %% Plot Positions
@@ -99,7 +105,6 @@ ylabel('z Setpoint. [m]')
 
 set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
-
 
 %% Plot Euler Angles
 figure('Position',[ 0.0005    0.0380    0.4990    0.8833])
@@ -174,7 +179,6 @@ ylabel('$\omega_z$ [rad/s]')
 
 set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
-
 
 %% Plot tether lenghts
 figure('Position',[-0.4995    0.0380    0.4990    0.8833])
@@ -328,125 +332,8 @@ ylabel('Thr3 Ten [N]')
 set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
 
-%% Plot body moments
-figure
-
-subplot(2,4,1)
-plot3(tscOrig.buoyMmtBdy.Data(:,1),...
-    tscOrig.buoyMmtBdy.Data(:,2),...
-    tscOrig.buoyMmtBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.buoyMmtBdy.Data(:,1),...
-    tscMod.buoyMmtBdy.Data(:,2),...
-    tscMod.buoyMmtBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Bouyancy')
-
-subplot(2,4,2)
-plot3(tscOrig.gravMmtBdy.Data(:,1),...
-    tscOrig.gravMmtBdy.Data(:,2),...
-    tscOrig.gravMmtBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.gravMmtBdy.Data(:,1),...
-    tscMod.gravMmtBdy.Data(:,2),...
-    tscMod.gravMmtBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Gravity')
-
-subplot(2,4,3)
-plot3(tscOrig.aeroMWMmtBdy.Data(:,1),...
-    tscOrig.aeroMWMmtBdy.Data(:,2),...
-    tscOrig.aeroMWMmtBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.aeroMWMmtBdy.Data(:,1),...
-    tscMod.aeroMWMmtBdy.Data(:,2),...
-    tscMod.aeroMWMmtBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Aero MW')
-
-subplot(2,4,4)
-plot3(tscOrig.aeroVSMmtBdy.Data(:,1),...
-    tscOrig.aeroVSMmtBdy.Data(:,2),...
-    tscOrig.aeroVSMmtBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.aeroVSMmtBdy.Data(:,1),...
-    tscMod.aeroVSMmtBdy.Data(:,2),...
-    tscMod.aeroVSMmtBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Aero VS')
-
-subplot(2,4,5)
-plot3(tscOrig.aeroTurbMmtBdy.Data(:,1),...
-    tscOrig.aeroTurbMmtBdy.Data(:,2),...
-    tscOrig.aeroTurbMmtBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.aeroTurbMmtBdy.Data(:,1),...
-    tscMod.aeroTurbMmtBdy.Data(:,2),...
-    tscMod.aeroTurbMmtBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Aero Turb')
-
-subplot(2,4,5)
-plot3(tscOrig.thr1MmtVecBdy.Data(:,1),...
-    tscOrig.thr1MmtVecBdy.Data(:,2),...
-    tscOrig.thr1MmtVecBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.thr1MmtVecBdy.Data(:,1),...
-    tscMod.thr1MmtVecBdy.Data(:,2),...
-    tscMod.thr1MmtVecBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Thr 1')
-
-subplot(2,4,6)
-plot3(tscOrig.thr2MmtVecBdy.Data(:,1),...
-    tscOrig.thr2MmtVecBdy.Data(:,2),...
-    tscOrig.thr2MmtVecBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.thr2MmtVecBdy.Data(:,1),...
-    tscMod.thr2MmtVecBdy.Data(:,2),...
-    tscMod.thr2MmtVecBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Thr 2')
-
-subplot(2,4,7)
-plot3(tscOrig.thr3MmtVecBdy.Data(:,1),...
-    tscOrig.thr3MmtVecBdy.Data(:,2),...
-    tscOrig.thr3MmtVecBdy.Data(:,3),...
-    'LineStyle','-','LineWidth',1.5,'Color',[0 0 0])
-grid on
-hold on
-plot3(tscMod.thr3MmtVecBdy.Data(:,1),...
-    tscMod.thr3MmtVecBdy.Data(:,2),...
-    tscMod.thr3MmtVecBdy.Data(:,3),...
-    'LineStyle','--','LineWidth',1.5,'Color',[0.5 0.5 0.5])
-% axis equal
-title('Thr 3')
-
-%% Plot pitching moment comparison
-
-%% Plot angular velocity vector
-figure('Position',[ 0.0005    0.0380    0.4990    0.8833])
+%% Plot Pitching Moments
+figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
 subplot(5,1,1)
 plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,2),...
     'LineWidth',1.5,'Color','k','LineStyle','-')
@@ -498,12 +385,122 @@ plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,2),...
 xlabel('Time, [s]')
 ylabel('Thr 3 [Nm]')
 
+%% Plot Rolling Moment comparison
+figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
+subplot(5,1,1)
+plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,1),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,1),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Main Wing [Nm]')
+title('Rolling Moment Comparison')
+
+subplot(5,1,2)
+plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,1),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,1),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Vert. Stab. [Nm]')
+
+subplot(5,1,3)
+plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,1),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,1),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Thr 1 [Nm]')
+
+subplot(5,1,4)
+plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,1),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,1),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Thr 2 [Nm]')
+
+subplot(5,1,5)
+plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,1),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,1),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Thr 3 [Nm]')
+
+
 set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
 
+%% Plot Yawing Moment comparison
+figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
+subplot(5,1,1)
+plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,3),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,3),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Main Wing [Nm]')
+title('Yawing Moment Comparison')
+
+subplot(5,1,2)
+plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,3),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,3),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Vert. Stab. [Nm]')
+
+subplot(5,1,3)
+plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,3),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,3),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Thr 1 [Nm]')
+
+subplot(5,1,4)
+plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,3),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,3),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Thr 2 [Nm]')
+
+subplot(5,1,5)
+plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,3),...
+    'LineWidth',1.5,'Color','k','LineStyle','-')
+hold on
+grid on
+plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,3),...
+    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+xlabel('Time, [s]')
+ylabel('Thr 3 [Nm]')
+
+
+set(findall(gcf,'Type','axes'),'FontSize',24)
+linkaxes(findall(gcf,'Type','axes'),'x')
 
 %% Animate the tether geometry
-close all
+% close all
 figure('Position',[0    0.0370    1.0000    0.8917])
 axes
 set(gca,'NextPlot','add')
