@@ -35,19 +35,19 @@ dsgn_test.exe_file_name          = 'dsgnAyaz1Exe';
 
 % dsgn_test.singleCase.alpha = 15;
 
-% dsgn_test.sweepCase.alpha      = linspace(-20,20,21);
-% dsgn_test.sweepCase.beta       = linspace(-20,20,21);
-% dsgn_test.sweepCase.flap       = linspace(0,10,5);
-% dsgn_test.sweepCase.aileron    = linspace(-15,15,5);
-% dsgn_test.sweepCase.elevator   = linspace(-15,15,5);
-% dsgn_test.sweepCase.rudder     = linspace(-1,10,5);
-
 dsgn_test.sweepCase.alpha      = linspace(-20,20,2);
 dsgn_test.sweepCase.beta       = linspace(-20,20,2);
 dsgn_test.sweepCase.flap       = linspace(0,10,2);
 dsgn_test.sweepCase.aileron    = linspace(-15,15,2);
 dsgn_test.sweepCase.elevator   = linspace(-15,15,2);
 dsgn_test.sweepCase.rudder     = linspace(-1,10,2);
+
+% dsgn_test.sweepCase.alpha      = linspace(-20,20,2);
+% dsgn_test.sweepCase.beta       = linspace(-20,20,2);
+% dsgn_test.sweepCase.flap       = linspace(0,10,2);
+% dsgn_test.sweepCase.aileron    = linspace(-15,15,2);
+% dsgn_test.sweepCase.elevator   = linspace(-15,15,2);
+% dsgn_test.sweepCase.rudder     = linspace(-1,10,2);
 
 dsgn_test.writeInputFile
 
@@ -63,7 +63,7 @@ estRunTime = ...
 fprintf('\nEstimated runtime %0.3f hours\n',estRunTime)
 
 tic
-avlProcess(dsgn_test,'sweep','Parallel',false)
+avlProcess(dsgn_test,'sweep','Parallel',true)
 toc
 
 load(dsgn_test.result_file_name);
