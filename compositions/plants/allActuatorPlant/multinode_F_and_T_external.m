@@ -412,13 +412,19 @@ op.sum_3_f = sum_3_f;
 op.O_F_ext = O_F_ext;
 op.B_T_ext = B_T_ext;
 op.T_o_ext = T_o_ext;
+
+op.B_T_buoy = B_T_buoy;
+op.B_T_grav = B_T_grav;
+op.B_T_aero_mw = B_T_aero_mw;
+op.B_T_aero_VS = B_T_aero_VS;
+op.B_T_aero_turb = B_T_aero_turb;
 op.B_Tt1 = B_Tt1;
 op.B_Tt2 = B_Tt2;
 op.B_Tt3 = B_Tt3;
 
-op.B_T_buoy = B_T_buoy;
-op.B_T_aero_mw = B_T_aero_mw;
-op.B_T_aero_VS = B_T_aero_VS;
+
+
+
 
 % output aero forces
 op.aero_F = aero_F;
