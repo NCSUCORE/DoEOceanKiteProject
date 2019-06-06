@@ -36,8 +36,8 @@ dsgn_test.lookup_table_file_name = 'dsgnAyaz1_2D_Lookup';
 dsgn_test.exe_file_name          = 'dsgnAyaz1Exe';
 
 %% sweep cases
-n_alpha = 11;
-n_beta = 11;
+n_alpha = 21;
+n_beta = 21;
 
 dsgn_test.sweepCase.alpha      = linspace(-20,20,n_alpha);
 dsgn_test.sweepCase.beta       = linspace(-20,20,n_beta);
@@ -79,10 +79,19 @@ dr = 1;
 
 k_CS_gain = calculate_2D_gains(dsgn_test,nom_a,nom_b,df,da,de,dr);
 
+%% 
+clc
+format compact
 
+uAppBdy = [5 0 1];
+dynPress = 1;
+flpDefl_deg = 10;
+ailDefl_deg = 0;
+elevDefl_deg = 0;
+rudDefl_deg = 0;
 
+refArea = 1;
 
-
-
+% sim('avlAerodynamics2D_th')
 
 
