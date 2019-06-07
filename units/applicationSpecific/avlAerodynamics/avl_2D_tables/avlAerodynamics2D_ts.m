@@ -1,29 +1,47 @@
 close all;clear;clc;format compact;fclose all;
+set(groot,'defaulttextinterpreter','latex');
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+
 
 % create sample design
 dsgn_test = avlDesignGeometryClass;
 
 %% modify design
 % wing parameters
-dsgn_test.wing_chord = 2;
+dsgn_test.wing_chord = 6;
+dsgn_test.wing_AR = 6;
 dsgn_test.wing_sweep = 15;
 dsgn_test.wing_dihedral = 0;
 dsgn_test.wing_TR = 0.8;
-dsgn_test.wing_naca_airfoil = '2412';
+dsgn_test.wing_naca_airfoil = '0015';
+dsgn_test.wing_airfoil_ClLimits = [-1.68 1.68];
+
+
+dsgn_test.wing_Nspanwise = 32;
+dsgn_test.wing_Nchordwise = 2;
 
 % horizontal stabilizer
 dsgn_test.h_stab_LE = 4*dsgn_test.wing_chord;
-dsgn_test.h_stab_chord = 0.75;
-dsgn_test.h_stab_AR = 8;
+dsgn_test.h_stab_chord = 0.25*dsgn_test.wing_chord;
+dsgn_test.h_stab_AR = 6;
 dsgn_test.h_stab_sweep = 15;
 dsgn_test.h_stab_TR = 0.8;
 dsgn_test.h_stab_naca_airfoil = '0015';
+dsgn_test.h_stab_airfoil_ClLimits = [-1.68 1.68];
+
+
+dsgn_test.h_stab_Nspanwise = 8;
+dsgn_test.h_stab_Nchordwise = 1;
 
 % vertical stabilizer
 dsgn_test.v_stab_LE = 4*dsgn_test.wing_chord;
 dsgn_test.v_stab_chord = dsgn_test.h_stab_chord;
 dsgn_test.v_stab_sweep = 15;
 dsgn_test.v_stab_TR = 0.75;
+
+dsgn_test.v_stab_Nspanwise = 5;
+dsgn_test.v_stab_Nchordwise = 1;
 
 % dsgn_test.plot
 
@@ -36,10 +54,10 @@ dsgn_test.lookup_table_file_name = 'dsgnAyaz1_2D_Lookup';
 dsgn_test.exe_file_name          = 'dsgnAyaz1Exe';
 
 %% sweep cases
-n_alpha = 21;
-n_beta = 21;
+n_alpha = 31;
+n_beta = 31;
 
-dsgn_test.sweepCase.alpha      = linspace(-20,20,n_alpha);
+dsgn_test.sweepCase.alpha      = linspace(-25,25,n_alpha);
 dsgn_test.sweepCase.beta       = linspace(-20,20,n_beta);
 dsgn_test.sweepCase.flap       = 0;
 dsgn_test.sweepCase.aileron    = 0;
@@ -59,7 +77,7 @@ tic
 avlProcess(dsgn_test,'sweep','Parallel',true)
 toc
 
-% load result file
+%% load result file
 load(dsgn_test.result_file_name);
 
 % build lookup tables based on 2 inouts
@@ -67,6 +85,23 @@ avlBuild_2D_LookupTable(dsgn_test.lookup_table_file_name,results)
 
 % plot polars based on 2 inouts
 avlPlot_2D_Polars(dsgn_test.lookup_table_file_name);
+
+%% previously used data
+pcl_mw = [0.0000   -0.0001   -0.0000    0.1217    0.0008];
+pcd_mw = [0.0000   -0.0000   -0.0000    0.0000    0.0089];
+alp_n = linspace(-25,25,100);
+pcl_n = 0.8*polyval(pcl_mw,alp_n);
+pcd_n = polyval(pcd_mw,alp_n) + (pcl_n.^2)/(pi*dsgn_test.wing_AR);
+
+figure(2);
+subplot(2,1,1)
+hold on
+plot(alp_n,pcl_n,'r','linewidth',1);
+
+subplot(2,1,2)
+hold on
+plot(alp_n,pcd_n,'r','linewidth',1);
+
 
 %% calculate the gains due to control surface deflection
 nom_a = 0;
@@ -77,9 +112,9 @@ da = 1;
 de = 1;
 dr = 1;
 
-k_CS_gain = calculate_2D_gains(dsgn_test,nom_a,nom_b,df,da,de,dr);
+% k_CS_gain = calculate_2D_gains(dsgn_test,nom_a,nom_b,df,da,de,dr);
 
-%% 
+%%
 clc
 format compact
 

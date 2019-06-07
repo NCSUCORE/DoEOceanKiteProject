@@ -9,6 +9,9 @@ di_w = obj.wing_dihedral;
 tr_w = obj.wing_TR;
 w_inc_angle = obj.wing_incidence_angle;
 w_afile =  obj.wing_naca_airfoil;
+w_Ns = obj.wing_Nspanwise;
+w_Nc = obj.wing_Nchordwise;
+
 
 le_hs = obj.h_stab_LE;
 c_r_hs = obj.h_stab_chord;
@@ -17,6 +20,8 @@ sw_hs = obj.h_stab_sweep;
 di_hs = obj.h_stab_dihedral;
 tr_hs = obj.h_stab_TR;
 hs_afile =  obj.h_stab_naca_airfoil;
+hs_Ns = obj.h_stab_Nspanwise;
+hs_Nc = obj.h_stab_Nchordwise;
 
 le_vs = obj.v_stab_LE;
 c_r_vs = obj.v_stab_chord;
@@ -24,6 +29,8 @@ AR_vs = obj.v_stab_AR;
 sw_vs = obj.v_stab_sweep;
 tr_vs = obj.v_stab_TR;
 vs_afile =  obj.v_stab_naca_airfoil;
+vs_Ns = obj.v_stab_Nspanwise;
+vs_Nc = obj.v_stab_Nchordwise;
 
 % cm cordinates
 R_ref = obj.reference_point;
@@ -43,8 +50,8 @@ y_t_w = (b_w/2);
 z_t_w = (b_w/2)*tand(di_w);
 
 % spacing parameters
-N_c_w = c_r_w*4;
-N_b_w = b_w*4;
+N_b_w = w_Ns;
+N_c_w = w_Nc;
 
 % error messages
 if mod(N_c_w,1) ~= 0 || N_c_w <= 0
@@ -65,8 +72,8 @@ y_t_hs = (b_hs/2);
 z_t_hs = (b_hs/2)*tand(di_hs);
 
 % spacing parameters
-N_c_hs = (c_r_hs/c_r_w)*N_c_w;
-N_b_hs = (b_hs/b_w)*N_b_w;
+N_b_hs = hs_Ns;
+N_c_hs = hs_Nc;
 
 % error messages
 if mod(N_c_hs,1) ~= 0 || N_c_hs <= 0
@@ -87,8 +94,8 @@ y_t_vs = 0;
 z_t_vs = b_vs;
 
 % spacing parameters
-N_c_vs = c_r_vs*4;
-N_b_vs = b_vs*4;
+N_b_vs = vs_Ns;
+N_c_vs = vs_Nc;
 
 % error messages
 if mod(N_c_vs,1) ~= 0 || N_c_vs <= 0

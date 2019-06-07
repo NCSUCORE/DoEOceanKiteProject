@@ -1,7 +1,7 @@
 function [CLtot_2D_Tbl,CDtot_2D_Tbl,Cltot_2D_Tbl,Cmtot_2D_Tbl,Cntot_2D_Tbl] =...
     avlBuild_2D_LookupTable(saveFileName,aeroResults)
 
-nCases = 1,25*(length(aeroResults) - 1) + length(aeroResults{end});
+nCases = 25*(length(aeroResults) - 1) + length(aeroResults{end});
 
 alphas      = NaN(1,nCases);
 betas       = NaN(1,nCases);
