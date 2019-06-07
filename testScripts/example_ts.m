@@ -38,7 +38,7 @@ sim('OCTModel')
 % Data is logged in the logsout variable in the worspace.  The function
 % ./functions/parseLogsout.m takes all the logged data and puts it into a
 % structure called tsc where the field names match the signal names
-tsc = parseLogsout;
+parseLogsout;
 
 % As an example, plot some data
 tsc.posVec.plot
