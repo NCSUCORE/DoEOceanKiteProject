@@ -1,7 +1,13 @@
 clear all
 close all
+ l = 1.6;
+ p = .8;
+path7 = [ cos(l).*cos(p);
+         sin(l).*cos(p);
+         sin(p);];
 
-init_pos = [2;1;1;]/sqrt(6);
+init_pos = [path7(1);path7(2);path7(3);];
+init_pos = init_pos/norm(init_pos);
 end_time = 100;
 aB=1;
 bB=1;
