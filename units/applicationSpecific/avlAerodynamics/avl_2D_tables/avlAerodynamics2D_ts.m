@@ -112,7 +112,10 @@ da = 1;
 de = 1;
 dr = 1;
 
-% k_CS_gain = calculate_2D_gains(dsgn_test,nom_a,nom_b,df,da,de,dr);
+k_CS_gain = calculate_2D_gains(dsgn_test,nom_a,nom_b,df,da,de,dr);
+
+saveFileName = fullfile(fileparts(which('avl.exe')),'designLibrary',dsgn_test.lookup_table_file_name);
+save(saveFileName,'CLtot_2D_Tbl','CDtot_2D_Tbl','Cltot_2D_Tbl','Cmtot_2D_Tbl','Cntot_2D_Tbl','k_CS_gain');
 
 %%
 clc
