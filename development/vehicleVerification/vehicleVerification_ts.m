@@ -7,6 +7,8 @@ modularPlant_init;
 
 duration_s = 1000;
 
+load('dsgnAyaz1_2D_Lookup');
+
 CONTROLLER = 'threeTetherThreeSurfaceCtrl';
 createThreeTetherThreeSurfaceCtrlBus;
 
@@ -28,30 +30,30 @@ set_roll.Data(timeVec<200) = 0;
 
 % Set controller gains and time constants
 % Uncomment this code to disable the controller
-% sim_param.elevons_param.elevator_control.kp_elev    = 0;
-% sim_param.elevons_param.elevator_control.ki_elev    = 0;
-% sim_param.elevons_param.elevator_control.kd_elev    = 0;
-% sim_param.elevons_param.elevator_control.t_elev     = 1;
-% 
-% sim_param.elevons_param.aileron_control.kp_aileron  = 0;
-% sim_param.elevons_param.aileron_control.ki_aileron  = 0;
-% sim_param.elevons_param.aileron_control.kd_aileron  = 0;
-% sim_param.elevons_param.aileron_control.t_aileron   = 1;
-% 
-% sim_param.controller_param.alti_control.Kp_z    = 0;
-% sim_param.controller_param.alti_control.Ki_z    = 0;
-% sim_param.controller_param.alti_control.Kd_z    = 0;
-% sim_param.controller_param.alti_control.wce_z   = 1;
-% 
-% sim_param.controller_param.pitch_control.Kp_p    = 0;
-% sim_param.controller_param.pitch_control.Ki_p    = 0;
-% sim_param.controller_param.pitch_control.Kd_p    = 0;
-% sim_param.controller_param.pitch_control.wce_p   = 0.1;
-% 
-% sim_param.controller_param.roll_control.Kp_r    = 0;
-% sim_param.controller_param.roll_control.Ki_r    = 0;
-% sim_param.controller_param.roll_control.Kd_r    = 0;
-% sim_param.controller_param.roll_control.wce_r   = 1;
+sim_param.elevons_param.elevator_control.kp_elev    = 0;
+sim_param.elevons_param.elevator_control.ki_elev    = 0;
+sim_param.elevons_param.elevator_control.kd_elev    = 0;
+sim_param.elevons_param.elevator_control.t_elev     = 1;
+
+sim_param.elevons_param.aileron_control.kp_aileron  = 0;
+sim_param.elevons_param.aileron_control.ki_aileron  = 0;
+sim_param.elevons_param.aileron_control.kd_aileron  = 0;
+sim_param.elevons_param.aileron_control.t_aileron   = 1;
+
+sim_param.controller_param.alti_control.Kp_z    = 0;
+sim_param.controller_param.alti_control.Ki_z    = 0;
+sim_param.controller_param.alti_control.Kd_z    = 0;
+sim_param.controller_param.alti_control.wce_z   = 1;
+
+sim_param.controller_param.pitch_control.Kp_p    = 0;
+sim_param.controller_param.pitch_control.Ki_p    = 0;
+sim_param.controller_param.pitch_control.Kd_p    = 0;
+sim_param.controller_param.pitch_control.wce_p   = 0.1;
+
+sim_param.controller_param.roll_control.Kp_r    = 0;
+sim_param.controller_param.roll_control.Ki_r    = 0;
+sim_param.controller_param.roll_control.Kd_r    = 0;
+sim_param.controller_param.roll_control.wce_r   = 1;
 
 % Run the origional plant model
 fprintf('Running Origional Model\n')

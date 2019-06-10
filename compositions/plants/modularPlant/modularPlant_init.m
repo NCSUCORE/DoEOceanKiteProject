@@ -30,7 +30,7 @@ pcm_VS = pcm_mw;
 cd_at_clmax = pcd_n(i_clmax);
 
 %% master scaling parameters
-k_scale = 0.1/1       % length scale
+k_scale = 1/1       % length scale
 rho_scale = 1/1      % density scale
 
 
@@ -181,7 +181,10 @@ m_added_x = pi*density*(span*(0.15*chord/2)^2 + HS_span*(0.15*HS_chord/2)^2 + VS
 m_added_y = pi*density*(1.98*span*(chord/2)^2 + 1.98*HS_span*(HS_chord/2)^2 + VS_span*(VS_chord/2)^2);
 m_added_z = pi*density*(span*(chord/2)^2 + HS_span*(HS_chord/2)^2 + 1.98*VS_span*(VS_chord/2)^2);
 
-m_added = [m_added_x;m_added_y;m_added_z];
+% m_added = [m_added_x;m_added_y;m_added_z]; test without added mass -AS
+
+m_added = [0;0;0];
+
 
 Izz_added = 0;
 
