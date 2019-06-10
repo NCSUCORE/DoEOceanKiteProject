@@ -13,7 +13,7 @@ Vn_o = [0 0 0]';
 R1_o = [0 0 0]';
 V1_o = [0 0 0]';
 
-sim_param.N = 20;
+sim_param.N = 2;
 N = sim_param.N;
 
 Ri_o =  zeros(3,N-2);
