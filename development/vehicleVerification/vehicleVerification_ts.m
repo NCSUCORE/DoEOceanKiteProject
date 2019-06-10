@@ -5,7 +5,7 @@ OCTModel_init
 
 modularPlant_init;
 
-duration_s = 1000;
+duration_s = 500;
 
 load('dsgnAyaz1_2D_Lookup');
 
@@ -25,8 +25,8 @@ set_alt = timeseries(set_alti*ones(size(timeVec)),timeVec);
 set_pitch = timeseries(set_pitch*ones(size(timeVec))*180/pi,timeVec);
 set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
 
-set_roll.Data = 10*sign(sin(timeVec/(2*pi*200)));
-set_roll.Data(timeVec<1000) = 0;
+set_roll.Data = 4*sign(sin(timeVec/(2*pi*200)));
+set_roll.Data(timeVec<200) = 0;
 
 % Set controller gains and time constants
 % Uncomment this code to disable the controller
