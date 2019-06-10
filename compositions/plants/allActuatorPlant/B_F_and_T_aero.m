@@ -75,12 +75,12 @@ beta_deg = beta*(180/pi);
 %% IMPORTANT
 % limiting alpha values
 if norm(alpha_deg) > 29
-    CL_mw = polyval(pcl_mw,29);
+    CL_mw = 0.8*polyval(pcl_mw,29);
     CD_mw = polyval(pcd_mw,29) + CL_mw^2/(pi*AR);
     CM_mw = polyval(pcm_mw,alpha_deg);
     
 else
-    CL_mw = polyval(pcl_mw,alpha_deg);
+    CL_mw = 0.8*polyval(pcl_mw,alpha_deg);
     CD_mw = polyval(pcd_mw,alpha_deg) + CL_mw^2/(pi*AR);
     CM_mw = polyval(pcm_mw,alpha_deg);
     
@@ -89,12 +89,12 @@ end
 % limiting beta values
 if norm(beta_deg) > 29
     
-    CL_VS = polyval(pcl_VS,29);
+    CL_VS = 0.8*polyval(pcl_VS,29);
     CD_VS = polyval(pcd_VS,29);
     CM_VS = polyval(pcm_VS,beta_deg);
 
 else
-    CL_VS = polyval(pcl_VS,beta_deg);
+    CL_VS = 0.8*polyval(pcl_VS,beta_deg);
     CD_VS = polyval(pcd_VS,beta_deg);
     CM_VS = polyval(pcm_VS,beta_deg);
     
