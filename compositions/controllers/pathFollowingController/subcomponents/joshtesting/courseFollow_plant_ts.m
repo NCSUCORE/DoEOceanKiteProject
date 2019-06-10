@@ -1,6 +1,6 @@
 clear all
-close all
- l = 1.6;
+% close all
+ l = -1;
  p = .8;
 path7 = [ cos(l).*cos(p);
          sin(l).*cos(p);
@@ -8,7 +8,7 @@ path7 = [ cos(l).*cos(p);
 
 init_pos = [path7(1);path7(2);path7(3);];
 init_pos = init_pos/norm(init_pos);
-end_time = 100;
+end_time = 120;
 aB=1;
 bB=1;
 phi_curve=.5;
@@ -23,13 +23,13 @@ path = @(s)[cos(lamda(s)).*cos(phi_curve+phi(s));...
             sin(phi_curve+phi(s));];
 a=parseLogsout;
 
-close all
-figure
-ax=axes;
-% [x, y, z] = sphere;
-% h = surfl(x, y, z); 
-% set(h, 'FaceAlpha', 0.5)
-% shading(ax,'interp')
+% close all
+% figure
+% ax=axes;
+[x, y, z] = sphere;
+h = surfl(x, y, z); 
+set(h, 'FaceAlpha', 0.5)
+shading(ax,'interp')
 for i=1:length(a.pos.Data(:,1))
 plot3(a.pos.Data(1:i,1),a.pos.Data(1:i,2),a.pos.Data(1:i,3))
 hold on
@@ -44,8 +44,8 @@ end
 % % test=a.star_pos.Data-a.vel_des.Data;
 % quiver3(a.pos.Data(:,1),a.pos.Data(:,2),a.pos.Data(:,3),a.vel.Data(:,1),a.vel.Data(:,2),a.vel.Data(:,3))
 %
-figure
-plot(a.central_angle)
+% figure
+% plot(a.central_angle)
 % 
 % figure
 % mags=sqrt(a.pos.Data(:,1).^2+a.pos.Data(:,2).^2+a.pos.Data(:,3).^2);
