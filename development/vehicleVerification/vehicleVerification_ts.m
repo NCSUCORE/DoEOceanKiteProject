@@ -26,34 +26,34 @@ set_pitch = timeseries(set_pitch*ones(size(timeVec))*180/pi,timeVec);
 set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
 
 set_roll.Data = 10*sign(sin(timeVec/(2*pi*200)));
-set_roll.Data(timeVec<200) = 0;
+set_roll.Data(timeVec<1000) = 0;
 
 % Set controller gains and time constants
 % Uncomment this code to disable the controller
-sim_param.elevons_param.elevator_control.kp_elev    = 0;
-sim_param.elevons_param.elevator_control.ki_elev    = 0;
-sim_param.elevons_param.elevator_control.kd_elev    = 0;
-sim_param.elevons_param.elevator_control.t_elev     = 1;
-
-sim_param.elevons_param.aileron_control.kp_aileron  = 0;
-sim_param.elevons_param.aileron_control.ki_aileron  = 0;
-sim_param.elevons_param.aileron_control.kd_aileron  = 0;
-sim_param.elevons_param.aileron_control.t_aileron   = 1;
-
-sim_param.controller_param.alti_control.Kp_z    = 0;
-sim_param.controller_param.alti_control.Ki_z    = 0;
-sim_param.controller_param.alti_control.Kd_z    = 0;
-sim_param.controller_param.alti_control.wce_z   = 1;
-
-sim_param.controller_param.pitch_control.Kp_p    = 0;
-sim_param.controller_param.pitch_control.Ki_p    = 0;
-sim_param.controller_param.pitch_control.Kd_p    = 0;
-sim_param.controller_param.pitch_control.wce_p   = 0.1;
-
-sim_param.controller_param.roll_control.Kp_r    = 0;
-sim_param.controller_param.roll_control.Ki_r    = 0;
-sim_param.controller_param.roll_control.Kd_r    = 0;
-sim_param.controller_param.roll_control.wce_r   = 1;
+% sim_param.elevons_param.elevator_control.kp_elev    = 0;
+% sim_param.elevons_param.elevator_control.ki_elev    = 0;
+% sim_param.elevons_param.elevator_control.kd_elev    = 0;
+% sim_param.elevons_param.elevator_control.t_elev     = 1;
+% 
+% sim_param.elevons_param.aileron_control.kp_aileron  = 0;
+% sim_param.elevons_param.aileron_control.ki_aileron  = 0;
+% sim_param.elevons_param.aileron_control.kd_aileron  = 0;
+% sim_param.elevons_param.aileron_control.t_aileron   = 1;
+% 
+% sim_param.controller_param.alti_control.Kp_z    = 0;
+% sim_param.controller_param.alti_control.Ki_z    = 0;
+% sim_param.controller_param.alti_control.Kd_z    = 0;
+% sim_param.controller_param.alti_control.wce_z   = 1;
+% 
+% sim_param.controller_param.pitch_control.Kp_p    = 0;
+% sim_param.controller_param.pitch_control.Ki_p    = 0;
+% sim_param.controller_param.pitch_control.Kd_p    = 0;
+% sim_param.controller_param.pitch_control.wce_p   = 0.1;
+% 
+% sim_param.controller_param.roll_control.Kp_r    = 0;
+% sim_param.controller_param.roll_control.Ki_r    = 0;
+% sim_param.controller_param.roll_control.Kd_r    = 0;
+% sim_param.controller_param.roll_control.wce_r   = 1;
 
 % Run the origional plant model
 fprintf('Running Origional Model\n')
@@ -335,171 +335,171 @@ set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
 
 %% Plot Pitching Moments
-figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
-subplot(5,1,1)
-plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,2),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,2),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Main Wing [Nm]')
-title('Pitching Moment Comparison')
-
-subplot(5,1,2)
-plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,2),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,2),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Vert. Stab. [Nm]')
-
-subplot(5,1,3)
-plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,2),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,2),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 1 [Nm]')
-
-subplot(5,1,4)
-plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,2),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,2),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 2 [Nm]')
-
-subplot(5,1,5)
-plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,2),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,2),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 3 [Nm]')
-
-%% Plot Rolling Moment comparison
-figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
-subplot(5,1,1)
-plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,1),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,1),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Main Wing [Nm]')
-title('Rolling Moment Comparison')
-
-subplot(5,1,2)
-plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,1),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,1),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Vert. Stab. [Nm]')
-
-subplot(5,1,3)
-plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,1),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,1),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 1 [Nm]')
-
-subplot(5,1,4)
-plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,1),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,1),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 2 [Nm]')
-
-subplot(5,1,5)
-plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,1),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,1),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 3 [Nm]')
-
-
-set(findall(gcf,'Type','axes'),'FontSize',24)
-linkaxes(findall(gcf,'Type','axes'),'x')
-
-%% Plot Yawing Moment comparison
-figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
-subplot(5,1,1)
-plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,3),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,3),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Main Wing [Nm]')
-title('Yawing Moment Comparison')
-
-subplot(5,1,2)
-plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,3),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,3),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Vert. Stab. [Nm]')
-
-subplot(5,1,3)
-plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,3),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,3),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 1 [Nm]')
-
-subplot(5,1,4)
-plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,3),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,3),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 2 [Nm]')
-
-subplot(5,1,5)
-plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,3),...
-    'LineWidth',1.5,'Color','k','LineStyle','-')
-hold on
-grid on
-plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,3),...
-    'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
-xlabel('Time, [s]')
-ylabel('Thr 3 [Nm]')
-
-
-set(findall(gcf,'Type','axes'),'FontSize',24)
-linkaxes(findall(gcf,'Type','axes'),'x')
+% figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
+% subplot(5,1,1)
+% plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Main Wing [Nm]')
+% title('Pitching Moment Comparison')
+% 
+% subplot(5,1,2)
+% plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Vert. Stab. [Nm]')
+% 
+% subplot(5,1,3)
+% plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 1 [Nm]')
+% 
+% subplot(5,1,4)
+% plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 2 [Nm]')
+% 
+% subplot(5,1,5)
+% plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,2),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 3 [Nm]')
+% 
+% %% Plot Rolling Moment comparison
+% figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
+% subplot(5,1,1)
+% plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Main Wing [Nm]')
+% title('Rolling Moment Comparison')
+% 
+% subplot(5,1,2)
+% plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Vert. Stab. [Nm]')
+% 
+% subplot(5,1,3)
+% plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 1 [Nm]')
+% 
+% subplot(5,1,4)
+% plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 2 [Nm]')
+% 
+% subplot(5,1,5)
+% plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,1),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 3 [Nm]')
+% 
+% 
+% set(findall(gcf,'Type','axes'),'FontSize',24)
+% linkaxes(findall(gcf,'Type','axes'),'x')
+% 
+% %% Plot Yawing Moment comparison
+% figure('Position',[-1.5625   -0.1824    0.5625    1.6694])
+% subplot(5,1,1)
+% plot(tscOrig.aeroMWMmtBdy.Time,tscOrig.aeroMWMmtBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.aeroMWMmtBdy.Time,tscMod.aeroMWMmtBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Main Wing [Nm]')
+% title('Yawing Moment Comparison')
+% 
+% subplot(5,1,2)
+% plot(tscOrig.aeroVSMmtBdy.Time,tscOrig.aeroVSMmtBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.aeroVSMmtBdy.Time,tscMod.aeroVSMmtBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Vert. Stab. [Nm]')
+% 
+% subplot(5,1,3)
+% plot(tscOrig.thr1MmtVecBdy.Time,tscOrig.thr1MmtVecBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr1MmtVecBdy.Time,tscMod.thr1MmtVecBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 1 [Nm]')
+% 
+% subplot(5,1,4)
+% plot(tscOrig.thr2MmtVecBdy.Time,tscOrig.thr2MmtVecBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr2MmtVecBdy.Time,tscMod.thr2MmtVecBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 2 [Nm]')
+% 
+% subplot(5,1,5)
+% plot(tscOrig.thr3MmtVecBdy.Time,tscOrig.thr3MmtVecBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color','k','LineStyle','-')
+% hold on
+% grid on
+% plot(tscMod.thr3MmtVecBdy.Time,tscMod.thr3MmtVecBdy.Data(:,3),...
+%     'LineWidth',1.5,'Color',[0.5 0.5 0.5],'LineStyle','--')
+% xlabel('Time, [s]')
+% ylabel('Thr 3 [Nm]')
+% 
+% 
+% set(findall(gcf,'Type','axes'),'FontSize',24)
+% linkaxes(findall(gcf,'Type','axes'),'x')
 
 %% Animate the tether geometry
 % close all
