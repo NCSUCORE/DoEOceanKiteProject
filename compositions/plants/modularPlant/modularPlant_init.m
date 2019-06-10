@@ -1,4 +1,4 @@
-%% load data files 
+%% load data files
 airfoil_data = readtable('naca0015data');
 airfoil_data = table2array(airfoil_data);
 load('adcp_data_file.mat');
@@ -57,7 +57,7 @@ N_mid_freq = 1500;                                  % number of frequency discre
 
 %% env_paramal parameters
 % fluid density
-nom_density = 1000;  
+nom_density = 1000;
 density = rho_scale*nom_density;
 % gravitaional acceleration
 grav = 9.81;
@@ -245,12 +245,12 @@ CD_cylinder = 0.5;
 nom_tether_youngs = 1*3.8e9;
 tether_youngs = k_scale*nom_tether_youngs;
 % tether density in working fluid
-tether_actual_density = 1300*rho_scale;       
+tether_actual_density = 1300*rho_scale;
 tether_density = tether_actual_density - density;
 % tether_density = 0.1*rho_scale;
 
 % maximum percent elongation
-max_elongation = 0.01;         
+max_elongation = 0.01;
 
 % tether diameter design
 % d_t = design_tether(sim_param,tether_youngs,max_elongation,set_alti,rated_flow);
@@ -521,3 +521,11 @@ maxWinchAccel = maxWinchSpeed*2;
 sim_param.controller_param.winch_time_const = 1;
 sim_param.winchMaxAccel = 1;
 sim_param.freeSpinPlatform = false;
+
+for ii = 1:length(unstretched_l)
+    winch(ii).initLength = unstretched_l(1);
+    winch(ii).maxSpeed  = sim_param.controller_param.winc_vel_up_lims;
+    winch(ii).timeConst = sim_param.controller_param.winch_time_const;
+    winch(ii).maxAccel = inf;
+end
+
