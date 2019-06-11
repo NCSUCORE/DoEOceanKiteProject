@@ -46,12 +46,12 @@ dsgn_test.v_stab_Nchordwise = 1;
 % dsgn_test.plot
 
 %% file names
-dsgn_test.input_file_name        = 'dsgnAyaz1.avl'; % File name for .avl file
-dsgn_test.run_file_name          = 'dsgnAyaz1.run';
-dsgn_test.design_name            = 'dsgnAyaz1Name'; % String at top of input file defining the name
-dsgn_test.result_file_name       = 'dsgnAyaz1Results';
-dsgn_test.lookup_table_file_name = 'dsgnAyaz1_2D_Lookup';
-dsgn_test.exe_file_name          = 'dsgnAyaz1Exe';
+dsgn_test.input_file_name        = 'dsgnAyaz3.avl'; % File name for .avl file
+dsgn_test.run_file_name          = 'dsgnAyaz3.run';
+dsgn_test.design_name            = 'dsgnAyaz3Name'; % String at top of input file defining the name
+dsgn_test.result_file_name       = 'dsgnAyaz3Results';
+dsgn_test.lookup_table_file_name = 'dsgnAyaz3_2D_Lookup';
+dsgn_test.exe_file_name          = 'dsgnAyaz3Exe';
 
 %% sweep cases
 n_alpha = 31;
@@ -81,7 +81,9 @@ toc
 load(dsgn_test.result_file_name);
 
 % build lookup tables based on 2 inouts
-avlBuild_2D_LookupTable(dsgn_test.lookup_table_file_name,results)
+avlBuild_2D_LookupTable(dsgn_test.lookup_table_file_name,results);
+
+load(dsgn_test.lookup_table_file_name);
 
 % plot polars based on 2 inouts
 avlPlot_2D_Polars(dsgn_test.lookup_table_file_name);

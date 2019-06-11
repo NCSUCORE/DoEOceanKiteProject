@@ -7,7 +7,7 @@ modularPlant_init;
 
 duration_s = 500;
 
-load('dsgnAyaz1_2D_Lookup');
+load('dsgnAyaz2_2D_Lookup');
 
 CONTROLLER = 'threeTetherThreeSurfaceCtrl';
 createThreeTetherThreeSurfaceCtrlBus;
