@@ -30,6 +30,15 @@ tether(2).initGndPos = gnd_station + R21_g;
 tether(3).initGndPos = gnd_station + R31_g; 
 
 
+testParameter(1).vec1 = [1 2 3];
+testParameter(1).vec2 = [4 5 6];
+
+testParameter(2).vec1 = [7 8 9];
+testParameter(2).vec2 = [10 11 12];
+
+testParameter(3).vec1 = [ 13 14 15];
+testParameter(3).vec2 = [ 16 17 18];
+
 sim('multiTether_th')
 
 simout

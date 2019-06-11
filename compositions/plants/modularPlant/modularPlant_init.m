@@ -524,8 +524,55 @@ sim_param.freeSpinPlatform = false;
 
 for ii = 1:length(unstretched_l)
     winch(ii).initLength = unstretched_l(1);
-    winch(ii).maxSpeed  = sim_param.controller_param.winc_vel_up_lims;
+    winch(ii).maxSpeed  = sim_param.controller_param.winc_vel_up_lims(ii);
     winch(ii).timeConst = sim_param.controller_param.winch_time_const;
     winch(ii).maxAccel = inf;
 end
+
+gndStnMmtArms(1).arm = R11_g;
+gndStnMmtArms(2).arm = R21_g;
+gndStnMmtArms(3).arm = R31_g;
+
+lftBdyMmtArms(1).arm = R1n_cm;
+lftBdyMmtArms(2).arm = R2n_cm;
+lftBdyMmtArms(3).arm = R3n_cm;
+
+
+thr(1).N                = sim_param.N;
+thr(1).diameter         = sim_param.tether_param.tether_diameter(1);
+thr(1).youngsMod        = sim_param.tether_param.tether_youngs;
+thr(1).density          = sim_param.tether_param.tether_density+ sim_param.env_param.density;
+thr(1).dragCoeff        = sim_param.tether_param.CD_cylinder;
+thr(1).dampingRatio     = sim_param.tether_param.damping_ratio;
+thr(1).fluidDensity     = sim_param.env_param.density;
+thr(1).gravAccel        = sim_param.env_param.grav;
+thr(1).vehicleMass      = sim_param.geom_param.mass;
+thr(1).initVhclAttchPt  = ini_Rcm_o + rotation_sequence(ini_euler_ang)*R1n_cm;
+thr(1).initGndStnAttchPt = gnd_station + R11_g;
+
+thr(2).N                = sim_param.N;
+thr(2).diameter         = sim_param.tether_param.tether_diameter(2);
+thr(2).youngsMod        = sim_param.tether_param.tether_youngs;
+thr(2).density          = sim_param.tether_param.tether_density + sim_param.env_param.density;
+thr(2).dragCoeff        = sim_param.tether_param.CD_cylinder;
+thr(2).dampingRatio     = sim_param.tether_param.damping_ratio;
+thr(2).fluidDensity     = sim_param.env_param.density;
+thr(2).gravAccel        = sim_param.env_param.grav;
+thr(2).vehicleMass      = sim_param.geom_param.mass;
+thr(2).initVhclAttchPt  = ini_Rcm_o + rotation_sequence(ini_euler_ang)*R2n_cm;
+thr(2).initGndStnAttchPt = gnd_station + R21_g;
+
+thr(3).N                = sim_param.N;
+thr(3).diameter         = sim_param.tether_param.tether_diameter(3);
+thr(3).youngsMod        = sim_param.tether_param.tether_youngs;
+thr(3).density          = sim_param.tether_param.tether_density + sim_param.env_param.density;
+thr(3).dragCoeff        = sim_param.tether_param.CD_cylinder;
+thr(3).dampingRatio     = sim_param.tether_param.damping_ratio;
+thr(3).fluidDensity     = sim_param.env_param.density;
+thr(3).gravAccel        = sim_param.env_param.grav;
+thr(3).vehicleMass      = sim_param.geom_param.mass;
+thr(3).initVhclAttchPt  = ini_Rcm_o + rotation_sequence(ini_euler_ang)*R3n_cm;
+thr(3).initGndStnAttchPt = gnd_station + R31_g;
+
+
 
