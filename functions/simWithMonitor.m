@@ -1,4 +1,4 @@
-function [] = simWithMonitor(model,timestep)
+function simLogsout = simWithMonitor(model,timestep)
     if nargin==1
         timestep=2;
     end
@@ -14,6 +14,11 @@ function [] = simWithMonitor(model,timestep)
         if ~isempty(e.cause)
             fprintf(2,'The cause was:\n     %s\n',e.cause{1}.message);
         end
+    end
+    if exist('logsout','var')
+        assignin('base', 'logsout', logsout);
+    else
+        simLogsout=[];
     end
 end
 function [] = sim_monitor_start(model,timestep)

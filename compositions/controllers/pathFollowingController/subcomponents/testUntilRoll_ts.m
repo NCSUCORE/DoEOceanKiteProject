@@ -20,7 +20,7 @@ flow=[1;0;0;];
 sim_time=100;
 
 
-sim('testUntilRoll_th')
+simWithMonitor('testUntilRoll_th')
 
 lamda=@(s) aB*sin(s)./(1+(aB/bB)^2*cos(s).^2);
 phi=@(s) (aB/bB)^2*sin(s).*cos(s)./(1 + (aB/bB)^2*cos(s).^2);
