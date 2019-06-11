@@ -5,3 +5,6 @@ for ii = 1:numel(thr)
        linspace(thr(ii).initGndStnAttchPt(3),thr(ii).initVhclAttchPt(3),thr(ii).N)];
     thr(ii).initNodeVels = zeros(size(thr(ii).initNodePoss));
 end
+
+createThrTenVecBus
+createThrNodeBus(numel(thr))

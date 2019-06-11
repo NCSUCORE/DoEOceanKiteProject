@@ -5,40 +5,49 @@ OCTModel_init
 
 modularPlant_init;
 
-createTetherInputBus
-createTetherOutputBus
+duration_s = 10;
+
+PLANT = 'modularPlant';
+
+createThreeTetherThreeSurfaceCtrlBus;
+createOrigionalPlantBus;
+createConstantUniformFlowEnvironmentBus;
+
+% Calculate setpoints
+timeVec = 0:0.1:duration_s;
+set_alt = timeseries(set_alti*ones(size(timeVec)),timeVec);
+set_pitch = timeseries(set_pitch*ones(size(timeVec))*180/pi,timeVec);
+set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
+
+set_roll.Data = 4*sign(sin(timeVec/(2*pi*200)));
+set_roll.Data(timeVec<200) = 0;
+
+% Set controller gains and time constants
+% Uncomment this code to disable the controller
+% sim_param.elevons_param.elevator_control.kp_elev    = 0;
+% sim_param.elevons_param.elevator_control.ki_elev    = 0;
+% sim_param.elevons_param.elevator_control.kd_elev    = 0;
+% sim_param.elevons_param.elevator_control.t_elev     = 1;
+% 
+% sim_param.elevons_param.aileron_control.kp_aileron  = 0;
+% sim_param.elevons_param.aileron_control.ki_aileron  = 0;
+% sim_param.elevons_param.aileron_control.kd_aileron  = 0;
+% sim_param.elevons_param.aileron_control.t_aileron   = 1;
+% 
+% sim_param.controller_param.alti_control.Kp_z    = 0;
+% sim_param.controller_param.alti_control.Ki_z    = 0;
+% sim_param.controller_param.alti_control.Kd_z    = 0;
+% sim_param.controller_param.alti_control.wce_z   = 1;
+% 
+% sim_param.controller_param.pitch_control.Kp_p    = 0;
+% sim_param.controller_param.pitch_control.Ki_p    = 0;
+% sim_param.controller_param.pitch_control.Kd_p    = 0;
+% sim_param.controller_param.pitch_control.wce_p   = 0.1;
+% 
+% sim_param.controller_param.roll_control.Kp_r    = 0;
+% sim_param.controller_param.roll_control.Ki_r    = 0;
+% sim_param.controller_param.roll_control.Kd_r    = 0;
+% sim_param.controller_param.roll_control.wce_r   = 1;
 
 
-for ii = 1:3
-tether(ii).N          = sim_param.N;
-tether(ii).diameter   = sim_param.tether_param.tether_diameter(ii);
-tether(ii).youngsMod  = sim_param.tether_param.tether_youngs;
-tether(ii).density    = sim_param.tether_param.tether_density+ sim_param.env_param.density;
-tether(ii).CD_Cyliner = sim_param.tether_param.CD_cylinder;
-tether(ii).damping_ratio = sim_param.tether_param.damping_ratio;
-tether(ii).fluidDensity  = sim_param.env_param.density;
-tether(ii).gravity       = sim_param.env_param.grav;
-tether(ii).vehicleMass   = sim_param.geom_param.mass;
-end
-
-tether(1).initAirPos = ini_Rcm_o + rotation_sequence(ini_euler_ang)*R1n_cm;
-tether(2).initAirPos = ini_Rcm_o + rotation_sequence(ini_euler_ang)*R2n_cm;
-tether(3).initAirPos = ini_Rcm_o + rotation_sequence(ini_euler_ang)*R3n_cm;
-
-tether(1).initGndPos = gnd_station + R11_g;
-tether(2).initGndPos = gnd_station + R21_g;
-tether(3).initGndPos = gnd_station + R31_g; 
-
-
-testParameter(1).vec1 = [1 2 3];
-testParameter(1).vec2 = [4 5 6];
-
-testParameter(2).vec1 = [7 8 9];
-testParameter(2).vec2 = [10 11 12];
-
-testParameter(3).vec1 = [ 13 14 15];
-testParameter(3).vec2 = [ 16 17 18];
-
-sim('multiTether_th')
-
-simout
+sim('OCTModel')

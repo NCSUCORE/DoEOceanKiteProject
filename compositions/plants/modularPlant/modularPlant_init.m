@@ -576,3 +576,4 @@ thr(3).initGndStnAttchPt = gnd_station + R31_g;
 
 
 
+load('dsgnAyaz1_2D_Lookup.mat')
