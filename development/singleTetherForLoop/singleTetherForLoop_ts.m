@@ -53,7 +53,7 @@ sim_param.controller_param.roll_control.wce_r   = 1;
 % gndStnMmtArms = gndStnMmtArms(1);
 % lftBdyMmtArms = lftBdyMmtArms(1);
 % thr = thr(1);
-%
+% 
 % gndStnMmtArms.arm = [0 0 0];
 % lftBdyMmtArms.arm = [0 0 0];
 % thr.diameter = thr.diameter*3;
@@ -64,11 +64,23 @@ switch numel(thr)
     case 3
         createThreeTetherThreeSurfaceCtrlBus;
         CONTROLLER = 'threeTetherThreeSurfaceCtrl';
+        caseDescriptor = '3 Tethers';
         
     case 1
         createOneTetherThreeSurfaceCtrlBus;
         CONTROLLER = 'oneTetherThreeSurfaceCtrl';
+        caseDescriptor = '1 Tether';
 end
+
+if  sim_param.elevons_param.elevator_control.kp_elev == 0 
+    caseDescriptor = [caseDescriptor ' Open Loop'];
+else
+    caseDescriptor = [caseDescriptor ' Closed Loop'];
+end
+caseDescriptor = {caseDescriptor,sprintf('%d Nodes ',thr(1).N)};
+
+fileName = [caseDescriptor{1} caseDescriptor{2} '.gif'];
+fileName = strrep(fileName,' ','');
 
 sim('OCTModel')
 
@@ -94,18 +106,18 @@ for ii = 1:numTethers
     xlim([-10 70])
     ylim([-25 25])
 end
-h.title = title(sprintf('Time = %.0f',0));
+h.title = title({caseDescriptor{1},[caseDescriptor{2} sprintf('Time = %.0f',0)]});
 set(gca,'FontSize',24')
 grid on
 
 frame = getframe(h.fig );
 im = frame2im(frame);
 [imind,cm] = rgb2ind(im,256);
-fileName = sprintf('%.0fTether.gif',numel(thr));
+
 imwrite(imind,cm,fileName,'gif', 'Loopcount',inf);
 
 for ii = 2:length(timeVec)
-    h.title.String = sprintf('Time = %.0f',timeVec(ii));
+    h.title.String = {caseDescriptor{1},[caseDescriptor{2} sprintf('Time = %.0f',timeVec(ii))]};
     for jj = 1:numTethers
         h.thr(jj).XData = tsc.thrNodeBus(jj).nodePositions.Data(1,:,ii);
         h.thr(jj).YData = tsc.thrNodeBus(jj).nodePositions.Data(2,:,ii);

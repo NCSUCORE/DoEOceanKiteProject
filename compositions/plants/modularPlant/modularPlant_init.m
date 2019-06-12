@@ -40,7 +40,7 @@ sim_time = nom_sim_time*sqrt(k_scale);
 
 %% number of nodes on each tether
 % number of nodes
-N = 5;
+N = 2;
 sim_param.N = N;
 
 %% turbulence input parameters
