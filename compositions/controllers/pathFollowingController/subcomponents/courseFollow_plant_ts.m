@@ -1,15 +1,15 @@
 clear all
 % close all
- l = .5;
- p = .53;
+ l = .05;
+ p = .51;
 path7 = [ cos(l).*cos(p);
          sin(l).*cos(p);
          sin(p);];
 
 init_pos = [path7(1);path7(2);path7(3);];
 init_pos = init_pos/norm(init_pos);
-end_time = 120;
-aB=1;
+end_time = 100;
+aB=1.3;
 bB=1;
 phi_curve=.5;
 
@@ -26,11 +26,11 @@ a=parseLogsout;
 close all
  figure
  ax=axes;
-[x, y, z] = sphere;
-h = surfl(x, y, z); 
-set(h, 'FaceAlpha', 0.5)
-shading(ax,'interp')
-hold on 
+%[x, y, z] = sphere;
+%h = surfl(x, y, z); 
+%set(h, 'FaceAlpha', 0.5)
+%shading(ax,'interp')
+%hold on 
 for i=1:length(a.pos.Data(:,1))
 plot3(a.pos.Data(1:i,1),a.pos.Data(1:i,2),a.pos.Data(1:i,3),'k')
 hold on
