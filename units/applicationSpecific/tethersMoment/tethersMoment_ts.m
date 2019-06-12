@@ -16,6 +16,3 @@ createSingleBus
 
 sim('tethersMoment_th')
 
-simout1.Data
-simout2.Data
-simout.Data

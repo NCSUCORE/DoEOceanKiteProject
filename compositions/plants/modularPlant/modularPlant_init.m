@@ -523,7 +523,7 @@ sim_param.winchMaxAccel = 1;
 sim_param.freeSpinPlatform = false;
 
 for ii = 1:length(unstretched_l)
-    winch(ii).initLength = unstretched_l(1);
+    winch(ii).initLength = unstretched_l(ii);
     winch(ii).maxSpeed  = sim_param.controller_param.winc_vel_up_lims(ii);
     winch(ii).timeConst = sim_param.controller_param.winch_time_const;
     winch(ii).maxAccel = inf;
@@ -574,6 +574,8 @@ thr(3).vehicleMass      = sim_param.geom_param.mass;
 thr(3).initVhclAttchPt  = ini_Rcm_o + rotation_sequence(ini_euler_ang)*R3n_cm;
 thr(3).initGndStnAttchPt = gnd_station + R31_g;
 
-
+sim_param.avlRefs.SRef = 216;
+sim_param.avlRefs.BRef = 36;
+sim_param.avlRefs.CRef = 5.4;
 
 load('dsgnAyaz1_2D_Lookup.mat')
