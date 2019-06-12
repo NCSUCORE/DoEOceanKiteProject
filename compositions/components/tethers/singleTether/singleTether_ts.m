@@ -6,14 +6,14 @@ ini_R1_o = [0 0 0]';
 
 amp = 10;
 omega = 1;
-sim_time = 20;
+sim_time = 10;
 
 Rn_o = [0 0 100]';
 Vn_o = [0 0 0]';
 R1_o = [0 0 0]';
 V1_o = [0 0 0]';
 
-sim_param.N = 10;
+sim_param.N = 2;
 N = sim_param.N;
 
 Ri_o =  zeros(3,N-2);
@@ -44,9 +44,11 @@ ini_Vi_o = zeros(size(Vi_o));
 
 dt = 1/1000;
 
-% sim('tetherComposition_th');
-sim('sinlgeTether_th')
-
+if N == 2
+    sim('sinlgeTetherNEqual2_th')
+else
+    sim('sinlgeTetherNGreater2_th')
+end
 
 %% post process
 %% colors
