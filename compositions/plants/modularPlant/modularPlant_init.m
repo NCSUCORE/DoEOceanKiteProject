@@ -30,7 +30,7 @@ pcm_VS = pcm_mw;
 cd_at_clmax = pcd_n(i_clmax);
 
 %% master scaling parameters
-k_scale = 1/1       % length scale
+k_scale = 12/40       % length scale
 rho_scale = 1/1      % density scale
 
 
