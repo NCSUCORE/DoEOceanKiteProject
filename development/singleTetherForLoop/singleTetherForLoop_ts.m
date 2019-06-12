@@ -9,7 +9,6 @@ duration_s = 200;
 
 PLANT = 'modularPlant';
 
-createThreeTetherThreeSurfaceCtrlBus;
 createOrigionalPlantBus;
 createConstantUniformFlowEnvironmentBus;
 
@@ -49,40 +48,75 @@ sim_param.controller_param.roll_control.Ki_r    = 0;
 sim_param.controller_param.roll_control.Kd_r    = 0;
 sim_param.controller_param.roll_control.wce_r   = 1;
 
+% Change structures to implement single tether
+% winch = winch(1);
+% gndStnMmtArms = gndStnMmtArms(1);
+% lftBdyMmtArms = lftBdyMmtArms(1);
+% thr = thr(1);
+%
+% gndStnMmtArms.arm = [0 0 0];
+% lftBdyMmtArms.arm = [0 0 0];
+% thr.diameter = thr.diameter*3;
+% thr.initVhclAttchPt = ini_Rcm_o + rotation_sequence(ini_euler_ang)*lftBdyMmtArms.arm(:);
+% thr.initGndStnAttchPt = rotation_sequence(ini_euler_ang)*gndStnMmtArms.arm(:);
+
+switch numel(thr)
+    case 3
+        createThreeTetherThreeSurfaceCtrlBus;
+        CONTROLLER = 'threeTetherThreeSurfaceCtrl';
+        
+    case 1
+        createOneTetherThreeSurfaceCtrlBus;
+        CONTROLLER = 'oneTetherThreeSurfaceCtrl';
+end
 
 sim('OCTModel')
+
 parseLogsout
 
 %%
-timeVec = 0:1:tsc.winchSpeeds.Time(end);
-for ii= 1:3
+timeVec = 0:1:tsc.winchSpeedCommands.Time(end);
+
+numTethers = numel(tsc.thrNodeBus);
+for ii= 1:numTethers
     tsc.thrNodeBus(ii).nodePositions = resample(tsc.thrNodeBus(ii).nodePositions,timeVec);
 end
 
-
-figure('Position',[0    0.0370    1.0000    0.8917])
-for ii = 1:3
-    h.thr(ii) = plot3(squeeze(tsc.thrNodeBus(ii).nodePositions.Data(1:3:end,1,1)),...
-        squeeze(tsc.thrNodeBus(ii).nodePositions.Data(2:3:end,:,1)),....
-        squeeze(tsc.thrNodeBus(ii).nodePositions.Data(3:3:end,:,1)),...
+h.fig = figure('Position',[1          41        1920         963]);
+for ii = 1:numTethers
+    h.thr(ii) = plot3(...
+        squeeze(tsc.thrNodeBus(ii).nodePositions.Data(1,:,1)),...
+        squeeze(tsc.thrNodeBus(ii).nodePositions.Data(2,:,1)),....
+        squeeze(tsc.thrNodeBus(ii).nodePositions.Data(3,:,1)),...
         'LineWidth',1.5,'LineStyle','--','Color','k','Marker','x');
     hold on
     zlim([0 205])
     xlim([-10 70])
-    ylim([-20 25])
+    ylim([-25 25])
 end
+h.title = title(sprintf('Time = %.0f',0));
+set(gca,'FontSize',24')
 grid on
 
-pause
+frame = getframe(h.fig );
+im = frame2im(frame);
+[imind,cm] = rgb2ind(im,256);
+fileName = sprintf('%.0fTether.gif',numel(thr));
+imwrite(imind,cm,fileName,'gif', 'Loopcount',inf);
+
 for ii = 2:length(timeVec)
-    for jj = 1:3
-        h.thr(jj).XData = squeeze(tsc.thrNodeBus(jj).nodePositions.Data(1:3:end,1,ii));
-        h.thr(jj).YData = squeeze(tsc.thrNodeBus(jj).nodePositions.Data(2:3:end,1,ii));
-        h.thr(jj).ZData = squeeze(tsc.thrNodeBus(jj).nodePositions.Data(3:3:end,1,ii));
+    h.title.String = sprintf('Time = %.0f',timeVec(ii));
+    for jj = 1:numTethers
+        h.thr(jj).XData = tsc.thrNodeBus(jj).nodePositions.Data(1,:,ii);
+        h.thr(jj).YData = tsc.thrNodeBus(jj).nodePositions.Data(2,:,ii);
+        h.thr(jj).ZData = tsc.thrNodeBus(jj).nodePositions.Data(3,:,ii);
     end
     zlim([0 205])
     xlim([-10 70])
-    ylim([-20 25])
+    ylim([-25 25])
     drawnow
-    pause
+    frame = getframe(h.fig );
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    imwrite(imind,cm,fileName,'gif','WriteMode','append');
 end
