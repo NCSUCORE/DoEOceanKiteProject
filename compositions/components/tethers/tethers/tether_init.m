@@ -7,4 +7,4 @@ for ii = 1:numel(thr)
 end
 
 createThrTenVecBus
-createThrNodeBus(numel(thr))
+createThrNodeBus(thr(1).N)
