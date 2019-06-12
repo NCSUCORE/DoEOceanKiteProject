@@ -62,11 +62,14 @@ end
 
 figure('Position',[0    0.0370    1.0000    0.8917])
 for ii = 1:3
-h.thr(ii) = plot3(squeeze(tsc.thrNodeBus(ii).nodePositions.Data(1:3:end,1,1)),...
-    squeeze(tsc.thrNodeBus(ii).nodePositions.Data(2:3:end,:,1)),....
-    squeeze(tsc.thrNodeBus(ii).nodePositions.Data(3:3:end,:,1)),...
-    'LineWidth',1.5,'LineStyle','--','Color','k','Marker','x');
-hold on
+    h.thr(ii) = plot3(squeeze(tsc.thrNodeBus(ii).nodePositions.Data(1:3:end,1,1)),...
+        squeeze(tsc.thrNodeBus(ii).nodePositions.Data(2:3:end,:,1)),....
+        squeeze(tsc.thrNodeBus(ii).nodePositions.Data(3:3:end,:,1)),...
+        'LineWidth',1.5,'LineStyle','--','Color','k','Marker','x');
+    hold on
+    zlim([0 205])
+    xlim([-10 70])
+    ylim([-20 25])
 end
 grid on
 
@@ -77,6 +80,9 @@ for ii = 2:length(timeVec)
         h.thr(jj).YData = squeeze(tsc.thrNodeBus(jj).nodePositions.Data(2:3:end,1,ii));
         h.thr(jj).ZData = squeeze(tsc.thrNodeBus(jj).nodePositions.Data(3:3:end,1,ii));
     end
+    zlim([0 205])
+    xlim([-10 70])
+    ylim([-20 25])
     drawnow
     pause
 end

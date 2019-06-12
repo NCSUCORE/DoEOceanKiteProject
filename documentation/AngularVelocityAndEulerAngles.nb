@@ -1,0 +1,303 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      9839,        295]
+NotebookOptionsPosition[      9157,        268]
+NotebookOutlinePosition[      9531,        284]
+CellTagsIndexPosition[      9488,        281]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["\<\
+This notebook derives the relationship between the angular velocity vector, \
+and the rate of change of the Euler angles.\
+\>", "Text",
+ CellChangeTimes->{{3.7693382115608616`*^9, 3.7693382325703115`*^9}}],
+
+Cell["First, define the standard rotation matrices.", "Text",
+ CellChangeTimes->{{3.7693382367022076`*^9, 3.7693382468301477`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Rx", "[", "\[Phi]_", "]"}], ":=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "0", ",", "0"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", 
+      RowBox[{"Cos", "[", "\[Phi]", "]"}], ",", 
+      RowBox[{"Sin", "[", "\[Phi]", "]"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", 
+      RowBox[{"-", 
+       RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ",", 
+      RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "}"}]}], 
+   "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Ry", "[", "\[Theta]_", "]"}], ":=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Cos", "[", "\[Theta]", "]"}], ",", "0", ",", 
+      RowBox[{"-", 
+       RowBox[{"Sin", "[", "\[Theta]", "]"}]}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "1", ",", "0"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Sin", "[", "\[Theta]", "]"}], ",", "0", ",", 
+      RowBox[{"Cos", "[", "\[Theta]", "]"}]}], "}"}]}], 
+   "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Rz", "[", "\[Psi]_", "]"}], ":=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Cos", "[", "\[Psi]", "]"}], ",", 
+      RowBox[{"-", 
+       RowBox[{"Sin", "[", "\[Psi]", "]"}]}], ",", "0"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Sin", "[", "\[Psi]", "]"}], ",", 
+      RowBox[{"Cos", "[", "\[Psi]", "]"}], ",", "0"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "0", ",", "1"}], "}"}]}], "}"}]}]}], "Input",
+ CellChangeTimes->{{3.769337572914615*^9, 3.769337606611273*^9}, {
+  3.769337676900772*^9, 3.7693378135828967`*^9}, {3.7693382516203847`*^9, 
+  3.7693382528946095`*^9}, {3.7693384376283846`*^9, 3.7693384509588423`*^9}}],
+
+Cell["\<\
+Build an expression for the angular velocity vector in terms of the rates of \
+change of the Euler angles.  Angular velocity has the following components:
+1) magnitude \[Psi]\[CloseCurlyQuote] in the direction of the original z
+2) magnitude \[Theta]\[CloseCurlyQuote] in the direction of the y resulting \
+from the first rotation
+3) magnitude \[Phi]\[CloseCurlyQuote] in the direction of the x resulting \
+from the first two rotations.
+Summing all three of these terms, and rotating each of them into the body \
+frame gives:\
+\>", "Text",
+ CellChangeTimes->{{3.76933826212576*^9, 3.7693384071773386`*^9}, {
+  3.769338466292227*^9, 3.7693384903754015`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"\[CapitalOmega]", "=", 
+    RowBox[{"Simplify", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Rx", "[", "\[Phi]", "]"}], ".", 
+       RowBox[{"Ry", "[", "\[Theta]", "]"}], ".", 
+       RowBox[{"Rz", "[", "\[Phi]", "]"}], ".", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", "0", "}"}], ",", 
+         RowBox[{"{", "0", "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"\[Psi]", "'"}], "}"}]}], "}"}]}], "+", 
+      RowBox[{
+       RowBox[{"Rx", "[", "\[Phi]", "]"}], ".", 
+       RowBox[{"Ry", "[", "\[Theta]", "]"}], ".", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", "0", "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"\[Theta]", "'"}], "}"}], ",", 
+         RowBox[{"{", "0", "}"}]}], "}"}]}], "+", 
+      RowBox[{
+       RowBox[{"Rx", "[", "\[Phi]", "]"}], ".", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"\[Phi]", "'"}], "}"}], ",", 
+         RowBox[{"{", "0", "}"}], ",", 
+         RowBox[{"{", "0", "}"}]}], "}"}]}]}], "]"}]}], ")"}], "//", 
+  "MatrixForm"}]], "Input",
+ CellChangeTimes->{{3.769337832262619*^9, 3.769337893604875*^9}, {
+  3.7693379250708437`*^9, 3.769338033247697*^9}, {3.7693380769700155`*^9, 
+  3.7693381085814395`*^9}, {3.769338288377449*^9, 3.769338291426895*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       SuperscriptBox["\[Phi]", "\[Prime]",
+        MultilineFunction->None], "-", 
+       RowBox[{
+        RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+        SuperscriptBox["\[Psi]", "\[Prime]",
+         MultilineFunction->None]}]}]},
+     {
+      RowBox[{
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        SuperscriptBox["\[Theta]", "\[Prime]",
+         MultilineFunction->None]}], "+", 
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Phi]", "]"}], " ", 
+        SuperscriptBox["\[Psi]", "\[Prime]",
+         MultilineFunction->None]}]}]},
+     {
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], " ", 
+        SuperscriptBox["\[Theta]", "\[Prime]",
+         MultilineFunction->None]}], "+", 
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        SuperscriptBox["\[Psi]", "\[Prime]",
+         MultilineFunction->None]}]}]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.769337975834218*^9, 3.7693380050226617`*^9}, 
+   3.769338035843707*^9, {3.7693380928791914`*^9, 3.769338108906561*^9}, 
+   3.7693384282516146`*^9}]
+}, Open  ]],
+
+Cell["\<\
+We can solve this system of equations for the rates of change of the Euler \
+angles:\
+\>", "Text",
+ CellChangeTimes->{{3.7693384940975776`*^9, 3.7693385097043796`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Simplify", "[", 
+   RowBox[{"Solve", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", "\[Omega]x", "}"}], ",", 
+        RowBox[{"{", "\[Omega]y", "}"}], ",", 
+        RowBox[{"{", "\[Omega]z", "}"}]}], "}"}], "\[Equal]", 
+      "\[CapitalOmega]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"\[Phi]", "'"}], ",", 
+       RowBox[{"\[Theta]", "'"}], ",", 
+       RowBox[{"\[Psi]", "'"}]}], "}"}]}], "]"}], "]"}], "//", 
+  "MatrixForm"}]], "Input",
+ CellChangeTimes->{{3.769338113220951*^9, 3.7693381719399023`*^9}}],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       SuperscriptBox["\[Phi]", "\[Prime]",
+        MultilineFunction->None], "\[Rule]", 
+       RowBox[{"\[Omega]x", "+", 
+        RowBox[{"\[Omega]z", " ", 
+         RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+         RowBox[{"Tan", "[", "\[Theta]", "]"}]}], "+", 
+        RowBox[{"\[Omega]y", " ", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}], " ", 
+         RowBox[{"Tan", "[", "\[Theta]", "]"}]}]}]}], 
+      RowBox[{
+       SuperscriptBox["\[Theta]", "\[Prime]",
+        MultilineFunction->None], "\[Rule]", 
+       RowBox[{
+        RowBox[{"\[Omega]y", " ", 
+         RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+        RowBox[{"\[Omega]z", " ", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]}], 
+      RowBox[{
+       SuperscriptBox["\[Psi]", "\[Prime]",
+        MultilineFunction->None], "\[Rule]", 
+       RowBox[{
+        RowBox[{"Sec", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"\[Omega]z", " ", 
+           RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "+", 
+          RowBox[{"\[Omega]y", " ", 
+           RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}]}]}
+    },
+    GridBoxAlignment->{
+     "Columns" -> {{Center}}, "ColumnsIndexed" -> {}, "Rows" -> {{Baseline}}, 
+      "RowsIndexed" -> {}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "ColumnsIndexed" -> {}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}, "RowsIndexed" -> {}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellChangeTimes->{{3.769338161617684*^9, 3.769338172365756*^9}, 
+   3.769338428263582*^9}]
+}, Open  ]],
+
+Cell[BoxData[" "], "Input",
+ CellChangeTimes->{3.7693387206432743`*^9}]
+},
+WindowSize->{958, 988},
+WindowMargins->{{-1927, Automatic}, {Automatic, 0}},
+Magnification:>1.5 Inherited,
+FrontEndVersion->"11.0 for Microsoft Windows (64-bit) (July 28, 2016)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 215, 4, 74, "Text"],
+Cell[776, 26, 131, 1, 45, "Text"],
+Cell[910, 29, 1754, 50, 104, "Input"],
+Cell[2667, 81, 666, 12, 188, "Text"],
+Cell[CellGroupData[{
+Cell[3358, 97, 1327, 36, 104, "Input"],
+Cell[4688, 135, 1774, 49, 116, "Output"]
+}, Open  ]],
+Cell[6477, 187, 178, 4, 45, "Text"],
+Cell[CellGroupData[{
+Cell[6680, 195, 602, 18, 45, "Input"],
+Cell[7285, 215, 1782, 47, 64, "Output"]
+}, Open  ]],
+Cell[9082, 265, 71, 1, 45, "Input"]
+}
+]
+*)
+
