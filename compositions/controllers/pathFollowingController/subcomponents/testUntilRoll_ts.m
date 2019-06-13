@@ -2,9 +2,10 @@ createModAyazPlantBus
 createModAyazFlowEnvironmentBus
 createTestUntilRollCtrlBus
 
+dead=.05;
 r_curve_max = .1;
 velMag=.05;
-accelMag=velMag^2/r_curve_max;
+accelMag=.5;%velMag^2/r_curve_max;
 l = .5;
 p = .6;
 r = 1;
@@ -12,35 +13,38 @@ path = r*[cos(l).*cos(p);
          sin(l).*cos(p);
          sin(p);];
 init_pos = [path(1);path(2);path(3);];
-max_bank=45*pi/180;
-kp_chi=max_bank/(pi/2); %max bank divided by large error
+max_Bank=45*pi/180;
+kp_chi=max_Bank/(pi/2); %max bank divided by large error
 ki_chi=kp_chi/100;
 kd_chi=kp_chi;
 tau_chi=.1;
 flow=[1;0;0;];
-sim_time=100;
-
+sim_time=50;
 
 simWithMonitor('testUntilRoll_th')
 
+aB=1;bB=1;phi_curve=.5;
 lamda=@(s) aB*sin(s)./(1+(aB/bB)^2*cos(s).^2);
 phi=@(s) (aB/bB)^2*sin(s).*cos(s)./(1 + (aB/bB)^2*cos(s).^2);
 path = @(s)[cos(lamda(s)).*cos(phi_curve+phi(s));...
             sin(lamda(s)).*cos(phi_curve+phi(s));...
             sin(phi_curve+phi(s));];
 a=parseLogsout;
-
-close all
+%% 
+% close all
 figure
 ax=axes;
-for i=1:20:length(a.pos.Data(:,1))
-plot3(a.pos.Data(1:i,1),a.pos.Data(1:i,2),a.pos.Data(1:i,3))
-hold on
-[x,y,z]=sphere;h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+runtime=10;
+waittime=.05;
 pathvals=path(0:.01:2*pi);
-plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',3)
+for i=1:floor(length(a.pos.Data(:,1))/(runtime/waittime)):length(a.pos.Data(:,1))
+plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',1.5)
+hold on
+plot3(a.pos.Data(1:i,1),a.pos.Data(1:i,2),a.pos.Data(1:i,3),'lineWidth',1.5)
+title(['T=' num2str(a.pos.Time(i))])
+[x,y,z]=sphere;h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
 view(90,30)
-scatter3(a.star_pos.Data(1:i,1),a.star_pos.Data(1:i,2),a.star_pos.Data(1:i,3),'k')
+% scatter3(a.star_pos.Data(1:i,1),a.star_pos.Data(1:i,2),a.star_pos.Data(1:i,3),'k')
 hold off
-pause(.05)
+pause(waittime)
 end
