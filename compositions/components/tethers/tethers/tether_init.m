@@ -17,8 +17,6 @@ numNodes = [thr(:).N];
 if length(unique(numNodes))>1
     error('Tethers must have the same number of nodes')
 else
-    
-    
     if numNodes(1) == 2
         set_param([gcb '/VariantSubsystem'], 'OverrideUsingVariant', 'VSS_twoNodeTether');
     else

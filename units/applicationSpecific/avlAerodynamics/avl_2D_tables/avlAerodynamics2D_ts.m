@@ -125,13 +125,33 @@ format compact
 
 uAppBdy = [5 0 1];
 dynPress = 1;
-flpDefl_deg = 10;
+flpDefl_deg = 0;
 ailDefl_deg = 0;
+
 elevDefl_deg = 0;
 rudDefl_deg = 0;
 
 refArea = 1;
 
-% sim('avlAerodynamics2D_th')
+alphas = linspace(0,50,100);
+uAppBdy = zeros([3 numel(alphas)]);
+for ii = 1:length(alphas)
+   
+    uAppBdy(:,ii) = -rotation_sequence([0 -alphas(ii)*pi/180 0])*[-1 0 0]';
+    
+end
+timeVec = 0:length(alphas)-1;
 
+uAppBdy = timeseries(uAppBdy',timeVec);
+
+
+
+sim('avlAerodynamics2D_th')
+
+
+parseLogsout
+
+plot(squeeze(tsc.angleOfAttackDeg.Data),squeeze(tsc.CMy.Data))
+figure
+avlPlot_2D_Polars('dsgnAyaz1_2D_Lookup')
 

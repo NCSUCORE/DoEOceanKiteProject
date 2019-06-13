@@ -3,19 +3,91 @@ clear all;clc;
 
 OCTModel_init
 modularPlant_init
+
 simParam = simParamClass;
 simParam.setInitialConditions('Position',ini_Rcm_o,'Velocity',ini_O_Vcm_o,...
     'EulerAngles',ini_euler_ang,'AngularVelocity',ini_OwB,'PlatformAngle',0,...
-    'PlatformAngularVelocity',0)
+    'PlatformAngularVelocity',0);
 
-%      addOptional(p,'Position',[0 0 0],@isnumeric);
-%             addOptional(p,'Velocity',[0 0 0],@isnumeric);
-%             addOptional(p,'EulerAngles',[0 0 0],@isnumeric);
-%             addOptional(p,'AngularVelocity',[0 0 0],@isnumeric);
-%             addOptional(p,'PlatformAngle',0,@isnumeric)
-%             addOptional(p,'PlatformAngularVelocity',0,@isnumeric);
+% Check that scaling works
+simParam = simParam.scale(1,1);
+
+thr(1).N                = simParam.N.Value;
+thr(1).diameter         = simParam.tether_param.tether_diameter.Value(1);
+thr(1).youngsMod        = simParam.tether_param.tether_youngs.Value;
+thr(1).density          = simParam.tether_param.tether_density.Value+ sim_param.env_param.density;
+thr(1).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
+thr(1).dampingRatio     = simParam.tether_param.damping_ratio.Value;
+thr(1).fluidDensity     = simParam.env_param.density.Value;
+thr(1).gravAccel        = simParam.env_param.grav.Value;
+thr(1).vehicleMass      = simParam.geom_param.mass.Value;
+thr(1).initVhclAttchPt  = simParam.initPosVec.Value +...
+    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R1n_cm.Value;
+thr(1).initGndStnAttchPt = simParam.tether_imp_nodes.R11_g.Value;
+
+thr(2).N                = simParam.N.Value;
+thr(2).diameter         = simParam.tether_param.tether_diameter.Value(2);
+thr(2).youngsMod        = simParam.tether_param.tether_youngs.Value;
+thr(2).density          = simParam.tether_param.tether_density.Value+ sim_param.env_param.density;
+thr(2).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
+thr(2).dampingRatio     = simParam.tether_param.damping_ratio.Value;
+thr(2).fluidDensity     = simParam.env_param.density.Value;
+thr(2).gravAccel        = simParam.env_param.grav.Value;
+thr(2).vehicleMass      = simParam.geom_param.mass.Value;
+thr(2).initVhclAttchPt  = simParam.initPosVec.Value +...
+    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R2n_cm.Value;
+thr(2).initGndStnAttchPt = simParam.tether_imp_nodes.R21_g.Value;
+
+thr(3).N                = simParam.N.Value;
+thr(3).diameter         = simParam.tether_param.tether_diameter.Value(3);
+thr(3).youngsMod        = simParam.tether_param.tether_youngs.Value;
+thr(3).density          = simParam.tether_param.tether_density.Value+ sim_param.env_param.density;
+thr(3).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
+thr(3).dampingRatio     = simParam.tether_param.damping_ratio.Value;
+thr(3).fluidDensity     = simParam.env_param.density.Value;
+thr(3).gravAccel        = simParam.env_param.grav.Value;
+thr(3).vehicleMass      = simParam.geom_param.mass.Value;
+thr(3).initVhclAttchPt  = simParam.initPosVec.Value +...
+    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R3n_cm.Value;
+thr(3).initGndStnAttchPt = simParam.tether_imp_nodes.R31_g.Value;
+
+
+gndStnMmtArms(1).arm = simParam.tether_imp_nodes.R11_g.Value;
+gndStnMmtArms(2).arm = simParam.tether_imp_nodes.R21_g.Value;
+gndStnMmtArms(3).arm = simParam.tether_imp_nodes.R31_g.Value;
+
+lftBdyMmtArms(1).arm = simParam.tether_imp_nodes.R1n_cm.Value;
+lftBdyMmtArms(2).arm = simParam.tether_imp_nodes.R2n_cm.Value;
+lftBdyMmtArms(3).arm = simParam.tether_imp_nodes.R3n_cm.Value;
 
 ctrl = threeTetherThreeSurfaceCtrlClass;
+
+% ctrl.elevonPitchKp.Value   = 0;
+% ctrl.elevonPitchKi.Value   = 0;
+% ctrl.elevonPitchKd.Value   = 0;
+% ctrl.elevonPitchTau.Value  = 1;
+% 
+% ctrl.elevonRollKp.Value   = 0;
+% ctrl.elevonRollKi.Value   = 0;
+% ctrl.elevonRollKd.Value   = 0;
+% ctrl.elevonRollTau.Value  = 1;
+% 
+% ctrl.tetherAltitudeKp.Value   = 0;
+% ctrl.tetherAltitudeKi.Value   = 0;
+% ctrl.tetherAltitudeKd.Value   = 0;
+% ctrl.tetherAltitudeTau.Value  = 1;
+% 
+% ctrl.tetherPitchKp.Value   = 0;
+% ctrl.tetherPitchKi.Value   = 0;
+% ctrl.tetherPitchKd.Value   = 0;
+% ctrl.tetherPitchTau.Value  = 1;
+% 
+% ctrl.tetherRollKp.Value   = 0;
+% ctrl.tetherRollKi.Value   = 0;
+% ctrl.tetherRollKd.Value   = 0;
+% ctrl.tetherRollTau.Value  = 1;
+            
+            
 
 duration_s = 200;
 
@@ -29,48 +101,8 @@ timeVec = 0:0.1:duration_s;
 set_alt = timeseries(set_alti*ones(size(timeVec)),timeVec);
 set_pitch = timeseries(set_pitch*ones(size(timeVec))*180/pi,timeVec);
 set_roll = timeseries(set_roll*ones(size(timeVec))*180/pi,timeVec);
-
 set_roll.Data = 0*sign(sin(timeVec/(2*pi*200)));
 set_roll.Data(timeVec<200) = 0;
-
-% Set controller gains and time constants
-% Uncomment this code to disable the controller
-sim_param.elevons_param.elevator_control.kp_elev    = 0;
-sim_param.elevons_param.elevator_control.ki_elev    = 0;
-sim_param.elevons_param.elevator_control.kd_elev    = 0;
-sim_param.elevons_param.elevator_control.t_elev     = 1;
-
-sim_param.elevons_param.aileron_control.kp_aileron  = 0;
-sim_param.elevons_param.aileron_control.ki_aileron  = 0;
-sim_param.elevons_param.aileron_control.kd_aileron  = 0;
-sim_param.elevons_param.aileron_control.t_aileron   = 1;
-
-sim_param.controller_param.alti_control.Kp_z    = 0;
-sim_param.controller_param.alti_control.Ki_z    = 0;
-sim_param.controller_param.alti_control.Kd_z    = 0;
-sim_param.controller_param.alti_control.wce_z   = 1;
-
-sim_param.controller_param.pitch_control.Kp_p    = 0;
-sim_param.controller_param.pitch_control.Ki_p    = 0;
-sim_param.controller_param.pitch_control.Kd_p    = 0;
-sim_param.controller_param.pitch_control.wce_p   = 0.1;
-
-sim_param.controller_param.roll_control.Kp_r    = 0;
-sim_param.controller_param.roll_control.Ki_r    = 0;
-sim_param.controller_param.roll_control.Kd_r    = 0;
-sim_param.controller_param.roll_control.wce_r   = 1;
-
-% Change structures to implement single tether
-% winch = winch(1);
-% gndStnMmtArms = gndStnMmtArms(1);
-% lftBdyMmtArms = lftBdyMmtArms(1);
-% thr = thr(1);
-% 
-% gndStnMmtArms.arm = [0 0 0];
-% lftBdyMmtArms.arm = [0 0 0];
-% thr.diameter = thr.diameter*3;
-% thr.initVhclAttchPt = ini_Rcm_o + rotation_sequence(ini_euler_ang)*lftBdyMmtArms.arm(:);
-% thr.initGndStnAttchPt = rotation_sequence(ini_euler_ang)*gndStnMmtArms.arm(:);
 
 switch numel(thr)
     case 3
@@ -144,3 +176,5 @@ for ii = 2:length(timeVec)
     [imind,cm] = rgb2ind(im,256);
     imwrite(imind,cm,fileName,'gif','WriteMode','append');
 end
+
+

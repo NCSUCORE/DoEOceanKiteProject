@@ -17,6 +17,9 @@ classdef simParamClass < handle
         avlSRef
         avlBRef
         avlCRef
+        freeSpinEnable
+        initPltAng
+        initPltAngVel
     end
     
     methods
@@ -38,10 +41,11 @@ classdef simParamClass < handle
             obj.tether_param.setupTether(obj.env_param);
             obj.tether_imp_nodes.setupTetherEndNodes(obj.aero_param,obj.geom_param);
             
-            obj.avlSRef = simulinkProperty(216,'Unit','m^s');
-            obj.avlBRef = simulinkProperty(36,'Unit','m^s');
-            obj.avlCRef = simulinkProperty(216,'Unit','m^s');
+            obj.avlSRef = simulinkProperty(216,'Unit','m/s');
+            obj.avlBRef = simulinkProperty(36,'Unit','m/s');
+            obj.avlCRef = simulinkProperty(216,'Unit','m/s');
             
+            obj.freeSpinEnable = simulinkProperty(0,'Unit','');
         end
         function obj = setInitialConditions(obj,varargin)
             p = inputParser;
@@ -81,6 +85,8 @@ classdef simParamClass < handle
             obj.initVelVec = simulinkProperty(ini_O_Vcm_o,'Unit','m/s');
             obj.initEulAng = simulinkProperty(ini_euler_ang,'Unit','rad');
             obj.initAngVel = simulinkProperty(ini_OwB,'Unit','rad/s');
+            obj.initPltAng = simulinkProperty(ini_platform_ang,'Unit','rad');
+            obj.initPltAngVel = simulinkProperty(ini_platform_vel,'Unit','rad/s');
             
             X0_partial = cat(1,ini_Rcm_o,ini_O_Vcm_o,ini_euler_ang,ini_OwB,ini_platform_ang,ini_platform_vel,obj.platform_param.gnd_station.Value);
             
@@ -116,6 +122,9 @@ classdef simParamClass < handle
             obj.tether_param    = scaleObj(obj.tether_param,lengthScaleFactor,densityScaleFactor);
             obj.tether_imp_nodes= scaleObj(obj.tether_imp_nodes,lengthScaleFactor,densityScaleFactor);
             obj.platform_param  = scaleObj(obj.platform_param,lengthScaleFactor,densityScaleFactor);
+             obj.avlBRef.Value = obj.avlBRef.Value*lengthScaleFactor;
+             obj.avlCRef.Value = obj.avlCRef.Value*lengthScaleFactor;
+             obj.avlSRef.Value = obj.avlSRef.Value*lengthScaleFactor^2;
         end
     end
 end
