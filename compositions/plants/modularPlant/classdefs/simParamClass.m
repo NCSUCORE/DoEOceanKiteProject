@@ -1,4 +1,4 @@
-classdef allActuatorPlantClass < handle
+classdef simParamClass < handle
     properties
         N = simulinkProperty(5,'Description','Number of tether nodes');
         aero_param
@@ -14,7 +14,7 @@ classdef allActuatorPlantClass < handle
     
     methods
         % Constructor function
-        function obj = allActuatorPlantClass
+        function obj = simParamClass
             % Initialize all the sub-classes (not the right word)
             obj.aero_param    = aeroParamsClass;
             obj.geom_param    = geomParamsClass;
