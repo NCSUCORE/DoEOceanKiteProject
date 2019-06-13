@@ -1,14 +1,14 @@
 clear all
 % close all
- l = .05;
- p = .51;
+ l = .2;
+ p = .6;
 path7 = [ cos(l).*cos(p);
          sin(l).*cos(p);
          sin(p);];
 
 init_pos = [path7(1);path7(2);path7(3);];
 init_pos = init_pos/norm(init_pos);
-end_time = 100;
+end_time = 140;
 aB=1.3;
 bB=1;
 phi_curve=.5;
@@ -24,22 +24,20 @@ path = @(s)[cos(lamda(s)).*cos(phi_curve+phi(s));...
 a=parseLogsout;
 
 close all
- figure
- ax=axes;
-%[x, y, z] = sphere;
-%h = surfl(x, y, z); 
-%set(h, 'FaceAlpha', 0.5)
-%shading(ax,'interp')
-%hold on 
-for i=1:length(a.pos.Data(:,1))
-plot3(a.pos.Data(1:i,1),a.pos.Data(1:i,2),a.pos.Data(1:i,3),'k')
-hold on
+figure
+ax=axes;
 pathvals=path(0:.01:2*pi);
-plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'r','lineWidth',3)
+for i=1:length(a.pos.Data(:,1))
+[x, y, z] = sphere;
+h = surfl(x, y, z); 
+set(h, 'FaceAlpha', 0.5)
+shading(ax,'interp')
+hold on 
+plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'r','lineWidth',1)
+plot3(a.pos.Data(1:i,1),a.pos.Data(1:i,2),a.pos.Data(1:i,3),'k','lineWidth',2)
 view(90,30)
-scatter3(a.star_pos.Data(1:i,1),a.star_pos.Data(1:i,2),a.star_pos.Data(1:i,3),'k')
-
-pause(.05)
+% scatter3(a.star_pos.Data(1:i,1),a.star_pos.Data(1:i,2),a.star_pos.Data(1:i,3),'k')
+pause(.02)
 end
 % quiver3(a.pos.Data(:,1),a.pos.Data(:,2),a.pos.Data(:,3),a.machineout.Data(:,1),a.machineout.Data(:,2),a.machineout.Data(:,3))
 % % test=a.star_pos.Data-a.vel_des.Data;
