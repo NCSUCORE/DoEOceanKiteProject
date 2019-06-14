@@ -10,6 +10,16 @@ classdef simParamClass < handle
         platform_param
         unstretched_l
         X0
+        initPosVec
+        initVelVec
+        initEulAng
+        initAngVel
+        avlSRef
+        avlBRef
+        avlCRef
+        freeSpinEnable
+        initPltAng
+        initPltAngVel
     end
     
     methods
@@ -30,6 +40,12 @@ classdef simParamClass < handle
             obj.turbine_param.setupTurbines(obj.env_param,obj.geom_param);
             obj.tether_param.setupTether(obj.env_param);
             obj.tether_imp_nodes.setupTetherEndNodes(obj.aero_param,obj.geom_param);
+            
+            obj.avlSRef = simulinkProperty(216,'Unit','m/s');
+            obj.avlBRef = simulinkProperty(36,'Unit','m/s');
+            obj.avlCRef = simulinkProperty(216,'Unit','m/s');
+            
+            obj.freeSpinEnable = simulinkProperty(0,'Unit','');
         end
         function obj = setInitialConditions(obj,varargin)
             p = inputParser;
@@ -64,7 +80,14 @@ classdef simParamClass < handle
             ini_OwB          = p.Results.AngularVelocity(:);
             ini_platform_ang = p.Results.PlatformAngle(:);
             ini_platform_vel = p.Results.PlatformAngularVelocity(:);
-                       
+            
+            obj.initPosVec = simulinkProperty(ini_Rcm_o,'Unit','m');
+            obj.initVelVec = simulinkProperty(ini_O_Vcm_o,'Unit','m/s');
+            obj.initEulAng = simulinkProperty(ini_euler_ang,'Unit','rad');
+            obj.initAngVel = simulinkProperty(ini_OwB,'Unit','rad/s');
+            obj.initPltAng = simulinkProperty(ini_platform_ang,'Unit','rad');
+            obj.initPltAngVel = simulinkProperty(ini_platform_vel,'Unit','rad/s');
+            
             X0_partial = cat(1,ini_Rcm_o,ini_O_Vcm_o,ini_euler_ang,ini_OwB,ini_platform_ang,ini_platform_vel,obj.platform_param.gnd_station.Value);
             
             node_locations = intermediate_nodes(R11_g,R21_g,R31_g,R1n_cm,R2n_cm,R3n_cm,obj.N.Value,X0_partial);
@@ -86,8 +109,8 @@ classdef simParamClass < handle
             
             obj.X0 = simulinkProperty(cat(1,ini_Rcm_o,ini_O_Vcm_o,ini_euler_ang,ini_OwB,ini_platform_ang,ini_platform_vel,...
                 ini_R1i_o,ini_R2i_o,ini_R3i_o,ini_O_V1i_o,ini_O_V2i_o,ini_O_V3i_o));
-
-%             obj.X0 = simulinkProperty(X0);
+            
+            %             obj.X0 = simulinkProperty(X0);
         end
         
         % Function to scale all parameters
@@ -99,6 +122,9 @@ classdef simParamClass < handle
             obj.tether_param    = scaleObj(obj.tether_param,lengthScaleFactor,densityScaleFactor);
             obj.tether_imp_nodes= scaleObj(obj.tether_imp_nodes,lengthScaleFactor,densityScaleFactor);
             obj.platform_param  = scaleObj(obj.platform_param,lengthScaleFactor,densityScaleFactor);
+             obj.avlBRef.Value = obj.avlBRef.Value*lengthScaleFactor;
+             obj.avlCRef.Value = obj.avlCRef.Value*lengthScaleFactor;
+             obj.avlSRef.Value = obj.avlSRef.Value*lengthScaleFactor^2;
         end
     end
 end

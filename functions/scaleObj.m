@@ -12,23 +12,29 @@ scaleFactors  = {...
     num2str(lengthScaleFactor^3),...
     num2str(lengthScaleFactor)};
 
+skipListNames = {'grav' ,'visc' ,'visc'};
+% skipListVals  = [9.8    ,8.9e-4 ,1.81e-5];
+skipUnits     = {'m/s^2','Pa'   ,'Pa'};
+
 for ii = 1:length(p)
     unit = obj.(p{ii}).Unit;
-    if ~isempty(unit)
-        if and(...
-                ~contains(obj.(p{ii}).Description,'grav','IgnoreCase',true) ,...
-                and(any(strcmp(obj.(p{ii}).Unit,{'m/s^2','m*s^-2'})) ,...
-                fix(10*obj.(p{ii}).Value)/10 == 9.8)) ...
-                ||...
-                and(~contains(obj.(p{ii}).Description,'visc','IgnoreCase',true),...
-                and(any(strcmp(obj.(p{ii}).Unit,{'Pa*s','kg/(m*s)'})) ,...
-                any(fix(obj.(p{ii}).Value) == [1e-3 1e-5])))
-            for jj = 1:length(scaleUnitList)
-                unit = strrep(unit, scaleUnitList{jj},scaleFactors{jj});
-            end
-            scaleFactor = eval(unit);
-            obj.(p{ii}).Value = obj.(p{ii}).Value*scaleFactor;
+    if ~isempty(unit) && ~skipCheck(p{ii},unit,skipListNames,skipUnits)
+        for jj = 1:length(scaleUnitList)
+            unit = strrep(unit, scaleUnitList{jj},scaleFactors{jj});
         end
+        scaleFactor = eval(unit);
+        obj.(p{ii}).Value = obj.(p{ii}).Value*scaleFactor;
+        
     end
 end
+end
+function rslt = skipCheck(name,unit,names,units)
+rslt = false;
+for ii = 1:length(names)
+    if any(contains(names,lower(name))) && any(strcmp(units,unit))
+        rslt = true;
+        break
+    end
+end
+
 end
