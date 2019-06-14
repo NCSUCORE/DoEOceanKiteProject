@@ -10,14 +10,14 @@ betas       = CLtot_2D_Tbl.Breakpoints(2).Value;
 figure('Position',[0    0.0370    1.0000    0.8917])
 subplot(2,3,1)
 plot(alphas,interp2(alphas,betas,...
-    CLtot_2D_Tbl.Table.Value,alphas,0),'Marker','o','LineWidth',1.5)
+    CLtot_2D_Tbl.Table.Value',alphas,0),'Marker','o','LineWidth',1.5)
 xlabel('$\alpha$, [deg]')
 ylabel('Lift Coefficient $C_L$')
 grid on
 
 subplot(2,3,2)
 plot(alphas,interp2(alphas,betas,...
-    CDtot_2D_Tbl.Table.Value,alphas,0),'Marker','o','LineWidth',1.5)
+    CDtot_2D_Tbl.Table.Value',alphas,0),'Marker','o','LineWidth',1.5)
 xlabel('$\alpha$, [deg]')
 ylabel('Drag Coefficient $C_D$')
 grid on
@@ -25,29 +25,29 @@ grid on
 
 subplot(2,3,3)
 plot(alphas,interp2(alphas,betas,...
-    Cmtot_2D_Tbl.Table.Value,alphas,0),'Marker','o','LineWidth',1.5)
+    Cmtot_2D_Tbl.Table.Value',alphas,0),'Marker','o','LineWidth',1.5)
 xlabel('$\alpha$, [deg]')
 ylabel({'Pitching Moment','Coefficient $C_m$'})
 grid on
 
 subplot(2,3,4)
 plot(interp2(alphas,betas,...
-    CDtot_2D_Tbl.Table.Value,alphas,0),interp2(alphas,betas,...
-    CLtot_2D_Tbl.Table.Value,alphas,0),'Marker','o','LineWidth',1.5)
+    CDtot_2D_Tbl.Table.Value',alphas,0),interp2(alphas,betas,...
+    CLtot_2D_Tbl.Table.Value',alphas,0),'Marker','o','LineWidth',1.5)
 xlabel('$C_D$')
 ylabel('$C_L$')
 grid on
 
 subplot(2,3,5)
 plot(betas,interp2(alphas,betas,...
-    Cltot_2D_Tbl.Table.Value,0,betas),'Marker','o','LineWidth',1.5)
+    Cltot_2D_Tbl.Table.Value',0,betas),'Marker','o','LineWidth',1.5)
 xlabel('$\beta$, [deg]')
 ylabel({'Roll Moment','Coefficient $C_l$'})
 grid on
 
 subplot(2,3,6)
 plot(betas,interp2(alphas,betas,...
-    Cntot_2D_Tbl.Table.Value,0,betas),'Marker','o','LineWidth',1.5)
+    Cntot_2D_Tbl.Table.Value',0,betas),'Marker','o','LineWidth',1.5)
 xlabel('$\beta$, [deg]')
 ylabel({'Yaw Moment','Coefficient $C_n$'})
 grid on
@@ -58,14 +58,14 @@ set(findall(gcf,'Type','axes'),'FontSize',24)
 figure('Position',[680 120 560 2*420])
 subplot(2,1,1)
 plot(alphas,interp2(alphas,betas,...
-    CLtot_2D_Tbl.Table.Value,alphas,0),'Marker','o','LineWidth',1.5)
+    CLtot_2D_Tbl.Table.Value',alphas,0),'Marker','o','LineWidth',1.5)
 xlabel('$\alpha$, [deg]')
 ylabel('Lift Coefficient $C_L$')
 grid on
 
 subplot(2,1,2)
 plot(alphas,interp2(alphas,betas,...
-    CDtot_2D_Tbl.Table.Value,alphas,0),'Marker','o','LineWidth',1.5)
+    CDtot_2D_Tbl.Table.Value',alphas,0),'Marker','o','LineWidth',1.5)
 xlabel('$\alpha$, [deg]')
 ylabel('Drag Coefficient $C_D$')
 grid on

@@ -63,7 +63,7 @@ toc
 load(dsgn_test.result_file_name);
 
 % build lookup tables based on 2 inouts
-avlBuild_2D_LookupTable(dsgn_test.lookup_table_file_name,results)
+avlBuild_2D_LookupTable(dsgn_test,results)
 
 % plot polars based on 2 inouts
 avlPlot_2D_Polars(dsgn_test.lookup_table_file_name);
@@ -77,7 +77,7 @@ da = 1;
 de = 1;
 dr = 1;
 
-k_CS_gain = calculate_2D_gains(dsgn_test,nom_a,nom_b,df,da,de,dr);
+% k_CS_gain = calculate_2D_gains(dsgn_test,nom_a,nom_b,df,da,de,dr);
 
 
 

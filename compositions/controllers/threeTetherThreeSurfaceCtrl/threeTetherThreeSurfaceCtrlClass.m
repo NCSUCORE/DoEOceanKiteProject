@@ -28,6 +28,12 @@ classdef threeTetherThreeSurfaceCtrlClass < handle
         setPitchDeg
         setAltM
         setRollDeg
+        
+        elevon_max_deflection
+        winc_vel_up_lims
+        
+        P_cs_mat
+        P_inv
     end
     
     methods
@@ -42,7 +48,7 @@ classdef threeTetherThreeSurfaceCtrlClass < handle
             obj.elevonRollKi   = simulinkProperty(0  ,'Unit','1/s');
             obj.elevonRollKd   = simulinkProperty(8  ,'Unit','s');
             obj.elevonRollTau  = simulinkProperty(0.2,'Unit','s');
-             
+            
             obj.tetherAltitudeKp   = simulinkProperty(0.5   ,'Unit','1/s');
             obj.tetherAltitudeKi   = simulinkProperty(0     ,'Unit','1/s^2');
             obj.tetherAltitudeKd   = simulinkProperty(0.25  ,'Unit','');
@@ -61,7 +67,13 @@ classdef threeTetherThreeSurfaceCtrlClass < handle
             obj.setPitchDeg = simulinkProperty(7  ,'Unit','deg');
             obj.setAltM     = simulinkProperty(200,'Unit','m');
             obj.setRollDeg  = simulinkProperty(0  ,'Unit','deg');
-
+            
+            obj.elevon_max_deflection = simulinkProperty(30,'Unit','deg');
+            obj.winc_vel_up_lims = simulinkProperty(0.4,'Unit','m/s');
+            
+            obj.P_cs_mat = simulinkProperty([-1 -1;-1 1]);
+            obj.P_inv = simulinkProperty([    1.0000    0.5000   -0.5000;    1.0000   -0.5000         0;    1.0000    0.5000    0.5000]);
+            
         end
         
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)

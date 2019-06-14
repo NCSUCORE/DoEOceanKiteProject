@@ -28,7 +28,11 @@ names = names(cellfun(@(x) ~isempty(x),names));
 % add each signal to the struct
 for ii = 1:length(names)
     ts = logsout.getElement(names{ii});
+    try
     tsc.(names{ii}) = ts.Values;
+    catch
+         x= 1;
+    end
 end
 
 if nargout == 0

@@ -2,7 +2,7 @@ function createOrigionalPlantBus()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
-elems(1).Name = 'posVec';
+elems(1).Name = 'positionVec';
 elems(1).Dimensions = [3 1];
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
