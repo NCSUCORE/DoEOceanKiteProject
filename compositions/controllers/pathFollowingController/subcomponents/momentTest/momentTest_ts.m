@@ -33,7 +33,7 @@ kd_chi=kp_chi;
 tau_chi=.1;
 
 flow=[1;0;0;];
-sim_time=100;
+sim_time=30;
 
 simWithMonitor('momentTest_th')
 
@@ -43,6 +43,7 @@ phi=@(s) (aB/bB)^2*sin(s).*cos(s)./(1 + (aB/bB)^2*cos(s).^2);
 path = @(s)[cos(lamda(s)).*cos(phi_curve+phi(s));...
             sin(lamda(s)).*cos(phi_curve+phi(s));...
             sin(phi_curve+phi(s));];
+        %%
 a=parseLogsout;
 %% 
 close all
@@ -57,7 +58,7 @@ plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 plot3(a.pos.Data(1:i,1),a.pos.Data(1:i,2),a.pos.Data(1:i,3),'lineWidth',2)
 title(['T=' num2str(a.pos.Time(i))])
-[x,y,z]=sphere;x=50*x;y=50*y;z=50*z;
+[x,y,z]=sphere;x=x;y=y;z=z;
 h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
 view(90,30)
 % scatter3(a.star_pos.Data(1:i,1),a.star_pos.Data(1:i,2),a.star_pos.Data(1:i,3),'k')

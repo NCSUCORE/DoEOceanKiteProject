@@ -4,11 +4,11 @@ createTestUntilRollCtrlBus
 
 dead=.05;
 % r_curve_max = .05;
-velMag=.05;
-accelMag=.5;%velMag^2/r_curve_max;
+velMag = 93.461420943553478; %.05;
+accelMag=48.527984471044967;%.5;%velMag^2/r_curve_max;
 l = .5;
 p = .6;
-r = 1;
+r = 50;
 path = r*[cos(l).*cos(p);
          sin(l).*cos(p);
          sin(p);];
@@ -29,6 +29,7 @@ phi=@(s) (aB/bB)^2*sin(s).*cos(s)./(1 + (aB/bB)^2*cos(s).^2);
 path = @(s)[cos(lamda(s)).*cos(phi_curve+phi(s));...
             sin(lamda(s)).*cos(phi_curve+phi(s));...
             sin(phi_curve+phi(s));];
+        %% 
 a=parseLogsout;
 %% 
 close all
