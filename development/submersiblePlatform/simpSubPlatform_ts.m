@@ -1,7 +1,7 @@
 clc
 format compact
 close all
-% 
+
 % load('custom_constant_baseline_1106_104556.mat')
 % position = tsc.positionGFC;
 % mag = tsc.tetherTensionMag;
@@ -16,6 +16,7 @@ flow = [0 0 0];
 
 rho = 1000;
 vol = 3.5;
+h = vol^(1/3);
 grav = 9.81;
 
 thr1Pt = [0 1 -.5];
@@ -29,13 +30,13 @@ thr3GndPos = [-50*cosd(30), -50*sind(30), 0];
 thr3GndVel = [0 0 0];
 CB2CMVec = [0 0 0];
 
-buoyF = 1.2;
+buoyF = 1.05;
 mass = rho*vol/buoyF;
 m = mass;
 
 inertiaMatrix = eye(3);
 
-initPos = [0 0 95];
+initPos = [0 0 100];
 initVel = [0 0 0];
 initEulerAngles = [0 0 0];
 initAngVel = [0 0 0];
@@ -46,17 +47,22 @@ N = 2;
 sim_param.N = N;
 
 dia_t = 0.05;
-E = 3.8e9;
+% E = 3.8e9;
+E = .38e9;
 zeta = 0.05;
 rho_tether = 1300;
 Cd = 0.5;
 
 tetherLengths = (norm(initPos+thr1Pt-thr1GndPos))*ones(3,1);
 
-zOcean = 5000;
+zOcean = -1000;
 zOceanPeriod = 18;
-xOcean = 5000;
-xOceanPeriod = 20;
+xOcean = 0;
+xOceanPeriod = 10;
+
+waveAmp = 3;
+wavePeriod = 20;
+oceanDepth = 113;
 sim('simpSubPlatform_th')
 
 %% Post Process
