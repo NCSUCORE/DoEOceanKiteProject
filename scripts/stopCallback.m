@@ -1,0 +1,2 @@
+parseLogsout
+plotEverything
