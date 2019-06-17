@@ -1,4 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels');
+figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Tether Lengths');
 
 for ii = 1:size(tsc.tetherLengths.Data,2)
     subplot(size(tsc.tetherLengths.Data,2),1,ii)

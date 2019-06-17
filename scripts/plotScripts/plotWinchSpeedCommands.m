@@ -1,4 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels');
+figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Winch Speed Commands');
 
 for ii = 1:size(tsc.winchSpeedCommands.Data,2)
     subplot(size(tsc.winchSpeedCommands.Data,2),1,ii)

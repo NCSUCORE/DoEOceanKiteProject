@@ -142,9 +142,10 @@ caseDescriptor = {caseDescriptor,sprintf('%d Nodes ',thr(1).N)};
 
 fileName = [caseDescriptor{1} caseDescriptor{2} '.gif'];
 fileName = strrep(fileName,' ','');
-
+try
 sim('OCTModel')
-
+catch
+end
 parseLogsout
 
 %%

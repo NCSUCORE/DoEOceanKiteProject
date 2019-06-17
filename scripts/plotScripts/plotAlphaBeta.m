@@ -1,4 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels');
+figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Alpha Beta');
 subplot(2,1,1)
 plot(tsc.angleOfAttackDeg.Time,squeeze(tsc.angleOfAttackDeg.Data),...
     'LineStyle','-','Color','k','LineWidth',1.5)
