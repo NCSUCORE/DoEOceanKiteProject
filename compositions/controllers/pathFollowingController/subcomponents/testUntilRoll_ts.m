@@ -4,11 +4,11 @@ createTestUntilRollCtrlBus
 
 dead=.05;
 % r_curve_max = .05;
-velMag = 93.461420943553478; %.05;
-accelMag=48.527984471044967;%.5;%velMag^2/r_curve_max;
+velMag = .05; %93.461420943553478; 
+accelMag= .5;%velMag^2/r_curve_max;48.527984471044967;
 l = .5;
 p = .6;
-r = 50;
+r = 1;
 path = r*[cos(l).*cos(p);
          sin(l).*cos(p);
          sin(p);];
