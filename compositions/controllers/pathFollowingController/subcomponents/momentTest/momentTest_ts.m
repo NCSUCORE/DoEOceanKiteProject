@@ -15,9 +15,9 @@ accMag=.5;%10*tetherTen/mass; %assumes you can take the entire tension in the te
 MOI_X=5e5;
 %%%%%%%%% Moment Controller %%%%%%
 %3 deg/s^2 for an error of 45 degrees
-kp_L =3/45; %
-kd_L = kp_L;
-tau_L = .05; 
+kp_L =2*MOI_X; %will be multiplied by gain of MOI_X
+kd_L = 5*MOI_X;
+tau_L = .01; 
 
 l = -.5;
 p = .7;
@@ -38,7 +38,7 @@ kd_chi=kp_chi;
 tau_chi=.1;
 
 flow=[1;0;0;];
-sim_time=50;
+sim_time=80;
 
 simWithMonitor('momentTest_th')
 
@@ -58,10 +58,10 @@ plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 
 plot3(a.posG.Data(:,1),a.posG.Data(:,2),a.posG.Data(:,3),'lineWidth',2)
-[x,y,z]=sphere;x=1*x;y=1*y;z=1*z;
-h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+% [x,y,z]=sphere;x=1*x;y=1*y;z=1*z;
+% h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
 view(90,30)
-pause(3)
+% pause(3)
 % %%
 % figure
 % ax=axes;
