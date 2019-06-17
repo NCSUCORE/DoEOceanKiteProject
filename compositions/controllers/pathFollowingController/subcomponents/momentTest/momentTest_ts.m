@@ -2,26 +2,25 @@ createModAyazPlantBus
 createModAyazFlowEnvironmentBus
 createTestUntilRollCtrlBus
 %%%%%%%%% Env and Sim Params %%%%%%%%
-flow=[1;0;0;];
-sim_time=80;
+flow=[1.5;0;0;];
+sim_time=50;
 %%%%%%%%% Plant Attributes %%%%%%%%%%
 mass = 6182; %kgs
-tetherLength = 1;%50; %meters
+tetherLength = 50; %meters
 tetherTen = 30000; % newtons
-velMag= .05;%6*sqrt((tetherTen/mass) * tetherLength); %Fcentripital = m*v^2/r about origin
-% accMag=velMag^2/r_curve_max;
-accMag=.5;%10*tetherTen/mass; %assumes you can take the entire tension in the tether,
+velMag= 6;%sqrt((tetherTen/mass) * tetherLength); %Fcentripital = m*v^2/r about origin
+accMag= tetherTen/mass; %assumes you can take the entire tension in the tether,
                        %set it to 0, and put that entire force towards
                        %accellerating in a circle
 MOI_X=5e5;
 
 long = -.5;
-lat = .7;
+lat = .3;
 path_init = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
 init_pos = [path_init(1);path_init(2);path_init(3);];
-init_vel_tan = velMag*[1;0;0]; %North
+init_vel_tan = velMag*[0;-1;0]; %[1;0;0]=north [0;1;0]=east
 %%%%%%%%%Controller Params%%%%%%
 %2 deg/s^2 for an error of 1 radian
 kp_L =2*MOI_X;
@@ -48,7 +47,7 @@ a=parseLogsout;
 % close all
 figure
 ax=axes;
-pathvals=path(0:.01:2*pi);
+pathvals=tetherLength*path(0:.01:2*pi);
 plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 

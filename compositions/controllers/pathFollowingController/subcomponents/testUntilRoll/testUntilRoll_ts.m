@@ -2,12 +2,17 @@ createModAyazPlantBus
 createModAyazFlowEnvironmentBus
 createTestUntilRollCtrlBus
 
-velMag = .05;
-accelMag= .5;
+mass = 6182; %kgs
+tetherLength = 50; %meters
+tetherTen = 30000; % newtons
+velMag= .2*sqrt((tetherTen/mass) * tetherLength); %Fcentripital = m*v^2/r about origin
+accMag= tetherTen/mass; %assumes you can take the entire tension in the tether,
+                       %set it to 0, and put that entire force towards
+                       %accellerating in a circle
+MOI_X=5e5;
 long = .8;
 lat = .6;
-r = 1;
-path = r*[cos(long).*cos(lat);
+path = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
 init_pos = [path(1);path(2);path(3);];
