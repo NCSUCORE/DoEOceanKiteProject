@@ -2,22 +2,16 @@ createModAyazPlantBus
 createModAyazFlowEnvironmentBus
 createTestUntilRollCtrlBus
 
-dead=.05;
-% r_curve_max = .05;
-velMag = .05; %93.461420943553478; 
-accelMag= .5;%velMag^2/r_curve_max;48.527984471044967;
-l = .8;
-p = .6;
+velMag = .05;
+accelMag= .5;
+long = .8;
+lat = .6;
 r = 1;
-path = r*[cos(l).*cos(p);
-         sin(l).*cos(p);
-         sin(p);];
+path = r*[cos(long).*cos(lat);
+         sin(long).*cos(lat);
+         sin(lat);];
 init_pos = [path(1);path(2);path(3);];
-syms u v w
-% init_vel=solve(dot(path_init,[u v w])==0,sqrt(u^2+v^2+w^2)==1,u==.5);
-% init_vel=[init_vel.u(1);init_vel.v(1);init_vel.w(1)];
-% init_vel=double(init_vel)*.05;
-init_vel=[.05;0;0];
+init_vel_tan=[.05;0;0];
 
 maxBank=45*pi/180;
 kp_chi=maxBank/(pi/2); %max bank divided by large error
@@ -26,16 +20,15 @@ kd_chi=kp_chi;
 tau_chi=.1;
 flow=[1;0;0;];
 sim_time=50;
-
+%%
 simWithMonitor('testUntilRoll_th')
-
+%%
 aB=1;bB=1;phi_curve=.5;
 lamda=@(s) aB*sin(s)./(1+(aB/bB)^2*cos(s).^2);
 phi=@(s) (aB/bB)^2*sin(s).*cos(s)./(1 + (aB/bB)^2*cos(s).^2);
 path = @(s)[cos(lamda(s)).*cos(phi_curve+phi(s));...
             sin(lamda(s)).*cos(phi_curve+phi(s));...
-            sin(phi_curve+phi(s));];
-        %% 
+            sin(phi_curve+phi(s));]; 
 a=parseLogsout;
 close all
 figure
@@ -48,8 +41,9 @@ plot3(a.pos.Data(:,1),a.pos.Data(:,2),a.pos.Data(:,3),'lineWidth',2)
 [x,y,z]=sphere;x=1*x;y=1*y;z=1*z;
 h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
 view(90,30)
-pause(3)
-% %% 
+
+%% 
+% pause(3)
 % close all
 % figure
 % ax=axes;
