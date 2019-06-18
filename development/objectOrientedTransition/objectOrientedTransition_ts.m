@@ -7,28 +7,34 @@ load('dsgnAyaz1_2D_Lookup.mat')
 
 % Check that scaling works
 scaleFactor = 1;
-duration_s = 200;
+duration_s = 200*sqrt(scaleFactor);
 
 PLANT = 'modularPlant';
 
+% Initialize classes
 ctrl = threeTetherThreeSurfaceCtrlClass;
-ctrl.scale(scaleFactor,1)
-
 simParam = simParamClass;
 
+% Set initial condition
 ini_Rcm_o = [0 0 ctrl.setAltM.Value]';
 ini_O_Vcm_o = [0 0 0]';
 ini_euler_ang = [0 0 0]';
 ini_OwB = [0 0 0]';
 initPlatformAngle = 0;
 initPlatformAngularVel = 0;
-
-simParam.setInitialConditions('Position',ini_Rcm_o,'Velocity',ini_O_Vcm_o,...
-    'EulerAngles',ini_euler_ang,'AngularVelocity',ini_OwB,'PlatformAngle',initPlatformAngle,...
+simParam.setInitialConditions(...
+    'Position',ini_Rcm_o,...
+    'Velocity',ini_O_Vcm_o,...
+    'EulerAngles',ini_euler_ang,...
+    'AngularVelocity',ini_OwB,...
+    'PlatformAngle',initPlatformAngle,...
     'PlatformAngularVelocity',initPlatformAngularVel);
 
+% Scale up/down
+ctrl.scale(scaleFactor,1);
 simParam = simParam.scale(scaleFactor,1);
 
+% Set up structure for tether for loop
 thr(1).N                = simParam.N.Value;
 thr(1).diameter         = simParam.tether_param.tether_diameter.Value(1);
 thr(1).youngsMod        = simParam.tether_param.tether_youngs.Value;
@@ -68,16 +74,25 @@ thr(3).initVhclAttchPt  = simParam.initPosVec.Value +...
     rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R3n_cm.Value;
 thr(3).initGndStnAttchPt = simParam.tether_imp_nodes.R31_g.Value;
 
-
+% Set up structure for tether attachment points at ground station
 gndStnMmtArms(1).arm = simParam.tether_imp_nodes.R11_g.Value;
 gndStnMmtArms(2).arm = simParam.tether_imp_nodes.R21_g.Value;
 gndStnMmtArms(3).arm = simParam.tether_imp_nodes.R31_g.Value;
 
+% Set up structure for tether attachment points on lifting body
 lftBdyMmtArms(1).arm = simParam.tether_imp_nodes.R1n_cm.Value;
 lftBdyMmtArms(2).arm = simParam.tether_imp_nodes.R2n_cm.Value;
 lftBdyMmtArms(3).arm = simParam.tether_imp_nodes.R3n_cm.Value;
 
+% Set up structure for winches
+for ii = 1:length(simParam.unstretched_l.Value)
+    winch(ii).initLength = simParam.unstretched_l.Value(ii);
+    winch(ii).maxSpeed  = ctrl.winc_vel_up_lims.Value;
+    winch(ii).timeConst = simParam.winch_time_const.Value;
+    winch(ii).maxAccel = inf;
+end
 
+% Turn controller off/on
 ctrl.elevonPitchKp.Value   = 0;
 ctrl.elevonPitchKi.Value   = 0;
 ctrl.elevonPitchKd.Value   = 0;
@@ -103,13 +118,6 @@ ctrl.tetherRollKi.Value   = 0;
 ctrl.tetherRollKd.Value   = 0;
 ctrl.tetherRollTau.Value  = 1;
 
-for ii = 1:length(simParam.unstretched_l.Value)
-    winch(ii).initLength = simParam.unstretched_l.Value(ii);
-    winch(ii).maxSpeed  = ctrl.winc_vel_up_lims.Value;
-    winch(ii).timeConst = simParam.winch_time_const.Value;
-    winch(ii).maxAccel = inf;
-end
-
 createOrigionalPlantBus;
 createConstantUniformFlowEnvironmentBus;
 
@@ -133,46 +141,8 @@ switch numel(thr)
         caseDescriptor = '1 Tether';
 end
 
-if  ctrl.elevonPitchKp.Value == 0
-    caseDescriptor = [caseDescriptor ' Open Loop'];
-else
-    caseDescriptor = [caseDescriptor ' Closed Loop'];
-end
-caseDescriptor = {caseDescriptor,sprintf('%d Nodes ',thr(1).N)};
-
-fileName = [caseDescriptor{1} caseDescriptor{2} '.gif'];
-fileName = strrep(fileName,' ','');
 try
 sim('OCTModel')
 catch
 end
-parseLogsout
-
-%%
-
-%%
-figure('Position',[1          41        1920         963]);
-subplot(4,1,1)
-tsc.eulerAngles.plot
-
-subplot(4,1,2)
-tsc.angleOfAttackDeg.plot
-
-subplot(4,1,3)
-tsc.netPitchMomentCoeff.plot
-grid on
-hold on
-tsc.CMy.plot('LineStyle','--')
-plot(tsc.angleOfAttackDeg.Time,interp2(Cmtot_2D_Tbl.Breakpoints(1).Value,Cmtot_2D_Tbl.Breakpoints(2).Value,Cmtot_2D_Tbl.Table.Value',squeeze(tsc.angleOfAttackDeg.Data),0))
-
-subplot(4,1,4)
-tsc.MAeroBdy.plot
-linkaxes(findall(gcf,'Type','Axes'),'x')
-
-%% Code to calculate pitch moment coefficient
-interp2(Cmtot_2D_Tbl.Breakpoints(1).Value,Cmtot_2D_Tbl.Breakpoints(2).Value,Cmtot_2D_Tbl.Table.Value,5,0)
-
-%%
-figure
-subplot(3,1,1)
-
+stopCallback
