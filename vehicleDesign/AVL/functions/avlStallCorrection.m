@@ -22,9 +22,12 @@ hs_cl_max = obj.h_stab_airfoil_ClLimits(2);
 for ii = 1:n_cases
     
     Sref = batch_res(ii).FT.Sref;
+    Bref = batch_res(ii).FT.Bref;
     
     % wing CL
     CLtot = batch_res(ii).FT.CLtot;
+    CMxtot = batch_res(ii).FT.Cltot;
+
     
     % get right wing and left wing data and process it
     right_w_yle = [batch_res(ii).ST.Wing.tabular.Yle; w_span/2];
@@ -51,6 +54,10 @@ for ii = 1:n_cases
     w_cCl = w_chord_cat.*w_cl_cat;
     w_CL = trapz(w_yle_cat,w_cCl)/Sref;
     
+    % calculate Y*chord*Cl and CMx
+    w_ycCl = w_yle_cat.*w_cCl;
+    w_CMx = -trapz(w_yle_cat,w_ycCl)/(Sref*Bref);
+        
     % get right HS and left HS data and process it
     right_hs_yle = [batch_res(ii).ST.H_stab.tabular.Yle; hs_span/2];
     right_hs_chord = [batch_res(ii).ST.H_stab.tabular.Chord; hs_chord*hs_TR];
@@ -74,15 +81,23 @@ for ii = 1:n_cases
     
     % calculate chord*Cl and CLtot
     hs_cCl = hs_chord_cat.*hs_cl_cat;
-
     hs_CL = trapz(hs_yle_cat,hs_cCl)/Sref;
+    
+    % calculate Y*chord*Cl and CMx
+    hs_ycCl = hs_yle_cat.*hs_cCl;
+    hs_CMx = -trapz(hs_yle_cat,hs_ycCl)/(Sref*Bref);
     
     % total lift
     CL = w_CL + hs_CL;
+    CMx = w_CMx + hs_CMx;
     
+    % print random stuff
+%     [batch_res(ii).FT.Alpha batch_res(ii).FT.Beta CLtot CMxtot CL CMx]
+
     % overwrite lookup table CL value
     batch_res(ii).FT.CLtot = CL;
-    
+%     batch_res(ii).FT.Cltot = CMx;
+
     % keyboard
     
     

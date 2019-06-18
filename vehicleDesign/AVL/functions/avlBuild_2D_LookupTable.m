@@ -1,6 +1,7 @@
 function [CLtot_2D_Tbl,CDtot_2D_Tbl,Cltot_2D_Tbl,Cmtot_2D_Tbl,Cntot_2D_Tbl] =...
-    avlBuild_2D_LookupTable(dsgn,aeroResults)
-saveFileName = dsgn.lookup_table_file_name;
+    avlBuild_2D_LookupTable(obj,aeroResults)
+
+saveFileName = obj.lookup_table_file_name;
 nCases = 25*(length(aeroResults) - 1) + length(aeroResults{end});
 
 alphas      = NaN(1,nCases);
@@ -85,16 +86,7 @@ Cntot_2D_Tbl.Table.Value = reshape(Cns,tableDims)';
 Cntot_2D_Tbl.Breakpoints(1).Value = alphas;
 Cntot_2D_Tbl.Breakpoints(2).Value = betas;
 
-nom_a = 0;
-nom_b = 0;
-
-df = 1;
-da = 1;
-de = 1;
-dr = 1;
-
-k_CS_gain = calculate_2D_gains(dsgn,nom_a,nom_b,df,da,de,dr);
-
 saveFileName = fullfile(fileparts(which('avl.exe')),'designLibrary',saveFileName);
-save(saveFileName,'CLtot_2D_Tbl','CDtot_2D_Tbl','Cltot_2D_Tbl','Cmtot_2D_Tbl','Cntot_2D_Tbl','k_CS_gain')
+dsgnData = obj;
+save(saveFileName,'CLtot_2D_Tbl','CDtot_2D_Tbl','Cltot_2D_Tbl','Cmtot_2D_Tbl','Cntot_2D_Tbl','dsgnData')
 end
