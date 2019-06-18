@@ -13,7 +13,7 @@ end
 
 % Save data
 fprintf('Saving all data to workspace.mat \n')
-save('workspace.mat')
+save(fullfile(folderName,'workspace.mat'))
 
 % Plot Everything
 fprintf('Running all plot script in ./scripts/plotScripts \n')
