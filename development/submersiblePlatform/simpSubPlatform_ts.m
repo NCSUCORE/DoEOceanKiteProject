@@ -2,10 +2,13 @@ clc
 format compact
 close all
 
+% run this to load tether tension data
+% clear
 % load('custom_constant_baseline_1106_104556.mat')
 % position = tsc.positionGFC;
 % mag = tsc.tetherTensionMag;
 
+% number of tethers
 N = 4;
 sim_param.N = N;
 
@@ -31,7 +34,7 @@ thr2GndVel = [0 0 0];
 thr3Pt = [-cosd(30),-sind(30),-.5];
 thr3GndPos = [-50*cosd(30), -50*sind(30), 0];
 thr3GndVel = [0 0 0];
-CB2CMVec = [0 0 0];
+CB2CMVec = [0 0 h/4];
 
 dia_t = 0.05;
 E = 3.8e9;
@@ -52,9 +55,13 @@ gndStnMmtArms(1).arm = thr1GndPos;
 gndStnMmtArms(2).arm = thr2GndPos;
 gndStnMmtArms(3).arm = thr3GndPos;
 
-lftBdyMmtArms(1).arm = thr1Pt;
-lftBdyMmtArms(2).arm = thr2Pt;
-lftBdyMmtArms(3).arm = thr3Pt;
+bodyMmtArms(1).arm = thr1Pt;
+bodyMmtArms(2).arm = thr2Pt;
+bodyMmtArms(3).arm = thr3Pt;
+
+liftingBodyThrAttch(1).arm = [0 h/2 h/2];
+liftingBodyThrAttch(2).arm = [h/2*cosd(30), -h/2*sind(30), h/2];
+liftingBodyThrAttch(3).arm = [-h/2*cosd(30), -h/2*sind(30), h/2];
 
 thr(1).N                = sim_param.N;
 thr(1).diameter         = dia_t;
