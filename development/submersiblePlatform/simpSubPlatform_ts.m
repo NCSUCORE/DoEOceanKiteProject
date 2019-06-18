@@ -6,18 +6,21 @@ close all
 % position = tsc.positionGFC;
 % mag = tsc.tetherTensionMag;
 
-numTeth = 3;
+N = 4;
+sim_param.N = N;
 
-% for i = 1:numTeth
-%     thr(i) = tetherParamClass;
-% end
-
-flow = [0 0 0];
+flow = [.1 0 0];
 
 rho = 1000;
 vol = 3.5;
 h = vol^(1/3);
 grav = 9.81;
+
+buoyF = 1.3;
+mass = rho*vol/buoyF;
+m = mass;
+
+inertiaMatrix = eye(3);
 
 thr1Pt = [0 1 -.5];
 thr1GndPos = [0 50 0];
@@ -30,53 +33,82 @@ thr3GndPos = [-50*cosd(30), -50*sind(30), 0];
 thr3GndVel = [0 0 0];
 CB2CMVec = [0 0 0];
 
-buoyF = 1.05;
-mass = rho*vol/buoyF;
-m = mass;
-
-inertiaMatrix = eye(3);
+dia_t = 0.05;
+E = 3.8e9;
+zeta = 0.05;
+rho_tether = 300;
+Cd = 0.5;
 
 initPos = [0 0 100];
 initVel = [0 0 0];
 initEulerAngles = [0 0 0];
 initAngVel = [0 0 0];
 
-sim_time = 360;
-
-N = 2;
-sim_param.N = N;
-
-dia_t = 0.05;
-% E = 3.8e9;
-E = .38e9;
-zeta = 0.05;
-rho_tether = 1300;
-Cd = 0.5;
+sim_time = 3600;
 
 tetherLengths = (norm(initPos+thr1Pt-thr1GndPos))*ones(3,1);
 
-zOcean = -1000;
-zOceanPeriod = 18;
-xOcean = 0;
-xOceanPeriod = 10;
+gndStnMmtArms(1).arm = thr1GndPos;
+gndStnMmtArms(2).arm = thr2GndPos;
+gndStnMmtArms(3).arm = thr3GndPos;
+
+lftBdyMmtArms(1).arm = thr1Pt;
+lftBdyMmtArms(2).arm = thr2Pt;
+lftBdyMmtArms(3).arm = thr3Pt;
+
+thr(1).N                = sim_param.N;
+thr(1).diameter         = dia_t;
+thr(1).youngsMod        = E;
+thr(1).density          = rho + rho_tether;
+thr(1).dragCoeff        = Cd;
+thr(1).dampingRatio     = zeta;
+thr(1).fluidDensity     = rho;
+thr(1).gravAccel        = grav;
+thr(1).vehicleMass      = mass;
+thr(1).initVhclAttchPt  = initPos + (rotation_sequence(initEulerAngles)*thr1Pt')';
+thr(1).initGndStnAttchPt = thr1GndPos;
+
+thr(2).N                = sim_param.N;
+thr(2).diameter         = dia_t;
+thr(2).youngsMod        = E;
+thr(2).density          = rho + rho_tether;
+thr(2).dragCoeff        = Cd;
+thr(2).dampingRatio     = zeta;
+thr(2).fluidDensity     = rho;
+thr(2).gravAccel        = grav;
+thr(2).vehicleMass      = mass;
+thr(2).initVhclAttchPt  = initPos + (rotation_sequence(initEulerAngles)*thr2Pt')';
+thr(2).initGndStnAttchPt = thr2GndPos;
+
+thr(3).N                = sim_param.N;
+thr(3).diameter         = dia_t;
+thr(3).youngsMod        = E;
+thr(3).density          = rho + rho_tether;
+thr(3).dragCoeff        = Cd;
+thr(3).dampingRatio     = zeta;
+thr(3).fluidDensity     = rho;
+thr(3).gravAccel        = grav;
+thr(3).vehicleMass      = mass;
+thr(3).initVhclAttchPt  = initPos + (rotation_sequence(initEulerAngles)*thr3Pt')';
+thr(3).initGndStnAttchPt = thr3GndPos;
+
+createThrAttachPtKinematicsBus
+
+arms(1).arm = thr1Pt;
+arms(2).arm = thr2Pt;
+arms(3).arm = thr3Pt;
+
+v = 0.6;
+vsquared = v^2;
+cd = .8;
+A = vol^(2/3);
+oceanPeriod = 20;
+
+xOn = 1; % 1 = on, 0 = off
+zOn = 1;
 
 waveAmp = 3;
-wavePeriod = 20;
-oceanDepth = 113;
+wavePeriod = oceanPeriod;
+% initposition = 100
+oceanDepth = 100+ h/4;
 sim('simpSubPlatform_th')
-
-%% Post Process
-
-tsc1 = parseLogsout;
-
-zSub = tsc1.subPos.Data(3,:);
-plot(tsc1.subPos.Time,zSub)
-hold on
-zLand = tsc1.landingPos.Data(3,:);
-plot(tsc1.landingPos.Time,zLand)
-legend('Submersed Floating Platform','Landing Platform')
-
-figure
-
-xSub = tsc1.subPos.Data(1,:);
-plot(tsc1.subPos.Time,xSub)
