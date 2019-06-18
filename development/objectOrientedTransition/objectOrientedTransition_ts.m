@@ -10,6 +10,10 @@ scaleFactor = 1;
 duration_s = 200*sqrt(scaleFactor);
 
 PLANT = 'modularPlant';
+WINCHES = 'winch000';
+TETHERS = 'tether000';
+GROUNDSTATION = 'groundStation000';
+VEHICLE = 'vehicle000';
 
 % Initialize classes
 ctrl = threeTetherThreeSurfaceCtrlClass;
