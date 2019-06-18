@@ -101,7 +101,7 @@ k_CS_gain = calculate_2D_gains2(dsgnTest_1,nom_a,nom_b);
 
 % k_CS_gain = calculate_2D_gains(dsgnTest_1,nom_a,nom_b,df,da,de,dr);
 % 
-% saveFileName = fullfile(fileparts(which('avl.exe')),'designLibrary',dsgnTest_1.lookup_table_file_name);
-% save(saveFileName,'k_CS_gain','-append')
+saveFileName = fullfile(fileparts(which('avl.exe')),'designLibrary',dsgnTest_1.lookup_table_file_name);
+save(saveFileName,'k_CS_gain','-append')
 
 
