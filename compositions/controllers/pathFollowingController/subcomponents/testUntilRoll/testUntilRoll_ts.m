@@ -4,19 +4,17 @@ createTestUntilRollCtrlBus
 
 mass = 6182; %kgs
 tetherLength = 50; %meters
-tetherTen = 30000; % newtons
-velMag= .2*sqrt((tetherTen/mass) * tetherLength); %Fcentripital = m*v^2/r about origin
-accMag= tetherTen/mass; %assumes you can take the entire tension in the tether,
-                       %set it to 0, and put that entire force towards
-                       %accellerating in a circle
-MOI_X=5e5;
-long = .8;
-lat = .6;
+tetherTen = 1.6e5; % newtons
+velMag= 7;
+accMag= tetherTen/mass; 
+
+long = -.5;
+lat = .3;
 path = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
-init_pos = [path(1);path(2);path(3);];
-init_vel_tan=[.05;0;0];
+init_pos = path;
+init_vel_tan=[velMag;0;0];
 
 maxBank=45*pi/180;
 kp_chi=maxBank/(pi/2); %max bank divided by large error
@@ -38,14 +36,17 @@ a=parseLogsout;
 close all
 figure
 ax=axes;
-pathvals=path(0:.01:2*pi);
+pathvals=tetherLength*path(0:.01:2*pi);
 plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 
 plot3(a.pos.Data(:,1),a.pos.Data(:,2),a.pos.Data(:,3),'lineWidth',2)
-[x,y,z]=sphere;x=1*x;y=1*y;z=1*z;
+[x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
 h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
-view(90,30)
+if min(a.pos.Data(:,3))>0
+    zlim([0 inf])
+end
+view(100,45)
 
 %% 
 % pause(3)
