@@ -32,6 +32,9 @@ ki_chi=kp_chi/100;
 kd_chi=kp_chi;
 tau_chi=.01;
 
+controlMomentMatrix = [1 0 0 ; 0 1 0 ; 0 0 1];
+controlMomentMax = 5*10^7;
+
 %%
 simWithMonitor('momentTest_th')
 
@@ -50,10 +53,10 @@ pathvals=tetherLength*path(0:.01:2*pi);
 plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 
-plot3(a.posG.Data(:,1),a.posG.Data(:,2),a.posG.Data(:,3),'lineWidth',2)
+plot3(a.posVec.Data(:,1),a.posVec.Data(:,2),a.posVec.Data(:,3),'lineWidth',2)
 [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
 h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
-if min(a.posG.Data(:,3))>0
+if min(a.posVec.Data(:,3))>0
     zlim([0 inf])
 end
 view(100,45)
