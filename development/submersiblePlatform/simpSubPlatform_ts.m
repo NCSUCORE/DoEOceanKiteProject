@@ -114,8 +114,10 @@ oceanPeriod = 20;
 xOn = 1; % 1 = on, 0 = off
 zOn = 1;
 
+initPos = [26.4381, 0, 83.0498];
+    
 waveAmp = 3;
 wavePeriod = oceanPeriod;
 % initposition = 100
-oceanDepth = 100+ h/4;
+oceanDepth = 83.0498 - h/2;
 sim('simpSubPlatform_th')
