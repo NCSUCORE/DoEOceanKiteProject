@@ -1,13 +1,14 @@
 % Script to test the origional model against the modularized model
 clear all;clc;
 
-OCTModel_init
+% OCTModel_init
 
 VEHICLE = 'vehicle000';
 WINCH = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
 PLANT = 'modularPlant';
+ENVIRONMENT = 'constantUniformFlow';
 
 load('dsgnTest_1_lookupTables.mat')
 

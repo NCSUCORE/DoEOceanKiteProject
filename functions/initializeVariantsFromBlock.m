@@ -1,17 +1,18 @@
 function initializeVariantsFromBlock(blkPath)
-% Determine which component we're working with
-componentName = unique(regexpi(blkPath,'vehicle|tethers|groundStation|winch','match'));
-controlName = upper(componentName{1});
+% Determine the name of the block that we're working with
+blkName = strsplit(blkPath,'/');
+blkName = blkName(end);
+blkName = blkName{1};
+blkName = genvarname(blkName);
+controlName = upper(blkName);
+controlName = genvarname(controlName);
 % Get variants
 vars = get_param(blkPath,'Variants');
 for ii = 1:length(vars)
     % Get the name of the block as it appears in the variant subsystem
     varName = strsplit(vars(ii).BlockName,'/');
-    subSysName = genvarname(varName{end-1});
     varName = varName{end};
-    blckName = varName;
     varName(1) = genvarname(lower(varName(1)));
-    variantName = ['VSS_' subSysName '_' varName];
-    evalin('base',sprintf('%s = Simulink.Variant(''strcmpi(%s,''''%s'''')'');',variantName,controlName,blckName));
+    evalin('base',sprintf('VSS_%s_%s = Simulink.Variant(''strcmpi(%s,''''%s'''')'');',blkName,varName,controlName,varName));
 end
 end
