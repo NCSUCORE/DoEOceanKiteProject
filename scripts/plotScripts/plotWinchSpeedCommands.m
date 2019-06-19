@@ -1,8 +1,8 @@
 figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Winch Speed Commands');
 
-for ii = 1:size(tsc.winchSpeedCommands.Data,2)
-    subplot(size(tsc.winchSpeedCommands.Data,2),1,ii)
-    plot(tsc.winchSpeedCommands.Time,tsc.winchSpeedCommands.Data(:,ii),...
+for ii = 1:size(tsc.winchSpeeds.Data,2)
+    subplot(size(tsc.winchSpeeds.Data,2),1,ii)
+    plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data(:,ii),...
         'LineStyle','-','Color','k','LineWidth',1.5)
     xlabel('Time, [s]')
     ylabel({sprintf('Winch %d Speed',ii),'Command [m/s]'})

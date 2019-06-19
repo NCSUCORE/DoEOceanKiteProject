@@ -7,12 +7,10 @@ sim_time=50;
 %%%%%%%%% Plant Attributes %%%%%%%%%%
 mass = 6182; %kgs
 tetherLength = 50; %meters
-tetherTen = 30000; % newtons
-velMag= 6;%sqrt((tetherTen/mass) * tetherLength); %Fcentripital = m*v^2/r about origin
-accMag= tetherTen/mass; %assumes you can take the entire tension in the tether,
-                       %set it to 0, and put that entire force towards
-                       %accellerating in a circle
-MOI_X=5e5;
+tetherTen = 1.6e5;%30000; % newtons from sim used for proposal (33seconds)
+velMag= 7;%m/s from sim used for proposal
+accMag= tetherTen/mass; %assumes lift = tether tension
+MOI_X=1e5; %kg*m^2 from sim used for proposal
 
 long = -.5;
 lat = .3;
@@ -20,7 +18,8 @@ path_init = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
 init_pos = [path_init(1);path_init(2);path_init(3);];
-init_vel_tan = velMag*[0;-1;0]; %[1;0;0]=north [0;1;0]=east
+init_vel_ang = 0;%degrees
+init_vel_tan= velMag*[cosd(init_vel_ang);sind(init_vel_ang);0];
 %%%%%%%%%Controller Params%%%%%%
 %2 deg/s^2 for an error of 1 radian
 kp_L =2*MOI_X;
@@ -32,6 +31,9 @@ kp_chi=maxBank/(pi/2); %max bank divided by large error
 ki_chi=kp_chi/100;
 kd_chi=kp_chi;
 tau_chi=.01;
+
+controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
+controlSigMax = 5*10^7;
 
 %%
 simWithMonitor('momentTest_th')
@@ -51,10 +53,13 @@ pathvals=tetherLength*path(0:.01:2*pi);
 plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 
-plot3(a.posG.Data(:,1),a.posG.Data(:,2),a.posG.Data(:,3),'lineWidth',2)
-% [x,y,z]=sphere;x=1*x;y=1*y;z=1*z;
-% h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
-view(90,30)
+plot3(a.posVec.Data(:,1),a.posVec.Data(:,2),a.posVec.Data(:,3),'lineWidth',2)
+[x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+if min(a.posVec.Data(:,3))>0
+    zlim([0 inf])
+end
+view(100,45)
 %%
 % pause(3)
 % %%
@@ -69,9 +74,12 @@ view(90,30)
 % hold on
 % plot3(a.posG.Data(1:i,1),a.posG.Data(1:i,2),a.posG.Data(1:i,3),'lineWidth',2)
 % title(['T=' num2str(a.posG.Time(i))])
-% [x,y,z]=sphere;x=x;y=y;z=z;
+% [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
 % h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
-% view(90,30)
+% if min(a.posG.Data(:,3))>0
+%     zlim([0 inf])
+% end
+% view(100,45)
 % %scatter3(a.star_pos.Data(1:i,1),a.star_pos.Data(1:i,2),a.star_pos.Data(1:i,3),'k')
 % hold off
 % pause(waittime)
@@ -83,6 +91,6 @@ view(90,30)
 % %                         if i == 1 
 % %                           imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
 % %                         else 
-% %                           imwrite(imind,cm,filename,'gif','DelayTime',0.05,'WriteMode','append'); 
+% %                           imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
 % %                         end 
 % end

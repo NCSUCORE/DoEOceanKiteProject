@@ -8,5 +8,6 @@ for ii = 1:length(files)
         % Try catch to keep moving through broken plot scripts
         eval(strrep(files(ii).name,'.m',''))
     catch 
+         warning('Failed: %s',files(ii).name)
     end
 end

@@ -3,7 +3,7 @@ function createTestUntilRollCtrlBus()
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'tanRollDes';
-elems(1).Dimensions = 1;
+elems(1).Dimensions = 3;
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;
