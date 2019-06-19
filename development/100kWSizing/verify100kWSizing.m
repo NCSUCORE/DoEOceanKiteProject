@@ -1,7 +1,6 @@
 % Script to test the origional model against the modularized model
 clear all;clc;
 
-% OCTModel_init
 
 VEHICLE = 'vehicle000';
 WINCH = 'winch000';
