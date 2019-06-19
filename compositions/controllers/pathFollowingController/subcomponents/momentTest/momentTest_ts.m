@@ -32,8 +32,8 @@ ki_chi=kp_chi/100;
 kd_chi=kp_chi;
 tau_chi=.01;
 
-controlMomentMatrix = [1 0 0 ; 0 1 0 ; 0 0 1];
-controlMomentMax = 5*10^7;
+controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
+controlSigMax = 5*10^7;
 
 %%
 simWithMonitor('momentTest_th')
