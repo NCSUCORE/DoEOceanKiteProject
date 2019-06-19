@@ -1,8 +1,8 @@
-timeStep = 1;
+timeStep = 0.5;
 fileName = 'animateSim.gif';
 
 % Resample to the animation framerate
-timeVec = 0:timeStep:tsc.winchSpeedCommands.Time(end);
+timeVec = 0:timeStep:tsc.positionVec.Time(end);
 numTethers = numel(tsc.thrNodeBus);
 xMin = [];
 xMax = [];
