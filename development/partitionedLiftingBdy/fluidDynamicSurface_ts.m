@@ -1,5 +1,7 @@
 close all;clear;clc
 
+load('dsgnTest_1_lookupTables.mat')
+
 velCMBdy   = [-1 0 0];
 angVelBdy  = [0 0 0];
 velWindBdy = [1 0 0];
@@ -15,15 +17,16 @@ chordUnitVec   = [1 0 0];
 sim('fluidDynamicSurface_th')
 
 figure('Position',[1          41        1920         963],'Units','Pixels')
-axes
-set(gca,'NextPlot','add')
-grid on
+% axes
+% set(gca,'NextPlot','add')
+% grid on
 
 plot3([0 velCMBdy(1)],...
     [0 velCMBdy(2)],...
     [0 velCMBdy(3)],...
     'LineStyle','-','Color','k','LineWidth',2,'DisplayName','Velocity')
-
+grid on
+hold on
 
 plot3([0 angVelBdy(1)],...
     [0 angVelBdy(2)],...
