@@ -6,6 +6,8 @@ velCMBdy   = [0 0 0];
 angVelBdy  = [0 0 0];
 velWindBdy = [0 0.1 0.0];
 
+fluidDensity = 1;
+
 ctrlSurfDefl = 0;
 
 aeroSurf(1).refArea        = 1;
@@ -54,7 +56,7 @@ aeroSurf(4).GainCD = partitionedAero(4).GainCD;
 
 sim('fluidDynamicSurface_th')
 
-FBdy
+FBdy.Data
 
 % figure('Position',[1          41        1920         963],'Units','Pixels')
 % % axes
