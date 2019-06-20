@@ -65,6 +65,9 @@ classdef avlDesignGeometryClass < handle
             'rudder',[-5 5])
     end
     properties (Dependent)
+        wing_ip_file_name
+        hs_ip_file_name
+        vs_ip_file_name
         wing_span
         h_stab_span
         v_stab_span
@@ -93,6 +96,30 @@ classdef avlDesignGeometryClass < handle
             end
         end
         
+        % create more input file names
+        function val = get.wing_ip_file_name(obj)
+            val = obj.input_file_name;
+            if endsWith(obj.input_file_name,'.avl')
+                val = erase(val,'.avl');
+            end
+            val = strcat(val,'_wing.avl');
+        end
+        
+        function val = get.hs_ip_file_name(obj)
+            val = obj.input_file_name;
+            if endsWith(obj.input_file_name,'.avl')
+                val = erase(val,'.avl');
+            end
+            val = strcat(val,'_hs.avl');
+        end
+        
+        function val = get.vs_ip_file_name(obj)
+            val = obj.input_file_name;
+            if endsWith(obj.input_file_name,'.avl')
+                val = erase(val,'.avl');
+            end
+            val = strcat(val,'_vs.avl');
+        end
         
         % Funtion defining how wing span depends on chord and AR
         function val = get.wing_span(obj)
@@ -111,6 +138,7 @@ classdef avlDesignGeometryClass < handle
         function writeInputFile(obj)
             avlCreateInputFile(obj)
         end
+        
         
         % Function to plot the geometry
         function plot(obj,varargin)

@@ -11,7 +11,6 @@ w_span = obj.wing_span;
 w_cl_min = obj.wing_airfoil_ClLimits(1);
 w_cl_max = obj.wing_airfoil_ClLimits(2);
 
-
 hs_chord = obj.h_stab_chord;
 hs_TR = obj.h_stab_TR;
 hs_span = obj.h_stab_span;

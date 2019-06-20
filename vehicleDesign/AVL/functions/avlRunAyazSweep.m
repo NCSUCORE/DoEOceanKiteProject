@@ -25,7 +25,7 @@ dsgnTest_1.reference_point = [0.6;0;0];
 dsgnTest_1.wing_chord = 1;
 dsgnTest_1.wing_AR = 10;
 dsgnTest_1.wing_sweep = 5;
-dsgnTest_1.wing_dihedral = 2;
+dsgnTest_1.wing_dihedral = 0;
 dsgnTest_1.wing_TR = 0.8;
 dsgnTest_1.wing_incidence_angle = 0;
 dsgnTest_1.wing_naca_airfoil = '2412';
@@ -43,7 +43,7 @@ dsgnTest_1.h_stab_TR = 0.8;
 dsgnTest_1.h_stab_naca_airfoil = '0015';
 dsgnTest_1.h_stab_airfoil_ClLimits = [-1.7 1.7];
 
-dsgnTest_1.h_stab_Nspanwise = dsgnTest_1.wing_Nspanwise*(dsgnTest_1.h_stab_chord/dsgnTest_1.wing_chord);
+dsgnTest_1.h_stab_Nspanwise = dsgnTest_1.wing_Nspanwise*(dsgnTest_1.h_stab_span/dsgnTest_1.wing_span);
 dsgnTest_1.h_stab_Nchordwise = 1;
 
 dsgnTest_1.v_stab_LE = dsgnTest_1.h_stab_LE;
