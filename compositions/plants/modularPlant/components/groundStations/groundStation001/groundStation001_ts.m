@@ -5,8 +5,20 @@ close all
 % run this to load tether tension data
 % clear
 % load('custom_constant_baseline_1106_104556.mat')
+
+% actual data %
 % position = tsc.positionGFC;
 % mag = tsc.tetherTensionMag;
+
+% average mag %
+% mag.Data = mean(mag.Data)*ones(size(mag.Data));
+
+% average direction %
+% for i = 1:3
+%     position.Data(:,i) = mean(position.Data(:,i))*ones(size(position.Data(:,i)));
+% end
+
+sim_time = 600;
 
 % number of tethers
 N = 4;
@@ -46,8 +58,6 @@ initPos = [0 0 100];
 initVel = [0 0 0];
 initEulerAngles = [0 0 0];
 initAngVel = [0 0 0];
-
-sim_time = 3600;
 
 tetherLengths = (norm(initPos+thr1Pt-thr1GndPos))*ones(3,1);
 
@@ -114,10 +124,35 @@ oceanPeriod = 20;
 xOn = 1; % 1 = on, 0 = off
 zOn = 1;
 
-initPos = [26.4381, 0, 83.0498];
+% full tension
+% initPos = [26.4381, 0, 83.0498];
+% avg mag
+% initPos = [23.77, 0, 85.0695];
     
 waveAmp = 3;
 wavePeriod = oceanPeriod;
-% initposition = 100
-oceanDepth = 83.0498 - h/2;
-sim('simpSubPlatform_th')
+oceanDepth = 100;
+sim('groundStation001_th')
+
+dep = get(logsout,7);
+figure
+dep.Values.plot
+subpo = get(logsout,4)
+meanz = mean(subpo.Values.Data(3,1,:))
+meanx = mean(subpo.Values.Data(1,1,:))
+
+initPos = [meanx, 0, meanz];
+
+oceanDepth = meanz;
+
+sim('groundStation001_th')
+
+figure
+dep1 = get(logsout, 7);
+dep1.Values.plot
+
+
+for i = 1:6
+    figure(i)
+    ylim([-25 5])
+end
