@@ -37,11 +37,19 @@ end
 CL_kWing = polyfit(obj.sweepCase.aileron,CL_w,2);
 CD_kWing = polyfit(obj.sweepCase.aileron,CD_w,2);
 
-WingAeroData.CLWing1DTable = CLWing1DTable;
-WingAeroData.CDWing1DTable = CDWing1DTable;
-WingAeroData.CMxWing1DTable = CMxWing1DTable;
-WingAeroData.CL_kWing = CL_kWing;
-WingAeroData.CD_kWing = CD_kWing;
+% left wing data
+partitionedAero(1).CLVals = reshape(CLWing1DTable.Table.Value,[],1);
+partitionedAero(1).CDVals = reshape(CDWing1DTable.Table.Value,[],1);
+partitionedAero(1).alpha   = reshape(CDWing1DTable.Breakpoints.Value,[],1);
+partitionedAero(1).GainCL  = reshape(CL_kWing,1,[]);
+partitionedAero(1).GainCD  = reshape(CD_kWing,1,[]);
+
+% right wing data
+partitionedAero(2).CLVals = reshape(CLWing1DTable.Table.Value,[],1);
+partitionedAero(2).CDVals = reshape(CDWing1DTable.Table.Value,[],1);
+partitionedAero(2).alpha   = reshape(CDWing1DTable.Breakpoints.Value,[],1);
+partitionedAero(2).GainCL  = reshape(CL_kWing,1,[]);
+partitionedAero(2).GainCD  = reshape(CD_kWing,1,[]);
 
 %% horizontal stabilizers
 % set run cases
@@ -77,11 +85,11 @@ end
 CL_kHS = polyfit(obj.sweepCase.aileron,CL_hs,2);
 CD_kHS = polyfit(obj.sweepCase.aileron,CD_hs,2);
 
-HSAeroData.CLHS1DTable = CLHS1DTable;
-HSAeroData.CDHS1DTable = CDHS1DTable;
-HSAeroData.CMxHS1DTable = CMxHS1DTable;
-HSAeroData.CL_kHS = CL_kHS;
-HSAeroData.CD_kHS = CD_kHS;
+partitionedAero(3).CLVals = reshape(CLHS1DTable.Table.Value,[],1);
+partitionedAero(3).CDVals = reshape(CDHS1DTable.Table.Value,[],1);
+partitionedAero(3).alpha   = reshape(CDHS1DTable.Breakpoints.Value,[],1);
+partitionedAero(3).GainCL  = reshape(CL_kHS,1,[]);
+partitionedAero(3).GainCD  = reshape(CD_kHS,1,[]);
 
 %% vertical stabilizer
 % set run cases
@@ -117,19 +125,15 @@ end
 CL_kVS = polyfit(obj.sweepCase.aileron,CL_vs,2);
 CD_kVS = polyfit(obj.sweepCase.aileron,CD_vs,2);
 
-VSAeroData.CLVS1DTable = CLVS1DTable;
-VSAeroData.CDVS1DTable = CDVS1DTable;
-VSAeroData.CMxVS1DTable = CMxVS1DTable;
-VSAeroData.CL_kVS = CL_kVS;
-VSAeroData.CD_kVS = CD_kVS;
+partitionedAero(4).CLVals = reshape(CLVS1DTable.Table.Value,[],1);
+partitionedAero(4).CDVals = reshape(CDVS1DTable.Table.Value,[],1);
+partitionedAero(4).alpha   = reshape(CDVS1DTable.Breakpoints.Value,[],1);
+partitionedAero(4).GainCL  = reshape(CL_kVS,1,[]);
+partitionedAero(4).GainCD  = reshape(CD_kVS,1,[]);
 
 dsgnData = obj;
 
-avlPartitionedResults.WingAeroData = WingAeroData;
-avlPartitionedResults.HSAeroData = HSAeroData;
-avlPartitionedResults.VSAeroData = VSAeroData;
-
-save(obj.lookup_table_file_name,'avlPartitionedResults','dsgnData');
+save(obj.lookup_table_file_name,'partitionedAero','dsgnData');
 
 
 

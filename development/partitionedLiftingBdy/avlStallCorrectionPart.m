@@ -27,7 +27,6 @@ vs_cl_max = obj.v_stab_airfoil_ClLimits(2);
 for ii = 1:n_cases
     
     Sref = batch_res(ii).FT.Sref;
-    Bref = batch_res(ii).FT.Bref;
     
     % wing CL
     CLtot = batch_res(ii).FT.CLtot;
@@ -50,17 +49,24 @@ for ii = 1:n_cases
         w_cCl = w_chord_cat.*w_cl_cat;
         w_CL = trapz(w_yle_cat,w_cCl)/Sref;
         
-        % calculate Y*chord*Cl and CMx
-        w_ycCl = w_yle_cat.*w_cCl;
-        w_CMx = -trapz(w_yle_cat,w_ycCl)/(Sref*Bref);
         
         CL = w_CL;
         
     elseif isfield(batch_res(ii).ST,'H_stab')
+        
         % get right HS and left HS data and process it
-        hs_yle_cat = [batch_res(ii).ST.H_stab.tabular.Yle; hs_span/2];
-        hs_chord_cat = [batch_res(ii).ST.H_stab.tabular.Chord; hs_chord*hs_TR];
-        hs_cl_cat = [batch_res(ii).ST.H_stab.tabular.cl; 0];
+        right_hs_yle = [batch_res(ii).ST.H_stab.tabular.Yle; hs_span/2];
+        right_hs_chord = [batch_res(ii).ST.H_stab.tabular.Chord; hs_chord*hs_TR];
+        right_hs_cl = [batch_res(ii).ST.H_stab.tabular.cl; 0];
+        
+        left_hs_yle = [-hs_span/2; flipud(batch_res(ii).ST.H_stabYDUP.tabular.Yle)];
+        left_hs_chord = [hs_chord*hs_TR; flipud(batch_res(ii).ST.H_stabYDUP.tabular.Chord)];
+        left_hs_cl = [0; flipud(batch_res(ii).ST.H_stabYDUP.tabular.cl)];
+        
+        % concatenate
+        hs_yle_cat = [left_hs_yle; right_hs_yle];
+        hs_chord_cat = [left_hs_chord; right_hs_chord];
+        hs_cl_cat = [left_hs_cl; right_hs_cl];
         
         % compare with Cl limits and remove elemts outside of range
         hs_belowRange = (hs_cl_cat < hs_cl_min);
@@ -72,10 +78,6 @@ for ii = 1:n_cases
         % calculate chord*Cl and CLtot
         hs_cCl = hs_chord_cat.*hs_cl_cat;
         hs_CL = trapz(hs_yle_cat,hs_cCl)/Sref;
-        
-        % calculate Y*chord*Cl and CMx
-        hs_ycCl = hs_yle_cat.*hs_cCl;
-        hs_CMx = -trapz(hs_yle_cat,hs_ycCl)/(Sref*Bref);
         
         
         CL = hs_CL;
@@ -96,11 +98,6 @@ for ii = 1:n_cases
         % calculate chord*Cl and CLtot
         vs_cCl = vs_chord_cat.*vs_cl_cat;
         vs_CL = trapz(vs_yle_cat,vs_cCl)/Sref;
-        
-        % calculate Y*chord*Cl and CMx
-        vs_ycCl = vs_yle_cat.*vs_cCl;
-        vs_CMx = -trapz(vs_yle_cat,vs_ycCl)/(Sref*Bref);
-        
         
         CL = vs_CL;
     else

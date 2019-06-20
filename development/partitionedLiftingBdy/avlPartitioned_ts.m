@@ -67,119 +67,141 @@ avlPartitioned(dsgnTest_1,[-40 40],31)
 %% plot polars
 load(dsgnTest_1.lookup_table_file_name)
 
-w_data = avlPartitionedResults.WingAeroData;
-hs_data = avlPartitionedResults.HSAeroData;
-vs_data = avlPartitionedResults.VSAeroData;
+figr = figure(1);
+figr.Position =[102 92 3*560 2*420];
+figr.Name ='Partitioned Aero Coeffs';
 
-
-figure('Position',[102 92 3*560 2*420])
-
-ax1 = subplot(2,3,1);
-plot(w_data.CLWing1DTable.Breakpoints.Value,w_data.CLWing1DTable.Table.Value);
+% left wing
+ax1 = subplot(2,4,1);
+plot(partitionedAero(1).alpha,partitionedAero(1).CLVals);
 hCL_ax = gca;
+
+xlabel('$\alpha$ [deg]')
+ylabel('$C_{L}$')
+title('Left Wing')
+grid on
+hold on
+
+ax5 = subplot(2,4,5);
+plot(partitionedAero(1).alpha,partitionedAero(1).CDVals);
+xlabel('$\alpha$ [deg]')
+ylabel('$C_{D}$')
+grid on
+hold on
+hCD_ax = gca;
+
+linkaxes([ax1,ax5],'x');
+
+% right wing
+ax2 = subplot(2,4,2);
+plot(partitionedAero(2).alpha,partitionedAero(2).CLVals);
 
 xlabel('$\alpha$ [deg]')
 ylabel('$C_{L}$')
 title('Right Wing')
 grid on
+hold on
 
-ax4 = subplot(2,3,4);
-plot(w_data.CDWing1DTable.Breakpoints.Value,w_data.CDWing1DTable.Table.Value);
+ax6 = subplot(2,4,6);
+plot(partitionedAero(2).alpha,partitionedAero(2).CDVals);
 xlabel('$\alpha$ [deg]')
 ylabel('$C_{D}$')
 grid on
-hCD_ax = gca;
+hold on
 
-linkaxes([ax1,ax4],'x');
+linkaxes([ax2,ax6],'x');
 
 % HS
-ax2 = subplot(2,3,2);
-plot(hs_data.CLHS1DTable.Breakpoints.Value,hs_data.CLHS1DTable.Table.Value);
+ax3 = subplot(2,4,3);
+plot(partitionedAero(3).alpha,partitionedAero(3).CLVals);
 xlabel('$\alpha$ [deg]')
 ylabel('$C_{L}$')
-title('Right H-stab')
+title('H-stab')
 grid on
+hold on
 
-ax5 = subplot(2,3,5);
-plot(hs_data.CDHS1DTable.Breakpoints.Value,hs_data.CDHS1DTable.Table.Value);
+ax7 = subplot(2,4,7);
+plot(partitionedAero(3).alpha,partitionedAero(3).CDVals);
 xlabel('$\alpha$ [deg]')
 ylabel('$C_{D}$')
 grid on
+hold on
 
-linkaxes([ax2,ax5],'x');
+linkaxes([ax3,ax7],'x');
 
 % VS
-ax3 = subplot(2,3,3);
-plot(vs_data.CLVS1DTable.Breakpoints.Value,vs_data.CLVS1DTable.Table.Value);
+ax4 = subplot(2,4,4);
+plot(partitionedAero(4).alpha,partitionedAero(4).CLVals);
 xlabel('$\alpha$ [deg]')
 ylabel('$C_{L}$')
 title('V-stab')
 grid on
+hold on
 
-ax6 = subplot(2,3,6);
-plot(vs_data.CDVS1DTable.Breakpoints.Value,vs_data.CDVS1DTable.Table.Value);
+ax8 = subplot(2,4,8);
+plot(partitionedAero(4).alpha,partitionedAero(4).CDVals);
 xlabel('$\alpha$ [deg]')
 ylabel('$C_{D}$')
 grid on
+hold on
 
-linkaxes([ax3,ax6],'x');
-linkprop([ax1,ax2,ax3],{'CameraPosition','CameraUpVector'});
+linkaxes([ax4,ax8],'x');
 
-axis([ax1 ax2 ax3],[-inf inf hCL_ax.YLim(1) hCL_ax.YLim(2)]);
-axis([ax4 ax5 ax6],[-inf inf hCD_ax.YLim(1) hCD_ax.YLim(2)]);
+axis([ax1 ax2 ax3 ax4],[-inf inf hCL_ax.YLim(1) hCL_ax.YLim(2)]);
+axis([ax5 ax6 ax7 ax8],[-inf inf hCD_ax.YLim(1) hCD_ax.YLim(2)]);
 
 
 %% find aero center
 %%%%%%%    ref point 1        %%%%%%%%%%%%
-dsgnTest_1.reference_point = [0.2;0;0];
-avlCreateInputFilePart(dsgnTest_1);
-
-% test at alp 1
-alp1 = 0;
-dsgnTest_1.singleCase.alpha = alp1;
-
-avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
-load('dsgnTest_1_results');
-
-Cm1 = results{1}.FT.Cmtot
-
-
-
-
-% test at alp 2
-alp2 = 5;
-dsgnTest_1.singleCase.alpha = alp2;
-
-avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
-load('dsgnTest_1_results');
-
-Cm2 = results{1}.FT.Cmtot;
-
-slp1 = (Cm2-Cm1)/(alp2 - alp1);
-
-
-%%%%%%%    ref point 2        %%%%%%%%%%%%
-dsgnTest_1.reference_point = [dsgnTest_1.wing_chord;dsgnTest_1.wing_span/4;0];
-avlCreateInputFilePart(dsgnTest_1);
-
-% test at alp 1
-dsgnTest_1.singleCase.alpha = alp1;
-
-avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
-load('dsgnTest_1_results');
-
-Cm3 = results{1}.FT.Cmtot;
-
-% test at alp 2
-dsgnTest_1.singleCase.alpha = alp2;
-
-avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
-load('dsgnTest_1_results');
-
-Cm4 = results{1}.FT.Cmtot;
-
-slp2 = (Cm4-Cm3)/(alp2 - alp1);
-
-
-
-
+% dsgnTest_1.reference_point = [0.2;0;0];
+% avlCreateInputFilePart(dsgnTest_1);
+% 
+% % test at alp 1
+% alp1 = 0;
+% dsgnTest_1.singleCase.alpha = alp1;
+% 
+% avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
+% load('dsgnTest_1_results');
+% 
+% Cm1 = results{1}.FT.Cmtot
+% 
+% 
+% 
+% 
+% % test at alp 2
+% alp2 = 5;
+% dsgnTest_1.singleCase.alpha = alp2;
+% 
+% avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
+% load('dsgnTest_1_results');
+% 
+% Cm2 = results{1}.FT.Cmtot;
+% 
+% slp1 = (Cm2-Cm1)/(alp2 - alp1);
+% 
+% 
+% %%%%%%%    ref point 2        %%%%%%%%%%%%
+% dsgnTest_1.reference_point = [dsgnTest_1.wing_chord;dsgnTest_1.wing_span/4;0];
+% avlCreateInputFilePart(dsgnTest_1);
+% 
+% % test at alp 1
+% dsgnTest_1.singleCase.alpha = alp1;
+% 
+% avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
+% load('dsgnTest_1_results');
+% 
+% Cm3 = results{1}.FT.Cmtot;
+% 
+% % test at alp 2
+% dsgnTest_1.singleCase.alpha = alp2;
+% 
+% avlProcessPart(dsgnTest_1,dsgnTest_1.wing_ip_file_name,'single','Parallel',false);
+% load('dsgnTest_1_results');
+% 
+% Cm4 = results{1}.FT.Cmtot;
+% 
+% slp2 = (Cm4-Cm3)/(alp2 - alp1);
+% 
+% 
+% 
+% 
