@@ -96,6 +96,12 @@ plot3(aeroStruct(1).aeroCentPosVec(1),aeroStruct(1).aeroCentPosVec(2),aeroStruct
 plot3(aeroStruct(2).aeroCentPosVec(1),aeroStruct(2).aeroCentPosVec(2),aeroStruct(2).aeroCentPosVec(3),'b+')
 plot3(aeroStruct(3).aeroCentPosVec(1),aeroStruct(3).aeroCentPosVec(2),aeroStruct(3).aeroCentPosVec(3),'b+')
 plot3(aeroStruct(4).aeroCentPosVec(1),aeroStruct(4).aeroCentPosVec(2),aeroStruct(4).aeroCentPosVec(3),'b+')
+xlabel('X [m]')
+ylabel('Y [m]')
+zlabel('Z [m]')
+
+set(gcf,'Position',[250 200 1.4*560 1.4*420])
+
 
 
 

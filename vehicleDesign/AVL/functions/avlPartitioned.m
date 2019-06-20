@@ -35,7 +35,9 @@ for ii = 1:n_case
 end
 
 CL_kWing = polyfit(obj.sweepCase.aileron,CL_w,2);
+CL_kWing(end) = 0;
 CD_kWing = polyfit(obj.sweepCase.aileron,CD_w,2);
+CD_kWing(end) = 0;
 
 % left wing data
 aeroStruct(1).refArea        = Sref;
@@ -93,7 +95,9 @@ for ii = 1:n_case
 end
 
 CL_kHS = polyfit(obj.sweepCase.aileron,CL_hs,2);
+CL_kHS(end) = 0;
 CD_kHS = polyfit(obj.sweepCase.aileron,CD_hs,2);
+CD_kHS(end) = 0;
 
 % HS data
 aeroStruct(3).refArea        = Sref;
@@ -136,7 +140,9 @@ for ii = 1:n_case
 end
 
 CL_kVS = polyfit(obj.sweepCase.aileron,CL_vs,2);
+CL_kVS(end) = 0;
 CD_kVS = polyfit(obj.sweepCase.aileron,CD_vs,2);
+CD_kVS(end) = 0;
 
 aeroStruct(4).refArea        = Sref;
 aeroStruct(4).aeroCentPosVec = [...
@@ -156,6 +162,11 @@ save(obj.lookup_table_file_name,'aeroStruct','dsgnData');
 delete(obj.wing_ip_file_name);
 delete(obj.hs_ip_file_name);
 delete(obj.vs_ip_file_name);
+
+%
+filepath = fileparts(which('avl.exe'));
+
+delete(fullfile(filepath,strcat(obj.result_file_name,'.mat')));
 
 
 

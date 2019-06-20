@@ -18,10 +18,8 @@ outputDirectory = fullfile(pwd,'output');
 
 % If the output directory doesn't exist, create it
 if ~exist(outputDirectory, 'dir')
-    fprintf('Creating output directory\n')
     mkdir(outputDirectory);
 else
-    fprintf('Deleting and recreating output directory\n')
     rmdir(outputDirectory,'s');
     mkdir(outputDirectory);
 end
@@ -45,7 +43,6 @@ cnt = 0;
 % runFileID = zeros([1 max(batchNums)]);
 
 % Preallocate vector to hold run file names and open all those files\
-fprintf('Creating .run files\n')
 runFileNames = cell([1 batchNums(end)]);
 for ii = 1:length(runFileNames)
     exeFileName  = strrep(obj.run_file_name,'.run','');
@@ -59,7 +56,7 @@ for ii = 1:length(runFileNames)
     fclose(fid);
 end
 
-fprintf('Filling in .run files\n')
+fprintf('Running AVL...\n')
 for ii = 1:length(alphas)
     alpha = alphas(ii);
     for jj = 1:length(betas)
@@ -87,7 +84,6 @@ for ii = 1:length(alphas)
     end
 end
 % fclose('all');
-fprintf('Creating _exe files.\n')
 % Create exe file for each .run batch file
 runFiles = dir('output'); % Gets all files in output folder
 runFiles = runFiles(~[runFiles.isdir]); % Removes . and .. from list
@@ -99,7 +95,6 @@ for ii = 1:length(runFiles)
     avlCreateExeFile(exeFileName,inputFileName,runFileName)
 end
 
-fprintf('Running AVL\n')
 % run each _exe file on each .run file
 exeFiles = dir(fullfile('output','*_exe'));
 if p.Results.Parallel % Then run in parallel
