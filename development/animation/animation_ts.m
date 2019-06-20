@@ -16,8 +16,6 @@ load('dsgnTest_1_lookupTables.mat')
 scaleFactor = 10/40;
 duration_s = 200*sqrt(scaleFactor);
 
-PLANT = 'modularPlant';
-
 % Initialize classes
 ctrl = threeTetherThreeSurfaceCtrlClass;
 simParam = simParamClass;
@@ -150,5 +148,5 @@ end
 
 
 sim('OCTModel')
-parseLogsout
-% stopCallback
+% parseLogsout
+stopCallback
