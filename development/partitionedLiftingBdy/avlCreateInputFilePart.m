@@ -273,6 +273,13 @@ fprintf(fileID,'#Nchordwise  Cspace   Nspanwise   Sspace\n');
 fprintf(fileID,'%d \t %0.2f \t %d \t %0.2f\n',...
     Nchordwise_hs, Cspace_hs, Nspanwise_hs, Sspace_hs);
 
+%
+fprintf(fileID,'YDUPLICATE\n'); % toggle Y-duplicate
+
+% YDUPLICATE
+y_dup_hs = 0;
+fprintf(fileID,'%0.1f\n',y_dup_hs);
+
 % ANGLE
 fprintf(fileID,'ANGLE\n'); % permanent incident angle
 fprintf(fileID,'%0.1f\n',angle_w);
