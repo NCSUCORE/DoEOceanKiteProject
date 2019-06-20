@@ -99,9 +99,7 @@ end
 
 
 %% AVL input file WING
-% filePath = fileparts(which('avl.exe'));
-% fileID = fopen(fullfile(fileparts(which('avl.exe')),obj.wing_ip_file_name),'w');
-fileID = fopen(obj.wing_ip_file_name,'w');
+fileID = fopen(fullfile(fileparts(which('avl.exe')),obj.wing_ip_file_name),'w');
 
 % design name % Plane Vanilla
 % des_Name = 'Plane Vanilla test';
@@ -234,9 +232,7 @@ fclose(fileID);
 
 
 %% AVL input file HS
-% filePath = fileparts(which('avl.exe'));
-% fileID = fopen(fullfile(fileparts(which('avl.exe')),obj.hs_ip_file_name),'w');
-fileID = fopen(obj.hs_ip_file_name,'w');
+fileID = fopen(fullfile(fileparts(which('avl.exe')),obj.hs_ip_file_name),'w');
 
 % design name % Plane Vanilla
 % des_Name = 'Plane Vanilla test';
@@ -356,9 +352,7 @@ fclose(fileID);
 
 
 %% AVL input file VS
-% filePath = fileparts(which('avl.exe'));
-% fileID = fopen(fullfile(fileparts(which('avl.exe')),obj.vs_ip_file_name),'w');
-fileID = fopen(obj.vs_ip_file_name,'w');
+fileID = fopen(fullfile(fileparts(which('avl.exe')),obj.vs_ip_file_name),'w');
 
 % design name % Plane Vanilla
 % des_Name = 'Plane Vanilla test';
