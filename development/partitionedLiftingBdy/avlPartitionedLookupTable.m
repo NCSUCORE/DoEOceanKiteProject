@@ -1,5 +1,5 @@
-function [CLtot_1D_Tbl,CDtot_1D_Tbl,Cmtot_1D_Tbl] =...
-    avlPartitionedLookupTable(obj,saveFileName,aeroResults)
+function [CLtot_1D_Tbl,CDtot_1D_Tbl] =...
+    avlPartitionedLookupTable(aeroResults)
 
 nCases = 25*(length(aeroResults) - 1) + length(aeroResults{end});
 
@@ -44,16 +44,10 @@ CDtot_1D_Tbl.StructTypeInfo.Name = 'CDtot_1D_Tbl';
 CDtot_1D_Tbl.Table.Value = reshape(CDs,tableDims)';
 CDtot_1D_Tbl.Breakpoints(1).Value = alphas;
 
-% Moment about body y lookup table
-Cmtot_1D_Tbl = Simulink.LookupTable;
-Cmtot_1D_Tbl.StructTypeInfo.Name = 'Cmtot_1D_Tbl';
-Cmtot_1D_Tbl.Table.Value = reshape(Cms,tableDims)';
-Cmtot_1D_Tbl.Breakpoints(1).Value = alphas;
-
 
 % saveFileName = fullfile(fileparts(which('avl.exe')),'designLibrary',saveFileName);
-dsgnData = obj;
-save(saveFileName,'CLtot_1D_Tbl','CDtot_1D_Tbl','Cmtot_1D_Tbl','dsgnData');
+% dsgnData = obj;
+% save(saveFileName,'CLtot_1D_Tbl','CDtot_1D_Tbl','dsgnData');
 
 
 end
