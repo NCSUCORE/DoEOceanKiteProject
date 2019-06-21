@@ -9,16 +9,20 @@ GROUNDSTATION = 'groundStation000';
 PLANT = 'modularPlant';
 ENVIRONMENT = 'constantUniformFlow';
 
-load('dsgnTest_1_lookupTables.mat')
+load('partDsgn1_lookupTables.mat')
 
+aeroStruct(1).aeroCentPosVec(1) = -aeroStruct(1).aeroCentPosVec(1);
+aeroStruct(2).aeroCentPosVec(1) = -aeroStruct(2).aeroCentPosVec(1);
 
 % Check that scaling works
-scaleFactor = 0.1;
-duration_s = 200*sqrt(scaleFactor);
+scaleFactor = 1;
+duration_s = 500*sqrt(scaleFactor);
 
 % Initialize classes
 ctrl = threeTetherThreeSurfaceCtrlClass;
 simParam = simParamClass;
+
+simParam.tether_param.tether_youngs.Value = simParam.tether_param.tether_youngs.Value/3;
 
 % Set initial condition
 ini_Rcm_o = [0 0 ctrl.setAltM.Value]';
@@ -28,7 +32,7 @@ ini_OwB = [0 0 0]';
 initPlatformAngle = 0;
 initPlatformAngularVel = 0;
 simParam.setInitialConditions(...
-    'Position',[40 0 ini_Rcm_o(3)-2],...
+    'Position',[10 0 ini_Rcm_o(3)-2],...
     'Velocity',ini_O_Vcm_o,...
     'EulerAngles',ini_euler_ang,...
     'AngularVelocity',ini_OwB,...
@@ -54,43 +58,43 @@ thr(1).initVhclAttchPt  = simParam.initPosVec.Value +...
 thr(1).initVhclAttchPt  = simParam.initPosVec.Value;
 thr(1).initGndStnAttchPt = [0 0 0]';
 
-thr(2).N                = simParam.N.Value;
-thr(2).diameter         = simParam.tether_param.tether_diameter.Value(2);
-thr(2).youngsMod        = simParam.tether_param.tether_youngs.Value;
-thr(2).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
-thr(2).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
-thr(2).dampingRatio     = simParam.tether_param.damping_ratio.Value;
-thr(2).fluidDensity     = simParam.env_param.density.Value;
-thr(2).gravAccel        = simParam.env_param.grav.Value;
-thr(2).vehicleMass      = simParam.geom_param.mass.Value;
-thr(2).initVhclAttchPt  = simParam.initPosVec.Value +...
-    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R2n_cm.Value;
-thr(2).initGndStnAttchPt = simParam.tether_imp_nodes.R21_g.Value;
-
-thr(3).N                = simParam.N.Value;
-thr(3).diameter         = simParam.tether_param.tether_diameter.Value(3);
-thr(3).youngsMod        = simParam.tether_param.tether_youngs.Value;
-thr(3).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
-thr(3).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
-thr(3).dampingRatio     = simParam.tether_param.damping_ratio.Value;
-thr(3).fluidDensity     = simParam.env_param.density.Value;
-thr(3).gravAccel        = simParam.env_param.grav.Value;
-thr(3).vehicleMass      = simParam.geom_param.mass.Value;
-thr(3).initVhclAttchPt  = simParam.initPosVec.Value +...
-    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R3n_cm.Value;
-thr(3).initGndStnAttchPt = simParam.tether_imp_nodes.R31_g.Value;
+% thr(2).N                = simParam.N.Value;
+% thr(2).diameter         = simParam.tether_param.tether_diameter.Value(2);
+% thr(2).youngsMod        = simParam.tether_param.tether_youngs.Value;
+% thr(2).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
+% thr(2).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
+% thr(2).dampingRatio     = simParam.tether_param.damping_ratio.Value;
+% thr(2).fluidDensity     = simParam.env_param.density.Value;
+% thr(2).gravAccel        = simParam.env_param.grav.Value;
+% thr(2).vehicleMass      = simParam.geom_param.mass.Value;
+% thr(2).initVhclAttchPt  = simParam.initPosVec.Value +...
+%     rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R2n_cm.Value;
+% thr(2).initGndStnAttchPt = simParam.tether_imp_nodes.R21_g.Value;
+% 
+% thr(3).N                = simParam.N.Value;
+% thr(3).diameter         = simParam.tether_param.tether_diameter.Value(3);
+% thr(3).youngsMod        = simParam.tether_param.tether_youngs.Value;
+% thr(3).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
+% thr(3).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
+% thr(3).dampingRatio     = simParam.tether_param.damping_ratio.Value;
+% thr(3).fluidDensity     = simParam.env_param.density.Value;
+% thr(3).gravAccel        = simParam.env_param.grav.Value;
+% thr(3).vehicleMass      = simParam.geom_param.mass.Value;
+% thr(3).initVhclAttchPt  = simParam.initPosVec.Value +...
+%     rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R3n_cm.Value;
+% thr(3).initGndStnAttchPt = simParam.tether_imp_nodes.R31_g.Value;
 
 % Set up structure for tether attachment points at ground station
 gndStnMmtArms(1).arm = [0 0 0];
-gndStnMmtArms(1).arm = simParam.tether_imp_nodes.R11_g.Value;
-gndStnMmtArms(2).arm = simParam.tether_imp_nodes.R21_g.Value;
-gndStnMmtArms(3).arm = simParam.tether_imp_nodes.R31_g.Value;
+% gndStnMmtArms(1).arm = simParam.tether_imp_nodes.R11_g.Value;
+% gndStnMmtArms(2).arm = simParam.tether_imp_nodes.R21_g.Value;
+% gndStnMmtArms(3).arm = simParam.tether_imp_nodes.R31_g.Value;
 
 % Set up structure for tether attachment points on lifting body
 lftBdyMmtArms(1).arm = [0 0 0];
-lftBdyMmtArms(1).arm = simParam.tether_imp_nodes.R1n_cm.Value;
-lftBdyMmtArms(2).arm = simParam.tether_imp_nodes.R2n_cm.Value;
-lftBdyMmtArms(3).arm = simParam.tether_imp_nodes.R3n_cm.Value;
+% lftBdyMmtArms(1).arm = simParam.tether_imp_nodes.R1n_cm.Value;
+% lftBdyMmtArms(2).arm = simParam.tether_imp_nodes.R2n_cm.Value;
+% lftBdyMmtArms(3).arm = simParam.tether_imp_nodes.R3n_cm.Value;
 
 % Set up structure for winches
 for ii = 1:numel(lftBdyMmtArms)
@@ -129,20 +133,25 @@ ctrl.tetherRollTau.Value  = 1;
 createOrigionalPlantBus;
 createConstantUniformFlowEnvironmentBus;
 
-% ctrl.P_cs_mat.Value = [-1 0;0 1];
-% ctrl.elevonPitchKp.Value = 0;
-% ctrl.elevonRollKp.Value  = 0;
+ctrl.P_cs_mat.Value = [1 0;0 1];
+ctrl.elevonPitchKp.Value = 10/2;
+ctrl.elevonPitchKd.Value  = 20/2;
 % 
-% ctrl.elevonPitchKd.Value = 0;
-% ctrl.elevonRollKd.Value = 0;
+ctrl.elevonRollKp.Value = 10;
+ctrl.elevonRollKd.Value  = 20;
+
+
+simParam.geom_param.MI.Value = simParam.geom_param.MI.Value*(1/4)^5;
+simParam.geom_param.mass.Value = simParam.geom_param.mass.Value*(1/4)^3;
 
 % Calculate setpoints
 timeVec = 0:0.1:duration_s;
 set_alt = timeseries(ctrl.setAltM.Value*ones(size(timeVec)),timeVec);
-set_pitch = timeseries(2*ones(size(timeVec)),timeVec);
+set_pitch = timeseries(15*ones(size(timeVec)),timeVec);
 set_roll = timeseries(ctrl.setRollDeg.Value*ones(size(timeVec)),timeVec);
-set_roll.Data = 0*sign(sin(timeVec/(2*pi*200)));
-set_roll.Data(timeVec<200) = 0;
+set_roll.Data = 30*sign(sin(2*pi*timeVec/(100)));
+set_roll.Data(timeVec<60) = 0;
+% set_roll.plot
 
 switch numel(thr)
     case 3
