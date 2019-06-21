@@ -51,6 +51,9 @@ aeroStruct(1).CD = reshape(CDWingTab.Table.Value,[],1);
 aeroStruct(1).alpha = reshape(CDWingTab.Breakpoints.Value,[],1);
 aeroStruct(1).GainCL = reshape(CL_kWing,1,[]);
 aeroStruct(1).GainCD =  reshape(CD_kWing,1,[]);
+aeroStruct(1).MaxCtrlDeflDn = obj.wing_CS_deflection_range(1);
+aeroStruct(1).MaxCtrlDeflUp = obj.wing_CS_deflection_range(2);
+
 
 % right wing data
 aeroStruct(2).refArea        = Sref;
@@ -64,6 +67,9 @@ aeroStruct(2).CD = reshape(CDWingTab.Table.Value,[],1);
 aeroStruct(2).alpha = reshape(CDWingTab.Breakpoints.Value,[],1);
 aeroStruct(2).GainCL = reshape(CL_kWing,1,[]);
 aeroStruct(2).GainCD =  reshape(CD_kWing,1,[]);
+aeroStruct(2).MaxCtrlDeflDn = obj.wing_CS_deflection_range(1);
+aeroStruct(2).MaxCtrlDeflUp = obj.wing_CS_deflection_range(2);
+
 
 %% horizontal stabilizers
 % set run cases
@@ -109,6 +115,9 @@ aeroStruct(3).CD = reshape(CDHSTab.Table.Value,[],1);
 aeroStruct(3).alpha = reshape(CDHSTab.Breakpoints.Value,[],1);
 aeroStruct(3).GainCL = reshape(CL_kHS,1,[]);
 aeroStruct(3).GainCD =  reshape(CD_kHS,1,[]);
+aeroStruct(3).MaxCtrlDeflDn = obj.h_stab_CS_deflection_range(1);
+aeroStruct(3).MaxCtrlDeflUp = obj.h_stab_CS_deflection_range(2);
+
 
 %% vertical stabilizer
 % set run cases
@@ -155,6 +164,9 @@ aeroStruct(4).CD = reshape(CDVSTab.Table.Value,[],1);
 aeroStruct(4).alpha = reshape(CDVSTab.Breakpoints.Value,[],1);
 aeroStruct(4).GainCL = reshape(CL_kVS,1,[]);
 aeroStruct(4).GainCD =  reshape(CD_kVS,1,[]);
+aeroStruct(4).MaxCtrlDeflDn = obj.v_stab_CS_deflection_range(1);
+aeroStruct(4).MaxCtrlDeflUp = obj.v_stab_CS_deflection_range(2);
+
 
 dsgnData = obj;
 save(obj.lookup_table_file_name,'aeroStruct','dsgnData');

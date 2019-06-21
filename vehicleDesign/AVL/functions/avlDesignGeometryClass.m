@@ -21,6 +21,7 @@ classdef avlDesignGeometryClass < handle
         wing_incidence_angle = 0;
         wing_naca_airfoil = '2412';
         wing_airfoil_ClLimits = [-1.5 1.5];
+        wing_CS_deflection_range = [-30 30];
         
         wing_Nspanwise = 20;
         wing_Nchordwise = 2;
@@ -33,6 +34,7 @@ classdef avlDesignGeometryClass < handle
         h_stab_TR = 0.8;
         h_stab_naca_airfoil = '2412';
         h_stab_airfoil_ClLimits = [-1.5 1.5];
+        h_stab_CS_deflection_range = [-30 30];
         
         h_stab_Nspanwise = 5;
         h_stab_Nchordwise = 1;
@@ -44,7 +46,8 @@ classdef avlDesignGeometryClass < handle
         v_stab_TR = 0.9;
         v_stab_naca_airfoil = '0015';
         v_stab_airfoil_ClLimits = [-2 2];
-        
+        v_stab_CS_deflection_range = [-30 30];
+
         v_stab_Nspanwise = 5;
         v_stab_Nchordwise = 1;
         
