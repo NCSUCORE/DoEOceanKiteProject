@@ -26,23 +26,23 @@ flow=[1.5;0;0;];
 sim_time=40;
 %%
 sim('testUntilRoll_th')
-% %%
-% aBooth=1;bBooth=1;latCurve=.5;
-% a=parseLogsout;
-% % close all
-% figure
-% ax=axes;
-% pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
-% plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
-% hold on
-% 
-% plot3(a.positionVec.Data(:,1),a.positionVec.Data(:,2),a.positionVec.Data(:,3),'lineWidth',2)
-% [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
-% h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
-% if min(a.positionVec.Data(:,3))>0
-%     zlim([0 inf])
-% end
-% view(100,45)
+%%
+aBooth=1;bBooth=1;latCurve=.5;
+a=parseLogsout;
+% close all
+figure
+ax=axes;
+pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
+plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
+hold on
+
+plot3(a.positionVec.Data(:,1),a.positionVec.Data(:,2),a.positionVec.Data(:,3),'lineWidth',2)
+[x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+if min(a.positionVec.Data(:,3))>0
+    zlim([0 inf])
+end
+view(100,45)
 %% 
 % pause(3)
 close all
