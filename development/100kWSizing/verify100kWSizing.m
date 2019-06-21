@@ -135,15 +135,11 @@ createConstantUniformFlowEnvironmentBus;
 
 ctrl.P_cs_mat.Value = [1 0;0 1];
 ctrl.elevonPitchKp.Value = 10/2;
-% ctrl.elevonPitchKi.Value = 1/2;
 ctrl.elevonPitchKd.Value  = 20/2;
 % 
 ctrl.elevonRollKp.Value = 10;
-% ctrl.elevonRollKi.Value = 1;
 ctrl.elevonRollKd.Value  = 20;
 
-% aeroStruct(1).GainCL = 10*aeroStruct(1).GainCL;
-% aeroStruct(2).GainCL = 10*aeroStruct(2).GainCL;
 
 simParam.geom_param.MI.Value = simParam.geom_param.MI.Value*(1/4)^5;
 simParam.geom_param.mass.Value = simParam.geom_param.mass.Value*(1/4)^3;
