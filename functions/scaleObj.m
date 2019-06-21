@@ -17,7 +17,11 @@ skipListNames = {'grav' ,'visc' ,'visc'};
 skipUnits     = {'m/s^2','Pa'   ,'Pa'};
 
 for ii = 1:length(p)
+    try
     unit = obj.(p{ii}).Unit;
+    catch
+        x = 1;
+    end
     if ~isempty(unit) && ~skipCheck(p{ii},unit,skipListNames,skipUnits)
         for jj = 1:length(scaleUnitList)
             unit = strrep(unit, scaleUnitList{jj},scaleFactors{jj});

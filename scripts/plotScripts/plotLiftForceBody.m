@@ -1,4 +1,5 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Lift Force, Body Frame');
+figure('Position',[ 1 41 1920 963],'Units','pixels',...
+    'Name','Lift Force, Body Frame');
 subplot(3,1,1)
 plot(tsc.FLiftBdy.Time,squeeze(tsc.FLiftBdy.Data(1,:,:)),...
     'LineStyle','-','Color','k','LineWidth',1.5)
