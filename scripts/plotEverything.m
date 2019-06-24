@@ -9,5 +9,6 @@ for ii = 1:length(files)
         eval(strrep(files(ii).name,'.m',''))
     catch 
          warning('Failed: %s',files(ii).name)
+         close
     end
 end
