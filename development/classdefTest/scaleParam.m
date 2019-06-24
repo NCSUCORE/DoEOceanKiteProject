@@ -1,5 +1,6 @@
 function val = scaleParam(p,factor)
-if ~isempty(p.Unit) && ~p.IgnoreScaling
+val = [];
+if ~p.IgnoreScaling && ~isempty(p.Value) && ~isempty(p.Unit)
     scaleUnitList = {'m','s','kg','rad','deg','N','Pa'}; % units that impact how to scale things
     scaleFactorList  = {...
         'factor',...
