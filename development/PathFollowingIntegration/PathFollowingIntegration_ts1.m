@@ -1,32 +1,66 @@
-% Script to test the origional model against the modularized model
+% Script to help implement the pathFollowingController with the modularized model
 % clear all;clc;
 
-
+%% Define Variants an busses
 VEHICLE = 'modVehicle000';
 WINCH = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
 PLANT = 'modularPlant';
 ENVIRONMENT = 'constantUniformFlow';
+CONTROLLER = 'pathFollowingController';
 
+createPathFollowingControllerCtrlBus;
+%% Initialize Plant Parameters
+%scaling
+scaleFactor = 1;
+duration_s = 500*sqrt(scaleFactor);
+
+%AeroStruct
 load('partDsgn1_lookupTables.mat')
 
 aeroStruct(1).aeroCentPosVec(1) = -aeroStruct(1).aeroCentPosVec(1);
 aeroStruct(2).aeroCentPosVec(1) = -aeroStruct(2).aeroCentPosVec(1);
 
-% Check that scaling works
-scaleFactor = 1;
-duration_s = 500*sqrt(scaleFactor);
-
-% Initialize classes
-ctrl = threeTetherThreeSurfaceCtrlClass;
 simParam = simParamClass;
-
 simParam.tether_param.tether_youngs.Value = simParam.tether_param.tether_youngs.Value/3;
 
+%%
+tetherLength=200;
+long = -.2;
+lat = .56;
+tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
+           -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+           cos(lat)            0          -sin(lat);];
+path_init = tetherLength*[cos(long).*cos(lat);
+         sin(long).*cos(lat);
+         sin(lat);];
+ini_Rcm_o = [path_init(1);path_init(2);path_init(3);];
+velMag=7;
+initVelAng = 45;%degrees
+ini_O_Vcm_o= velMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+%%%%%%%%%Controller Params%%%%%%
+aBooth=1;bBooth=1;latCurve=.5;
+
+%2 deg/s^2 for an error of 1 radian
+MOI_X=simParam.geom_param.MI.Value(1,1);
+kpRollMom =2*MOI_X;
+kdRollMom = 5*MOI_X;
+tauRollMom = .01; 
+
+maxBank=45*pi/180;
+kpVelAng=maxBank/(pi/2); %max bank divided by large error
+kiVelAng=kpVelAng/100;
+kdVelAng=kpVelAng;
+tauVelAng=.01;
+
+controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
+controlSigMax = 5*10^7;
+
+
 % Set initial condition
-ini_Rcm_o = [0 0 ctrl.setAltM.Value]';
-ini_O_Vcm_o = [0 0 0]';
+% ini_Rcm_o = [0 0 200]';
+% ini_O_Vcm_o = [0 0 0]';
 ini_euler_ang = [0 0 0]';
 ini_OwB = [0 0 0]';
 initPlatformAngle = 0;
@@ -40,7 +74,6 @@ simParam.setInitialConditions(...
     'PlatformAngularVelocity',initPlatformAngularVel);
 
 % Scale up/down
-ctrl.scale(scaleFactor,1);
 simParam = simParam.scale(scaleFactor,1);
 
 % Set up structure for tether for loop
@@ -70,71 +103,13 @@ winch.maxSpeed  = ctrl.winc_vel_up_lims.Value;
 winch.timeConst = simParam.winch_time_const.Value;
 winch.maxAccel = inf;
 
-% Turn controller off/on
-ctrl.elevonPitchKp.Value   = 0;
-ctrl.elevonPitchKi.Value   = 0;
-ctrl.elevonPitchKd.Value   = 0;
-ctrl.elevonPitchTau.Value  = 1;
 
-ctrl.elevonRollKp.Value   = 0;
-ctrl.elevonRollKi.Value   = 0;
-ctrl.elevonRollKd.Value   = 0;
-ctrl.elevonRollTau.Value  = 1;
-
-ctrl.tetherAltitudeKp.Value   = 0;
-ctrl.tetherAltitudeKi.Value   = 0;
-ctrl.tetherAltitudeKd.Value   = 0;
-ctrl.tetherAltitudeTau.Value  = 1;
-
-ctrl.tetherPitchKp.Value   = 0;
-ctrl.tetherPitchKi.Value   = 0;
-ctrl.tetherPitchKd.Value   = 0;
-ctrl.tetherPitchTau.Value  = 1;
-
-ctrl.tetherRollKp.Value   = 0;
-ctrl.tetherRollKi.Value   = 0;
-ctrl.tetherRollKd.Value   = 0;
-ctrl.tetherRollTau.Value  = 1;
-
-createOrigionalPlantBus;
-createConstantUniformFlowEnvironmentBus;
-
-ctrl.P_cs_mat.Value = [1 0;0 1];
-ctrl.elevonPitchKp.Value = 10/2;
-ctrl.elevonPitchKd.Value  = 20/2;
-% 
-ctrl.elevonRollKp.Value = 10;
-ctrl.elevonRollKd.Value  = 20;
-
-
-simParam.geom_param.MI.Value = simParam.geom_param.MI.Value*(1/4)^5;
-simParam.geom_param.mass.Value = simParam.geom_param.mass.Value*(1/4)^3;
-
-% Calculate setpoints
-timeVec = 0:0.1:duration_s;
-set_alt = timeseries(ctrl.setAltM.Value*ones(size(timeVec)),timeVec);
-set_pitch = timeseries(15*ones(size(timeVec)),timeVec);
-set_roll = timeseries(ctrl.setRollDeg.Value*ones(size(timeVec)),timeVec);
-set_roll.Data = 30*sign(sin(2*pi*timeVec/(100)));
-set_roll.Data(timeVec<60) = 0;
-% set_roll.plot
-
-switch numel(thr)
-    case 3
-        createThreeTetherThreeSurfaceCtrlBus;
-        CONTROLLER = 'threeTetherThreeSurfaceCtrl';
-        caseDescriptor = '3 Tethers';
-        
-    case 1
-        createOneTetherThreeSurfaceCtrlBus;
-        CONTROLLER = 'oneTetherThreeSurfaceCtrl';
-        caseDescriptor = '1 Tether';
-end
 
 simParam.geom_param.MI.Value = simParam.geom_param.MI.Value*10;
 thr(1).diameter         = simParam.tether_param.tether_diameter.Value(1)*2;
 
 
+%%
 simWithMonitor('OCTModel')
 
 % stopCallback

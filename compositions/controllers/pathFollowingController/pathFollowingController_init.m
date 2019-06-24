@@ -1,4 +1,3 @@
-% disp("Running pathFollowingController_init")
 pathLoc = @(s)boothSToGroundPos(s,aMask,bMask,curveLatMask,0);
 centralAngle = @(s)acos(dot(initPosForInitSStar,pathLoc(s))/...
                    (norm(pathLoc(s))*norm(initPosForInitSStar)));
