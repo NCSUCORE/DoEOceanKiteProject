@@ -8,9 +8,13 @@ classdef vehicle < dynamicprops
         numTurbines
         numTethers
         centOfBuoy
-        aeroRefPt
         mass
         inertia
+        initPosVecGnd
+        initVelVecGnd
+        initEulAngBdy
+        initAngVelVecBdy
+        volume
     end
     
     methods
@@ -22,6 +26,12 @@ classdef vehicle < dynamicprops
             obj.centOfBuoy  = vehicle.param('Unit','m');
             obj.mass        = vehicle.param('Unit','kg');
             obj.inertia     = vehicle.param('Unit','kg*m^2');
+            obj.initPosVecGnd     = vehicle.param('Unit','m');
+            obj.initVelVecGnd     = vehicle.param('Unit','m/s');
+            obj.initEulAngBdy     = vehicle.param('Unit','rad');
+            obj.initAngVelVecBdy  = vehicle.param('Unit','rad/s');
+            obj.volume            = vehicle.param('Unit','m^3');
+            
         end
         
         % Function to build the vehicle
@@ -36,13 +46,22 @@ classdef vehicle < dynamicprops
                 defThrName{ii} = sprintf('thrAttch%d',ii);
             end
             p = inputParser;
+            addRequired(p,'AeroStructFile',@ischar)
             addParameter(p,'SurfaceNames',defSurfName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
             parse(p,varargin{:})
+            
             % Create aero surface fields
+            load(p.Results.AeroStructFile)
+            propNames = fields(aeroStruct);
+            obj.numSurfaces.Value = numel(aeroStruct);
             for ii = 1:obj.numSurfaces.Value
                 obj.addprop(p.Results.SurfaceNames{ii});
                 obj.(p.Results.SurfaceNames{ii}) = vehicle.aeroSurf;
+                
+                for jj = 1:length(propNames)
+                    obj.(p.Results.SurfaceNames{ii}).(propNames{jj}).Value = aeroStruct(ii).(propNames{jj});
+                end
             end
             % Create tethers
             for ii = 1:obj.numTethers.Value
@@ -54,14 +73,16 @@ classdef vehicle < dynamicprops
                 obj.addprop(sprintf('turbine%d',ii));
                 obj.(sprintf('turbine%d',ii)) = vehicle.turb;
             end
+            
+            
         end
         
         % Function to scale the object
         function obj = scale(obj,scaleFactor)
-           props = properties(obj);
-           for ii = 1:numel(props)
-              obj.(props{ii}) = obj.(props{ii}).scale(scaleFactor);
-           end
+            props = properties(obj);
+            for ii = 1:numel(props)
+                obj.(props{ii}) = obj.(props{ii}).scale(scaleFactor);
+            end
         end
         
         
@@ -93,6 +114,19 @@ classdef vehicle < dynamicprops
             end
         end
         
+        % function to set initial conditions
+        function obj = setICs(obj,varargin)
+            p = inputParser;
+            addParameter(p,'InitPos',[0 0 0],@isnumeric)
+            addParameter(p,'InitVel',[0 0 0]',@isnumeric)
+            addParameter(p,'InitEulAng',[0 0 0],@isnumeric)
+            addParameter(p,'InitAngVel',[0 0 0]',@isnumeric)
+            parse(p,varargin{:})
+            obj.initPosVecGnd.Value     = p.Results.InitPos;
+            obj.initVelVecGnd.Value     = p.Results.InitVel;
+            obj.initEulAngBdy.Value     = p.Results.InitEulAng;
+            obj.initAngVelVecBdy.Value  = p.Results.InitAngVel;
+        end
     end
 end
 

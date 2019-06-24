@@ -4,7 +4,6 @@ classdef param < Simulink.Parameter
     end
     methods
         function obj = param(varargin)
-%             obj = obj@Simulink.Parameter;
             p = inputParser;
             addParameter(p,'Value',[],@isnumeric)
             addParameter(p,'Min',[],@isnumeric)
