@@ -9,7 +9,6 @@ classdef simParamClass < handle
         tether_imp_nodes
         platform_param
         unstretched_l
-%         X0
         initPosVec
         initVelVec
         initEulAng
