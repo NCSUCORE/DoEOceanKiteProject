@@ -9,6 +9,12 @@ classdef vehicle < dynamicprops
         numTethers
         centOfBuoy
         mass
+        Ixx
+        Iyy
+        Izz
+        Ixy
+        Ixz
+        Iyz
         inertia
         initPosVecGnd
         initVelVecGnd
@@ -25,6 +31,12 @@ classdef vehicle < dynamicprops
             obj.numTethers  = vehicle.param;
             obj.centOfBuoy  = vehicle.param('Unit','m');
             obj.mass        = vehicle.param('Unit','kg');
+            obj.Ixx         = vehicle.param('Unit','kg*m^2');
+            obj.Iyy         = vehicle.param('Unit','kg*m^2');
+            obj.Izz         = vehicle.param('Unit','kg*m^2');
+            obj.Ixy         = vehicle.param('Unit','kg*m^2');
+            obj.Ixz         = vehicle.param('Unit','kg*m^2');
+            obj.Iyz         = vehicle.param('Unit','kg*m^2');
             obj.inertia     = vehicle.param('Unit','kg*m^2');
             obj.initPosVecGnd     = vehicle.param('Unit','m');
             obj.initVelVecGnd     = vehicle.param('Unit','m/s');
@@ -35,7 +47,14 @@ classdef vehicle < dynamicprops
         end
         
         % Function to build the vehicle
-        function obj = build(obj,varargin)
+        function obj = build(obj,AeroStructFile,varargin)
+            
+            p = inputParser;
+            addRequired(p,'AeroStructFile',@ischar)
+            parse(p,AeroStructFile)
+            
+            load(p.Results.AeroStructFile)
+            obj.numSurfaces.Value = numel(aeroStruct);
             % Populate cell array of default names
             defSurfName = {};
             for ii = 1:obj.numSurfaces.Value
@@ -45,16 +64,14 @@ classdef vehicle < dynamicprops
             for ii = 1:obj.numTethers.Value
                 defThrName{ii} = sprintf('thrAttch%d',ii);
             end
-            p = inputParser;
-            addRequired(p,'AeroStructFile',@ischar)
+            
             addParameter(p,'SurfaceNames',defSurfName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
-            parse(p,varargin{:})
+            parse(p,AeroStructFile)
             
             % Create aero surface fields
-            load(p.Results.AeroStructFile)
             propNames = fields(aeroStruct);
-            obj.numSurfaces.Value = numel(aeroStruct);
+            
             for ii = 1:obj.numSurfaces.Value
                 obj.addprop(p.Results.SurfaceNames{ii});
                 obj.(p.Results.SurfaceNames{ii}) = vehicle.aeroSurf;
@@ -76,12 +93,16 @@ classdef vehicle < dynamicprops
             
             
         end
-        
+        function val = get.inertia(obj)
+            val = vehicle.param('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
+                -abs(obj.Ixy.Value) obj.Iyy.Value -abs(obj.Iyz.Value);...
+                -abs(obj.Ixz.Value) -abs(obj.Iyz.Value) obj.Izz.Value],'Unit','kg*m^2');
+        end
         % Function to scale the object
         function obj = scale(obj,scaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}) = obj.(props{ii}).scale(scaleFactor);
+                obj.(props{ii}).scale(scaleFactor);
             end
         end
         
@@ -90,7 +111,7 @@ classdef vehicle < dynamicprops
             % Function returns all properties of the specified class in a
             % 1xN struct useable in a for loop in simulink
             % Example classnames: vehicle.turb, vehicle.aeroSurf
-            props = obj.getPropsByClass(className);
+            props = sort(obj.getPropsByClass(className));
             if numel(props)<1
                 return
             end

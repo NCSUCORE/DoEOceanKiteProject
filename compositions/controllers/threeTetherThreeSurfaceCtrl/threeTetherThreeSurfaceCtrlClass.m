@@ -76,8 +76,8 @@ classdef threeTetherThreeSurfaceCtrlClass < handle
             
         end
         
-        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
-            scaleObj(obj,lengthScaleFactor,densityScaleFactor)
+        function obj = scale(obj,lengthScaleFactor)
+            scaleObj(obj,lengthScaleFactor)
         end
     end
 end

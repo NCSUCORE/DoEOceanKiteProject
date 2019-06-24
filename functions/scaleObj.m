@@ -1,4 +1,4 @@
-function obj = scaleObj(obj,lengthScaleFactor,densityScaleFactor)
+function obj = scaleObj(obj,lengthScaleFactor)
 % function that uses the listed units to automatically scale up/down
 p = properties(obj);
 scaleUnitList = {'m','s','kg','rad','deg','N','Pa'}; % units that impact how to scale things
