@@ -104,6 +104,8 @@ for ii = 1:numel(lftBdyMmtArms)
     winch(ii).maxAccel = inf;
 end
 
+turbStruct(1).Rturb_cm
+
 % Turn controller off/on
 ctrl.elevonPitchKp.Value   = 0;
 ctrl.elevonPitchKi.Value   = 0;
