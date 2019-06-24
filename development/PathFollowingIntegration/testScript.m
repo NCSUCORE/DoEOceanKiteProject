@@ -3,7 +3,7 @@ clear all;clc;
 
 OCTModel_init
 
-VEHICLE = 'vehicle001';
+VEHICLE = 'modVehicle000';
 WINCHES = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
