@@ -1,6 +1,22 @@
 clear all;clc
 
 scaleFactor = 1;
+simParam = simParamClass;
+
+%% Set up simulation
+VEHICLE         = 'vehicle000';
+WINCH           = 'winch000';
+TETHERS         = 'tether000';
+GROUNDSTATION   = 'groundStation000';
+PLANT           = 'modularPlant';
+ENVIRONMENT     = 'constantUniformFlow';
+CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
+duration_s      = 500;
+
+%% Create busses
+createConstantUniformFlowEnvironmentBus
+createOrigionalPlantBus;
+createOneTetherThreeSurfaceCtrlBus;
 
 %% Build the vehicle
 vhcl = OCT.vehicle;
@@ -16,7 +32,6 @@ vhcl.build('partDsgn1_lookupTables.mat');
 % vhcl.Ixz.Value = 0;%81875397*10^-6;
 % vhcl.Iyz.Value = 0;
 % vhcl.volume.Value = 111.7*(1/4)^3;%9453552023*10^-6;
-
 
 vhcl.Ixx.Value = (6.303e9)*10^-6;
 vhcl.Iyy.Value = 2080666338.077*10^-6;
@@ -49,33 +64,7 @@ vhcl.aeroSurf2.aeroCentPosVec.Value(1) = -1.25;
 
 vhcl.scale(scaleFactor);
 
-%% Set up simulation
-VEHICLE         = 'vehicle000';
-WINCH           = 'winch000';
-TETHERS         = 'tether000';
-GROUNDSTATION   = 'groundStation000';
-PLANT           = 'modularPlant';
-ENVIRONMENT     = 'constantUniformFlow';
-CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
-duration_s      = 500;
-
-% Create busses
-createConstantUniformFlowEnvironmentBus
-createOrigionalPlantBus;
-createOneTetherThreeSurfaceCtrlBus;
-
-%% Set up tethers, winches and ground station
-
-
-simParam = simParamClass;
-
-
-
-winch(1).initLength = 212;
-winch(1).maxSpeed  = 0.4;
-winch(1).timeConst = 1;
-winch(1).maxAccel = inf;
-
+%% Create ground station
 gndStn = OCT.station;
 gndStn.numTethers.Value = 1;
 gndStn.build;
@@ -87,8 +76,9 @@ gndStn.initAngPos.Value         = 0;
 gndStn.initAngVel.Value         = 0;
 gndStn.thrAttch1.posVec.Value   = [0 0 0];
 gndStn.freeSpnEnbl.Value        = false;
-gndStn.scale(scaleFactor)
+gndStn.scale(scaleFactor);
 
+%% Create tethers
 thr = OCT.tethers;
 thr.numTethers.Value = 1;
 thr.build
@@ -103,6 +93,15 @@ thr.tether1.dampingRatio.Value  = 0.05;
 thr.tether1.dragCoeff.Value     = 0.5;
 thr.tether1.density.Value       = 1300;
 thr.scale(scaleFactor)
+
+
+%% Create winches
+winch(1).initLength = 212;
+winch(1).maxSpeed  = 0.4;
+winch(1).timeConst = 1;
+winch(1).maxAccel = inf;
+
+
 %% Set up controller
 ctrl = threeTetherThreeSurfaceCtrlClass;
 
