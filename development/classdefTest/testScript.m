@@ -67,8 +67,8 @@ createOneTetherThreeSurfaceCtrlBus;
 %% Set up tethers, winches and ground station
 simParam = simParamClass;
 thr(1).N                = 5;
-thr(1).diameter         = 0.055;
-thr(1).youngsMod        = (3.8e9);  % found something that said 75 GPa for kevlar
+thr(1).diameter         = 0.015;% 0.055
+thr(1).youngsMod        = (50e9);%3.8e9  % found something that said 75 GPa for kevlar
 thr(1).density          = 1300;
 thr(1).dragCoeff        = 0.5;
 thr(1).dampingRatio     = 0.05;
