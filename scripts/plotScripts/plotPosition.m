@@ -17,14 +17,14 @@ ylabel('y Position, [m]')
 subplot(3,1,3)
 plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,:,:)),...
     'LineStyle','-','Color','k','LineWidth',1.5)
-xlabel('Time, [s]')
-ylabel('z Position, [m]')
 grid on
 hold on
 try
 set_alt.plot('LineWidth',1.5,'Color','r','LineStyle','--')
 catch
 end
+xlabel('Time, [s]')
+ylabel('z Position, [m]')
 
 set(findall(gcf,'Type','axes'),'FontSize',20)
 linkaxes(findall(gcf,'Type','axes'),'x')

@@ -17,37 +17,37 @@ vhcl.build('partDsgn1_lookupTables.mat');
 % vhcl.Iyz.Value = 0;
 % vhcl.volume.Value = 111.7*(1/4)^3;%9453552023*10^-6;
 
-vhcl.mass.Value = 1.1*(945.352);
+
 vhcl.Ixx.Value = (6.303e9)*10^-6;
 vhcl.Iyy.Value = 2080666338.077*10^-6;
 vhcl.Izz.Value = (8.32e9)*10^-6;
 vhcl.Ixy.Value = 0;
 vhcl.Ixz.Value = 81875397*10^-6;
 vhcl.Iyz.Value = 0;
-vhcl.volume.Value = 945352023*10^-6;
-
+vhcl.volume.Value = 0.945352023;
+vhcl.mass.Value = 0.8*vhcl.volume.Value*1000;
 
 vhcl.centOfBuoy.Value = [0 0 0]';
 vhcl.thrAttch1.posVec.Value = [0 0 0]';
 
-vhcl.setICs('InitPos',[10 0 198],'InitEulAng',[0 7 0]*pi/180);
+vhcl.setICs('InitPos',[150 0 150],'InitEulAng',[0 7 0]*pi/180);
 
-vhcl.turbine1.diameter.Value        = 8.7000/4;
+vhcl.turbine1.diameter.Value        = 1;
 vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
-vhcl.turbine1.attachPtVec.Value     = [2.5 -20.5 0]'/4;
+vhcl.turbine1.attachPtVec.Value     = [-1.25 -5 0]';
 vhcl.turbine1.powerCoeff.Value      = 0.5;
 vhcl.turbine1.dragCoeff.Value       = 0.8;
 
-vhcl.turbine2.diameter.Value        = 8.7000/4;
+vhcl.turbine2.diameter.Value        = 1;
 vhcl.turbine2.axisUnitVec.Value     = [1 0 0]';
-vhcl.turbine2.attachPtVec.Value     = [2.5 20.5 0]'/4;
+vhcl.turbine2.attachPtVec.Value     = [-1.25  5 0]';
 vhcl.turbine2.powerCoeff.Value      = 0.5;
 vhcl.turbine2.dragCoeff.Value       = 0.8;
 
 vhcl.aeroSurf1.aeroCentPosVec.Value(1) = -1.25;
 vhcl.aeroSurf2.aeroCentPosVec.Value(1) = -1.25;
 
-vhcl.scale(scaleFactor)
+vhcl.scale(scaleFactor);
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -67,8 +67,8 @@ createOneTetherThreeSurfaceCtrlBus;
 %% Set up tethers, winches and ground station
 simParam = simParamClass;
 thr(1).N                = 5;
-thr(1).diameter         = 0.75;
-thr(1).youngsMod        = (3.8e9); 
+thr(1).diameter         = 0.055;
+thr(1).youngsMod        = (3.8e9);  % found something that said 75 GPa for kevlar
 thr(1).density          = 1300;
 thr(1).dragCoeff        = 0.5;
 thr(1).dampingRatio     = 0.05;
@@ -79,7 +79,7 @@ thr(1).initVhclAttchPt  = vhcl.initPosVecGnd.Value' + ...
     rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value;
 thr(1).initGndStnAttchPt = [0 0 0]';
 
-winch(1).initLength = 197.5033;
+winch(1).initLength = 212;
 winch(1).maxSpeed  = 0.4;
 winch(1).timeConst = 1;
 winch(1).maxAccel = inf;
@@ -140,7 +140,7 @@ set_roll = timeseries(ctrl.setRollDeg.Value*ones(size(timeVec)),timeVec);
 set_roll.Data = 30*sign(sin(2*pi*timeVec/(100)));
 set_roll.Data(timeVec<60) = 0;
 
-ctrl.scale(scaleFactor)
+ctrl.scale(scaleFactor);
 
 
 
