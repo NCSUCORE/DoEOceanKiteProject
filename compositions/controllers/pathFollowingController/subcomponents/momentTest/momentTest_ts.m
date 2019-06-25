@@ -28,14 +28,14 @@ kpRollMom =2*MOI_X;
 kdRollMom = 5*MOI_X;
 tauRollMom = .01; 
 
-maxBank=45*pi/180;
+maxBank=45*pi/180; %
 kpVelAng=maxBank/(pi/2); %max bank divided by large error
 kiVelAng=kpVelAng/100;
 kdVelAng=kpVelAng;
 tauVelAng=.01;
 
-controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
-controlSigMax = 5*10^7;
+controlAlMat = eye(3);
+controlSigMax = inf; %saturation
 
 %%
 sim('momentTest_th')
