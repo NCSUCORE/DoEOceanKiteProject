@@ -27,4 +27,5 @@ for ii = 1:length(figHandles)
     fileName = [fileName{:}];
     savePlot(figHandles(ii),folderName,fileName)
 end
+clearvars figHandles fileName folderName ii 
 fprintf('Done. \n')

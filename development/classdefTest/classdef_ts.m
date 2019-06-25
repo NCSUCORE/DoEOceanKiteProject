@@ -1,7 +1,7 @@
 clear all;clc
 
 scaleFactor = 1;
-
+duration_s  = 500*sqrt(scaleFactor);
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -11,7 +11,7 @@ GROUNDSTATION   = 'groundStation000';
 PLANT           = 'modularPlant';
 ENVIRONMENT     = 'constantUniformFlow';
 CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
-duration_s      = 500;
+
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
@@ -124,60 +124,57 @@ wnch.scale(scaleFactor);
 
 
 %% Set up environment
+% Create
 env = OCT.env;
 env.addFlow({'water'},'FlowDensities',1000);
+% Set Values
 env.water.velVec.Value = [1 0 0];
+% Scale up/down
 env.scale(scaleFactor);
 
 %% Set up controller
-ctrl = threeTetherThreeSurfaceCtrlClass;
+% Create
+ctrl = CTR.controller;
+% add filtered PID controllers
+% FPID controllers are initialized to zero gains, 1s time const
+ctrl.add('FPIDNames',{'elevonPitch','elevonRoll'},...
+    'FPIDErrorUnits',{'deg','deg'},...
+    'FPIDOutputUnits',{'deg','deg'});
 
-ctrl.elevonPitchKp.Value   = 0;
-ctrl.elevonPitchKi.Value   = 0;
-ctrl.elevonPitchKd.Value   = 0;
-ctrl.elevonPitchTau.Value  = 1;
+% add control allocation matrix (implemented as a simple gain)
+ctrl.add('GainNames',{'ctrlAllocMat'},...
+    'GainUnits',{''});
 
-ctrl.elevonRollKp.Value   = 0;
-ctrl.elevonRollKi.Value   = 0;
-ctrl.elevonRollKd.Value   = 0;
-ctrl.elevonRollTau.Value  = 1;
+% add output saturation
+ctrl.add('SaturationNames',{'outputSat'});
 
-ctrl.tetherAltitudeKp.Value   = 0;
-ctrl.tetherAltitudeKi.Value   = 0;
-ctrl.tetherAltitudeKd.Value   = 0;
-ctrl.tetherAltitudeTau.Value  = 1;
+% add setpoints
+ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
+    'SetpointUnits',{'deg','deg'});
 
-ctrl.tetherPitchKp.Value   = 0;
-ctrl.tetherPitchKi.Value   = 0;
-ctrl.tetherPitchKd.Value   = 0;
-ctrl.tetherPitchTau.Value  = 1;
+% Set the values of the controller parameters
+ctrl.ctrlAllocMat.Value = [1 0;0 1];
 
-ctrl.tetherRollKp.Value   = 0;
-ctrl.tetherRollKi.Value   = 0;
-ctrl.tetherRollKd.Value   = 0;
-ctrl.tetherRollTau.Value  = 1;
+ctrl.elevonPitch.kp.Value = 12.5;
+ctrl.elevonPitch.ki.Value  = 1;
 
-ctrl.P_cs_mat.Value = [1 0;0 1];
-ctrl.elevonPitchKp.Value = 12.5;
-ctrl.elevonPitchKi.Value  = 1;
+ctrl.elevonRoll.kp.Value = 15;
+ctrl.elevonRoll.kd.Value  = 15;
 
-ctrl.elevonRollKp.Value = 15;
-ctrl.elevonRollKd.Value  = 15;
 
 % Calculate setpoints
 timeVec = 0:0.1:duration_s;
-set_alt = timeseries(ctrl.setAltM.Value*ones(size(timeVec)),timeVec);
-set_pitch = timeseries(7*ones(size(timeVec)),timeVec);
-set_roll = timeseries(ctrl.setRollDeg.Value*ones(size(timeVec)),timeVec);
-set_roll.Data = 30*sign(sin(2*pi*timeVec/(100)));
-set_roll.Data(timeVec<60) = 0;
+ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 
+ctrl.rollSP.Value = timeseries(30*sign(sin(2*pi*timeVec/(100))),timeVec);
+ctrl.rollSP.Value.Data(timeVec<60) = 0;
+
+% Scale up/down
 ctrl.scale(scaleFactor);
 
-
-
+%% Run the simulation
 sim('OCTModel')
-
+% Run stop callback to plot everything
 stopCallback
 
 

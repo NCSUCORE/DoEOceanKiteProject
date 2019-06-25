@@ -4,8 +4,11 @@ plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,...
     'LineStyle','-','Color','k','LineWidth',1.5)
 grid on
 hold on
-plot(set_roll.Time,squeeze(set_roll.Data),...
+try
+plot(tsc.rollSetpoint.Time,squeeze(tsc.rollSetpoint.Data),...
     'LineStyle','--','Color',[1 0 0] ,'LineWidth',1.5)
+catch
+end
 xlabel('Time, [s]')
 ylabel('Roll, [deg]')
 
@@ -14,8 +17,11 @@ plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi,...
     'LineStyle','-','Color','k','LineWidth',1.5)
 grid on
 hold on
-plot(set_pitch.Time,squeeze(set_pitch.Data),...
+try
+plot(tsc.pitchSetpoint.Time,squeeze(tsc.pitchSetpoint.Data),...
     'LineStyle','--','Color',[1 0 0] ,'LineWidth',1.5)
+catch
+end
 xlabel('Time, [s]')
 ylabel('Pitch, [deg]')
 
