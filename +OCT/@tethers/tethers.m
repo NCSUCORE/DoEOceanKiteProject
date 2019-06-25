@@ -26,11 +26,11 @@ classdef tethers < dynamicprops
                 obj.addprop(p.Results.TetherNames{ii});
                 obj.(p.Results.TetherNames{ii}) = OCT.tether;
             end
-        end
+        end 
         
         function val = struct(obj,className)
             % Function returns all properties of the specified class in a
-            % 1xN struct useable in a for loop in simulink
+            % 1xN struct useable in a for loop in simulink 
             % Example classnames: OCT.turb, OCT.aeroSurf
             props = sort(obj.getPropsByClass(className));
             if numel(props)<1

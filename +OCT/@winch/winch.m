@@ -1,22 +1,28 @@
-classdef winch
+classdef winch < handle
     %WINCH Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        Property1
+        initLength
+        maxSpeed
+        timeConst
+        maxAccel
     end
     
     methods
-        function obj = winch(inputArg1,inputArg2)
-            %WINCH Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.Property1 = inputArg1 + inputArg2;
+        function obj = winch
+            obj.initLength  = OCT.param('Unit','m');
+            obj.maxSpeed    = OCT.param('Unit','m/s');
+            obj.timeConst   = OCT.param('Unit','s');
+            obj.maxAccel    = OCT.param('Unit','m/s^2');
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+        % Function to scale the object
+        function obj = scale(obj,scaleFactor)
+            props = properties(obj);
+            for ii = 1:numel(props)
+                obj.(props{ii}).scale(scaleFactor);
+            end
         end
     end
 end

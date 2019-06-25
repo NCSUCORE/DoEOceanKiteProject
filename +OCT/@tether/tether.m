@@ -33,7 +33,7 @@ classdef tether < handle
             obj.initAirNodeVel  = OCT.param('Unit','m/s');
             obj.initNodePos     = OCT.param('Unit','m');
             obj.initNodeVel     = OCT.param('Unit','m/s');
-        end
+        end 
         
         function val = get.initNodePos(obj)
             val = obj.initNodePos;

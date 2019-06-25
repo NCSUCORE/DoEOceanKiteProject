@@ -18,12 +18,14 @@ createConstantUniformFlowEnvironmentBus
 createOrigionalPlantBus;
 createOneTetherThreeSurfaceCtrlBus;
 
-%% Build the vehicle
+%% Vehicle
+% Create
 vhcl = OCT.vehicle;
 vhcl.numTethers.Value  = 1;
 vhcl.numTurbines.Value = 2;
 vhcl.build('partDsgn1_lookupTables.mat');
 
+% Set Values
 % vhcl.mass.Value = (8.9360e+04)*(1/4)^3;%0.8*(945.352);
 % vhcl.Ixx.Value = 14330000*(1/4)^5;%(6.303e9)*10^-6;
 % vhcl.Iyy.Value = 143200*(1/4)^5;%2080666338.077*10^-6;
@@ -62,13 +64,16 @@ vhcl.turbine2.dragCoeff.Value       = 0.8;
 vhcl.aeroSurf1.aeroCentPosVec.Value(1) = -1.25;
 vhcl.aeroSurf2.aeroCentPosVec.Value(1) = -1.25;
 
+% Scale up/down
 vhcl.scale(scaleFactor);
 
-%% Create ground station
+%% Ground Station
+% Create
 gndStn = OCT.station;
 gndStn.numTethers.Value = 1;
 gndStn.build;
 
+% Set values
 gndStn.inertia.Value            = 1;
 gndStn.posVec.Value             = [0 0 0];
 gndStn.dampCoeff.Value          = 1;
@@ -76,12 +81,17 @@ gndStn.initAngPos.Value         = 0;
 gndStn.initAngVel.Value         = 0;
 gndStn.thrAttch1.posVec.Value   = [0 0 0];
 gndStn.freeSpnEnbl.Value        = false;
+
+% Scale up/down
 gndStn.scale(scaleFactor);
 
-%% Create tethers
+%% Tethers
+% Create
 thr = OCT.tethers;
 thr.numTethers.Value = 1;
-thr.build
+thr.build;
+
+% Set parameter values
 thr.tether1.numNodes.Value       = 5;
 thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
 thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
@@ -93,14 +103,24 @@ thr.tether1.youngsMod.Value     = 3.8e9;
 thr.tether1.dampingRatio.Value  = 0.05;
 thr.tether1.dragCoeff.Value     = 0.5;
 thr.tether1.density.Value       = 1300;
-thr.scale(scaleFactor)
+
+% Scale up/down
+thr.scale(scaleFactor);
 
 
-%% Create winches
-winch(1).initLength = 212;
-winch(1).maxSpeed  = 0.4;
-winch(1).timeConst = 1;
-winch(1).maxAccel = inf;
+%% Winches
+% Create
+wnch = OCT.winches;
+wnch.numWinches.Value = 1;
+wnch.build;
+% Set values
+wnch.winch1.initLength.Value = 212;
+wnch.winch1.maxSpeed.Value   = 0.4;
+wnch.winch1.timeConst.Value  = 1;
+wnch.winch1.maxAccel.Value   = inf;
+
+% Scale up/down
+wnch.scale(scaleFactor);
 
 
 %% Set up controller
