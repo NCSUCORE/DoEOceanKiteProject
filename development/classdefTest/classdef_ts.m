@@ -88,6 +88,7 @@ thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence
 thr.tether1.initGndNodeVel.Value = [0 0 0]';
 thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
 thr.tether1.diameter.Value      = 0.05;
+thr.tether1.vehicleMass.Value   = vhcl.mass.Value;
 thr.tether1.youngsMod.Value     = 3.8e9;
 thr.tether1.dampingRatio.Value  = 0.05;
 thr.tether1.dragCoeff.Value     = 0.5;
