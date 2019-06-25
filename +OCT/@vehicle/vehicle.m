@@ -26,23 +26,23 @@ classdef vehicle < dynamicprops
     methods
         function obj = vehicle
             %VEHICLE Construct an instance of this class
-            obj.numSurfaces = vehicle.param;
-            obj.numTurbines = vehicle.param;
-            obj.numTethers  = vehicle.param;
-            obj.centOfBuoy  = vehicle.param('Unit','m');
-            obj.mass        = vehicle.param('Unit','kg');
-            obj.Ixx         = vehicle.param('Unit','kg*m^2');
-            obj.Iyy         = vehicle.param('Unit','kg*m^2');
-            obj.Izz         = vehicle.param('Unit','kg*m^2');
-            obj.Ixy         = vehicle.param('Unit','kg*m^2');
-            obj.Ixz         = vehicle.param('Unit','kg*m^2');
-            obj.Iyz         = vehicle.param('Unit','kg*m^2');
-            obj.inertia     = vehicle.param('Unit','kg*m^2');
-            obj.initPosVecGnd     = vehicle.param('Unit','m');
-            obj.initVelVecGnd     = vehicle.param('Unit','m/s');
-            obj.initEulAngBdy     = vehicle.param('Unit','rad');
-            obj.initAngVelVecBdy  = vehicle.param('Unit','rad/s');
-            obj.volume            = vehicle.param('Unit','m^3');
+            obj.numSurfaces = OCT.param;
+            obj.numTurbines = OCT.param;
+            obj.numTethers  = OCT.param;
+            obj.centOfBuoy  = OCT.param('Unit','m');
+            obj.mass        = OCT.param('Unit','kg');
+            obj.Ixx         = OCT.param('Unit','kg*m^2');
+            obj.Iyy         = OCT.param('Unit','kg*m^2');
+            obj.Izz         = OCT.param('Unit','kg*m^2');
+            obj.Ixy         = OCT.param('Unit','kg*m^2');
+            obj.Ixz         = OCT.param('Unit','kg*m^2');
+            obj.Iyz         = OCT.param('Unit','kg*m^2');
+            obj.inertia     = OCT.param('Unit','kg*m^2');
+            obj.initPosVecGnd     = OCT.param('Unit','m');
+            obj.initVelVecGnd     = OCT.param('Unit','m/s');
+            obj.initEulAngBdy     = OCT.param('Unit','rad');
+            obj.initAngVelVecBdy  = OCT.param('Unit','rad/s');
+            obj.volume            = OCT.param('Unit','m^3');
             
         end
         
@@ -74,36 +74,35 @@ classdef vehicle < dynamicprops
             
             for ii = 1:obj.numSurfaces.Value
                 obj.addprop(p.Results.SurfaceNames{ii});
-                obj.(p.Results.SurfaceNames{ii}) = vehicle.aeroSurf;
+                obj.(p.Results.SurfaceNames{ii}) = OCT.aeroSurf;
                 
                 for jj = 1:length(propNames)
                     obj.(p.Results.SurfaceNames{ii}).(propNames{jj}).Value = aeroStruct(ii).(propNames{jj});
                 end
             end
-            % Create tethers
+            % Create tethers attachment points
             for ii = 1:obj.numTethers.Value
                 obj.addprop(p.Results.TetherNames{ii});
-                obj.(p.Results.TetherNames{ii}) = vehicle.thrAttch;
+                obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
             end
             % Create turbines
             for ii = 1:obj.numTurbines.Value
                 obj.addprop(sprintf('turbine%d',ii));
-                obj.(sprintf('turbine%d',ii)) = vehicle.turb;
+                obj.(sprintf('turbine%d',ii)) = OCT.turb;
             end
             
             
         end
-        function val = get.interia(obj)
-            val = [Ixx -abs(Ixy) -abs(Ixz);...
-                -abs(Ixy) Iyy -abs(Iyz);...
-                -abs(Ixz) -abs(Iy
-            
+        function val = get.inertia(obj)
+            val = OCT.param('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
+                -abs(obj.Ixy.Value) obj.Iyy.Value -abs(obj.Iyz.Value);...
+                -abs(obj.Ixz.Value) -abs(obj.Iyz.Value) obj.Izz.Value],'Unit','kg*m^2');
         end
         % Function to scale the object
         function obj = scale(obj,scaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}) = obj.(props{ii}).scale(scaleFactor);
+                obj.(props{ii}).scale(scaleFactor);
             end
         end
         
@@ -111,8 +110,8 @@ classdef vehicle < dynamicprops
         function val = struct(obj,className)
             % Function returns all properties of the specified class in a
             % 1xN struct useable in a for loop in simulink
-            % Example classnames: vehicle.turb, vehicle.aeroSurf
-            props = obj.getPropsByClass(className);
+            % Example classnames: OCT.turb, OCT.aeroSurf
+            props = sort(obj.getPropsByClass(className));
             if numel(props)<1
                 return
             end

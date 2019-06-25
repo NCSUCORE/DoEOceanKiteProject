@@ -3,7 +3,7 @@ clear all;clc
 scaleFactor = 1;
 
 %% Build the vehicle
-vhcl = vehicle.vehicle;
+vhcl = OCT.vehicle;
 vhcl.numTethers.Value  = 1;
 vhcl.numTurbines.Value = 2;
 vhcl.build('partDsgn1_lookupTables.mat');
@@ -65,26 +65,18 @@ createOrigionalPlantBus;
 createOneTetherThreeSurfaceCtrlBus;
 
 %% Set up tethers, winches and ground station
+
+
 simParam = simParamClass;
-thr(1).N                = 5;
-thr(1).diameter         = 0.015;% 0.055
-thr(1).youngsMod        = (50e9);%3.8e9  % found something that said 75 GPa for kevlar
-thr(1).density          = 1300;
-thr(1).dragCoeff        = 0.5;
-thr(1).dampingRatio     = 0.05;
-thr(1).fluidDensity     = 1000;
-thr(1).gravAccel        = 9.81;
-thr(1).vehicleMass      = vhcl.mass.Value;
-thr(1).initVhclAttchPt  = vhcl.initPosVecGnd.Value' + ...
-    rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value;
-thr(1).initGndStnAttchPt = [0 0 0]';
+
+
 
 winch(1).initLength = 212;
 winch(1).maxSpeed  = 0.4;
 winch(1).timeConst = 1;
 winch(1).maxAccel = inf;
 
-gndStn = groundStation.station;
+gndStn = OCT.station;
 gndStn.numTethers.Value = 1;
 gndStn.build;
 
@@ -97,6 +89,20 @@ gndStn.thrAttch1.posVec.Value   = [0 0 0];
 gndStn.freeSpnEnbl.Value        = false;
 gndStn.scale(scaleFactor)
 
+thr = OCT.tethers;
+thr.numTethers.Value = 1;
+thr.build
+thr.tether1.numNodes.Value       = 5;
+thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
+thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
+thr.tether1.initGndNodeVel.Value = [0 0 0]';
+thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
+thr.tether1.diameter.Value      = 0.05;
+thr.tether1.youngsMod.Value     = 3.8e9;
+thr.tether1.dampingRatio.Value  = 0.05;
+thr.tether1.dragCoeff.Value     = 0.5;
+thr.tether1.density.Value       = 1300;
+thr.scale(scaleFactor)
 %% Set up controller
 ctrl = threeTetherThreeSurfaceCtrlClass;
 

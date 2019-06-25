@@ -16,13 +16,13 @@ classdef station < dynamicprops
     methods
         function obj = station
             %VEHICLE Construct an instance of this class
-            obj.numTethers  = vehicle.param('IgnoreScaling',true);
-            obj.inertia     = vehicle.param('Unit','kg*m^2');
-            obj.dampCoeff   = vehicle.param('Unit','N*s/m');
-            obj.initAngPos  = vehicle.param('Unit','rad');
-            obj.initAngVel  = vehicle.param('Unit','rad/s');
-            obj.freeSpnEnbl = vehicle.param;
-            obj.posVec      = vehicle.param('Unit','m');
+            obj.numTethers  = OCT.param('IgnoreScaling',true);
+            obj.inertia     = OCT.param('Unit','kg*m^2');
+            obj.dampCoeff   = OCT.param('Unit','N*s/m');
+            obj.initAngPos  = OCT.param('Unit','rad');
+            obj.initAngVel  = OCT.param('Unit','rad/s');
+            obj.freeSpnEnbl = OCT.param;
+            obj.posVec      = OCT.param('Unit','m');
         end
         
         % Function to build the vehicle
@@ -39,7 +39,7 @@ classdef station < dynamicprops
             % Create tethers
             for ii = 1:obj.numTethers.Value
                 obj.addprop(p.Results.TetherNames{ii});
-                obj.(p.Results.TetherNames{ii}) = groundStation.thrAttach;
+                obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
             end        
         end
         
@@ -55,7 +55,7 @@ classdef station < dynamicprops
         function val = struct(obj,className)
             % Function returns all properties of the specified class in a
             % 1xN struct useable in a for loop in simulink
-            % Example classnames: vehicle.turb, vehicle.aeroSurf
+            % Example classnames: OCT.turb, OCT.aeroSurf
             props = obj.getPropsByClass(className);
             if numel(props)<1
                 return

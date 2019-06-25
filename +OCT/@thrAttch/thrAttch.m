@@ -1,4 +1,4 @@
-classdef thrAttach
+classdef thrAttch
     %THRATTCH Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -6,15 +6,16 @@ classdef thrAttach
         posVec
     end
     methods
-        function obj = thrAttach
-            obj.posVec = vehicle.param('Unit','m');
+        function obj = thrAttch
+            obj.posVec = OCT.param('Unit','m');
         end
-        function obj = scale(obj,scaleFactor)
+        function obj = scale(obj,factor)
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}).Value = scaleParam(obj.(props{ii}),scaleFactor);
+                obj.(props{ii}).scale(factor);
             end
         end
         
     end
 end
+
