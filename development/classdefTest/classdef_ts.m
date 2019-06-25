@@ -1,7 +1,7 @@
 clear all;clc
 
 scaleFactor = 1;
-simParam = simParamClass;
+
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -15,7 +15,7 @@ duration_s      = 500;
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
-createOrigionalPlantBus;
+createPlantBus;
 createOneTetherThreeSurfaceCtrlBus;
 
 %% Vehicle
@@ -122,6 +122,12 @@ wnch.winch1.maxAccel.Value   = inf;
 % Scale up/down
 wnch.scale(scaleFactor);
 
+
+%% Set up environment
+env = OCT.env;
+env.addFlow({'water'},'FlowDensities',1000);
+env.water.velVec.Value = [1 0 0];
+env.scale(scaleFactor);
 
 %% Set up controller
 ctrl = threeTetherThreeSurfaceCtrlClass;
