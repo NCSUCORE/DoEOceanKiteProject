@@ -156,11 +156,10 @@ ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
 ctrl.ctrlAllocMat.Value = [1 0;0 1];
 
 ctrl.elevonPitch.kp.Value = 12.5;
-ctrl.elevonPitch.ki.Value  = 1;
+ctrl.elevonPitch.ki.Value = 1;
 
-ctrl.elevonRoll.kp.Value = 15;
+ctrl.elevonRoll.kp.Value  = 15;
 ctrl.elevonRoll.kd.Value  = 15;
-
 
 % Calculate setpoints
 timeVec = 0:0.1:duration_s;
