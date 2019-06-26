@@ -38,7 +38,7 @@ classdef controller < dynamicprops
             if ~isempty(p.Results.GainNames)
                 for ii = 1:numel(p.Results.GainNames)
                     obj.addprop(p.Results.GainNames{ii});
-                    obj.(p.Results.GainNames{ii}) = CTR.gain('Unit',p.Results.GainUnits{ii});
+                    obj.(p.Results.GainNames{ii}) = SIM.param('Unit',p.Results.GainUnits{ii});
                 end
             end
             

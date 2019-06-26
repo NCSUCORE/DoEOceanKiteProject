@@ -138,7 +138,7 @@ thr.tether3.density.Value       = 1300;
 
 %% Set up environment
 % Create
-env = OCT.env;
+env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
 env.water.velVec.Value = [1 0 0];
