@@ -8,7 +8,6 @@ VEHICLE         = 'vehicle000';
 WINCH           = 'winch000';
 TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
-PLANT           = 'modularPlant';
 ENVIRONMENT     = 'constantUniformFlow';
 CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
 
@@ -35,19 +34,28 @@ vhcl.build('partDsgn1_lookupTables.mat');
 % vhcl.Iyz.Value = 0;
 % vhcl.volume.Value = 111.7*(1/4)^3;%9453552023*10^-6;
 
-vhcl.Ixx.Value = (6.303e9)*10^-6;
-vhcl.Iyy.Value = 2080666338.077*10^-6;
-vhcl.Izz.Value = (8.32e9)*10^-6;
+% vhcl.Ixx.Value = (6.303e9)*10^-6;
+% vhcl.Iyy.Value = 2080666338.077*10^-6;
+% vhcl.Izz.Value = (8.32e9)*10^-6;
+% vhcl.Ixy.Value = 0;
+% vhcl.Ixz.Value = 81875397*10^-6;
+% vhcl.Iyz.Value = 0;
+% vhcl.volume.Value = 0.945352023;
+% vhcl.mass.Value = 0.8*vhcl.volume.Value*1000;
+
+vhcl.Ixx.Value = (100e3)*(6.3/8);
+vhcl.Iyy.Value = (100e3)*(2/8);
+vhcl.Izz.Value = 100e3;
 vhcl.Ixy.Value = 0;
-vhcl.Ixz.Value = 81875397*10^-6;
+vhcl.Ixz.Value = 0;
 vhcl.Iyz.Value = 0;
-vhcl.volume.Value = 0.945352023;
-vhcl.mass.Value = 0.8*vhcl.volume.Value*1000;
+vhcl.volume.Value = 6.033;
+vhcl.mass.Value = 0.95*vhcl.volume.Value*1000;
 
 vhcl.centOfBuoy.Value = [0 0 0]';
 vhcl.thrAttch1.posVec.Value = [0 0 0]';
 
-vhcl.setICs('InitPos',[150 0 150],'InitEulAng',[0 7 0]*pi/180);
+vhcl.setICs('InitPos',[90 0 185],'InitEulAng',[0 7 0]*pi/180);
 
 vhcl.turbine1.diameter.Value        = 0;
 vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
@@ -97,9 +105,9 @@ thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
 thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
 thr.tether1.initGndNodeVel.Value = [0 0 0]';
 thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
-thr.tether1.diameter.Value      = 0.05;
+thr.tether1.diameter.Value      = 0.04;
 thr.tether1.vehicleMass.Value   = vhcl.mass.Value;
-thr.tether1.youngsMod.Value     = 3.8e9;
+thr.tether1.youngsMod.Value     = 115e9;
 thr.tether1.dampingRatio.Value  = 0.05;
 thr.tether1.dragCoeff.Value     = 0.5;
 thr.tether1.density.Value       = 1300;
@@ -125,7 +133,7 @@ wnch.scale(scaleFactor);
 
 %% Set up environment
 % Create
-env = OCT.env;
+env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
 env.water.velVec.Value = [1 0 0];

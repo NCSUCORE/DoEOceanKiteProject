@@ -16,7 +16,7 @@ classdef env < dynamicprops
             % Create winches
             for ii = 1:numel(p.Results.FlowNames)
                 obj.addprop(p.Results.FlowNames{ii});
-                obj.(p.Results.FlowNames{ii}) = OCT.flow;
+                obj.(p.Results.FlowNames{ii}) = ENV.flow;
                 if ~isempty(p.Results.FlowDensities)
                     obj.(p.Results.FlowNames{ii}).density.Value = p.Results.FlowDensities(ii);
                 end

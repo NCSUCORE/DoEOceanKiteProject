@@ -12,12 +12,13 @@ fileNames = union({files{1}.name},{files{2}.name});
 for ii = 1:length(fileNames)
     open(fullfile(basePath,varargin{1},'fig',fileNames{ii}))
     fig1 = gcf;
-    fig1.Position = [1          41        1920         963];
+    fig1.Position = [2    42   958   954];
     fig1.Units = 'pixels';
     
     open(fullfile(basePath,varargin{2},'fig',fileNames{ii}))
     fig2 = gcf;
-    fig1.Units = 'pixels';
+    fig2.Position = [962    42   958   954];
+    fig2.Units = 'pixels';
     
     fig1ax = findall(fig1,'type','axes');
     fig2ax = findall(fig2,'type','axes');
@@ -27,7 +28,11 @@ for ii = 1:length(fileNames)
     
     for jj = 1:length(fig2ax)
         % Get all lines on this ax of fig 1
+        try
         fig1lines = findall(fig1ax(jj),'Type','line');
+        catch
+            x = 1;
+        end
         % Set all the display names and styles of each line
         for kk = 1:numel(fig1lines)
             fig1lines(kk).DisplayName = varargin{1};
@@ -44,6 +49,7 @@ for ii = 1:length(fileNames)
         legend(fig1ax(jj),'Interpreter','none');
     end
     close(fig2);
+    pause(0.1);
 end
 
 
