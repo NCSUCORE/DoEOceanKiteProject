@@ -4,6 +4,8 @@ classdef tethers < dynamicprops
     
     properties
         numTethers
+        maxPercentageElongation = 0.05;
+        maxAppFlowMultiplier = 2;
     end
     
     methods
@@ -64,7 +66,7 @@ classdef tethers < dynamicprops
                 env.gravAccel.Value*[0;0;1];
             
             % calculate lift forces for wing and HS, ignore VS
-            q_max = 0.5*env.water.density.Value*(2*norm(env.water.velVec.Value))^2;
+            q_max = 0.5*env.water.density.Value*(obj.maxAppFlowMultiplier*norm(env.water.velVec.Value))^2;
             Sref = vhcl.aeroSurf1.refArea.Value;
             F_aero = [0;0;0];
             for ii = 1:3
@@ -77,14 +79,14 @@ classdef tethers < dynamicprops
             switch obj.numTethers.Value
                 case 1
                     obj.tether1.diameter.Value = sqrt((4*sum_F)/...
-                        (pi*0.05*obj.tether1.youngsMod.Value));
+                        (pi*obj.maxPercentageElongation*obj.tether1.youngsMod.Value));
                 case 3
                     obj.tether1.diameter.Value = sqrt((4*sum_F/4)/...
-                        (pi*0.05*obj.tether1.youngsMod.Value));
+                        (pi*obj.maxPercentageElongation*obj.tether1.youngsMod.Value));
                     obj.tether2.diameter.Value = sqrt((4*sum_F/2)/...
-                        (pi*0.05*obj.tether2.youngsMod.Value));
+                        (pi*obj.maxPercentageElongation*obj.tether2.youngsMod.Value));
                     obj.tether3.diameter.Value = sqrt((4*sum_F/4)/...
-                        (pi*0.05*obj.tether3.youngsMod.Value));
+                        (pi*obj.maxPercentageElongation*obj.tether3.youngsMod.Value));
                 otherwise
                     error(['What are you trying to achieve by running this system with %d tether?! '...
                         'I didn''t account for that!\n',obj.numTethers.Value])
