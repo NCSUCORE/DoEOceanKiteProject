@@ -1,6 +1,6 @@
 clear all;clc
 
-scaleFactor = 0.5;
+scaleFactor = 1;
 duration_s  = 500*sqrt(scaleFactor);
 
 %% Set up simulation
