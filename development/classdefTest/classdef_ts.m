@@ -69,8 +69,8 @@ vhcl.turbine2.attachPtVec.Value     = [-1.25  5 0]';
 vhcl.turbine2.powerCoeff.Value      = 0.5;
 vhcl.turbine2.dragCoeff.Value       = 0.8;
 
-vhcl.aeroSurf1.aeroCentPosVec.Value(1) = -1.25;
-vhcl.aeroSurf2.aeroCentPosVec.Value(1) = -1.25;
+vhcl.aeroSurf1.aeroCentPosVec.Value(1) = 0;
+vhcl.aeroSurf2.aeroCentPosVec.Value(1) = 0;
 
 % Scale up/down
 vhcl.scale(scaleFactor);
@@ -93,27 +93,7 @@ gndStn.freeSpnEnbl.Value        = false;
 % Scale up/down
 gndStn.scale(scaleFactor);
 
-%% Tethers
-% Create
-thr = OCT.tethers;
-thr.numTethers.Value = 1;
-thr.build;
 
-% Set parameter values
-thr.tether1.numNodes.Value       = 5;
-thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
-thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
-thr.tether1.initGndNodeVel.Value = [0 0 0]';
-thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
-thr.tether1.diameter.Value      = 0.04;
-thr.tether1.vehicleMass.Value   = vhcl.mass.Value;
-thr.tether1.youngsMod.Value     = 115e9;
-thr.tether1.dampingRatio.Value  = 0.05;
-thr.tether1.dragCoeff.Value     = 0.5;
-thr.tether1.density.Value       = 1300;
-
-% Scale up/down
-thr.scale(scaleFactor);
 
 
 %% Winches
@@ -140,12 +120,36 @@ env.water.velVec.Value = [1 0 0];
 % Scale up/down
 env.scale(scaleFactor);
 
+%% Tethers
+% Create
+thr = OCT.tethers;
+thr.numTethers.Value = 1;
+thr.build;
+
+% Set parameter values
+thr.tether1.numNodes.Value       = 5;
+thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
+thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
+thr.tether1.initGndNodeVel.Value = [0 0 0]';
+thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
+% thr.tether1.diameter.Value      = 0.04;
+thr.tether1.vehicleMass.Value   = vhcl.mass.Value;
+thr.tether1.youngsMod.Value     = 60e9;
+thr.tether1.dampingRatio.Value  = 0.05;
+thr.tether1.dragCoeff.Value     = 0.5;
+thr.tether1.density.Value       = 1300;
+
+thr.designTetherDiameter(vhcl,env)
+
+% Scale up/down
+thr.scale(scaleFactor);
+
 %% Set up controller
 % Create
 ctrl = CTR.controller;
 % add filtered PID controllers
 % FPID controllers are initialized to zero gains, 1s time const
-ctrl.add('FPIDNames',{'elevonPitch','elevonRoll'},...
+ctrl.add('FPIDNames',{'elevators','ailerons'},...
     'FPIDErrorUnits',{'deg','deg'},...
     'FPIDOutputUnits',{'deg','deg'});
 
@@ -161,13 +165,14 @@ ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
     'SetpointUnits',{'deg','deg'});
 
 % Set the values of the controller parameters
-ctrl.ctrlAllocMat.Value = [1 0;0 1];
+ctrl.elevators.kp.Value = 10;
+ctrl.elevators.ki.Value = 2;
 
-ctrl.elevonPitch.kp.Value = 12.5;
-ctrl.elevonPitch.ki.Value = 1;
+ctrl.ailerons.kp.Value  = 15;
+ctrl.ailerons.kd.Value  = 15;
 
-ctrl.elevonRoll.kp.Value  = 15;
-ctrl.elevonRoll.kd.Value  = 15;
+ctrl.outputSat.upperLimit.Value = 30;
+ctrl.outputSat.lowerLimit.Value = -30;
 
 % Calculate setpoints
 timeVec = 0:0.1:duration_s;
@@ -175,6 +180,8 @@ ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 
 ctrl.rollSP.Value = timeseries(30*sign(sin(2*pi*timeVec/(100))),timeVec);
 ctrl.rollSP.Value.Data(timeVec<60) = 0;
+
+
 
 % Scale up/down
 ctrl.scale(scaleFactor);
