@@ -26,25 +26,24 @@ classdef vehicle < dynamicprops
     methods
         function obj = vehicle
             %VEHICLE Construct an instance of this class
-            obj.numSurfaces = SIM.param;
-            obj.numTurbines = SIM.param;
-            obj.numTethers  = SIM.param;
-            obj.centOfBuoy  = SIM.param('Unit','m');
-            obj.mass        = SIM.param('Unit','kg');
-            obj.Ixx         = SIM.param('Unit','kg*m^2');
-            obj.Iyy         = SIM.param('Unit','kg*m^2');
-            obj.Izz         = SIM.param('Unit','kg*m^2');
-            obj.Ixy         = SIM.param('Unit','kg*m^2');
-            obj.Ixz         = SIM.param('Unit','kg*m^2');
-            obj.Iyz         = SIM.param('Unit','kg*m^2');
-            obj.inertia     = SIM.param('Unit','kg*m^2');
-            obj.initPosVecGnd     = SIM.param('Unit','m');
-            obj.initVelVecGnd     = SIM.param('Unit','m/s');
-            obj.initEulAngBdy     = SIM.param('Unit','rad');
-            obj.initAngVelVecBdy  = SIM.param('Unit','rad/s');
-            obj.volume            = SIM.param('Unit','m^3');
-            
-        end
+            obj.numSurfaces = SIM.parameter;
+            obj.numTurbines = SIM.parameter;
+            obj.numTethers  = SIM.parameter;
+            obj.centOfBuoy  = SIM.parameter('Unit','m','Description','centOfBuoy');
+            obj.mass        = SIM.parameter('Unit','kg','Description','mass');
+            obj.Ixx         = SIM.parameter('Unit','kg*m^2','Description','Ixx');
+            obj.Iyy         = SIM.parameter('Unit','kg*m^2','Description','Iyy');
+            obj.Izz         = SIM.parameter('Unit','kg*m^2','Description','Izz');
+            obj.Ixy         = SIM.parameter('Unit','kg*m^2','Description','Ixy');
+            obj.Ixz         = SIM.parameter('Unit','kg*m^2','Description','Ixz');
+            obj.Iyz         = SIM.parameter('Unit','kg*m^2','Description','Iyz');
+            obj.inertia     = SIM.parameter('Unit','kg*m^2','Description','inertia');
+            obj.initPosVecGnd     = SIM.parameter('Unit','m','Description','initPosVecGnd');
+            obj.initVelVecGnd     = SIM.parameter('Unit','m/s','Description','initVelVecGnd');
+            obj.initEulAngBdy     = SIM.parameter('Unit','rad','Description','initEulAngBdy');
+            obj.initAngVelVecBdy  = SIM.parameter('Unit','rad/s','Description','initAngVelVecBdy');
+            obj.volume            = SIM.parameter('Unit','m^3','Description','volume');            
+        end % end vehicle
         
         % Function to build the vehicle
         function obj = build(obj,AeroStructFile,varargin)
@@ -54,7 +53,7 @@ classdef vehicle < dynamicprops
             parse(p,AeroStructFile)
             
             load(p.Results.AeroStructFile)
-            obj.numSurfaces.Value = numel(aeroStruct);
+            obj.numSurfaces.setValue(numel(aeroStruct),'');
             % Populate cell array of default names
             defSurfName = {};
             for ii = 1:obj.numSurfaces.Value
@@ -92,20 +91,20 @@ classdef vehicle < dynamicprops
             end
             
             
-        end
+        end % end build
         function val = get.inertia(obj)
-            val = SIM.param('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
+            val = SIM.parameter('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
                 -abs(obj.Ixy.Value) obj.Iyy.Value -abs(obj.Iyz.Value);...
                 -abs(obj.Ixz.Value) -abs(obj.Iyz.Value) obj.Izz.Value],'Unit','kg*m^2');
-        end
+        end % end get.inertia
+
         % Function to scale the object
         function obj = scale(obj,scaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
                 obj.(props{ii}).scale(scaleFactor);
             end
-        end
-        
+        end % end scale
         
         function val = struct(obj,className)
             % Function returns all properties of the specified class in a
@@ -143,10 +142,10 @@ classdef vehicle < dynamicprops
             addParameter(p,'InitEulAng',[0 0 0],@isnumeric)
             addParameter(p,'InitAngVel',[0 0 0]',@isnumeric)
             parse(p,varargin{:})
-            obj.initPosVecGnd.Value     = p.Results.InitPos;
-            obj.initVelVecGnd.Value     = p.Results.InitVel;
-            obj.initEulAngBdy.Value     = p.Results.InitEulAng;
-            obj.initAngVelVecBdy.Value  = p.Results.InitAngVel;
+            obj.initPosVecGnd.setValue(p.Results.InitPos,'m');
+            obj.initVelVecGnd.setValue(p.Results.InitVel,'m/s');
+            obj.initEulAngBdy.setValue(p.Results.InitEulAng,'rad');
+            obj.initAngVelVecBdy.setValue(p.Results.InitAngVel,'rad/s');
         end
     end
 end

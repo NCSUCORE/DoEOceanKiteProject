@@ -20,8 +20,8 @@ createOneTetherThreeSurfaceCtrlBus;
 %% Vehicle
 % Create
 vhcl = OCT.vehicle;
-vhcl.numTethers.Value  = 1;
-vhcl.numTurbines.Value = 2;
+vhcl.numTethers.setValue(1,'');
+vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn1_lookupTables.mat');
 
 % Set Values
@@ -43,17 +43,17 @@ vhcl.build('partDsgn1_lookupTables.mat');
 % vhcl.volume.Value = 0.945352023;
 % vhcl.mass.Value = 0.8*vhcl.volume.Value*1000;
 
-vhcl.Ixx.Value = (100e3)*(6.3/8);
-vhcl.Iyy.Value = (100e3)*(2/8);
-vhcl.Izz.Value = 100e3;
-vhcl.Ixy.Value = 0;
-vhcl.Ixz.Value = 0;
-vhcl.Iyz.Value = 0;
-vhcl.volume.Value = 6.033;
-vhcl.mass.Value = 0.95*vhcl.volume.Value*1000;
+vhcl.Ixx.setValue((100e3)*(6.3/8),'kg*m^2');
+vhcl.Iyy.setValue((100e3)*(2/8),'kg*m^2');
+vhcl.Izz.setValue(100e3,'kg*m^2');
+vhcl.Ixy.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(0,'kg*m^2');
+vhcl.Iyz.setValue(0,'kg*m^2');
+vhcl.volume.setValue(6.033,'m^3');
+vhcl.mass.setValue(0.95*vhcl.volume.Value*1000,'kg');
 
-vhcl.centOfBuoy.Value = [0 0 0]';
-vhcl.thrAttch1.posVec.Value = [0 0 0]';
+vhcl.centOfBuoy.setValue([0 0 0],'m');
+vhcl.thrAttch1.posVec.setValue([0 0 0],'m');
 
 vhcl.setICs('InitPos',[90 0 185],'InitEulAng',[0 7 0]*pi/180);
 
