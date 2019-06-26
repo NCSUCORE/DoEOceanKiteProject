@@ -30,21 +30,21 @@ env.scale(scaleFactor);
 %% Vehicle
 % Create
 vhcl = OCT.vehicle;
-vhcl.numTethers.Value  = 1;
-vhcl.numTurbines.Value = 2;
+vhcl.numTethers.setValue(1,'');
+vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn1_lookupTables.mat');
 
 % Set Values
-vhcl.Ixx.Value = 34924.16;
-vhcl.Iyy.Value = 30487.96;
-vhcl.Izz.Value = 64378.94;
-vhcl.Ixy.Value = 0;
-vhcl.Ixz.Value = 731.66;
-vhcl.Iyz.Value = 0;
-vhcl.volume.Value = 7.40;
-vhcl.mass.Value = 0.95*7404.24;
+vhcl.Ixx.setValue(34924.16,'kg*m^2');
+vhcl.Iyy.setValue(30487.96,'kg*m^2');
+vhcl.Izz.setValue(64378.94,'kg*m^2');
+vhcl.Ixy.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(731.66,'kg*m^2');
+vhcl.Iyz.setValue(0,'kg*m^2');
+vhcl.volume.setValue(7.40,'m^3');
+vhcl.mass.setValue(0.95*7404.24,'kg');
 
-vhcl.centOfBuoy.Value = [0 0 0]';
+vhcl.centOfBuoy.setValue([0 0 0]','m');
 vhcl.thrAttch1.posVec.Value = [0 0 0]';
 
 vhcl.setICs('InitPos',[0 0 200],'InitEulAng',[0 7 0]*pi/180);
@@ -107,7 +107,7 @@ thr.tether1.dampingRatio.Value  = 0.05;
 thr.tether1.dragCoeff.Value     = 0.5;
 thr.tether1.density.Value       = 1300;
 
-thr.designTetherDiameter(vhcl,env)
+thr.designTetherDiameter(vhcl,env);
 
 % Scale up/down
 thr.scale(scaleFactor);
