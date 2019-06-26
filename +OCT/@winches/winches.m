@@ -75,26 +75,49 @@ classdef winches < dynamicprops
             Sref = vhcl.aeroSurf1.refArea.Value;
             F_aero = [0;0;0];
             for ii = 1:3
-                CLm(ii) = max(vhcl.(strcat('aeroSurf',num2str(ii))).CL.Value);
-                F_aero = F_aero + q*Sref*[0;0;CLm(ii)];
+                CL(ii) = interp1(vhcl.(strcat('aeroSurf',num2str(ii))).alpha.Value,...
+                    vhcl.(strcat('aeroSurf',num2str(ii))).CL.Value,...
+                    (180/pi)*vhcl.initEulAngBdy.Value(2));
+                CD(ii) = interp1(vhcl.(strcat('aeroSurf',num2str(ii))).alpha.Value,...
+                    vhcl.(strcat('aeroSurf',num2str(ii))).CL.Value,...
+                    (180/pi)*vhcl.initEulAngBdy.Value(2));
+                F_aero = F_aero + q*Sref*[CD(ii);0;CL(ii)];
             end
             
             sum_F = norm(F_grav + F_buoy + F_aero);
             
-            switch thr.numTethers.Value
+            switch obj.numWinches.Value
                 case 1
-                    thr.tether1.diameter.Value = sqrt((4*sum_F)/...
-                        (pi*thr.maxPercentageElongation*thr.tether1.youngsMod.Value));
+                    L = norm(thr.tether1.initAirNodePos.Value - ...
+                        thr.tether1.initGndNodePos.Value);
+                    delta_L = sum_F/(L*thr.tether1.youngsMod.Value*...
+                        (pi/4)*thr.tether1.diameter.Value^2);
+                    
+                    obj.winch1.initLength.Value = L + delta_L;
                 case 3
-                    thr.tether1.diameter.Value = sqrt((4*sum_F/4)/...
-                        (pi*thr.maxPercentageElongation*thr.tether1.youngsMod.Value));
-                    thr.tether2.diameter.Value = sqrt((4*sum_F/2)/...
-                        (pi*thr.maxPercentageElongation*thr.tether2.youngsMod.Value));
-                    thr.tether3.diameter.Value = sqrt((4*sum_F/4)/...
-                        (pi*thr.maxPercentageElongation*thr.tether3.youngsMod.Value));
+                    L1 = norm(thr.tether1.initAirNodePos.Value - ...
+                        thr.tether1.initGndNodePos.Value);
+                    delta_L1 = (sum_F/4)/(L1*thr.tether1.youngsMod.Value*...
+                        (pi/4)*thr.tether1.diameter.Value^2);
+                    
+                    obj.winch1.initLength.Value = L1 + delta_L1;
+                    % winch 2
+                    L2 = norm(thr.tether2.initAirNodePos.Value - ...
+                        thr.tether2.initGndNodePos.Value);
+                    delta_L2 = (sum_F/2)/(L2*thr.tether2.youngsMod.Value*...
+                        (pi/4)*thr.tether2.diameter.Value^2);
+                    
+                    obj.winch2.initLength.Value = L2 + delta_L2;
+                    % winch 3
+                    L3 = norm(thr.tether3.initAirNodePos.Value - ...
+                        thr.tether3.initGndNodePos.Value);
+                    delta_L3 = (sum_F/2)/(L3*thr.tether3.youngsMod.Value*...
+                        (pi/4)*thr.tether3.diameter.Value^2);
+                    
+                    obj.winch3.initLength.Value = L3 + delta_L3;
+                
                 otherwise
-                    error(['What are you trying to achieve by running this system with %d tether?! '...
-                        'I didn''t account for that!\n',obj.numTethers.Value])
+                    error(['Method not progerammed for %d winches.',thr.numWinches.Value])
             end
             
         end

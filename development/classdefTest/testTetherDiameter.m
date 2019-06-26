@@ -162,6 +162,8 @@ env.scale(scaleFactor);
 %%
 thr = thr.designTetherDiameter(vhcl,env);
 
+wnch = wnch.setTetherInitLength(vhcl,env,thr);
+
 
 
 

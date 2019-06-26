@@ -119,13 +119,23 @@ thr.scale(scaleFactor);
 %% Winches
 % Create
 wnch = OCT.winches;
-wnch.numWinches.Value = 1;
+wnch.numWinches.Value = 3;
 wnch.build;
 % Set values
 wnch.winch1.initLength.Value = 212;
 wnch.winch1.maxSpeed.Value   = 0.4;
 wnch.winch1.timeConst.Value  = 1;
 wnch.winch1.maxAccel.Value   = inf;
+
+wnch.winch2.initLength.Value = 212;
+wnch.winch2.maxSpeed.Value   = 0.4;
+wnch.winch2.timeConst.Value  = 1;
+wnch.winch2.maxAccel.Value   = inf;
+
+wnch.winch3.initLength.Value = 212;
+wnch.winch3.maxSpeed.Value   = 0.4;
+wnch.winch3.timeConst.Value  = 1;
+wnch.winch3.maxAccel.Value   = inf;
 
 % Scale up/down
 wnch.scale(scaleFactor);
