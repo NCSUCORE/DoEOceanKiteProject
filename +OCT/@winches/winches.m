@@ -9,7 +9,7 @@ classdef winches < dynamicprops
     methods
         
         function obj = winches
-            obj.numWinches = OCT.param('IgnoreScaling',true);
+            obj.numWinches = SIM.param('IgnoreScaling',true);
         end
         
         function obj = build(obj,varargin)

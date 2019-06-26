@@ -26,23 +26,23 @@ classdef vehicle < dynamicprops
     methods
         function obj = vehicle
             %VEHICLE Construct an instance of this class
-            obj.numSurfaces = OCT.param;
-            obj.numTurbines = OCT.param;
-            obj.numTethers  = OCT.param;
-            obj.centOfBuoy  = OCT.param('Unit','m');
-            obj.mass        = OCT.param('Unit','kg');
-            obj.Ixx         = OCT.param('Unit','kg*m^2');
-            obj.Iyy         = OCT.param('Unit','kg*m^2');
-            obj.Izz         = OCT.param('Unit','kg*m^2');
-            obj.Ixy         = OCT.param('Unit','kg*m^2');
-            obj.Ixz         = OCT.param('Unit','kg*m^2');
-            obj.Iyz         = OCT.param('Unit','kg*m^2');
-            obj.inertia     = OCT.param('Unit','kg*m^2');
-            obj.initPosVecGnd     = OCT.param('Unit','m');
-            obj.initVelVecGnd     = OCT.param('Unit','m/s');
-            obj.initEulAngBdy     = OCT.param('Unit','rad');
-            obj.initAngVelVecBdy  = OCT.param('Unit','rad/s');
-            obj.volume            = OCT.param('Unit','m^3');
+            obj.numSurfaces = SIM.param;
+            obj.numTurbines = SIM.param;
+            obj.numTethers  = SIM.param;
+            obj.centOfBuoy  = SIM.param('Unit','m');
+            obj.mass        = SIM.param('Unit','kg');
+            obj.Ixx         = SIM.param('Unit','kg*m^2');
+            obj.Iyy         = SIM.param('Unit','kg*m^2');
+            obj.Izz         = SIM.param('Unit','kg*m^2');
+            obj.Ixy         = SIM.param('Unit','kg*m^2');
+            obj.Ixz         = SIM.param('Unit','kg*m^2');
+            obj.Iyz         = SIM.param('Unit','kg*m^2');
+            obj.inertia     = SIM.param('Unit','kg*m^2');
+            obj.initPosVecGnd     = SIM.param('Unit','m');
+            obj.initVelVecGnd     = SIM.param('Unit','m/s');
+            obj.initEulAngBdy     = SIM.param('Unit','rad');
+            obj.initAngVelVecBdy  = SIM.param('Unit','rad/s');
+            obj.volume            = SIM.param('Unit','m^3');
             
         end
         
@@ -94,7 +94,7 @@ classdef vehicle < dynamicprops
             
         end
         function val = get.inertia(obj)
-            val = OCT.param('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
+            val = SIM.param('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
                 -abs(obj.Ixy.Value) obj.Iyy.Value -abs(obj.Iyz.Value);...
                 -abs(obj.Ixz.Value) -abs(obj.Iyz.Value) obj.Izz.Value],'Unit','kg*m^2');
         end

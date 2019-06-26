@@ -10,7 +10,7 @@ classdef tethers < dynamicprops
     
     methods
         function obj = tethers
-            obj.numTethers      = OCT.param('IgnoreScaling',true);
+            obj.numTethers      = SIM.param('IgnoreScaling',true);
         end
         
         function obj = build(obj,varargin)

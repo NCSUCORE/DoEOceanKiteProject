@@ -4,7 +4,7 @@ classdef env < dynamicprops
     end
     methods
         function obj = env
-            obj.gravAccel = OCT.param('Value',9.81,'Unit','m/s^2','IgnoreScaling',true);
+            obj.gravAccel = SIM.param('Value',9.81,'Unit','m/s^2','IgnoreScaling',true);
         end
 
         function obj = addFlow(obj,FlowNames,varargin)

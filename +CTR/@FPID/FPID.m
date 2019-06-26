@@ -13,10 +13,10 @@ classdef FPID < handle
         function obj = FPID(inUnits,outUnits)
             %@FPID Construct an instance of this class
             %   Detailed explanation goes here
-            obj.kp  = CTR.gain('Value',0,'Unit',sprintf('(%s)/(%s)',outUnits,inUnits),'Description','Proportional gain');
-            obj.ki  = CTR.gain('Value',0,'Unit',sprintf('(%s)/(%s*s)',outUnits,inUnits),'Description','Integral gain');
-            obj.kd  = CTR.gain('Value',0,'Unit',sprintf('(%s*s)/(%s)',outUnits,inUnits),'Description','Derivative gain');
-            obj.tau = CTR.gain('Value',1,'Unit','s','Description','Time Constant');
+            obj.kp  = SIM.param('Value',0,'Unit',sprintf('(%s)/(%s)',outUnits,inUnits),'Description','Proportional gain');
+            obj.ki  = SIM.param('Value',0,'Unit',sprintf('(%s)/(%s*s)',outUnits,inUnits),'Description','Integral gain');
+            obj.kd  = SIM.param('Value',0,'Unit',sprintf('(%s*s)/(%s)',outUnits,inUnits),'Description','Derivative gain');
+            obj.tau = SIM.param('Value',1,'Unit','s','Description','Time Constant');
         end
         
         % Function to scale the object
