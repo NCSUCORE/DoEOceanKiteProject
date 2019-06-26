@@ -1,6 +1,6 @@
 clear all;clc
 
-scaleFactor = 1;
+scaleFactor = 0.5;
 duration_s  = 500*sqrt(scaleFactor);
 
 %% Set up simulation
@@ -49,13 +49,13 @@ vhcl.thrAttch1.posVec.Value = [0 0 0]';
 
 vhcl.setICs('InitPos',[150 0 150],'InitEulAng',[0 7 0]*pi/180);
 
-vhcl.turbine1.diameter.Value        = 1;
+vhcl.turbine1.diameter.Value        = 0;
 vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
 vhcl.turbine1.attachPtVec.Value     = [-1.25 -5 0]';
 vhcl.turbine1.powerCoeff.Value      = 0.5;
 vhcl.turbine1.dragCoeff.Value       = 0.8;
 
-vhcl.turbine2.diameter.Value        = 1;
+vhcl.turbine2.diameter.Value        = 0;
 vhcl.turbine2.axisUnitVec.Value     = [1 0 0]';
 vhcl.turbine2.attachPtVec.Value     = [-1.25  5 0]';
 vhcl.turbine2.powerCoeff.Value      = 0.5;
