@@ -22,7 +22,7 @@ classdef tether < handle
         function obj = tether
             obj.numNodes        = SIM.param('IgnoreScaling',true);
             obj.diameter        = SIM.param('Unit','m');
-            obj.youngsMod       = SIM.param('Unit','N/m^3');
+            obj.youngsMod       = SIM.param('Unit','Pa');
             obj.vehicleMass     = SIM.param('Unit','kg');
             obj.dampingRatio    = SIM.param;
             obj.dragCoeff       = SIM.param;

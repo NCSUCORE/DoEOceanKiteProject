@@ -26,8 +26,8 @@ classdef aeroSurf < handle
             obj.CL              = SIM.param;
             obj.CD              = SIM.param;
             obj.alpha           = SIM.param('Unit','deg');
-            obj.GainCL          = SIM.param;
-            obj.GainCD          = SIM.param;
+            obj.GainCL          = SIM.param('Unit','1/deg');
+            obj.GainCD          = SIM.param('Unit','1/deg');
             obj.MaxCtrlDeflDn   = SIM.param('Unit','deg');
             obj.MaxCtrlDeflUp   = SIM.param('Unit','deg');
         end
