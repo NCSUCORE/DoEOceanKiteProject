@@ -136,9 +136,23 @@ thr.tether3.dampingRatio.Value  = 0.05;
 thr.tether3.dragCoeff.Value     = 0.5;
 thr.tether3.density.Value       = 1300;
 
+%% Winches
+% Create
+wnch = OCT.winches;
+wnch.numWinches.Value = 1;
+wnch.build;
+% Set values
+wnch.winch1.initLength.Value = 212;
+wnch.winch1.maxSpeed.Value   = 0.4;
+wnch.winch1.timeConst.Value  = 1;
+wnch.winch1.maxAccel.Value   = inf;
+
+% Scale up/down
+wnch.scale(scaleFactor);
+
 %% Set up environment
 % Create
-env = OCT.env;
+env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
 env.water.velVec.Value = [1 0 0];
@@ -147,6 +161,8 @@ env.scale(scaleFactor);
 
 %%
 thr = thr.designTetherDiameter(vhcl,env);
+
+
 
 
 

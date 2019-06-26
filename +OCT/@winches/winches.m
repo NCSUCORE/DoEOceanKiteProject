@@ -61,6 +61,44 @@ classdef winches < dynamicprops
                 end
             end
         end
+        
+        % set intial length
+        function obj = setTetherInitLength(obj,vhcl,env,thr)
+            % calculate total external forces except tethers
+            F_grav = vhcl.mass.Value*env.gravAccel.Value*[0;0;-1];
+            F_buoy =  env.water.density.Value*vhcl.volume.Value*...
+                env.gravAccel.Value*[0;0;1];
+            
+            % calculate lift forces for wing and HS, ignore VS
+            Vrel = env.water.velVec.Value - vhcl.initVelVecGnd.Value;
+            q = 0.5*env.water.density.Value*(norm(Vrel))^2;
+            Sref = vhcl.aeroSurf1.refArea.Value;
+            F_aero = [0;0;0];
+            for ii = 1:3
+                CLm(ii) = max(vhcl.(strcat('aeroSurf',num2str(ii))).CL.Value);
+                F_aero = F_aero + q*Sref*[0;0;CLm(ii)];
+            end
+            
+            sum_F = norm(F_grav + F_buoy + F_aero);
+            
+            switch thr.numTethers.Value
+                case 1
+                    thr.tether1.diameter.Value = sqrt((4*sum_F)/...
+                        (pi*thr.maxPercentageElongation*thr.tether1.youngsMod.Value));
+                case 3
+                    thr.tether1.diameter.Value = sqrt((4*sum_F/4)/...
+                        (pi*thr.maxPercentageElongation*thr.tether1.youngsMod.Value));
+                    thr.tether2.diameter.Value = sqrt((4*sum_F/2)/...
+                        (pi*thr.maxPercentageElongation*thr.tether2.youngsMod.Value));
+                    thr.tether3.diameter.Value = sqrt((4*sum_F/4)/...
+                        (pi*thr.maxPercentageElongation*thr.tether3.youngsMod.Value));
+                otherwise
+                    error(['What are you trying to achieve by running this system with %d tether?! '...
+                        'I didn''t account for that!\n',obj.numTethers.Value])
+            end
+            
+        end
+        
     end
 end
 
