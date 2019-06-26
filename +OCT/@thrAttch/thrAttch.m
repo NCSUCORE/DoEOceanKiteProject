@@ -7,7 +7,7 @@ classdef thrAttch
     end
     methods
         function obj = thrAttch
-            obj.posVec = OCT.param('Unit','m');
+            obj.posVec = SIM.param('Unit','m');
         end
         function obj = scale(obj,factor)
             props = properties(obj);

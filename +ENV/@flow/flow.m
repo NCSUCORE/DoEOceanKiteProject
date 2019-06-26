@@ -12,11 +12,11 @@ classdef flow < handle
     
     methods
         function obj = flow
-            obj.velVec      = OCT.param('Unit','m/s');
-            obj.density     = OCT.param('Unit','kg/m^3','IgnoreScaling',true);
-            obj.speed       = OCT.param('Unit','m/s');
-            obj.elevation   = OCT.param('Unit','deg');
-            obj.heading     = OCT.param('Unit','deg');
+            obj.velVec      = SIM.param('Unit','m/s');
+            obj.density     = SIM.param('Unit','kg/m^3','IgnoreScaling',true);
+            obj.speed       = SIM.param('Unit','m/s');
+            obj.elevation   = SIM.param('Unit','deg');
+            obj.heading     = SIM.param('Unit','deg');
         end
         
         % Function to scale the object

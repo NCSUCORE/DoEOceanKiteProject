@@ -19,17 +19,17 @@ classdef aeroSurf < handle
     
     methods
         function obj = aeroSurf
-            obj.refArea         = OCT.param('Unit','m^2');
-            obj.aeroCentPosVec  = OCT.param('Unit','m');
-            obj.spanUnitVec     = OCT.param;
-            obj.chordUnitVec    = OCT.param;
-            obj.CL              = OCT.param;
-            obj.CD              = OCT.param;
-            obj.alpha           = OCT.param('Unit','deg');
-            obj.GainCL          = OCT.param;
-            obj.GainCD          = OCT.param;
-            obj.MaxCtrlDeflDn   = OCT.param('Unit','deg');
-            obj.MaxCtrlDeflUp   = OCT.param('Unit','deg');
+            obj.refArea         = SIM.param('Unit','m^2');
+            obj.aeroCentPosVec  = SIM.param('Unit','m');
+            obj.spanUnitVec     = SIM.param;
+            obj.chordUnitVec    = SIM.param;
+            obj.CL              = SIM.param;
+            obj.CD              = SIM.param;
+            obj.alpha           = SIM.param('Unit','deg');
+            obj.GainCL          = SIM.param;
+            obj.GainCD          = SIM.param;
+            obj.MaxCtrlDeflDn   = SIM.param('Unit','deg');
+            obj.MaxCtrlDeflUp   = SIM.param('Unit','deg');
         end
         
         function obj = scale(obj,factor)

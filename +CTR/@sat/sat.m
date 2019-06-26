@@ -11,8 +11,8 @@ classdef sat
         function obj = sat
             %SAT Construct an instance of this class
             %   Detailed explanation goes here
-                    obj.upperLimit = CTR.gain('Value',inf);
-                    obj.lowerLimit = CTR.gain('Value',-inf);
+                    obj.upperLimit = SIM.param('Value',inf);
+                    obj.lowerLimit = SIM.param('Value',-inf);
         end
         % Function to scale the object
         function obj = scale(obj,scaleFactor)
