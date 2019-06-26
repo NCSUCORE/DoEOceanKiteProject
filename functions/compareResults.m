@@ -28,11 +28,9 @@ for ii = 1:length(fileNames)
     
     for jj = 1:length(fig2ax)
         % Get all lines on this ax of fig 1
-        try
+
         fig1lines = findall(fig1ax(jj),'Type','line');
-        catch
-            x = 1;
-        end
+
         % Set all the display names and styles of each line
         for kk = 1:numel(fig1lines)
             fig1lines(kk).DisplayName = varargin{1};

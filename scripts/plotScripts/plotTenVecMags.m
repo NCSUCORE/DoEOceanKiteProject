@@ -8,7 +8,7 @@ for ii = 1:numel(tsc.airTenVecBusArry)
     plot(tsc.gndTenVecBusArry(ii).tenVec.Time,squeeze(sqrt(sum(tsc.gndTenVecBusArry(ii).tenVec.Data(:,:,:).^2))),...
         'LineStyle','--','Color',[0.5 0.5 0.5],'LineWidth',1.5,'DisplayName','Ground')
     xlabel('Time, [s]')
-    ylabel(sprintf('Thr %d $ |F_x^{Gnd}| $, [N]',ii))
+    ylabel(sprintf('Thr %d $ |F^{Gnd}| $, [N]',ii))
     legend
     
     set(findall(gcf,'Type','axes'),'FontSize',20)
