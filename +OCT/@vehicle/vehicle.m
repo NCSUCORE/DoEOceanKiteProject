@@ -3,7 +3,7 @@ classdef vehicle < dynamicprops
     %VEHICLE Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess = private)
         numSurfaces
         numTurbines
         numTethers
@@ -42,18 +42,81 @@ classdef vehicle < dynamicprops
             obj.initVelVecGnd     = SIM.parameter('Unit','m/s','Description','initVelVecGnd');
             obj.initEulAngBdy     = SIM.parameter('Unit','rad','Description','initEulAngBdy');
             obj.initAngVelVecBdy  = SIM.parameter('Unit','rad/s','Description','initAngVelVecBdy');
-            obj.volume            = SIM.parameter('Unit','m^3','Description','volume');            
+            obj.volume            = SIM.parameter('Unit','m^3','Description','volume');
         end % end vehicle
+        %% Setters
+        function setNumSurfaces(obj,val,units)
+            obj.numSurfaces.setValue(val,units);
+        end
+        
+        function setNumTurbines(obj,val,units)
+            obj.numTurbines.setValue(val,units);
+        end
+        
+        function setNumTethers(obj,val,units)
+            obj.numTethers.setValue(val,units);
+        end
+        
+        function setCentOfBuoy(obj,val,units)
+            obj.centOfBuoy.setValue(val,units);
+        end
+        
+        function setMass(obj,val,units)
+            obj.mass.setValue(val,units);
+        end
+        
+        function setIxx(obj,val,units)
+            obj.Ixx.setValue(val,units);
+        end
+        
+        function setIyy(obj,val,units)
+            obj.Iyy.setValue(val,units);
+        end
+        
+        function setIzz(obj,val,units)
+            obj.Izz.setValue(val,units);
+        end
+        
+        function setIxy(obj,val,units)
+            obj.Ixy.setValue(val,units);
+        end
+        
+        function setIxz(obj,val,units)
+            obj.Ixz.setValue(val,units);
+        end
+        
+        function setIyz(obj,val,units)
+            obj.Iyz.setValue(val,units);
+        end
+        
+        function setInertia(obj,val,units)
+            obj.inertia.setValue(val,units);
+        end
+        
+        function setInitPosVecGnd(obj,val,units)
+            obj.initPosVecGnd.setValue(val,units);
+        end
+        
+        function setInitVelVecGnd(obj,val,units)
+            obj.initVelVecGnd.setValue(val,units);
+        end
+        
+        function setInitEulAngBdy(obj,val,units)
+            obj.initEulAngBdy.setValue(val,units);
+        end
+        
+        function setInitAngVelVecBdy(obj,val,units)
+            obj.initAngVelBdy.setValue(val,units);
+        end
+        
+        function setVolume(obj,val,units)
+            obj.volume.setValue(val,units);
+        end
+        
         
         % Function to build the vehicle
-        function obj = build(obj,AeroStructFile,varargin)
+        function obj = build(obj,varargin)
             
-            p = inputParser;
-            addRequired(p,'AeroStructFile',@ischar)
-            parse(p,AeroStructFile)
-            
-            load(p.Results.AeroStructFile)
-            obj.numSurfaces.setValue(numel(aeroStruct),'');
             % Populate cell array of default names
             defSurfName = {};
             for ii = 1:obj.numSurfaces.Value
@@ -64,20 +127,15 @@ classdef vehicle < dynamicprops
                 defThrName{ii} = sprintf('thrAttch%d',ii);
             end
             
+            p = inputParser;
             addParameter(p,'SurfaceNames',defSurfName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
-            parse(p,AeroStructFile)
+            parse(p,varargin{:})
             
             % Create aero surface fields
-            propNames = fields(aeroStruct);
-            
             for ii = 1:obj.numSurfaces.Value
                 obj.addprop(p.Results.SurfaceNames{ii});
                 obj.(p.Results.SurfaceNames{ii}) = OCT.aeroSurf;
-                
-                for jj = 1:length(propNames)
-                    obj.(p.Results.SurfaceNames{ii}).(propNames{jj}).setValue(aeroStruct(ii).(propNames{jj}),obj.(p.Results.SurfaceNames{ii}).(propNames{jj}).Unit);
-                end
             end
             % Create tethers attachment points
             for ii = 1:obj.numTethers.Value
@@ -97,7 +155,7 @@ classdef vehicle < dynamicprops
                 -abs(obj.Ixy.Value) obj.Iyy.Value -abs(obj.Iyz.Value);...
                 -abs(obj.Ixz.Value) -abs(obj.Iyz.Value) obj.Izz.Value],'Unit','kg*m^2');
         end % end get.inertia
-
+        
         % Function to scale the object
         function obj = scale(obj,scaleFactor)
             props = properties(obj);
@@ -146,6 +204,33 @@ classdef vehicle < dynamicprops
             obj.initVelVecGnd.setValue(p.Results.InitVel,'m/s');
             obj.initEulAngBdy.setValue(p.Results.InitEulAng,'rad');
             obj.initAngVelVecBdy.setValue(p.Results.InitAngVel,'rad/s');
+        end
+        
+        % function to plot the geometry
+        
+        function h = plot(obj,varargin)
+            
+            p = inputParser;
+            addParameter(p,'FigHandle',[],@(x) isa(x,'matlab.ui.Figure'));
+            addParameter(p,'EulerAngles',[0 0 0],@isnumeric);
+            addParameter(p,'Position',[0 0 0],@isnumeric);
+            parse(p,varargin{:})
+
+            if isempty(p.Results.FigHandle)
+                h.fig = figure('Position',[1          41        1920         963],'Units','pixels');
+            else
+                h.fig = p.Results.figHandle;
+            end
+            
+            surfaces = obj.getPropsByClass('OCT.aeroSurf');
+            for ii = 1:numel(surfaces)
+                obj.(surfaces{ii}).plot(...
+                    'FigHandle',h.fig,...
+                    'EulerAngles',p.Results.EulerAngles,...
+                    'Position',p.Results.Position);
+            end
+            grid on
+            set(gca,'DataAspectRatio',[1 1 1])
         end
     end
 end
