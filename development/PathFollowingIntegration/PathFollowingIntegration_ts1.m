@@ -46,7 +46,7 @@ vhcl.mass.setValue(0.95*7404.24,'kg');
 vhcl.centOfBuoy.setValue([0 0 0]','m');
 vhcl.thrAttch1.posVec.Value = [0 0 0]';
 tetherLength = 200;
-long = .5;
+long = 0;
 lat = pi/4;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
@@ -64,7 +64,7 @@ ini_yaw=atan2(ini_Vcm(2),ini_Vcm(1));
 bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)+acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
-vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm,'InitEulAng',[ini_pitch ini_roll ini_yaw]*pi/180);
+vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm,'InitEulAng',[ini_pitch ini_roll ini_yaw]);
 
 vhcl.turbine1.diameter.Value        = 1;
 vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
@@ -171,11 +171,14 @@ MMOverrideBool = 1;
 constantVelBool = 1;
 
 %% Run the simulation
-try
+% try
+% disp("running the first time")
+% sim('OCTModel')
+% catch
+% disp("second time")
+% sim('OCTModel')
+% end
 sim('OCTModel')
-catch
-simWithMonitor('OCTModel')
-end
 % Run stop callback to plot everything
 
 a=parseLogsout;
@@ -189,7 +192,7 @@ a=parseLogsout;
  plot3(a.positionVec.Data(1,:),a.positionVec.Data(2,:),a.positionVec.Data(3,:),'lineWidth',2)
  [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
  h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
- if min(a.positionVec.Data(:,3))>0
+ if min(a.positionVec.Data(3,:))>0
      zlim([0 inf])
  end
  view(100,45)
