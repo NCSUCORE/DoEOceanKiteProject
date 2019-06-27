@@ -11,10 +11,10 @@ classdef winch < handle
     
     methods
         function obj = winch
-            obj.initLength  = SIM.param('Unit','m');
-            obj.maxSpeed    = SIM.param('Unit','m/s');
-            obj.timeConst   = SIM.param('Unit','s');
-            obj.maxAccel    = SIM.param('Unit','m/s^2');
+            obj.initLength  = SIM.parameter('Unit','m');
+            obj.maxSpeed    = SIM.parameter('Unit','m/s');
+            obj.timeConst   = SIM.parameter('Unit','s');
+            obj.maxAccel    = SIM.parameter('Unit','m/s^2');
         end
         
         % Function to scale the object

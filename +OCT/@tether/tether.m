@@ -20,19 +20,19 @@ classdef tether < handle
     
     methods
         function obj = tether
-            obj.numNodes        = SIM.param('IgnoreScaling',true);
-            obj.diameter        = SIM.param('Unit','m');
-            obj.youngsMod       = SIM.param('Unit','Pa');
-            obj.vehicleMass     = SIM.param('Unit','kg');
-            obj.dampingRatio    = SIM.param;
-            obj.dragCoeff       = SIM.param;
-            obj.density         = SIM.param('Unit','kg/m^3');
-            obj.initGndNodePos  = SIM.param('Unit','m');
-            obj.initAirNodePos  = SIM.param('Unit','m');
-            obj.initGndNodeVel  = SIM.param('Unit','m/s');
-            obj.initAirNodeVel  = SIM.param('Unit','m/s');
-            obj.initNodePos     = SIM.param('Unit','m');
-            obj.initNodeVel     = SIM.param('Unit','m/s');
+            obj.numNodes        = SIM.parameter('NoScale',true);
+            obj.diameter        = SIM.parameter('Unit','m');
+            obj.youngsMod       = SIM.parameter('Unit','Pa');
+            obj.vehicleMass     = SIM.parameter('Unit','kg');
+            obj.dampingRatio    = SIM.parameter;
+            obj.dragCoeff       = SIM.parameter;
+            obj.density         = SIM.parameter('Unit','kg/m^3');
+            obj.initGndNodePos  = SIM.parameter('Unit','m');
+            obj.initAirNodePos  = SIM.parameter('Unit','m');
+            obj.initGndNodeVel  = SIM.parameter('Unit','m/s');
+            obj.initAirNodeVel  = SIM.parameter('Unit','m/s');
+            obj.initNodePos     = SIM.parameter('Unit','m');
+            obj.initNodeVel     = SIM.parameter('Unit','m/s');
         end 
         
         function val = get.initNodePos(obj)

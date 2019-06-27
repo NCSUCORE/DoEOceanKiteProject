@@ -4,13 +4,13 @@ classdef tethers < dynamicprops
     
     properties
         numTethers
-        maxPercentageElongation = SIM.param('Value',0.05);
-        maxAppFlowMultiplier = SIM.param('Value',2);
+        maxPercentageElongation = SIM.parameter('Value',0.05);
+        maxAppFlowMultiplier = SIM.parameter('Value',2);
     end
     
     methods
         function obj = tethers
-            obj.numTethers      = SIM.param('IgnoreScaling',true);
+            obj.numTethers      = SIM.parameter('NoScale',true);
         end
         
         function obj = build(obj,varargin)
@@ -41,8 +41,8 @@ classdef tethers < dynamicprops
             subProps = properties(obj.(props{1}));
             for ii = 1:length(props)
                 for jj = 1:numel(subProps)
-                    param = obj.(props{ii}).(subProps{jj});
-                    val(ii).(subProps{jj}) = param.Value;
+                    parameter = obj.(props{ii}).(subProps{jj});
+                    val(ii).(subProps{jj}) = parameter.Value;
                 end
             end
         end
@@ -78,15 +78,15 @@ classdef tethers < dynamicprops
             
             switch obj.numTethers.Value
                 case 1
-                    obj.tether1.diameter.Value = sqrt((4*sum_F)/...
-                        (pi*obj.maxPercentageElongation.Value*obj.tether1.youngsMod.Value));
+                    obj.tether1.diameter.setValue(sqrt((4*sum_F)/...
+                        (pi*obj.maxPercentageElongation.Value*obj.tether1.youngsMod.Value)),obj.tether1.diameter.Unit);
                 case 3
-                    obj.tether1.diameter.Value = sqrt((4*sum_F/4)/...
-                        (pi*obj.maxPercentageElongation.Value*obj.tether1.youngsMod.Value));
-                    obj.tether2.diameter.Value = sqrt((4*sum_F/2)/...
-                        (pi*obj.maxPercentageElongation.Value*obj.tether2.youngsMod.Value));
-                    obj.tether3.diameter.Value = sqrt((4*sum_F/4)/...
-                        (pi*obj.maxPercentageElongation.Value*obj.tether3.youngsMod.Value));
+                    obj.tether1.diameter.setValue(sqrt((4*sum_F/4)/...
+                        (pi*obj.maxPercentageElongation.Value*obj.tether1.youngsMod.Value)),obj.tether1.diameter.Unit);
+                    obj.tether2.diameter.setValue(sqrt((4*sum_F/2)/...
+                        (pi*obj.maxPercentageElongation.Value*obj.tether2.youngsMod.Value)),obj.tether2.diameter.Unit);
+                    obj.tether3.diameter.setValue(sqrt((4*sum_F/4)/...
+                        (pi*obj.maxPercentageElongation.Value*obj.tether3.youngsMod.Value)),obj.tether3.diameter.Unit);
                 otherwise
                     error(['What are you trying to achieve by running this system with %d tether?! '...
                         'I didn''t account for that!\n',obj.numTethers.Value])

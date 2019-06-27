@@ -16,13 +16,13 @@ classdef station < dynamicprops
     methods
         function obj = station
             %VEHICLE Construct an instance of this class
-            obj.numTethers  = SIM.param('IgnoreScaling',true);
-            obj.inertia     = SIM.param('Unit','kg*m^2');
-            obj.dampCoeff   = SIM.param('Unit','(N*m)/(rad*s)');
-            obj.initAngPos  = SIM.param('Unit','rad');
-            obj.initAngVel  = SIM.param('Unit','rad/s');
-            obj.freeSpnEnbl = SIM.param('IgnoreScaling',true);
-            obj.posVec      = SIM.param('Unit','m');
+            obj.numTethers  = SIM.parameter('NoScale',true);
+            obj.inertia     = SIM.parameter('Unit','kg*m^2');
+            obj.dampCoeff   = SIM.parameter('Unit','(N*m)/(rad*s)');
+            obj.initAngPos  = SIM.parameter('Unit','rad');
+            obj.initAngVel  = SIM.parameter('Unit','rad/s');
+            obj.freeSpnEnbl = SIM.parameter('NoScale',true);
+            obj.posVec      = SIM.parameter('Unit','m');
         end
         
         % Function to build the vehicle

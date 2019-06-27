@@ -3,7 +3,7 @@ classdef setPoint
     %   Detailed explanation goes here
     
     properties
-        Value
+        Value % timeseries object
     end
     
     methods

@@ -4,7 +4,7 @@ classdef env < dynamicprops
     end
     methods
         function obj = env
-            obj.gravAccel = SIM.param('Value',9.81,'Unit','m/s^2','IgnoreScaling',true);
+            obj.gravAccel = SIM.parameter('Value',9.81,'Unit','m/s^2','NoScale',true);
         end
 
         function obj = addFlow(obj,FlowNames,varargin)
@@ -18,7 +18,7 @@ classdef env < dynamicprops
                 obj.addprop(p.Results.FlowNames{ii});
                 obj.(p.Results.FlowNames{ii}) = ENV.flow;
                 if ~isempty(p.Results.FlowDensities)
-                    obj.(p.Results.FlowNames{ii}).density.Value = p.Results.FlowDensities(ii);
+                    obj.(p.Results.FlowNames{ii}).density.setValue(p.Results.FlowDensities(ii),'kg/m^3');
                 end
             end
         end

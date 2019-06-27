@@ -11,11 +11,11 @@ classdef turb < handle
     end
     methods
         function obj = turb
-            obj.diameter             = SIM.param('Unit','m');
-            obj.axisUnitVec          = SIM.param('Description','Vector defining axis of rotation in body frame, should be close to [1 0 0]');
-            obj.attachPtVec          = SIM.param('Unit','m','Description','Vector from CoM to turbine center, in body frame');
-            obj.powerCoeff           = SIM.param;
-            obj.dragCoeff            = SIM.param;
+            obj.diameter             = SIM.parameter('Unit','m');
+            obj.axisUnitVec          = SIM.parameter('Description','Vector defining axis of rotation in body frame, should be close to [1 0 0]');
+            obj.attachPtVec          = SIM.parameter('Unit','m','Description','Vector from CoM to turbine center, in body frame');
+            obj.powerCoeff           = SIM.parameter;
+            obj.dragCoeff            = SIM.parameter;
         end
         function obj = scale(obj,factor)
             props = properties(obj);

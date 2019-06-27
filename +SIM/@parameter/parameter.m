@@ -4,7 +4,7 @@ classdef parameter < handle
         Value       % real scalar
         Unit        % unit scalar
         Description % string scalar
-        Scalable    % bool
+        NoScale    % bool
         Min
         Max
     end % end properties
@@ -18,7 +18,7 @@ classdef parameter < handle
             addParameter(p,'Max',[],@isnumeric)
             addParameter(p,'Unit','',@ischar)
             addParameter(p,'Description','',@ischar)
-            addParameter(p,'Scalable',false,@islogical)
+            addParameter(p,'NoScale',false,@islogical)
             parse(p,varargin{:})
             for ii = 1:length(p.Parameters)
                 obj.(p.Parameters{ii}) = p.Results.(p.Parameters{ii});
@@ -28,7 +28,7 @@ classdef parameter < handle
         %% Methods
         function scale(obj,factor)
             obj.Value = obj.Value;
-            if obj.Scalable && ~isempty(obj.Value) && ~isempty(obj.Unit)
+            if ~obj.NoScale && ~isempty(obj.Value) && ~isempty(obj.Unit)
                 scaleUnitList = {'m','s','kg','rad','deg','N','Pa'}; % units that impact how to scale things
                 scaleFactorList  = {...
                     'factor',...
@@ -50,13 +50,13 @@ classdef parameter < handle
                 warning(['No unit provided for' hobj.Description '. Using default which is ' hobj.Unit]);
             end
             try
-            if ~strcmp(hobj.Unit,unit)
-                ME = MException('param:unitChange','Cannot change units after object is constructed. No change in value.');
-                throw(ME);
-            end
+                if ~strcmp(hobj.Unit,unit)
+                    ME = MException('param:unitChange','Cannot change units after object is constructed. No change in value.');
+                    throw(ME);
+                end
             catch ME
                 warning(ME.message);
-                return;
+                rethrow(ME);
             end
             hobj.Value = val;
             hobj.Unit = unit;

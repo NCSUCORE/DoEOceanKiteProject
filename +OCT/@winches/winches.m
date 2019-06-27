@@ -9,7 +9,7 @@ classdef winches < dynamicprops
     methods
         
         function obj = winches
-            obj.numWinches = SIM.param('IgnoreScaling',true);
+            obj.numWinches = SIM.parameter('NoScale',true);
         end
         
         function obj = build(obj,varargin)
@@ -46,8 +46,8 @@ classdef winches < dynamicprops
             subProps = properties(obj.(props{1}));
             for ii = 1:length(props)
                 for jj = 1:numel(subProps)
-                    param = obj.(props{ii}).(subProps{jj});
-                    val(ii).(subProps{jj}) = param.Value;
+                    parameter = obj.(props{ii}).(subProps{jj});
+                    val(ii).(subProps{jj}) = parameter.Value;
                 end
             end
         end
@@ -93,28 +93,28 @@ classdef winches < dynamicprops
                     delta_L = sum_F/(L*thr.tether1.youngsMod.Value*...
                         (pi/4)*thr.tether1.diameter.Value^2);
                     
-                    obj.winch1.initLength.Value = L + delta_L;
+                    obj.winch1.initLength.setValue(L + delta_L,obj.winch1.initLength.Unit);
                 case 3
                     L1 = norm(thr.tether1.initAirNodePos.Value - ...
                         thr.tether1.initGndNodePos.Value);
                     delta_L1 = (sum_F/4)/(L1*thr.tether1.youngsMod.Value*...
                         (pi/4)*thr.tether1.diameter.Value^2);
                     
-                    obj.winch1.initLength.Value = L1 + delta_L1;
+                    obj.winch1.initLength.setValue(L1 + delta_L1,obj.winch1.initLength.Unit);
                     % winch 2
                     L2 = norm(thr.tether2.initAirNodePos.Value - ...
                         thr.tether2.initGndNodePos.Value);
                     delta_L2 = (sum_F/2)/(L2*thr.tether2.youngsMod.Value*...
                         (pi/4)*thr.tether2.diameter.Value^2);
                     
-                    obj.winch2.initLength.Value = L2 + delta_L2;
+                    obj.winch2.initLength.setValue(L2 + delta_L2,obj.winch2.initLength.Unit);
                     % winch 3
                     L3 = norm(thr.tether3.initAirNodePos.Value - ...
                         thr.tether3.initGndNodePos.Value);
                     delta_L3 = (sum_F/2)/(L3*thr.tether3.youngsMod.Value*...
                         (pi/4)*thr.tether3.diameter.Value^2);
                     
-                    obj.winch3.initLength.Value = L3 + delta_L3;
+                    obj.winch3.initLength.setValue(L3 + delta_L3,obj.winch3.initLength.Unit);
                 
                 otherwise
                     error(['Method not progerammed for %d winches.',thr.numWinches.Value])

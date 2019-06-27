@@ -23,7 +23,7 @@ createOneTetherThreeSurfaceCtrlBus;
 env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
-env.water.velVec.Value = [1 0 0];
+env.water.velVec.setValue([1 0 0],'m/s');
 % Scale up/down
 env.scale(scaleFactor);
 
@@ -45,45 +45,45 @@ vhcl.volume.setValue(7.40,'m^3');
 vhcl.mass.setValue(0.95*7404.24,'kg');
 
 vhcl.centOfBuoy.setValue([0 0 0]','m');
-vhcl.thrAttch1.posVec.Value = [0 0 0]';
+vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
 
 vhcl.setICs('InitPos',[0 0 200],'InitEulAng',[0 7 0]*pi/180);
 
-vhcl.turbine1.diameter.Value        = 0;
-vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
-vhcl.turbine1.attachPtVec.Value     = [-1.25 -5 0]';
-vhcl.turbine1.powerCoeff.Value      = 0.5;
-vhcl.turbine1.dragCoeff.Value       = 0.8;
+vhcl.turbine1.diameter.setValue(0,'m');
+vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
+vhcl.turbine1.powerCoeff.setValue(0.5,'');
+vhcl.turbine1.dragCoeff.setValue(0.8,'');
 
-vhcl.turbine2.diameter.Value        = 0;
-vhcl.turbine2.axisUnitVec.Value     = [1 0 0]';
-vhcl.turbine2.attachPtVec.Value     = [-1.25  5 0]';
-vhcl.turbine2.powerCoeff.Value      = 0.5;
-vhcl.turbine2.dragCoeff.Value       = 0.8;
+vhcl.turbine2.diameter.setValue(0,'m');
+vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
+vhcl.turbine2.powerCoeff.setValue(0.5,'');
+vhcl.turbine2.dragCoeff.setValue(0.8,'');
 
-vhcl.aeroSurf1.aeroCentPosVec.Value(1) = 0;
-vhcl.aeroSurf2.aeroCentPosVec.Value(1) = 0;
-
-vhcl.aeroSurf1.aeroCentPosVec.Value(3) = 0;
-vhcl.aeroSurf2.aeroCentPosVec.Value(3) = 0;
-
+% vhcl.aeroSurf1.aeroCentPosVec.Value(1) = 0;
+% vhcl.aeroSurf2.aeroCentPosVec.Value(1) = 0;
+% 
+% vhcl.aeroSurf1.aeroCentPosVec.Value(3) = 0;
+% vhcl.aeroSurf2.aeroCentPosVec.Value(3) = 0;
+vhcl.aeroSurf2.aeroCentPosVec.setValue([0;vhcl.aeroSurf1.aeroCentPosVec.Value(2);0],'m');
 % Scale up/down
 vhcl.scale(scaleFactor);
 
 %% Ground Station
 % Create
 gndStn = OCT.station;
-gndStn.numTethers.Value = 1;
+gndStn.numTethers.setValue(1,'');
 gndStn.build;
 
 % Set values
-gndStn.inertia.Value            = 1;
-gndStn.posVec.Value             = [0 0 0];
-gndStn.dampCoeff.Value          = 1;
-gndStn.initAngPos.Value         = 0;
-gndStn.initAngVel.Value         = 0;
-gndStn.thrAttch1.posVec.Value   = [0 0 0];
-gndStn.freeSpnEnbl.Value        = false;
+gndStn.inertia.setValue(1,'kg*m^2');
+gndStn.posVec.setValue([0 0 0],'m');
+gndStn.dampCoeff.setValue(1,'(N*m)/(rad*s)');
+gndStn.initAngPos.setValue(0,'rad');
+gndStn.initAngVel.setValue(0,'rad/s');
+gndStn.thrAttch1.posVec.setValue([0 0 0],'m');
+gndStn.freeSpnEnbl.setValue(false,'');
 
 % Scale up/down
 gndStn.scale(scaleFactor);
@@ -91,21 +91,21 @@ gndStn.scale(scaleFactor);
 %% Tethers
 % Create
 thr = OCT.tethers;
-thr.numTethers.Value = 1;
+thr.numTethers.setValue(1,'');
 thr.build;
 
 % Set parameter values
-thr.tether1.numNodes.Value       = 5;
-thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
-thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
-thr.tether1.initGndNodeVel.Value = [0 0 0]';
-thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
+thr.tether1.numNodes.setValue(5,'');
+thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 % thr.tether1.diameter.Value      = 0.04;
-thr.tether1.vehicleMass.Value   = vhcl.mass.Value;
-thr.tether1.youngsMod.Value     = 30e9;
-thr.tether1.dampingRatio.Value  = 0.05;
-thr.tether1.dragCoeff.Value     = 0.5;
-thr.tether1.density.Value       = 1300;
+thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+thr.tether1.youngsMod.setValue(30e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.05,'');
+thr.tether1.dragCoeff.setValue(0.5,'');
+thr.tether1.density.setValue(1300,'kg/m^3');
 
 thr.designTetherDiameter(vhcl,env);
 
@@ -116,12 +116,12 @@ thr.scale(scaleFactor);
 %% Winches
 % Create
 wnch = OCT.winches;
-wnch.numWinches.Value = 1;
+wnch.numWinches.setValue(1,'');
 wnch.build;
 % Set values
-wnch.winch1.maxSpeed.Value   = 0.4;
-wnch.winch1.timeConst.Value  = 1;
-wnch.winch1.maxAccel.Value   = inf;
+wnch.winch1.maxSpeed.setValue(0.4,'m/s');
+wnch.winch1.timeConst.setValue(1,'s');
+wnch.winch1.maxAccel.setValue(inf,'m/s^2');
 
 wnch = wnch.setTetherInitLength(vhcl,env,thr);
 
@@ -150,17 +150,17 @@ ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
     'SetpointUnits',{'deg','deg'});
 
 % Set the values of the controller parameters
-ctrl.elevators.kp.Value = 10;
+ctrl.elevators.kp.setValue(10,'(deg)/(deg)'); % do we really want to represent unitless values like this?
 % ctrl.elevators.ki.Value = 2;
-ctrl.elevators.kd.Value = 0.25;
-ctrl.elevators.tau.Value = 0.05;
+ctrl.elevators.kd.setValue(0.25,'(deg*s)/(deg)'); % Likewise, do we want (deg*s)/(deg) or just s?
+ctrl.elevators.tau.setValue(0.05,'s');
 
-ctrl.ailerons.kp.Value  = 15;
-ctrl.ailerons.kd.Value  = 15;
-ctrl.ailerons.tau.Value = 0.05;
+ctrl.ailerons.kp.setValue(15,'(deg)/(deg)');
+ctrl.ailerons.kd.setValue(15,'(deg*s)/(deg)');
+ctrl.ailerons.tau.setValue(0.05,'s');
 
-ctrl.outputSat.upperLimit.Value = 0;
-ctrl.outputSat.lowerLimit.Value = 0;
+ctrl.outputSat.upperLimit.setValue(0,'');
+ctrl.outputSat.lowerLimit.setValue(0,'');
 
 % Calculate setpoints
 timeVec = 0:0.1:1000;

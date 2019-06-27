@@ -76,7 +76,7 @@ classdef vehicle < dynamicprops
                 obj.(p.Results.SurfaceNames{ii}) = OCT.aeroSurf;
                 
                 for jj = 1:length(propNames)
-                    obj.(p.Results.SurfaceNames{ii}).(propNames{jj}).Value = aeroStruct(ii).(propNames{jj});
+                    obj.(p.Results.SurfaceNames{ii}).(propNames{jj}).setValue(aeroStruct(ii).(propNames{jj}),obj.(p.Results.SurfaceNames{ii}).(propNames{jj}).Unit);
                 end
             end
             % Create tethers attachment points

@@ -12,11 +12,11 @@ classdef flow < handle
     
     methods
         function obj = flow
-            obj.velVec      = SIM.param('Unit','m/s');
-            obj.density     = SIM.param('Unit','kg/m^3','IgnoreScaling',true);
-            obj.speed       = SIM.param('Unit','m/s');
-            obj.elevation   = SIM.param('Unit','deg');
-            obj.heading     = SIM.param('Unit','deg');
+            obj.velVec      = SIM.parameter('Unit','m/s');
+            obj.density     = SIM.parameter('Unit','kg/m^3','NoScale',true);
+            obj.speed       = SIM.parameter('Unit','m/s');
+            obj.elevation   = SIM.parameter('Unit','deg');
+            obj.heading     = SIM.parameter('Unit','deg');
         end
         
         % Function to scale the object
@@ -28,17 +28,17 @@ classdef flow < handle
         end
         
         function val = speed.get(obj)
-            obj.speed.Value = sqrt(sum(obj.velVec.Value.^2));
+            obj.speed.setValue(sqrt(sum(obj.velVec.Value.^2)),'m/s');
             val = obj.Speed;
         end
         
         function val = get.elevation(obj)
-            obj.elevation.Value = acosd(obj.velVec.Value(3)./sqrt(obj.velVec.Value(1)^2+obj.velVec.Value(2).^2));
+            obj.elevation.setValue(acosd(obj.velVec.Value(3)./sqrt(obj.velVec.Value(1)^2+obj.velVec.Value(2).^2)),'deg');
             val = obj.elevation;
         end
         
         function val = get.heading(obj)
-            obj.heading.Value = atan2d(obj.velVec.Value(2),obj.velVec.Value(1));
+            obj.heading.setValue(atan2d(obj.velVec.Value(2),obj.velVec.Value(1)),'deg');
             val = obj.heading;
         end
     end
