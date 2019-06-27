@@ -1,49 +1,159 @@
-% Script to help implement the pathFollowingController with the modularized model
-% clear all;clc;
+clear all;clc
 
-%% Define Variants an busses
+scaleFactor = 1;
+duration_s  = 50*sqrt(scaleFactor);
+
+%% Set up simulation
 VEHICLE = 'modVehicle000';
 WINCH = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
-PLANT = 'modularPlant';
+% PLANT = 'modularPlant';
 ENVIRONMENT = 'constantUniformFlow';
 CONTROLLER = 'pathFollowingController';
 
+%% Create busses
+createConstantUniformFlowEnvironmentBus
+createPlantBus;
 createPathFollowingControllerCtrlBus;
-%% Initialize Plant Parameters
-%scaling
-scaleFactor = 1;
-duration_s = 500*sqrt(scaleFactor);
 
-%AeroStruct
-load('partDsgn1_lookupTables.mat')
+%% Vehicle
+% Create
+vhcl = OCT.vehicle;
+vhcl.numTethers.setValue(1,'');
+vhcl.numTurbines.setValue(2,'');
+vhcl.build('partDsgn1_lookupTables.mat');
 
-aeroStruct(1).aeroCentPosVec(1) = -aeroStruct(1).aeroCentPosVec(1);
-aeroStruct(2).aeroCentPosVec(1) = -aeroStruct(2).aeroCentPosVec(1);
+% Set Values
+% vhcl.mass.Value = (8.9360e+04)*(1/4)^3;%0.8*(945.352);
+% vhcl.Ixx.Value = 14330000*(1/4)^5;%(6.303e9)*10^-6;
+% vhcl.Iyy.Value = 143200*(1/4)^5;%2080666338.077*10^-6;
+% vhcl.Izz.Value = 15300000*(1/4)^5;%(8.32e9)*10^-6;
+% vhcl.Ixy.Value = 0;
+% vhcl.Ixz.Value = 0;%81875397*10^-6;
+% vhcl.Iyz.Value = 0;
+% vhcl.volume.Value = 111.7*(1/4)^3;%9453552023*10^-6;
 
-simParam = simParamClass;
-simParam.tether_param.tether_youngs.Value = simParam.tether_param.tether_youngs.Value/3;
+vhcl.Ixx.setValue(34924.16,'kg*m^2');
+vhcl.Iyy.setValue(30487.96,'kg*m^2');
+vhcl.Izz.setValue(64378.94,'kg*m^2');
+vhcl.Ixy.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(731.66,'kg*m^2');
+vhcl.Iyz.setValue(0,'kg*m^2');
+vhcl.volume.setValue(7.40,'m^3');
+vhcl.mass.setValue(0.95*7404.24,'kg');
 
-%%
-tetherLength=200;
-long = -.2;
-lat = .56;
+vhcl.centOfBuoy.setValue([0 0 0]','m');
+vhcl.thrAttch1.posVec.Value = [0 0 0]';
+tetherLength = 200;
+long = .5;
+lat = pi/4;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
            cos(lat)            0          -sin(lat);];
 path_init = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
-ini_Rcm_o = [path_init(1);path_init(2);path_init(3);];
-velMag=7;
-initVelAng = 45;%degrees
-ini_O_Vcm_o= velMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+ini_Rcm = [path_init(1);path_init(2);path_init(3);];
+constantVelMag=7; %Constant velocity or Constant initial velocity
+initVelAng = 270;%degrees
+ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
+ini_yaw=atan2(ini_Vcm(2),ini_Vcm(1));
+[~,bodyToGr]=rotation_sequence([ini_pitch 0 ini_yaw]);
+bodyY_before_roll=bodyToGr*[0 1 0]';
+tanZ=tanToGr*[0 0 1]';
+ini_roll=(pi/2)+acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
+vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm,'InitEulAng',[ini_pitch ini_roll ini_yaw]*pi/180);
+
+vhcl.turbine1.diameter.Value        = 1;
+vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
+vhcl.turbine1.attachPtVec.Value     = [-1.25 -5 0]';
+vhcl.turbine1.powerCoeff.Value      = 0.5;
+vhcl.turbine1.dragCoeff.Value       = 0.8;
+
+vhcl.turbine2.diameter.Value        = 1;
+vhcl.turbine2.axisUnitVec.Value     = [1 0 0]';
+vhcl.turbine2.attachPtVec.Value     = [-1.25  5 0]';
+vhcl.turbine2.powerCoeff.Value      = 0.5;
+vhcl.turbine2.dragCoeff.Value       = 0.8;
+
+vhcl.aeroSurf1.aeroCentPosVec.Value(1) = -1.25;
+vhcl.aeroSurf2.aeroCentPosVec.Value(1) = -1.25;
+
+% Scale up/down
+vhcl.scale(scaleFactor);
+
+%% Ground Station
+% Create
+gndStn = OCT.station;
+gndStn.numTethers.Value = 1;
+gndStn.build;
+
+% Set values
+gndStn.inertia.Value            = 1;
+gndStn.posVec.Value             = [0 0 0];
+gndStn.dampCoeff.Value          = 1;
+gndStn.initAngPos.Value         = 0;
+gndStn.initAngVel.Value         = 0;
+gndStn.thrAttch1.posVec.Value   = [0 0 0];
+gndStn.freeSpnEnbl.Value        = false;
+
+% Scale up/down
+gndStn.scale(scaleFactor);
+
+%% Tethers
+% Create
+thr = OCT.tethers;
+thr.numTethers.Value = 1;
+thr.build;
+
+% Set parameter values
+thr.tether1.numNodes.Value       = 5;
+thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
+thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
+thr.tether1.initGndNodeVel.Value = [0 0 0]';
+thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
+thr.tether1.diameter.Value      = 0.05;
+thr.tether1.vehicleMass.Value   = vhcl.mass.Value;
+thr.tether1.youngsMod.Value     = 3.8e9;
+thr.tether1.dampingRatio.Value  = 0.05;
+thr.tether1.dragCoeff.Value     = 0.5;
+thr.tether1.density.Value       = 1300;
+
+% Scale up/down
+thr.scale(scaleFactor);
+
+
+%% Winches
+% Create
+wnch = OCT.winches;
+wnch.numWinches.Value = 1;
+wnch.build;
+% Set values
+wnch.winch1.initLength.Value = 212;
+wnch.winch1.maxSpeed.Value   = 0.4;
+wnch.winch1.timeConst.Value  = 1;
+wnch.winch1.maxAccel.Value   = inf;
+
+% Scale up/down
+wnch.scale(scaleFactor);
+
+
+%% Set up environment
+% Create
+env = ENV.env;
+env.addFlow({'water'},'FlowDensities',1000);
+% Set Values
+env.water.velVec.Value = [1 0 0];
+% Scale up/down
+env.scale(scaleFactor);
+
 %%%%%%%%%Controller Params%%%%%%
 aBooth=1;bBooth=1;latCurve=.5;
 
 %2 deg/s^2 for an error of 1 radian
-MOI_X=simParam.geom_param.MI.Value(1,1);
+MOI_X=vhcl.Ixx.Value;
 kpRollMom =2*MOI_X;
 kdRollMom = 5*MOI_X;
 tauRollMom = .01; 
@@ -56,60 +166,69 @@ tauVelAng=.01;
 
 controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
 controlSigMax = 5*10^7;
+MMAddBool = 0;
+MMOverrideBool = 1;
+constantVelBool = 1;
 
-
-% Set initial condition
-% ini_Rcm_o = [0 0 200]';
-% ini_O_Vcm_o = [0 0 0]';
-ini_euler_ang = [0 0 0]';
-ini_OwB = [0 0 0]';
-initPlatformAngle = 0;
-initPlatformAngularVel = 0;
-simParam.setInitialConditions(...
-    'Position',[10 0 ini_Rcm_o(3)-2],...
-    'Velocity',ini_O_Vcm_o,...
-    'EulerAngles',ini_euler_ang,...
-    'AngularVelocity',ini_OwB,...
-    'PlatformAngle',initPlatformAngle,...
-    'PlatformAngularVelocity',initPlatformAngularVel);
-
-% Scale up/down
-simParam = simParam.scale(scaleFactor,1);
-
-% Set up structure for tether for loop
-thr(1).N                = simParam.N.Value;
-thr(1).diameter         = simParam.tether_param.tether_diameter.Value(1);
-thr(1).youngsMod        = simParam.tether_param.tether_youngs.Value;
-thr(1).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
-thr(1).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
-thr(1).dampingRatio     = simParam.tether_param.damping_ratio.Value;
-thr(1).fluidDensity     = simParam.env_param.density.Value;
-thr(1).gravAccel        = simParam.env_param.grav.Value;
-thr(1).vehicleMass      = simParam.geom_param.mass.Value;
-thr(1).initVhclAttchPt  = simParam.initPosVec.Value +...
-    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R1n_cm.Value;
-thr(1).initVhclAttchPt  = simParam.initPosVec.Value;
-thr(1).initGndStnAttchPt = [0 0 0]';
-
-% Set up structure for tether attachment points at ground station
-gndStnMmtArms(1).arm = [0 0 0];
-
-% Set up structure for tether attachment points on lifting body
-lftBdyMmtArms(1).arm = [0 0 0];
-
-% Set up structure for winches
-winch.initLength = simParam.unstretched_l.Value(1);
-winch.maxSpeed  = ctrl.winc_vel_up_lims.Value;
-winch.timeConst = simParam.winch_time_const.Value;
-winch.maxAccel = inf;
-
-
-
-simParam.geom_param.MI.Value = simParam.geom_param.MI.Value*10;
-thr(1).diameter         = simParam.tether_param.tether_diameter.Value(1)*2;
-
-
-%%
+%% Run the simulation
+try
+sim('OCTModel')
+catch
 simWithMonitor('OCTModel')
+end
+% Run stop callback to plot everything
 
+a=parseLogsout;
+ close all
+ figure
+ ax=axes;
+ pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
+ plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
+ hold on
+ 
+ plot3(a.positionVec.Data(1,:),a.positionVec.Data(2,:),a.positionVec.Data(3,:),'lineWidth',2)
+ [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+ h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+ if min(a.positionVec.Data(:,3))>0
+     zlim([0 inf])
+ end
+ view(100,45)
+ %%
 % stopCallback
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Script to help implement the pathFollowingController with the modularized model
+% % clear all;clc;
+% 
+% %% Define Variants an busses
+% VEHICLE = 'modVehicle000';
+% WINCH = 'winch000';
+% TETHERS = 'tether000';
+% GROUNDSTATION = 'groundStation000';
+% PLANT = 'modularPlant';
+% ENVIRONMENT = 'constantUniformFlow';
+% CONTROLLER = 'pathFollowingController';
+% 
+% createPathFollowingControllerCtrlBus;
+% %% Initialize Plant Parameters
+% %scaling
+% scaleFactor = 1;
+% duration_s = 500*sqrt(scaleFactor);
+% 
+% %AeroStruct
+% load('partDsgn1_lookupTables.mat')
+% 
+% aeroStruct(1).aeroCentPosVec(1) = -aeroStruct(1).aeroCentPosVec(1);
+% aeroStruct(2).aeroCentPosVec(1) = -aeroStruct(2).aeroCentPosVec(1);
+% 
+% simParam = simParamClass;
+% simParam.tether_param.tether_youngs.Value = simParam.tether_param.tether_youngs.Value/3;
+% 
+% %%
+% tetherLength=200;

@@ -12,11 +12,12 @@ velMag= 7;%m/s from sim used for proposal
 accMag= tetherTen/mass; %assumes lift = tether tension
 MOI_X=1e5; %kg*m^2 from sim used for proposal
 
+tetherLength=200;
 long = -.2;
 lat = .56;
 path_init = tetherLength*[cos(long).*cos(lat);
-         sin(long).*cos(lat);
-         sin(lat);];
+            sin(long).*cos(lat);
+            sin(lat);];
 initPos = [path_init(1);path_init(2);path_init(3);];
 initVelAng = 45;%degrees
 initVelTan= velMag*[cosd(initVelAng);sind(initVelAng);0];
