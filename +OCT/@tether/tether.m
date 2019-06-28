@@ -42,7 +42,7 @@ classdef tether < handle
                     [linspace(obj.initGndNodePos.Value(1),obj.initAirNodePos.Value(1),obj.numNodes.Value);...
                     linspace(obj.initGndNodePos.Value(2),obj.initAirNodePos.Value(2),obj.numNodes.Value);...
                     linspace(obj.initGndNodePos.Value(3),obj.initAirNodePos.Value(3),obj.numNodes.Value)];
-                obj.initNodePos.Value = vel(:,2:end-1);
+                obj.initNodePos.setValue(vel(:,2:end-1),'m');
                 val = obj.initNodePos;
             end
         end
@@ -53,7 +53,7 @@ classdef tether < handle
                     [linspace(obj.initGndNodeVel.Value(1),obj.initAirNodeVel.Value(1),obj.numNodes.Value);...
                     linspace(obj.initGndNodeVel.Value(2),obj.initAirNodeVel.Value(2),obj.numNodes.Value);...
                     linspace(obj.initGndNodeVel.Value(3),obj.initAirNodeVel.Value(3),obj.numNodes.Value)];
-                obj.initNodeVel.Value = vel(:,2:end-1);
+                obj.initNodeVel.setValue(vel(:,2:end-1),'m/s');
                 val = obj.initNodeVel;
             end
         end

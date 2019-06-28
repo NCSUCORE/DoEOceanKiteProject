@@ -28,46 +28,11 @@ env.water.velVec.setValue([1 0 0],'m/s');
 env.scale(scaleFactor);
 
 %% Vehicle
-% Create
-vhcl = OCT.vehicle;
-vhcl.numTethers.setValue(1,'');
-vhcl.numTurbines.setValue(2,'');
-vhcl.build('partDsgn1_lookupTables.mat');
-
-% Set Values
-vhcl.Ixx.setValue(34924.16,'kg*m^2');
-vhcl.Iyy.setValue(30487.96,'kg*m^2');
-vhcl.Izz.setValue(64378.94,'kg*m^2');
-vhcl.Ixy.setValue(0,'kg*m^2');
-vhcl.Ixz.setValue(731.66,'kg*m^2');
-vhcl.Iyz.setValue(0,'kg*m^2');
-vhcl.volume.setValue(7.40,'m^3');
-vhcl.mass.setValue(0.95*7404.24,'kg');
-
-vhcl.centOfBuoy.setValue([0 0 0]','m');
-vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
+% Load it from a file
+load('TestVehicle1')
 
 vhcl.setICs('InitPos',[0 0 200],'InitEulAng',[0 7 0]*pi/180);
 
-vhcl.turbine1.diameter.setValue(0,'m');
-vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
-vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
-vhcl.turbine1.powerCoeff.setValue(0.5,'');
-vhcl.turbine1.dragCoeff.setValue(0.8,'');
-
-vhcl.turbine2.diameter.setValue(0,'m');
-vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
-vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
-vhcl.turbine2.powerCoeff.setValue(0.5,'');
-vhcl.turbine2.dragCoeff.setValue(0.8,'');
-
-% vhcl.aeroSurf1.aeroCentPosVec.Value(1) = 0;
-% vhcl.aeroSurf2.aeroCentPosVec.Value(1) = 0;
-% 
-% vhcl.aeroSurf1.aeroCentPosVec.Value(3) = 0;
-% vhcl.aeroSurf2.aeroCentPosVec.Value(3) = 0;
-vhcl.aeroSurf2.aeroCentPosVec.setValue([0;vhcl.aeroSurf1.aeroCentPosVec.Value(2);0],'m');
-% Scale up/down
 vhcl.scale(scaleFactor);
 
 %% Ground Station

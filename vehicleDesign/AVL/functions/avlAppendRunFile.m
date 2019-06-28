@@ -1,5 +1,5 @@
 function avlAppendRunFile(fileID,runCaseNumber,...
-    alpha,beta,flap,aileron,elevator,rudder)
+    alpha,beta,aileron)
 % create run file
 fprintf(fileID,'\n');
 fprintf(fileID,' ---------------------------------------------\n');
@@ -12,10 +12,7 @@ fprintf(fileID,' beta         ->  beta        =   %0.5f    \n',beta);
 fprintf(fileID,' pb/2V        ->  pb/2V       =   0.00000    \n');
 fprintf(fileID,' qc/2V        ->  qc/2V       =   0.00000    \n');
 fprintf(fileID,' rb/2V        ->  rb/2V       =   0.00000    \n');
-fprintf(fileID,' flap         ->  flap        =   %0.5f    \n',flap);
 fprintf(fileID,' aileron      ->  aileron     =   %0.5f    \n',aileron);
-fprintf(fileID,' elevator     ->  elevator    =   %0.5f    \n',elevator);
-fprintf(fileID,' rudder       ->  rudder      =   %0.5f    \n',rudder);
 fprintf(fileID,'\n');
 
 % copy paste stuff

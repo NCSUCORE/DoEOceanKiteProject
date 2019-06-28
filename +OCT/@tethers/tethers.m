@@ -67,10 +67,12 @@ classdef tethers < dynamicprops
             
             % calculate lift forces for wing and HS, ignore VS
             q_max = 0.5*env.water.density.Value*(obj.maxAppFlowMultiplier.Value*norm(env.water.velVec.Value))^2;
-            Sref = vhcl.aeroSurf1.refArea.Value;
+%             Sref = vhcl.stbWing.refArea.Value + vhcl.prtWing.refArea.Value;
             F_aero = [0;0;0];
-            for ii = 1:3
-                CLm(ii) = max(vhcl.(strcat('aeroSurf',num2str(ii))).CL.Value);
+            aeroSurfs = vhcl.getPropsByClass('OCT.aeroSurf');
+            for ii = 1:numel(aeroSurfs)
+                Sref = vhcl.(aeroSurfs{ii}).refArea.Value;
+                CLm(ii) = max(vhcl.(aeroSurfs{ii}).CL.Value);
                 F_aero = F_aero + q_max*Sref*[0;0;CLm(ii)];
             end
             

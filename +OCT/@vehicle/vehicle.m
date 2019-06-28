@@ -26,9 +26,9 @@ classdef vehicle < dynamicprops
     methods
         function obj = vehicle
             %VEHICLE Construct an instance of this class
-            obj.numSurfaces = SIM.parameter;
-            obj.numTurbines = SIM.parameter;
-            obj.numTethers  = SIM.parameter;
+            obj.numSurfaces = SIM.parameter('Description','Number of fluid dynamic surfaces');
+            obj.numTurbines = SIM.parameter('Description','Number of turbines');
+            obj.numTethers  = SIM.parameter('Description','Number of tethers');
             obj.centOfBuoy  = SIM.parameter('Unit','m','Description','centOfBuoy');
             obj.mass        = SIM.parameter('Unit','kg','Description','mass');
             obj.Ixx         = SIM.parameter('Unit','kg*m^2','Description','Ixx');
@@ -160,7 +160,11 @@ classdef vehicle < dynamicprops
         function obj = scale(obj,scaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}).scale(scaleFactor);
+                try
+                    obj.(props{ii}).scale(scaleFactor);
+                catch
+                    x = 1;
+                end
             end
         end % end scale
         
@@ -175,7 +179,9 @@ classdef vehicle < dynamicprops
             subProps = properties(obj.(props{1}));
             for ii = 1:length(props)
                 for jj = 1:numel(subProps)
-                    val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
+                    if isa(obj.(props{ii}).(subProps{jj}),'SIM.parameter')
+                        val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
+                    end
                 end
             end
         end
@@ -205,17 +211,39 @@ classdef vehicle < dynamicprops
             obj.initEulAngBdy.setValue(p.Results.InitEulAng,'rad');
             obj.initAngVelVecBdy.setValue(p.Results.InitAngVel,'rad/s');
         end
+        function save(obj,fileName)
+            vhcl = obj;
+            save(fileName,'vhcl')
+        end
+        % Function to run AVL on all OCT.aeroSurf properties
+        function AVL(obj,varargin)
+            
+            p = inputParser;
+            addParameter(p,'SaveFileName',[],@ischar);
+            parse(p,varargin{:})
+            
+            props = getPropsByClass(obj,'OCT.aeroSurf');
+            for ii = 1:numel(props)
+                obj.(props{ii}).AVL;
+            end
+            
+            if ~isempty(p.Results.SaveFileName)
+                vhcl = obj;
+                filePath = fileparts(which('OCTProject.prj'));
+                filePath = fullfile(filePath,'vehicleDesign','AVL','designLibrary',p.Results.SaveFileName);
+                save(filePath,'vhcl')
+            end
+            
+        end
         
         % function to plot the geometry
-        
-        function h = plot(obj,varargin)
-            
+        function h = plotGeometry(obj,varargin)
             p = inputParser;
             addParameter(p,'FigHandle',[],@(x) isa(x,'matlab.ui.Figure'));
             addParameter(p,'EulerAngles',[0 0 0],@isnumeric);
             addParameter(p,'Position',[0 0 0],@isnumeric);
             parse(p,varargin{:})
-
+            
             if isempty(p.Results.FigHandle)
                 h.fig = figure('Position',[1          41        1920         963],'Units','pixels');
             else
@@ -224,7 +252,7 @@ classdef vehicle < dynamicprops
             
             surfaces = obj.getPropsByClass('OCT.aeroSurf');
             for ii = 1:numel(surfaces)
-                obj.(surfaces{ii}).plot(...
+                obj.(surfaces{ii}).plotGeometry(...
                     'FigHandle',h.fig,...
                     'EulerAngles',p.Results.EulerAngles,...
                     'Position',p.Results.Position);
@@ -232,6 +260,18 @@ classdef vehicle < dynamicprops
             grid on
             set(gca,'DataAspectRatio',[1 1 1])
         end
+        
+        % Function to plot polars
+        % Function to run AVL on all OCT.aeroSurf properties
+        function plotPolars(obj,varargin)
+            props = getPropsByClass(obj,'OCT.aeroSurf');
+            for ii = 1:numel(props)
+                obj.(props{ii}).plotPolars;
+                set(gcf,'Name',props{ii})
+            end
+        end
+        
+        
     end
 end
 
