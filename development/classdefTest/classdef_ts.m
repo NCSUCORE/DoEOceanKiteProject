@@ -1,6 +1,6 @@
 clear all;clc
 
-scaleFactor = 0.5;
+scaleFactor = 1;
 duration_s  = 500*sqrt(scaleFactor);
 
 %% Set up simulation
@@ -68,12 +68,13 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 % thr.tether1.diameter.Value      = 0.04;
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(30e9,'Pa');
+
 thr.tether1.dampingRatio.setValue(0.05,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
 
 thr.designTetherDiameter(vhcl,env);
-
+% thr.tether1.diameter.setValue(0.01,'m');
 % Scale up/down
 thr.scale(scaleFactor);
 

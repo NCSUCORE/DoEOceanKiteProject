@@ -95,6 +95,7 @@ classdef winches < dynamicprops
                         (pi/4)*thr.tether1.diameter.Value^2);
                     
                     obj.winch1.initLength.setValue(L + delta_L,obj.winch1.initLength.Unit);
+                    obj.winch1.initLength.setValue(norm(vhcl.initPosVecGnd.Value),'m')
                 case 3
                     L1 = norm(thr.tether1.initAirNodePos.Value - ...
                         thr.tether1.initGndNodePos.Value);
