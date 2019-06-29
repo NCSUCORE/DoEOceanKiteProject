@@ -1,32 +1,20 @@
-
+%%
 a=parseLogsout;
- close all
+
+
  figure
  ax=axes;
  pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
- 
-for i=1:floor(length(a.positionVec.Data(:,1))/(runtime/waittime)):length(a.positionVec.Data(:,1))
-
-    
- 
+ waittime = .01; 
+ filename="Dummy_Controller_4";
+ %%
+for i=1:floor(length(a.positionVec.Data(1,:))/(duration_s/waittime)):length(a.positionVec.Data(1,:))
  plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
  hold on
  
- plot3(a.positionVec.Data(i,:),a.positionVec.Data(i,:),a.positionVec.Data(i,:),'lineWidth',2)
- [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
- h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
- if min(a.positionVec.Data(3,:))>0
-     zlim([0 inf])
- end
- 
- 
-
-
-posV = [a.positionVec.Data(i,1),a.positionVec.Data(i,2),a.positionVec.Data(i,3)];
-
-eulerAnglesPlot = [a.eulerPitch.Data(i,1),a.eulerRoll.Data(i,2),a.eulerYaw.Data(i,3)];
-
- [grndToBody,bodyToGr]=rotation_sequence(eulerAnglesPlot);
+posV = [a.positionVec.Data(1,:,i),a.positionVec.Data(2,:,i),a.positionVec.Data(3,:,i)];
+eulerAnglesPlot = [a.eulerPitch.Data(i),a.eulerRoll.Data(i),a.eulerYaw.Data(i)];
+[grndToBody,bodyToGr]=rotation_sequence(eulerAnglesPlot);
 
 bodyAxisPointsx1 =[-7,0, 0];
 bodyAxisPointsx2 = [7,0, 0];
@@ -57,6 +45,25 @@ line([groundBdyAxisY1(1,:);groundBdyAxisY2(1,:)],[groundBdyAxisY1(2,:);groundBdy
 scatter3([groundBdyAxisZ1(1,:);groundBdyAxisZ2(1,:)],[groundBdyAxisZ1(2,:);groundBdyAxisZ2(2,:)],[groundBdyAxisZ1(3,:);groundBdyAxisZ2(3,:)],'filled');
 line([groundBdyAxisZ1(1,:);groundBdyAxisZ2(1,:)],[groundBdyAxisZ1(2,:);groundBdyAxisZ2(2,:)],[groundBdyAxisZ1(3,:);groundBdyAxisZ2(3,:)],'LineWidth',2)
 
-
-view(100,45)
-end 
+plot3(a.positionVec.Data(1,1:i),a.positionVec.Data(2,1:i),a.positionVec.Data(3,1:i),'lineWidth',2)
+title(['T=' num2str(a.positionVec.Time(i))])
+[x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+if min(a.positionVec.Data(:,3))>0
+    zlim([0 inf])
+end
+view(90,15)
+% scatter3(tetherLength*a.star_pos.Data(1:i,1),tetherLength*a.star_pos.Data(1:i,2),tetherLength*a.star_pos.Data(1:i,3),'k')
+hold off
+% pause(waittime)
+                        % Capture the plot as an image 
+                        frame = getframe(ax); 
+                        im = frame2im(frame); 
+                        [imind,cm] = rgb2ind(im,256); 
+                        % Write to the GIF File 
+                        if i == 1 
+                          imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+                        else 
+                          imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
+                        end 
+end
