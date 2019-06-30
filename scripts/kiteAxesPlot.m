@@ -5,7 +5,7 @@ a=parseLogsout;
  figure
  ax=axes;
  pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
- waittime = .01; 
+ waittime = .5; 
  filename="Dummy_Controller_4";
  %%
 for i=1:floor(length(a.positionVec.Data(1,:))/(duration_s/waittime)):length(a.positionVec.Data(1,:))
@@ -13,17 +13,17 @@ for i=1:floor(length(a.positionVec.Data(1,:))/(duration_s/waittime)):length(a.po
  hold on
  
 posV = [a.positionVec.Data(1,:,i),a.positionVec.Data(2,:,i),a.positionVec.Data(3,:,i)];
-eulerAnglesPlot = [a.eulerPitch.Data(i),a.eulerRoll.Data(i),a.eulerYaw.Data(i)];
+eulerAnglesPlot = [a.eulerRoll.Data(i),a.eulerPitch.Data(i),a.eulerYaw.Data(i)];
 [grndToBody,bodyToGr]=rotation_sequence(eulerAnglesPlot);
 
-bodyAxisPointsx1 =[-7,0, 0];
-bodyAxisPointsx2 = [7,0, 0];
+bodyAxisPointsx1 =[-11,0, 0];
+bodyAxisPointsx2 = [11,0, 0];
 
-bodyAxisPointsy1 =[0,-3, 0];
-bodyAxisPointsy2= [0,3, 0];
+bodyAxisPointsy1 =[0,-5, 0];
+bodyAxisPointsy2= [0,5, 0];
 
-bodyAxisPointsz1 =[0,0, -1.5];
-bodyAxisPointsz2= [0,0, 1.5];
+bodyAxisPointsz1 =[0,0, -3];
+bodyAxisPointsz2= [0,0, 3];
 
 
 groundBdyAxisX1=bodyToGr*[bodyAxisPointsx1]'+posV';
