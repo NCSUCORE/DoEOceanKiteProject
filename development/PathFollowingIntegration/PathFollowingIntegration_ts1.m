@@ -1,7 +1,7 @@
 clear all;clc
 
 scaleFactor = 1;
-duration_s  = 50*sqrt(scaleFactor);
+duration_s  = 3*sqrt(scaleFactor);
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -63,8 +63,8 @@ ini_yaw=atan2(ini_Vcm(2),ini_Vcm(1));
 [~,bodyToGr]=rotation_sequence([ini_pitch 0 ini_yaw]);
 bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
-ini_roll=(pi/2)+acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
-vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm,'InitEulAng',[ini_pitch ini_roll ini_yaw]);
+ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
+vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm,'InitEulAng',[ ini_roll ini_pitch ini_yaw]);
 
 vhcl.turbine1.diameter.Value        = 1;
 vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
@@ -180,22 +180,8 @@ constantVelBool = 1;
 % end
 sim('OCTModel')
 % Run stop callback to plot everything
+kiteAxesPlot
 
-a=parseLogsout;
- close all
- figure
- ax=axes;
- pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
- plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
- hold on
- 
- plot3(a.positionVec.Data(1,:),a.positionVec.Data(2,:),a.positionVec.Data(3,:),'lineWidth',2)
- [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
- h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
- if min(a.positionVec.Data(3,:))>0
-     zlim([0 inf])
- end
- view(100,45)
  %%
 % stopCallback
 
