@@ -7,8 +7,8 @@ close all
 % load('custom_constant_baseline_1106_104556.mat')
 
 % actual data %
-position = tsc.positionGFC;
-mag = tsc.tetherTensionMag;
+% position = tsc.positionGFC;
+% mag = tsc.tetherTensionMag;
 
 % average mag %
 % mag.Data = mean(mag.Data)*ones(size(mag.Data));
@@ -39,15 +39,15 @@ m = mass;
 
 inertiaMatrix = eye(3);
 
-dist = 30;
+dist = 75;
 
-thr1Pt = [0 1 -.25];
+thr1Pt = [0 1 0];
 thr1GndPos = [0 dist 0];
 thr1GndVel = [0 0 0];
-thr2Pt = [cosd(30),-sind(30),-.25];
+thr2Pt = [cosd(30),-sind(30),0];
 thr2GndPos = [dist*cosd(30), -dist*sind(30), 0];
 thr2GndVel = [0 0 0];
-thr3Pt = [-cosd(30),-sind(30),-.25];
+thr3Pt = [-cosd(30),-sind(30),0];
 thr3GndPos = [-dist*cosd(30), -dist*sind(30), 0];
 thr3GndVel = [0 0 0];
 CB2CMVec = [0 0 -h/4];
@@ -63,7 +63,8 @@ initVel = [0 0 0];
 initEulerAngles = [0 0 0];
 initAngVel = [0 0 0];
 
-tetherLengths = (norm(initPos+thr1Pt-thr1GndPos))*ones(3,1);
+tetherLengths = [norm(initPos+thr1Pt-thr1GndPos),norm(initPos+thr2Pt-thr2GndPos),...
+    norm(initPos+thr2Pt-thr2GndPos)];
 
 gndStnMmtArms(1).posVec = thr1GndPos;
 gndStnMmtArms(2).posVec = thr2GndPos;
@@ -126,6 +127,7 @@ arms(2).posVec = thr2Pt;
 arms(3).posVec = thr3Pt;
 
 v = 0.6;
+v = 0;
 vsquared = v^2;
 cd = .8;
 A = vol^(2/3);
