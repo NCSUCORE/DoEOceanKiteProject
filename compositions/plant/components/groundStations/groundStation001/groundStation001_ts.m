@@ -7,8 +7,8 @@ close all
 % load('custom_constant_baseline_1106_104556.mat')
 
 % actual data %
-% position = tsc.positionGFC;
-% mag = tsc.tetherTensionMag;
+position = tsc.positionGFC;
+mag = tsc.tetherTensionMag;
 
 % average mag %
 % mag.Data = mean(mag.Data)*ones(size(mag.Data));
@@ -39,16 +39,18 @@ m = mass;
 
 inertiaMatrix = eye(3);
 
-thr1Pt = [0 1 -.5];
-thr1GndPos = [0 50 0];
+dist = 30;
+
+thr1Pt = [0 1 -.25];
+thr1GndPos = [0 dist 0];
 thr1GndVel = [0 0 0];
-thr2Pt = [cosd(30),-sind(30),-.5];
-thr2GndPos = [50*cosd(30), -50*sind(30), 0];
+thr2Pt = [cosd(30),-sind(30),-.25];
+thr2GndPos = [dist*cosd(30), -dist*sind(30), 0];
 thr2GndVel = [0 0 0];
-thr3Pt = [-cosd(30),-sind(30),-.5];
-thr3GndPos = [-50*cosd(30), -50*sind(30), 0];
+thr3Pt = [-cosd(30),-sind(30),-.25];
+thr3GndPos = [-dist*cosd(30), -dist*sind(30), 0];
 thr3GndVel = [0 0 0];
-CB2CMVec = [0 0 0];
+CB2CMVec = [0 0 -h/4];
 
 dia_t = 0.05;
 E = 3.8e9;
@@ -74,42 +76,6 @@ bodyMmtArms(3).posVec = thr3Pt;
 liftingBodyThrAttch(1).posVec = [0 1/2 1/2];
 liftingBodyThrAttch(2).posVec = [1/2*cosd(30), -1/2*sind(30), 1/2];
 liftingBodyThrAttch(3).posVec = [-1/2*cosd(30), -1/2*sind(30), 1/2];
-
-% thr(1).numNodes         = sim_param.N;
-% thr(1).diameter         = dia_t;
-% thr(1).youngsMod        = E;
-% thr(1).density          = rho + rho_tether;
-% thr(1).dragCoeff        = Cd;
-% thr(1).dampingRatio     = zeta;
-% thr(1).fluidDensity     = rho;
-% thr(1).gravAccel        = grav;
-% thr(1).vehicleMass      = mass;
-% thr(1).initVhclAttchPt  = initPos + (rotation_sequence(initEulerAngles)*thr1Pt')';
-% thr(1).initGndStnAttchPt = thr1GndPos;
-% 
-% thr(2).numNodes         = sim_param.N;
-% thr(2).diameter         = dia_t;
-% thr(2).youngsMod        = E;
-% thr(2).density          = rho + rho_tether;
-% thr(2).dragCoeff        = Cd;
-% thr(2).dampingRatio     = zeta;
-% thr(2).fluidDensity     = rho;
-% thr(2).gravAccel        = grav;
-% thr(2).vehicleMass      = mass;
-% thr(2).initVhclAttchPt  = initPos + (rotation_sequence(initEulerAngles)*thr2Pt')';
-% thr(2).initGndStnAttchPt = thr2GndPos;
-% 
-% thr(3).numNodes         = sim_param.N;
-% thr(3).diameter         = dia_t;
-% thr(3).youngsMod        = E;
-% thr(3).density          = rho + rho_tether;
-% thr(3).dragCoeff        = Cd;
-% thr(3).dampingRatio     = zeta;
-% thr(3).fluidDensity     = rho;
-% thr(3).gravAccel        = grav;
-% thr(3).vehicleMass      = mass;
-% thr(3).initVhclAttchPt  = initPos + (rotation_sequence(initEulerAngles)*thr3Pt')';
-% thr(3).initGndStnAttchPt = thr3GndPos;
 
 thr = OCT.tethers;
 thr.numTethers = SIM.parameter('Value',3);
