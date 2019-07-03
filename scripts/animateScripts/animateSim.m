@@ -1,4 +1,4 @@
-timeStep = 1;
+timeStep = 2;
 fileName = 'animateSim.gif';
 bodyAxisLength = 15;
 % Resample to the animation framerate

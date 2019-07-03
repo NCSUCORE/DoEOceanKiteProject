@@ -10,6 +10,7 @@ TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
 CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
+VARIANTSUBSYSTEM = 'NNodeTether';
 
 
 %% Create busses
@@ -28,11 +29,49 @@ env.water.velVec.setValue([1 0 0],'m/s');
 env.scale(scaleFactor);
 
 %% Vehicle
-% Load it from a file
-load('TestVehicle1')
+% Create
+vhcl = OCT.vehicle;
+vhcl.numTethers.setValue(1,'');
+vhcl.numTurbines.setValue(2,'');
+vhcl.build('partDsgn1_lookupTables.mat');
+
+% Set Values
+% vhcl.Ixx.setValue(34924.16,'kg*m^2');
+% vhcl.Iyy.setValue(30487.96,'kg*m^2');
+% vhcl.Izz.setValue(64378.94,'kg*m^2');
+% vhcl.Ixy.setValue(0,'kg*m^2');
+% vhcl.Ixz.setValue(731.66,'kg*m^2');
+% vhcl.Iyz.setValue(0,'kg*m^2');
+% vhcl.volume.setValue(7.40,'m^3');
+% vhcl.mass.setValue(0.95*7404.24,'kg');
+
+vhcl.Ixx.setValue(6303,'kg*m^2');
+vhcl.Iyy.setValue(2080.7,'kg*m^2');
+vhcl.Izz.setValue(8320.4,'kg*m^2');
+vhcl.Ixy.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(0,'kg*m^2');
+vhcl.Iyz.setValue(0,'kg*m^2');
+vhcl.volume.setValue(0.9454,'m^3');
+vhcl.mass.setValue(859.4,'kg');
+
+vhcl.centOfBuoy.setValue([0 0 0]','m');
+vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
 
 vhcl.setICs('InitPos',[0 0 200],'InitEulAng',[0 7 0]*pi/180);
 
+vhcl.turbine1.diameter.setValue(0,'m');
+vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
+vhcl.turbine1.powerCoeff.setValue(0.5,'');
+vhcl.turbine1.dragCoeff.setValue(0.8,'');
+
+vhcl.turbine2.diameter.setValue(0,'m');
+vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
+vhcl.turbine2.powerCoeff.setValue(0.5,'');
+vhcl.turbine2.dragCoeff.setValue(0.8,'');
+
+% Scale up/down
 vhcl.scale(scaleFactor);
 
 %% Ground Station
@@ -65,16 +104,15 @@ thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
-% thr.tether1.diameter.Value      = 0.04;
+% thr.tether1.diameter.setValue(0.025,'m');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(30e9,'Pa');
-
+thr.tether1.youngsMod.setValue(3.89e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.05,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
 
 thr.designTetherDiameter(vhcl,env);
-% thr.tether1.diameter.setValue(0.01,'m');
+
 % Scale up/down
 thr.scale(scaleFactor);
 
@@ -140,7 +178,10 @@ ctrl.rollSP.Value.DataInfo.Units = 'deg';
 ctrl = ctrl.scale(scaleFactor);
 
 %% Run the simulation
-sim('OCTModel')
+try
+    sim('OCTModel')
+catch
+end
 % Run stop callback to plot everything
 stopCallback
 
