@@ -1,6 +1,5 @@
 clc
 format compact
-close all
 
 % run this to load tether tension data
 % clear
@@ -20,24 +19,24 @@ close all
 
 % createConstantUniformFlowEnvironmentBus
 
-sim_time = 360;
+sim_time = 900;
 
 % number of tethers
 N = 4;
 sim_param.N = N;
-
-flow = [.1 0 0];
 
 rho = 1000;
 vol = 3.5;
 h = vol^(1/3);
 grav = 9.81;
 
+env.water.velVec = SIM.parameter('Value',[0 0 0]);
+
 buoyF = 1.5;
 mass = rho*vol/buoyF;
 m = mass;
 
-inertiaMatrix = eye(3);
+inertiaMatrix = ((1/6)*mass*h^2).*eye(3);
 
 dist = 75;
 
@@ -50,7 +49,7 @@ thr2GndVel = [0 0 0];
 thr3Pt = [-cosd(30),-sind(30),0];
 thr3GndPos = [-dist*cosd(30), -dist*sind(30), 0];
 thr3GndVel = [0 0 0];
-CB2CMVec = [0 0 -h/4];
+CB2CMVec = [0 0 h/4];
 
 dia_t = 0.05;
 E = 3.8e9;
@@ -65,6 +64,12 @@ initAngVel = [0 0 0];
 
 tetherLengths = [norm(initPos+thr1Pt-thr1GndPos),norm(initPos+thr2Pt-thr2GndPos),...
     norm(initPos+thr2Pt-thr2GndPos)];
+
+tenMag = -4600-117;
+
+thr1ten = tenMag*(initPos+thr1Pt-thr1GndPos)/tetherLengths(1)
+thr2ten = tenMag*(initPos+thr2Pt-thr2GndPos)/tetherLengths(2)
+thr3ten = tenMag*(initPos+thr3Pt-thr3GndPos)/tetherLengths(3)
 
 gndStnMmtArms(1).posVec = thr1GndPos;
 gndStnMmtArms(2).posVec = thr2GndPos;
@@ -141,7 +146,7 @@ zOn = 0;
 % avg mag
 % initPos = [23.77, 0, 85.0695];
     
-waveAmp = 3;
+waveAmp = 0;
 wavePeriod = oceanPeriod;
 oceanDepth = 115;
 sim('groundStation001_th')
