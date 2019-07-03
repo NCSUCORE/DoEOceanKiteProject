@@ -163,8 +163,8 @@ ctrl.ailerons.kp.setValue(15,'(deg)/(deg)');
 ctrl.ailerons.kd.setValue(15,'(deg*s)/(deg)');
 ctrl.ailerons.tau.setValue(0.05,'s');
 
-ctrl.outputSat.upperLimit.setValue(0,'');
-ctrl.outputSat.lowerLimit.setValue(0,'');
+ctrl.outputSat.upperLimit.setValue(30,'');
+ctrl.outputSat.lowerLimit.setValue(-30,'');
 
 % Calculate setpoints
 timeVec = 0:0.1:1000;
