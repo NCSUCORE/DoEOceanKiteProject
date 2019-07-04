@@ -2,17 +2,35 @@ classdef tethers < dynamicprops
     %TETHERS Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess = private)
         numTethers
-        maxPercentageElongation = SIM.parameter('Value',0.05);
-        maxAppFlowMultiplier = SIM.parameter('Value',2);
+        numNodes 
+        maxPercentageElongation
+        maxAppFlowMultiplier
     end
     
     methods
         function obj = tethers
             obj.numTethers      = SIM.parameter('NoScale',true);
+            obj.numNodes        = SIM.parameter('NoScale',true,'Description','Number of nodes in each tether, all tethers have the same number of nodes');
+            obj.maxPercentageElongation = SIM.parameter('Value',0.05);
+            obj.maxAppFlowMultiplier = SIM.parameter('Value',2);
         end
         
+        function obj = setNumTethers(obj,val,units)
+           obj.numTethers.setValue(val,units);
+        end
+        
+        function obj = setNumNodes(obj,val,units)
+            props = obj.getPropsByClass('OCT.tether');
+            for ii = 1:length(props)
+                obj.(props{ii}).setNumNodes(val,units);
+            end
+            obj.numNodes.setValue(val,units);
+            
+        end
+        
+       
         function obj = build(obj,varargin)
             defThrName = {};
             for ii = 1:obj.numTethers.Value
@@ -26,7 +44,7 @@ classdef tethers < dynamicprops
             % Create tethers
             for ii = 1:obj.numTethers.Value
                 obj.addprop(p.Results.TetherNames{ii});
-                obj.(p.Results.TetherNames{ii}) = OCT.tether;
+                obj.(p.Results.TetherNames{ii}) = OCT.tether(obj.numNodes.Value);
             end
         end
         

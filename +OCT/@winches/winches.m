@@ -2,7 +2,7 @@ classdef winches < dynamicprops
     %WINCHES Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess = private)
         numWinches
     end
     
@@ -10,6 +10,10 @@ classdef winches < dynamicprops
         
         function obj = winches
             obj.numWinches = SIM.parameter('NoScale',true);
+        end
+        
+        function obj = setNumWinches(obj,val,units)
+           obj.numWinches.setValue(val,units); 
         end
         
         function obj = build(obj,varargin)

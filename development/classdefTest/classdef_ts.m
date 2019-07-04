@@ -6,7 +6,7 @@ duration_s  = 500*sqrt(scaleFactor);
 %% Set up simulation
 VEHICLE         = 'vehicle000';
 WINCH           = 'winch000';
-TETHERS         = 'tether000';
+TETHERS         = 'tether001';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
 CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
@@ -36,23 +36,23 @@ vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn1_lookupTables.mat');
 
 % Set Values
-% vhcl.Ixx.setValue(34924.16,'kg*m^2');
-% vhcl.Iyy.setValue(30487.96,'kg*m^2');
-% vhcl.Izz.setValue(64378.94,'kg*m^2');
-% vhcl.Ixy.setValue(0,'kg*m^2');
-% vhcl.Ixz.setValue(731.66,'kg*m^2');
-% vhcl.Iyz.setValue(0,'kg*m^2');
-% vhcl.volume.setValue(7.40,'m^3');
-% vhcl.mass.setValue(0.95*7404.24,'kg');
-
-vhcl.Ixx.setValue(6303,'kg*m^2');
-vhcl.Iyy.setValue(2080.7,'kg*m^2');
-vhcl.Izz.setValue(8320.4,'kg*m^2');
+vhcl.Ixx.setValue(34924.16,'kg*m^2');
+vhcl.Iyy.setValue(30487.96,'kg*m^2');
+vhcl.Izz.setValue(64378.94,'kg*m^2');
 vhcl.Ixy.setValue(0,'kg*m^2');
-vhcl.Ixz.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(731.66,'kg*m^2');
 vhcl.Iyz.setValue(0,'kg*m^2');
-vhcl.volume.setValue(0.9454,'m^3');
-vhcl.mass.setValue(859.4,'kg');
+vhcl.volume.setValue(7.40,'m^3');
+vhcl.mass.setValue(0.95*7404.24,'kg');
+
+% vhcl.Ixx.setValue(6303,'kg*m^2');
+% vhcl.Iyy.setValue(2080.7,'kg*m^2');
+% vhcl.Izz.setValue(8320.4,'kg*m^2');
+% vhcl.Ixy.setValue(0,'kg*m^2');
+% vhcl.Ixz.setValue(0,'kg*m^2');
+% vhcl.Iyz.setValue(0,'kg*m^2');
+% vhcl.volume.setValue(0.9454,'m^3');
+% vhcl.mass.setValue(859.4,'kg');
 
 vhcl.centOfBuoy.setValue([0 0 0]','m');
 vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
@@ -95,21 +95,26 @@ gndStn.scale(scaleFactor);
 %% Tethers
 % Create
 thr = OCT.tethers;
-thr.numTethers.setValue(1,'');
+thr.setNumTethers(1,'');
+thr.setNumNodes(2,'');
 thr.build;
 
+
 % Set parameter values
-thr.tether1.numNodes.setValue(5,'');
+% thr.tether1.numNodes.setValue(5,'');
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
-% thr.tether1.diameter.setValue(0.025,'m');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(3.89e9,'Pa');
-thr.tether1.dampingRatio.setValue(0.05,'');
+thr.tether1.youngsMod.setValue(3.9e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.75,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
+thr.tether1.setDragEnable(true,'');
+thr.tether1.setSpringDamperEnable(true,'');
+thr.tether1.setNetBuoyEnable(true,'');
+% thr.tether1.setDiameter(0.01,'m');
 
 thr.designTetherDiameter(vhcl,env);
 

@@ -1,18 +1,18 @@
 figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Ctrl Surf Deflections');
 subplot(4,1,1)
-plot(tsc.prtAilDefl.Time,tsc.prtAilDefl.Data,...
+plot(tsc.portAileronDefl.Time,tsc.portAileronDefl.Data,...
     'LineStyle','-','Color','k','LineWidth',1.5)
 xlabel('Time, [s]')
 ylabel('$\delta_{ail}^{prt}$, [deg]')
 
 subplot(4,1,2)
-plot(tsc.stbAilDefl.Time,tsc.stbAilDefl.Data,...
+plot(tsc.stbAileronDefl.Time,tsc.stbAileronDefl.Data,...
     'LineStyle','-','Color','k','LineWidth',1.5)
 xlabel('Time, [s]')
 ylabel('$\delta_{ail}^{sbd}$, [deg]')
 
 subplot(4,1,3)
-plot(tsc.stbElevDefl.Time,tsc.stbElevDefl.Data,...
+plot(tsc.elevDefl.Time,tsc.elevDefl.Data,...
     'LineStyle','-','Color','k','LineWidth',1.5)
 xlabel('Time, [s]')
 ylabel('$\delta_{elev}$, [deg]')
