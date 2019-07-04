@@ -6,7 +6,7 @@ duration_s  = 500*sqrt(scaleFactor);
 %% Set up simulation
 VEHICLE         = 'vehicle000';
 WINCH           = 'winch000';
-TETHERS         = 'tether001';
+TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
 CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
@@ -96,12 +96,10 @@ gndStn.scale(scaleFactor);
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(1,'');
-thr.setNumNodes(2,'');
+thr.setNumNodes(5,'');
 thr.build;
 
-
 % Set parameter values
-% thr.tether1.numNodes.setValue(5,'');
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
@@ -114,7 +112,6 @@ thr.tether1.density.setValue(1300,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(true,'');
-% thr.tether1.setDiameter(0.01,'m');
 
 thr.designTetherDiameter(vhcl,env);
 

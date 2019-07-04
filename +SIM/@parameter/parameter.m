@@ -13,7 +13,7 @@ classdef parameter < handle
         %% Constructor
         function obj = parameter(varargin)
             p = inputParser;
-            addParameter(p,'Value',[],@isnumeric)
+            addParameter(p,'Value',[],@(x) isnumeric(x) || islogical(x))
             addParameter(p,'Min',[],@isnumeric)
             addParameter(p,'Max',[],@isnumeric)
             addParameter(p,'Unit','',@ischar)

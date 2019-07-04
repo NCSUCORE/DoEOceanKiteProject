@@ -36,9 +36,9 @@ classdef tether < handle
             obj.initAirNodeVel  = SIM.parameter('Unit','m/s');
             obj.initNodePos     = SIM.parameter('Unit','m','Description','Initial conditions for intermediate (not end) nodes.');
             obj.initNodeVel     = SIM.parameter('Unit','m/s','Description','Initial conditions for intermediate (not end) nodes.');
-            obj.dragEnable          = SIM.parameter('NoScale',true);
-            obj.springDamperEnable  = SIM.parameter('NoScale',true);
-            obj.netBuoyEnable       = SIM.parameter('NoScale',true);
+            obj.dragEnable          = SIM.parameter('Value',true,'NoScale',true);
+            obj.springDamperEnable  = SIM.parameter('Value',true,'NoScale',true);
+            obj.netBuoyEnable       = SIM.parameter('Value',true,'NoScale',true);
         end
         
         
