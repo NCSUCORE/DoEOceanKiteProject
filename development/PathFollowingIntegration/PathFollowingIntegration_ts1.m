@@ -3,8 +3,8 @@ bdclose all
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 100*sqrt(scaleFactor);
-startControl=30;
+duration_s  = 200*sqrt(scaleFactor);
+startControl=20;
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -36,7 +36,7 @@ vhcl.numTethers.setValue(1,'');
 vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn1_lookupTables.mat');
 %IC's
-tetherLength = 50;
+tetherLength = 200;
 long = 0;
 lat = pi/4;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
@@ -46,7 +46,7 @@ path_init = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
 ini_Rcm = [path_init(1);path_init(2);path_init(3);];
-constantVelMag=7; %Constant velocity or Constant initial velocity
+constantVelMag=10; %Constant velocity or Constant initial velocity
 initVelAng = 270;%degrees
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 
@@ -164,13 +164,15 @@ wnch.scale(scaleFactor);
 %% %%%%%%%%%Controller Params%%%%%%
 aBooth=1;bBooth=1;latCurve=.5;
 
+perpErrorVal = 15*pi/180;
+
 %2 deg/s^2 for an error of 1 radian
 MOI_X=vhcl.Ixx.Value;
 kpRollMom =2*MOI_X;
 kdRollMom = 5*MOI_X;
 tauRollMom = .01; 
 
-maxBank=45*pi/180;
+maxBank=20*pi/180;
 kpVelAng=maxBank/(pi/2); %max bank divided by large error
 kiVelAng=kpVelAng/100;
 kdVelAng=kpVelAng;
@@ -178,8 +180,8 @@ tauVelAng=.01;
 
 controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
 controlSigMax = 5*10^7;
-MMAddBool = 0;
-MMOverrideBool = 1;
+MMAddBool = 1;
+MMOverrideBool = 0;
 constantVelBool = 1;
 
 %% Run the simulation
