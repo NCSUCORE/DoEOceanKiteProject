@@ -1,4 +1,4 @@
-timeStep = 2;
+timeStep = .01;
 fileName = 'animateSim.gif';
 bodyAxisLength = 15;
 % Resample to the animation framerate
@@ -133,7 +133,11 @@ for ii = 2:length(timeVec)
     h.bodyZ.XData = [tsc.positionVec.Data(1,:,ii) tsc.positionVec.Data(1,:,ii)+bodyAxes(1,3)];
     h.bodyZ.YData = [tsc.positionVec.Data(2,:,ii) tsc.positionVec.Data(2,:,ii)+bodyAxes(2,3)];
     h.bodyZ.ZData = [tsc.positionVec.Data(3,:,ii) tsc.positionVec.Data(3,:,ii)+bodyAxes(3,3)];
-       
+    
+    [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+    h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+    quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i))
+
     
     xlim(xLim)
     ylim(yLim)

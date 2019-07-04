@@ -1,7 +1,10 @@
 clear all;clc
+bdclose all
+OCTModel
 
 scaleFactor = 1;
-duration_s  = 3*sqrt(scaleFactor);
+duration_s  = 100*sqrt(scaleFactor);
+startControl=30;
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -11,41 +14,29 @@ GROUNDSTATION = 'groundStation000';
 % PLANT = 'modularPlant';
 ENVIRONMENT = 'constantUniformFlow';
 CONTROLLER = 'pathFollowingController';
+VARIANTSUBSYSTEM = 'twoNodeTether';
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
 createPathFollowingControllerCtrlBus;
 
-%% Vehicle
+%% Set up environment
+% Create
+env = ENV.env;
+env.addFlow({'water'},'FlowDensities',1000);
+% Set Values
+env.water.velVec.setValue([1 0 0],'m/s');
+% Scale up/down
+env.scale(scaleFactor);
+%% Create Vehicle and Initial conditions
 % Create
 vhcl = OCT.vehicle;
 vhcl.numTethers.setValue(1,'');
 vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn1_lookupTables.mat');
-
-% Set Values
-% vhcl.mass.Value = (8.9360e+04)*(1/4)^3;%0.8*(945.352);
-% vhcl.Ixx.Value = 14330000*(1/4)^5;%(6.303e9)*10^-6;
-% vhcl.Iyy.Value = 143200*(1/4)^5;%2080666338.077*10^-6;
-% vhcl.Izz.Value = 15300000*(1/4)^5;%(8.32e9)*10^-6;
-% vhcl.Ixy.Value = 0;
-% vhcl.Ixz.Value = 0;%81875397*10^-6;
-% vhcl.Iyz.Value = 0;
-% vhcl.volume.Value = 111.7*(1/4)^3;%9453552023*10^-6;
-
-vhcl.Ixx.setValue(34924.16,'kg*m^2');
-vhcl.Iyy.setValue(30487.96,'kg*m^2');
-vhcl.Izz.setValue(64378.94,'kg*m^2');
-vhcl.Ixy.setValue(0,'kg*m^2');
-vhcl.Ixz.setValue(731.66,'kg*m^2');
-vhcl.Iyz.setValue(0,'kg*m^2');
-vhcl.volume.setValue(7.40,'m^3');
-vhcl.mass.setValue(0.95*7404.24,'kg');
-
-vhcl.centOfBuoy.setValue([0 0 0]','m');
-vhcl.thrAttch1.posVec.Value = [0 0 0]';
-tetherLength = 200;
+%IC's
+tetherLength = 50;
 long = 0;
 lat = pi/4;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
@@ -58,28 +49,55 @@ ini_Rcm = [path_init(1);path_init(2);path_init(3);];
 constantVelMag=7; %Constant velocity or Constant initial velocity
 initVelAng = 270;%degrees
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+
 ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
-ini_yaw=atan2(ini_Vcm(2),ini_Vcm(1));
-[~,bodyToGr]=rotation_sequence([ini_pitch 0 ini_yaw]);
+ini_yaw=atan2(-ini_Vcm(2),-ini_Vcm(1));
+
+[bodyToGr,~]=rotation_sequence([0 ini_pitch ini_yaw]);
 bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
-vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm,'InitEulAng',[ ini_roll ini_pitch ini_yaw]);
 
-vhcl.turbine1.diameter.Value        = 1;
-vhcl.turbine1.axisUnitVec.Value     = [1 0 0]';
-vhcl.turbine1.attachPtVec.Value     = [-1.25 -5 0]';
-vhcl.turbine1.powerCoeff.Value      = 0.5;
-vhcl.turbine1.dragCoeff.Value       = 0.8;
+ini_Vcm_body = [-constantVelMag;0;0];
+ini_eul=[ini_roll ini_pitch ini_yaw];
+vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 
-vhcl.turbine2.diameter.Value        = 1;
-vhcl.turbine2.axisUnitVec.Value     = [1 0 0]';
-vhcl.turbine2.attachPtVec.Value     = [-1.25  5 0]';
-vhcl.turbine2.powerCoeff.Value      = 0.5;
-vhcl.turbine2.dragCoeff.Value       = 0.8;
+%% Vehicle Parameters
+% Set Values
+% vhcl.mass.Value = (8.9360e+04)*(1/4)^3;%0.8*(945.352);
+% vhcl.Ixx.Value = 14330000*(1/4)^5;%(6.303e9)*10^-6;
+% vhcl.Iyy.Value = 143200*(1/4)^5;%2080666338.077*10^-6;
+% vhcl.Izz.Value = 15300000*(1/4)^5;%(8.32e9)*10^-6;
+% vhcl.Ixy.Value = 0;
+% vhcl.Ixz.Value = 0;%81875397*10^-6;
+% vhcl.Iyz.Value = 0;
+% vhcl.volume.Value = 111.7*(1/4)^3;%9453552023*10^-6;
 
-vhcl.aeroSurf1.aeroCentPosVec.Value(1) = -1.25;
-vhcl.aeroSurf2.aeroCentPosVec.Value(1) = -1.25;
+vhcl.Ixx.setValue(6303,'kg*m^2');
+vhcl.Iyy.setValue(2080.7,'kg*m^2');
+vhcl.Izz.setValue(8320.4,'kg*m^2');
+vhcl.Ixy.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(0,'kg*m^2');
+vhcl.Iyz.setValue(0,'kg*m^2');
+vhcl.volume.setValue(0.9454,'m^3');
+vhcl.mass.setValue(945.4,'kg'); %old=859.4
+vhcl.centOfBuoy.setValue([0 0 0]','m');
+vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
+
+vhcl.turbine1.diameter.setValue(0,'m');
+vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
+vhcl.turbine1.powerCoeff.setValue(0.5,'');
+vhcl.turbine1.dragCoeff.setValue(0.8,'');
+
+vhcl.turbine2.diameter.setValue(0,'m');
+vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
+vhcl.turbine2.powerCoeff.setValue(0.5,'');
+vhcl.turbine2.dragCoeff.setValue(0.8,'');
+
+% vhcl.aeroSurf1.aeroCentPosVec.Value(1) = -1.25;
+% vhcl.aeroSurf2.aeroCentPosVec.Value(1) = -1.25;
 
 % Scale up/down
 vhcl.scale(scaleFactor);
@@ -87,17 +105,17 @@ vhcl.scale(scaleFactor);
 %% Ground Station
 % Create
 gndStn = OCT.station;
-gndStn.numTethers.Value = 1;
+gndStn.numTethers.setValue(1,'');
 gndStn.build;
 
 % Set values
-gndStn.inertia.Value            = 1;
-gndStn.posVec.Value             = [0 0 0];
-gndStn.dampCoeff.Value          = 1;
-gndStn.initAngPos.Value         = 0;
-gndStn.initAngVel.Value         = 0;
-gndStn.thrAttch1.posVec.Value   = [0 0 0];
-gndStn.freeSpnEnbl.Value        = false;
+gndStn.inertia.setValue(1,'kg*m^2');
+gndStn.posVec.setValue([0 0 0],'m');
+gndStn.dampCoeff.setValue(1,'(N*m)/(rad*s)');
+gndStn.initAngPos.setValue(0,'rad');
+gndStn.initAngVel.setValue(0,'rad/s');
+gndStn.thrAttch1.posVec.setValue([0 0 0],'m');
+gndStn.freeSpnEnbl.setValue(false,'');
 
 % Scale up/down
 gndStn.scale(scaleFactor);
@@ -105,21 +123,23 @@ gndStn.scale(scaleFactor);
 %% Tethers
 % Create
 thr = OCT.tethers;
-thr.numTethers.Value = 1;
+thr.numTethers.setValue(1,'');
 thr.build;
 
 % Set parameter values
-thr.tether1.numNodes.Value       = 5;
-thr.tether1.initGndNodePos.Value = gndStn.thrAttch1.posVec.Value(:);
-thr.tether1.initAirNodePos.Value = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:);
-thr.tether1.initGndNodeVel.Value = [0 0 0]';
-thr.tether1.initAirNodeVel.Value = vhcl.initVelVecGnd.Value(:);
-thr.tether1.diameter.Value      = 0.05;
-thr.tether1.vehicleMass.Value   = vhcl.mass.Value;
-thr.tether1.youngsMod.Value     = 3.8e9;
-thr.tether1.dampingRatio.Value  = 0.05;
-thr.tether1.dragCoeff.Value     = 0.5;
-thr.tether1.density.Value       = 1300;
+thr.tether1.numNodes.setValue(2,'');
+thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
+% thr.tether1.diameter.setValue(0.025,'m');
+thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+thr.tether1.youngsMod.setValue(3.89e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.05,'');
+thr.tether1.dragCoeff.setValue(0.5,'');
+thr.tether1.density.setValue(1300,'kg/m^3');
+
+thr.designTetherDiameter(vhcl,env);
 
 % Scale up/down
 thr.scale(scaleFactor);
@@ -128,28 +148,20 @@ thr.scale(scaleFactor);
 %% Winches
 % Create
 wnch = OCT.winches;
-wnch.numWinches.Value = 1;
+wnch.numWinches.setValue(1,'');
 wnch.build;
 % Set values
-wnch.winch1.initLength.Value = 212;
-wnch.winch1.maxSpeed.Value   = 0.4;
-wnch.winch1.timeConst.Value  = 1;
-wnch.winch1.maxAccel.Value   = inf;
+wnch.winch1.maxSpeed.setValue(0.4,'m/s');
+wnch.winch1.timeConst.setValue(1,'s');
+wnch.winch1.maxAccel.setValue(inf,'m/s^2');
+
+wnch = wnch.setTetherInitLength(vhcl,env,thr);
 
 % Scale up/down
 wnch.scale(scaleFactor);
 
 
-%% Set up environment
-% Create
-env = ENV.env;
-env.addFlow({'water'},'FlowDensities',1000);
-% Set Values
-env.water.velVec.Value = [1 0 0];
-% Scale up/down
-env.scale(scaleFactor);
-
-%%%%%%%%%Controller Params%%%%%%
+%% %%%%%%%%%Controller Params%%%%%%
 aBooth=1;bBooth=1;latCurve=.5;
 
 %2 deg/s^2 for an error of 1 radian
@@ -178,15 +190,17 @@ constantVelBool = 1;
 % disp("second time")
 % sim('OCTModel')
 % end
-sim('OCTModel')
+
+simWithMonitor('OCTModel')
 % Run stop callback to plot everything
 kiteAxesPlot
-
+% clear h
+% animateSim
  %%
 % stopCallback
 
 
-
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
