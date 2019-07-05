@@ -18,12 +18,13 @@ format compact
 % end
 
 % createConstantUniformFlowEnvironmentBus
+% createOneTetherThreeSurfaceCtrlBus
+% createThrAttachPtKinematicsBus
 
-sim_time = 900;
+sim_time = 3600;
 
 % number of tethers
-N = 4;
-sim_param.N = N;
+N = 2;
 
 rho = 1000;
 vol = 3.5;
@@ -38,38 +39,43 @@ m = mass;
 
 inertiaMatrix = ((1/6)*mass*h^2).*eye(3);
 
-dist = 75;
+dist = 50;
 
 thr1Pt = [0 1 0];
 thr1GndPos = [0 dist 0];
 thr1GndVel = [0 0 0];
-thr2Pt = [cosd(30),-sind(30),0];
-thr2GndPos = [dist*cosd(30), -dist*sind(30), 0];
+thr2Pt = [cosd(30),-(1/2),0];
+thr2GndPos = [dist*cosd(30), -dist*(1/2), 0];
 thr2GndVel = [0 0 0];
-thr3Pt = [-cosd(30),-sind(30),0];
-thr3GndPos = [-dist*cosd(30), -dist*sind(30), 0];
+thr3Pt = [-cosd(30),-(1/2),0];
+thr3GndPos = [-dist*cosd(30), -dist*(1/2), 0];
 thr3GndVel = [0 0 0];
-CB2CMVec = [0 0 h/4];
+CB2CMVec = [0 0 0];
 
 dia_t = 0.05;
 E = 3.8e9;
 zeta = 0.05;
-rho_tether = 300;
+rho_tether = 1300;
 Cd = 0.5;
 
 initPos = [0 0 100];
-initVel = [0 0 0];
-initEulerAngles = [0 0 0];
+initVel = [1e-3 0 0];
+initEulerAngles = (pi/180).*[0 0 0];
 initAngVel = [0 0 0];
 
 tetherLengths = [norm(initPos+thr1Pt-thr1GndPos),norm(initPos+thr2Pt-thr2GndPos),...
     norm(initPos+thr2Pt-thr2GndPos)];
 
-tenMag = -4600-117;
-
-thr1ten = tenMag*(initPos+thr1Pt-thr1GndPos)/tetherLengths(1)
-thr2ten = tenMag*(initPos+thr2Pt-thr2GndPos)/tetherLengths(2)
-thr3ten = tenMag*(initPos+thr3Pt-thr3GndPos)/tetherLengths(3)
+% % % % tenMag = -4152.4818783275;
+% % % % 
+% % % % thr1ten = tenMag*(initPos+thr1Pt-thr1GndPos)/tetherLengths(1);
+% % % % thr2ten = tenMag*(initPos+thr2Pt-thr2GndPos)/tetherLengths(2);
+% % % % thr3ten = tenMag*(initPos+thr3Pt-thr3GndPos)/tetherLengths(3);
+% % % % 
+% % % % thr3ten(2) = -(thr1ten(2)+thr2ten(2));
+% % % % thr1ten + thr2ten + thr3ten
+% % % % 
+% % % % rho*grav*vol-mass*grav+thr1ten(3)*3
 
 gndStnMmtArms(1).posVec = thr1GndPos;
 gndStnMmtArms(2).posVec = thr2GndPos;
@@ -80,66 +86,68 @@ bodyMmtArms(2).posVec = thr2Pt;
 bodyMmtArms(3).posVec = thr3Pt;
 
 liftingBodyThrAttch(1).posVec = [0 1/2 1/2];
-liftingBodyThrAttch(2).posVec = [1/2*cosd(30), -1/2*sind(30), 1/2];
-liftingBodyThrAttch(3).posVec = [-1/2*cosd(30), -1/2*sind(30), 1/2];
+liftingBodyThrAttch(2).posVec = [1/2*cosd(30), -1/2*(1/2), 1/2];
+liftingBodyThrAttch(3).posVec = [-1/2*cosd(30), -1/2*(1/2), 1/2];
 
 thr = OCT.tethers;
-thr.numTethers = SIM.parameter('Value',3);
+thr.numTethers.setValue(3,'');
+thr.numNodes.setValue(N,'')
 thr.build;
 
-thr.tether1.numNodes        = SIM.parameter('Value',4);
-thr.tether1.initGndNodePos  = SIM.parameter('Value',thr1GndPos);
-thr.tether1.initAirNodePos  = SIM.parameter('Value',initPos + (rotation_sequence(initEulerAngles)*thr1Pt')');
-thr.tether1.initGndNodeVel  = SIM.parameter('Value',[0 0 0]);
-thr.tether1.initAirNodeVel  = SIM.parameter('Value',initVel);
-thr.tether1.diameter        = SIM.parameter('Value',dia_t);
-thr.tether1.youngsMod       = SIM.parameter('Value',E);
-thr.tether1.dampingRatio    = SIM.parameter('Value',zeta);
-thr.tether1.dragCoeff       = SIM.parameter('Value',Cd);
-thr.tether1.density         = SIM.parameter('Value',rho_tether);
-thr.tether1.vehicleMass     = SIM.parameter('Value',mass);
+thr.tether1.initGndNodePos.setValue(thr1GndPos,'m');
+thr.tether1.initAirNodePos.setValue(initPos + (rotation_sequence(initEulerAngles)*thr1Pt')','m');
+thr.tether1.initGndNodeVel.setValue([0 0 0],'m/s');
+thr.tether1.initAirNodeVel.setValue(initVel,'m/s');
+thr.tether1.diameter.setValue(dia_t,'m');
+thr.tether1.youngsMod.setValue(E,'Pa');
+thr.tether1.dampingRatio.setValue(zeta,'');
+thr.tether1.dragCoeff.setValue(Cd,'');
+thr.tether1.density.setValue(rho_tether,'kg/m^3');
+thr.tether1.vehicleMass.setValue(mass,'kg');
+thr.tether1.setDragEnable(true,'');
+thr.tether1.setSpringDamperEnable(true,'');
+thr.tether1.setNetBuoyEnable(true,'');
 
-thr.tether2.numNodes        = SIM.parameter('Value',4);
-thr.tether2.initGndNodePos  = SIM.parameter('Value',thr2GndPos);
-thr.tether2.initAirNodePos  = SIM.parameter('Value',initPos + (rotation_sequence(initEulerAngles)*thr2Pt')');
-thr.tether2.initGndNodeVel  = SIM.parameter('Value',[0 0 0]);
-thr.tether2.initAirNodeVel  = SIM.parameter('Value',initVel);
-thr.tether2.diameter        = SIM.parameter('Value',dia_t);
-thr.tether2.youngsMod       = SIM.parameter('Value',E);
-thr.tether2.dampingRatio    = SIM.parameter('Value',zeta);
-thr.tether2.dragCoeff       = SIM.parameter('Value',Cd);
-thr.tether2.density         = SIM.parameter('Value',rho_tether);
-thr.tether2.vehicleMass     = SIM.parameter('Value',mass);
+thr.tether2.initGndNodePos.setValue(thr2GndPos,'m');
+thr.tether2.initAirNodePos.setValue(initPos + (rotation_sequence(initEulerAngles)*thr2Pt')','m');
+thr.tether2.initGndNodeVel.setValue([0 0 0],'m/s');
+thr.tether2.initAirNodeVel.setValue(initVel,'m/s');
+thr.tether2.diameter.setValue(dia_t,'m');
+thr.tether2.youngsMod.setValue(E,'Pa');
+thr.tether2.dampingRatio.setValue(zeta,'');
+thr.tether2.dragCoeff.setValue(Cd,'');
+thr.tether2.density.setValue(rho_tether,'kg/m^3');
+thr.tether2.vehicleMass.setValue(mass,'kg');
+thr.tether2.setDragEnable(true,'');
+thr.tether2.setSpringDamperEnable(true,'');
+thr.tether2.setNetBuoyEnable(true,'');
 
-thr.tether3.numNodes        = SIM.parameter('Value',4);
-thr.tether3.initGndNodePos  = SIM.parameter('Value',thr3GndPos);
-thr.tether3.initAirNodePos  = SIM.parameter('Value',initPos + (rotation_sequence(initEulerAngles)*thr3Pt')');
-thr.tether3.initGndNodeVel  = SIM.parameter('Value',[0 0 0]);
-thr.tether3.initAirNodeVel  = SIM.parameter('Value',initVel);
-thr.tether3.diameter        = SIM.parameter('Value',dia_t);
-thr.tether3.youngsMod       = SIM.parameter('Value',E);
-thr.tether3.dampingRatio    = SIM.parameter('Value',zeta);
-thr.tether3.dragCoeff       = SIM.parameter('Value',Cd);
-thr.tether3.density         = SIM.parameter('Value',rho_tether);
-thr.tether3.vehicleMass     = SIM.parameter('Value',mass);
+thr.tether3.initGndNodePos.setValue(thr3GndPos,'m');
+thr.tether3.initAirNodePos.setValue(initPos + (rotation_sequence(initEulerAngles)*thr3Pt')','m');
+thr.tether3.initGndNodeVel.setValue([0 0 0],'m/s');
+thr.tether3.initAirNodeVel.setValue(initVel,'m/s');
+thr.tether3.diameter.setValue(dia_t,'m');
+thr.tether3.youngsMod.setValue(E,'Pa');
+thr.tether3.dampingRatio.setValue(zeta,'');
+thr.tether3.dragCoeff.setValue(Cd,'');
+thr.tether3.density.setValue(rho_tether,'kg/m^3');
+thr.tether3.vehicleMass.setValue(mass,'kg');
+thr.tether3.setDragEnable(true,'');
+thr.tether3.setSpringDamperEnable(true,'');
+thr.tether3.setNetBuoyEnable(true,'');
 
 thr = thr.struct('OCT.tether');
 
-createThrAttachPtKinematicsBus
-
-arms(1).posVec = thr1Pt;
-arms(2).posVec = thr2Pt;
-arms(3).posVec = thr3Pt;
+airTethDist = [0 0 h/2];
 
 v = 0.6;
-v = 0;
 vsquared = v^2;
 cd = .8;
 A = vol^(2/3);
 oceanPeriod = 20;
 
-xOn = 0; % 1 = on, 0 = off
-zOn = 0;
+xOn = 1; % 1 = on, 0 = off
+zOn = 1;
 
 % full tension
 % initPos = [26.4381, 0, 83.0498];
@@ -148,8 +156,16 @@ zOn = 0;
     
 waveAmp = 0;
 wavePeriod = oceanPeriod;
-oceanDepth = 115;
+oceanDepth = 105;
 sim('groundStation001_th')
+figure
+depth.plot
+title('Depth')
+ylabel('Depth (m)')
+figure
+eulang.plot
+legend('roll','pitch','yaw')
+ylabel('Euler Angles (rad)')
 
 
 %%
