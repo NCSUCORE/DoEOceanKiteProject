@@ -1,10 +1,10 @@
 clear all;clc
-bdclose all
+bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
 duration_s  = 200*sqrt(scaleFactor);
-startControl=20;
+startControl= 20; %duration_s for 0 control signals
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -42,12 +42,12 @@ lat = pi/4;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
            cos(lat)            0          -sin(lat);];
-path_init = tetherLength*[cos(long).*cos(lat);
+ini_Rcm = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
-ini_Rcm = [path_init(1);path_init(2);path_init(3);];
-constantVelMag=10; %Constant velocity or Constant initial velocity
-initVelAng = 270;%degrees
+% path_init=tetherLength * boothSToGroundPos(.68*(2*pi),1,1,.5,0);
+constantVelMag=34; %Constant velocity or Constant initial velocity
+initVelAng = 90;%degrees
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 
 ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
@@ -180,9 +180,18 @@ tauVelAng=.01;
 
 controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
 controlSigMax = 5*10^7;
+
+%% Plant Modification Options
+%Pick 0 or 1 to turn on:
 MMAddBool = 1;
 MMOverrideBool = 0;
-constantVelBool = 1;
+
+%Pick 0 or 1 to turn on:
+constantVelBool = 0;
+constantNormVelBool = 0;
+
+%Only meaningful if using constantNormVel
+radialMotionBool = 1;
 
 %% Run the simulation
 % try
