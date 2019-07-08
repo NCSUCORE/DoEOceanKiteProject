@@ -56,7 +56,11 @@ quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data
 if min(tsc.positionVec.Data(3,1,:))>0
     zlim([0 inf])
 end
-view(90,15)
+if exist('AZ','var') && exist('EL','var')
+    view(AZ,EL)
+else
+    view(90,15)
+end
 % scatter3(tetherLength*tsc.star_pos.Data(1:i,1),tetherLength*tsc.star_pos.Data(1:i,2),tetherLength*tsc.star_pos.Data(1:i,3),'k')
 hold off
 % % pause(waittime)

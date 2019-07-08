@@ -123,21 +123,23 @@ gndStn.scale(scaleFactor);
 %% Tethers
 % Create
 thr = OCT.tethers;
-thr.numTethers.setValue(1,'');
+thr.setNumTethers(1,'');
+thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thr.tether1.numNodes.setValue(2,'');
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
-% thr.tether1.diameter.setValue(0.025,'m');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(3.89e9,'Pa');
-thr.tether1.dampingRatio.setValue(0.05,'');
+thr.tether1.youngsMod.setValue(3.9e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.75,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
+thr.tether1.setDragEnable(true,'');
+thr.tether1.setSpringDamperEnable(true,'');
+thr.tether1.setNetBuoyEnable(true,'');
 
 thr.designTetherDiameter(vhcl,env);
 
@@ -168,8 +170,8 @@ perpErrorVal = 15*pi/180;
 
 %2 deg/s^2 for an error of 1 radian
 MOI_X=vhcl.Ixx.Value;
-kpRollMom =2*MOI_X;
-kdRollMom = 5*MOI_X;
+kpRollMom =0*2*MOI_X;
+kdRollMom = 0*5*MOI_X;
 tauRollMom = .01; 
 
 maxBank=20*pi/180;
@@ -178,8 +180,8 @@ kiVelAng=kpVelAng/100;
 kdVelAng=kpVelAng;
 tauVelAng=.01;
 
-controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
-controlSigMax = 5*10^7;
+controlAlMat = eye(3);
+controlSigMax = inf;
 
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
@@ -203,7 +205,7 @@ radialMotionBool = 0;
 % end
 
 %simWithMonitor('OCTModelLateralFlight')
-sim('OCTModelLateralFlight')
+simWithMonitor('OCTModelLateralFlight')
 % Run stop callback to plot everything
 kiteAxesPlot
 % clear h
