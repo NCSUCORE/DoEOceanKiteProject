@@ -59,8 +59,8 @@ classdef tethers < dynamicprops
             subProps = properties(obj.(props{1}));
             for ii = 1:length(props)
                 for jj = 1:numel(subProps)
-                    parameter = obj.(props{ii}).(subProps{jj});
-                    val(ii).(subProps{jj}) = parameter.Value;
+%                     parameter = obj.(props{ii}).(subProps{jj});
+                    val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
                 end
             end
         end

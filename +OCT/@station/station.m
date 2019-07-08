@@ -3,7 +3,7 @@ classdef station < dynamicprops
     %VEHICLE Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess = private)
         numTethers
         inertia
         dampCoeff
@@ -25,7 +25,7 @@ classdef station < dynamicprops
             obj.posVec      = SIM.parameter('Unit','m');
         end
         
-        % Function to build the vehicle
+        % Function to build the ground station
         function obj = build(obj,varargin)
             % Populate cell array of default names
             defThrName = {};

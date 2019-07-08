@@ -32,7 +32,7 @@ vol = 3.5;
 h = vol^(1/3);
 % platform properties
 buoyF = 1.5;
-mass = rho*vol/buoyF;
+mass = 1000*vol/buoyF;
 m = mass;
 inertiaMatrix = ((1/6)*mass*h^2).*eye(3);
 
