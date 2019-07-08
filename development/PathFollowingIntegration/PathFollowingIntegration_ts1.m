@@ -4,7 +4,7 @@ OCTModel
 
 scaleFactor = 1;
 duration_s  = 200*sqrt(scaleFactor);
-startControl= duration_s; %duration_s for 0 control signals
+startControl= 2; %duration_s for 0 control signals
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -168,31 +168,31 @@ aBooth=1;bBooth=1;latCurve=.5;
 
 perpErrorVal = 15*pi/180;
 
+%5 deg/s^2 for an error of 1 radian
 MOI_X=vhcl.Ixx.Value;
 kpRollMom = 25000*(pi/180)*MOI_X;
 kdRollMom = 5000*(pi/180)*MOI_X;
 tauRollMom = .01; 
 
-maxBank=20*pi/180;
-kpVelAng=maxBank/(pi/4); %max bank divided by large error
+maxBank=40*pi/180;
+kpVelAng=maxBank/(5*(pi/180)); %max bank divided by large error
 kiVelAng=kpVelAng/100;
-kdVelAng=kpVelAng;
+kdVelAng=6*kpVelAng;
 tauVelAng=.01;
 
 controlAlMat = eye(3);
 controlSigMax = inf;
-
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
-MMAddBool = 0;
-MMOverrideBool = 1;
+MMAddBool = 1;
+MMOverrideBool = 0;
 
 %Pick 0 or 1 to turn on:
 constantVelBool = 0;
 constantNormVelBool = 0;
 
 %Only meaningful if using constantNormVel
-radialMotionBool = 1;
+radialMotionBool = 0;
 
 %% Run the simulation
 % try

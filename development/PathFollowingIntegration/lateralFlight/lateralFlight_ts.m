@@ -3,7 +3,7 @@ clear all;clc
 % OCTModelLateralFlight
 
 scaleFactor = 1;
-duration_s  = 200*sqrt(scaleFactor);
+duration_s  = 50*sqrt(scaleFactor);
 startControl= 1; %duration_s for 0 control signals
 
 %% Set up simulation
@@ -173,10 +173,10 @@ kpRollMom = 25000*(pi/180)*MOI_X;
 kdRollMom = 5000*(pi/180)*MOI_X;
 tauRollMom = .01; 
 
-maxBank=30*pi/180;
+maxBank=40*pi/180;
 kpVelAng=maxBank/(5*(pi/180)); %max bank divided by large error
 kiVelAng=kpVelAng/100;
-kdVelAng=5*kpVelAng;
+kdVelAng=6*kpVelAng;
 tauVelAng=.01;
 
 controlAlMat = eye(3);
@@ -210,4 +210,5 @@ deslims=ylim;
 subplot(1,3,3)
 tsc.tanRoll.plot
 ylim(deslims)
+pause(10)
 kiteAxesPlot %Pretty plot
