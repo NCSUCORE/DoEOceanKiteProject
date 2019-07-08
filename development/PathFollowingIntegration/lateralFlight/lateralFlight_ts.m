@@ -163,24 +163,44 @@ wnch = wnch.setTetherInitLength(vhcl,env,thr);
 wnch.scale(scaleFactor);
 
 %% %%%%%%%%%Controller Params%%%%%%
-aBooth=1;bBooth=1;latCurve=.5;
 
-perpErrorVal = 15*pi/180;
 
 %5 deg/s^2 for an error of 1 radian
 MOI_X=vhcl.Ixx.Value;
-kpRollMom = 25000*(pi/180)*MOI_X;
-kdRollMom = 5000*(pi/180)*MOI_X;
-tauRollMom = .01; 
 
-maxBank=40*pi/180;
-kpVelAng=maxBank/(5*(pi/180)); %max bank divided by large error
-kiVelAng=kpVelAng/100;
-kdVelAng=6*kpVelAng;
-tauVelAng=.01;
 
-controlAlMat = eye(3);
-controlSigMax = inf;
+pathCtrl = CTR.controller;
+pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
+    'FPIDErrorUnits',{'rad','N*m'},...
+    'FPIDOutputUnits',{'rad','N*m'})
+
+pathCtrl.rollMoment.kp.setValue(25000*(pi/180)*MOI_X,'(N*m)/(N*m)');
+pathCtrl.rollMoment.kd.setValue(5000*(pi/180)*MOI_X,'(N*m*s)/(N*m)');
+pathCtrl.rollMoment.tau.setValue (.01,'s');
+
+pathCtrl.add('GainNames',{'ctrlAllocMat'},...
+    'GainUnits',{''})
+
+pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
+
+pathCtrl.maxBank.upperLimit.setValue(30*pi/180,'');
+pathCtrl.maxBank.lowerLimit.setValue(-30*pi/180,'');
+pathCtrl.controlSigMax.lowerLimit.setValue(-inf,'');
+pathCtrl.controlSigMax.upperLimit.setValue(inf,'');
+
+pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(5*(pi/180)),'(rad)/(rad)');
+pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*5,'(rad*s)/(rad)');
+pathCtrl.velAng.tau.setValue(.01,'s');
+
+pathCtrl.ctrlAllocMat.setValue(eye(3),'');
+
+pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','aBooth','bBooth','latCurve'})
+pathCtrl.latSP.Value = pi/4;
+pathCtrl.trim.Value = 15;
+pathCtrl.perpErrorVal.Value = 15*pi/180;
+pathCtrl.aBooth.Value = 1;
+pathCtrl.bBooth.Value = 1;
+pathCtrl.latCurve.Value =.5;
 
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
@@ -195,20 +215,20 @@ constantNormVelBool = 0;
 radialMotionBool = 1;
 
 %% Run the simulation
-simWithMonitor('OCTModelLateralFlight')
+sim('OCTModelLateralFlight')
 
 %% Animate and Plot
 % clear h;animateSim %Animate tether
 % stopCallback %Plot Everything
-% parseLogsout;
-% figure;
-% subplot(1,3,1)
-% tsc.latErr.plot
-% subplot(1,3,2)
-% tsc.tanRollDes.plot
-% deslims=ylim;
-% subplot(1,3,3)
-% tsc.tanRoll.plot
-% ylim(deslims)
-% pause(5)
+parseLogsout;
+figure;
+subplot(1,3,1)
+tsc.latErr.plot
+subplot(1,3,2)
+tsc.tanRollDes.plot
+deslims=ylim;
+subplot(1,3,3)
+tsc.tanRoll.plot
+ylim(deslims)
+pause(10)
 kiteAxesPlot %Pretty plot
