@@ -4,9 +4,14 @@ parseLogsout;
 
 figure
 ax=axes;
-pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
+% pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
+lat=pi/4;
+long=0:.01:2*pi;
+pathvals=tetherLength*[cos(long).*cos(lat);
+         sin(long).*cos(lat);
+         ones(1,length(long)).*sin(lat);];
 waittime = .05; 
-animation_time = 5;
+animation_time = 3;
 filename="Dummy_Controller_4";
 timevec=tsc.positionVec.Time;
  %%
