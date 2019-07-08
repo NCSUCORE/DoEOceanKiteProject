@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 200*sqrt(scaleFactor);
+duration_s  = 40*sqrt(scaleFactor);
 startControl= 2; %duration_s for 0 control signals
 
 %% Set up simulation
@@ -170,8 +170,8 @@ perpErrorVal = 15*pi/180;
 
 %5 deg/s^2 for an error of 1 radian
 MOI_X=vhcl.Ixx.Value;
-kpRollMom = 25000*(pi/180)*MOI_X;
-kdRollMom = 5000*(pi/180)*MOI_X;
+kpRollMom = 50*(pi/180)*MOI_X;
+kdRollMom = 50*(pi/180)*MOI_X;
 tauRollMom = .01; 
 
 maxBank=40*pi/180;

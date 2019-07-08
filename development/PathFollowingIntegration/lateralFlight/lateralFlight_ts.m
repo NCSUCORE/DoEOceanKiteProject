@@ -195,20 +195,20 @@ constantNormVelBool = 0;
 radialMotionBool = 1;
 
 %% Run the simulation
-sim('OCTModelLateralFlight')
+simWithMonitor('OCTModelLateralFlight')
 
 %% Animate and Plot
 % clear h;animateSim %Animate tether
 % stopCallback %Plot Everything
-parseLogsout;
-figure;
-subplot(1,3,1)
-tsc.latErr.plot
-subplot(1,3,2)
-tsc.tanRollDes.plot
-deslims=ylim;
-subplot(1,3,3)
-tsc.tanRoll.plot
-ylim(deslims)
-pause(10)
+% parseLogsout;
+% figure;
+% subplot(1,3,1)
+% tsc.latErr.plot
+% subplot(1,3,2)
+% tsc.tanRollDes.plot
+% deslims=ylim;
+% subplot(1,3,3)
+% tsc.tanRoll.plot
+% ylim(deslims)
+% pause(5)
 kiteAxesPlot %Pretty plot
