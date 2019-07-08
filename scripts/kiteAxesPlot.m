@@ -4,9 +4,14 @@ parseLogsout;
 
 figure
 ax=axes;
-pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
+% pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
+lat=pi/4;
+long=0:.01:2*pi;
+pathvals=tetherLength*[cos(long).*cos(lat);
+         sin(long).*cos(lat);
+         ones(1,length(long)).*sin(lat);];
 waittime = .05; 
-animation_time = 5;
+animation_time = 3;
 filename="Dummy_Controller_4";
 timevec=tsc.positionVec.Time;
  %%
@@ -56,7 +61,11 @@ quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data
 if min(tsc.positionVec.Data(3,1,:))>0
     zlim([0 inf])
 end
-view(90,15)
+if exist('AZ','var') && exist('EL','var')
+    view(AZ,EL)
+else
+    view(90,15)
+end
 % scatter3(tetherLength*tsc.star_pos.Data(1:i,1),tetherLength*tsc.star_pos.Data(1:i,2),tetherLength*tsc.star_pos.Data(1:i,3),'k')
 hold off
 % % pause(waittime)

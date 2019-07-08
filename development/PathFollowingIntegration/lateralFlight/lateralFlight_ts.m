@@ -1,10 +1,10 @@
 clear all;clc
-bdclose OCTModelLateralFlight
-OCTModelLateralFlight
+% bdclose OCTModelLateralFlight
+% OCTModelLateralFlight
 
 scaleFactor = 1;
-duration_s  = 500*sqrt(scaleFactor);
-startControl= 20; %duration_s for 0 control signals
+duration_s  = 200*sqrt(scaleFactor);
+startControl= 1; %duration_s for 0 control signals
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -29,6 +29,7 @@ env.addFlow({'water'},'FlowDensities',1000);
 env.water.velVec.setValue([1 0 0],'m/s');
 % Scale up/down
 env.scale(scaleFactor);
+
 %% Create Vehicle and Initial conditions
 % Create
 vhcl = OCT.vehicle;
@@ -123,27 +124,28 @@ gndStn.scale(scaleFactor);
 %% Tethers
 % Create
 thr = OCT.tethers;
-thr.numTethers.setValue(1,'');
+thr.setNumTethers(1,'');
+thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thr.tether1.numNodes.setValue(2,'');
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
-% thr.tether1.diameter.setValue(0.025,'m');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(3.89e9,'Pa');
-thr.tether1.dampingRatio.setValue(0.05,'');
+thr.tether1.youngsMod.setValue(3.9e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.75,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
+thr.tether1.setDragEnable(true,'');
+thr.tether1.setSpringDamperEnable(true,'');
+thr.tether1.setNetBuoyEnable(true,'');
 
 thr.designTetherDiameter(vhcl,env);
 
 % Scale up/down
 thr.scale(scaleFactor);
-
 
 %% Winches
 % Create
@@ -160,26 +162,25 @@ wnch = wnch.setTetherInitLength(vhcl,env,thr);
 % Scale up/down
 wnch.scale(scaleFactor);
 
-
 %% %%%%%%%%%Controller Params%%%%%%
 aBooth=1;bBooth=1;latCurve=.5;
 
 perpErrorVal = 15*pi/180;
 
-%2 deg/s^2 for an error of 1 radian
+%5 deg/s^2 for an error of 1 radian
 MOI_X=vhcl.Ixx.Value;
-kpRollMom =2*MOI_X;
-kdRollMom = 5*MOI_X;
+kpRollMom = 25000*(pi/180)*MOI_X;
+kdRollMom = 5000*(pi/180)*MOI_X;
 tauRollMom = .01; 
 
-maxBank=20*pi/180;
-kpVelAng=maxBank/(pi/2); %max bank divided by large error
+maxBank=30*pi/180;
+kpVelAng=maxBank/(5*(pi/180)); %max bank divided by large error
 kiVelAng=kpVelAng/100;
-kdVelAng=kpVelAng;
+kdVelAng=5*kpVelAng;
 tauVelAng=.01;
 
-controlAlMat = [1 0 0 ; 0 1 0 ; 0 0 1];
-controlSigMax = 5*10^7;
+controlAlMat = eye(3);
+controlSigMax = inf;
 
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
@@ -191,59 +192,22 @@ constantVelBool = 0;
 constantNormVelBool = 0;
 
 %Only meaningful if using constantNormVel
-radialMotionBool = 0;
+radialMotionBool = 1;
 
 %% Run the simulation
-% try
-% disp("running the first time")
-% sim('OCTModel')
-% catch
-% disp("second time")
-% sim('OCTModel')
-% end
-
-%simWithMonitor('OCTModelLateralFlight')
 sim('OCTModelLateralFlight')
-% Run stop callback to plot everything
-kiteAxesPlot
-% clear h
-% animateSim
- %%
-% stopCallback
 
-
- 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % Script to help implement the pathFollowingController with the modularized model
-% % clear all;clc;
-% 
-% %% Define Variants an busses
-% VEHICLE = 'modVehicle000';
-% WINCH = 'winch000';
-% TETHERS = 'tether000';
-% GROUNDSTATION = 'groundStation000';
-% PLANT = 'modularPlant';
-% ENVIRONMENT = 'constantUniformFlow';
-% CONTROLLER = 'pathFollowingController';
-% 
-% createPathFollowingControllerCtrlBus;
-% %% Initialize Plant Parameters
-% %scaling
-% scaleFactor = 1;
-% duration_s = 500*sqrt(scaleFactor);
-% 
-% %AeroStruct
-% load('partDsgn1_lookupTables.mat')
-% 
-% aeroStruct(1).aeroCentPosVec(1) = -aeroStruct(1).aeroCentPosVec(1);
-% aeroStruct(2).aeroCentPosVec(1) = -aeroStruct(2).aeroCentPosVec(1);
-% 
-% simParam = simParamClass;
-% simParam.tether_param.tether_youngs.Value = simParam.tether_param.tether_youngs.Value/3;
-% 
-% %%
-% tetherLength=200;
+%% Animate and Plot
+% clear h;animateSim %Animate tether
+% stopCallback %Plot Everything
+parseLogsout;
+figure;
+subplot(1,3,1)
+tsc.latErr.plot
+subplot(1,3,2)
+tsc.tanRollDes.plot
+deslims=ylim;
+subplot(1,3,3)
+tsc.tanRoll.plot
+ylim(deslims)
+kiteAxesPlot %Pretty plot
