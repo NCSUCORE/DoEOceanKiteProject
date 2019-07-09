@@ -191,13 +191,12 @@ pathCtrl.velAng.tau.setValue(.01,'s');
 
 pathCtrl.ctrlAllocMat.setValue(eye(3),'');
 
-pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','aBooth','bBooth','latCurve'})
+pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams'})
 pathCtrl.latSP.Value = pi/4;
 pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 15*pi/180;
-pathCtrl.aBooth.Value = 1;
-pathCtrl.bBooth.Value = 1;
-pathCtrl.latCurve.Value =.5;
+pathCtrl.pathParams.Value = [1,1,.5,0];
+
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
 MMAddBool = 1;
