@@ -3,8 +3,8 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 40*sqrt(scaleFactor);
-startControl= 2; %duration_s for 0 control signals
+duration_s  = 50*sqrt(scaleFactor);
+startControl= 5; %duration_s for 0 control signals
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -37,7 +37,7 @@ vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn1_lookupTables.mat');
 %IC's
 tetherLength = 200;
-long = 0;
+long = -pi/4;
 lat = pi/4;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
@@ -46,7 +46,7 @@ ini_Rcm = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
 % path_init=tetherLength * boothSToGroundPos(.68*(2*pi),1,1,.5,0);
-constantVelMag=34; %Constant velocity or Constant initial velocity
+constantVelMag=20; %Constant velocity or initial velocity
 initVelAng = 90;%degrees
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 
@@ -171,8 +171,8 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDErrorUnits',{'rad','N*m'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
-pathCtrl.rollMoment.kp.setValue(50*(pi/180)*MOI_X,'(N*m)/(N*m)');
-pathCtrl.rollMoment.kd.setValue(50*(pi/180)*MOI_X,'(N*m*s)/(N*m)');
+pathCtrl.rollMoment.kp.setValue(5000*(pi/180)*MOI_X,'(N*m)/(N*m)');
+pathCtrl.rollMoment.kd.setValue(500*(pi/180)*MOI_X,'(N*m*s)/(N*m)');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat'},...
@@ -185,8 +185,8 @@ pathCtrl.maxBank.lowerLimit.setValue(-40*pi/180,'');
 pathCtrl.controlSigMax.lowerLimit.setValue(-inf,'');
 pathCtrl.controlSigMax.upperLimit.setValue(inf,'');
 
-pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(5*(pi/180)),'(rad)/(rad)');
-pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*5,'(rad*s)/(rad)');
+pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
 pathCtrl.ctrlAllocMat.setValue(eye(3),'');
@@ -194,9 +194,10 @@ pathCtrl.ctrlAllocMat.setValue(eye(3),'');
 pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathFcn','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
 pathCtrl.trim.Value = 15;
-pathCtrl.perpErrorVal.Value = 15*pi/180;
-pathCtrl.pathFcn.Value = @lemOfBooth;
-pathCtrl.pathParams.Value = [1,1,.5,0];
+pathCtrl.perpErrorVal.Value = 3*pi/180;
+% pathCtrl.pathFcn.Value = 'lemOfBooth';
+% pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)];
+ pathCtrl.pathParams.Value = [pi/4,-pi/4,pi/2,norm(vhcl.initPosVecGnd.Value)];
 pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
@@ -220,8 +221,33 @@ radialMotionBool = 0;
 % end
 
 simWithMonitor('OCTModel')
+
+parseLogsout;
+
+figure;
+subplot(1,3,1)
+tsc.velAngleAdjustedError.plot
+subplot(1,3,2)
+tsc.tanRollDes.plot
+deslims=ylim;
+subplot(1,3,3)
+tsc.tanRoll.plot
+ylim(deslims)
+
+velmags = sqrt(sum(tsc.velocityVec.Data.^2,1));
+figure;
+plot(tsc.velocityVec.Time,squeeze(velmags));
+
+radialPos = sqrt(sum(tsc.positionVec.Data.^2,1));
+figure;
+plot(tsc.velocityVec.Time,squeeze(radialPos));
+
+lat = atan2(squeeze(tsc.positionVec.Data(3,:,:)),sqrt(squeeze(tsc.positionVec.Data(1,:,:)).^2+squeeze(tsc.positionVec.Data(2,:,:)).^2));
+lat=lat*180/pi;
+figure;
+plot(tsc.velocityVec.Time,squeeze(lat));
 % Run stop callback to plot everything
-kiteAxesPlot
+% kiteAxesPlot
 % clear h
 % animateSim
  %%

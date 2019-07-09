@@ -3,7 +3,7 @@ clear all;clc
 % OCTModelLateralFlight
 
 scaleFactor = 1;
-duration_s  = 50*sqrt(scaleFactor);
+duration_s  = 100*sqrt(scaleFactor);
 startControl= 1; %duration_s for 0 control signals
 
 %% Set up simulation
@@ -39,7 +39,7 @@ vhcl.build('partDsgn1_lookupTables.mat');
 %IC's
 tetherLength = 200;
 long = 0;
-lat = pi/4;
+lat = pi/8;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
            cos(lat)            0          -sin(lat);];
@@ -48,7 +48,7 @@ ini_Rcm = tetherLength*[cos(long).*cos(lat);
          sin(lat);];
 % path_init=tetherLength * boothSToGroundPos(.68*(2*pi),1,1,.5,0);
 constantVelMag=34; %Constant velocity or Constant initial velocity
-initVelAng = 90;%degrees
+initVelAng = 270;%degrees
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 
 ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
@@ -195,7 +195,7 @@ pathCtrl.velAng.tau.setValue(.01,'s');
 pathCtrl.ctrlAllocMat.setValue(eye(3),'');
 
 pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','aBooth','bBooth','latCurve'})
-pathCtrl.latSP.Value = pi/4;
+pathCtrl.latSP.Value = pi/8;
 pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 15*pi/180;
 pathCtrl.aBooth.Value = 1;
@@ -230,5 +230,5 @@ deslims=ylim;
 subplot(1,3,3)
 tsc.tanRoll.plot
 ylim(deslims)
-pause(10)
+% pause(10)
 kiteAxesPlot %Pretty plot

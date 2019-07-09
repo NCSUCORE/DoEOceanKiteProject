@@ -1,30 +1,29 @@
-function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
+function [posGround,varargout] = circleOnSphere(pathVariable,geomParams)
 %pathVariable is parameterized along the path from 0 to 1
 %geomParams is a vector in order of the following variables:
-%   aBooth is the general size
-%   bBooth is roughly the height to width ratio
+%   radius is the radius of the circle on the surface of the sphere
 %   latCurve is the average Latitude (the lat of the crossover point)
 %   longCurve is the average Longitude (the lat of the crossover point)
-%   radius is the radius of the sphere the path is drawn on (optional)
+%   sphereRadius is the radius of the sphere the path is drawn on (optional)
 %       if not given, a unit sphere is assumed
 %Outpus:
 %   posGround is the position in the ground frame at the given pathVar
 %   The second output, if requested is a ground frame unit vector in the
 %       direction tangent to the curve (the direction to go)
-    pathVariable = pathVariable * 2*pi;
-    aBooth=geomParams(1);
-    bBooth=geomParams(2);
-    latCurve=geomParams(3);
-    longCurve=geomParams(4);
-    if length(geomParams)==5
-        radius = geomParams(5);
+
+    pathVariable = pathVariable) * 2*pi;
+    radius = geomParams(1);
+    latCurve = geomParams(2);
+    longCurve = geomparams(3);
+    if length(geomParams)==4
+        sphereRadius = geomParams(5);
     else
-        radius = 1;
+        sphereRadius = 1;
     end
     
-    long=@(x) longCurve+(aBooth.*sin(x)./(1+(aBooth./bBooth).^2.*cos(x).^2));
-    lat=@(x) latCurve+((aBooth./bBooth).^2.*sin(x).*cos(x)./(1 + (aBooth./bBooth).^2.*cos(x).^2));
-    path = @(x)radius * [cos(long(x)).*cos(+lat(x));...
+    long=@(x) longCurve+cos(x);
+    lat=@(x) latCurve+sin(x);
+    path = @(x)sphereRadius * [cos(long(x)).*cos(lat(x));...
                          sin(long(x)).*cos(lat(x));...
                          sin(lat(x));];
     posGround=path(pathVariable);
@@ -39,6 +38,6 @@ function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
                           cos(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)))];
         dPathdS = @(x) (dPathdLat(x).*dLatdS(x)) + (dPathdLong(x).*dLongdS(x));
         tangentVec=-dPathdS(pathVariable);
-        varargout{1}=tangentVec./sqrt(sum(tangentVec.^2,1));
+        varargout{1}=tangentVec./norm(tangentVec);
     end
 end
