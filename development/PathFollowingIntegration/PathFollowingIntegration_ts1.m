@@ -176,7 +176,7 @@ pathCtrl.rollMoment.kd.setValue(50*(pi/180)*MOI_X,'(N*m*s)/(N*m)');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat'},...
-    'GainUnits',{''})
+    'GainUnits',{''}) %Not scaling here is dangerous
 
 pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
 
@@ -191,12 +191,13 @@ pathCtrl.velAng.tau.setValue(.01,'s');
 
 pathCtrl.ctrlAllocMat.setValue(eye(3),'');
 
-pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams'})
+pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathFcn','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
 pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 15*pi/180;
+pathCtrl.pathFcn.Value = @lemOfBooth;
 pathCtrl.pathParams.Value = [1,1,.5,0];
-
+pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
 MMAddBool = 1;
