@@ -6,6 +6,9 @@ scaleFactor = 1;
 duration_s  = 1500*sqrt(scaleFactor);
 
 % branching off
+altiMin = 100;
+altiMax = 150;
+
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -13,7 +16,7 @@ WINCH           = 'winch000';
 TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
-CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
+CONTROLLER      = 'singleTetherSpooling';
 VARIANTSUBSYSTEM = 'NNodeTether';
 
 
@@ -53,7 +56,7 @@ vhcl.mass.setValue(vhcl.volume.Value*1000/BF,'kg');
 vhcl.centOfBuoy.setValue([0 0 0]','m');
 vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
 
-vhcl.setICs('InitPos',[0 0 100],'InitEulAng',[0 7 0]*pi/180,'InitVel',[1 0 0]);
+vhcl.setICs('InitPos',[0 0 1.25*altiMin],'InitEulAng',[0 7 0]*pi/180,'InitVel',[1 0 0]);
 
 vhcl.turbine1.diameter.setValue(0,'m');
 vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
@@ -121,8 +124,8 @@ wnch = OCT.winches;
 wnch.numWinches.setValue(1,'');
 wnch.build;
 % Set values
-wnch.winch1.maxSpeed.setValue(0.4,'m/s');
-wnch.winch1.timeConst.setValue(1,'s');
+wnch.winch1.maxSpeed.setValue(0.2,'m/s');
+wnch.winch1.timeConst.setValue(5,'s');
 wnch.winch1.maxAccel.setValue(inf,'m/s^2');
 
 wnch = wnch.setTetherInitLength(vhcl,env,thr);
@@ -171,18 +174,18 @@ timeVec = 0:0.1:duration_s;
 ctrl.pitchSP.Value = timeseries(8*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 ctrl.rollSP.Value = timeseries(25*sign(sin(2*pi*timeVec/(120))),timeVec);
-ctrl.rollSP.Value.Data(timeVec<150) = 0;
+ctrl.rollSP.Value.Data(timeVec<120) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
 % Scale up/down
 ctrl = ctrl.scale(scaleFactor);
 
 %% Run the simulation
-try
-    simWithMonitor('OCTModel',2)
-catch
-end
+% try
+%     simWithMonitor('OCTModel',2)
+% catch
+% end
 % Run stop callback to plot everything
-stopCallback
+% stopCallback
 
 
