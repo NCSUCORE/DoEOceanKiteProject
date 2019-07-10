@@ -34,11 +34,13 @@ env.scale(scaleFactor);
 vhcl = OCT.vehicle;
 vhcl.numTethers.setValue(1,'');
 vhcl.numTurbines.setValue(2,'');
+%Whats in here?
+%Reference areas are all 10?
 vhcl.build('partDsgn1_lookupTables.mat');
 %IC's
 tetherLength = 200;
 long = -pi/4;
-lat = pi/4;
+lat = 3*pi/8;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
            cos(lat)            0          -sin(lat);];
@@ -189,7 +191,7 @@ pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(r
 pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
-pathCtrl.ctrlAllocMat.setValue([1/2*.0173*10*2.5 0 0;0 1 0;0 0 1],'')%eye(3),'');
+pathCtrl.ctrlAllocMat.setValue([1/(2*.0173*10*2.5) 0 0;0 1 0;0 0 1],'')%eye(3),'');
 
 pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
@@ -233,9 +235,10 @@ subplot(1,3,3)
 tsc.tanRoll.plot
 ylim(deslims)
 
-velmags = sqrt(sum(tsc.velocityVec.Data.^2,1));
+vels=[(1-tsc.velocityVec.Data(1,1,:)); tsc.velocityVec.Data(2:3,1,:)];
+velmags = sqrt(sum((vels).^2,1));
 figure;
-plot(tsc.velocityVec.Time,squeeze(velmags));
+plot(tsc.velocityVec.Time, squeeze(velmags));
 
 radialPos = sqrt(sum(tsc.positionVec.Data.^2,1));
 figure;
