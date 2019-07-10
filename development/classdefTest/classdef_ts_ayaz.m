@@ -181,11 +181,12 @@ ctrl.rollSP.Value.DataInfo.Units = 'deg';
 ctrl = ctrl.scale(scaleFactor);
 
 %% Run the simulation
-% try
-%     simWithMonitor('OCTModel',2)
-% catch
-% end
+try
+    simWithMonitor('OCTModel',2)
+catch
+    simWithMonitor('OCTModel',2)
+end
 % Run stop callback to plot everything
-% stopCallback
+stopCallback
 
 
