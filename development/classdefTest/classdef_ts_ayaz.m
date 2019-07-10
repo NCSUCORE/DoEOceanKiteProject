@@ -124,7 +124,7 @@ wnch = OCT.winches;
 wnch.numWinches.setValue(1,'');
 wnch.build;
 % Set values
-wnch.winch1.maxSpeed.setValue(0.2,'m/s');
+wnch.winch1.maxSpeed.setValue(0.15,'m/s');
 wnch.winch1.timeConst.setValue(5,'s');
 wnch.winch1.maxAccel.setValue(inf,'m/s^2');
 
