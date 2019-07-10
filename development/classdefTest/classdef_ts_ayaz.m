@@ -5,6 +5,8 @@ format compact
 scaleFactor = 1;
 duration_s  = 1500*sqrt(scaleFactor);
 
+% branching off
+
 %% Set up simulation
 VEHICLE         = 'vehicle000';
 WINCH           = 'winch000';
