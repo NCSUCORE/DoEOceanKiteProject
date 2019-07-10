@@ -29,9 +29,9 @@ plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 % quiver3(tanPathVals(1,:),tanPathVals(2,:),tanPathVals(3,:),tans(1,:),tans(2,:),tans(3,:))
 
- 
 
-eulerAnglesPlot = [tsc.eulerRoll.Data(i),tsc.eulerPitch.Data(i),tsc.eulerYaw.Data(i)];
+
+eulerAnglesPlot = tsc.eulerAngles.Data(:,1,i);
 [bodyToGr,~]=rotation_sequence(eulerAnglesPlot);
 
 bodyAxisPointsx1 =[-8;0; 0];

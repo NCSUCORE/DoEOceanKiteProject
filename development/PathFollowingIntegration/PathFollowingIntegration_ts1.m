@@ -7,7 +7,7 @@ duration_s  = 150*sqrt(scaleFactor);
 startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
-VEHICLE = 'modVehicle000';
+VEHICLE = 'vehicleMMAdd';
 WINCH = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
@@ -39,7 +39,7 @@ vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn1_lookupTables.mat');
 %IC's
 tetherLength = 200;
-long = -pi/4;
+long = -3*pi/8;
 lat = 3*pi/8;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
@@ -191,7 +191,7 @@ pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(r
 pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
-pathCtrl.ctrlAllocMat.setValue([1/(2*.0173*10*2.5) 0 0;0 1 0;0 0 1],'')%eye(3),'');
+pathCtrl.ctrlAllocMat.setValue(eye(3),'');
 
 pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
@@ -202,7 +202,7 @@ pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
 pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
-MMAddBool = 0;
+MMAddBool = 1;
 MMOverrideBool = 0;
 
 %Pick 0 or 1 to turn on:
