@@ -173,6 +173,7 @@ classdef avlDesignGeometryClass < handle
                 obj.wing_span*tand(obj.wing_sweep)/2+obj.wing_TR*obj.wing_chord -obj.wing_span/2 tand(obj.wing_dihedral)*obj.wing_span/2;...
                 obj.wing_chord 0 0;...
                 0 0 0];
+            outline = outline + -1*obj.reference_point(1)*[ones(5,1) zeros(5,2)];
             plot3(outline(:,1),outline(:,2),outline(:,3),'LineWidth',2,'Color','k','LineStyle','-')
             hold on
             % Starboard wing x and y points
@@ -182,6 +183,7 @@ classdef avlDesignGeometryClass < handle
                 obj.wing_span*tand(obj.wing_sweep)/2+obj.wing_TR*obj.wing_chord obj.wing_span/2 tand(obj.wing_dihedral)*obj.wing_span/2;...
                 obj.wing_chord 0 0;...
                 0 0 0];
+            outline = outline + -1*obj.reference_point(1)*[ones(5,1) zeros(5,2)];
             plot3(outline(:,1),outline(:,2),outline(:,3),'LineWidth',2,'Color','k','LineStyle','-')
             
             % Plot the horizontal stabilizer
@@ -195,6 +197,7 @@ classdef avlDesignGeometryClass < handle
             
             % Translate backwards
             outline = outline + obj.h_stab_LE*[ones(5,1) zeros(5,2)];
+            outline = outline + -1*obj.reference_point(1)*[ones(5,1) zeros(5,2)];
             plot3(outline(:,1),outline(:,2),outline(:,3),'LineWidth',2,'Color','k','LineStyle','-')
             
             % Starboard x and y points
@@ -207,6 +210,7 @@ classdef avlDesignGeometryClass < handle
             
             % Translate backwards
             outline = outline + obj.h_stab_LE*[ones(5,1) zeros(5,2)];
+            outline = outline + -1*obj.reference_point(1)*[ones(5,1) zeros(5,2)];
             plot3(outline(:,1),outline(:,2),outline(:,3),'LineWidth',2,'Color','k','LineStyle','-')
             
             % Plot the vertical stabilizer
@@ -218,12 +222,13 @@ classdef avlDesignGeometryClass < handle
                 0 0 0];
             % Translate backwards
             outline = outline + obj.v_stab_LE*[ones(5,1) zeros(5,2)];
+            outline = outline + -1*obj.reference_point(1)*[ones(5,1) zeros(5,2)];
             plot3(outline(:,1),outline(:,2),outline(:,3),'LineWidth',2,'Color','k','LineStyle','-')
             
             % Plot the fuselage line
-            plot3([0 obj.v_stab_LE],[0 0],[0 0],'LineWidth',2,'Color','k','LineStyle','-')
+            plot3([-1*obj.reference_point(1) outline(1,1)],[0 0],[0 0],'LineWidth',2,'Color','k','LineStyle','-')
             
-            scatter3(obj.reference_point(1),obj.reference_point(2),obj.reference_point(3),...
+            scatter3(0,0,0,...
                 'Marker','x','SizeData',72,'CData',[1 0 0]);
             
             axis equal
