@@ -3,7 +3,12 @@ clc
 format compact
 
 scaleFactor = 1;
-duration_s  = 500*sqrt(scaleFactor);
+duration_s  = 1500*sqrt(scaleFactor);
+
+% merging branches
+altiMin = 100;
+altiMax = 150;
+
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -11,7 +16,7 @@ WINCH           = 'winch000';
 TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
-CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
+CONTROLLER      = 'singleTetherSpooling';
 VARIANTSUBSYSTEM = 'NNodeTether';
 
 
@@ -38,7 +43,7 @@ vhcl.numTurbines.setValue(2,'');
 vhcl.build('partDsgn2_lookupTables.mat');
 
 % Set Values
-BF = 1.05;
+BF = 1.02;
 vhcl.Ixx.setValue(6303.1,'kg*m^2');
 vhcl.Iyy.setValue(2080.7,'kg*m^2');
 vhcl.Izz.setValue(8320.4,'kg*m^2');
@@ -51,7 +56,7 @@ vhcl.mass.setValue(vhcl.volume.Value*1000/BF,'kg');
 vhcl.centOfBuoy.setValue([0 0 0]','m');
 vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
 
-vhcl.setICs('InitPos',[0 0 100],'InitEulAng',[0 7 0]*pi/180,'InitVel',[1 0 0]);
+vhcl.setICs('InitPos',[0 0 1.25*altiMin],'InitEulAng',[0 7 0]*pi/180,'InitVel',[1 0 0]);
 
 vhcl.turbine1.diameter.setValue(0,'m');
 vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
@@ -119,8 +124,8 @@ wnch = OCT.winches;
 wnch.numWinches.setValue(1,'');
 wnch.build;
 % Set values
-wnch.winch1.maxSpeed.setValue(0.4,'m/s');
-wnch.winch1.timeConst.setValue(1,'s');
+wnch.winch1.maxSpeed.setValue(0.15,'m/s');
+wnch.winch1.timeConst.setValue(5,'s');
 wnch.winch1.maxAccel.setValue(inf,'m/s^2');
 
 wnch = wnch.setTetherInitLength(vhcl,env,thr);
@@ -150,27 +155,26 @@ ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
     'SetpointUnits',{'deg','deg'});
 
 % Set the values of the controller parameters
-ctrl.ailerons.kp.setValue(0.75,'(deg)/(deg)');
+ctrl.ailerons.kp.setValue(0.6,'(deg)/(deg)');
 ctrl.ailerons.ki.setValue(0,'(deg)/(deg*s)');
-ctrl.ailerons.kd.setValue(1,'(deg*s)/(deg)');
+ctrl.ailerons.kd.setValue(1.2,'(deg*s)/(deg)');
 ctrl.ailerons.tau.setValue(0.5,'s');
 
-ctrl.elevators.kp.setValue(.165,'(deg)/(deg)'); % do we really want to represent unitless values like this?
+ctrl.elevators.kp.setValue(.15,'(deg)/(deg)'); % do we really want to represent unitless values like this?
 ctrl.elevators.ki.setValue(0,'(deg)/(deg*s)');
-ctrl.elevators.kd.setValue(0.1,'(deg*s)/(deg)'); % Likewise, do we want (deg*s)/(deg) or just s?
-ctrl.elevators.tau.setValue(0.5,'s');
-
+ctrl.elevators.kd.setValue(1,'(deg*s)/(deg)'); % Likewise, do we want (deg*s)/(deg) or just s?
+ctrl.elevators.tau.setValue(0.01,'s');
 
 
 ctrl.outputSat.upperLimit.setValue(30,'');
 ctrl.outputSat.lowerLimit.setValue(-30,'');
 
 % Calculate setpoints
-timeVec = 0:0.1:1000;
-ctrl.pitchSP.Value = timeseries(6*ones(size(timeVec)),timeVec);
+timeVec = 0:0.1:duration_s;
+ctrl.pitchSP.Value = timeseries(8*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
-ctrl.rollSP.Value = timeseries(30*sign(sin(2*pi*timeVec/(120))),timeVec);
-ctrl.rollSP.Value.Data(timeVec<60) = 0;
+ctrl.rollSP.Value = timeseries(25*sign(sin(2*pi*timeVec/(120))),timeVec);
+ctrl.rollSP.Value.Data(timeVec<120) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
 % Scale up/down
@@ -180,6 +184,7 @@ ctrl = ctrl.scale(scaleFactor);
 try
     simWithMonitor('OCTModel',2)
 catch
+    simWithMonitor('OCTModel',2)
 end
 % Run stop callback to plot everything
 stopCallback
