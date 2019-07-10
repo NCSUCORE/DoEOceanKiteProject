@@ -11,31 +11,31 @@ function [posGround,varargout] = circleOnSphere(pathVariable,geomParams)
 %   The second output, if requested is a ground frame unit vector in the
 %       direction tangent to the curve (the direction to go)
 
-    pathVariable = pathVariable) * 2*pi;
+    pathVariable = (pathVariable) * 2*pi;
     radius = geomParams(1);
     latCurve = geomParams(2);
-    longCurve = geomparams(3);
+    longCurve = geomParams(3);
     if length(geomParams)==4
-        sphereRadius = geomParams(5);
+        sphereRadius = geomParams(4);
     else
         sphereRadius = 1;
     end
     
-    long=@(x) longCurve+cos(x);
-    lat=@(x) latCurve+sin(x);
+    long=@(x) radius*(longCurve+cos(x));
+    lat=@(x) radius*(latCurve+sin(x));
     path = @(x)sphereRadius * [cos(long(x)).*cos(lat(x));...
                          sin(long(x)).*cos(lat(x));...
                          sin(lat(x));];
     posGround=path(pathVariable);
     if nargout==2
-        dLongdS = @(x) (aBooth.*cos(x))./((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1) + (2.*aBooth.^3.*cos(x).*sin(x).^2)./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1).^2);
-        dLatdS = @(x) (aBooth.^2.*cos(x).^2)./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)) - (aBooth.^2.*sin(x).^2)./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)) + (2.*aBooth.^4.*cos(x).^2.*sin(x).^2)./(bBooth.^4.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1).^2);
-        dPathdLong =  @(x) [-cos(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1))).*sin(longCurve + (aBooth.*sin(x))./((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1));
-                            cos(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1))).*cos(longCurve + (aBooth.*sin(x))./((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1));
-                            zeros(size(pathVariable))];
-        dPathdLat = @(x) [-cos(longCurve + (aBooth.*sin(x))./((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)).*sin(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)));
-                          -sin(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1))).*sin(longCurve + (aBooth.*sin(x))./((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1));
-                          cos(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)))];
+        dLongdS = @(x) -radius.*sin(x);
+        dLatdS = @(x) radius.*cos(x);
+        dPathdLong =  @(x) [-cos(radius.*(latCurve + sin(x))).*sin(radius.*(longCurve + cos(x)))
+                             cos(radius.*(longCurve + cos(x))).*cos(radius.*(latCurve + sin(x)))
+                                                                 0];
+        dPathdLat = @(x) [-cos(radius.*(longCurve + cos(x))).*sin(radius.*(latCurve + sin(x)))
+                          -sin(radius.*(longCurve + cos(x))).*sin(radius.*(latCurve + sin(x)))
+                                   cos(radius.*(latCurve + sin(x)))];
         dPathdS = @(x) (dPathdLat(x).*dLatdS(x)) + (dPathdLong(x).*dLongdS(x));
         tangentVec=-dPathdS(pathVariable);
         varargout{1}=tangentVec./norm(tangentVec);

@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 50*sqrt(scaleFactor);
+duration_s  = 200*sqrt(scaleFactor);
 startControl= 5; %duration_s for 0 control signals
 
 %% Set up simulation
@@ -197,7 +197,7 @@ pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 3*pi/180;
 % pathCtrl.pathFcn.Value = 'lemOfBooth';
 % pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)];
- pathCtrl.pathParams.Value = [pi/4,-pi/4,pi/2,norm(vhcl.initPosVecGnd.Value)];
+ pathCtrl.pathParams.Value = [.5,pi/2,0,norm(vhcl.initPosVecGnd.Value)];
 pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
