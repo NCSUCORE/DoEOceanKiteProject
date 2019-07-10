@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 1000*sqrt(scaleFactor);
+duration_s  = 150*sqrt(scaleFactor);
 startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
@@ -189,7 +189,7 @@ pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(r
 pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
-pathCtrl.ctrlAllocMat.setValue(eye(3),'');
+pathCtrl.ctrlAllocMat.setValue([1/2*.0173*10*2.5 0 0;0 1 0;0 0 1],'')%eye(3),'');
 
 pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
@@ -200,7 +200,7 @@ pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
 pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
-MMAddBool = 1;
+MMAddBool = 0;
 MMOverrideBool = 0;
 
 %Pick 0 or 1 to turn on:
