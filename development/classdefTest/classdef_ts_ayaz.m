@@ -5,7 +5,7 @@ format compact
 scaleFactor = 1;
 duration_s  = 1500*sqrt(scaleFactor);
 
-% branching off
+% merging branches
 altiMin = 100;
 altiMax = 150;
 
