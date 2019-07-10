@@ -3,8 +3,8 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 200*sqrt(scaleFactor);
-startControl= 5; %duration_s for 0 control signals
+duration_s  = 1000*sqrt(scaleFactor);
+startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
 VEHICLE = 'modVehicle000';
@@ -14,7 +14,7 @@ GROUNDSTATION = 'groundStation000';
 % PLANT = 'modularPlant';
 ENVIRONMENT = 'constantUniformFlow';
 CONTROLLER = 'pathFollowingController';
-VARIANTSUBSYSTEM = 'twoNodeTether';
+VARIANTSUBSYSTEM = 'NNodeTether';
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
@@ -46,7 +46,7 @@ ini_Rcm = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
 % path_init=tetherLength * boothSToGroundPos(.68*(2*pi),1,1,.5,0);
-constantVelMag=20; %Constant velocity or initial velocity
+constantVelMag=19; %Constant velocity or initial velocity
 initVelAng = 90;%degrees
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 
@@ -124,7 +124,7 @@ gndStn.scale(scaleFactor);
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(1,'');
-thr.setNumNodes(2,'');
+thr.setNumNodes(5,'');
 thr.build;
 
 % Set parameter values
@@ -171,8 +171,8 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDErrorUnits',{'rad','N*m'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
-pathCtrl.rollMoment.kp.setValue(5000*(pi/180)*MOI_X,'(N*m)/(N*m)');
-pathCtrl.rollMoment.kd.setValue(500*(pi/180)*MOI_X,'(N*m*s)/(N*m)');
+pathCtrl.rollMoment.kp.setValue(5.5e5,'(N*m)/(N*m)'); %Units are wrong
+pathCtrl.rollMoment.kd.setValue(5.5e4,'(N*m*s)/(N*m)');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat'},...
@@ -191,13 +191,12 @@ pathCtrl.velAng.tau.setValue(.01,'s');
 
 pathCtrl.ctrlAllocMat.setValue(eye(3),'');
 
-pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathFcn','pathParams','searchSize'})
+pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
 pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 3*pi/180;
-% pathCtrl.pathFcn.Value = 'lemOfBooth';
-% pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)];
- pathCtrl.pathParams.Value = [.5,pi/2,0,norm(vhcl.initPosVecGnd.Value)];
+pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
+% pathCtrl.pathParams.Value = [.5,pi/2,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
 pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
