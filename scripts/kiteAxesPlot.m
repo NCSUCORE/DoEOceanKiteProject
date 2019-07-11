@@ -11,10 +11,11 @@ ax=axes;
 %          ones(1,length(long)).*sin(lat);];
 pathvals=swapablePath(linspace(0,1,1000),pathCtrl.pathParams.Value);
 % [tanPathVals,tans]=constantLat(linspace(0,1,10),[pi/4,0,pi/2,tetherLength]);
-waittime = .05; 
+waittime = .1; 
 animation_time = 10;
-filename="Dummy_Controller_4";
+filename="MMadd_success.gif";
 timevec=tsc.positionVec.Time;
+tetherLength=pathCtrl.pathParams.Value(end);
  %%
 for t=linspace(0,timevec(end),ceil(animation_time/waittime))
 [~,i]=min(abs(timevec-t));
@@ -22,15 +23,15 @@ for t=linspace(0,timevec(end),ceil(animation_time/waittime))
 posG = tsc.positionVec.Data(:,:,i);
 if grow
     tetherLength = norm(posG);
-    pathvals=constantLat(linspace(0,1,1000),[pi/4,0,pi/2,tetherLength]);
+    pathvals=swapablePath(linspace(0,1,1000),[pathCtrl.pathParams.Value(1:end-1) tetherLength]);
 end
 plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
 % quiver3(tanPathVals(1,:),tanPathVals(2,:),tanPathVals(3,:),tans(1,:),tans(2,:),tans(3,:))
 
- 
 
-eulerAnglesPlot = [tsc.eulerRoll.Data(i),tsc.eulerPitch.Data(i),tsc.eulerYaw.Data(i)];
+
+eulerAnglesPlot = tsc.eulerAngles.Data(:,1,i);
 [bodyToGr,~]=rotation_sequence(eulerAnglesPlot);
 
 bodyAxisPointsx1 =[-8;0; 0];
@@ -72,16 +73,17 @@ quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data
 if min(tsc.positionVec.Data(3,1,:))>0
     zlim([0 inf])
 end
+pause(.01)
 if exist('AZ','var') && exist('EL','var')
     view(AZ,EL)
 else
     view(90,15)
 end
-% scatter3(tetherLength*tsc.star_pos.Data(1:i,1),tetherLength*tsc.star_pos.Data(1:i,2),tetherLength*tsc.star_pos.Data(1:i,3),'k')
+% scatter3(tetherLength*     tsc.star_pos.Data(1:i,1),tetherLength*tsc.star_pos.Data(1:i,2),tetherLength*tsc.star_pos.Data(1:i,3),'k')
 hold off
-% % pause(waittime)
+pause(.1)
 %                         % Capture the plot as an image 
-%                         frame = getframe(ax); 
+%                         frame = getframe(gcf); 
 %                         im = frame2im(frame); 
 %                         [imind,cm] = rgb2ind(im,256); 
 %                         % Write to the GIF File 
@@ -90,5 +92,5 @@ hold off
 %                         else 
 %                           imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
 %                         end 
-pause(.05)
+% pause(.05)
 end

@@ -41,7 +41,7 @@ CD_kWing(end) = 0;
 
 % left wing data
 aeroStruct(1).refArea        = Sref;
-aeroStruct(1).aeroCentPosVec = [...
+aeroStruct(1).aeroCentPosVec = -obj.reference_point  + [...
     (tand(obj.wing_sweep)*obj.wing_span/4) + obj.wing_chord*(1 + obj.wing_TR)/8;...
     -obj.wing_span/4; tand(obj.wing_dihedral)*obj.wing_span/4];
 aeroStruct(1).spanUnitVec    = [0 1 0];
@@ -57,9 +57,7 @@ aeroStruct(1).MaxCtrlDeflUp = obj.wing_CS_deflection_range(2);
 
 % right wing data
 aeroStruct(2).refArea        = Sref;
-aeroStruct(2).aeroCentPosVec = [...
-    (tand(obj.wing_sweep)*obj.wing_span/4) + obj.wing_chord*(1 + obj.wing_TR)/8;...
-    obj.wing_span/4; tand(obj.wing_dihedral)*obj.wing_span/4];
+aeroStruct(2).aeroCentPosVec = aeroStruct(1).aeroCentPosVec.*[1;-1;1];
 aeroStruct(2).spanUnitVec    = [0 1 0];
 aeroStruct(2).chordUnitVec   = [1 0 0];
 aeroStruct(2).CL = reshape(CLWingTab.Table.Value,[],1);
@@ -107,7 +105,7 @@ CD_kHS(end) = 0;
 
 % HS data
 aeroStruct(3).refArea        = Sref;
-aeroStruct(3).aeroCentPosVec = [obj.h_stab_LE + (obj.h_stab_chord/4);0 ;0];
+aeroStruct(3).aeroCentPosVec = -obj.reference_point  + [obj.h_stab_LE + (obj.h_stab_chord/4);0 ;0];
 aeroStruct(3).spanUnitVec    = [0 1 0];
 aeroStruct(3).chordUnitVec   = [1 0 0];
 aeroStruct(3).CL = reshape(CLHSTab.Table.Value,[],1);
@@ -154,7 +152,7 @@ CD_kVS = polyfit(obj.sweepCase.aileron,CD_vs,2);
 CD_kVS(end) = 0;
 
 aeroStruct(4).refArea        = Sref;
-aeroStruct(4).aeroCentPosVec = [...
+aeroStruct(4).aeroCentPosVec = -obj.reference_point  + [...
     obj.v_stab_LE + (tand(obj.v_stab_sweep)*obj.v_stab_span/2) + obj.v_stab_chord*(1 + obj.v_stab_TR)/8;...
     0 ;obj.v_stab_span/2];
 aeroStruct(4).spanUnitVec    = [0 0 1];

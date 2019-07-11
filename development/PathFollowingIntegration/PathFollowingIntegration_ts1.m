@@ -3,23 +3,23 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 200*sqrt(scaleFactor);
-startControl= 5; %duration_s for 0 control signals
+duration_s  = 150*sqrt(scaleFactor);
+startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
-VEHICLE = 'modVehicle000';
+VEHICLE = 'vehicle000';
 WINCH = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
 % PLANT = 'modularPlant';
 ENVIRONMENT = 'constantUniformFlow';
 CONTROLLER = 'pathFollowingController';
-VARIANTSUBSYSTEM = 'twoNodeTether';
+VARIANTSUBSYSTEM = 'NNodeTether';
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
-createPathFollowingControllerCtrlBus;
+createOneTetherThreeSurfaceCtrlBus;
 
 %% Set up environment
 % Create
@@ -34,11 +34,13 @@ env.scale(scaleFactor);
 vhcl = OCT.vehicle;
 vhcl.numTethers.setValue(1,'');
 vhcl.numTurbines.setValue(2,'');
+%Whats in here?
+%Reference areas are all 10?
 vhcl.build('partDsgn1_lookupTables.mat');
 %IC's
 tetherLength = 200;
-long = -pi/4;
-lat = pi/4;
+long = 0;
+lat = 3*pi/8;
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
            cos(lat)            0          -sin(lat);];
@@ -46,7 +48,7 @@ ini_Rcm = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
 % path_init=tetherLength * boothSToGroundPos(.68*(2*pi),1,1,.5,0);
-constantVelMag=20; %Constant velocity or initial velocity
+constantVelMag=19; %Constant velocity or initial velocity
 initVelAng = 90;%degrees
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 
@@ -171,8 +173,8 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDErrorUnits',{'rad','N*m'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
-pathCtrl.rollMoment.kp.setValue(5000*(pi/180)*MOI_X,'(N*m)/(N*m)');
-pathCtrl.rollMoment.kd.setValue(500*(pi/180)*MOI_X,'(N*m*s)/(N*m)');
+pathCtrl.rollMoment.kp.setValue(5.5e5,'(N*m)/(N*m)'); %Units are wrong
+pathCtrl.rollMoment.kd.setValue(5.5e4,'(N*m*s)/(N*m)');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat'},...
@@ -189,19 +191,18 @@ pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(r
 pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
-pathCtrl.ctrlAllocMat.setValue(eye(3),'');
+pathCtrl.ctrlAllocMat.setValue([1/(2*.0173*10*2.5) 0 ;0 1],'')%eye(3),'');
 
-pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathFcn','pathParams','searchSize'})
+pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
 pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 3*pi/180;
-% pathCtrl.pathFcn.Value = 'lemOfBooth';
-% pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)];
- pathCtrl.pathParams.Value = [.5,pi/2,0,norm(vhcl.initPosVecGnd.Value)];
+pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
+% pathCtrl.pathParams.Value = [.5,pi/2,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
 pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
-MMAddBool = 1;
+MMAddBool = 0;
 MMOverrideBool = 0;
 
 %Pick 0 or 1 to turn on:
@@ -234,9 +235,10 @@ subplot(1,3,3)
 tsc.tanRoll.plot
 ylim(deslims)
 
-velmags = sqrt(sum(tsc.velocityVec.Data.^2,1));
+vels=[(1-tsc.velocityVec.Data(1,1,:)); tsc.velocityVec.Data(2:3,1,:)];
+velmags = sqrt(sum((vels).^2,1));
 figure;
-plot(tsc.velocityVec.Time,squeeze(velmags));
+plot(tsc.velocityVec.Time, squeeze(velmags));
 
 radialPos = sqrt(sum(tsc.positionVec.Data.^2,1));
 figure;

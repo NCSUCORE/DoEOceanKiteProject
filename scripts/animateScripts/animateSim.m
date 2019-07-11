@@ -135,8 +135,8 @@ for ii = 2:length(timeVec)
     h.bodyZ.ZData = [tsc.positionVec.Data(3,:,ii) tsc.positionVec.Data(3,:,ii)+bodyAxes(3,3)];
     
     [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
-    h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
-    quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i))
+    sphereSurf=surfl(x,y,z);set(sphereSurf,'FaceAlpha',0.5);shading(ax,'interp')
+    quiver3(tsc.positionVec.Data(1,1,ii),tsc.positionVec.Data(2,1,ii),tsc.positionVec.Data(3,1,ii),tsc.velocityVec.Data(1,1,ii),tsc.velocityVec.Data(2,1,ii),tsc.velocityVec.Data(3,1,ii))
 
     
     xlim(xLim)
