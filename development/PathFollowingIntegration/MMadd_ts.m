@@ -3,11 +3,11 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 150*sqrt(scaleFactor);
+duration_s  = 1000*sqrt(scaleFactor);
 startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
-VEHICLE = 'modVehicle000';
+VEHICLE = 'vehicleMMAdd';
 WINCH = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
@@ -19,7 +19,7 @@ VARIANTSUBSYSTEM = 'NNodeTether';
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
-createPathFollowingControllerCtrlBus;
+createOneTetherThreeSurfaceCtrlBus;
 
 %% Set up environment
 % Create
@@ -37,19 +37,25 @@ vhcl.numTurbines.setValue(2,'');
 %Whats in here?
 %Reference areas are all 10?
 vhcl.build('partDsgn1_lookupTables.mat');
+% vhcl.aeroSurf1.CD.setValue(.02+vhcl.aeroSurf1.CD.Value,'');
+% vhcl.aeroSurf2.CD.setValue(.02+vhcl.aeroSurf2.CD.Value,'');
+% vhcl.aeroSurf3.CD.setValue(.02+vhcl.aeroSurf3.CD.Value,'');
+% vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 %IC's
 tetherLength = 200;
-long = -pi/4;
+long = -3*pi/8;
 lat = 3*pi/8;
+constantVelMag=19; %Constant velocity or initial velocity
+initVelAng = 90;%degrees
+
+
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
            cos(lat)            0          -sin(lat);];
 ini_Rcm = tetherLength*[cos(long).*cos(lat);
          sin(long).*cos(lat);
          sin(lat);];
-% path_init=tetherLength * boothSToGroundPos(.68*(2*pi),1,1,.5,0);
-constantVelMag=19; %Constant velocity or initial velocity
-initVelAng = 90;%degrees
+% [ini_Rcm,ini_Vcm]=swapablePath(...);ini_Vcm=constantVelMag*ini_v
 ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 
 ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
@@ -79,7 +85,7 @@ vhcl.Ixx.setValue(6303,'kg*m^2');
 vhcl.Iyy.setValue(2080.7,'kg*m^2');
 vhcl.Izz.setValue(8320.4,'kg*m^2');
 vhcl.Ixy.setValue(0,'kg*m^2');
-vhcl.Ixz.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(81.87,'kg*m^2');
 vhcl.Iyz.setValue(0,'kg*m^2');
 vhcl.volume.setValue(0.9454,'m^3');
 vhcl.mass.setValue(945.4,'kg'); %old=859.4
@@ -126,7 +132,7 @@ gndStn.scale(scaleFactor);
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(1,'');
-thr.setNumNodes(5,'');
+thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
@@ -135,7 +141,7 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(3.9e9,'Pa');
+thr.tether1.youngsMod.setValue(4e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.75,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
@@ -191,18 +197,19 @@ pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(r
 pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
-pathCtrl.ctrlAllocMat.setValue([1/(2*.0173*10*2.5) 0 0;0 1 0;0 0 1],'')%eye(3),'');
+% pathCtrl.ctrlAllocMat.setValue([1/(2*.0173*10*2.5) 0 ;0 1],'');
+pathCtrl.ctrlAllocMat.setValue(eye(2),'');
 
 pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
 pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 3*pi/180;
-pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
-% pathCtrl.pathParams.Value = [.5,pi/2,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
+% pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
+pathCtrl.pathParams.Value = [.4,3*pi/8,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
 pathCtrl.searchSize.Value = pi/2;
 %% Plant Modification Options
 %Pick 0 or 1 to turn on:
-MMAddBool = 0;
+MMAddBool = 1;
 MMOverrideBool = 0;
 
 %Pick 0 or 1 to turn on:
@@ -234,24 +241,56 @@ deslims=ylim;
 subplot(1,3,3)
 tsc.tanRoll.plot
 ylim(deslims)
-
-vels=[(1-tsc.velocityVec.Data(1,1,:)); tsc.velocityVec.Data(2:3,1,:)];
+%%
+figure('units','normalized','outerposition',[0 0 1 1]);
+subplot(1,2,1)
+vels=tsc.velocityVec.Data(:,:,:);%[(1-tsc.velocityVec.Data(1,1,:)); tsc.velocityVec.Data(2:3,1,:)];
 velmags = sqrt(sum((vels).^2,1));
-figure;
 plot(tsc.velocityVec.Time, squeeze(velmags));
+xlabel('time (s)')
+ylabel('ground frame velocity (m)')
 
+figure
 radialPos = sqrt(sum(tsc.positionVec.Data.^2,1));
-figure;
 plot(tsc.velocityVec.Time,squeeze(radialPos));
+xlabel('time (s)')
+ylabel('radial position/tether length (m)')
 
-lat = atan2(squeeze(tsc.positionVec.Data(3,:,:)),sqrt(squeeze(tsc.positionVec.Data(1,:,:)).^2+squeeze(tsc.positionVec.Data(2,:,:)).^2));
-lat=lat*180/pi;
-figure;
-plot(tsc.velocityVec.Time,squeeze(lat));
+spl3 = subplot(1,3,3);
+% lat = atan2(squeeze(tsc.positionVec.Data(3,:,:)),sqrt(squeeze(tsc.positionVec.Data(1,:,:)).^2+squeeze(tsc.positionVec.Data(2,:,:)).^2));
+% lat=lat*180/pi;
+% figure;
+% plot(tsc.velocityVec.Time,squeeze(lat));
 % Run stop callback to plot everything
-% kiteAxesPlot
+kiteAxesPlot
 % clear h
 % animateSim
+%%
+figure;
+subplot(2,2,1)
+scatter(squeeze(tsc.CD.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
+xlabel("C_D")
+ylabel("C_L")
+title("half wing C_L vs C_D")
+
+subplot(2,2,2)
+scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
+xlabel("alpha (deg)")
+ylabel("C_L")
+title("half wing C_L vs alpha")
+
+subplot(2,2,3)
+scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CD.Data(1,1,:)))
+xlabel("alpha (deg)")
+ylabel("C_D")
+title("half wing C_D vs alpha")
+
+subplot(2,2,4)
+plot(tsc.alphaLocal.Time,squeeze(tsc.alphaLocal.Data(1,1,:)))
+xlabel("time (s)")
+ylabel("alpha (deg)")
+title("wing alpha vs time")
+
  %%
 % stopCallback
 
