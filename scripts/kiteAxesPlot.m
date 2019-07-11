@@ -3,6 +3,8 @@ parseLogsout;
 grow = false;
 figure
 ax=axes;
+% axes(spl3);
+% subplot(1,3,3)
 % pathvals=tetherLength*boothSToGroundPos(0:.01:2*pi,aBooth,bBooth,latCurve,0);
 % lat=pi/8;
 % long=0:.01:2*pi;
@@ -13,12 +15,26 @@ pathvals=swapablePath(linspace(0,1,1000),pathCtrl.pathParams.Value);
 % [tanPathVals,tans]=constantLat(linspace(0,1,10),[pi/4,0,pi/2,tetherLength]);
 waittime = .1; 
 animation_time = 10;
-filename="MMadd_success.gif";
+filename="fig83plot.gif";
 timevec=tsc.positionVec.Time;
 tetherLength=pathCtrl.pathParams.Value(end);
  %%
 for t=linspace(0,timevec(end),ceil(animation_time/waittime))
 [~,i]=min(abs(timevec-t));
+
+% subplot(1,3,1)
+% plot(tsc.velocityVec.Time(1:i), squeeze(velmags(1:i)));
+% xlim([0,1000])
+% xlabel('time (s)')
+% ylabel('ground frame velocity (m)')
+% 
+% subplot(1,3,2)
+% plot(tsc.velocityVec.Time(1:i),squeeze(radialPos(1:i)));
+% xlim([0,1000])
+% xlabel('time (s)')
+% ylabel('radial position/tether length (m)')
+% 
+% subplot(1,3,3)
 
 posG = tsc.positionVec.Data(:,:,i);
 if grow
@@ -66,7 +82,7 @@ line([groundBdyAxisZ1(1,:);groundBdyAxisZ2(1,:)],[groundBdyAxisZ1(2,:);groundBdy
 plot3(tsc.positionVec.Data(1,1:i),tsc.positionVec.Data(2,1:i),tsc.positionVec.Data(3,1:i),'k','lineWidth',2)
 title(['T=' num2str(tsc.positionVec.Time(i))])
 [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
-h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(ax,'interp')
+h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
 quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i))
 dispVelVecDes=tsc.velVectorDes.Data(:,i)*10;
 quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),dispVelVecDes(1),dispVelVecDes(2),dispVelVecDes(3),'r','lineWidth',2)
@@ -81,16 +97,16 @@ else
 end
 % scatter3(tetherLength*     tsc.star_pos.Data(1:i,1),tetherLength*tsc.star_pos.Data(1:i,2),tetherLength*tsc.star_pos.Data(1:i,3),'k')
 hold off
-pause(.1)
-%                         % Capture the plot as an image 
-%                         frame = getframe(gcf); 
-%                         im = frame2im(frame); 
-%                         [imind,cm] = rgb2ind(im,256); 
-%                         % Write to the GIF File 
-%                         if i == 1 
-%                           imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
-%                         else 
-%                           imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
-%                         end 
+                        % Capture the plot as an image 
+                        frame = getframe(gcf); 
+                        im = frame2im(frame); 
+                        [imind,cm] = rgb2ind(im,256); 
+                        % Write to the GIF File 
+                        if i == 1 
+                          imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+                        else 
+                          imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
+                        end 
+pause(.15)
 % pause(.05)
 end
