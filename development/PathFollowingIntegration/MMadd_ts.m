@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 1000*sqrt(scaleFactor);
+duration_s  = 1*sqrt(scaleFactor);
 startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation

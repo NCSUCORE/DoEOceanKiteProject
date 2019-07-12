@@ -1,6 +1,4 @@
 %% busses
-
-
 createThrTenVecBus
 createThrAttachPtKinematicsBus
 createConstantUniformFlowEnvironmentBus
@@ -80,8 +78,84 @@ thr.designTetherDiameter(vhcl,env);
 
 % Scale up/down
 thr.scale(scaleFactor);
+%% circular position
+syms radius latCurve longCurve x
+
+long= radius.*(longCurve+cos(x)); %path longitude
+lat= radius.*(latCurve+sin(x)); %path latitude
+
+%derivatives of phi and lambda with respect to s 
+dLambdadS = diff(long,x);
+dPhidS = diff(lat,x);
+
+% partial derivatives of gamma with respect to lambda and phi and lambd
+syms lambda phi
+path = [ cos(lambda).*cos(phi);
+         sin(lambda).*cos(phi);
+         sin(phi);]; % figure 8 parameter
+partialGammaWrtLambda = diff(path,lambda);
+partialGammaWrtPhi = diff(path,phi);
+
+% partial derivatives of gamma with respect to lambda and phi and lambda
+% and phi plugged in
+partialGammaWrtLambda_g = subs(partialGammaWrtLambda,{lambda,phi},{long,lat});
+partialGammaWrtPhi_g = subs(partialGammaWrtPhi,{lambda,phi},{long,lat});
 
 
-% simulate
+tangent = partialGammaWrtLambda_g* dLambdadS + partialGammaWrtPhi_g*dPhidS;
+
+
+
+
+pathDeriv = double(subs(tangent,{x,latCurve,longCurve,radius},{linspace(0,2*pi,100),pi/2,0,.5}));
+velocityTopNode = pathDeriv;
+%% path and shape generation
+radius = .4; 
+latCurve = 3*pi/8 ; 
+x = linspace(0,2*pi, 100);%path paramitrization 
+longCurve =0; 
+long1 = radius.*(longCurve+cos(x)); %path longitude
+lat1 = radius.*(latCurve+sin(x)); %path latitude
+
+positionTopNode = tetherLength *  [ cos(long1).*cos(lat1);
+                  sin(long1).*cos(lat1);
+                  sin(lat1);];
+     %% simulate
+radialVelocityBit = 1; 
+
 sim('tether000Test1')
+
+    
+%%
+%plot sphere
+theta = linspace(0, 2*pi);
+phi = linspace(-pi/2 , pi/2); 
+[theta, phi] = meshgrid(theta, phi); 
+rho = 1; 
+
+[x,y,z] = sph2cart(theta, phi, rho);
+surf(x,y,z)
+%% tangent to path Graphic
+s = linspace(0,2*pi, 100);
+
+plot3(positionTopNode(1,:),positionTopNode(2,:), positionTopNode(3,:))
+hold on 
+
+theta = linspace(0, 2*pi);
+phi = linspace(-pi/2 , pi/2); 
+[theta, phi] = meshgrid(theta, phi); 
+rho = 200; 
+
+%[x,y,z] = sph2cart(theta, phi, rho);
+%surf(x,y,z)
+hold on
+for k = 1:100
+
+tang =(s-s(k)).*pathDeriv(:,k)+positionTopNode(:,k);
+%velocity plot
+plot3(tang(1,:), tang(2,:), tang(3,:),'LineWidth',3)
+pause(.01)
+end
+
+
 
