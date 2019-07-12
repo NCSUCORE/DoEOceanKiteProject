@@ -6,15 +6,21 @@
 % Find 'todo' for tasks that need doing.
 
 %% Set-up test
-clearvars; close all; clc;
+clear all; close all; clc;
 
 % Test control parameters
+simDuration = 12;        % seconds
 scaleFactor  = 1;
+numNodes = 2;            % REMEMBER increasing the number of nodes increases the stiffness, so you need smaller timesteps and/or lower modulus.
 endNodeInitPosition = [55;-55;185;];
 endNodeInitVelocity = [-19;0;0];
-totalMass = 945.4;       % kg
-totalUnstchLength = 200; % m
+totalMass = 945.4;       % kg todo change property name to tetherMass in the tether class
+totalUnstchLength = 200; % m 
 endNodePath = 'circle';  % available: circle, (not currently working: radial, flight, stationary)
+includeDrag = true;
+includeBuoyancy = true;
+includeSpringDamper = true;
+constantVelocity = 1;
 
 % Results visualization parameters
 makeAllPlots = false;
@@ -24,6 +30,7 @@ savePlots = true; % todo(rodney) add basic saveplot functionality
 
 % Must be in workspace for model to run
 tetherLength = totalUnstchLength; % m
+duration_s = simDuration;
 
 %% Create busses
 createThrTenVecBus
@@ -45,7 +52,7 @@ TETHERS = 'tether000';             % Is this which tether model to use?
 VARIANTSUBSYSTEM = 'NNodeTether';  % And this is which variant to use? Do the variante subsystems depend on the model? If so, is there a way to take burden of knowledge off of the developer/user? Maybe a GUI?
 thr = OCT.tethers;
 thr.setNumTethers(1,'');
-thr.setNumNodes(2,'');
+thr.setNumNodes(numNodes,'');
 thr.build;
 thr.tether1.initGndNodePos.setValue(groundStation,'m');
 thr.tether1.initAirNodePos.setValue(endNodeInitPosition,'m');
@@ -62,6 +69,9 @@ thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(true,'');
 thr.tether1.diameter.setValue(0.0144,'m');
 thr.scale(scaleFactor);
+thr.tether1.dragEnable.setValue(includeDrag,'');
+thr.tether1.netBuoyEnable.setValue(includeBuoyancy,'');
+thr.tether1.springDamperEnable.setValue(includeSpringDamper,'');
 
 %% Make end node paths
 switch endNodePath
@@ -85,7 +95,7 @@ switch endNodePath
         partialGammaWrtPhi_g = subs(partialGammaWrtPhi,{lambda,phi},{long,lat});
         tangent = partialGammaWrtLambda_g* dLambdadS + partialGammaWrtPhi_g*dPhidS;
         pathDeriv = double(subs(tangent,{x,latCurve,longCurve,radius},{linspace(0,2*pi,100),pi/2,0,.5}));
-        velocityTopNode = pathDeriv;
+        velocityTopNode = constantVelocity*pathDeriv;
         % path and shape generation
         radius = .4; 
         latCurve = 3*pi/8 ; 
@@ -97,7 +107,7 @@ switch endNodePath
                           sin(long1).*cos(lat1);
                           sin(lat1);];
         radialVelocityBit = 1; 
-        constantVelocity = 1;
+        
     case 'radial'
         % todo make line path moving radial to/from ground node
         error('radial endNodePath not currently opperational');
@@ -115,6 +125,9 @@ end
 %% Run the simulation
 sim('tether000Test1')
     
+%% Get results
+parseLogsout
+
 %% Visualize the results
 % Path plot
 if makeAllPlots || makePathPlot
