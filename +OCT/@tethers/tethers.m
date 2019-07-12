@@ -4,7 +4,7 @@ classdef tethers < dynamicprops
     
     properties (SetAccess = private)
         numTethers
-        numNodes 
+        numNodes
         maxPercentageElongation
         maxAppFlowMultiplier
     end
@@ -18,7 +18,7 @@ classdef tethers < dynamicprops
         end
         
         function obj = setNumTethers(obj,val,units)
-           obj.numTethers.setValue(val,units);
+            obj.numTethers.setValue(val,units);
         end
         
         function obj = setNumNodes(obj,val,units)
@@ -30,7 +30,7 @@ classdef tethers < dynamicprops
             
         end
         
-       
+        
         function obj = build(obj,varargin)
             defThrName = {};
             for ii = 1:obj.numTethers.Value
@@ -59,8 +59,14 @@ classdef tethers < dynamicprops
             subProps = properties(obj.(props{1}));
             for ii = 1:length(props)
                 for jj = 1:numel(subProps)
-%                     parameter = obj.(props{ii}).(subProps{jj});
-                    val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
+                    value = double(obj.(props{ii}).(subProps{jj}).Value);
+                    if ~isnumeric(value)
+                        warning('Non-numeric property, %s',subProps{jj})
+                    else
+                        if ~isempty(value)
+                            val(ii).(subProps{jj}) = value;
+                        end
+                    end
                 end
             end
         end
@@ -85,7 +91,7 @@ classdef tethers < dynamicprops
             
             % calculate lift forces for wing and HS, ignore VS
             q_max = 0.5*env.water.density.Value*(obj.maxAppFlowMultiplier.Value*norm(env.water.velVec.Value))^2;
-%             Sref = vhcl.stbWing.refArea.Value + vhcl.prtWing.refArea.Value;
+            %             Sref = vhcl.stbWing.refArea.Value + vhcl.prtWing.refArea.Value;
             F_aero = [0;0;0];
             aeroSurfs = vhcl.getPropsByClass('OCT.aeroSurf');
             for ii = 1:numel(aeroSurfs)
@@ -118,13 +124,13 @@ classdef tethers < dynamicprops
             props = properties(obj);
             for ii = 1:numel(props)
                 try
-                obj.(props{ii}).scale(scaleFactor);
+                    obj.(props{ii}).scale(scaleFactor);
                 catch
                 end
             end
         end
     end
-
+    
     
 end
 
