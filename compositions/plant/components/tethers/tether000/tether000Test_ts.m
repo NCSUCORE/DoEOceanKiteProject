@@ -26,13 +26,13 @@ if tetherPerturbationWarning && tetherPerturbationBit == 1
     warning("Tether perturabtion is turned on. This message can be turned off in line 18")
 end
 
-endNodeInitPosition = [50;0;300];
+endNodeInitPosition = [10;0;200];
 endNodeInitVelocity = [0;0;0];
 totalMass = 1000;       % kg todo change property name to tetherMass in the tether class
 totalUnstchLength = 200; % m 
-endNodePath = 'radial';  % available: circle,  radial, flight,(not currently working: stationary)
+endNodePath = 'flight';  % available: circle,  radial, flight,(not currently working: stationary)
 includeDrag = true;
-includeBuoyancy = true;
+includeBuoyancy = false;
 includeSpringDamper = true;
 
 %one for x direction, two for y direction, three for z direction
@@ -65,7 +65,7 @@ createConstantUniformFlowEnvironmentBus
 % environment
 env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
-env.water.velVec.setValue([1 0 0],'m/s');
+env.water.velVec.setValue([5 0 0],'m/s');
 env.scale(scaleFactor);
 
 % tether
@@ -204,6 +204,11 @@ if makeAllPlots || makePathPlot
     plot3(positionTopNode(1,:),positionTopNode(2,:), positionTopNode(3,:));
     % If/when it becomes possible to specify a path for internal nodes
     % we'll add that.
+    axis([-1.1*max(max(abs(positionTopNode(1,:))),max(abs(positionTopNode(2,:)))) 1.1*max(max(abs(positionTopNode(1,:))),max(abs(positionTopNode(2,:))))...
+            -max(max(abs(positionTopNode(1,:))),max(abs(positionTopNode(2,:)))) 1.1*max(max(abs(positionTopNode(1,:))),max(abs(positionTopNode(2,:))))...
+            0 1.1*max(abs(positionTopNode(3,:)))]);
+    aa = gca;
+    aa.DataAspectRatio = [1 1 max(abs(positionTopNode(3,:)))/max(max(abs(positionTopNode(1,:))),max(abs(positionTopNode(2,:))))];
     view(-50,15);
     title(['Path = ' endNodePath]);
     xlabel('x (m)'); ylabel('y (m)'); zlabel('z (m)');
