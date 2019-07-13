@@ -73,6 +73,8 @@ classdef tether < handle
             obj.initAirNodeVel.setValue(val,units);
         end
         function obj = setInit.setValueAirNodeVel(obj,val,units)
+            % note rodney mitchell this looks like the same as above. DO we
+            % need both methods?
             obj.initAirNodeVel.setValue(val,units);
         end
         function obj = setInitNodePos(obj,val,units)
@@ -107,6 +109,13 @@ classdef tether < handle
         
         
         function val = get.initNodePos(obj)
+            % note rodney mitchell this forces the nodes to be evenly distributed between the gound and second to last node.
+            % Is that what we want? This means that you cannot change the
+            % initial value of any intermediate node. I mean, you can
+            % change it, but you can't get it back once it's been changed.
+            % If this behavior is intended I suggest making the property
+            % dependent. If the behavior is not intended I suggest making a
+            % class method for the intended behavior and releasing the get.
             if obj.numNodes.Value>2
                 pos = ...
                     [linspace(obj.initGndNodePos.Value(1),obj.initAirNodePos.Value(1),obj.numNodes.Value);...
