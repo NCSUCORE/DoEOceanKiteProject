@@ -11,33 +11,48 @@ clear all; close all; clc;
 % Test control parameters
 simDuration = 20;        % seconds
 scaleFactor  = 1;
-numNodes = 2;            % REMEMBER increasing the number of nodes increases the stiffness, so you need smaller timesteps and/or lower modulus.
+numNodes = 4;            % REMEMBER increasing the number of nodes increases the stiffness, so you need smaller timesteps and/or lower modulus.
+%conditions for stationary tether
+verticalTether = true;
+tetherPerturbationBit = 1; 
+numNodesWarning = true;
+tetherPerturbationWarning = true;
+if numNodesWarning && numNodes >2 
+    warning("The number of nodes is %d. If you want more than 2 nodes you can turn this message off in line 16",numNodes)
+end
+
+if tetherPerturbationWarning && tetherPerturbationBit == 1  
+    warning("Tether perturabtion is turned on. This message can be turned off in line 18")
+end
+
 endNodeInitPosition = [55;-55;185;];
 endNodeInitVelocity = [-19;0;0];
 totalMass = 945.4;       % kg todo change property name to tetherMass in the tether class
 totalUnstchLength = 200; % m 
-endNodePath = 'flight';  % available: circle,  radial, flight,(not currently working: stationary)
+endNodePath = 'stationary';  % available: circle,  radial, flight,(not currently working: stationary)
 includeDrag = true;
 includeBuoyancy = true;
 includeSpringDamper = true;
-constantVelocity = 1;
 
- %one for x direction, two for y direction, three for z direction
- %only for 'flight' 
-        directionInt = 1;
+%one for x direction, two for y direction, three for z direction
+%only for 'flight' 
+directionInt = 1;
 
 % Results visualization parameters
 makeAllPlots = true;
 makePathPlot = true; % todo generalize path plot so that you are just ploting whatever path was used
 makeStretchPlot = true;
 makeTensionsPlot = false; % todo make a plot of all tensions
-endNodePathPlot = 'flightPlot';
+endNodePathPlot = 'stationaryPlot';
 savePlots = true; % todo(rodney) add basic saveplot functionality
 
 % Must be in workspace for model to run
 tetherLength = totalUnstchLength; % m
 duration_s = simDuration;
 
+%Time parameters for time series
+timeStep = 1 ; % not for the simulation parameters, just for calculation
+timeVec = 0:.01:simDuration;
 %% Create busses
 createThrTenVecBus
 createThrAttachPtKinematicsBus
@@ -79,9 +94,7 @@ thr.tether1.dragEnable.setValue(includeDrag,'');
 thr.tether1.netBuoyEnable.setValue(includeBuoyancy,'');
 thr.tether1.springDamperEnable.setValue(includeSpringDamper,'');
 
-%Time parameters for time series
-timeStep = 1 ; % not for the simulation parameters, just for calculation
-timeVec = 0:.01:simDuration;
+
  
 %% Make end node paths
 switch endNodePath
@@ -155,10 +168,33 @@ switch endNodePath
            endNodeVel = timeseries(velocityTopNode,timeVec);
                   
     case 'stationary'
-      
+         
+       
         % this is for looking at the wave propegation
-        positionTopNode = thr.tether1.initAirNodePos.Value*ones(1,simDuration);
-        velocityTopNode = [1;1;1]*zeros(1,simDuration);
+        
+        if verticalTether
+        thr.tether1.initAirNodePos.setValue([0;0;200],'m');
+        end
+        if  tetherPerturbationBit == 1
+        %this is hard coding,and there is a better way to do this
+        %perturbing node
+        nodeToPerturb = 2;
+         
+        nodePerturbAmount = 1000; %meters
+        %where the node was from to begin with
+        defaultInitialConditions = thr.tether1.initNodePos.Value;
+        %where you are putting it now
+        nodeLocationChange = defaultInitialConditions(:,nodeToPerturb) + [0;nodePerturbAmount;0];
+        %making the inital conditions for the middle node again
+        thr.tether1.initNodePos.setValue([defaultInitialConditions(:,1),nodeLocationChange],'m');
+       
+        end 
+        
+        positionTopNode = (thr.tether1.initAirNodePos.Value) * ones(1,numel(timeVec));
+        velocityTopNode = [1;1;1]*zeros(1,numel(timeVec));
+         endNodePos = timeseries(positionTopNode,timeVec);
+         endNodeVel = timeseries(velocityTopNode,timeVec);
+              
     otherwise
         error('Unknown endNodePath. You must use one of the paths in the switch block.');
 end
@@ -173,6 +209,10 @@ parseLogsout
 
 %cool thing that mitchell did 
 % Change anything with "Interpreter" in the name to use Latex formatting
+        filename1='pathPlot.png';
+        filename2='airNodeTensionPlot.png';
+        filename3='grdNodeTensionPlot.png';
+        filename4='stretchPlot.png';
 props = get(groot, 'factory');
 fnames = fieldnames(props);
 fnames = fnames(contains(fnames,'interpreter','IgnoreCase',true));
@@ -219,7 +259,7 @@ if makeAllPlots || makePathPlot
                     [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
                      h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
                      hold on 
-                     scatter3(positionTopNode(:,1),positionTopNode(:,2), positionTopNode(:,3))
+                     line([0;positionTopNode(1,numel(timeVec))],[[0;positionTopNode(2,numel(timeVec))]],[[0;positionTopNode(3,numel(timeVec))]],'LineWidth',2)
                      hold off
             
     otherwise
@@ -270,15 +310,26 @@ end
    
 end
      if savePlots
-         %warning('savePlots not currently funcitonal. All I did was close the figure.');
-        filename1='pathPlot.png';
-        filename2='airNodeTensionPlot.png';
-        filename3='grdNodeTensionPlot.png';
-        filename4='stretchPlot.png';
+         
+         if makeAllPlots
       saveas(h1,filename1)
       saveas(h2,filename2)
       saveas(h3,filename3)
       saveas(h4,filename4)
+         end 
+         if ~makeAllPlots
+             if makeTensionsPlot
+                 saveas(h2,filename2)
+                 saveas(h3,filename3)
+             end
+             if makePathPlot
+                 saveas(h1,filename1)
+             end
+             if makeStretchPlot
+                 saveas(h4,filename4)
+             end
+             
+         end
     end
 
 
