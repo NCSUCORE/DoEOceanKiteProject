@@ -16,17 +16,21 @@ endNodeInitPosition = [55;-55;185;];
 endNodeInitVelocity = [-19;0;0];
 totalMass = 945.4;       % kg todo change property name to tetherMass in the tether class
 totalUnstchLength = 200; % m 
-endNodePath = 'radial';  % available: circle, (not currently working: radial, flight, stationary)
+endNodePath = 'flight';  % available: circle, (not currently working: radial, flight, stationary)
 includeDrag = true;
 includeBuoyancy = true;
 includeSpringDamper = true;
 constantVelocity = 1;
 
+ % one for x direction, two for y direction, three for z direction
+ %only for 'flight' 
+        directionInt = 1;
+
 % Results visualization parameters
 makeAllPlots = true;
 makePathPlot = true; % todo generalize path plot so that you are just ploting whatever path was used
 makeTensionsPlot = false; % todo make a plot of all tensions
-endNodePathPlot = 'radialPlot';
+endNodePathPlot = 'flightPlot';
 savePlots = true; % todo(rodney) add basic saveplot functionality
 
 % Must be in workspace for model to run
@@ -74,64 +78,84 @@ thr.tether1.dragEnable.setValue(includeDrag,'');
 thr.tether1.netBuoyEnable.setValue(includeBuoyancy,'');
 thr.tether1.springDamperEnable.setValue(includeSpringDamper,'');
 
+ timeStep = 1 ; % not for the simulation parameters, just for calculation
+ timeVec = 0:.01:simDuration;
+ 
 %% Make end node paths
 switch endNodePath
     case 'circle'
+
         
-        oneLoop = 10;  % how fast (in seconds) you want to complete one loop; 
-        endPathParametrization = 2*pi*(simDuration/oneLoop); % last value in the path parameterization vector
-        %lookupTableResolutionBooster = 100;  %more points in the lookup table
-        
-        
-        syms radius latCurve longCurve x
-        long= radius.*(longCurve+cos(x)); %path longitude
-        lat= radius.*(latCurve+sin(x)); %path latitude
-        %derivatives of phi and lambda with respect to s 
-        dLambdadS = diff(long,x);
-        dPhidS = diff(lat,x);
-        % partial derivatives of gamma with respect to lambda and phi and lambd
-        syms lambda phi
-        path = [ cos(lambda).*cos(phi);
-                 sin(lambda).*cos(phi);
-                 sin(phi);]; % figure 8 parameter
-        partialGammaWrtLambda = diff(path,lambda);
-        partialGammaWrtPhi = diff(path,phi);
-        % partial derivatives of gamma with respect to lambda and phi and lambda
-        % and phi plugged in
-        partialGammaWrtLambda_g = subs(partialGammaWrtLambda,{lambda,phi},{long,lat});
-        partialGammaWrtPhi_g = subs(partialGammaWrtPhi,{lambda,phi},{long,lat});
-        tangent = partialGammaWrtLambda_g* dLambdadS + partialGammaWrtPhi_g*dPhidS;
-        pathDeriv = double(subs(tangent,{x,latCurve,longCurve,radius},{linspace(0,endPathParametrization,simDuration),pi/2,0,.5}));
-        velocityTopNode = constantVelocity*pathDeriv;
-        % path and shape generation
-        radius = .4; 
-        latCurve = 3*pi/8 ; 
-        x = linspace(0,endPathParametrization, simDuration ); %path paramitrization 
-        longCurve =0; 
-        long1 = radius.*(longCurve+cos(x)); %path longitude
-        lat1 = radius.*(latCurve+sin(x)); %path latitude
-        positionTopNode = totalUnstchLength *  [ cos(long1).*cos(lat1);
-                          sin(long1).*cos(lat1);
-                          sin(lat1);];
-       
-        
-    case 'radial'
-        % todo make line path moving radial to/from ground node
-       % error('radial endNodePath not currently opperational');
-       
-       % making you go radially outward from your initial radial
-       % coordinates
-       endNodeStepSize= 2;
-        endNodeRadialLocationStepMat = (thr.tether1.initAirNodePos.Value/norm(thr.tether1.initAirNodePos.Value))* ones(1,simDuration)  ;
-          initialEndNodeLocationMat  =  (thr.tether1.initAirNodePos.Value) * ones(1,simDuration) ; 
-                stepMat = 0:endNodeStepSize:endNodeStepSize*simDuration-1 ;
-           addMat = stepMat.*endNodeRadialLocationStepMat;
-         positionTopNode =  initialEndNodeLocationMat + addMat;
-         velocityTopNode =   positionTopNode;
+
+               [az, el, rho] =  cart2sph(thr.tether1.initAirNodePos.Value(1),thr.tether1.initAirNodePos.Value(2),thr.tether1.initAirNodePos.Value(3));
+             
+               % going one rotation in the amount of time , keeping elev
+               % angle and radius the same 
+                azimuthMat = linspace(az,2*pi+az,numel(timeVec)); 
+                positionTopNodeSpherical = [azimuthMat;el*ones(1,numel(timeVec));rho*ones(1,numel(timeVec))] ;
+                
+                positionTopNode = [];
+                %converting back to cartesian
+                for i = 1:numel(timeVec)
+                 positionTopNodeSphericalTemp1 = positionTopNodeSpherical(:,i)';
+                 [xNew, yNew, zNew] = sph2cart(positionTopNodeSphericalTemp1(1),positionTopNodeSphericalTemp1(2),positionTopNodeSphericalTemp1(3));
+                 positionTopNodeTemp = [xNew;yNew;zNew];
+                 positionTopNode = [positionTopNode,positionTopNodeTemp];
+                end
+                
+                deriv = diff(positionTopNode')/timeStep;
+                %differentiating position to find velocity
+                velocityTopNode = [thr.tether1.initAirNodeVel.Value,deriv'];
+ 
+                    
+                endNodePos = timeseries(positionTopNode,timeVec);
+                endNodeVel = timeseries(velocityTopNode,timeVec);
+                
          
+    case 'radial'
+       % making you go radially outward from your initial radial position
+       % coordinates at a constant velocity
+         endNodeStepSize= .07; % how much you want to go outward every timestep
+         endNodeRadialLocationStepMat = (thr.tether1.initAirNodePos.Value/norm(thr.tether1.initAirNodePos.Value))* ones(1,numel(timeVec))  ;
+         initialEndNodeLocationMat  =  (thr.tether1.initAirNodePos.Value) * ones(1,numel(timeVec)) ; 
+         stepMat = linspace(0,.07*numel(timeVec),numel(timeVec)) ;
+         addMat = stepMat.*endNodeRadialLocationStepMat;
+         positionTopNode =  initialEndNodeLocationMat + addMat;
+         velocityTopNode = [];
+%          for i = 1:numel(timeVec)
+%          velocityTopNodeTemp = constantVelocity*(positionTopNode(:,i)/norm(positionTopNode(:,i)));
+%          velocityTopNode = [ velocityTopNode, velocityTopNodeTemp];
+%          end
+                deriv = diff(positionTopNode')/timeStep;
+                %differentiating position to find velocity
+                velocityTopNode = [thr.tether1.initAirNodeVel.Value,deriv'];
+         
+           endNodePos = timeseries(positionTopNode,timeVec);
+           endNodeVel = timeseries(velocityTopNode,timeVec);
     case 'flight'
-        % todo make line path moving along the ground
-        error('flight endNodePath not currently opperational');
+        % step 
+        endNodeStepSize = .07;
+        stepMat = linspace(0,.07*numel(timeVec),numel(timeVec)) ;
+        % one for x direction, two for y direction, three for z direction
+        if directionInt ==1
+            endNodeGrowthDirection = [1;0;0];
+        end 
+        if directionInt ==2
+            endNodeGrowthDirection = [0;1;0];
+        end 
+        if directionInt ==3
+            endNodeGrowthDirection = [0;0;1];
+        end 
+        initialEndNodeLocationMat  =  (thr.tether1.initAirNodePos.Value) * ones(1,numel(timeVec)) ; 
+        addMat =  stepMat.*endNodeGrowthDirection;
+        positionTopNode =  initialEndNodeLocationMat + addMat;
+        deriv = diff(positionTopNode')/timeStep;
+                %differentiating position to find velocity
+                velocityTopNode = [thr.tether1.initAirNodeVel.Value,deriv'];
+         
+           endNodePos = timeseries(positionTopNode,timeVec);
+           endNodeVel = timeseries(velocityTopNode,timeVec);
+                  
     case 'stationary'
       
         % this is for looking at the wave propegation
@@ -154,29 +178,28 @@ if makeAllPlots || makePathPlot
     switch endNodePathPlot
         
         case 'circlePlot'
-    %plot sphere
+   
     
-                      figure(1); 
-                      s = linspace(0,endPathParametrization,simDuration);
+                      figure;             
                       plot3(positionTopNode(1,:),positionTopNode(2,:), positionTopNode(3,:));
                          hold on 
                      [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
                       h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
-                 for k =1:simDuration
-                     tang =(s-s(k)).*pathDeriv(:,k)+positionTopNode(:,k);
-                     %velocity plot
-                     plot3(tang(1,:), tang(2,:), tang(3,:),'LineWidth',3)
-                     pause(.01)
-                 end
-                     hold off
+                 hold off
     
         case 'radialPlot' 
+            figure;
                      [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
                      h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
-                     hold on 
+                    %  hold on
                      plot3(positionTopNode(:,1),positionTopNode(:,2), positionTopNode(:,3))
-                     hold off
-        case 'stationaryFlight' 
+                   % hold off
+        case 'flightPlot'
+            %why the heck does it still plot radial plot
+               plot3(positionTopNode(:,1),positionTopNode(:,2), positionTopNode(:,3))
+               
+               
+        case 'stationaryPlot' 
             
              [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
                      h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
