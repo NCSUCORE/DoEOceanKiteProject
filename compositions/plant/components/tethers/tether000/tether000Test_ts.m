@@ -16,13 +16,13 @@ endNodeInitPosition = [55;-55;185;];
 endNodeInitVelocity = [-19;0;0];
 totalMass = 945.4;       % kg todo change property name to tetherMass in the tether class
 totalUnstchLength = 200; % m 
-endNodePath = 'radial';  % available: circle, (not currently working: radial, flight, stationary)
+endNodePath = 'flight';  % available: circle,  radial, flight,(not currently working: stationary)
 includeDrag = true;
 includeBuoyancy = true;
 includeSpringDamper = true;
 constantVelocity = 1;
 
- % one for x direction, two for y direction, three for z direction
+ %one for x direction, two for y direction, three for z direction
  %only for 'flight' 
         directionInt = 1;
 
@@ -31,7 +31,7 @@ makeAllPlots = true;
 makePathPlot = true; % todo generalize path plot so that you are just ploting whatever path was used
 makeStretchPlot = true;
 makeTensionsPlot = false; % todo make a plot of all tensions
-endNodePathPlot = 'radialPlot';
+endNodePathPlot = 'flightPlot';
 savePlots = true; % todo(rodney) add basic saveplot functionality
 
 % Must be in workspace for model to run
@@ -79,8 +79,9 @@ thr.tether1.dragEnable.setValue(includeDrag,'');
 thr.tether1.netBuoyEnable.setValue(includeBuoyancy,'');
 thr.tether1.springDamperEnable.setValue(includeSpringDamper,'');
 
- timeStep = 1 ; % not for the simulation parameters, just for calculation
- timeVec = 0:.01:simDuration;
+%Time parameters for time series
+timeStep = 1 ; % not for the simulation parameters, just for calculation
+timeVec = 0:.01:simDuration;
  
 %% Make end node paths
 switch endNodePath
@@ -116,43 +117,39 @@ switch endNodePath
     case 'radial'
        % making you go radially outward from your initial radial position
        % coordinates at a constant velocity
-         endNodeStepSize= .07; % how much you want to go outward every timestep
-         endNodeRadialLocationStepMat = (thr.tether1.initAirNodePos.Value/norm(thr.tether1.initAirNodePos.Value))* ones(1,numel(timeVec))  ;
-         initialEndNodeLocationMat  =  (thr.tether1.initAirNodePos.Value) * ones(1,numel(timeVec)) ; 
-         stepMat = linspace(0,.07*numel(timeVec),numel(timeVec)) ;
-         addMat = stepMat.*endNodeRadialLocationStepMat;
-         positionTopNode =  initialEndNodeLocationMat + addMat;
-         velocityTopNode = [];
-%          for i = 1:numel(timeVec)
-%          velocityTopNodeTemp = constantVelocity*(positionTopNode(:,i)/norm(positionTopNode(:,i)));
-%          velocityTopNode = [ velocityTopNode, velocityTopNodeTemp];
-%          end
+              endNodeStepSize= .07; % how much you want to go outward every timestep
+              endNodeRadialLocationStepMat = (thr.tether1.initAirNodePos.Value/norm(thr.tether1.initAirNodePos.Value))* ones(1,numel(timeVec))  ;
+               initialEndNodeLocationMat  =  (thr.tether1.initAirNodePos.Value) * ones(1,numel(timeVec)) ; 
+               stepMat = linspace(0,.07*numel(timeVec),numel(timeVec)) ;
+               addMat = stepMat.*endNodeRadialLocationStepMat;
+               positionTopNode =  initialEndNodeLocationMat + addMat;
+  
                 deriv = diff(positionTopNode')/timeStep;
                 %differentiating position to find velocity
                 velocityTopNode = [thr.tether1.initAirNodeVel.Value,deriv'];
          
-           endNodePos = timeseries(positionTopNode,timeVec);
-           endNodeVel = timeseries(velocityTopNode,timeVec);
+             endNodePos = timeseries(positionTopNode,timeVec);
+             endNodeVel = timeseries(velocityTopNode,timeVec);
     case 'flight'
         % step 
         endNodeStepSize = .07;
         stepMat = linspace(0,.07*numel(timeVec),numel(timeVec)) ;
         % one for x direction, two for y direction, three for z direction
-        if directionInt ==1
-            endNodeGrowthDirection = [1;0;0];
-        end 
-        if directionInt ==2
-            endNodeGrowthDirection = [0;1;0];
-        end 
-        if directionInt ==3
-            endNodeGrowthDirection = [0;0;1];
-        end 
-        initialEndNodeLocationMat  =  (thr.tether1.initAirNodePos.Value) * ones(1,numel(timeVec)) ; 
-        addMat =  stepMat.*endNodeGrowthDirection;
-        positionTopNode =  initialEndNodeLocationMat + addMat;
-        deriv = diff(positionTopNode')/timeStep;
+              if directionInt ==1
+              endNodeGrowthDirection = [1;0;0];
+              end 
+              if directionInt ==2
+              endNodeGrowthDirection = [0;1;0];
+              end 
+              if directionInt ==3
+              endNodeGrowthDirection = [0;0;1];
+              end 
+                    initialEndNodeLocationMat  =  (thr.tether1.initAirNodePos.Value) * ones(1,numel(timeVec)) ; 
+                    addMat =  stepMat.*endNodeGrowthDirection;
+                    positionTopNode =  initialEndNodeLocationMat + addMat;
+                    deriv = diff(positionTopNode')/timeStep;
                 %differentiating position to find velocity
-                velocityTopNode = [thr.tether1.initAirNodeVel.Value,deriv'];
+                    velocityTopNode = [thr.tether1.initAirNodeVel.Value,deriv'];
          
            endNodePos = timeseries(positionTopNode,timeVec);
            endNodeVel = timeseries(velocityTopNode,timeVec);
@@ -173,6 +170,20 @@ sim('tether000Test1')
 parseLogsout
 
 %% Visualize the results
+
+%cool thing that mitchell did 
+% Change anything with "Interpreter" in the name to use Latex formatting
+props = get(groot, 'factory');
+fnames = fieldnames(props);
+fnames = fnames(contains(fnames,'interpreter','IgnoreCase',true));
+for ii = 1:length(fnames)
+   propName = strrep(fnames{ii},'factory','default');
+   set(groot,propName,'latex')
+end
+
+% Change figure backgrounds to white
+set(groot,'defaultfigurecolor','w')
+
 % Path plot
 if makeAllPlots || makePathPlot
     parseLogsout
@@ -181,28 +192,31 @@ if makeAllPlots || makePathPlot
         case 'circlePlot'
    
     
-                      figure;             
+            h1 = figure(1);             
                       plot3(positionTopNode(1,:),positionTopNode(2,:), positionTopNode(3,:));
-                         hold on 
+                      hold on 
                      [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
                       h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
-                 hold off
+                      hold off
     
         case 'radialPlot' 
-            figure;
+            h1 = figure(1);     
                     [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
                     h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
                     hold on               
                     line([positionTopNode(1,1);positionTopNode(1,numel(timeVec))],[[positionTopNode(2,1);positionTopNode(2,numel(timeVec))]],[[positionTopNode(3,1);positionTopNode(3,numel(timeVec))]],'LineWidth',2)
                     hold off
         case 'flightPlot'
-            %why the heck does it still plot radial plot
-                 line([positionTopNode(1,1);positionTopNode(1,numel(timeVec))],[[positionTopNode(2,1);positionTopNode(2,numel(timeVec))]],[[positionTopNode(3,1);positionTopNode(3,numel(timeVec))]],'LineWidth',2)
-              
-               
+            h1 = figure(1);     
+                     [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+                     h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
+                     hold on 
+                     line([positionTopNode(1,1);positionTopNode(1,numel(timeVec))],[[positionTopNode(2,1);positionTopNode(2,numel(timeVec))]],[[positionTopNode(3,1);positionTopNode(3,numel(timeVec))]],'LineWidth',2)
+                     hold off
+                
         case 'stationaryPlot' 
-            
-             [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+            h1 = figure(1);     
+                    [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
                      h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
                      hold on 
                      scatter3(positionTopNode(:,1),positionTopNode(:,2), positionTopNode(:,3))
@@ -212,35 +226,34 @@ if makeAllPlots || makePathPlot
         error('Unknown endNodePath. You must use one of the paths in the switch block.');
     end
     
-%     if savePlots
-%         %warning('savePlots not currently funcitonal. All I did was close the figure.');
-%        filename1="pathPlot.jpg";
-%        filename2="gndNodeTensionPlot.jpg";
-%        filename3="endNodeTensionPlot.jpg";
-%        filename4="stretchPlot.jpg";
-%        
-%     end
+
 end % end if makePathPlot
+
 
 % Tension plot
 if makeAllPlots || makeTensionsPlot
     
-     figure(2)
-tsc.airTenVecBusArry.tenVec.plot
-title('Ground Node Tension')
+   h2 =  figure(2);
+%tsc.airTenVecBusArry.tenVec.plot
+plotTime = linspace(0,simDuration,length(squeeze(tsc.airTenVecBusArry.tenVec.data)'));
+plot(plotTime,squeeze(tsc.airTenVecBusArry.tenVec.data)') ;
+title('Air Node Tension')
 xlabel('Time (s)')
 ylabel('Tension (N)')
-   figure(3)
-tsc.gndTenVecBusArry.tenVec.plot
-title('Air Node Tension')
+
+   h3 = figure(3);
+%tsc.gndTenVecBusArry.tenVec.plot
+plotTime = linspace(0,simDuration,length(squeeze(tsc.gndTenVecBusArry.tenVec.data)'));
+plot(plotTime,squeeze(tsc.gndTenVecBusArry.tenVec.data)') ;
+title('Ground Node Tension')
 xlabel('Time (s)')
 ylabel('Tension (N)')
 end
 
 if makeAllPlots || makeStretchPlot
 % tetherStretch Plot
-figure(4)
-stretchMat = [];
+    h4 = figure(4);
+    stretchMat = [];
 
 for q = 1:numel(timeVec)
 
@@ -250,11 +263,22 @@ for q = 1:numel(timeVec)
     
 end 
   plot(timeVec,stretchMat)
+  title( 'Tether Stretch')
   xlabel('Time (s)')
   ylabel('Stretch (m)')   
      
    
 end
-
+     if savePlots
+         %warning('savePlots not currently funcitonal. All I did was close the figure.');
+        filename1='pathPlot.png';
+        filename2='airNodeTensionPlot.png';
+        filename3='grdNodeTensionPlot.png';
+        filename4='stretchPlot.png';
+      saveas(h1,filename1)
+      saveas(h2,filename2)
+      saveas(h3,filename3)
+      saveas(h4,filename4)
+    end
 
 
