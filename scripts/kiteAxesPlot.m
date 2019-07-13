@@ -13,7 +13,7 @@ ax=axes;
 %          ones(1,length(long)).*sin(lat);];
 pathvals=swapablePath(linspace(0,1,1000),pathCtrl.pathParams.Value);
 % [tanPathVals,tans]=constantLat(linspace(0,1,10),[pi/4,0,pi/2,tetherLength]);
-waittime = .1; 
+    waittime = .1; 
 animation_time = 10;
 filename="fig83plot.gif";
 timevec=tsc.positionVec.Time;

@@ -16,7 +16,7 @@ endNodeInitPosition = [55;-55;185;];
 endNodeInitVelocity = [-19;0;0];
 totalMass = 945.4;       % kg todo change property name to tetherMass in the tether class
 totalUnstchLength = 200; % m 
-endNodePath = 'flight';  % available: circle, (not currently working: radial, flight, stationary)
+endNodePath = 'radial';  % available: circle, (not currently working: radial, flight, stationary)
 includeDrag = true;
 includeBuoyancy = true;
 includeSpringDamper = true;
@@ -29,8 +29,9 @@ constantVelocity = 1;
 % Results visualization parameters
 makeAllPlots = true;
 makePathPlot = true; % todo generalize path plot so that you are just ploting whatever path was used
+makeStretchPlot = true;
 makeTensionsPlot = false; % todo make a plot of all tensions
-endNodePathPlot = 'flightPlot';
+endNodePathPlot = 'radialPlot';
 savePlots = true; % todo(rodney) add basic saveplot functionality
 
 % Must be in workspace for model to run
@@ -189,15 +190,15 @@ if makeAllPlots || makePathPlot
     
         case 'radialPlot' 
             figure;
-                     [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
-                     h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
-                    %  hold on
-                     plot3(positionTopNode(:,1),positionTopNode(:,2), positionTopNode(:,3))
-                   % hold off
+                    [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
+                    h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
+                    hold on               
+                    line([positionTopNode(1,1);positionTopNode(1,numel(timeVec))],[[positionTopNode(2,1);positionTopNode(2,numel(timeVec))]],[[positionTopNode(3,1);positionTopNode(3,numel(timeVec))]],'LineWidth',2)
+                    hold off
         case 'flightPlot'
             %why the heck does it still plot radial plot
-               plot3(positionTopNode(:,1),positionTopNode(:,2), positionTopNode(:,3))
-               
+                 line([positionTopNode(1,1);positionTopNode(1,numel(timeVec))],[[positionTopNode(2,1);positionTopNode(2,numel(timeVec))]],[[positionTopNode(3,1);positionTopNode(3,numel(timeVec))]],'LineWidth',2)
+              
                
         case 'stationaryPlot' 
             
@@ -211,10 +212,14 @@ if makeAllPlots || makePathPlot
         error('Unknown endNodePath. You must use one of the paths in the switch block.');
     end
     
-    if savePlots
-        warning('savePlots not currently funcitonal. All I did was close the figure.');
-       % close(hfig);
-    end
+%     if savePlots
+%         %warning('savePlots not currently funcitonal. All I did was close the figure.');
+%        filename1="pathPlot.jpg";
+%        filename2="gndNodeTensionPlot.jpg";
+%        filename3="endNodeTensionPlot.jpg";
+%        filename4="stretchPlot.jpg";
+%        
+%     end
 end % end if makePathPlot
 
 % Tension plot
@@ -223,16 +228,32 @@ if makeAllPlots || makeTensionsPlot
      figure(2)
 tsc.airTenVecBusArry.tenVec.plot
 title('Ground Node Tension')
-xlabel('time (s)')
+xlabel('Time (s)')
 ylabel('Tension (N)')
    figure(3)
 tsc.gndTenVecBusArry.tenVec.plot
 title('Air Node Tension')
-xlabel('time (s)')
+xlabel('Time (s)')
 ylabel('Tension (N)')
+end
+
+if makeAllPlots || makeStretchPlot
+% tetherStretch Plot
+figure(4)
+stretchMat = [];
+
+for q = 1:numel(timeVec)
+
+    
+    stretchTemp = norm(positionTopNode(:,q))-totalUnstchLength;
+    stretchMat =  [stretchMat, stretchTemp];
+    
+end 
+  plot(timeVec,stretchMat)
+  xlabel('Time (s)')
+  ylabel('Stretch (m)')   
      
-     
-    %error('Tension plot not ready');
+   
 end
 
 
