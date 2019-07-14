@@ -10,30 +10,31 @@ clear all; close all; clc;
 
 % Test control parameters
 simDuration = 30;        % seconds
-timeMod = 2; % to modify periods and travel times (ex. circle is timeMod loops per simDuration)
+timeMod = 4; % to modify periods and travel times (ex. circle is timeMod loops per simDuration)
 scaleFactor  = 1;
 numNodes = 2;            % REMEMBER increasing the number of nodes increases the stiffness, so you need smaller timesteps and/or lower modulus.
 %conditions for stationary tether
 verticalTether = true;
 tetherPerturbationBit = 1; 
 numNodesWarning = true;
-tetherPerturbationWarning = true;
+tetherPerturbationWarning = false;
 if numNodesWarning && numNodes >2 
     warning("The number of nodes is %d. If you want more than 2 nodes you can turn this message off in line 16",numNodes)
 end
 
-if tetherPerturbationWarning && tetherPerturbationBit == 1  
+if tetherPerturbationWarning && tetherPerturbationBit == 1
     warning("Tether perturabtion is turned on. This message can be turned off in line 18")
 end
 
-endNodeInitPosition = [10;0;200];
+endNodeInitPosition = [180;0;180];
 endNodeInitVelocity = [0;0;0];
 totalMass = 1000;       % kg todo change property name to tetherMass in the tether class
 totalUnstchLength = 200; % m 
-endNodePath = 'flight';  % available: circle,  radial, flight,(not currently working: stationary)
+endNodePath = 'circle';  % available: circle,  radial, flight,(not currently working: stationary)
 includeDrag = true;
-includeBuoyancy = false;
-includeSpringDamper = true;
+includeBuoyancy = true;
+includeSpringDamper = false;
+tetherModulus = 10e9;
 
 %one for x direction, two for y direction, three for z direction
 %only for 'flight' 
@@ -68,6 +69,33 @@ env.addFlow({'water'},'FlowDensities',1000);
 env.water.velVec.setValue([5 0 0],'m/s');
 env.scale(scaleFactor);
 
+% Make a vehicle solely for the tether2 diameter method.
+vhcl = OCT.vehicle;
+vhcl.numTethers.setValue(1,'');
+vhcl.numTurbines.setValue(2,'');
+vhcl.build('partDsgn1_lookupTables.mat');
+vhcl.Ixx.setValue(6303,'kg*m^2');
+vhcl.Iyy.setValue(2080.7,'kg*m^2');
+vhcl.Izz.setValue(8320.4,'kg*m^2');
+vhcl.Ixy.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(81.87,'kg*m^2');
+vhcl.Iyz.setValue(0,'kg*m^2');
+vhcl.volume.setValue(0.9454,'m^3');
+vhcl.mass.setValue(945.4,'kg'); 
+vhcl.centOfBuoy.setValue([0 0 0]','m');
+vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
+vhcl.turbine1.diameter.setValue(0,'m');
+vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
+vhcl.turbine1.powerCoeff.setValue(0.5,'');
+vhcl.turbine1.dragCoeff.setValue(0.8,'');
+vhcl.turbine2.diameter.setValue(0,'m');
+vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
+vhcl.turbine2.powerCoeff.setValue(0.5,'');
+vhcl.turbine2.dragCoeff.setValue(0.8,'');
+vhcl.scale(scaleFactor);
+
 % tether
 % Define variants then make tether object
 TETHERS = 'tether000';             % Is this which tether model to use?
@@ -81,7 +109,7 @@ thr.tether1.initAirNodePos.setValue(endNodeInitPosition,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(endNodeInitVelocity,'m/s');
 thr.tether1.vehicleMass.setValue(totalMass,'kg');
-thr.tether1.youngsMod.setValue(4e9,'Pa');
+thr.tether1.youngsMod.setValue(tetherModulus,'Pa');
 thr.tether1.dampingRatio.setValue(0.75,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
@@ -89,7 +117,8 @@ createThrNodeBus(thr.numNodes.Value); % Can this not be a class method?
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(true,'');
-thr.tether1.diameter.setValue(0.0144,'m');
+%thr.tether1.diameter.setValue(0.0144,'m');
+thr.designTetherDiameter(vhcl,env);
 thr.scale(scaleFactor);
 thr.tether1.dragEnable.setValue(includeDrag,'');
 thr.tether1.netBuoyEnable.setValue(includeBuoyancy,'');
@@ -217,7 +246,7 @@ if makeAllPlots || makePathPlot
         if ~exist('dump','dir')
             mkdir('dump');
         end
-        saveas(hfig,['dump\' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '.png']);
+        saveas(hfig,['dump\' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '_mod' num2str(tetherModulus,'%3.2e') '.png']);
     end
 end % end if makePathPlot
 
@@ -238,7 +267,7 @@ if makeAllPlots || makeTensionsPlot
         if ~exist('dump','dir')
             mkdir('dump');
         end
-        saveas(hfig,['dump\airtension_' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '.png']);
+        saveas(hfig,['dump\airtension_' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '_mod' num2str(tetherModulus,'%3.2e') '.png']);
     end
 
     hfig = figure('Position',[700 100 w h]);
@@ -255,7 +284,7 @@ if makeAllPlots || makeTensionsPlot
         if ~exist('dump','dir')
             mkdir('dump');
         end
-        saveas(hfig,['dump\gndtension_' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '.png']);
+        saveas(hfig,['dump\gndtension_' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '_mod' num2str(tetherModulus,'%3.2e') '.png']);
     end
 end
 
@@ -276,7 +305,7 @@ if makeAllPlots || makeStretchPlot
         if ~exist('dump','dir')
             mkdir('dump');
         end
-        saveas(hfig,['dump\stretch_' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '.png']);
+        saveas(hfig,['dump\stretch_' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '_mod' num2str(tetherModulus,'%3.2e') '.png']);
     end
 end
 
@@ -300,7 +329,7 @@ if makeMovie
     if ~exist('dump','dir')
         mkdir('dump');
     end
-    writerObj = VideoWriter(['dump\' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '.avi']);
+    writerObj = VideoWriter(['dump\' endNodePath '_drag' num2str(includeDrag) '_buoy' num2str(includeBuoyancy) '_spring' num2str(includeSpringDamper) '_mod' num2str(tetherModulus,'%3.2e') '.avi']);
     writerObj.FrameRate = 10;
     open(writerObj);
     writeVideo(writerObj, frms);
