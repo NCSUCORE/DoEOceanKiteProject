@@ -18,7 +18,7 @@ classdef station < dynamicprops
             %VEHICLE Construct an instance of this class
             obj.numTethers  = SIM.parameter('NoScale',true);
             obj.inertia     = SIM.parameter('Unit','kg*m^2');
-            obj.dampCoeff   = SIM.parameter('Unit','(N*m)/(rad*s)');
+            obj.dampCoeff   = SIM.parameter('Unit','(N*m)/(rad/s)');
             obj.initAngPos  = SIM.parameter('Unit','rad');
             obj.initAngVel  = SIM.parameter('Unit','rad/s');
             obj.freeSpnEnbl = SIM.parameter('NoScale',true);

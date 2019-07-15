@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 1*sqrt(scaleFactor);
+duration_s  = 1000*sqrt(scaleFactor);
 startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
@@ -141,15 +141,16 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(4e9,'Pa');
-thr.tether1.dampingRatio.setValue(0.75,'');
+thr.tether1.youngsMod.setValue(100e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.9,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(true,'');
+thr.tether1.setDiameter(0.0144,'m');
 
-thr.designTetherDiameter(vhcl,env);
+% thr.designTetherDiameter(vhcl,env);
 
 % Scale up/down
 thr.scale(scaleFactor);
