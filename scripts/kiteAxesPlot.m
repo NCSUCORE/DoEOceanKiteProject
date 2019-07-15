@@ -1,6 +1,7 @@
 %%
 parseLogsout;
-grow = false;
+close all
+grow = true;
 figure
 ax=axes;
 % axes(spl3);
@@ -19,7 +20,11 @@ filename="fig83plot.gif";
 timevec=tsc.positionVec.Time;
 tetherLength=pathCtrl.pathParams.Value(end);
  %%
-for t=linspace(0,timevec(end),ceil(animation_time/waittime))
+% manual=true;
+manual=false;
+range1=100;
+% for t=60:.2:120
+for t=linspace(0,timevec(end),ceil(animation_time/waittime))%t=223.4%timevec(end)
 [~,i]=min(abs(timevec-t));
 
 % subplot(1,3,1)
@@ -78,14 +83,33 @@ line([groundBdyAxisY1(1,:);groundBdyAxisY2(1,:)],[groundBdyAxisY1(2,:);groundBdy
 
 scatter3([groundBdyAxisZ1(1,:);groundBdyAxisZ2(1,:)],[groundBdyAxisZ1(2,:);groundBdyAxisZ2(2,:)],[groundBdyAxisZ1(3,:);groundBdyAxisZ2(3,:)],'filled');
 line([groundBdyAxisZ1(1,:);groundBdyAxisZ2(1,:)],[groundBdyAxisZ1(2,:);groundBdyAxisZ2(2,:)],[groundBdyAxisZ1(3,:);groundBdyAxisZ2(3,:)],'LineWidth',2)
-
+%% Random other stuff
 plot3(tsc.positionVec.Data(1,1:i),tsc.positionVec.Data(2,1:i),tsc.positionVec.Data(3,1:i),'k','lineWidth',2)
-title(['T=' num2str(tsc.positionVec.Time(i))])
+
+title(sprintf("t=%4.1f;percent perp=%4.4f; central ang=%4.2f;",tsc.positionVec.Time(i),tsc.perc_perp.Data(i),tsc.central_angle.Data(i)*180/pi))
+
 [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
 h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
-quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i))
-dispVelVecDes=tsc.velVectorDes.Data(:,i)*10;
+quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i),'w','lineWidth',1.2)
+
+starpos=tsc.star_pos.Data(i,:);
+starpos=tetherLength*starpos/norm(starpos);
+scatter3(starpos(1),starpos(2),starpos(3),'k')
+
+startanvec=tsc.tan_unit.Data(i,:);
+startanvec=7*startanvec;
+
+starperpvec=tsc.perp_unit.Data(i,:);
+starperpvec = 7*starperpvec;
+
+dispVelVecDes=tsc.velVectorDes.Data(i,:);
+dispVelVecDes = 10*dispVelVecDes;
+
 quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),dispVelVecDes(1),dispVelVecDes(2),dispVelVecDes(3),'r','lineWidth',2)
+quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),starperpvec(1),starperpvec(2),starperpvec(3),'g','lineWidth',2)
+quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),startanvec(1),startanvec(2),startanvec(3),'b','lineWidth',2)
+
+%% limits plotti
 if min(tsc.positionVec.Data(3,1,:))>0
     zlim([0 inf])
 end
@@ -95,18 +119,23 @@ if exist('AZ','var') && exist('EL','var')
 else
     view(90,15)
 end
-% scatter3(tetherLength*     tsc.star_pos.Data(1:i,1),tetherLength*tsc.star_pos.Data(1:i,2),tetherLength*tsc.star_pos.Data(1:i,3),'k')
+
+axis([tsc.positionVec.Data(1,i)-range1 tsc.positionVec.Data(1,i)+range1 tsc.positionVec.Data(2,i)-range1 tsc.positionVec.Data(2,i)+range1 tsc.positionVec.Data(3,i)-range1 tsc.positionVec.Data(3,i)+range1])
+
 hold off
-                        % Capture the plot as an image 
-                        frame = getframe(gcf); 
-                        im = frame2im(frame); 
-                        [imind,cm] = rgb2ind(im,256); 
-                        % Write to the GIF File 
-                        if i == 1 
-                          imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
-                        else 
-                          imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
-                        end 
-pause(.15)
-% pause(.05)
+%                         % Capture the plot as an image 
+%                         frame = getframe(gcf); 
+%                         im = frame2im(frame); 
+%                         [imind,cm] = rgb2ind(im,256); 
+%                         % Write to the GIF File 
+%                         if i == 1 
+%                           imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+%                         else 
+%                           imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
+%                         end 
+if manual
+    pause()
+else
+    pause(waittime)
+end
 end
