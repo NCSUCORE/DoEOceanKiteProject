@@ -3,7 +3,11 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
+<<<<<<< HEAD
 duration_s  = 1000*sqrt(scaleFactor);
+=======
+duration_s  = 120*sqrt(scaleFactor);
+>>>>>>> a7b90a47b0175aa04e6e5fd643b1bc9f02b9898f
 startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
@@ -14,7 +18,7 @@ GROUNDSTATION = 'groundStation000';
 % PLANT = 'modularPlant';
 ENVIRONMENT = 'constantUniformFlow';
 CONTROLLER = 'pathFollowingController';
-VARIANTSUBSYSTEM = 'NNodeTether';
+% VARIANTSUBSYSTEM = 'NNodeTether';
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
@@ -141,8 +145,13 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+<<<<<<< HEAD
 thr.tether1.youngsMod.setValue(100e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.9,'');
+=======
+thr.tether1.youngsMod.setValue(50e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.75,'');
+>>>>>>> a7b90a47b0175aa04e6e5fd643b1bc9f02b9898f
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
@@ -151,6 +160,10 @@ thr.tether1.setNetBuoyEnable(true,'');
 thr.tether1.setDiameter(0.0144,'m');
 
 % thr.designTetherDiameter(vhcl,env);
+<<<<<<< HEAD
+=======
+thr.tether1.diameter.setValue(0.0144,'m');
+>>>>>>> a7b90a47b0175aa04e6e5fd643b1bc9f02b9898f
 
 % Scale up/down
 thr.scale(scaleFactor);
@@ -180,8 +193,8 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDErrorUnits',{'rad','N*m'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
-pathCtrl.rollMoment.kp.setValue(5.5e5,'(N*m)/(N*m)'); %Units are wrong
-pathCtrl.rollMoment.kd.setValue(5.5e4,'(N*m*s)/(N*m)');
+pathCtrl.rollMoment.kp.setValue(10*5.5e5,'(N*m)/(N*m)'); %Units are wrong
+pathCtrl.rollMoment.kd.setValue(.1*pathCtrl.rollMoment.kp.Value,'(N*m*s)/(N*m)');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat'},...
@@ -189,13 +202,13 @@ pathCtrl.add('GainNames',{'ctrlAllocMat'},...
 
 pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
 
-pathCtrl.maxBank.upperLimit.setValue(40*pi/180,'');
-pathCtrl.maxBank.lowerLimit.setValue(-40*pi/180,'');
+pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
 pathCtrl.controlSigMax.lowerLimit.setValue(-inf,'');
 pathCtrl.controlSigMax.upperLimit.setValue(inf,'');
 
 pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value,'(rad*s)/(rad)');
+pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*1.5,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
 % pathCtrl.ctrlAllocMat.setValue([1/(2*.0173*10*2.5) 0 ;0 1],'');
@@ -204,7 +217,7 @@ pathCtrl.ctrlAllocMat.setValue(eye(2),'');
 pathCtrl.add('SetpointNames',{'latSP','trim','perpErrorVal','pathParams','searchSize'})
 pathCtrl.latSP.Value = pi/4;
 pathCtrl.trim.Value = 15;
-pathCtrl.perpErrorVal.Value = 3*pi/180;
+pathCtrl.perpErrorVal.Value = 5*pi/180;
 % pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
 pathCtrl.pathParams.Value = [.4,3*pi/8,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
 pathCtrl.searchSize.Value = pi/2;
@@ -256,78 +269,50 @@ radialPos = sqrt(sum(tsc.positionVec.Data.^2,1));
 plot(tsc.velocityVec.Time,squeeze(radialPos));
 xlabel('time (s)')
 ylabel('radial position/tether length (m)')
+title(sprintf("Radial Position\nYoungs Mod = %.2e Pa; Diam = %4.2d m",thr.tether1.youngsMod.Value, thr.tether1.diameter.Value))
 
-spl3 = subplot(1,3,3);
+figure
+plot(tsc.FThrNetBdy.Time,squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))));
+xlabel('time (s)')
+ylabel('Tether Tension Magnitude on Body (N)')
+title(sprintf("Tether Tension\nYoungs Mod = %.2e Pa; Diam = %4.2d m",thr.tether1.youngsMod.Value, thr.tether1.diameter.Value))
+
+kiteAxesPlot
+
+% spl3 = subplot(1,3,3);
 % lat = atan2(squeeze(tsc.positionVec.Data(3,:,:)),sqrt(squeeze(tsc.positionVec.Data(1,:,:)).^2+squeeze(tsc.positionVec.Data(2,:,:)).^2));
 % lat=lat*180/pi;
 % figure;
 % plot(tsc.velocityVec.Time,squeeze(lat));
 % Run stop callback to plot everything
-kiteAxesPlot
+% kiteAxesPlot
 % clear h
 % animateSim
 %%
-figure;
-subplot(2,2,1)
-scatter(squeeze(tsc.CD.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
-xlabel("C_D")
-ylabel("C_L")
-title("half wing C_L vs C_D")
+% figure;
+% subplot(2,2,1)
+% scatter(squeeze(tsc.CD.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
+% xlabel("C_D")
+% ylabel("C_L")
+% title("half wing C_L vs C_D")
+% 
+% subplot(2,2,2)
+% scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
+% xlabel("alpha (deg)")
+% ylabel("C_L")
+% title("half wing C_L vs alpha")
+% 
+% subplot(2,2,3)
+% scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CD.Data(1,1,:)))
+% xlabel("alpha (deg)")
+% ylabel("C_D")
+% title("half wing C_D vs alpha")
+% 
+% subplot(2,2,4)
+% plot(tsc.alphaLocal.Time,squeeze(tsc.alphaLocal.Data(1,1,:)))
+% xlabel("time (s)")
+% ylabel("alpha (deg)")
+% title("wing alpha vs time")
 
-subplot(2,2,2)
-scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
-xlabel("alpha (deg)")
-ylabel("C_L")
-title("half wing C_L vs alpha")
-
-subplot(2,2,3)
-scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CD.Data(1,1,:)))
-xlabel("alpha (deg)")
-ylabel("C_D")
-title("half wing C_D vs alpha")
-
-subplot(2,2,4)
-plot(tsc.alphaLocal.Time,squeeze(tsc.alphaLocal.Data(1,1,:)))
-xlabel("time (s)")
-ylabel("alpha (deg)")
-title("wing alpha vs time")
-
- %%
+%%
 % stopCallback
-
-
- 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % Script to help implement the pathFollowingController with the modularized model
-% % clear all;clc;
-% 
-% %% Define Variants an busses
-% VEHICLE = 'modVehicle000';
-% WINCH = 'winch000';
-% TETHERS = 'tether000';
-% GROUNDSTATION = 'groundStation000';
-% PLANT = 'modularPlant';
-% ENVIRONMENT = 'constantUniformFlow';
-% CONTROLLER = 'pathFollowingController';
-% 
-% createPathFollowingControllerCtrlBus;
-% %% Initialize Plant Parameters
-% %scaling
-% scaleFactor = 1;
-% duration_s = 500*sqrt(scaleFactor);
-% 
-% %AeroStruct
-% load('partDsgn1_lookupTables.mat')
-% 
-% aeroStruct(1).aeroCentPosVec(1) = -aeroStruct(1).aeroCentPosVec(1);
-% aeroStruct(2).aeroCentPosVec(1) = -aeroStruct(2).aeroCentPosVec(1);
-% 
-% simParam = simParamClass;
-% simParam.tether_param.tether_youngs.Value = simParam.tether_param.tether_youngs.Value/3;
-% 
-% %%
-% tetherLength=200;
