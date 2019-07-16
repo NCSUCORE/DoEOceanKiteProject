@@ -1,4 +1,4 @@
-clc
+clc;clear all
 bdclose OCTModel
 OCTModel
 
@@ -7,7 +7,7 @@ duration_s  = 500*sqrt(scaleFactor);
 startControl= 15; %duration_s for 0 control signals
 
 %% Set up simulation
-VEHICLE = 'vehicleMMAdd';
+VEHICLE = 'vehicle000';
 WINCH = 'winch000';
 TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
@@ -37,14 +37,14 @@ vhcl.numTurbines.setValue(2,'');
 %Whats in here?
 %Reference areas are all 10?
 vhcl.build('partDsgn1_lookupTables.mat');
-% vhcl.aeroSurf1.CD.setValue(.02+vhcl.aeroSurf1.CD.Value,'');
-% vhcl.aeroSurf2.CD.setValue(.02+vhcl.aeroSurf2.CD.Value,'');
-% vhcl.aeroSurf3.CD.setValue(.02+vhcl.aeroSurf3.CD.Value,'');
-% vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
+vhcl.aeroSurf1.CD.setValue(.02+vhcl.aeroSurf1.CD.Value,'');
+vhcl.aeroSurf2.CD.setValue(.02+vhcl.aeroSurf2.CD.Value,'');
+vhcl.aeroSurf3.CD.setValue(.02+vhcl.aeroSurf3.CD.Value,'');
+vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 %IC's
 tetherLength = 200;
 long = -3*pi/8;
-lat = pi/4;
+lat = 3.5*pi/8;
 constantVelMag=6; %Constant velocity or initial velocity
 initVelAng = 90;%degrees
 
@@ -198,21 +198,25 @@ pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(r
 pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*1.5,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
-% pathCtrl.ctrlAllocMat.setValue([1/(2*.0173*10*2.5) 0 ;0 1],'');
-pathCtrl.ctrlAllocMat.setValue(eye(2),'');
+allMat = zeros(2);
+allMat(2,1)=1/(2*vhcl.aeroSurf1.GainCL.Value(2)*vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
+allMat(1,2)=1/(vhcl.aeroSurf3.GainCL.Value(2)*vhcl.aeroSurf3.refArea.Value*abs(vhcl.aeroSurf3.aeroCentPosVec.Value(1)));
+pathCtrl.ctrlAllocMat.setValue(allMat,'');
+% pathCtrl.ctrlAllocMat.setValue(eye(2),'');
 
 pathCtrl.add('SetpointNames',{'latSP','perpErrorVal','pathParams','searchSize','constantPitchSig'})
 tstimes=1:duration_s;
-finalVal = 100000;
-finalTime = 150;
-pathCtrl.constantPitchSig.Value =...
-    timeseries([(1:finalTime)*(finalVal/finalTime)...
-                finalVal*ones(1,length(finalTime+1:duration_s))]);
+finalVal = 5e4;
+finalTime = 50;
+% pathCtrl.constantPitchSig.Value =...
+%     timeseries([(1:finalTime)*(finalVal/finalTime)...
+%                 finalVal*ones(1,length(finalTime+1:duration_s))]);
+pathCtrl.constantPitchSig.Value =timeseries(finalVal*ones(1,duration_s));
 pathCtrl.latSP.Value = pi/4;
 % pathCtrl.trim.Value = 15;
 pathCtrl.perpErrorVal.Value = 5*pi/180;
-% pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
-pathCtrl.pathParams.Value = [.4,3*pi/8,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
+pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
+% pathCtrl.pathParams.Value = [.4,3*pi/8,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
 pathCtrl.searchSize.Value = pi/2;
 
 %% Run the simulation
@@ -223,21 +227,21 @@ pathCtrl.searchSize.Value = pi/2;
 % disp("second time")
 % sim('OCTModel')
 % end
-MMAddBool = 1;
+MMAddBool = 0;
 simWithMonitor('OCTModel')
 
 parseLogsout;
 %%
 
-% figure;
-% subplot(1,3,1)
-% tsc.velAngleAdjustedError.plot
-% subplot(1,3,2)
-% tsc.tanRollDes.plot
-% deslims=ylim;
-% subplot(1,3,3)
-% tsc.tanRoll.plot
-% ylim(deslims)
+figure;
+subplot(1,3,1)
+tsc.velAngleAdjustedError.plot
+subplot(1,3,2)
+tsc.tanRollDes.plot
+deslims=ylim;
+subplot(1,3,3)
+tsc.tanRoll.plot
+ylim(deslims)
 %%
 figure
 vels=tsc.velocityVec.Data(:,:,:);%[(1-tsc.velocityVec.Data(1,1,:)); tsc.velocityVec.Data(2:3,1,:)];
