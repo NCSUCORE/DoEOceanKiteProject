@@ -15,7 +15,7 @@ classdef FPID < handle
             %   Detailed explanation goes here
             obj.kp  = SIM.parameter('Value',0,'Unit',sprintf('(%s)/(%s)',outUnits,inUnits),'Description','Proportional gain');
             obj.ki  = SIM.parameter('Value',0,'Unit',sprintf('(%s)/(%s*s)',outUnits,inUnits),'Description','Integral gain');
-            obj.kd  = SIM.parameter('Value',0,'Unit',sprintf('(%s*s)/(%s)',outUnits,inUnits),'Description','Derivative gain');
+            obj.kd  = SIM.parameter('Value',0,'Unit',sprintf('(%s)/(%s/s)',outUnits,inUnits),'Description','Derivative gain');
             obj.tau = SIM.parameter('Value',1,'Unit','s','Description','Time Constant');
         end
         

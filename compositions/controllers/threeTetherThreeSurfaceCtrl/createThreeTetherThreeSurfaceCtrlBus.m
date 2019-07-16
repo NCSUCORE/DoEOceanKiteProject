@@ -2,7 +2,7 @@ function createThreeTetherThreeSurfaceCtrlBus()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
-elems(1).Name = 'elevonDeflection';
+elems(1).Name = 'ctrlSurfDeflection';
 elems(1).Dimensions = 2;
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
