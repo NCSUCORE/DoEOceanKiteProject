@@ -165,10 +165,10 @@ ctrl.elevators.ki.setValue(0,'(deg)/(deg*s)');
 ctrl.elevators.kd.setValue(1,'(deg)/(deg/s)'); % Likewise, do we want (deg*s)/(deg) or just s?
 ctrl.elevators.tau.setValue(0.01,'s');
 
-ctrl.rudder.kp.setValue(0,'(deg)/(deg)');
+ctrl.rudder.kp.setValue(0.0,'(deg)/(deg)');
 ctrl.rudder.ki.setValue(0,'(deg)/(deg*s)');
 ctrl.rudder.kd.setValue(0,'(deg)/(deg/s)');
-ctrl.rudder.tau.setValue(0.5,'s');
+ctrl.rudder.tau.setValue(0.01,'s');
 
 ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
 
@@ -183,7 +183,7 @@ ctrl.rollSP.Value = timeseries(25*sign(sin(2*pi*timeVec/(120))),timeVec);
 ctrl.rollSP.Value.Data(timeVec<120) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
-ctrl.yawSP.Value = timeseries(8*ones(size(timeVec)),timeVec);
+ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
 
 % Scale up/down
@@ -197,6 +197,8 @@ catch
 end
 % Run stop callback to plot everything
 
+% 
 stopCallback
+% plotAyaz
 
 
