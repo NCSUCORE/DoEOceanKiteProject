@@ -2,12 +2,12 @@ clear;
 clc
 format compact
 
-scaleFactor = 1;
+scaleFactor = 1/10;
 duration_s  = 1500*sqrt(scaleFactor);
 
 % merging branches
-altiMin = 100;
-altiMax = 150;
+altiMin = 100*sqrt(scaleFactor);
+altiMax = 150*sqrt(scaleFactor);
 
 
 %% Set up simulation
@@ -82,7 +82,7 @@ gndStn.build;
 % Set values
 gndStn.inertia.setValue(1,'kg*m^2');
 gndStn.posVec.setValue([0 0 0],'m');
-gndStn.dampCoeff.setValue(1,'(N*m)/(rad*s)');
+gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)');
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 gndStn.thrAttch1.posVec.setValue([0 0 0],'m');
@@ -187,6 +187,7 @@ catch
     simWithMonitor('OCTModel',2)
 end
 % Run stop callback to plot everything
+
 stopCallback
 
 
