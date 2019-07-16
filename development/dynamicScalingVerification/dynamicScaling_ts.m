@@ -1,7 +1,7 @@
 clear all;clc;close all
 
 scaleFactor = 0.01;
-duration_s  = 250;
+duration_s  = 1000;
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';

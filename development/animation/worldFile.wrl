@@ -3,11 +3,11 @@
 
 # visible: 0 means visible, -1 invisible (used as a Switch choice)
 PROTO Grid10mSquare [
-  exposedField SFVec3f position 0 0 0
-  exposedField SFRotation rotation 0 0 1 0
-  exposedField SFVec3f scale 1 1 1
-  exposedField SFColor color 0.3 0.3 0.3
   exposedField SFInt32 visible 0
+  exposedField SFColor color 0.3 0.3 0.3
+  exposedField SFVec3f scale 1 1 1
+  exposedField SFRotation rotation 0 0 1 0
+  exposedField SFVec3f position 0 0 0
 ]
 {
   EXTERNPROTO Triad [
@@ -34019,4 +34019,7 @@ DEF Tree3 Transform {
       }
     }
   ]
+}
+DEF TrackingViewpoint Viewpoint {
+  description "TrackingView"
 }

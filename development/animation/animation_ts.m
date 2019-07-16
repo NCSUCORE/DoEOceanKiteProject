@@ -1,152 +1,166 @@
-% Script to test the origional model against the modularized model
-clear all;clc;
+clear all;clc;close all
 
-OCTModel_init
+scaleFactor = 1;
+duration_s  = 1000;
 
-VEHICLE = 'vehicle000';
-WINCHES = 'winch000';
-TETHERS = 'tether000';
-GROUNDSTATION = 'groundStation000';
+%% Set up simulation
+VEHICLE         = 'vehicle000';
+WINCH           = 'winch000';
+TETHERS         = 'tether000';
+GROUNDSTATION   = 'groundStation000';
+ENVIRONMENT     = 'constantUniformFlow';
+CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
+VARIANTSUBSYSTEM = 'NNodeTether';
 
-PLANT = 'modularPlant';
 
-load('dsgnTest_1_lookupTables.mat')
+%% Create busses
+createConstantUniformFlowEnvironmentBus
+createPlantBus;
+createOneTetherThreeSurfaceCtrlBus;
 
-% Check that scaling works
-scaleFactor = 10/40;
-duration_s = 200*sqrt(scaleFactor);
 
-% Initialize classes
-ctrl = threeTetherThreeSurfaceCtrlClass;
-simParam = simParamClass;
+%% Set up environment
+% Create
+env = ENV.env;
+env.addFlow({'water'},'FlowDensities',1000);
+% Set Values
+env.water.velVec.setValue([1 0 0],'m/s');
 
-% Set initial condition
-ini_Rcm_o = [0 0 ctrl.setAltM.Value]';
-ini_O_Vcm_o = [0 0 0]';
-ini_euler_ang = [0 0 0]';
-ini_OwB = [0 0 0]';
-initPlatformAngle = 0;
-initPlatformAngularVel = 0;
-simParam.setInitialConditions(...
-    'Position',ini_Rcm_o,...
-    'Velocity',ini_O_Vcm_o,...
-    'EulerAngles',ini_euler_ang,...
-    'AngularVelocity',ini_OwB,...
-    'PlatformAngle',initPlatformAngle,...
-    'PlatformAngularVelocity',initPlatformAngularVel);
+%% Vehicle
+% Create
+vhcl = OCT.vehicle;
+vhcl.numTethers.setValue(1,'');
+vhcl.numTurbines.setValue(2,'');
+vhcl.build('partDsgn1_lookupTables.mat');
 
-% Scale up/down
-ctrl.scale(scaleFactor,1);
-simParam = simParam.scale(scaleFactor,1);
+% Set Values
+vhcl.Ixx.setValue(34924.16,'kg*m^2');
+vhcl.Iyy.setValue(30487.96,'kg*m^2');
+vhcl.Izz.setValue(64378.94,'kg*m^2');
+vhcl.Ixy.setValue(0,'kg*m^2');
+vhcl.Ixz.setValue(731.66,'kg*m^2');
+vhcl.Iyz.setValue(0,'kg*m^2');
+vhcl.volume.setValue(7.40,'m^3');
+vhcl.mass.setValue(0.95*7404.24,'kg');
 
-% Set up structure for tether for loop
-thr(1).N                = simParam.N.Value;
-thr(1).diameter         = simParam.tether_param.tether_diameter.Value(1);
-thr(1).youngsMod        = simParam.tether_param.tether_youngs.Value;
-thr(1).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
-thr(1).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
-thr(1).dampingRatio     = simParam.tether_param.damping_ratio.Value;
-thr(1).fluidDensity     = simParam.env_param.density.Value;
-thr(1).gravAccel        = simParam.env_param.grav.Value;
-thr(1).vehicleMass      = simParam.geom_param.mass.Value;
-thr(1).initVhclAttchPt  = simParam.initPosVec.Value +...
-    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R1n_cm.Value;
-thr(1).initGndStnAttchPt = simParam.tether_imp_nodes.R11_g.Value;
+% vhcl.Ixx.setValue(6303,'kg*m^2');
+% vhcl.Iyy.setValue(2080.7,'kg*m^2');
+% vhcl.Izz.setValue(8320.4,'kg*m^2');
+% vhcl.Ixy.setValue(0,'kg*m^2');
+% vhcl.Ixz.setValue(0,'kg*m^2');
+% vhcl.Iyz.setValue(0,'kg*m^2');
+% vhcl.volume.setValue(0.9454,'m^3');
+% vhcl.mass.setValue(859.4,'kg');
 
-thr(2).N                = simParam.N.Value;
-thr(2).diameter         = simParam.tether_param.tether_diameter.Value(2);
-thr(2).youngsMod        = simParam.tether_param.tether_youngs.Value;
-thr(2).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
-thr(2).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
-thr(2).dampingRatio     = simParam.tether_param.damping_ratio.Value;
-thr(2).fluidDensity     = simParam.env_param.density.Value;
-thr(2).gravAccel        = simParam.env_param.grav.Value;
-thr(2).vehicleMass      = simParam.geom_param.mass.Value;
-thr(2).initVhclAttchPt  = simParam.initPosVec.Value +...
-    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R2n_cm.Value;
-thr(2).initGndStnAttchPt = simParam.tether_imp_nodes.R21_g.Value;
+vhcl.centOfBuoy.setValue([0 0 0]','m');
+vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
 
-thr(3).N                = simParam.N.Value;
-thr(3).diameter         = simParam.tether_param.tether_diameter.Value(3);
-thr(3).youngsMod        = simParam.tether_param.tether_youngs.Value;
-thr(3).density          = simParam.tether_param.tether_density.Value+ simParam.env_param.density.Value;
-thr(3).dragCoeff        = simParam.tether_param.CD_cylinder.Value;
-thr(3).dampingRatio     = simParam.tether_param.damping_ratio.Value;
-thr(3).fluidDensity     = simParam.env_param.density.Value;
-thr(3).gravAccel        = simParam.env_param.grav.Value;
-thr(3).vehicleMass      = simParam.geom_param.mass.Value;
-thr(3).initVhclAttchPt  = simParam.initPosVec.Value +...
-    rotation_sequence(simParam.initEulAng.Value)*simParam.tether_imp_nodes.R3n_cm.Value;
-thr(3).initGndStnAttchPt = simParam.tether_imp_nodes.R31_g.Value;
+vhcl.setICs('InitPos',[0 0 200],'InitEulAng',[0 7 0]*pi/180);
 
-% Set up structure for tether attachment points at ground station
-gndStnMmtArms(1).arm = simParam.tether_imp_nodes.R11_g.Value;
-gndStnMmtArms(2).arm = simParam.tether_imp_nodes.R21_g.Value;
-gndStnMmtArms(3).arm = simParam.tether_imp_nodes.R31_g.Value;
+vhcl.turbine1.diameter.setValue(0,'m');
+vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
+vhcl.turbine1.powerCoeff.setValue(0.5,'');
+vhcl.turbine1.dragCoeff.setValue(0.8,'');
 
-% Set up structure for tether attachment points on lifting body
-lftBdyMmtArms(1).arm = simParam.tether_imp_nodes.R1n_cm.Value;
-lftBdyMmtArms(2).arm = simParam.tether_imp_nodes.R2n_cm.Value;
-lftBdyMmtArms(3).arm = simParam.tether_imp_nodes.R3n_cm.Value;
+vhcl.turbine2.diameter.setValue(0,'m');
+vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
+vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
+vhcl.turbine2.powerCoeff.setValue(0.5,'');
+vhcl.turbine2.dragCoeff.setValue(0.8,'');
 
-% Set up structure for winches
-for ii = 1:length(simParam.unstretched_l.Value)
-    winch(ii).initLength = simParam.unstretched_l.Value(ii);
-    winch(ii).maxSpeed  = ctrl.winc_vel_up_lims.Value;
-    winch(ii).timeConst = simParam.winch_time_const.Value;
-    winch(ii).maxAccel = inf;
-end
 
-% Turn controller off/on
-ctrl.elevonPitchKp.Value   = 0;
-ctrl.elevonPitchKi.Value   = 0;
-ctrl.elevonPitchKd.Value   = 0;
-ctrl.elevonPitchTau.Value  = 1;
 
-ctrl.elevonRollKp.Value   = 0;
-ctrl.elevonRollKi.Value   = 0;
-ctrl.elevonRollKd.Value   = 0;
-ctrl.elevonRollTau.Value  = 1;
+%% Ground Station
+% Create
+gndStn = OCT.station;
+gndStn.numTethers.setValue(1,'');
+gndStn.build;
 
-ctrl.tetherAltitudeKp.Value   = 0;
-ctrl.tetherAltitudeKi.Value   = 0;
-ctrl.tetherAltitudeKd.Value   = 0;
-ctrl.tetherAltitudeTau.Value  = 1;
+% Set values
+gndStn.inertia.setValue(1,'kg*m^2');
+gndStn.posVec.setValue([0 0 0],'m');
+gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)');
+gndStn.initAngPos.setValue(0,'rad');
+gndStn.initAngVel.setValue(0,'rad/s');
+gndStn.thrAttch1.posVec.setValue([0 0 0],'m');
+gndStn.freeSpnEnbl.setValue(false,'');
 
-ctrl.tetherPitchKp.Value   = 0;
-ctrl.tetherPitchKi.Value   = 0;
-ctrl.tetherPitchKd.Value   = 0;
-ctrl.tetherPitchTau.Value  = 1;
 
-ctrl.tetherRollKp.Value   = 0;
-ctrl.tetherRollKi.Value   = 0;
-ctrl.tetherRollKd.Value   = 0;
-ctrl.tetherRollTau.Value  = 1;
+%% Tethers
+% Create
+thr = OCT.tethers;
+thr.setNumTethers(1,'');
+thr.setNumNodes(5,'');
+thr.build;
 
-createOrigionalPlantBus;
-createConstantUniformFlowEnvironmentBus;
+% Set parameter values
+thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
+thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+thr.tether1.youngsMod.setValue(50e9,'Pa');
+thr.tether1.dampingRatio.setValue(0.75,'');
+thr.tether1.dragCoeff.setValue(0.5,'');
+thr.tether1.density.setValue(1300,'kg/m^3');
+thr.tether1.setDragEnable(true,'');
+thr.tether1.setSpringDamperEnable(true,'');
+thr.tether1.setNetBuoyEnable(false,'');
+thr.tether1.setDiameter(0.015,'m');
+
+
+%% Winches
+% Create
+wnch = OCT.winches;
+wnch.numWinches.setValue(1,'');
+wnch.build;
+% Set values
+wnch.winch1.maxSpeed.setValue(0.4,'m/s');
+wnch.winch1.timeConst.setValue(1,'s');
+wnch.winch1.maxAccel.setValue(inf,'m/s^2');
+
+wnch = wnch.setTetherInitLength(vhcl,env,thr);
+
+%% Set up controller
+% Create
+ctrl = CTR.controller;
+% add filtered PID controllers
+% FPID controllers are initialized to zero gains, 1s time const
+ctrl.add('FPIDNames',{'elevators','ailerons'},...
+    'FPIDErrorUnits',{'deg','deg'},...
+    'FPIDOutputUnits',{'deg','deg'});
+
+% add control allocation matrix (implemented as a simple gain)
+ctrl.add('GainNames',{'ctrlAllocMat'},...
+    'GainUnits',{''});
+
+% add output saturation
+ctrl.add('SaturationNames',{'outputSat'});
+
+% add setpoints
+ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
+    'SetpointUnits',{'deg','deg'});
+
+% Set the values of the controller parameters
+ctrl.elevators.kp.setValue(15,'(deg)/(deg)'); % do we really want to represent unitless values like this?
+ctrl.elevators.tau.setValue(0.05,'s');
+
+ctrl.ailerons.kp.setValue(15,'(deg)/(deg)');
+ctrl.ailerons.kd.setValue(0,'(deg*s)/(deg)');
+ctrl.ailerons.tau.setValue(0.05,'s');
+
+ctrl.outputSat.upperLimit.setValue(30,'');
+ctrl.outputSat.lowerLimit.setValue(-30,'');
 
 % Calculate setpoints
-timeVec = 0:0.1:duration_s;
-set_alt = timeseries(ctrl.setAltM.Value*ones(size(timeVec)),timeVec);
-set_pitch = timeseries(ctrl.setRollDeg.Value*ones(size(timeVec)),timeVec);
-set_roll = timeseries(ctrl.setPitchDeg.Value*ones(size(timeVec)),timeVec);
-set_roll.Data = 0*sign(sin(timeVec/(2*pi*200)));
-set_roll.Data(timeVec<200) = 0;
+timeVec = 0:0.1:1000;
+ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
+ctrl.pitchSP.Value.DataInfo.Units = 'deg';
+ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(100))),timeVec);
+ctrl.rollSP.Value.Data(timeVec<60) = 0;
+ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
-switch numel(thr)
-    case 3
-        createThreeTetherThreeSurfaceCtrlBus;
-        CONTROLLER = 'threeTetherThreeSurfaceCtrl';
-        caseDescriptor = '3 Tethers';
-        
-    case 1
-        createOneTetherThreeSurfaceCtrlBus;
-        CONTROLLER = 'oneTetherThreeSurfaceCtrl';
-        caseDescriptor = '1 Tether';
-end
+%% Run first sim
+simWithMonitor('OCTModel',5)
 
-
-sim('OCTModel')
-% parseLogsout
-stopCallback

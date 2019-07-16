@@ -4480,21 +4480,6 @@ DEF Terrain Transform {
     }
   ]
 }
-Transform {
-  translation 0 50 0
-  children Shape {
-    appearance Appearance {
-      material Material {
-      }
-    }
-    geometry Text {
-      fontStyle FontStyle {
-        size 5
-      }
-      string "TEXT HERE" 
-    }
-  }
-}
 DEF VP1 Viewpoint {
   description "VP3"
   position -86.499 89.6502 -15.4041
@@ -34034,4 +34019,6 @@ DEF Tree3 Transform {
       }
     }
   ]
+}
+DEF TrackingViewpoint Viewpoint {
 }
