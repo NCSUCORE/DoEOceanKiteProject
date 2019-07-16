@@ -176,19 +176,21 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
 pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*1.5,'(rad*s)/(rad)');
+pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*1.5,'(rad)/(rad/s)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
 pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
-pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m*s)/(rad)');
+pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig'},...
     'GainUnits',{'(deg)/(N*m)','rad','','rad','deg'}) %Not scaling here is dangerous
 
-allMat = zeros(2);
-allMat(2,1)=1/(2*vhcl.aeroSurf1.GainCL.Value(2)*vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
-allMat(1,2)=1/(vhcl.aeroSurf3.GainCL.Value(2)*vhcl.aeroSurf3.refArea.Value*abs(vhcl.aeroSurf3.aeroCentPosVec.Value(1)));
+allMat = zeros(4,3);
+allMat(1,1)=-1/(2*vhcl.aeroSurf1.GainCL.Value(2)*vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
+allMat(2,1)=-1*allMat(1,1);
+allMat(3,2)=-1/(vhcl.aeroSurf3.GainCL.Value(2)*vhcl.aeroSurf3.refArea.Value*abs(vhcl.aeroSurf3.aeroCentPosVec.Value(1)));
+allMat(4,3)=1/(vhcl.aeroSurf4.GainCL.Value(2)*vhcl.aeroSurf4.refArea.Value*abs(vhcl.aeroSurf4.aeroCentPosVec.Value(1))); %Could be negative
 pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
 % pathCtrl.ctrlAllocMat.setValue(eye(2),'(deg)/(N*m)');
 
@@ -197,7 +199,7 @@ pathCtrl.perpErrorVal.setValue(5*pi/180,'rad');
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 pathCtrl.searchSize.setValue(pi/2,'rad');
 
-pathCtrl.constantPitchSig.setValue(25,'deg');
+pathCtrl.constantPitchSig.setValue(-25,'deg');
 
 pathCtrl.scale(scaleFactor);
 %% Run the simulation
@@ -243,7 +245,7 @@ xlabel('time (s)')
 ylabel('Alpha on the Left Wing')
 
 
-% kiteAxesPlot
+kiteAxesPlot
 
 % clear h
 % animateSim
