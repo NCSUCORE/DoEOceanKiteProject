@@ -3,7 +3,7 @@ function createOneTetherThreeSurfaceCtrlBus()
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'ctrlSurfDeflection';
-elems(1).Dimensions = 2;
+elems(1).Dimensions = 4;
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;
