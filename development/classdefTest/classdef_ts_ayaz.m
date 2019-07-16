@@ -2,12 +2,12 @@ clear;
 clc
 format compact
 
-scaleFactor = 1;
-duration_s  = 1500*sqrt(scaleFactor);
+scaleFactor = 1/1;
+duration_s  = 800*sqrt(scaleFactor);
 
 % merging branches
-altiMin = 100;
-altiMax = 150;
+altiMin = 100*sqrt(scaleFactor);
+altiMax = 150*sqrt(scaleFactor);
 
 
 %% Set up simulation
@@ -16,7 +16,7 @@ WINCH           = 'winch000';
 TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
-CONTROLLER      = 'singleTetherSpooling';
+CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
 VARIANTSUBSYSTEM = 'NNodeTether';
 
 
@@ -82,7 +82,7 @@ gndStn.build;
 % Set values
 gndStn.inertia.setValue(1,'kg*m^2');
 gndStn.posVec.setValue([0 0 0],'m');
-gndStn.dampCoeff.setValue(1,'(N*m)/(rad*s)');
+gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)');
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 gndStn.thrAttch1.posVec.setValue([0 0 0],'m');
@@ -139,32 +139,38 @@ wnch.scale(scaleFactor);
 ctrl = CTR.controller;
 % add filtered PID controllers
 % FPID controllers are initialized to zero gains, 1s time const
-ctrl.add('FPIDNames',{'elevators','ailerons'},...
-    'FPIDErrorUnits',{'deg','deg'},...
-    'FPIDOutputUnits',{'deg','deg'});
+ctrl.add('FPIDNames',{'elevators','ailerons','rudder'},...
+    'FPIDErrorUnits',{'deg','deg','deg'},...
+    'FPIDOutputUnits',{'deg','deg','deg'});
 
 % add control allocation matrix (implemented as a simple gain)
-ctrl.add('GainNames',{'ctrlAllocMat'},...
+ctrl.add('GainNames',{'ctrlSurfAllocationMat'},...
     'GainUnits',{''});
 
 % add output saturation
 ctrl.add('SaturationNames',{'outputSat'});
 
 % add setpoints
-ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
-    'SetpointUnits',{'deg','deg'});
+ctrl.add('SetpointNames',{'pitchSP','rollSP','yawSP'},...
+    'SetpointUnits',{'deg','deg','deg'});
 
 % Set the values of the controller parameters
-ctrl.ailerons.kp.setValue(0.6,'(deg)/(deg)');
+ctrl.ailerons.kp.setValue(2,'(deg)/(deg)');
 ctrl.ailerons.ki.setValue(0,'(deg)/(deg*s)');
-ctrl.ailerons.kd.setValue(1.2,'(deg*s)/(deg)');
+ctrl.ailerons.kd.setValue(1.2,'(deg)/(deg/s)');
 ctrl.ailerons.tau.setValue(0.5,'s');
 
 ctrl.elevators.kp.setValue(.15,'(deg)/(deg)'); % do we really want to represent unitless values like this?
 ctrl.elevators.ki.setValue(0,'(deg)/(deg*s)');
-ctrl.elevators.kd.setValue(1,'(deg*s)/(deg)'); % Likewise, do we want (deg*s)/(deg) or just s?
+ctrl.elevators.kd.setValue(1,'(deg)/(deg/s)'); % Likewise, do we want (deg*s)/(deg) or just s?
 ctrl.elevators.tau.setValue(0.01,'s');
 
+ctrl.rudder.kp.setValue(0,'(deg)/(deg)');
+ctrl.rudder.ki.setValue(0,'(deg)/(deg*s)');
+ctrl.rudder.kd.setValue(0,'(deg)/(deg/s)');
+ctrl.rudder.tau.setValue(0.5,'s');
+
+ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
 
 ctrl.outputSat.upperLimit.setValue(30,'');
 ctrl.outputSat.lowerLimit.setValue(-30,'');
@@ -177,6 +183,9 @@ ctrl.rollSP.Value = timeseries(25*sign(sin(2*pi*timeVec/(120))),timeVec);
 ctrl.rollSP.Value.Data(timeVec<120) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
+ctrl.yawSP.Value = timeseries(8*ones(size(timeVec)),timeVec);
+ctrl.yawSP.Value.DataInfo.Units = 'deg';
+
 % Scale up/down
 ctrl = ctrl.scale(scaleFactor);
 
@@ -187,6 +196,7 @@ catch
     simWithMonitor('OCTModel',2)
 end
 % Run stop callback to plot everything
+
 stopCallback
 
 
