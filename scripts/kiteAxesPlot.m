@@ -123,16 +123,16 @@ pause(.01)
 % axis([tsc.positionVec.Data(1,i)-range1 tsc.positionVec.Data(1,i)+range1 tsc.positionVec.Data(2,i)-range1 tsc.positionVec.Data(2,i)+range1 tsc.positionVec.Data(3,i)-range1 tsc.positionVec.Data(3,i)+range1])
 
 hold off
-%                         % Capture the plot as an image 
-%                         frame = getframe(gcf); 
-%                         im = frame2im(frame); 
-%                         [imind,cm] = rgb2ind(im,256); 
-%                         % Write to the GIF File 
-%                         if i == 1 
-%                           imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
-%                         else 
-%                           imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
-%                         end 
+                        % Capture the plot as an image 
+                        frame = getframe(gcf); 
+                        im = frame2im(frame); 
+                        [imind,cm] = rgb2ind(im,256); 
+                        % Write to the GIF File 
+                        if i == 1 
+                          imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+                        else 
+                          imwrite(imind,cm,filename,'gif','DelayTime',waittime,'WriteMode','append'); 
+                        end 
 if manual
     pause
 else
