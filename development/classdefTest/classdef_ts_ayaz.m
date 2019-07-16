@@ -198,7 +198,7 @@ end
 % Run stop callback to plot everything
 
 % 
-stopCallback
-% plotAyaz
+% stopCallback
+plotAyaz
 
 
