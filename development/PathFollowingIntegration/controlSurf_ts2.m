@@ -4,7 +4,7 @@ OCTModel
 
 scaleFactor = 1;
 duration_s  = 500*sqrt(scaleFactor);
-startControl= 15; %duration_s for 0 control signals. Does not apply to constant elevator angle
+startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 
 %% Set up simulation
 VEHICLE = 'vehicle000';
@@ -40,30 +40,24 @@ vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 
 %IC's
 tetherLength = 200;
-long = -3*pi/8;
-lat = pi/4;
-constantVelMag=6; %Constant velocity or initial velocity
-initVelAng = 90;%degrees
-
-
-tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
-           -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
-           cos(lat)            0          -sin(lat);];
-ini_Rcm = tetherLength*[cos(long).*cos(lat);
-         sin(long).*cos(lat);
-         sin(lat);];
-% [ini_Rcm,ini_Vcm]=swapablePath(...);ini_Vcm=constantVelMag*ini_v
-ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+velMag=6; %Constant velocity or initial velocity
+pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
+% pathParamVec=[1,2,pi/4,0,tetherLength];%Lem
+[ini_Rcm,ini_Vcm]=swapablePath(.6,pathParamVec);
+ini_Vcm=velMag*ini_Vcm;
 
 ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
 ini_yaw=atan2(-ini_Vcm(2),-ini_Vcm(1));
-
+[long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
+tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
+           -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+           cos(lat)            0          -sin(lat);];
 [bodyToGr,~]=rotation_sequence([0 ini_pitch ini_yaw]);
 bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
 
-ini_Vcm_body = [-constantVelMag;0;0];
+ini_Vcm_body = [-velMag;0;0];
 ini_eul=[ini_roll ini_pitch ini_yaw];
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 
@@ -178,36 +172,34 @@ pathCtrl.controlSigMax.lowerLimit.setValue(-30,'');
 pathCtrl.controlSigMax.upperLimit.setValue(30,'');
 
 pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
-    'FPIDErrorUnits',{'rad','N*m'},...
+    'FPIDErrorUnits',{'rad','rad'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
 pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
 pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*1.5,'(rad*s)/(rad)');
 pathCtrl.velAng.tau.setValue(.01,'s');
 
-pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(N*m)'); %Units are wrong
-pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m*s)/(N*m)');
+pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
+pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m*s)/(rad)');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
-pathCtrl.add('GainNames',{'ctrlAllocMat'},...
-    'GainUnits',{''}) %Not scaling here is dangerous
+pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig'},...
+    'GainUnits',{'(deg)/(N*m)','rad','','rad','deg'}) %Not scaling here is dangerous
 
 allMat = zeros(2);
 allMat(2,1)=1/(2*vhcl.aeroSurf1.GainCL.Value(2)*vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
 allMat(1,2)=1/(vhcl.aeroSurf3.GainCL.Value(2)*vhcl.aeroSurf3.refArea.Value*abs(vhcl.aeroSurf3.aeroCentPosVec.Value(1)));
-pathCtrl.ctrlAllocMat.setValue(allMat,'');
-% pathCtrl.ctrlAllocMat.setValue(eye(2),'');
+pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
+% pathCtrl.ctrlAllocMat.setValue(eye(2),'(deg)/(N*m)');
 
-pathCtrl.add('SetpointNames',{'latSP','perpErrorVal','pathParams','searchSize','constantPitchSig'})
-pathCtrl.latSP.Value = pi/4;
-pathCtrl.perpErrorVal.Value = 5*pi/180;
-% pathCtrl.pathParams.Value = [1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)]; %lem
-pathCtrl.pathParams.Value = [.4,3*pi/8,0,norm(vhcl.initPosVecGnd.Value)]; %Circle
-pathCtrl.searchSize.Value = pi/2;
+pathCtrl.perpErrorVal.setValue(5*pi/180,'rad');
+% pathCtrl.pathParams.setValue([1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)],''); % Lem Unscalable
+pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
+pathCtrl.searchSize.setValue(pi/2,'rad');
 
-pathCtrl.constantPitchSig.Value = 25;
+pathCtrl.constantPitchSig.setValue(25,'deg');
 
-
+pathCtrl.scale(scaleFactor);
 %% Run the simulation
 MMAddBool = 0;
 simWithMonitor('OCTModel')
