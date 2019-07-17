@@ -7,13 +7,13 @@ function simLogsout = simWithMonitor(model,timestep)
         sim(model)
         sim_monitor_end(model)
     catch e
-        sim_monitor_end(model)
-        fprintf(2,'There was an error!')
+        fprintf(2,'\nsimWithMonitor caught an error.\n')
         fprintf(2,'The identifier was:\n     %s\n',e.identifier);
         fprintf(2,'The message was:\n     %s\n',e.message);
         if ~isempty(e.cause)
             fprintf(2,'The cause was:\n     %s\n',e.cause{1}.message);
         end
+        sim_monitor_end(model)
     end
     if exist('logsout','var')
         assignin('base', 'logsout', logsout);
@@ -21,16 +21,25 @@ function simLogsout = simWithMonitor(model,timestep)
         simLogsout=[];
     end
 end
+function myTimerFcn(myTimerObj, ~, model,timestep)
+    time=get_param(model,'SimulationTime');
+    if time==0
+        fprintf('Compiling and Initializing...\n')
+    else
+    fprintf('The Current simulation time is %0.5f seconds. Run time is %0.1f seconds.\n',...
+        time,timestep*(myTimerObj.TasksExecuted-1));
+    end
+end
 function [] = sim_monitor_start(model,timestep)
     %model should be a string of the name of the model you are about to run
     %timestep (optional) allows control over how often the text will print
 
     sim_timer=timer("Name",strcat(model,"_timer"));
-    sim_timer.period=2;
+    sim_timer.period=timestep;
     sim_timer.ExecutionMode = 'fixedRate';
-    sim_timer.TimerFcn = ...
-        @(myTimerObj, thisEvent)fprintf('The Current simulation time is %0.5f seconds. Run time is %0.1f seconds.\n',...
-        get_param(model,'SimulationTime'),timestep*(myTimerObj.TasksExecuted-1));
+    sim_timer.TimerFcn = {@myTimerFcn, model, timestep};
+%         @(myTimerObj, thisEvent)fprintf('The Current simulation time is %0.5f seconds. Run time is %0.1f seconds.\n',...
+%         get_param(model,'SimulationTime'),timestep*(myTimerObj.TasksExecuted-1));
 %     disp(['The Current simulation time is '...
 %         num2str(get_param(model,'SimulationTime')) 'seconds. Run time is '...
 %         num2str(timestep*(myTimerObj.TasksExecuted-1)) ' seconds.']);
@@ -46,5 +55,6 @@ function [] = sim_monitor_end(model)
     %Should run without error if given a model without a running timer.
     sim_timer=timerfind("Name",strcat(model,"_timer"));
     stop(sim_timer);
-    delete(sim_timer);  
+    delete(sim_timer);
+    fprintf(2,'\n')
 end
