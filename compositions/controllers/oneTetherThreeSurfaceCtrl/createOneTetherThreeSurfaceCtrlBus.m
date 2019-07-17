@@ -8,7 +8,7 @@ elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;
 elems(1).Complexity = 'real';
-elems(1).Unit = 'rad';
+elems(1).Unit = 'deg';
 
 elems(2) = Simulink.BusElement;
 elems(2).Name = 'winchSpeeds';

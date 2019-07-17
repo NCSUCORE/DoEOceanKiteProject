@@ -119,7 +119,7 @@ if exist('AZ','var') && exist('EL','var')
 else
     view(90,15)
 end
-pause(.01)
+pause(.001)
 % axis([tsc.positionVec.Data(1,i)-range1 tsc.positionVec.Data(1,i)+range1 tsc.positionVec.Data(2,i)-range1 tsc.positionVec.Data(2,i)+range1 tsc.positionVec.Data(3,i)-range1 tsc.positionVec.Data(3,i)+range1])
 
 hold off
