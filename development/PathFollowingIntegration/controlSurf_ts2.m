@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 500*sqrt(scaleFactor);
+duration_s  = 1000*sqrt(scaleFactor);
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 
 %% Set up simulation
@@ -39,26 +39,55 @@ vhcl.aeroSurf3.CD.setValue(.02+vhcl.aeroSurf3.CD.Value,'');
 vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 
 %IC's
-tetherLength = 200;
-velMag=6; %Constant velocity or initial velocity
-pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
-% pathParamVec=[1,2,pi/4,0,tetherLength];%Lem
-[ini_Rcm,ini_Vcm]=swapablePath(.6,pathParamVec);
-ini_Vcm=velMag*ini_Vcm;
+ tetherLength = 200;
+% velMag=6; %Constant velocity or initial velocity
+% %pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
+ pathParamVec=[1,1,.7,0,tetherLength];%Lem
+% [ini_Rcm,ini_Vcm]=swapablePath(.6,pathParamVec);
+% ini_Vcm=velMag*ini_Vcm;
+% 
+% ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
+% ini_yaw=atan2(-ini_Vcm(2),-ini_Vcm(1));
+% [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
+% tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
+%            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+%            cos(lat)            0          -sin(lat);];
+% [bodyToGr,~]=rotation_sequence([0 ini_pitch ini_yaw]);
+% bodyY_before_roll=bodyToGr*[0 1 0]';
+% tanZ=tanToGr*[0 0 1]';
+% ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
+% 
+% ini_Vcm_body = [-velMag;0;0];
+% ini_eul=[ini_roll ini_pitch ini_yaw];
 
-ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
-ini_yaw=atan2(-ini_Vcm(2),-ini_Vcm(1));
-[long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
+long = -1.3*pi/8;
+
+lat = 1.7*pi/4;
+
+constantVelMag=6; %Constant velocity or initial velocity
+initVelAng = 90;%degrees
+
+
 tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
            cos(lat)            0          -sin(lat);];
+ini_Rcm = tetherLength*[cos(long).*cos(lat);
+         sin(long).*cos(lat);
+         sin(lat);];
+% [ini_Rcm,ini_Vcm]=swapablePath(...);ini_Vcm=constantVelMag*ini_v
+ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+
+ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
+ini_yaw=atan2(-ini_Vcm(2),-ini_Vcm(1));
+
 [bodyToGr,~]=rotation_sequence([0 ini_pitch ini_yaw]);
 bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
 
-ini_Vcm_body = [-velMag;0;0];
+ini_Vcm_body = [-constantVelMag;0;0];
 ini_eul=[ini_roll ini_pitch ini_yaw];
+vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 
 %% Vehicle Parameters
@@ -168,6 +197,7 @@ pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
 
 pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+
 pathCtrl.controlSigMax.lowerLimit.setValue(-30,'');
 pathCtrl.controlSigMax.upperLimit.setValue(30,'');
 
@@ -176,12 +206,12 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
 pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-pathCtrl.velAng.kd.setValue(pathCtrl.velAng.kp.Value*1.5,'(rad)/(rad/s)');
-pathCtrl.velAng.tau.setValue(.01,'s');
+pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+pathCtrl.velAng.tau.setValue(.8,'s');
 
 pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
 pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-pathCtrl.rollMoment.tau.setValue (.01,'s');
+pathCtrl.rollMoment.tau.setValue (.8,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig'},...
     'GainUnits',{'(deg)/(N*m)','rad','','rad','deg'}) %Not scaling here is dangerous
@@ -194,7 +224,7 @@ allMat(4,3)=1/(vhcl.aeroSurf4.GainCL.Value(2)*vhcl.aeroSurf4.refArea.Value*abs(v
 pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
 % pathCtrl.ctrlAllocMat.setValue(eye(2),'(deg)/(N*m)');
 
-pathCtrl.perpErrorVal.setValue(5*pi/180,'rad');
+pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
 % pathCtrl.pathParams.setValue([1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)],''); % Lem Unscalable
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 pathCtrl.searchSize.setValue(pi/2,'rad');
@@ -208,7 +238,13 @@ simWithMonitor('OCTModel')
 
 parseLogsout;
 %%
+plotIt1 = 0;
+plotIt2 = 1 ;
+plotIt3 = 0;
+plotIt4 = 0;
+plotIt5 = 0;
 
+if plotIt1 == 1
 figure;
 subplot(1,3,1)
 tsc.velAngleAdjustedError.plot
@@ -218,32 +254,49 @@ deslims=ylim;
 subplot(1,3,3)
 tsc.tanRoll.plot
 ylim(deslims)
+end
 %%
+
+plotIt1 = 0;
+plotIt2 = 0;
+plotIt3 = 0;
+plotIt4 = 0;
+
+
+if plotIt2 
 figure
 vels=tsc.velocityVec.Data(:,:,:);%[(1-tsc.velocityVec.Data(1,1,:)); tsc.velocityVec.Data(2:3,1,:)];
 velmags = sqrt(sum((vels).^2,1));
 plot(tsc.velocityVec.Time, squeeze(velmags));
 xlabel('time (s)')
 ylabel('ground frame velocity (m)')
+end
 
+if plotIt3 
 figure
 radialPos = sqrt(sum(tsc.positionVec.Data.^2,1));
 plot(tsc.velocityVec.Time,squeeze(radialPos));
 xlabel('time (s)')
 ylabel('radial position/tether length (m)')
 title("Radial Position")
+end
 
+if plotIt4
 figure
 plot(tsc.FThrNetBdy.Time,squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))));
 xlabel('time (s)')
 ylabel('Tether Tension Magnitude on Body (N)')
 title("Tether Tension")
+end
 
+if plotIt5
+    
 figure
 plot(tsc.alphaLocal.Time,squeeze(tsc.alphaLocal.Data(1,1,:)))
 xlabel('time (s)')
 ylabel('Alpha on the Left Wing')
 
+end
 
 kiteAxesPlot
 
