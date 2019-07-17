@@ -75,7 +75,7 @@ tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
 
 ini_Vcm_body = [-velMag;0;0];
-ini_eul=[ini_roll ini_pitch ini_yaw];
+ini_eul=[ini_roll 88 ini_yaw];
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 
