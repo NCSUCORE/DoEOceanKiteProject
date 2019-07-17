@@ -29,3 +29,7 @@ codegen/
 
 # Octave session info
 octave-workspace
+
+# Video files
+*.avi
+*.gif

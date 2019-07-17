@@ -174,6 +174,5 @@ ctrl.rollSP.Value.DataInfo.Units = 'deg';
 ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
 
-%% Run first sim
-% simWithMonitor('OCTModel',5)
+
 
