@@ -127,40 +127,53 @@ wnch = wnch.setTetherInitLength(vhcl,env,thr);
 ctrl = CTR.controller;
 % add filtered PID controllers
 % FPID controllers are initialized to zero gains, 1s time const
-ctrl.add('FPIDNames',{'elevators','ailerons'},...
-    'FPIDErrorUnits',{'deg','deg'},...
-    'FPIDOutputUnits',{'deg','deg'});
+ctrl.add('FPIDNames',{'elevators','ailerons','rudder'},...
+    'FPIDErrorUnits',{'deg','deg','deg'},...
+    'FPIDOutputUnits',{'deg','deg','deg'});
 
 % add control allocation matrix (implemented as a simple gain)
-ctrl.add('GainNames',{'ctrlAllocMat'},...
+ctrl.add('GainNames',{'ctrlSurfAllocationMat'},...
     'GainUnits',{''});
 
 % add output saturation
 ctrl.add('SaturationNames',{'outputSat'});
 
 % add setpoints
-ctrl.add('SetpointNames',{'pitchSP','rollSP'},...
-    'SetpointUnits',{'deg','deg'});
+ctrl.add('SetpointNames',{'pitchSP','rollSP','yawSP'},...
+    'SetpointUnits',{'deg','deg','deg'});
 
 % Set the values of the controller parameters
-ctrl.elevators.kp.setValue(15,'(deg)/(deg)'); % do we really want to represent unitless values like this?
-ctrl.elevators.tau.setValue(0.05,'s');
+ctrl.ailerons.kp.setValue(2,'(deg)/(deg)');
+ctrl.ailerons.ki.setValue(0,'(deg)/(deg*s)');
+ctrl.ailerons.kd.setValue(1.2,'(deg)/(deg/s)');
+ctrl.ailerons.tau.setValue(0.5,'s');
 
-ctrl.ailerons.kp.setValue(15,'(deg)/(deg)');
-ctrl.ailerons.kd.setValue(0,'(deg*s)/(deg)');
-ctrl.ailerons.tau.setValue(0.05,'s');
+ctrl.elevators.kp.setValue(.15,'(deg)/(deg)'); % do we really want to represent unitless values like this?
+ctrl.elevators.ki.setValue(0,'(deg)/(deg*s)');
+ctrl.elevators.kd.setValue(1,'(deg)/(deg/s)'); % Likewise, do we want (deg*s)/(deg) or just s?
+ctrl.elevators.tau.setValue(0.01,'s');
+
+ctrl.rudder.kp.setValue(0,'(deg)/(deg)');
+ctrl.rudder.ki.setValue(0,'(deg)/(deg*s)');
+ctrl.rudder.kd.setValue(0,'(deg)/(deg/s)');
+ctrl.rudder.tau.setValue(0.5,'s');
+
+ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
 
 ctrl.outputSat.upperLimit.setValue(30,'');
 ctrl.outputSat.lowerLimit.setValue(-30,'');
 
 % Calculate setpoints
-timeVec = 0:0.1:1000;
-ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
+timeVec = 0:0.1:duration_s;
+ctrl.pitchSP.Value = timeseries(8*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
-ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(100))),timeVec);
-ctrl.rollSP.Value.Data(timeVec<60) = 0;
+ctrl.rollSP.Value = timeseries(25*sign(sin(2*pi*timeVec/(100))),timeVec);
+ctrl.rollSP.Value.Data(timeVec<50) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
+ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
+ctrl.yawSP.Value.DataInfo.Units = 'deg';
+
 %% Run first sim
-simWithMonitor('OCTModel',5)
+% simWithMonitor('OCTModel',5)
 
