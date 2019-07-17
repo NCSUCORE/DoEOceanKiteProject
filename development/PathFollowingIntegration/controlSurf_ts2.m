@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 1000*sqrt(scaleFactor);
+duration_s  = 500*sqrt(scaleFactor);
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 
 %% Set up simulation
@@ -43,7 +43,7 @@ vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 tetherLength = 200;
 velMag=6;
 %pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
-pathParamVec=[3*pi/8,1.5,.7854,0,tetherLength];%Lem
+pathParamVec=[1,1,pi/4,0,tetherLength];%Lem
 onpath = true;
 if onpath
     pathParamStart = .6;
@@ -75,7 +75,7 @@ tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
 
 ini_Vcm_body = [-velMag;0;0];
-ini_eul=[ini_roll 88 ini_yaw];
+ini_eul=[ini_roll ini_pitch ini_yaw];
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 
@@ -201,7 +201,7 @@ pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)')
 pathCtrl.rollMoment.tau.setValue (.8,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig'},...
-    'GainUnits',{'(deg)/(N*m)','rad','','rad','deg'}) %Not scaling here is dangerous
+    'GainUnits',{'(deg)/(N*m)','rad','','','deg'}) %Not scaling here is dangerous
 
 allMat = zeros(4,3);
 allMat(1,1)=-1/(2*vhcl.aeroSurf1.GainCL.Value(2)*vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
@@ -214,7 +214,7 @@ pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
 pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
 % pathCtrl.pathParams.setValue([1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)],''); % Lem Unscalable
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
-pathCtrl.searchSize.setValue(.25,'rad');
+pathCtrl.searchSize.setValue(.5,'');
 
 pathCtrl.constantPitchSig.setValue(-25,'deg');
 

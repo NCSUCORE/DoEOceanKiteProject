@@ -16,7 +16,7 @@ frames = 50;
 waittime = .05; 
 
 gifit = false;
-filename="controlSurfDef.gif";
+filename="fig8.gif";
 gifWaitTime = .05;
 %% Execution
 % for t=timevec(end)
@@ -31,7 +31,6 @@ if grow
 end
 plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
 hold on
-
 eulerAnglesPlot = tsc.eulerAngles.Data(:,1,i);
 [bodyToGr,~]=rotation_sequence(eulerAnglesPlot);
 
@@ -73,6 +72,9 @@ title(sprintf("t=%4.1f",tsc.positionVec.Time(i)))
 %sphere
 [x,y,z]=sphere;x=tetherLength*x;y=tetherLength*y;z=tetherLength*z;
 h=surfl(x,y,z);set(h,'FaceAlpha',0.5);shading(gca,'interp')
+if min(tsc.positionVec.Data(3,1,:))>0
+    zlim([0 inf])
+end
 %velocity vec (unscaled)
 quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i),'w','lineWidth',1.2)
 
