@@ -20,7 +20,7 @@ Partdsgn1.lookup_table_file_name = 'partDsgn2_lookupTables';
 % Name for design in the input file
 Partdsgn1.design_name            = 'partDsgn2'; % String at top of input file defining the name
 
-Partdsgn1.reference_point = [1.5;0;0];
+Partdsgn1.reference_point = [1;0;0];
 
 Partdsgn1.wing_chord = 1;
 Partdsgn1.wing_AR = 10;
