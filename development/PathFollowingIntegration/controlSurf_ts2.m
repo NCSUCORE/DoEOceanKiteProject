@@ -30,10 +30,27 @@ flowSpeed3 = [1.4 0 0];
 flowSpeed4 = [2 0 0];
 flowSpeed5 = [1 0 0];
 
-controlCase = 'flowSpeedFour';
-env.water.velVec.setValue(flowSpeed4,'m/s');
+controlCase = 'flowSpeedFive';
+env.water.velVec.setValue(flowSpeed5,'m/s');
 % Scale up/down
 env.scale(scaleFactor);
+
+%% Path Choice
+pathIniRadius = 200;
+% pathFuncName='lemOfBooth';
+% pathParamVec=[1,1.4,.36,0,pathIniRadius];%Lem
+pathFuncName='circleOnSphere';
+pathParamVec=[.4,3*pi/8,0,pathIniRadius];%Circle
+
+swapableID=fopen('../../functions/pathGeometryFunctions/swapablePath.m','w');
+fprintf(swapableID,['function [posGround,varargout] = swapablePath(pathVariable,geomParams)\n',...
+           '     func = @%s;\n',...
+           '     posGround = func(pathVariable,geomParams);\n',...
+           '     if nargout == 2\n',...
+           '          [~,varargout{1}] = func(pathVariable,geomParams);\n',...
+           '     end\n',...
+           'end'],pathFuncName);
+fclose(swapableID);
 
 %% Create Vehicle and Initial conditions
 % Create
@@ -47,10 +64,8 @@ vhcl.aeroSurf3.CD.setValue(.02+vhcl.aeroSurf3.CD.Value,'');
 vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 
 %IC's
-tetherLength =50;
+tetherLength = pathIniRadius;
 velMag=6;
-pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
-%pathParamVec=[1,1.4,.36,0,tetherLength];%Lem
 onpath = false;
 if onpath
     pathParamStart = .6;
@@ -236,7 +251,7 @@ switch controlCase
     pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
     pathCtrl.velAng.tau.setValue(.8,'s');
 
-    pathCtrl.rollMoment.kp.setValue(6e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
     pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
     pathCtrl.rollMoment.tau.setValue (.8,'s');
     
@@ -300,6 +315,7 @@ switch controlCase
     pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
     pathCtrl.rollMoment.tau.setValue (.8,'s');
 end
+
 %% Run the simulation
 MMAddBool = 0;
 simWithMonitor('OCTModel')
@@ -310,8 +326,9 @@ errorSigsPlot = 0;
 velMagsPlot = 1 ;
 radialPosPlot = 0;
 tetherTenMagPlot = 1;
-alphaLocalPlot = 0;
-clcdPlots = 0;
+alphaLocalPlot = 1;
+clcdPlots = 1;
+
 %% Plots
 if errorSigsPlot == 1
 figure;
@@ -363,33 +380,35 @@ end
 if clcdPlots
 figure;
 subplot(2,2,1)
-scatter(vhcl.aeroSurf1.CD.Value,vhcl.aeroSurf1.CL.Value)
+drags=vhcl.aeroSurf1.CD.Value+vhcl.aeroSurf2.CD.Value+vhcl.aeroSurf3.CD.Value;
+lifts=vhcl.aeroSurf1.CL.Value+vhcl.aeroSurf2.CL.Value+vhcl.aeroSurf3.CL.Value;
+scatter(drags,lifts)
 xlabel("C_D")
 ylabel("C_L")
 title("half wing C_L vs C_D")
 
 subplot(2,2,2)
-scatter(vhcl.aeroSurf1.alpha.Value,vhcl.aeroSurf1.CL.Value)
+scatter(vhcl.aeroSurf1.alpha.Value,lifts)
 xlabel("alpha (deg)")
 ylabel("C_L")
 title("half wing C_L vs alpha")
 
 subplot(2,2,3)
-scatter(vhcl.aeroSurf1.alpha.Value,vhcl.aeroSurf1.CD.Value)
+scatter(vhcl.aeroSurf1.alpha.Value,drags)
 xlabel("alpha (deg)")
 ylabel("C_D")
 title("half wing C_D vs alpha")
 
-subplot(2,2,4)
-plot(vhcl.aeroSurf1.alpha.Value,vhcl.aeroSurf1.CL.Value./vhcl.aeroSurf1.CD.Value)
+figure
+plot(vhcl.aeroSurf1.alpha.Value,lifts./drags)
 xlabel("alpha")
-ylabel('C_L \/ C_D')
+ylabel('C_L / C_D')
 title("Wing Lift to Drag Ratio vs alpha with 0 Deflection")
 end
 
-
 meanVelocity = mean(squeeze(velmags))
 meanTension = mean(squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))))
+
 %% Animations/Plot Everything
 % stopCallback
 % animateSim

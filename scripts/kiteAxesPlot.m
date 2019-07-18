@@ -19,9 +19,9 @@ gifit = false;
 filename="fig8.gif";
 gifWaitTime = .05;
 %% Execution
-% for t=timevec(end)
+for t=timevec(end)
 % for t=linspace(90,114,40)
-for t=linspace(0,timevec(end),frames)
+% for t=linspace(0,timevec(end),frames)
 [~,i]=min(abs(timevec-t));
 posG = tsc.positionVec.Data(:,:,i);
 
