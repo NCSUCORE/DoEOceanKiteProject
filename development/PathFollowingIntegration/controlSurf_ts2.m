@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 1000*sqrt(scaleFactor);
+duration_s  = 500*sqrt(scaleFactor);
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 
 %% Set up simulation
@@ -24,9 +24,17 @@ createOneTetherThreeSurfaceCtrlBus;
 env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
-env.water.velVec.setValue([1 0 0],'m/s');
+flowSpeed1 = [.2 0 0];
+flowSpeed2 = [.8 0 0];
+flowSpeed3 = [1.4 0 0];
+flowSpeed4 = [2 0 0];
+flowSpeed5 = [1 0 0];
+
+controlCase = 'flowSpeedFour';
+env.water.velVec.setValue(flowSpeed4,'m/s');
 % Scale up/down
 env.scale(scaleFactor);
+
 %% Create Vehicle and Initial conditions
 % Create
 vhcl = OCT.vehicle;
@@ -39,43 +47,31 @@ vhcl.aeroSurf3.CD.setValue(.02+vhcl.aeroSurf3.CD.Value,'');
 vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 
 %IC's
- tetherLength = 200;
-% velMag=6; %Constant velocity or initial velocity
-% %pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
- pathParamVec=[1,1,.7,0,tetherLength];%Lem
-% [ini_Rcm,ini_Vcm]=swapablePath(.6,pathParamVec);
-% ini_Vcm=velMag*ini_Vcm;
-% 
-% ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
-% ini_yaw=atan2(-ini_Vcm(2),-ini_Vcm(1));
-% [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
-% tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
-%            -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
-%            cos(lat)            0          -sin(lat);];
-% [bodyToGr,~]=rotation_sequence([0 ini_pitch ini_yaw]);
-% bodyY_before_roll=bodyToGr*[0 1 0]';
-% tanZ=tanToGr*[0 0 1]';
-% ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
-% 
-% ini_Vcm_body = [-velMag;0;0];
-% ini_eul=[ini_roll ini_pitch ini_yaw];
-
-long = -1.3*pi/8;
-
-lat = 1.7*pi/4;
-
-constantVelMag=6; %Constant velocity or initial velocity
-initVelAng = 90;%degrees
-
-
-tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
-           -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
-           cos(lat)            0          -sin(lat);];
-ini_Rcm = tetherLength*[cos(long).*cos(lat);
-         sin(long).*cos(lat);
-         sin(lat);];
-% [ini_Rcm,ini_Vcm]=swapablePath(...);ini_Vcm=constantVelMag*ini_v
-ini_Vcm= constantVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+tetherLength =50;
+velMag=6;
+pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
+%pathParamVec=[1,1.4,.36,0,tetherLength];%Lem
+onpath = false;
+if onpath
+    pathParamStart = .6;
+    [ini_Rcm,ini_Vcm]=swapablePath(pathParamStart,pathParamVec);
+    ini_Vcm=velMag*ini_Vcm;
+    [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
+    tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
+               -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+               cos(lat)            0          -sin(lat);];
+else
+    long = -1.9*pi/8;
+    lat = pi/4;
+    initVelAng = 90;%degrees
+    tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
+               -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+               cos(lat)            0          -sin(lat);];
+    ini_Rcm = tetherLength*[cos(long).*cos(lat);
+                            sin(long).*cos(lat);
+                            sin(lat);];
+    ini_Vcm= velMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+end
 
 ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
 ini_yaw=atan2(-ini_Vcm(2),-ini_Vcm(1));
@@ -85,7 +81,7 @@ bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
 
-ini_Vcm_body = [-constantVelMag;0;0];
+ini_Vcm_body = [-velMag;0;0];
 ini_eul=[ini_roll ini_pitch ini_yaw];
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
@@ -172,7 +168,6 @@ thr.tether1.setDiameter(0.0144,'m');
 % Scale up/down
 thr.scale(scaleFactor);
 
-
 %% Winches
 % Create
 wnch = OCT.winches;
@@ -188,15 +183,13 @@ wnch = wnch.setTetherInitLength(vhcl,env,thr);
 % Scale up/down
 wnch.scale(scaleFactor);
 
-
-%% %%%%%%%%%Controller Params%%%%%%
+%% Controller
 
 pathCtrl = CTR.controller;
 
 pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
 
-pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+
 
 pathCtrl.controlSigMax.lowerLimit.setValue(-30,'');
 pathCtrl.controlSigMax.upperLimit.setValue(30,'');
@@ -205,16 +198,10 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDErrorUnits',{'rad','rad'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
-pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
-pathCtrl.velAng.tau.setValue(.8,'s');
 
-pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
-pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-pathCtrl.rollMoment.tau.setValue (.8,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig'},...
-    'GainUnits',{'(deg)/(N*m)','rad','','rad','deg'}) %Not scaling here is dangerous
+    'GainUnits',{'(deg)/(N*m)','rad','','','deg'}) %Not scaling here is dangerous
 
 allMat = zeros(4,3);
 allMat(1,1)=-1/(2*vhcl.aeroSurf1.GainCL.Value(2)*vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
@@ -224,27 +211,109 @@ allMat(4,3)=1/(vhcl.aeroSurf4.GainCL.Value(2)*vhcl.aeroSurf4.refArea.Value*abs(v
 pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
 % pathCtrl.ctrlAllocMat.setValue(eye(2),'(deg)/(N*m)');
 
-pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+
 % pathCtrl.pathParams.setValue([1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)],''); % Lem Unscalable
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
-pathCtrl.searchSize.setValue(pi/2,'rad');
+pathCtrl.searchSize.setValue(.5,'');
 
 pathCtrl.constantPitchSig.setValue(-25,'deg');
 
 pathCtrl.scale(scaleFactor);
+
+
+
+
+
+switch controlCase
+    
+    
+    case 'flowSpeedOne' %.2
+    pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    pathCtrl.perpErrorVal.setValue(15*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    pathCtrl.velAng.tau.setValue(.8,'s');
+
+    pathCtrl.rollMoment.kp.setValue(6e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue (.8,'s');
+    
+    
+    case 'flowSpeedTwo' %.8
+    pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');   
+    pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    pathCtrl.velAng.tau.setValue(.8,'s');
+
+    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue (.8,'s');
+    
+    %for 50 m tether for figure 8
+    %pathCtrl.perpErrorVal.setValue(15*pi/180,'rad');
+    %pathCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)'); %Units are wrong
+    
+    case 'flowSpeedThree' %1.4
+     pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+     pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    pathCtrl.maxBank.upperLimit.setValue(15*pi/180,'');% 50 m 
+     pathCtrl.maxBank.lowerLimit.setValue(-15*pi/180,''); % 50 m 
+    pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    %pathCtrl.velAng.tau.setValue(.03,'s'); %200m & 50m
+    pathCtrl.velAng.tau.setValue(.1,'s'); %125 m 
+    pathCtrl.rollMoment.kp.setValue(.85*3e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.55*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue(.03,'s');   %200m & 50m
+  %  pathCtrl.rollMoment.tau.setValue(.1,'s');% 125 m & 50 m 
+    case 'flowSpeedFour' %2
+   pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    pathCtrl.perpErrorVal.setValue(12*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.1*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)'); 
+    pathCtrl.velAng.tau.setValue(.01,'s'); %125 m   
+   
+    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+    pathCtrl.rollMoment.kd.setValue(1*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+
+    pathCtrl.rollMoment.tau.setValue(.01,'s');
+    
+    case 'flowSpeedFive' %1
+    pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');   
+    pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    pathCtrl.velAng.tau.setValue(.8,'s');
+
+    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue (.8,'s');
+end
 %% Run the simulation
 MMAddBool = 0;
 simWithMonitor('OCTModel')
-
 parseLogsout;
-%%
-plotIt1 = 0;
-plotIt2 = 1 ;
-plotIt3 = 0;
-plotIt4 = 0;
-plotIt5 = 0;
 
-if plotIt1 == 1
+%% Plot choices
+errorSigsPlot = 0;
+velMagsPlot = 1 ;
+radialPosPlot = 0;
+tetherTenMagPlot = 1;
+alphaLocalPlot = 0;
+clcdPlots = 0;
+%% Plots
+if errorSigsPlot == 1
 figure;
 subplot(1,3,1)
 tsc.velAngleAdjustedError.plot
@@ -255,15 +324,8 @@ subplot(1,3,3)
 tsc.tanRoll.plot
 ylim(deslims)
 end
-%%
 
-plotIt1 = 0;
-plotIt2 = 0;
-plotIt3 = 0;
-plotIt4 = 0;
-
-
-if plotIt2 
+if velMagsPlot 
 figure
 vels=tsc.velocityVec.Data(:,:,:);%[(1-tsc.velocityVec.Data(1,1,:)); tsc.velocityVec.Data(2:3,1,:)];
 velmags = sqrt(sum((vels).^2,1));
@@ -272,7 +334,7 @@ xlabel('time (s)')
 ylabel('ground frame velocity (m)')
 end
 
-if plotIt3 
+if radialPosPlot 
 figure
 radialPos = sqrt(sum(tsc.positionVec.Data.^2,1));
 plot(tsc.velocityVec.Time,squeeze(radialPos));
@@ -281,7 +343,7 @@ ylabel('radial position/tether length (m)')
 title("Radial Position")
 end
 
-if plotIt4
+if tetherTenMagPlot
 figure
 plot(tsc.FThrNetBdy.Time,squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))));
 xlabel('time (s)')
@@ -289,7 +351,7 @@ ylabel('Tether Tension Magnitude on Body (N)')
 title("Tether Tension")
 end
 
-if plotIt5
+if alphaLocalPlot
     
 figure
 plot(tsc.alphaLocal.Time,squeeze(tsc.alphaLocal.Data(1,1,:)))
@@ -298,36 +360,37 @@ ylabel('Alpha on the Left Wing')
 
 end
 
-kiteAxesPlot
+if clcdPlots
+figure;
+subplot(2,2,1)
+scatter(vhcl.aeroSurf1.CD.Value,vhcl.aeroSurf1.CL.Value)
+xlabel("C_D")
+ylabel("C_L")
+title("half wing C_L vs C_D")
 
-% clear h
-% animateSim
+subplot(2,2,2)
+scatter(vhcl.aeroSurf1.alpha.Value,vhcl.aeroSurf1.CL.Value)
+xlabel("alpha (deg)")
+ylabel("C_L")
+title("half wing C_L vs alpha")
 
+subplot(2,2,3)
+scatter(vhcl.aeroSurf1.alpha.Value,vhcl.aeroSurf1.CD.Value)
+xlabel("alpha (deg)")
+ylabel("C_D")
+title("half wing C_D vs alpha")
+
+subplot(2,2,4)
+plot(vhcl.aeroSurf1.alpha.Value,vhcl.aeroSurf1.CL.Value./vhcl.aeroSurf1.CD.Value)
+xlabel("alpha")
+ylabel('C_L \/ C_D')
+title("Wing Lift to Drag Ratio vs alpha with 0 Deflection")
+end
+
+
+meanVelocity = mean(squeeze(velmags))
+meanTension = mean(squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))))
+%% Animations/Plot Everything
 % stopCallback
-%%
-% figure;
-% subplot(2,2,1)
-% scatter(squeeze(tsc.CD.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
-% xlabel("C_D")
-% ylabel("C_L")
-% title("half wing C_L vs C_D")
-% 
-% subplot(2,2,2)
-% scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CL.Data(1,1,:)))
-% xlabel("alpha (deg)")
-% ylabel("C_L")
-% title("half wing C_L vs alpha")
-% 
-% subplot(2,2,3)
-% scatter(squeeze(tsc.alphaLocal.Data(1,1,:)),squeeze(tsc.CD.Data(1,1,:)))
-% xlabel("alpha (deg)")
-% ylabel("C_D")
-% title("half wing C_D vs alpha")
-% 
-% subplot(2,2,4)
-% plot(tsc.alphaLocal.Time,squeeze(tsc.alphaLocal.Data(1,1,:)))
-% xlabel("time (s)")
-% ylabel("alpha (deg)")
-% title("wing alpha vs time")
-
-% figure;plot(vhcl.aeroSurf1.alpha.Value,vhcl.aeroSurf1.CL.Value./vhcl.aeroSurf1.CD.Value)
+% animateSim
+kiteAxesPlot

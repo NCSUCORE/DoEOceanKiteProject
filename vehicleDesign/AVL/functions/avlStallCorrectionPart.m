@@ -42,8 +42,8 @@ for ii = 1:n_cases
         w_belowRange = (w_cl_cat < w_cl_min);
         w_aboveRange = (w_cl_cat > w_cl_max);
         
-        iRemove = or(w_belowRange,w_aboveRange);
-        w_cl_cat(iRemove) = 0;
+        w_cl_cat(w_aboveRange) = max(2*w_cl_max - w_cl_cat(w_aboveRange),0);
+        w_cl_cat(w_belowRange) = min(2*w_cl_min - w_cl_cat(w_belowRange),0);
         
         % calculate chord*Cl and CLtot
         w_cCl = w_chord_cat.*w_cl_cat;
@@ -72,8 +72,8 @@ for ii = 1:n_cases
         hs_belowRange = (hs_cl_cat < hs_cl_min);
         hs_aboveRange = (hs_cl_cat > hs_cl_max);
         
-        iRemove = or(hs_belowRange,hs_aboveRange);
-        hs_cl_cat(iRemove) = 0;
+        hs_cl_cat(hs_aboveRange) = max(2*hs_cl_max - hs_cl_cat(hs_aboveRange),0);
+        hs_cl_cat(hs_belowRange) = min(2*hs_cl_min - hs_cl_cat(hs_belowRange),0);
         
         % calculate chord*Cl and CLtot
         hs_cCl = hs_chord_cat.*hs_cl_cat;
@@ -92,8 +92,8 @@ for ii = 1:n_cases
         vs_belowRange = (vs_cl_cat < vs_cl_min);
         vs_aboveRange = (vs_cl_cat > vs_cl_max);
         
-        iRemove = or(vs_belowRange,vs_aboveRange);
-        vs_cl_cat(iRemove) = 0;
+        vs_cl_cat(vs_aboveRange) = max(2*vs_cl_max - vs_cl_cat(vs_aboveRange),0);
+        vs_cl_cat(vs_belowRange) = min(2*vs_cl_min - vs_cl_cat(vs_belowRange),0);
         
         % calculate chord*Cl and CLtot
         vs_cCl = vs_chord_cat.*vs_cl_cat;
