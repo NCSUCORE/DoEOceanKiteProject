@@ -31,7 +31,7 @@ env.water.velVec.setValue([1 0 0],'m/s');
 vhcl = OCT.vehicle;
 vhcl.numTethers.setValue(1,'');
 vhcl.numTurbines.setValue(2,'');
-vhcl.build('partDsgn2_lookupTables.mat');
+vhcl.build('partDsgn1_lookupTables.mat');
 
 % Set Values
 vhcl.Ixx.setValue(34924.16,'kg*m^2');

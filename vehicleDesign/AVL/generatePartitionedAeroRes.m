@@ -10,15 +10,15 @@ Partdsgn1 = avlDesignGeometryClass;
 %% modify design
 % wing parameters
 % Input file names
-Partdsgn1.input_file_name        = 'partDsgn2.avl'; % File name for .avl file
+Partdsgn1.input_file_name        = 'partDsgn1.avl'; % File name for .avl file
 Partdsgn1.run_file_name          = 'testRunFile.run';
 Partdsgn1.exe_file_name          = 'exeFile';
 % Output file names
-Partdsgn1.result_file_name       = 'partDsgn2_results';
-Partdsgn1.lookup_table_file_name = 'partDsgn2_lookupTables';
+Partdsgn1.result_file_name       = 'partDsgn1_results';
+Partdsgn1.lookup_table_file_name = 'partDsgn1_lookupTables';
 
 % Name for design in the input file
-Partdsgn1.design_name            = 'partDsgn2'; % String at top of input file defining the name
+Partdsgn1.design_name            = 'partDsgn1'; % String at top of input file defining the name
 
 Partdsgn1.reference_point = [1;0;0];
 
