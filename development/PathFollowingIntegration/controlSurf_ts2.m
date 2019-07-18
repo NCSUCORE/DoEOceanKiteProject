@@ -24,7 +24,14 @@ createOneTetherThreeSurfaceCtrlBus;
 env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
-env.water.velVec.setValue([1 0 0],'m/s');
+flowSpeed1 = [.2 0 0];
+flowSpeed2 = [.8 0 0];
+flowSpeed3 = [1.4 0 0];
+flowSpeed4 = [2 0 0];
+flowSpeed5 = [1 0 0];
+
+controlCase = 'flowSpeedFour';
+env.water.velVec.setValue(flowSpeed4,'m/s');
 % Scale up/down
 env.scale(scaleFactor);
 
@@ -40,11 +47,11 @@ vhcl.aeroSurf3.CD.setValue(.02+vhcl.aeroSurf3.CD.Value,'');
 vhcl.aeroSurf4.CD.setValue(.02+vhcl.aeroSurf4.CD.Value,'');
 
 %IC's
-tetherLength = 200;
+tetherLength =50;
 velMag=6;
-%pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
-pathParamVec=[1,1,pi/4,0,tetherLength];%Lem
-onpath = true;
+pathParamVec=[.4,3*pi/8,0,tetherLength];%Circle
+%pathParamVec=[1,1.4,.36,0,tetherLength];%Lem
+onpath = false;
 if onpath
     pathParamStart = .6;
     [ini_Rcm,ini_Vcm]=swapablePath(pathParamStart,pathParamVec);
@@ -54,8 +61,8 @@ if onpath
                -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
                cos(lat)            0          -sin(lat);];
 else
-    long = -1.3*pi/8;
-    lat = 1.7*pi/4;
+    long = -1.9*pi/8;
+    lat = pi/4;
     initVelAng = 90;%degrees
     tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
                -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
@@ -182,8 +189,7 @@ pathCtrl = CTR.controller;
 
 pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
 
-pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+
 
 pathCtrl.controlSigMax.lowerLimit.setValue(-30,'');
 pathCtrl.controlSigMax.upperLimit.setValue(30,'');
@@ -192,13 +198,7 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
     'FPIDErrorUnits',{'rad','rad'},...
     'FPIDOutputUnits',{'rad','N*m'})
 
-pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
-pathCtrl.velAng.tau.setValue(.8,'s');
 
-pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
-pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-pathCtrl.rollMoment.tau.setValue (.8,'s');
 
 pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig'},...
     'GainUnits',{'(deg)/(N*m)','rad','','','deg'}) %Not scaling here is dangerous
@@ -211,7 +211,7 @@ allMat(4,3)=1/(vhcl.aeroSurf4.GainCL.Value(2)*vhcl.aeroSurf4.refArea.Value*abs(v
 pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
 % pathCtrl.ctrlAllocMat.setValue(eye(2),'(deg)/(N*m)');
 
-pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+
 % pathCtrl.pathParams.setValue([1,1,pi/4,0,norm(vhcl.initPosVecGnd.Value)],''); % Lem Unscalable
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 pathCtrl.searchSize.setValue(.5,'');
@@ -220,17 +220,97 @@ pathCtrl.constantPitchSig.setValue(-25,'deg');
 
 pathCtrl.scale(scaleFactor);
 
+
+
+
+
+switch controlCase
+    
+    
+    case 'flowSpeedOne' %.2
+    pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    pathCtrl.perpErrorVal.setValue(15*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    pathCtrl.velAng.tau.setValue(.8,'s');
+
+    pathCtrl.rollMoment.kp.setValue(6e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue (.8,'s');
+    
+    
+    case 'flowSpeedTwo' %.8
+    pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');   
+    pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    pathCtrl.velAng.tau.setValue(.8,'s');
+
+    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue (.8,'s');
+    
+    %for 50 m tether for figure 8
+    %pathCtrl.perpErrorVal.setValue(15*pi/180,'rad');
+    %pathCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)'); %Units are wrong
+    
+    case 'flowSpeedThree' %1.4
+     pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+     pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    pathCtrl.maxBank.upperLimit.setValue(15*pi/180,'');% 50 m 
+     pathCtrl.maxBank.lowerLimit.setValue(-15*pi/180,''); % 50 m 
+    pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    %pathCtrl.velAng.tau.setValue(.03,'s'); %200m & 50m
+    pathCtrl.velAng.tau.setValue(.1,'s'); %125 m 
+    pathCtrl.rollMoment.kp.setValue(.85*3e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.55*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue(.03,'s');   %200m & 50m
+  %  pathCtrl.rollMoment.tau.setValue(.1,'s');% 125 m & 50 m 
+    case 'flowSpeedFour' %2
+   pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    pathCtrl.perpErrorVal.setValue(12*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.1*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)'); 
+    pathCtrl.velAng.tau.setValue(.01,'s'); %125 m   
+   
+    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+    pathCtrl.rollMoment.kd.setValue(1*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+
+    pathCtrl.rollMoment.tau.setValue(.01,'s');
+    
+    case 'flowSpeedFive' %1
+    pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+    pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');   
+    pathCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+    
+    pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+    pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+    pathCtrl.velAng.tau.setValue(.8,'s');
+
+    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)'); %Units are wrong
+    pathCtrl.rollMoment.kd.setValue(.2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    pathCtrl.rollMoment.tau.setValue (.8,'s');
+end
 %% Run the simulation
 MMAddBool = 0;
 simWithMonitor('OCTModel')
 parseLogsout;
 
 %% Plot choices
-errorSigsPlot = 1;
+errorSigsPlot = 0;
 velMagsPlot = 1 ;
 radialPosPlot = 0;
-tetherTenMagPlot = 0;
-alphaLocalPlot = 1;
+tetherTenMagPlot = 1;
+alphaLocalPlot = 0;
 clcdPlots = 0;
 %% Plots
 if errorSigsPlot == 1
@@ -306,6 +386,10 @@ xlabel("alpha")
 ylabel('C_L \/ C_D')
 title("Wing Lift to Drag Ratio vs alpha with 0 Deflection")
 end
+
+
+meanVelocity = mean(squeeze(velmags))
+meanTension = mean(squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))))
 %% Animations/Plot Everything
 % stopCallback
 % animateSim
