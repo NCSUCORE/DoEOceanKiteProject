@@ -6,15 +6,15 @@ load('pos.mat')
 % clear
 
 % run this to set magnitude to zero %
-% mag.Data = zeros
+mag.Data = zeros
 
-% run this to set magnitude to average magnitude %
-mag.Data = mean(mag.Data)*ones(size(mag.Data));
+% % run this to set magnitude to average magnitude %
+% mag.Data = mean(mag.Data)*ones(size(mag.Data));
 % 
-% run this to set average direction %
-for i = 1:3
-    position.Data(:,i) = mean(position.Data(:,i))*ones(size(position.Data(:,i)));
-end
+% % run this to set average direction %
+% for i = 1:3
+%     position.Data(:,i) = mean(position.Data(:,i))*ones(size(position.Data(:,i)));
+% end
 
 % create buses
 createThreeTetherThreeSurfaceCtrlBus
@@ -23,7 +23,7 @@ createThrAttachPtKinematicsBus
 createThrTenVecBus
 
 % simulation time
-sim_time = 600;
+sim_time = 300;
 
 % geometry of platform
 platformVolume = 3.5;
@@ -65,11 +65,11 @@ anchThrGnd(3).posVec = 100.*anchThrPltfrm(3).posVec;
 airbThrPltfrm(1).posVec = [0 1/2 1/2]';
 
 % number of tethers
-N = 5;
+numNodes = 4;
 
 thrs = OCT.tethers;
 thrs.numTethers.setValue(3,'');
-thrs.numNodes.setValue(N,'')
+thrs.numNodes.setValue(numNodes,'')
 thrs.build;
 
 thrs.tether1.initGndNodePos.setValue(anchThrGnd(1).posVec,'m');
@@ -103,7 +103,7 @@ thrs.tether2.setNetBuoyEnable(true,'');
 tetherLengths(2) = norm(thrs.tether2.initAirNodePos.Value-thrs.tether2.initGndNodePos.Value);
 
 thrs.tether3.initGndNodePos.setValue(anchThrGnd(3).posVec,'m');
-thrs.tether3.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(2).posVec(:),'m');
+thrs.tether3.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(3).posVec(:),'m');
 thrs.tether3.initGndNodeVel.setValue([0 0 0],'m/s');
 thrs.tether3.initAirNodeVel.setValue(initVel,'m/s');
 thrs.tether3.diameter.setValue(.05,'m');
@@ -118,16 +118,16 @@ thrs.tether3.setNetBuoyEnable(true,'');
 tetherLengths(3) = norm(thrs.tether3.initAirNodePos.Value-thrs.tether3.initGndNodePos.Value);
 
 % circulation data
-v = 0.6;
+v = 0.5;
 vsquared = v^2;
 cd = .8;
 A = platformVolume^(2/3);
-oceanPeriod = 20;
+oceanPeriod = 15;
 xOn = 1; % 1 = on, 0 = off
 zOn = 1;
 
 % ocean properties
-waveAmp = 0;
+waveAmp = 1.5;
 wavePeriod = oceanPeriod;
 oceanDepth = 105;
 
@@ -135,9 +135,18 @@ sim('groundStation001_th')
 
 parseLogsout
 
+
 %%
 close all
+
+figure
+oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);
+diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
+plot(tsc.subBodyPos.Time,diff)
+xlabel('Time, t [s]')
+ylabel('Distance from Ocean Surface [m]')
 % Plot position
+figure
 subplot(3,1,1)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)))
 grid on
@@ -152,6 +161,8 @@ ylabel('Y Pos [m]')
 
 subplot(3,1,3)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)))
+hold on
+plot(tsc.subBodyPos.Time,oH,'r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
@@ -178,7 +189,8 @@ ylabel('Yaw, [deg]')
 
 % Animate some stuff
 
-timeStep = .1;
+timeStep = 1;
+fileName = 'sub_circ.gif';
 
 % Resample data to the animation framerate
 timeVec = 0:timeStep:tsc.subBodyPos.Time(end);
@@ -190,7 +202,7 @@ end
 
 
 h.fig = figure; % Create figure
-h.fig.Position = [1          41        1920         963]; % Set to full screen (1920 pixel display)
+h.fig.Position = [1          41        1920         750]; % Set to full screen (1920 pixel display)
 
 % Plot a bunch of stuff at the first time step
 % Plot the position
@@ -209,11 +221,20 @@ h.thr(ii) = plot3(...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(2,:,1),...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(3,:,1),...
     'Color','k','Marker','o','LineWidth',1.5);
+% xlim([0,9])
+% ylim([-5,3])
+% zlim([90,100])
 hold on
 end
 h.title = title(sprintf('Time = %d',tsc.subBodyPos.Time(1)));
 
 set(gca,'FontSize',24)
+
+frame = getframe(h.fig );
+im = frame2im(frame);
+[imind,cm] = rgb2ind(im,256);
+
+imwrite(imind,cm,fileName,'gif', 'Loopcount',inf);
 
 for ii = 2:numel(timeVec)
     
@@ -233,5 +254,146 @@ for ii = 2:numel(timeVec)
     h.title.String = sprintf('Time = %d',tsc.subBodyPos.Time(ii));
     
     drawnow
+    
+    frame = getframe(h.fig); 
+    im = frame2im(frame); 
+    [imind,cm] = rgb2ind(im,256);
+    imwrite(imind,cm,fileName,'gif','WriteMode','append','DelayTime',0.05);
+    
+end
+
+%%
+
+for j = 1:3
+    initPos(j) = mean(tsc.subBodyPos.Data(j,:,:));
+end
+oceanDepth = initPos(3);
+
+sim('groundStation001_th')
+
+parseLogsout
+
+%%
+
+figure
+oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);
+diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
+plot(tsc.subBodyPos.Time,diff)
+xlabel('Time, t [s]')
+ylabel('Distance from Ocean Surface [m]')
+% Plot position
+figure
+subplot(3,1,1)
+plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)))
+grid on
+xlabel('Time, t [s]')
+ylabel('X Pos [m]')
+
+subplot(3,1,2)
+plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(2,:,:)))
+grid on
+xlabel('Time, t [s]')
+ylabel('Y Pos [m]')
+
+subplot(3,1,3)
+plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)))
+hold on
+plot(tsc.subBodyPos.Time,oH,'r')
+grid on
+xlabel('Time, t [s]')
+ylabel('Z Pos [m]')
+
+% Plot Euler angles
+figure
+subplot(3,1,1)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi)
+grid on
+xlabel('Time, t [s]')
+ylabel('Roll, [deg]')
+
+subplot(3,1,2)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi)
+grid on
+xlabel('Time, t [s]')
+ylabel('Pitch, [deg]')
+
+subplot(3,1,3)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi)
+grid on
+xlabel('Time, t [s]')
+ylabel('Yaw, [deg]')
+
+% Animate some stuff
+
+timeStep = 1;
+fileName = 'partSub_circ.gif';
+
+% Resample data to the animation framerate
+timeVec = 0:timeStep:tsc.subBodyPos.Time(end);
+numTethers = numel(tsc.anchThrNodeBusArry);
+for ii= 1:numTethers
+    tsc.anchThrNodeBusArry(ii).nodePositions = resample(tsc.anchThrNodeBusArry(ii).nodePositions,timeVec);
+    tsc.subBodyPos = resample(tsc.subBodyPos,timeVec);
+end   
+
+
+h.fig = figure; % Create figure
+h.fig.Position = [1          41        1920         750]; % Set to full screen (1920 pixel display)
+
+% Plot a bunch of stuff at the first time step
+% Plot the position
+h.position = scatter3(...
+    tsc.subBodyPos.Data(1,:,1),...
+    tsc.subBodyPos.Data(2,:,1),...
+    tsc.subBodyPos.Data(3,:,1),...
+    'CData',[1 0 0],'Marker','o','LineWidth',1.5);
+
+grid on
+hold on
+set(gca,'DataAspectRatio',[1 1 1]);
+for ii = 1:numTethers
+h.thr(ii) = plot3(...
+    tsc.anchThrNodeBusArry(ii).nodePositions.Data(1,:,1),...
+    tsc.anchThrNodeBusArry(ii).nodePositions.Data(2,:,1),...
+    tsc.anchThrNodeBusArry(ii).nodePositions.Data(3,:,1),...
+    'Color','k','Marker','o','LineWidth',1.5);
+% xlim([0,9])
+% ylim([-5,3])
+% zlim([90,100])
+hold on
+end
+h.title = title(sprintf('Time = %d',tsc.subBodyPos.Time(1)));
+
+set(gca,'FontSize',24)
+
+frame = getframe(h.fig );
+im = frame2im(frame);
+[imind,cm] = rgb2ind(im,256);
+
+imwrite(imind,cm,fileName,'gif', 'Loopcount',inf);
+
+for ii = 2:numel(timeVec)
+    
+    % Update the position dot
+    h.position.XData = tsc.subBodyPos.Data(1,:,ii);
+    h.position.YData = tsc.subBodyPos.Data(2,:,ii);
+    h.position.ZData = tsc.subBodyPos.Data(3,:,ii);
+    
+    % Update the tether geometry
+    for jj = 1:numTethers
+        h.thr(jj).XData = tsc.anchThrNodeBusArry(jj).nodePositions.Data(1,:,ii);
+        h.thr(jj).YData = tsc.anchThrNodeBusArry(jj).nodePositions.Data(2,:,ii);
+        h.thr(jj).ZData = tsc.anchThrNodeBusArry(jj).nodePositions.Data(3,:,ii);
+    end
+    
+    % Update the title
+    h.title.String = sprintf('Time = %d',tsc.subBodyPos.Time(ii));
+    
+    drawnow
+    
+    frame = getframe(h.fig); 
+    im = frame2im(frame); 
+    [imind,cm] = rgb2ind(im,256);
+    imwrite(imind,cm,fileName,'gif','WriteMode','append','DelayTime',0.05);
     
 end
