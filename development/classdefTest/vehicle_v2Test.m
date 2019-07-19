@@ -9,7 +9,7 @@ format compact
 % close alls
 
 %% common parameters
-lengthScale = 1/2;
+lengthScale = 1/1;
 densityScale = 1/1;
 numTethers = 1;
 thrNumNodes = 2;
@@ -83,8 +83,6 @@ vhcl.setFluidCoeffsFileName('someFile','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
-
-% % % calc aerodynamic center
 
 % % % plot
 vhcl.plot
