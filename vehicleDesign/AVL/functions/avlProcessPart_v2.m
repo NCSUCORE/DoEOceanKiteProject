@@ -1,16 +1,8 @@
-function avlProcessPart(obj,inputFileName,type,varargin)
+function avlProcessPart_v2(obj,inputFileName,alphas,ailerons,type,varargin)
 
 p = inputParser;
-addRequired(p,'Type',@(x) any(validatestring(x,{'single','sweep'})));
 addParameter(p,'Parallel',true,@islogical);
 parse(p,type,varargin{:})
-
-alphas      = obj.([type 'Case']).alpha;
-betas       = obj.([type 'Case']).beta;
-flaps       = obj.([type 'Case']).flap;
-elevators   = obj.([type 'Case']).elevator;
-ailerons    = obj.([type 'Case']).aileron;
-rudders     = obj.([type 'Case']).rudder;
 
 cd(fileparts(which('avl.exe')))
 
@@ -25,8 +17,7 @@ else
 end
 
 % Calculate total number of cases
-numCases = length(alphas)*length(betas)*length(flaps)*...
-    length(ailerons)*length(elevators)*length(rudders);
+numCases = length(alphas)*length(ailerons);
 
 % Vectors of all numbers
 % iterNums = 1:numCases;                  % Number to track which iteration we're on
@@ -45,7 +36,7 @@ cnt = 0;
 % Preallocate vector to hold run file names and open all those files\
 runFileNames = cell([1 batchNums(end)]);
 for ii = 1:length(runFileNames)
-    exeFileName  = strrep(obj.run_file_name,'.run','');
+    exeFileName  = strrep('runFile','.run','');
     exeFileName  = strcat(exeFileName,sprintf('_Batch%d.run',ii));
     exeFileName  = fullfile('.','output',exeFileName);
     runFileNames{ii} = exeFileName;
@@ -59,28 +50,15 @@ end
 fprintf('Running AVL...\n')
 for ii = 1:length(alphas)
     alpha = alphas(ii);
-    for jj = 1:length(betas)
-        beta = betas(jj);
-        for kk = 1:length(flaps)
-            flap = flaps(kk);
-            for mm = 1:length(ailerons)
-                aileron = ailerons(mm);
-                for nn = 1:length(elevators)
-                    elevator = elevators(nn);
-                    for pp = 1:length(rudders)
-                        rudder = rudders(pp);
-                        cnt = cnt+1;
-                        
-                        
-                        fid = fopen(runFileNames{batchNums(cnt)},'a');
-                        avlAppendRunFile(fid,caseNums(cnt),...
-                            alpha,beta,flap,aileron,elevator,rudder)
-                        fclose(fid);
-                        
-                    end
-                end
-            end
-        end
+    for mm = 1:length(ailerons)
+        aileron = ailerons(mm);
+        cnt = cnt+1;
+        
+        fid = fopen(runFileNames{batchNums(cnt)},'a');
+        avlAppendRunFile_v2(fid,caseNums(cnt),...
+            alpha,aileron)
+        fclose(fid);
+        
     end
 end
 % fclose('all');
@@ -107,10 +85,10 @@ if p.Results.Parallel % Then run in parallel
         [~,raw] = system(cmd_str);
         
         % Cleanup messy text output, put into structure
-        clean = avlOutputCleanup(obj,raw);
+        clean = avlOutputCleanup(raw);
         
         % Apply stall modelling corrections
-        aero = avlStallCorrectionPart(obj,clean);
+        aero = avlStallCorrectionPart_v2(obj,clean);
         
         % Save the results
         parsave(['.',filesep,'output',filesep, strrep(exeFiles(ii).name,'_exe','.mat')],aero)
@@ -129,7 +107,7 @@ else % Else run in series
         clean = avlOutputCleanup(raw);
         
         % Apply stall modelling corrections
-        aero = avlStallCorrectionPart(obj,clean);
+        aero = avlStallCorrectionPart_v2(obj,clean);
         
         % Save the results
         parsave(['.',filesep,'output',filesep, strrep(exeFiles(ii).name,'_exe','.mat')],aero)
@@ -146,7 +124,7 @@ for ii = 1:length(runFiles)
     batchNum = str2double(batchNum{1});
     results{batchNum} = aero;
 end
-save(obj.result_file_name,'results')
+save('resultFile','results')
 
 rmdir(outputDirectory,'s') % Delete temporary directory
 end

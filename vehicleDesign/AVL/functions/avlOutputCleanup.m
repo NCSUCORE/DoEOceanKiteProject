@@ -1,4 +1,4 @@
-function clean = avlOutputCleanup(obj,raw)
+function clean = avlOutputCleanup(raw)
 
 % Step 1: chop the text into sections, where each section is the result
 % from a single run
