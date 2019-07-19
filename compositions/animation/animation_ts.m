@@ -1,6 +1,6 @@
 clear all;clc;close all
 
-scaleFactor = 1;
+scaleFactor = 0.1;
 duration_s  = 1000;
 
 %% Set up simulation
@@ -167,12 +167,25 @@ ctrl.outputSat.lowerLimit.setValue(-30,'');
 timeVec = 0:0.1:duration_s;
 ctrl.pitchSP.Value = timeseries(8*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
-ctrl.rollSP.Value = timeseries(25*sign(sin(2*pi*timeVec/(100))),timeVec);
+ctrl.rollSP.Value = timeseries(5*sign(sin(2*pi*timeVec/(100))),timeVec);
 ctrl.rollSP.Value.Data(timeVec<50) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
 ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
+
+% Scale up/down
+env.scale(scaleFactor);
+% Scale up/down
+vhcl.scale(scaleFactor);
+% Scale up/down
+gndStn.scale(scaleFactor);
+% Scale up/down
+thr.scale(scaleFactor);
+% Scale up/down
+wnch.scale(scaleFactor);
+% Scale up/down
+ctrl = ctrl.scale(scaleFactor);
 
 
 
