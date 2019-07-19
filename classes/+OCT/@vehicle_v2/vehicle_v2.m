@@ -556,7 +556,7 @@ classdef vehicle_v2 < dynamicprops
             
             else
                 str = input(['  Specified file does not exist.',...
-                    'Would you like to run AVL and generate results for the new design? Y/N: \n'],'s');
+                    'Would you like to run AVL and generate results for the new design? (Y/N): \n'],'s');
                 if isempty(str)
                     str = 'N';
                 end
