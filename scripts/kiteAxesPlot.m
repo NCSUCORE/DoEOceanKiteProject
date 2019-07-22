@@ -102,8 +102,8 @@ for t=dispTimeVec
 
     %% Window Options
     if min(tsc.positionVec.Data(3,1,:))>0
-        xlim([-250 250])
-        ylim([-250 250])
+%         xlim([-250 250])
+%         ylim([-250 250])
         zlim([0 inf])
     end
     if exist('AZ','var') && exist('EL','var')

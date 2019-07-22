@@ -3,7 +3,7 @@ bdclose OCTModel
 OCTModel
 
 scaleFactor = 1;
-duration_s  = 150*sqrt(scaleFactor);
+duration_s  = 700*sqrt(scaleFactor);
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 
 %% Set up simulation
@@ -207,8 +207,8 @@ pathCtrl.add('FPIDNames',{'velAng','rollMoment'},...
 
 
 
-pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig'},...
-    'GainUnits',{'(deg)/(N*m)','rad','','','deg'})
+pathCtrl.add('GainNames',{'ctrlAllocMat','perpErrorVal','pathParams','searchSize','constantPitchSig','winchSpeedOut','winchSpeedIn','maxR','minR'},...
+    'GainUnits',{'(deg)/(N*m)','rad','','','deg','m/s','m/s','m','m'})
 
 allMat = zeros(4,3);
 allMat(1,1)=-1/(2*vhcl.aeroSurf1.GainCL.Value(2)*vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
@@ -221,6 +221,11 @@ pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 pathCtrl.searchSize.setValue(.5,'');
 
 pathCtrl.constantPitchSig.setValue(0,'deg');
+
+pathCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
+pathCtrl.winchSpeedIn.setValue(-flowspeed,'m/s')
+pathCtrl.maxR.setValue(300,'m')
+pathCtrl.minR.setValue(200,'m')
 
 %% flowspeed gains swaps
 switch flowspeed
@@ -307,9 +312,10 @@ parseLogsout;
 %% Plot choices
 errorSigsPlot = 1;
 velMagsPlot = 0 ;
-radialPosPlot = 0;
+radialPosPlot = 1;
 tetherTenMagPlot = 0;
 alphaLocalPlot = 1;
+powerPlot = 1;
 clcdPlots = 0;
 means = 0;
 animate = 1;
@@ -361,6 +367,15 @@ if alphaLocalPlot
     ylabel('Alpha on the Left Wing')
 end
 
+if powerPlot
+    figure
+    plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))))
+    xlabel('time (s)')
+    ylabel('Power (Watts)')
+    [~,poweri]=min(abs(tsc.winchSpeeds.Data-540));
+    ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
+    title(sprintf('Power vs Time; Average Power = %4.2f',mean(tsc.winchSpeeds.Data(1:poweri).*ten(1:poweri))));
+end
 if clcdPlots
     figure;
     subplot(2,2,1)
