@@ -54,7 +54,7 @@ vhcl.setHsAR(8,'');
 vhcl.setHsTR(0.8,'');
 vhcl.setHsSweep(5,'deg');
 vhcl.setHsDihedral(0,'deg');
-vhcl.setHsIncidence(-5,'deg');
+vhcl.setHsIncidence(0,'deg');
 vhcl.setHsNACA('0012','');
 vhcl.setHsClMaxl(1.75,'');
 vhcl.setHsClMin(-1.75,'');
@@ -79,7 +79,7 @@ vhcl.setInitialAngVel([0;0;0],'rad/s');
 vhcl.scaleVehicle
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile1','');
+vhcl.setFluidCoeffsFileName('someFile4','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
