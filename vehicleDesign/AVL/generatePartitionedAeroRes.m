@@ -20,7 +20,7 @@ Partdsgn1.lookup_table_file_name = 'partDsgn1_lookupTables';
 % Name for design in the input file
 Partdsgn1.design_name            = 'partDsgn1'; % String at top of input file defining the name
 
-Partdsgn1.reference_point = [1;0;0];
+Partdsgn1.reference_point = [1.2;0;0];
 
 Partdsgn1.wing_chord = 1;
 Partdsgn1.wing_AR = 10;
@@ -53,9 +53,9 @@ Partdsgn1.v_stab_airfoil_ClLimits = [-1.7 1.7];
 
 %% run AVL
 alpha_range = [-40 40];
-n_steps = 51;
+n_steps = 75;
 
-avlPartitioned(Partdsgn1,[-40 40],n_steps)
+avlPartitioned(Partdsgn1,[-55 55],n_steps)
 
 %% plot polars
 plotPartitionedPolars(Partdsgn1.lookup_table_file_name)

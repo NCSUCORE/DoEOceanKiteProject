@@ -561,7 +561,7 @@ classdef vehicle_v2 < dynamicprops
                     str = 'N';
                 end
                
-                if strcmp(str,'Y')
+                if strcmpi(str,'Y')
                     avlCreateInputFilePart_v2(obj)
                     
                     %% wing
