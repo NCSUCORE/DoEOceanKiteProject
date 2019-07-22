@@ -36,7 +36,7 @@ env.scale(scaleFactor);
 vhcl = OCT.vehicle;
 vhcl.numTethers.setValue(3,'');
 vhcl.numTurbines.setValue(2,'');
-vhcl.build('partDsgn2_lookupTables.mat');
+vhcl.build('partDsgn1_lookupTables.mat');
 
 % Set Values
 BF = 1.02;
@@ -96,7 +96,7 @@ gndStn.scale(scaleFactor);
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(3,'');
-thr.setNumNodes(3,'');
+thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
@@ -195,15 +195,15 @@ ctrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
 ctrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
 ctrl.tetherAlti.tau.setValue(0.5,'s');
 
-ctrl.tetherPitch.kp.setValue(1,'(m/s)/(rad)');
+ctrl.tetherPitch.kp.setValue(2,'(m/s)/(rad)');
 ctrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
-ctrl.tetherPitch.kd.setValue(0,'(m/s)/(rad/s)');
-ctrl.tetherPitch.tau.setValue(0.5,'s');
+ctrl.tetherPitch.kd.setValue(4,'(m/s)/(rad/s)');
+ctrl.tetherPitch.tau.setValue(0.1,'s');
 
-ctrl.tetherRoll.kp.setValue(0,'(m/s)/(rad)');
+ctrl.tetherRoll.kp.setValue(4,'(m/s)/(rad)');
 ctrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
-ctrl.tetherRoll.kd.setValue(0,'(m/s)/(rad/s)');
-ctrl.tetherRoll.tau.setValue(0.5,'s');
+ctrl.tetherRoll.kd.setValue(12,'(m/s)/(rad/s)');
+ctrl.tetherRoll.tau.setValue(0.01,'s');
 
 ctrl.thrAllocationMat.setValue([1 .5 -.5; 1 -.5 0; 1 .5 .5],'');
 
