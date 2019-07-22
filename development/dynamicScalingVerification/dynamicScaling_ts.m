@@ -1,10 +1,10 @@
 % clear;
+clearvars logsout
 clc
 format compact
 close all
 
-scaleFactor = 1/1;
-duration_s  = 50*sqrt(scaleFactor);
+duration_s = 250;
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -34,7 +34,7 @@ env.water.velVec.setValue([1 0 0],'m/s');
 vhcl = OCT.vehicle;
 vhcl.numTethers.setValue(3,'');
 vhcl.numTurbines.setValue(2,'');
-vhcl.build('partDsgn2_lookupTables.mat');
+vhcl.build('partDsgn1_hsIncAng_lookupTables.mat');
 
 % Set Values
 BF = 1.02;
@@ -98,7 +98,7 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(10e9,'Pa');
+thr.tether1.youngsMod.setValue(100e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.05,'');
 thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
@@ -106,12 +106,12 @@ thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(true,'');
 
-thr.tether2.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
+thr.tether2.initGndNodePos.setValue(gndStn.thrAttch2.posVec.Value(:),'m');
 thr.tether2.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch2.posVec.Value(:),'m');
 thr.tether2.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether2.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether2.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether2.youngsMod.setValue(10e9,'Pa');
+thr.tether2.youngsMod.setValue(100e9,'Pa');
 thr.tether2.dampingRatio.setValue(0.05,'');
 thr.tether2.dragCoeff.setValue(0.5,'');
 thr.tether2.density.setValue(1300,'kg/m^3');
@@ -119,12 +119,12 @@ thr.tether2.setDragEnable(true,'');
 thr.tether2.setSpringDamperEnable(true,'');
 thr.tether2.setNetBuoyEnable(true,'');
 
-thr.tether3.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
+thr.tether3.initGndNodePos.setValue(gndStn.thrAttch3.posVec.Value(:),'m');
 thr.tether3.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch3.posVec.Value(:),'m');
 thr.tether3.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether3.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether3.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether3.youngsMod.setValue(10e9,'Pa');
+thr.tether3.youngsMod.setValue(100e9,'Pa');
 thr.tether3.dampingRatio.setValue(0.05,'');
 thr.tether3.dragCoeff.setValue(0.5,'');
 thr.tether3.density.setValue(1300,'kg/m^3');
@@ -143,15 +143,15 @@ wnch.build;
 % Set values
 wnch.winch1.maxSpeed.setValue(1,'m/s');
 wnch.winch1.timeConst.setValue(1,'s');
-wnch.winch1.maxAccel.setValue(inf,'m/s^2');
+wnch.winch1.maxAccel.setValue(10e10,'m/s^2');
 
 wnch.winch2.maxSpeed.setValue(1,'m/s');
 wnch.winch2.timeConst.setValue(1,'s');
-wnch.winch2.maxAccel.setValue(inf,'m/s^2');
+wnch.winch2.maxAccel.setValue(10e10,'m/s^2');
 
 wnch.winch3.maxSpeed.setValue(1,'m/s');
 wnch.winch3.timeConst.setValue(1,'s');
-wnch.winch3.maxAccel.setValue(inf,'m/s^2');
+wnch.winch3.maxAccel.setValue(10e10,'m/s^2');
 
 wnch = wnch.setTetherInitLength(vhcl,env,thr);
 
@@ -182,7 +182,7 @@ ctrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
 ctrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
 ctrl.tetherAlti.tau.setValue(0.5,'s');
 
-ctrl.tetherPitch.kp.setValue(1,'(m/s)/(rad)');
+ctrl.tetherPitch.kp.setValue(0,'(m/s)/(rad)');
 ctrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
 ctrl.tetherPitch.kd.setValue(0,'(m/s)/(rad/s)');
 ctrl.tetherPitch.tau.setValue(0.5,'s');
@@ -232,9 +232,11 @@ ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
 
 
-
 %% Run first sim
-simWithMonitor('OCTModel',5)
+try
+    sim('OCTModel');
+catch
+end
 tsc1 = parseLogsout;
 clearvars logsout
 
@@ -256,15 +258,18 @@ ctrl = ctrl.scale(scaleFactor);
 
 
 %% Run second sim
-simWithMonitor('OCTModel',5)
+try
+    sim('OCTModel');
+catch
+end
 tsc2 = parseLogsout;
 
 %% Post Process
 sigs = fieldnames(tsc2);
 for ii = 1:length(sigs)
     try
-    tsc2.(sigs{ii}).Time = tsc2.(sigs{ii}).Time/sqrt(scaleFactor);
-    catch 
+        tsc2.(sigs{ii}).Time = tsc2.(sigs{ii}).Time/sqrt(scaleFactor);
+    catch
         warning('Skipping %s',sigs{ii})
     end
 end
@@ -301,6 +306,39 @@ plot(tsc2.eulerAngles.Time,squeeze(tsc2.eulerAngles.Data(3,:,:)),...
 xlabel('Normalized Time')
 ylabel('Yaw, [rad]')
 set(findall(gcf,'Type','axes'),'FontSize',24)
+
+figure
+subplot(3,1,1)
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(1,:,:))*scaleFactor,...
+    'DisplayName','Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+grid on
+hold on
+plot(tsc2.positionVec.Time,squeeze(tsc2.positionVec.Data(1,:,:)),...
+    'DisplayName','Scaled','LineWidth',1.5,'Color','r','LineStyle','--')
+xlabel('Normalized Time')
+ylabel('X Normed')
+
+subplot(3,1,2)
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(2,:,:))*scaleFactor,...
+    'DisplayName','Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+grid on
+hold on
+plot(tsc2.positionVec.Time,squeeze(tsc2.positionVec.Data(2,:,:)),...
+    'DisplayName','Scaled','LineWidth',1.5,'Color','r','LineStyle','--')
+xlabel('Normalized Time')
+ylabel('Y Normed')
+
+subplot(3,1,3)
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(3,:,:))*scaleFactor,...
+    'DisplayName','Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+grid on
+hold on
+plot(tsc2.positionVec.Time,squeeze(tsc2.positionVec.Data(3,:,:)),...
+    'DisplayName','Scaled','LineWidth',1.5,'Color','r','LineStyle','--')
+xlabel('Normalized Time')
+ylabel('Z Normed')
+set(findall(gcf,'Type','axes'),'FontSize',24)
+
 
 %% Plot moments breakdown
 figure
@@ -422,22 +460,3 @@ plot(tsc2.MBuoyBdy.Time,squeeze(tsc2.MBuoyBdy.Data(3,:,:)),...
 ylabel('Mz Buoy')
 
 linkaxes(findall(gcf,'Type','axes'),'x')
-
-%% Plot local angles of attack
-format compact
-clc
-tsc1.CL.Data(:,:,1)-tsc2.CL.Data(:,:,1)
-tsc1.CD.Data(:,:,1)-tsc2.CD.Data(:,:,1)
-tsc1.alphaLocal.Data(:,:,1)-tsc2.alphaLocal.Data(:,:,1)
-tsc1.MFluidBdy.Data(:,:,1)*(scaleFactor^4)-tsc2.MFluidBdy.Data(:,:,1)
-
-tsc1.FFluidBdy.Data(:,:,1)*(scaleFactor^3)-tsc2.FFluidBdy.Data(:,:,1)
-tsc1.FTurb1Bdy.Data(:,:,1)*(scaleFactor^3)-tsc2.FTurb1Bdy.Data(:,:,1)
-tsc1.FGravBdy.Data(:,:,1)*(scaleFactor^3)-tsc2.FGravBdy.Data(:,:,1)
-tsc1.FBuoyBdy.Data(:,:,1)*(scaleFactor^3)-tsc2.FBuoyBdy.Data(:,:,1)
-tsc1.FThrNetBdy.Data(:,:,1)*(scaleFactor^3)-tsc2.FThrNetBdy.Data(:,:,1)
-
-tsc1.airTenVecBusArry.tenVec.Data(:,:,1)*(scaleFactor^3)-tsc2.airTenVecBusArry.tenVec.Data(:,:,1)
-
-
-
