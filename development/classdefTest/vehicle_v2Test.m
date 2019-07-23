@@ -33,7 +33,7 @@ vhcl.setIxy(0,'kg*m^2');
 vhcl.setIxz(81875397.942*1e-6,'kg*m^2');
 vhcl.setIyz(0,'kg*m^2');
 vhcl.setRcb_cm([0;0;0],'m');
-vhcl.setRbridle_cm([0;0;-2],'m');
+vhcl.setRbridle_cm([0;0;0],'m');
 
 % % % wing
 vhcl.setRwingLE_cm([-1;0;0],'m');
