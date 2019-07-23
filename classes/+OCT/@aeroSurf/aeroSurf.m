@@ -2,7 +2,7 @@ classdef aeroSurf < handle
     %AEROSURF Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties (SetAccess = {?OCT.vehicle})
         refArea
         aeroCentPosVec
         spanUnitVec
@@ -12,9 +12,11 @@ classdef aeroSurf < handle
         alpha
         GainCL
         GainCD
+        RBdy2Surf
+    end
+    properties (SetAccess = public)
         MaxCtrlDeflDn
         MaxCtrlDeflUp
-        RBdy2Surf
     end
     
     methods
