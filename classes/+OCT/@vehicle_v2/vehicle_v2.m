@@ -561,7 +561,7 @@ classdef vehicle_v2 < dynamicprops
                     str = 'N';
                 end
                
-                if strcmp(str,'Y')
+                if strcmpi(str,'Y')
                     avlCreateInputFilePart_v2(obj)
                     
                     %% wing
@@ -599,8 +599,9 @@ classdef vehicle_v2 < dynamicprops
                     CD_kWing(end) = 0;
                     
                     % port wing data
+                    CdOffset = 0.01;
                     aeroStruct(1).CL = reshape(CLWingTab.Table.Value,[],1);
-                    aeroStruct(1).CD = reshape(CDWingTab.Table.Value,[],1);
+                    aeroStruct(1).CD = reshape(CDWingTab.Table.Value,[],1) + CdOffset;
                     aeroStruct(1).alpha = reshape(CDWingTab.Breakpoints.Value,[],1);
                     aeroStruct(1).GainCL = reshape(CL_kWing,1,[]);
                     aeroStruct(1).GainCD =  reshape(CD_kWing,1,[]);
@@ -647,7 +648,7 @@ classdef vehicle_v2 < dynamicprops
                     
                     % HS data
                     aeroStruct(3).CL = reshape(CLHSTab.Table.Value,[],1);
-                    aeroStruct(3).CD = reshape(CDHSTab.Table.Value,[],1);
+                    aeroStruct(3).CD = reshape(CDHSTab.Table.Value,[],1) + CdOffset;
                     aeroStruct(3).alpha = reshape(CDHSTab.Breakpoints.Value,[],1);
                     aeroStruct(3).GainCL = reshape(CL_kHS,1,[]);
                     aeroStruct(3).GainCD =  reshape(CD_kHS,1,[]);
@@ -684,7 +685,7 @@ classdef vehicle_v2 < dynamicprops
                     CD_kVS(end) = 0;
                     
                     aeroStruct(4).CL = reshape(CLVSTab.Table.Value,[],1);
-                    aeroStruct(4).CD = reshape(CDVSTab.Table.Value,[],1);
+                    aeroStruct(4).CD = reshape(CDVSTab.Table.Value,[],1) + CdOffset;
                     aeroStruct(4).alpha = reshape(CDVSTab.Breakpoints.Value,[],1);
                     aeroStruct(4).GainCL = reshape(CL_kVS,1,[]);
                     aeroStruct(4).GainCD =  reshape(CD_kVS,1,[]);

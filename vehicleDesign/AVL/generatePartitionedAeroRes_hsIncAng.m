@@ -14,13 +14,13 @@ Partdsgn1.input_file_name        = 'partDsgn1.avl'; % File name for .avl file
 Partdsgn1.run_file_name          = 'testRunFile.run';
 Partdsgn1.exe_file_name          = 'exeFile';
 % Output file names
-Partdsgn1.result_file_name       = 'partDsgn1_results';
-Partdsgn1.lookup_table_file_name = 'partDsgn1_lookupTables';
+Partdsgn1.result_file_name       = 'partDsgn1_hsIncAng_results';
+Partdsgn1.lookup_table_file_name = 'partDsgn1_hsIncAng_lookupTables';
 
 % Name for design in the input file
-Partdsgn1.design_name            = 'partDsgn1'; % String at top of input file defining the name
+Partdsgn1.design_name            = 'partDsgn1_hsIncAng'; % String at top of input file defining the name
 
-Partdsgn1.reference_point = [1.2;0;0];
+Partdsgn1.reference_point = [0;0;0];
 
 Partdsgn1.wing_chord = 1;
 Partdsgn1.wing_AR = 10;
@@ -53,10 +53,10 @@ Partdsgn1.v_stab_airfoil_ClLimits = [-1.7 1.7];
 
 %% run AVL
 alpha_range = [-40 40];
-n_steps = 75;
+n_steps = 51;
 
-avlPartitioned(Partdsgn1,[-55 55],n_steps)
+avlPartitioned_hsIncAng(Partdsgn1,[-40 40],n_steps)
 
 %% plot polars
-plotPartitionedPolars(Partdsgn1.lookup_table_file_name)
+plotPartitionedPolars('partDsgn1_hsIncAng_lookupTables.mat')
 

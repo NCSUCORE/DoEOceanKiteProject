@@ -107,7 +107,7 @@ if p.Results.Parallel % Then run in parallel
         [~,raw] = system(cmd_str);
         
         % Cleanup messy text output, put into structure
-        clean = avlOutputCleanup(obj,raw);
+        clean = avlOutputCleanup(raw);
         
         % Apply stall modelling corrections
         aero = avlStallCorrectionPart(obj,clean);
