@@ -2,7 +2,7 @@ classdef aeroSurf < handle
     %AEROSURF Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties (SetAccess = {?OCT.vehicle})
+    properties (SetAccess = {?OCT.vehicle_v2})
         refArea
         aeroCentPosVec
         spanUnitVec

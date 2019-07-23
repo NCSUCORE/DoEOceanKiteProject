@@ -92,6 +92,7 @@ classdef vehicle < dynamicprops
             
             
         end % end build
+        
         function val = get.inertia(obj)
             val = SIM.parameter('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
                 -abs(obj.Ixy.Value) obj.Iyy.Value -abs(obj.Iyz.Value);...

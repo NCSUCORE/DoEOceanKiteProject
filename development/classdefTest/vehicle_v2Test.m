@@ -11,12 +11,13 @@ format compact
 %% common parameters
 lengthScale = 1/1;
 densityScale = 1/1;
-numTethers = 1;
+numTethers = 3;
 thrNumNodes = 2;
 numTurbines = 2;
 
 %% lifiting body
 vhcl = OCT.vehicle_v2;
+vhcl.build;
 
 vhcl.setLengthScale(lengthScale,'');
 vhcl.setDensityScale(densityScale,'');
@@ -75,11 +76,8 @@ vhcl.setInitialCmVel([0;0;0],'m/s');
 vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
-% % % scale the vehicle
-vhcl.scaleVehicle
-
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile4','');
+vhcl.setFluidCoeffsFileName('someFile1','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
