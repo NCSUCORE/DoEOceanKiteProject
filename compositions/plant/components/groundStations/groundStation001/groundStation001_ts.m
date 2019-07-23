@@ -1,4 +1,4 @@
-close all;clc
+% close all;clc
 
 load('mag.mat')
 load('pos.mat')
@@ -6,12 +6,12 @@ load('pos.mat')
 % clear
 
 % run this to set magnitude to zero %
-mag.Data = zeros;
+% mag.Data = zeros;
 
-% % run this to set magnitude to average magnitude %
+% % % run this to set magnitude to average magnitude %
 % mag.Data = mean(mag.Data)*ones(size(mag.Data));
-% 
-% % run this to set average direction %
+% % 
+% % % run this to set average direction %
 % for i = 1:3
 %     position.Data(:,i) = mean(position.Data(:,i))*ones(size(position.Data(:,i)));
 % end
@@ -23,7 +23,7 @@ createThrAttachPtKinematicsBus
 createThrTenVecBus
 
 % simulation time
-sim_time = 300;
+sim_time = 1800;
 
 % geometry of platform
 platformVolume = 3.5;
@@ -158,16 +158,16 @@ ctrl.add('SaturationNames',{'outputSat'});
 ctrl.add('SetpointNames',{'surgeSP','swaySP','heaveSP'},...
     'SetpointUnits',{'m','m','m'});
 
-ctrl.surge.kp.setValue(1,'(m/s)/(m)');
-ctrl.surge.kd.setValue(0*ctrl.surge.kp.Value,'(m/s)/(m/s)');
+ctrl.surge.kp.setValue(.05,'(m/s)/(m)');
+ctrl.surge.kd.setValue(12*ctrl.surge.kp.Value,'(m/s)/(m/s)');
 ctrl.surge.tau.setValue(.1,'s');
 
-ctrl.sway.kp.setValue(1,'(m/s)/(m)');
-ctrl.sway.kd.setValue(0*ctrl.sway.kp.Value,'(m/s)/(m/s)');
+ctrl.sway.kp.setValue(.05,'(m/s)/(m)');
+ctrl.sway.kd.setValue(12*ctrl.sway.kp.Value,'(m/s)/(m/s)');
 ctrl.sway.tau.setValue(.1,'s');
 
-ctrl.heave.kp.setValue(1,'(m/s)/(m)');
-ctrl.heave.kd.setValue(0*ctrl.heave.kp.Value,'(m/s)/(m/s)');
+ctrl.heave.kp.setValue(.15,'(m/s)/(m)');
+ctrl.heave.kd.setValue(20*ctrl.heave.kp.Value,'(m/s)/(m/s)');
 ctrl.heave.tau.setValue(.1,'s');
 
 ctrl.outputSat.upperLimit.setValue(.4,'');
@@ -182,16 +182,17 @@ ctrl.heaveSP.Value = timeseries(100*ones(size(timeV)),timeV);
 % ctrl.surgeSP.Value.DataInfo.Units = 'm';
 
 surge1 = -dist + sqrt(dist^2+1);
-surge1 = 0
+% surge1 = 0;
 surge2 = -dist + sqrt(dist^2+1-2*dist*cosd(30));
 surge3 = -dist + sqrt(dist^2+1-2*dist*cosd(120));
 surgeVec = [0 0 0]';
-% surgeVec = [surge1 surge2 surge3]';
-% surgeVec = surgeVec/norm(surgeVec);
-swayNum = -dist + sqrt(dist^2+1^2-2*dist*cosd(60));
+surgeVec = [surge1 surge2 surge3]';
+surgeVec = surgeVec/norm(surgeVec);
+swayNumPos = -dist + sqrt(dist^2+1^2-2*dist*cosd(60));
+swayNumNeg = -dist + sqrt(dist^2+1^2-2*dist*cosd(120));
 swayVec = [0 0 0]';
-% swayVec = [-1 -swayNum -swayNum]';
-% swayVec = swayVec/norm(swayVec);
+swayVec = [-1 -swayNum -swayNum]';
+swayVec = swayVec/norm(swayVec);
 heaveNum = -sqrt(mean(ctrl.heaveSP.Value.Data)^2+dist^2) + sqrt((mean(ctrl.heaveSP.Value.Data)+1)^2+dist^2);
 heaveVec = [0 0 0]';
 heaveVec = [heaveNum heaveNum heaveNum]';
@@ -200,6 +201,16 @@ heaveVec = heaveVec/norm(heaveVec);
 % ctrl.thrAllocationMat.setValue(-1.*[surge1 surge2 surge3;-1 -swayNum -swayNum;-heaveNum -heaveNum -heaveNum]','1/s')
 ctrl.thrAllocationMat.setValue([surgeVec,swayVec,heaveVec],'1/s')
 ctrl.thrAllocationMat.Value
+
+posSurgeVec = [0 0 0];
+negSurgeVec = [0 0 0];
+posSurgeVec = [surge1 surge2 surge3];
+negSurgeVec = -1.*[-1*surge1 surge3 surge2];
+
+posSwayVec = [0 0 0];
+negSwayVec = [0 0 0];
+negSwayVec = [-1 -swayNumPos -swayNumPos];
+posSwayVec = -1.*[1 -swayNumNeg -swayNumNeg];
 
 % circulation data
 v = 0;
@@ -213,7 +224,7 @@ zOn = 1;
 % ocean properties
 waveAmp = 1.5;
 wavePeriod = oceanPeriod;
-oceanDepth = 105;
+oceanDepth = 110;
 
 sim('groundStation001_th')
 
@@ -221,15 +232,15 @@ parseLogsout
 
 
 %%
-close all
+% close all
 
 parseLogsout
-figure
-oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);
-diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
-plot(tsc.subBodyPos.Time,diff)
-xlabel('Time, t [s]')
-ylabel('Distance from Ocean Surface [m]')
+% figure
+% oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);
+% diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
+% plot(tsc.subBodyPos.Time,diff)
+% xlabel('Time, t [s]')
+% ylabel('Distance from Ocean Surface [m]')
 
 % Plot position
 figure
@@ -252,31 +263,31 @@ ylabel('Y Pos [m]')
 subplot(3,1,3)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
 hold on
-plot(tsc.subBodyPos.Time,oH)
+% plot(tsc.subBodyPos.Time,oH)
 plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
 
-% Plot Euler angles
-figure
-subplot(3,1,1)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi)
-grid on
-xlabel('Time, t [s]')
-ylabel('Roll, [deg]')
-
-subplot(3,1,2)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi)
-grid on
-xlabel('Time, t [s]')
-ylabel('Pitch, [deg]')
-
-subplot(3,1,3)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi)
-grid on
-xlabel('Time, t [s]')
-ylabel('Yaw, [deg]')
+% % Plot Euler angles
+% figure
+% subplot(3,1,1)
+% plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi)
+% grid on
+% xlabel('Time, t [s]')
+% ylabel('Roll, [deg]')
+% 
+% subplot(3,1,2)
+% plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi)
+% grid on
+% xlabel('Time, t [s]')
+% ylabel('Pitch, [deg]')
+% 
+% subplot(3,1,3)
+% plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi)
+% grid on
+% xlabel('Time, t [s]')
+% ylabel('Yaw, [deg]')
 
 % Animate some stuff
 
@@ -288,6 +299,7 @@ figure
 tsc.winchSpeeds.plot
 legend('1','2','3')
 
+%%
 timeStep = 1;
 % fileName = 'sub_circ.gif';
 
