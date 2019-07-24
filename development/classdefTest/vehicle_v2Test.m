@@ -32,7 +32,7 @@ vhcl.setIzz(8.320369733598E+09*1e-6,'kg*m^2');
 vhcl.setIxy(0,'kg*m^2');
 vhcl.setIxz(81875397.942*1e-6,'kg*m^2');
 vhcl.setIyz(0,'kg*m^2');
-vhcl.setRcb_cm([0;0;0],'m');
+vhcl.setCentOfBuoy([0;0;0],'m');
 vhcl.setRbridle_cm([0;0;0],'m');
 
 % % % wing
@@ -76,7 +76,7 @@ vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile8','');
+vhcl.setFluidCoeffsFileName('someFile1','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs

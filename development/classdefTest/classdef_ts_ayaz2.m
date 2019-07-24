@@ -4,7 +4,7 @@ format compact
 close all
 
 scaleFactor = 1/1;
-duration_s  = 500*sqrt(scaleFactor);
+duration_s  = 400*sqrt(scaleFactor);
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -31,45 +31,83 @@ env.water.velVec.setValue([1 0 0],'m/s');
 % Scale up/down
 env.scale(scaleFactor);
 
-%% Vehicle
-% Create
-vhcl = OCT.vehicle;
-vhcl.numTethers.setValue(3,'');
-vhcl.numTurbines.setValue(2,'');
-vhcl.build('partDsgn1_lookupTables.mat');
+%% common parameters
+lengthScale = 1/1;
+densityScale = 1/1;
+numTethers = 3;
+thrNumNodes = 2;
+numTurbines = 2;
 
-% Set Values
-BF = 1.25;
-vhcl.Ixx.setValue(6303.1,'kg*m^2');
-vhcl.Iyy.setValue(2080.7,'kg*m^2');
-vhcl.Izz.setValue(8320.4,'kg*m^2');
-vhcl.Ixy.setValue(0,'kg*m^2');
-vhcl.Ixz.setValue(0.0,'kg*m^2');
-vhcl.Iyz.setValue(0,'kg*m^2');
-vhcl.volume.setValue(945352023e-9,'m^3');
-vhcl.mass.setValue(vhcl.volume.Value*1000/BF,'kg');
+%% lifiting body
+vhcl = OCT.vehicle_v2;
 
-vhcl.centOfBuoy.setValue([ 0 0 0]','m');
-vhcl.thrAttch1.posVec.setValue([-0.25   -5.0000         0]','m');
-vhcl.thrAttch2.posVec.setValue([ 5.75         0         0]','m');
-vhcl.thrAttch3.posVec.setValue([-0.25    5.0000         0]','m');
+vhcl.setLengthScale(lengthScale,'');
+vhcl.setDensityScale(densityScale,'');
+vhcl.setNumTethers(numTethers,'');
+vhcl.setNumTurbines(numTurbines,'');
+vhcl.setBuoyFactor(1.00,'');
 
-vhcl.setICs('InitPos',[0 0 50],'InitEulAng',[0 3 0]*pi/180,'InitVel',[1 0 0]);
+% % % volume and inertias
+vhcl.setVolume(945352023.474*1e-9,'m^3');
+vhcl.setIxx(6.303080401918E+09*1e-6,'kg*m^2');
+vhcl.setIyy(2080666338.077*1e-6,'kg*m^2');
+vhcl.setIzz(8.320369733598E+09*1e-6,'kg*m^2');
+vhcl.setIxy(0,'kg*m^2');
+vhcl.setIxz(81875397.942*1e-6,'kg*m^2');
+vhcl.setIyz(0,'kg*m^2');
+vhcl.setCentOfBuoy([0;0;0],'m');
+vhcl.setRbridle_cm([0;0;0],'m');
 
-vhcl.turbine1.diameter.setValue(0,'m');
-vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
-vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
-vhcl.turbine1.powerCoeff.setValue(0.5,'');
-vhcl.turbine1.dragCoeff.setValue(0.8,'');
+% % % wing
+vhcl.setRwingLE_cm([-1;0;0],'m');
+vhcl.setWingChord(1,'m');
+vhcl.setWingAR(10,'');
+vhcl.setWingTR(0.8,'');
+vhcl.setWingSweep(2,'deg');
+vhcl.setWingDihedral(0,'deg');
+vhcl.setWingIncidence(0,'deg');
+vhcl.setWingNACA('4412','');
+vhcl.setWingClMax(1.75,'');
+vhcl.setWingClMin(-1.75,'');
 
-vhcl.turbine2.diameter.setValue(0,'m');
-vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
-vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
-vhcl.turbine2.powerCoeff.setValue(0.5,'');
-vhcl.turbine2.dragCoeff.setValue(0.8,'');
+% % % H-stab
+vhcl.setRhsLE_wingLE([6;0;0],'m');
+vhcl.setHsChord(0.6,'m');
+vhcl.setHsAR(8,'');
+vhcl.setHsTR(0.8,'');
+vhcl.setHsSweep(5,'deg');
+vhcl.setHsDihedral(0,'deg');
+vhcl.setHsIncidence(0,'deg');
+vhcl.setHsNACA('0012','');
+vhcl.setHsClMaxl(1.75,'');
+vhcl.setHsClMin(-1.75,'');
 
-% Scale up/down
-vhcl.scale(scaleFactor);
+% % % V-stab
+vhcl.setRvs_wingLE([6;0;0],'m');
+vhcl.setVsChord(0.6,'m');
+vhcl.setVsSpan(2.5,'m');
+vhcl.setVsTR(0.8,'');
+vhcl.setVsSweep(10,'deg');
+vhcl.setVsNACA('0012','');
+vhcl.setVsClMax(1.75,'');
+vhcl.setVsClMin(-1.75,'');
+
+% % % initial conditions
+vhcl.setInitialCmPos([0;0;50],'m');
+vhcl.setInitialCmVel([0;0;0],'m/s');
+vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
+vhcl.setInitialAngVel([0;0;0],'rad/s');
+
+% % % data file name
+vhcl.setFluidCoeffsFileName('someFile1','');
+
+% % % load/generate fluid dynamic data
+vhcl.calcFluidDynamicCoefffs
+
+% % % plot
+vhcl.plot
+% vhcl.plotCoeffPolars
+
 
 %% Ground Station
 % Create
@@ -83,10 +121,10 @@ gndStn.posVec.setValue([0 0 0],'m');
 gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)');
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
-gndStn.thrAttch1.posVec.setValue([-0.25   -5.0000         0],'m');
-gndStn.thrAttch2.posVec.setValue([ 5.75         0         0],'m');
-gndStn.thrAttch3.posVec.setValue([-0.25    5.0000         0],'m');
-gndStn.freeSpnEnbl.setValue(false,'');
+gndStn.thrAttch1.posVec.setValue(vhcl.thrAttchPts(1).posVec.Value,'m');
+gndStn.thrAttch2.posVec.setValue(vhcl.thrAttchPts(2).posVec.Value,'m');
+gndStn.thrAttch3.posVec.setValue(vhcl.thrAttchPts(3).posVec.Value,'m');
+gndStn.freeSpnEnbl.setValue(true,'');
 
 
 % Scale up/down
@@ -100,11 +138,10 @@ thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thrDia = 0.005;
-
+thrDia = 0.0075;
 
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
-thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttchPts(1).posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
@@ -117,8 +154,8 @@ thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(false,'');
 thr.tether1.setDiameter(thrDia,'m');
 
-thr.tether2.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
-thr.tether2.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch2.posVec.Value(:),'m');
+thr.tether2.initGndNodePos.setValue(gndStn.thrAttch2.posVec.Value(:),'m');
+thr.tether2.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttchPts(2).posVec.Value,'m');
 thr.tether2.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether2.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether2.vehicleMass.setValue(vhcl.mass.Value,'kg');
@@ -131,8 +168,8 @@ thr.tether2.setSpringDamperEnable(true,'');
 thr.tether2.setNetBuoyEnable(false,'');
 thr.tether2.setDiameter(thrDia*sqrt(2),'m');
 
-thr.tether3.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
-thr.tether3.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch3.posVec.Value(:),'m');
+thr.tether3.initGndNodePos.setValue(gndStn.thrAttch3.posVec.Value(:),'m');
+thr.tether3.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttchPts(3).posVec.Value,'m');
 thr.tether3.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether3.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether3.vehicleMass.setValue(vhcl.mass.Value,'kg');
@@ -158,15 +195,15 @@ wnch.numWinches.setValue(3,'');
 wnch.build;
 % Set values
 wnch.winch1.maxSpeed.setValue(1,'m/s');
-wnch.winch1.timeConst.setValue(1,'s');
+wnch.winch1.timeConst.setValue(0.05,'s');
 wnch.winch1.maxAccel.setValue(inf,'m/s^2');
 
 wnch.winch2.maxSpeed.setValue(1,'m/s');
-wnch.winch2.timeConst.setValue(1,'s');
+wnch.winch2.timeConst.setValue(0.05,'s');
 wnch.winch2.maxAccel.setValue(inf,'m/s^2');
 
 wnch.winch3.maxSpeed.setValue(1,'m/s');
-wnch.winch3.timeConst.setValue(1,'s');
+wnch.winch3.timeConst.setValue(0.05,'s');
 wnch.winch3.maxAccel.setValue(inf,'m/s^2');
 
 wnch = wnch.setTetherInitLength(vhcl,env,thr);
@@ -199,16 +236,16 @@ ctrl.add('SetpointNames',{'altiSP','pitchSP','rollSP','yawSP'},...
 ctrl.tetherAlti.kp.setValue(0,'(m/s)/(m)');
 ctrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
 ctrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
-ctrl.tetherAlti.tau.setValue(0.5,'s');
+ctrl.tetherAlti.tau.setValue(5,'s');
 
-ctrl.tetherPitch.kp.setValue(1*0,'(m/s)/(rad)');
+ctrl.tetherPitch.kp.setValue(2,'(m/s)/(rad)');
 ctrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
-ctrl.tetherPitch.kd.setValue(2*0,'(m/s)/(rad/s)');
+ctrl.tetherPitch.kd.setValue(4,'(m/s)/(rad/s)');
 ctrl.tetherPitch.tau.setValue(0.1,'s');
 
-ctrl.tetherRoll.kp.setValue(0,'(m/s)/(rad)');
+ctrl.tetherRoll.kp.setValue(4,'(m/s)/(rad)');
 ctrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
-ctrl.tetherRoll.kd.setValue(0,'(m/s)/(rad/s)');
+ctrl.tetherRoll.kd.setValue(12,'(m/s)/(rad/s)');
 ctrl.tetherRoll.tau.setValue(0.01,'s');
 
 ctrl.thrAllocationMat.setValue([1 .5 -.5; 1 -.5 0; 1 .5 .5],'');
@@ -237,14 +274,17 @@ ctrl.outputSat.lowerLimit.setValue(-30,'');
 
 % Calculate setpoints
 timeVec = 0:0.1:duration_s;
-ctrl.altiSP.Value = timeseries(100*ones(size(timeVec)),timeVec);
+ctrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
 ctrl.altiSP.Value.DataInfo.Units = 'm';
 
-ctrl.pitchSP.Value = timeseries(5*ones(size(timeVec)),timeVec);
+ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 
-ctrl.rollSP.Value = timeseries(25*sign(sin(2*pi*timeVec/(120))),timeVec);
-ctrl.rollSP.Value.Data(timeVec<120) = 0;
+Yswitch = 15;
+rollAmp = 20;
+
+ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(100))),timeVec);
+ctrl.rollSP.Value.Data(timeVec<0) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 
 ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
@@ -263,4 +303,5 @@ end
 
 plotAyaz
 
+fullKitePlot
 

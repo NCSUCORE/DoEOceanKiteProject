@@ -17,7 +17,7 @@ classdef vehicle_v2 < dynamicprops
         Ixz
         Iyz
         % center of buoyancy
-        Rcb_cm
+        centOfBuoy
         % bridle location
         Rbridle_cm
         % aero properties
@@ -60,15 +60,15 @@ classdef vehicle_v2 < dynamicprops
         hStab
         vStab
         % intial conditions
-        init_inertialCmPos
-        init_inertialCmVel
-        init_euler
-        init_angVel
+        initPosVecGnd
+        initVelVecGnd
+        initEulAngBdy
+        initAngVelVecBdy
     end
     
     properties (Dependent)
         mass
-        MI
+        inertia
         addedMass
         addedInertia
         surfaceOutlines
@@ -97,7 +97,7 @@ classdef vehicle_v2 < dynamicprops
             obj.Iyz            = SIM.parameter('Unit','kg*m^2','Description','Iyz');
             % some vectors
             obj.Rbridle_cm    = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
-            obj.Rcb_cm        = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
+            obj.centOfBuoy        = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
             % fluid coeffs file name
             obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data');
             % defining aerodynamic surfaces
@@ -148,10 +148,10 @@ classdef vehicle_v2 < dynamicprops
             obj.vStab.spanUnitVec.setValue([0;0;1],'');
             obj.vStab.chordUnitVec.setValue([1;0;0],'');
             % initial conditions
-            obj.init_inertialCmPos = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
-            obj.init_inertialCmVel = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the inertial frame');
-            obj.init_euler         = SIM.parameter('Unit','rad','Description','Initial Euler angles');
-            obj.init_angVel        = SIM.parameter('Unit','rad/s','Description','Initial angular velocities');
+            obj.initPosVecGnd = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
+            obj.initVelVecGnd = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the inertial frame');
+            obj.initEulAngBdy         = SIM.parameter('Unit','rad','Description','Initial Euler angles');
+            obj.initAngVelVecBdy        = SIM.parameter('Unit','rad/s','Description','Initial angular velocities');
         end
         
         %% setters
@@ -203,8 +203,8 @@ classdef vehicle_v2 < dynamicprops
             obj.Iyz.setValue(val,units);
         end
         
-        function setRcb_cm(obj,val,units)
-            obj.Rcb_cm.setValue(reshape(val,3,1),units);
+        function setCentOfBuoy(obj,val,units)
+            obj.centOfBuoy.setValue(reshape(val,3,1),units);
         end
         
         function setRbridle_cm(obj,val,units)
@@ -334,19 +334,19 @@ classdef vehicle_v2 < dynamicprops
         
         % initial conditions
         function setInitialCmPos(obj,val,units)
-            obj.init_inertialCmPos.setValue(reshape(val,3,1),units);
+            obj.initPosVecGnd.setValue(reshape(val,3,1),units);
         end             
 
         function setInitialCmVel(obj,val,units)
-            obj.init_inertialCmVel.setValue(reshape(val,3,1),units);
+            obj.initVelVecGnd.setValue(reshape(val,3,1),units);
         end
         
         function setInitialEuler(obj,val,units)
-            obj.init_euler.setValue(reshape(val,3,1),units);
+            obj.initEulAngBdy.setValue(reshape(val,3,1),units);
         end
         
         function setInitialAngVel(obj,val,units)
-            obj.init_angVel.setValue(reshape(val,3,1),units);
+            obj.initAngVelVecBdy.setValue(reshape(val,3,1),units);
         end
         
         %% getters
@@ -357,8 +357,8 @@ classdef vehicle_v2 < dynamicprops
                 'Unit','kg','Description','Vehicle mass');
         end
         
-        % MI
-        function val = get.MI(obj)
+        % inertia
+        function val = get.inertia(obj)
             val = SIM.parameter('Value',[obj.Ixx.Value -abs(obj.Ixy.Value) -abs(obj.Ixz.Value);...
                 -abs(obj.Ixy.Value) obj.Iyy.Value -abs(obj.Iyz.Value);...
                 -abs(obj.Ixz.Value) -abs(obj.Iyz.Value) obj.Izz.Value],'Unit','kg*m^2',....
@@ -395,7 +395,6 @@ classdef vehicle_v2 < dynamicprops
             val = SIM.parameter('Value',zeros(3,3),...
                 'Unit','kg*m^2','Description','Added inertia of the system in the body frame'); 
         end
-        
         
         % surface outlines
         function val = get.surfaceOutlines(obj)
@@ -481,15 +480,16 @@ classdef vehicle_v2 < dynamicprops
                     port_thr = obj.surfaceOutlines.port_wing.Value(:,2);
                     %                        + [obj.wingChord.Value*obj.wingTR.Value/2;0;0];
                     
-                    stbd_thr = port_thr.*[1;-1;1];
-                    
                     aft_thr = obj.RwingLE_cm.Value + ...
                         [max(obj.RhsLE_wingLE.Value(1),obj.Rvs_wingLE.Value(1));0;0]...
                         + [max(obj.hsChord.Value,obj.vsChord.Value);0;0];
                     
+                    stbd_thr = port_thr.*[1;-1;1];
+
+                    
                     val(1).posVec.setValue(port_thr,'m');
-                    val(2).posVec.setValue(stbd_thr,'m');
-                    val(3).posVec.setValue(aft_thr,'m');
+                    val(2).posVec.setValue(aft_thr,'m');
+                    val(3).posVec.setValue(stbd_thr,'m');
                     
                 otherwise
                     error('No get method programmed for %d tether attachment points',obj.numTethers.Value);
@@ -559,6 +559,8 @@ classdef vehicle_v2 < dynamicprops
         function calcFluidDynamicCoefffs(obj)
             fileLoc = which(obj.fluidCoeffsFileName.Value);
             
+            presFolder = pwd;
+            
             minDef = -30;
             maxDef = 30;
             
@@ -608,10 +610,11 @@ classdef vehicle_v2 < dynamicprops
 
             
             else
-                str = input(['  Specified file does not exist.',...
-                    'Would you like to run AVL and generate results for the new design? (Y/N): \n'],'s');
+                fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                    ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                str = input('(Y/N): \n','s');
                 if isempty(str)
-                    str = 'N';
+                    str = 'y';
                 end
                
                 if strcmpi(str,'Y')
@@ -795,8 +798,12 @@ classdef vehicle_v2 < dynamicprops
                     
                     delete(fullfile(filepath,strcat('resultFile','.mat')));
                     
+                    fprintf('''%s'' created in:\n %s\n',...
+                        obj.fluidCoeffsFileName.Value,fileparts(which(obj.fluidCoeffsFileName.Value)));
                     
-                elseif strcmp(str,'N')
+                    cd(presFolder);
+                    
+                elseif strcmpi(str,'N')
                     warning('Simulation won''t run without valid aero coefficient values')
                     
                 else
@@ -817,6 +824,13 @@ classdef vehicle_v2 < dynamicprops
             props = sort(obj.getPropsByClass(className));
             if numel(props)<1
                 return
+            end
+            
+            if  ismember(props{1},{'portWing','stbdWing','hStab','vStab'})
+                props{1} = 'portWing';
+                props{2} = 'stbdWing';
+                props{3} = 'hStab';
+                props{4} = 'vStab';
             end
             subProps = properties(obj.(props{1}));
             

@@ -78,7 +78,7 @@ classdef winches < dynamicprops
             q = 0.5*env.water.density.Value*(norm(Vrel))^2;
             aeroSurfs = vhcl.getPropsByClass('OCT.aeroSurf');
             F_aero = [0;0;0];
-            for ii = 1:numel(aeroSurfs)
+            for ii = 1:3
                 Sref = vhcl.(aeroSurfs{ii}).refArea.Value;
                 CL(ii) = interp1(vhcl.(aeroSurfs{ii}).alpha.Value,...
                     vhcl.(aeroSurfs{ii}).CL.Value,...
@@ -117,7 +117,7 @@ classdef winches < dynamicprops
                     % winch 3
                     L3 = norm(thr.tether3.initAirNodePos.Value - ...
                         thr.tether3.initGndNodePos.Value);
-                    delta_L3 = (sum_F/2)/(L3*thr.tether3.youngsMod.Value*...
+                    delta_L3 = (sum_F/4)/(L3*thr.tether3.youngsMod.Value*...
                         (pi/4)*thr.tether3.diameter.Value^2);
                     
                     obj.winch3.initLength.setValue(L3 + delta_L3,obj.winch3.initLength.Unit);
