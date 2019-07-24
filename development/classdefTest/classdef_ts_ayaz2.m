@@ -201,9 +201,9 @@ ctrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
 ctrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
 ctrl.tetherAlti.tau.setValue(0.5,'s');
 
-ctrl.tetherPitch.kp.setValue(1,'(m/s)/(rad)');
+ctrl.tetherPitch.kp.setValue(1*0,'(m/s)/(rad)');
 ctrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
-ctrl.tetherPitch.kd.setValue(2,'(m/s)/(rad/s)');
+ctrl.tetherPitch.kd.setValue(2*0,'(m/s)/(rad/s)');
 ctrl.tetherPitch.tau.setValue(0.1,'s');
 
 ctrl.tetherRoll.kp.setValue(0,'(m/s)/(rad)');

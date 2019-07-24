@@ -20,42 +20,42 @@ Partdsgn1.lookup_table_file_name = 'partDsgn1_lookupTables';
 % Name for design in the input file
 Partdsgn1.design_name            = 'partDsgn1'; % String at top of input file defining the name
 
-Partdsgn1.reference_point = [1.2;0;0];
+Partdsgn1.reference_point = [1.0;0;0];
 
 Partdsgn1.wing_chord = 1;
 Partdsgn1.wing_AR = 10;
-Partdsgn1.wing_sweep = 5;
-Partdsgn1.wing_dihedral = 2;
+Partdsgn1.wing_sweep = 2;
+Partdsgn1.wing_dihedral = 0;
 Partdsgn1.wing_TR = 0.8;
 Partdsgn1.wing_incidence_angle = 0;
-Partdsgn1.wing_naca_airfoil = '2412';
-Partdsgn1.wing_airfoil_ClLimits = [-1.7 1.7];
+Partdsgn1.wing_naca_airfoil = '4412';
+Partdsgn1.wing_airfoil_ClLimits = [-1.75 1.75];
 
 Partdsgn1.wing_Nspanwise = 20;
 Partdsgn1.wing_Nchordwise = 5;
 
-Partdsgn1.h_stab_LE = 6*Partdsgn1.wing_chord;
-Partdsgn1.h_stab_chord = Partdsgn1.wing_chord*.5;
+Partdsgn1.h_stab_LE = 6;
+Partdsgn1.h_stab_chord = 0.6;
 Partdsgn1.h_stab_AR = 8;
-Partdsgn1.h_stab_sweep = 10;
+Partdsgn1.h_stab_sweep = 5;
 Partdsgn1.h_stab_dihedral = 0;
 Partdsgn1.h_stab_TR = 0.8;
-Partdsgn1.h_stab_naca_airfoil = '0015';
-Partdsgn1.h_stab_airfoil_ClLimits = [-1.7 1.7];
+Partdsgn1.h_stab_naca_airfoil = '0012';
+Partdsgn1.h_stab_airfoil_ClLimits = [-1.75 1.75];
 
-Partdsgn1.v_stab_LE = Partdsgn1.h_stab_LE;
-Partdsgn1.v_stab_chord = Partdsgn1.h_stab_chord;
-Partdsgn1.v_stab_AR = 4;
-Partdsgn1.v_stab_sweep = 15;
-Partdsgn1.v_stab_TR = 1;
-Partdsgn1.v_stab_naca_airfoil = '0015';
-Partdsgn1.v_stab_airfoil_ClLimits = [-1.7 1.7];
+Partdsgn1.v_stab_LE = 6;
+Partdsgn1.v_stab_chord = 0.75;
+Partdsgn1.v_stab_AR = 3.5;
+Partdsgn1.v_stab_sweep = 10;
+Partdsgn1.v_stab_TR = 0.8;
+Partdsgn1.v_stab_naca_airfoil = '0012';
+Partdsgn1.v_stab_airfoil_ClLimits = [-1.75 1.75];
 
 %% run AVL
-alpha_range = [-40 40];
+alpha_range = [-55 55];
 n_steps = 75;
 
-avlPartitioned(Partdsgn1,[-55 55],n_steps)
+avlPartitioned(Partdsgn1,alpha_range,n_steps)
 
 %% plot polars
 plotPartitionedPolars(Partdsgn1.lookup_table_file_name)
