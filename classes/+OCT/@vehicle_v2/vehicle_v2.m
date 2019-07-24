@@ -70,10 +70,10 @@ classdef vehicle_v2 < dynamicprops
         mass
         MI
         addedMass
+        addedInertia
         surfaceOutlines
         thrAttchPts
-        thrAttchPts2
-        turbineAttchPts
+        turbines
         fluidMomentArms
         fluidRefArea
     end
@@ -390,6 +390,13 @@ classdef vehicle_v2 < dynamicprops
             
         end
         
+        % added inertia
+        function val = get.addedInertia(obj)
+            val = SIM.parameter('Value',zeros(3,3),...
+                'Unit','kg*m^2','Description','Added inertia of the system in the body frame'); 
+        end
+        
+        
         % surface outlines
         function val = get.surfaceOutlines(obj)
             % dummy variables
@@ -461,32 +468,6 @@ classdef vehicle_v2 < dynamicprops
         % Tether attachment points
         function val = get.thrAttchPts(obj)
             
-           switch obj.numTethers.Value
-               case 1
-                   val = SIM.parameter('Value',obj.Rbridle_cm.Value.*obj.lengthScale.Value,...
-                       'Unit','m','Description','Vehicle tether attachment point');
-                   
-%                    obj.thrAttch1.posVec.setValue(val,'m');
-
-               case 3
-                   port_thr = obj.surfaceOutlines.port_wing.Value(:,2);
-%                        + [obj.wingChord.Value*obj.wingTR.Value/2;0;0];
-                   
-                   stbd_thr = port_thr.*[1;-1;1];
-                   
-                   aft_thr = obj.RwingLE_cm.Value + ...
-                       [max(obj.RhsLE_wingLE.Value(1),obj.Rvs_wingLE.Value(1));0;0]...
-                       + [max(obj.hsChord.Value,obj.vsChord.Value);0;0];
-                   
-                   val = SIM.parameter('Value',[port_thr,aft_thr,stbd_thr],...
-                       'Unit','m','Description','Vehicle tether attachment point');
-           end
-           
-        end
-        
-        % Tether attachment points
-        function val = get.thrAttchPts2(obj)
-            
             for ii = 1:obj.numTethers.Value
                 val(ii,1) = OCT.thrAttch;
             end
@@ -516,19 +497,28 @@ classdef vehicle_v2 < dynamicprops
            
         end
         
-        % turbine attachment points
-        function val = get.turbineAttchPts(obj)
+        % turbines
+        function val = get.turbines(obj)
+            
+            for ii = 1:obj.numTurbines.Value
+                val(ii,1) = OCT.turb;
+                val(ii,1).diameter.setValue(0,'m');
+                val(ii,1).axisUnitVec.setValue([1;0;0],'');
+                val(ii,1).powerCoeff.setValue(0.5,'');
+                val(ii,1).dragCoeff.setValue(0.5,'');
+            end
+            
             switch obj.numTurbines.Value
-               case 2
-                   port_wing = obj.surfaceOutlines.port_wing.Value(:,2);
-                   stbd_wing = port_wing.*[1;-1;1];
-                   
-                   val = SIM.parameter('Value',[port_wing,stbd_wing],...
-                       'Unit','m','Description','Vehicle turbine attachment point');
+                case 2
+                    port_wing = obj.surfaceOutlines.port_wing.Value(:,2);
+                    stbd_wing = port_wing.*[1;-1;1];
                 otherwise
                     fprintf('get method not programmed for %d turbines',obj.numTurbines.Value)
-                   
-           end
+                    
+            end
+            
+            val(1).attachPtVec.setValue(port_wing,'m');
+            val(2).attachPtVec.setValue(stbd_wing,'m');
             
         end
         
@@ -562,34 +552,9 @@ classdef vehicle_v2 < dynamicprops
                 'Description','Reference area for aerodynamic calculations');
         end
         
+        
         %% other methods
-        
-        % Function to build the vehicle
-        function obj = build(obj,varargin)
-            
-            defThrName = {};
-            for ii = 1:obj.numTethers.Value
-                defThrName{ii} = sprintf('thrAttch%d',ii);
-            end
-            p = inputParser;
-            addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
-            parse(p,varargin{:})
-            
-
-            % Create tethers attachment points
-            for ii = 1:obj.numTethers.Value
-                obj.addprop(p.Results.TetherNames{ii});
-                obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
-            end
-            % Create turbines
-            for ii = 1:obj.numTurbines.Value
-                obj.addprop(sprintf('turbine%d',ii));
-                obj.(sprintf('turbine%d',ii)) = OCT.turb;
-            end
-            
-            
-        end % end build
-        
+       
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
             fileLoc = which(obj.fluidCoeffsFileName.Value);
@@ -905,17 +870,17 @@ classdef vehicle_v2 < dynamicprops
             end
             
             for ii = 1:obj.numTethers.Value
-                pTet = plot3(obj.thrAttchPts.Value(1,ii),...
-                    obj.thrAttchPts.Value(2,ii),...
-                    obj.thrAttchPts.Value(3,ii),...
+                pTet = plot3(obj.thrAttchPts(ii).posVec.Value(1),...
+                    obj.thrAttchPts(ii).posVec.Value(2),...
+                    obj.thrAttchPts(ii).posVec.Value(3),...
                     'r+');
                 
             end
             
             for ii = 1:obj.numTurbines.Value
-                pTurb = plot3(obj.turbineAttchPts.Value(1,ii),...
-                    obj.turbineAttchPts.Value(2,ii),...
-                    obj.turbineAttchPts.Value(3,ii),...
+                pTurb = plot3(obj.turbines(ii).attachPtVec.Value(1),...
+                    obj.turbines(ii).attachPtVec.Value(2),...
+                    obj.turbines(ii).attachPtVec.Value(3),...
                     'm+');
             end
             

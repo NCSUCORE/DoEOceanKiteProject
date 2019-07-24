@@ -17,7 +17,6 @@ numTurbines = 2;
 
 %% lifiting body
 vhcl = OCT.vehicle_v2;
-vhcl.build;
 
 vhcl.setLengthScale(lengthScale,'');
 vhcl.setDensityScale(densityScale,'');
@@ -62,7 +61,7 @@ vhcl.setHsClMin(-1.75,'');
 
 % % % V-stab
 vhcl.setRvs_wingLE([6;0;0],'m');
-vhcl.setVsChord(0.75,'m');
+vhcl.setVsChord(0.6,'m');
 vhcl.setVsSpan(2.5,'m');
 vhcl.setVsTR(0.8,'');
 vhcl.setVsSweep(10,'deg');
@@ -77,11 +76,12 @@ vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile1','');
+vhcl.setFluidCoeffsFileName('someFile8','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 
 % % % plot
 vhcl.plot
-vhcl.plotCoeffPolars
+% vhcl.plotCoeffPolars
+
