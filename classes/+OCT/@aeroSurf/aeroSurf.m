@@ -12,6 +12,7 @@ classdef aeroSurf < handle
         alpha
         GainCL
         GainCD
+        RBdy2Surf
     end
     properties (SetAccess = public)
         MaxCtrlDeflDn
@@ -31,18 +32,22 @@ classdef aeroSurf < handle
             obj.GainCD          = SIM.parameter('Unit','1/deg');
             obj.MaxCtrlDeflDn   = SIM.parameter('Unit','deg');
             obj.MaxCtrlDeflUp   = SIM.parameter('Unit','deg');
+            obj.RBdy2Surf       = SIM.parameter('NoScale',true);
         end
         
         function obj = scale(obj,factor)
             props = properties(obj);
             for ii = 1:numel(props)
-                try
                 obj.(props{ii}).scale(factor);
-                catch
-                    x= 1;
-                end
-                 
             end
+        end
+        
+        function val = get.RBdy2Surf(obj)
+            value = [...
+                obj.chordUnitVec.Value(:)';...
+                obj.spanUnitVec.Value(:)';...
+                cross(obj.chordUnitVec.Value(:)',obj.spanUnitVec.Value(:)')];
+            val = SIM.parameter('Value',value);
         end
     end
     

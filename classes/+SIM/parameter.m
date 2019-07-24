@@ -3,11 +3,13 @@ classdef parameter < handle
     properties (SetAccess = private)
         Value       % real scalar
         Unit        % unit scalar
-        Description % string scalar
         NoScale    % bool
         Min
         Max
     end % end properties
+    properties (SetAccess = public)
+        Description % string scalar
+    end
     
     methods
         %% Constructor

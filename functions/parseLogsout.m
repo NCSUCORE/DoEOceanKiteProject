@@ -18,7 +18,7 @@ parse(p,varargin{:});
 try
     logsout = evalin('base',p.Results.DataSetVarName);
 catch
-    error('Unable to load %s from base workspace',p.Results.DataSetVarName)
+    error('Unable to load %s from base workspace.',p.Results.DataSetVarName)
 end
 
 % get names of signals
