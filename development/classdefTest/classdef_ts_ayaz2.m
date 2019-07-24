@@ -280,7 +280,7 @@ ctrl.altiSP.Value.DataInfo.Units = 'm';
 ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 
-Yswitch = 15;
+Yswitch = 10;
 rollAmp = 20;
 
 ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(100))),timeVec);
