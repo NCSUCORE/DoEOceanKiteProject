@@ -61,13 +61,13 @@ classdef controller < dynamicprops
         end
         
         % Function to scale the object
-        function obj = scale(obj,scaleFactor)
+        function obj = scale(obj,lengthScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
                 if isa(obj.(props{ii}),'CTR.setPoint')
-                    obj.(props{ii}) = obj.(props{ii}).scale(scaleFactor);
+                    obj.(props{ii}) = obj.(props{ii}).scale(lengthScaleFactor);
                 else
-                    obj.(props{ii}).scale(scaleFactor);
+                    obj.(props{ii}).scale(lengthScaleFactor);
                 end
             end
         end

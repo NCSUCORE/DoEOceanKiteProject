@@ -35,10 +35,10 @@ classdef aeroSurf < handle
             obj.RBdy2Surf       = SIM.parameter('NoScale',true);
         end
         
-        function obj = scale(obj,factor)
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}).scale(factor);
+                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
         end
         
