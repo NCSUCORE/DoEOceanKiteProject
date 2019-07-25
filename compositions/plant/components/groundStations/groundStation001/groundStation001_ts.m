@@ -134,19 +134,21 @@ tetherLengths(3) = norm(thr.tether3.initAirNodePos.Value-thr.tether3.initGndNode
 wnch = OCT.winches;
 wnch.setNumWinches(3,'');
 wnch.build;
-wnch.setTetherInitLength(vhcl,env,thr);
 
 wnch.winch1.maxSpeed.setValue(0.4,'m/s');
 wnch.winch1.timeConst.setValue(1,'s');
 wnch.winch1.maxAccel.setValue(inf,'m/s^2')
+wnch.winch1.initLength.setValue(tetherLengths(1),'m')
 
 wnch.winch2.maxSpeed.setValue(0.4,'m/s');
 wnch.winch2.timeConst.setValue(1,'s');
 wnch.winch2.maxAccel.setValue(inf,'m/s^2')
+wnch.winch2.initLength.setValue(tetherLengths(2),'m')
 
 wnch.winch3.maxSpeed.setValue(0.4,'m/s');
 wnch.winch3.timeConst.setValue(1,'s');
 wnch.winch3.maxAccel.setValue(inf,'m/s^2')
+wnch.winch3.initLength.setValue(tetherLengths(3),'m')
 
 ctrl = CTR.controller;
 ctrl.add('FPIDNames',{'surge','sway','heave'},...
@@ -387,7 +389,7 @@ parseLogsout
 % figure
 oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);
 diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
-plot(tsc.subBodyPos.Time,diff)
+plot(tsc.subBodyPos.Time,diff,'k')
 xlabel('Time, t [s]')
 ylabel('Distance from Ocean Surface [m]')
 
@@ -396,7 +398,8 @@ figure
 subplot(3,1,1)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)),'k')
 hold on
-plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'--g')
+% plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'--g')
+plot(timeV,initPos(1).*ones(length(timeV)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('X Pos [m]')
@@ -404,7 +407,8 @@ ylabel('X Pos [m]')
 subplot(3,1,2)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(2,:,:)),'k')
 hold on
-plot(timeV,squeeze(ctrl.swaySP.Value.Data),'g--')
+% plot(timeV,squeeze(ctrl.swaySP.Value.Data),'g--')
+plot(timeV,initPos(2).*ones(length(timeV)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Y Pos [m]')
@@ -413,7 +417,8 @@ subplot(3,1,3)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
 hold on
 plot(tsc.subBodyPos.Time,oH)
-plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
+% plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
+plot(timeV,initPos(3).*ones(length(timeV)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
@@ -448,13 +453,13 @@ figure
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
 hold on
 plot(tsc.subBodyPos.Time,oH)
-plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
+% plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
 
-figure
-tsc.oceanForce.plot
+% figure
+% tsc.oceanForce.plot
 
 % figure
 % tsc.tetherLengths.plot
