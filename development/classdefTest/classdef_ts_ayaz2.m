@@ -4,7 +4,7 @@ format compact
 % close all
 
 lengthScaleFactor = 1/1;
-densityScaleFactor = 1/1000;
+densityScaleFactor = 1/1;
 duration_s  = 400*sqrt(lengthScaleFactor);
 
 %% Set up simulation
