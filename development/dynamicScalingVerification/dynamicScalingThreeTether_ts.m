@@ -19,7 +19,6 @@ createConstantUniformFlowEnvironmentBus
 createPlantBus;
 createThreeTetherThreeSurfaceCtrlBus;
 
-
 %% Set up environment
 % Create
 env = ENV.env;
@@ -206,7 +205,7 @@ ctrl.add('FPIDNames',{'tetherAlti','tetherPitch','tetherRoll','elevators','ailer
 ctrl.add('GainNames',{'ctrlSurfAllocationMat','thrAllocationMat','ySwitch','rollAmp'},...
     'GainUnits',{'','','m','deg'});
 
-ctrl.ySwitch.setValue(5,'m');
+ctrl.ySwitch.setValue(3,'m');
 ctrl.rollAmp.setValue(10,'deg');
 
 
