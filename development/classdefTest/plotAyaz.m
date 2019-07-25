@@ -105,40 +105,40 @@ figure(fn)
 set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
-
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,tsc.ctrlSurfDeflection.Data',plotProps,...
-    {'$\delta_{port-alrn}$','$\delta_{stbd-alrn}$','$\delta_{elevator}$','$\delta_{rudder}$'},...
-    'Angle (deg)','Control surface defelctions');
+% 
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,tsc.ctrlSurfDeflection.Data',plotProps,...
+%     {'$\delta_{port-alrn}$','$\delta_{stbd-alrn}$','$\delta_{elevator}$','$\delta_{rudder}$'},...
+%     'Angle (deg)','Control surface defelctions');
 
 
 
 %% local forces
-% angle of attack
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
-    {'Port wing','Stbd wing','H-stab','V-stab'},...
-    'Angle (deg)','Angle of attack');
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.CL.Data),plotProps,...
-    {'Port wing','Stbd wing','H-stab','V-stab'},...
-    'CL','Lift coefficient');
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.CD.Data),plotProps,...
-    {'Port wing','Stbd wing','H-stab','V-stab'},...
-    'CD','Drag coefficient');
-
+% % % angle of attack
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
+%     {'Port wing','Stbd wing','H-stab','V-stab'},...
+%     'Angle (deg)','Angle of attack');
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.CL.Data),plotProps,...
+%     {'Port wing','Stbd wing','H-stab','V-stab'},...
+%     'CL','Lift coefficient');
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.CD.Data),plotProps,...
+%     {'Port wing','Stbd wing','H-stab','V-stab'},...
+%     'CD','Drag coefficient');
+% 
     
 
 

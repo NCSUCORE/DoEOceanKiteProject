@@ -33,7 +33,7 @@ env.scale(scaleFactor);
 
 %% common parameters
 numTethers = 3;
-thrNumNodes = 2;
+thrNumNodes = 4;
 numTurbines = 2;
 
 %% lifiting body
@@ -56,7 +56,7 @@ vhcl.setCentOfBuoy([0;0;0],'m');
 vhcl.setRbridle_cm([0;0;0],'m');
 
 % % % wing
-vhcl.setRwingLE_cm([-1;0;0],'m');
+vhcl.setRwingLE_cm([-0.2;0;0],'m');
 vhcl.setWingChord(1,'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
@@ -95,8 +95,6 @@ vhcl.setInitialCmVel([0;0;0],'m/s');
 vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
-vhcl.scale(scaleFactor);
-
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile4','');
 
@@ -125,15 +123,11 @@ gndStn.thrAttch2.posVec.setValue([5.6000         0         0]','m');
 gndStn.thrAttch3.posVec.setValue([-0.8254    5.0000         0]','m');
 gndStn.freeSpnEnbl.setValue(true,'');
 
-
-% Scale up/down
-gndStn.scale(scaleFactor);
-
 %% Tethers
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(3,'');
-thr.setNumNodes(4,'');
+thr.setNumNodes(thrNumNodes,'');
 thr.build;
 
 % Set parameter values
@@ -183,10 +177,6 @@ thr.tether3.setDiameter(thrDia,'m');
 
 % thr.designTetherDiameter(vhcl,env);
 
-% Scale up/down
-thr.scale(scaleFactor);
-
-
 %% Winches
 % Create
 wnch = OCT.winches;
@@ -210,10 +200,6 @@ wnch.winch3.initLength.setValue(50.01,'m');
 
 % wnch = wnch.setTetherInitLength(vhcl,env,thr);
 
-% Scale up/down
-wnch.scale(scaleFactor);
-
-
 %% Set up controller
 % Create
 ctrl = CTR.controller;
@@ -224,15 +210,19 @@ ctrl.add('FPIDNames',{'tetherAlti','tetherPitch','tetherRoll','elevators','ailer
     'FPIDOutputUnits',{'m/s','m/s','m/s','deg','deg','deg'});
 
 % add control allocation matrix (implemented as a simple gain)
-ctrl.add('GainNames',{'ctrlSurfAllocationMat','thrAllocationMat'},...
-    'GainUnits',{'',''});
+ctrl.add('GainNames',{'ctrlSurfAllocationMat','thrAllocationMat','ySwitch','rollAmp'},...
+    'GainUnits',{'','','m','deg'});
+
+ctrl.ySwitch.setValue(5,'m');
+ctrl.rollAmp.setValue(20,'deg');
+
 
 % add output saturation
 ctrl.add('SaturationNames',{'outputSat'});
 
 % add setpoints
-ctrl.add('SetpointNames',{'altiSP','pitchSP','rollSP','yawSP'},...
-    'SetpointUnits',{'m','deg','deg','deg'});
+ctrl.add('SetpointNames',{'altiSP','pitchSP','yawSP'},...
+    'SetpointUnits',{'m','deg','deg'});
 
 % tether controllers
 ctrl.tetherAlti.kp.setValue(0,'(m/s)/(m)');
@@ -270,8 +260,8 @@ ctrl.rudder.tau.setValue(0.5,'s');
 
 ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
 
-ctrl.outputSat.upperLimit.setValue(30,'');
-ctrl.outputSat.lowerLimit.setValue(-30,'');
+ctrl.outputSat.upperLimit.setValue(0,'');
+ctrl.outputSat.lowerLimit.setValue(0,'');
 
 % Calculate setpoints
 timeVec = 0:0.1*sqrt(scaleFactor):duration_s;
@@ -281,19 +271,21 @@ ctrl.altiSP.Value.DataInfo.Units = 'm';
 ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 
-Yswitch = 10*scaleFactor;
-rollAmp = 20;
-rollPeriod = 100*sqrt(scaleFactor);
-
-ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(rollPeriod))),timeVec);
-ctrl.rollSP.Value.Data(timeVec<0) = 0;
-ctrl.rollSP.Value.DataInfo.Units = 'deg';
-
 ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
 
-% Scale up/down
-ctrl = ctrl.scale(scaleFactor);
+%% scale
+vhcl.scale(scaleFactor);
+vhcl.calcFluidDynamicCoefffs;
+
+gndStn.scale(scaleFactor);
+
+thr.scale(scaleFactor);
+
+wnch.scale(scaleFactor);
+
+ctrl.scale(scaleFactor);
+
 
 %% Run the simulation
 try
