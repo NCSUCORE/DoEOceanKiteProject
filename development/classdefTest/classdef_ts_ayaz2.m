@@ -133,7 +133,7 @@ gndStn.scale(scaleFactor);
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(3,'');
-thr.setNumNodes(2,'');
+thr.setNumNodes(4,'');
 thr.build;
 
 % Set parameter values
@@ -269,7 +269,6 @@ ctrl.rudder.kd.setValue(0,'(deg)/(deg/s)');
 ctrl.rudder.tau.setValue(0.5,'s');
 
 ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
-
 
 ctrl.outputSat.upperLimit.setValue(30,'');
 ctrl.outputSat.lowerLimit.setValue(-30,'');
