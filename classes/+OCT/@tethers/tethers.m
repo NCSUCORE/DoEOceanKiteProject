@@ -30,7 +30,6 @@ classdef tethers < dynamicprops
             
         end
         
-        
         function obj = build(obj,varargin)
             defThrName = {};
             for ii = 1:obj.numTethers.Value
@@ -120,11 +119,11 @@ classdef tethers < dynamicprops
         end
         
         % Function to scale the object
-        function obj = scale(obj,scaleFactor)
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
                 try
-                    obj.(props{ii}).scale(scaleFactor);
+                    obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
                 catch
                 end
             end

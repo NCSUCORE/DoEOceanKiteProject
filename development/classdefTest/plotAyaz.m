@@ -13,12 +13,9 @@ line_wd = 1;
 parseLogsout
 
 %% Scale factors
-Lscale = scaleFactor;
-if Lscale==1
-    run_no = 1;
-else
-    run_no = 2;
-end
+Lscale = lengthScaleFactor;
+Dscale = densityScaleFactor;
+
 
 % % % extract the important variables into dummy variables
 time = tsc.positionVec.Time.*(1/Lscale^0.5);
@@ -29,10 +26,14 @@ sol_euler = squeeze(tsc.eulerAngles.Data);
 
 %% plot states
 plotProps{1} = 'rgb';
-if run_no == 1
+if Lscale == 1 && Dscale == 1
     plotProps{2} = '-';
-elseif run_no == 2
+elseif Lscale ~= 1 && Dscale == 1
     plotProps{2} = '--';
+elseif Lscale == 1 && Dscale ~= 1
+    plotProps{2} = ':';
+elseif Lscale ~= 1 && Dscale ~= 1
+    plotProps{2} = '.-';
 end
 
 ss = get(0,'ScreenSize');

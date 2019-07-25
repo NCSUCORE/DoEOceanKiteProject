@@ -3,8 +3,9 @@ clear;
 format compact
 % close all
 
-scaleFactor = 1/1;
-duration_s  = 400*sqrt(scaleFactor);
+lengthScaleFactor = 1/1;
+densityScaleFactor = 1/1000;
+duration_s  = 400*sqrt(lengthScaleFactor);
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -28,8 +29,6 @@ env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
 env.water.velVec.setValue([1 0 0],'m/s');
-% Scale up/down
-env.scale(scaleFactor);
 
 %% common parameters
 numTethers = 3;
@@ -264,7 +263,7 @@ ctrl.outputSat.upperLimit.setValue(0,'');
 ctrl.outputSat.lowerLimit.setValue(0,'');
 
 % Calculate setpoints
-timeVec = 0:0.1*sqrt(scaleFactor):duration_s;
+timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
 ctrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
 ctrl.altiSP.Value.DataInfo.Units = 'm';
 
@@ -275,16 +274,18 @@ ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
 
 %% scale
-vhcl.scale(scaleFactor);
+env.scale(lengthScaleFactor,densityScaleFactor);
+
+vhcl.scale(lengthScaleFactor,densityScaleFactor);
 vhcl.calcFluidDynamicCoefffs;
 
-gndStn.scale(scaleFactor);
+gndStn.scale(lengthScaleFactor,densityScaleFactor);
 
-thr.scale(scaleFactor);
+thr.scale(lengthScaleFactor,densityScaleFactor);
 
-wnch.scale(scaleFactor);
+wnch.scale(lengthScaleFactor,densityScaleFactor);
 
-ctrl.scale(scaleFactor);
+ctrl.scale(lengthScaleFactor);
 
 
 %% Run the simulation
