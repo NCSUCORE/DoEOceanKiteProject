@@ -298,5 +298,5 @@ end
 
 plotAyaz
 
-% fullKitePlot
+fullKitePlot
 
