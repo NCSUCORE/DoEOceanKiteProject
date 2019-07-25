@@ -549,6 +549,14 @@ classdef vehicle_v2 < dynamicprops
         
         
         %% other methods
+        % Function to scale the object
+        function obj = scale(obj,scaleFactor)
+            
+            props = findAttrValue(obj,'SetAccess','private');
+            for ii = 1:numel(props)
+                obj.(props{ii}).scale(scaleFactor);
+            end
+        end % end scale
        
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
@@ -1004,6 +1012,9 @@ classdef vehicle_v2 < dynamicprops
             axis([ax5 ax6 ax7 ax8],[-inf inf hCD_ax.YLim(1) hCD_ax.YLim(2)]);
             
         end
+        
+        % matlab function
+
         
 
         

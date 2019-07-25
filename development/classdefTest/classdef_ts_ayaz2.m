@@ -1,10 +1,10 @@
 clear;
-clc
+% clc
 format compact
-close all
+% close all
 
 scaleFactor = 1/1;
-duration_s  = 800*sqrt(scaleFactor);
+duration_s  = 400*sqrt(scaleFactor);
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -32,8 +32,6 @@ env.water.velVec.setValue([1 0 0],'m/s');
 env.scale(scaleFactor);
 
 %% common parameters
-lengthScale = 1/1;
-densityScale = 1/1;
 numTethers = 3;
 thrNumNodes = 2;
 numTurbines = 2;
@@ -97,6 +95,8 @@ vhcl.setInitialCmVel([0;0;0],'m/s');
 vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
+vhcl.scale(scaleFactor);
+
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile4','');
 
@@ -120,9 +120,9 @@ gndStn.posVec.setValue([0 0 0],'m');
 gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)');
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
-gndStn.thrAttch1.posVec.setValue(vhcl.thrAttchPts(1).posVec.Value,'m');
-gndStn.thrAttch2.posVec.setValue(vhcl.thrAttchPts(2).posVec.Value,'m');
-gndStn.thrAttch3.posVec.setValue(vhcl.thrAttchPts(3).posVec.Value,'m');
+gndStn.thrAttch1.posVec.setValue([-0.8254   -5.0000         0]','m');
+gndStn.thrAttch2.posVec.setValue([5.6000         0         0]','m');
+gndStn.thrAttch3.posVec.setValue([-0.8254    5.0000         0]','m');
 gndStn.freeSpnEnbl.setValue(true,'');
 
 
@@ -196,16 +196,19 @@ wnch.build;
 wnch.winch1.maxSpeed.setValue(1,'m/s');
 wnch.winch1.timeConst.setValue(0.05,'s');
 wnch.winch1.maxAccel.setValue(inf,'m/s^2');
+wnch.winch1.initLength.setValue(50.01,'m');
 
 wnch.winch2.maxSpeed.setValue(1,'m/s');
 wnch.winch2.timeConst.setValue(0.05,'s');
 wnch.winch2.maxAccel.setValue(inf,'m/s^2');
+wnch.winch2.initLength.setValue(49.90,'m');
 
 wnch.winch3.maxSpeed.setValue(1,'m/s');
 wnch.winch3.timeConst.setValue(0.05,'s');
 wnch.winch3.maxAccel.setValue(inf,'m/s^2');
+wnch.winch3.initLength.setValue(50.01,'m');
 
-wnch = wnch.setTetherInitLength(vhcl,env,thr);
+% wnch = wnch.setTetherInitLength(vhcl,env,thr);
 
 % Scale up/down
 wnch.scale(scaleFactor);
@@ -272,17 +275,18 @@ ctrl.outputSat.upperLimit.setValue(30,'');
 ctrl.outputSat.lowerLimit.setValue(-30,'');
 
 % Calculate setpoints
-timeVec = 0:0.1:duration_s;
+timeVec = 0:0.1*sqrt(scaleFactor):duration_s;
 ctrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
 ctrl.altiSP.Value.DataInfo.Units = 'm';
 
 ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 
-Yswitch = 10;
+Yswitch = 10*scaleFactor;
 rollAmp = 20;
+rollPeriod = 100*sqrt(scaleFactor);
 
-ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(100))),timeVec);
+ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(rollPeriod))),timeVec);
 ctrl.rollSP.Value.Data(timeVec<0) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
 

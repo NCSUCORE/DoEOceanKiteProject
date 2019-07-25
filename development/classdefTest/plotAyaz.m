@@ -20,11 +20,6 @@ else
     run_no = 2;
 end
 
-%% resample data
-resampleDataRate = 1*(1/Lscale^0.5);
-% % % filename = 'testAnimated.gif';
-signals = fieldnames(tsc);
-
 % % % extract the important variables into dummy variables
 time = tsc.positionVec.Time.*(1/Lscale^0.5);
 sol_Rcm_o = squeeze(tsc.positionVec.Data).*(1/Lscale);

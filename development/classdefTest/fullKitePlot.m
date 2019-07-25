@@ -3,6 +3,7 @@
 
 %% animations plots
 resampleDataRate = 2;
+signals = fieldnames(tsc);
 time = 0:resampleDataRate:tsc.(signals{1}).Time(end);
 
 tscResample.positionVec = resample(tsc.positionVec,time);
@@ -120,7 +121,7 @@ for ii = 1:n_steps
     title(['Time = ',sprintf('%0.2f', time(ii)),' s'])
     
     try
-%         waitforbuttonpress
+        waitforbuttonpress
     catch
         break
     end
