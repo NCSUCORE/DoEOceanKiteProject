@@ -1,12 +1,15 @@
 classdef winch < handle
-    %WINCH Summary of this class goes here
-    %   Detailed explanation goes here
+    %WINCH Simple model of winch dynamics, velocity is rate limited,
+    %filtered and saturated.  Output is tether length.  Also includes power
+    %consumption/production estimate. 
     
     properties (SetAccess = private)
         initLength
         maxSpeed
         timeConst
         maxAccel
+        motorEfficiency
+        generatorEfficiency
     end
     
     methods
@@ -15,6 +18,11 @@ classdef winch < handle
             obj.maxSpeed    = SIM.parameter('Unit','m/s');
             obj.timeConst   = SIM.parameter('Unit','s');
             obj.maxAccel    = SIM.parameter('Unit','m/s^2');
+            obj.motorEfficiency     = SIM.parameter('Value',0.95,'Min',0,'Max',1);
+            obj.generatorEfficiency = SIM.parameter('Value',0.9,'Min',0,'Max',1);
+            
+            obj.motorEfficiency.Description = sprintf('Electromechanical efficiency of winches during spool in, default = %.2f',obj.motorEfficiency.Value);
+            obj.generatorEfficiency.Description = sprintf('Electromechanical regenerative efficiency of winches during spool out, default = %.2f',obj.generatorEfficiency.Value);
         end
         
         function obj = setInitLength(obj,val,units)
@@ -39,4 +47,3 @@ classdef winch < handle
         end
     end
 end
-

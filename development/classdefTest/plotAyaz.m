@@ -104,20 +104,20 @@ set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,tsc.winchSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release');
 
-% 
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,tsc.tetherLengths.Data'.*(1/Lscale),plotProps,...
-%     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
-% 
-% 
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,tsc.ctrlSurfDeflection.Data',plotProps,...
-%     {'$\delta_{port-alrn}$','$\delta_{stbd-alrn}$','$\delta_{elevator}$','$\delta_{rudder}$'},...
-%     'Angle (deg)','Control surface defelctions');
+
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
+    {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
+
+
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,tsc.ctrlSurfDeflection.Data',plotProps,...
+    {'$\delta_{port-alrn}$','$\delta_{stbd-alrn}$','$\delta_{elevator}$','$\delta_{rudder}$'},...
+    'Angle (deg)','Control surface defelctions');
 
 
 
