@@ -41,8 +41,7 @@ numTurbines = 2;
 %% lifiting body
 vhcl = OCT.vehicle_v2;
 
-vhcl.setLengthScale(lengthScale,'');
-vhcl.setDensityScale(densityScale,'');
+vhcl.setFluidDensity(env.water.density.Value,'kg/m^3')
 vhcl.setNumTethers(numTethers,'');
 vhcl.setNumTurbines(numTurbines,'');
 vhcl.setBuoyFactor(1.00,'');

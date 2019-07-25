@@ -4,8 +4,7 @@ classdef vehicle_v2 < dynamicprops
     %   Detailed explanation goes here
     
     properties (SetAccess = private)
-        lengthScale
-        densityScale
+        fluidDensity
         numTethers
         numTurbines
         buoyFactor
@@ -82,8 +81,7 @@ classdef vehicle_v2 < dynamicprops
         %% Constructor
         function obj = vehicle_v2
             %VEHICLE Construct an instance of this class
-            obj.lengthScale  = SIM.parameter('Description','Length scale factor');
-            obj.densityScale = SIM.parameter('Description','Length scale factor');
+            obj.fluidDensity = SIM.parameter('Unit','kg/m^3','Description','Fluid density');
             obj.numTethers  = SIM.parameter('Description','Number of tethers');
             obj.numTurbines = SIM.parameter('Description','Number of turbines');
             obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor');
@@ -155,14 +153,11 @@ classdef vehicle_v2 < dynamicprops
         end
         
         %% setters
-        function setLengthScale(obj,val,units)
-            obj.lengthScale.setValue(val,units);
-        end
         
-        function setDensityScale(obj,val,units)
-            obj.densityScale.setValue(val,units);
+        function setFluidDensity(obj,val,units)
+            obj.fluidDensity.setValue(val,units)
         end
-        
+
         function setNumTethers(obj,val,units)
             obj.numTethers.setValue(val,units);
         end
@@ -352,7 +347,7 @@ classdef vehicle_v2 < dynamicprops
         %% getters
         % mass
         function val = get.mass(obj)
-            val = SIM.parameter('Value',1e3*obj.volume.Value*obj.densityScale.Value/...
+            val = SIM.parameter('Value',obj.fluidDensity.Value*obj.volume.Value/...
                 obj.buoyFactor.Value,...
                 'Unit','kg','Description','Vehicle mass');
         end
@@ -368,7 +363,7 @@ classdef vehicle_v2 < dynamicprops
         % added mass
         function val = get.addedMass(obj)
             % dummy variables
-            density = 1000*obj.densityScale.Value;
+            density = obj.fluidDensity.Value;
             chord = obj.wingChord.Value;
             span = chord*obj.wingAR.Value;
             HS_chord = obj.hsChord.Value;
@@ -474,7 +469,7 @@ classdef vehicle_v2 < dynamicprops
             switch obj.numTethers.Value
                 case 1
                     
-                    val(1).posVec.setValue(obj.Rbridle_cm.Value.*obj.lengthScale.Value,'m');
+                    val(1).posVec.setValue(obj.Rbridle_cm.Value,'m');
                     
                 case 3
                     port_thr = obj.surfaceOutlines.port_wing.Value(:,2);
