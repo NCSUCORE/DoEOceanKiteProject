@@ -47,4 +47,3 @@ classdef winch < handle
         end
     end
 end
-

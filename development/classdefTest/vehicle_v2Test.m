@@ -11,7 +11,7 @@ format compact
 %% common parameters
 lengthScale = 1/1;
 densityScale = 1/1;
-numTethers = 1;
+numTethers = 3;
 thrNumNodes = 2;
 numTurbines = 2;
 
@@ -32,8 +32,8 @@ vhcl.setIzz(8.320369733598E+09*1e-6,'kg*m^2');
 vhcl.setIxy(0,'kg*m^2');
 vhcl.setIxz(81875397.942*1e-6,'kg*m^2');
 vhcl.setIyz(0,'kg*m^2');
-vhcl.setRcb_cm([0;0;0],'m');
-vhcl.setRbridle_cm([0;0;-2],'m');
+vhcl.setCentOfBuoy([0;0;0],'m');
+vhcl.setRbridle_cm([0;0;0],'m');
 
 % % % wing
 vhcl.setRwingLE_cm([-1;0;0],'m');
@@ -61,7 +61,7 @@ vhcl.setHsClMin(-1.75,'');
 
 % % % V-stab
 vhcl.setRvs_wingLE([6;0;0],'m');
-vhcl.setVsChord(0.75,'m');
+vhcl.setVsChord(0.6,'m');
 vhcl.setVsSpan(2.5,'m');
 vhcl.setVsTR(0.8,'');
 vhcl.setVsSweep(10,'deg');
@@ -75,15 +75,13 @@ vhcl.setInitialCmVel([0;0;0],'m/s');
 vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
-% % % scale the vehicle
-vhcl.scaleVehicle
-
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile4','');
+vhcl.setFluidCoeffsFileName('someFile1','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 
 % % % plot
 vhcl.plot
-vhcl.plotCoeffPolars
+% vhcl.plotCoeffPolars
+

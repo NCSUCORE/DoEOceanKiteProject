@@ -29,13 +29,22 @@ elems(3).Complexity = 'real';
 elems(3).Unit = 'rad';
 
 elems(4) = Simulink.BusElement;
-elems(4).Name = 'winchPower';
-elems(4).Dimensions = 1;
+elems(4).Name = 'angularVel';
+elems(4).Dimensions = [3 1];
 elems(4).DimensionsMode = 'Fixed';
 elems(4).DataType = 'double';
 elems(4).SampleTime = -1;
 elems(4).Complexity = 'real';
-elems(4).Unit = 'W';
+elems(4).Unit = 'rad/s';
+
+elems(5) = Simulink.BusElement;
+elems(5).Name = 'winchPower';
+elems(5).Dimensions = 1;
+elems(5).DimensionsMode = 'Fixed';
+elems(5).DataType = 'double';
+elems(5).SampleTime = -1;
+elems(5).Complexity = 'real';
+elems(5).Unit = 'W';
 
 
 CONTROL = Simulink.Bus;

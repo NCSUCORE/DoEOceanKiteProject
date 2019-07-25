@@ -56,7 +56,7 @@ classdef station < dynamicprops
             % Function returns all properties of the specified class in a
             % 1xN struct useable in a for loop in simulink
             % Example classnames: OCT.turb, OCT.aeroSurf
-            props = obj.getPropsByClass(className);
+            props = sort(obj.getPropsByClass(className));
             if numel(props)<1
                 return
             end

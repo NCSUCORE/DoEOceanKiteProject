@@ -1,10 +1,10 @@
-clear;
-% clc
+% clear;
+clearvars logsout
+clc
 format compact
-% close all
-
-scaleFactor = 1/1;
-duration_s  = 400*sqrt(scaleFactor);
+close all
+scaleFactor = 1;
+duration_s = 500;
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -13,14 +13,11 @@ TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
 CONTROLLER      = 'threeTetherThreeSurfaceCtrl';
-VARIANTSUBSYSTEM = 'NNodeTether';
-
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
 createThreeTetherThreeSurfaceCtrlBus;
-
 
 %% Set up environment
 % Create
@@ -28,20 +25,14 @@ env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);
 % Set Values
 env.water.velVec.setValue([1 0 0],'m/s');
-% Scale up/down
-env.scale(scaleFactor);
 
-%% common parameters
-numTethers = 3;
-thrNumNodes = 2;
-numTurbines = 2;
 
 %% lifiting body
 vhcl = OCT.vehicle_v2;
 
 vhcl.setFluidDensity(env.water.density.Value,'kg/m^3')
-vhcl.setNumTethers(numTethers,'');
-vhcl.setNumTurbines(numTurbines,'');
+vhcl.setNumTethers(3,'');
+vhcl.setNumTurbines(2,'');
 vhcl.setBuoyFactor(1.00,'');
 
 % % % volume and inertias
@@ -123,11 +114,8 @@ gndStn.initAngVel.setValue(0,'rad/s');
 gndStn.thrAttch1.posVec.setValue([-0.8254   -5.0000         0]','m');
 gndStn.thrAttch2.posVec.setValue([5.6000         0         0]','m');
 gndStn.thrAttch3.posVec.setValue([-0.8254    5.0000         0]','m');
-gndStn.freeSpnEnbl.setValue(true,'');
+gndStn.freeSpnEnbl.setValue(false,'');
 
-
-% Scale up/down
-gndStn.scale(scaleFactor);
 
 %% Tethers
 % Create
@@ -181,11 +169,6 @@ thr.tether3.setSpringDamperEnable(true,'');
 thr.tether3.setNetBuoyEnable(false,'');
 thr.tether3.setDiameter(thrDia,'m');
 
-% thr.designTetherDiameter(vhcl,env);
-
-% Scale up/down
-thr.scale(scaleFactor);
-
 
 %% Winches
 % Create
@@ -208,11 +191,6 @@ wnch.winch3.timeConst.setValue(0.05,'s');
 wnch.winch3.maxAccel.setValue(inf,'m/s^2');
 wnch.winch3.initLength.setValue(50.01,'m');
 
-% wnch = wnch.setTetherInitLength(vhcl,env,thr);
-
-% Scale up/down
-wnch.scale(scaleFactor);
-
 
 %% Set up controller
 % Create
@@ -224,8 +202,12 @@ ctrl.add('FPIDNames',{'tetherAlti','tetherPitch','tetherRoll','elevators','ailer
     'FPIDOutputUnits',{'m/s','m/s','m/s','deg','deg','deg'});
 
 % add control allocation matrix (implemented as a simple gain)
-ctrl.add('GainNames',{'ctrlSurfAllocationMat','thrAllocationMat'},...
-    'GainUnits',{'',''});
+ctrl.add('GainNames',{'ctrlSurfAllocationMat','thrAllocationMat','ySwitch','rollAmp'},...
+    'GainUnits',{'','','m','deg'});
+
+ctrl.ySwitch.setValue(3,'m');
+ctrl.rollAmp.setValue(10,'deg');
+
 
 % add output saturation
 ctrl.add('SaturationNames',{'outputSat'});
@@ -270,8 +252,9 @@ ctrl.rudder.tau.setValue(0.5,'s');
 
 ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
 
-ctrl.outputSat.upperLimit.setValue(30,'');
-ctrl.outputSat.lowerLimit.setValue(-30,'');
+
+ctrl.outputSat.upperLimit.setValue(0,'');
+ctrl.outputSat.lowerLimit.setValue(0,'');
 
 % Calculate setpoints
 timeVec = 0:0.1*sqrt(scaleFactor):duration_s;
@@ -292,18 +275,244 @@ ctrl.rollSP.Value.DataInfo.Units = 'deg';
 ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
 
+
+%% Run first sim
+try
+    sim('OCTModel');
+catch
+end
+tsc1 = parseLogsout;
+clearvars logsout
+
+%% Scaling
+scaleFactor = 0.01;
+duration_s = duration_s*sqrt(scaleFactor);
+% Scale up/down
+env.scale(scaleFactor);
+% Scale up/down
+vhcl.scale(scaleFactor);
+% Scale up/down
+gndStn.scale(scaleFactor);
+% Scale up/down
+thr.scale(scaleFactor);
+% Scale up/down
+wnch.scale(scaleFactor);
+
+Yswitch = Yswitch*scaleFactor;
+
 % Scale up/down
 ctrl = ctrl.scale(scaleFactor);
 
-%% Run the simulation
+
+%% Run second sim
 try
-    simWithMonitor('OCTModel',2)
+    sim('OCTModel');
 catch
-    simWithMonitor('OCTModel',2)
 end
-% Run stop callback to plot everything
+tsc2 = parseLogsout;
 
-plotAyaz
+%% Post Process
+sigs = fieldnames(tsc2);
+for ii = 1:length(sigs)
+    try
+        tsc2.(sigs{ii}).Time = tsc2.(sigs{ii}).Time/sqrt(scaleFactor);
+    catch
+        warning('Skipping %s',sigs{ii})
+    end
+end
 
-% fullKitePlot
+%%
+figure
+subplot(3,2,1)
+plot(tsc1.eulerAngles.Time,squeeze(tsc1.eulerAngles.Data(1,:,:)),...
+    'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k',...
+    'LineStyle','-')
+grid on
+hold on
+plot(tsc2.eulerAngles.Time,squeeze(tsc2.eulerAngles.Data(1,:,:)),...
+    'DisplayName','Roll, Scaled','LineWidth',1.5,'Color','r',...
+    'LineStyle','--')
+xlabel('Normalized Time')
+ylabel('Roll, [rad]')
 
+subplot(3,2,3)
+plot(tsc1.eulerAngles.Time,squeeze(tsc1.eulerAngles.Data(2,:,:)),...
+    'DisplayName','Pitch, Nominal','LineWidth',1.5,'Color','k',...
+    'LineStyle','-')
+grid on
+hold on
+plot(tsc2.eulerAngles.Time,squeeze(tsc2.eulerAngles.Data(2,:,:)),...
+    'DisplayName','Pitch, Scaled','LineWidth',1.5,'Color','r',...
+    'LineStyle','--')
+xlabel('Normalized Time')
+ylabel('Pitch, [rad]')
+
+subplot(3,2,5)
+plot(tsc1.eulerAngles.Time,squeeze(tsc1.eulerAngles.Data(3,:,:)),...
+    'DisplayName','Yaw, Nominal','LineWidth',1.5,'Color','k',...
+    'LineStyle','-')
+grid on
+hold on
+plot(tsc2.eulerAngles.Time,squeeze(tsc2.eulerAngles.Data(3,:,:)),...
+    'DisplayName','Yaw, Scaled','LineWidth',1.5,'Color','r',...
+    'LineStyle','--')
+xlabel('Normalized Time')
+ylabel('Yaw, [rad]')
+
+
+subplot(3,2,2)
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(1,:,:))*scaleFactor,...
+    'DisplayName','Nominal','LineWidth',1.5,'Color','k',...
+    'LineStyle','-')
+grid on
+hold on
+plot(tsc2.positionVec.Time,squeeze(tsc2.positionVec.Data(1,:,:)),...
+    'DisplayName','Scaled','LineWidth',1.5,'Color','r',...
+    'LineStyle','--')
+xlabel('Normalized Time')
+ylabel('X Normed')
+
+subplot(3,2,4)
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(2,:,:))*scaleFactor,...
+    'DisplayName','Nominal','LineWidth',1.5,'Color','k',...
+    'LineStyle','-')
+grid on
+hold on
+plot(tsc2.positionVec.Time,squeeze(tsc2.positionVec.Data(2,:,:)),...
+    'DisplayName','Scaled','LineWidth',1.5,'Color','r',...
+    'LineStyle','--')
+xlabel('Normalized Time')
+ylabel('Y Normed')
+
+subplot(3,2,6)
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(3,:,:))*scaleFactor,...
+    'DisplayName','Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+grid on
+hold on
+plot(tsc2.positionVec.Time,squeeze(tsc2.positionVec.Data(3,:,:)),...
+    'DisplayName','Scaled','LineWidth',1.5,'Color','r','LineStyle','--')
+xlabel('Normalized Time')
+ylabel('Z Normed')
+set(findall(gcf,'Type','axes'),'FontSize',24)
+
+
+%% Plot moments breakdown
+% figure
+% subplot(3,1,1)
+% plot(tsc1.MFluidBdy.Time,squeeze(tsc1.MFluidBdy.Data(1,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MFluidBdy.Time,squeeze(tsc2.MFluidBdy.Data(1,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Fluid')
+% 
+% subplot(3,1,2)
+% plot(tsc1.MFluidBdy.Time,squeeze(tsc1.MFluidBdy.Data(2,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MFluidBdy.Time,squeeze(tsc2.MFluidBdy.Data(2,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Fluid')
+% 
+% subplot(3,1,3)
+% plot(tsc1.MFluidBdy.Time,squeeze(tsc1.MFluidBdy.Data(3,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MFluidBdy.Time,squeeze(tsc2.MFluidBdy.Data(3,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Fluid')
+% 
+% linkaxes(findall(gcf,'Type','axes'),'x')
+% 
+% figure
+% subplot(3,1,1)
+% plot(tsc1.MTurbBdy.Time,squeeze(tsc1.MTurbBdy.Data(1,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MTurbBdy.Time,squeeze(tsc2.MTurbBdy.Data(1,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Turb')
+% 
+% subplot(3,1,2)
+% plot(tsc1.MTurbBdy.Time,squeeze(tsc1.MTurbBdy.Data(2,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MTurbBdy.Time,squeeze(tsc2.MTurbBdy.Data(2,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Turb')
+% 
+% subplot(3,1,3)
+% plot(tsc1.MTurbBdy.Time,squeeze(tsc1.MTurbBdy.Data(3,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MTurbBdy.Time,squeeze(tsc2.MTurbBdy.Data(3,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Turb')
+% 
+% linkaxes(findall(gcf,'Type','axes'),'x')
+% 
+% figure
+% subplot(3,1,1)
+% plot(tsc1.MThrNetBdy.Time,squeeze(tsc1.MThrNetBdy.Data(1,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MThrNetBdy.Time,squeeze(tsc2.MThrNetBdy.Data(1,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Thr')
+% 
+% subplot(3,1,2)
+% plot(tsc1.MThrNetBdy.Time,squeeze(tsc1.MThrNetBdy.Data(2,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MThrNetBdy.Time,squeeze(tsc2.MThrNetBdy.Data(2,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Thr')
+% 
+% subplot(3,1,3)
+% plot(tsc1.MThrNetBdy.Time,squeeze(tsc1.MThrNetBdy.Data(3,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MThrNetBdy.Time,squeeze(tsc2.MThrNetBdy.Data(3,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Thr')
+% 
+% linkaxes(findall(gcf,'Type','axes'),'x')
+% 
+% figure
+% subplot(3,1,1)
+% plot(tsc1.MBuoyBdy.Time,squeeze(tsc1.MBuoyBdy.Data(1,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MBuoyBdy.Time,squeeze(tsc2.MBuoyBdy.Data(1,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mx Buoy')
+% 
+% subplot(3,1,2)
+% plot(tsc1.MBuoyBdy.Time,squeeze(tsc1.MBuoyBdy.Data(2,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MBuoyBdy.Time,squeeze(tsc2.MBuoyBdy.Data(2,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('My Buoy')
+% 
+% subplot(3,1,3)
+% plot(tsc1.MBuoyBdy.Time,squeeze(tsc1.MBuoyBdy.Data(3,:,:))*scaleFactor^4,...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
+% grid on
+% hold on
+% plot(tsc2.MBuoyBdy.Time,squeeze(tsc2.MBuoyBdy.Data(3,:,:)),...
+%     'DisplayName','Roll, Nominal','LineWidth',1.5,'Color','r','LineStyle','--')
+% ylabel('Mz Buoy')
+% 
+% linkaxes(findall(gcf,'Type','axes'),'x')

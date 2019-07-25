@@ -20,11 +20,6 @@ else
     run_no = 2;
 end
 
-%% resample data
-resampleDataRate = 1*(1/Lscale^0.5);
-% % % filename = 'testAnimated.gif';
-signals = fieldnames(tsc);
-
 % % % extract the important variables into dummy variables
 time = tsc.positionVec.Time.*(1/Lscale^0.5);
 sol_Rcm_o = squeeze(tsc.positionVec.Data).*(1/Lscale);
@@ -108,7 +103,7 @@ vectorPlotter(time,tsc.winchSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,tsc.tetherLengths.Data'.*(1/Lscale),plotProps,...
+vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
 
 
