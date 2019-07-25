@@ -99,7 +99,7 @@ vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile1','');
+vhcl.setFluidCoeffsFileName('someFile4','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
@@ -238,14 +238,14 @@ ctrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
 ctrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
 ctrl.tetherAlti.tau.setValue(5,'s');
 
-ctrl.tetherPitch.kp.setValue(2,'(m/s)/(rad)');
+ctrl.tetherPitch.kp.setValue(2*0,'(m/s)/(rad)');
 ctrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
-ctrl.tetherPitch.kd.setValue(4,'(m/s)/(rad/s)');
+ctrl.tetherPitch.kd.setValue(4*0,'(m/s)/(rad/s)');
 ctrl.tetherPitch.tau.setValue(0.1,'s');
 
-ctrl.tetherRoll.kp.setValue(4,'(m/s)/(rad)');
+ctrl.tetherRoll.kp.setValue(4*0,'(m/s)/(rad)');
 ctrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
-ctrl.tetherRoll.kd.setValue(12,'(m/s)/(rad/s)');
+ctrl.tetherRoll.kd.setValue(12*0,'(m/s)/(rad/s)');
 ctrl.tetherRoll.tau.setValue(0.01,'s');
 
 ctrl.thrAllocationMat.setValue([1 .5 -.5; 1 -.5 0; 1 .5 .5],'');
@@ -267,7 +267,6 @@ ctrl.rudder.kd.setValue(0,'(deg)/(deg/s)');
 ctrl.rudder.tau.setValue(0.5,'s');
 
 ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
-
 
 ctrl.outputSat.upperLimit.setValue(30,'');
 ctrl.outputSat.lowerLimit.setValue(-30,'');
@@ -303,5 +302,5 @@ end
 
 plotAyaz
 
-fullKitePlot
+% fullKitePlot
 
