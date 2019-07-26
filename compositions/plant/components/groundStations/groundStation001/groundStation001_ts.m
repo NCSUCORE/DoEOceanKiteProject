@@ -6,12 +6,12 @@ load('pos.mat')
 % clear
 
 % run this to set magnitude to zero %
-% mag.Data = zeros;
+mag.Data = zeros;
 
-% % % run this to set magnitude to average magnitude %
+% % run this to set magnitude to average magnitude %
 % mag.Data = mean(mag.Data)*ones(size(mag.Data));
-% % 
-% % % run this to set average direction %
+
+% % run this to set average direction %
 % for i = 1:3
 %     position.Data(:,i) = mean(position.Data(:,i))*ones(size(position.Data(:,i)));
 % end
@@ -169,7 +169,7 @@ ctrl.sway.kd.setValue(12*ctrl.sway.kp.Value,'(m/s)/(m/s)');
 ctrl.sway.tau.setValue(.1,'s');
 
 ctrl.heave.kp.setValue(.15,'(m/s)/(m)');
-ctrl.heave.kd.setValue(20*ctrl.heave.kp.Value,'(m/s)/(m/s)');
+ctrl.heave.kd.setValue(12*ctrl.heave.kp.Value,'(m/s)/(m/s)');
 ctrl.heave.tau.setValue(.1,'s');
 
 ctrl.outputSat.upperLimit.setValue(.4,'');
@@ -184,9 +184,9 @@ ctrl.heaveSP.Value = timeseries(100*ones(size(timeV)),timeV);
 % ctrl.surgeSP.Value.DataInfo.Units = 'm';
 
 surgeVec = [0 -.5 .5]';
+surgeVec = [-swayNum -1 -swayNum]';
 surgeVec = surgeVec/norm(surgeVec);
-surgeVec = [0 0 0]';
-swayNum = -dist + sqrt(dist^2+1^2-2*dist*cosd(60));
+% surgeVec = [0 0 0]';
 swayVec = [-1 -swayNum -swayNum]';
 swayVec = swayVec/norm(swayVec);
 swayVec = [0 0 0]';
@@ -197,7 +197,7 @@ heaveVec = [0 0 0]';
 ctrl.thrAllocationMat.setValue([surgeVec,swayVec,heaveVec],'1/s')
 
 % circulation data
-v = 0.6;
+v = 0;
 vsquared = v^2;
 cd = .8;
 A = platformVolume^(2/3);
@@ -230,7 +230,7 @@ figure
 subplot(3,1,1)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)),'k')
 hold on
-plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'--g')
+plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('X Pos [m]')
@@ -238,7 +238,7 @@ ylabel('X Pos [m]')
 subplot(3,1,2)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(2,:,:)),'k')
 hold on
-plot(timeV,squeeze(ctrl.swaySP.Value.Data),'g--')
+plot(timeV,squeeze(ctrl.swaySP.Value.Data),'r--')
 grid on
 xlabel('Time, t [s]')
 ylabel('Y Pos [m]')
@@ -246,18 +246,21 @@ ylabel('Y Pos [m]')
 subplot(3,1,3)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
 hold on
-plot(tsc.subBodyPos.Time,oH)
-plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
+% plot(tsc.subBodyPos.Time,oH)
+plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'r--')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
+% saveas(gcf,'controlled_zeroData_surge.png')
+
+%%
 
 % Plot Euler angles
 figure
 subplot(3,1,1)
 plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,'k')
 hold on
-plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--g')
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Roll, [deg]')
@@ -265,7 +268,7 @@ ylabel('Roll, [deg]')
 subplot(3,1,2)
 plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi,'k')
 hold on
-plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--g')
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Pitch, [deg]')
@@ -273,34 +276,40 @@ ylabel('Pitch, [deg]')
 subplot(3,1,3)
 plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi,'k')
 hold on
-plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--g')
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Yaw, [deg]')
+saveas(gcf,'controlled_avgData_eul.png')
 
-figure
-plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
-hold on
-plot(tsc.subBodyPos.Time,oH)
-plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
-grid on
-xlabel('Time, t [s]')
-ylabel('Z Pos [m]')
+% figure
+% plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
+% hold on
+% plot(tsc.subBodyPos.Time,oH)
+% plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'r--')
+% grid on
+% xlabel('Time, t [s]')
+% ylabel('Z Pos [m]')
+% saveas(gcf,'controlled_zeroData_z.png')
 
-figure
-tsc.oceanForce.plot
+% figure
+% tsc.oceanForce.plot
 
 % figure
 % tsc.tetherLengths.plot
 % legend('1: pos y','2: pos x, neg y','3: neg x, neg y')
 % 
-% figure
-% tsc.winchSpeeds.plot
-% legend('1','2','3')
+figure
+tsc.winchSpeeds.plot
+legend('1','2','3')
+xlabel('Time, t [s]')
+ylabel('Winch Speed [m/s]')
+title('')
+saveas(gcf,'controlled_avgData_winchSpeed.png')
 
 %%
 timeStep = 1;
-fileName = 'sub_tensionData.gif';
+fileName = 'sub_avgData.gif';
 
 % Resample data to the animation framerate
 timeVec = 0:timeStep:tsc.subBodyPos.Time(end);
@@ -331,9 +340,9 @@ h.thr(ii) = plot3(...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(2,:,1),...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(3,:,1),...
     'Color','k','Marker','o','LineWidth',1.5);
-xlim([-2,10])
-ylim([-6,6])
-zlim([89,101])
+xlim([-2,6])
+ylim([-4,4])
+zlim([92,100])
 hold on
 end
 h.title = title(sprintf('Time = %d',tsc.subBodyPos.Time(1)));
@@ -378,10 +387,10 @@ for j = 1:3
     initPos(j) = mean(tsc.subBodyPos.Data(j,:,:));
 end
 oceanDepth = initPos(3);
+xOn = 1; % 1 = on, 0 = off
+zOn = 1;
 
 sim('groundStation001_th')
-
-parseLogsout
 
 %%
 
@@ -392,6 +401,7 @@ diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
 plot(tsc.subBodyPos.Time,diff,'k')
 xlabel('Time, t [s]')
 ylabel('Distance from Ocean Surface [m]')
+saveas(gcf,'partSub_avgData_under.png')
 
 % Plot position
 figure
@@ -422,6 +432,7 @@ plot(timeV,initPos(3).*ones(length(timeV)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
+saveas(gcf,'partSub_avgData.png')
 
 % Plot Euler angles
 figure
@@ -448,6 +459,7 @@ plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Yaw, [deg]')
+saveas(gcf,'partSub_avgData_eul.png')
 
 figure
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
@@ -457,6 +469,8 @@ plot(tsc.subBodyPos.Time,oH)
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
+
+saveas(gcf,'partSub_avgData_z.png')
 
 % figure
 % tsc.oceanForce.plot
@@ -473,7 +487,7 @@ ylabel('Z Pos [m]')
 % Animate some stuff
 
 timeStep = 1;
-fileName = 'partSub_tensionData.gif';
+fileName = 'partSub_avgData.gif';
 
 % Resample data to the animation framerate
 timeVec = 0:timeStep:tsc.subBodyPos.Time(end);
@@ -504,9 +518,9 @@ h.thr(ii) = plot3(...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(2,:,1),...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(3,:,1),...
     'Color','k','Marker','o','LineWidth',1.5);
-% xlim([0,9])
-% ylim([-5,3])
-% zlim([90,100])
+xlim([0,8])
+ylim([-4,4])
+zlim([92,100])
 hold on
 end
 h.title = title(sprintf('Time = %d',tsc.subBodyPos.Time(1)));
