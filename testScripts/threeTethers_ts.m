@@ -3,6 +3,9 @@ clear;
 format compact
 % close all
 
+make_video = 0;
+
+
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 400*sqrt(lengthScaleFactor);
@@ -32,7 +35,7 @@ env.water.velVec.setValue([1 0 0],'m/s');
 
 %% common parameters
 numTethers = 3;
-thrNumNodes = 4;
+thrNumNodes = 2;
 numTurbines = 2;
 
 %% lifiting body
@@ -298,5 +301,5 @@ end
 
 plotAyaz
 
-fullKitePlot
+% fullKitePlot
 
