@@ -3,7 +3,8 @@ clearvars logsout
 clc
 format compact
 close all
-scaleFactor = 1;
+lengthScaleFactor = 1;
+densityScaleFactor = 1;
 duration_s = 500;
 
 %% Set up simulation
@@ -86,8 +87,6 @@ vhcl.setInitialCmVel([0;0;0],'m/s');
 vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
-vhcl.scale(scaleFactor);
-
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile4','');
 
@@ -121,7 +120,7 @@ gndStn.freeSpnEnbl.setValue(false,'');
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(3,'');
-thr.setNumNodes(4,'');
+thr.setNumNodes(thrNumNodes,'');
 thr.build;
 
 % Set parameter values
@@ -169,7 +168,6 @@ thr.tether3.setSpringDamperEnable(true,'');
 thr.tether3.setNetBuoyEnable(false,'');
 thr.tether3.setDiameter(thrDia,'m');
 
-
 %% Winches
 % Create
 wnch = OCT.winches;
@@ -205,16 +203,16 @@ ctrl.add('FPIDNames',{'tetherAlti','tetherPitch','tetherRoll','elevators','ailer
 ctrl.add('GainNames',{'ctrlSurfAllocationMat','thrAllocationMat','ySwitch','rollAmp'},...
     'GainUnits',{'','','m','deg'});
 
-ctrl.ySwitch.setValue(3,'m');
-ctrl.rollAmp.setValue(10,'deg');
+ctrl.ySwitch.setValue(5,'m');
+ctrl.rollAmp.setValue(20,'deg');
 
 
 % add output saturation
 ctrl.add('SaturationNames',{'outputSat'});
 
 % add setpoints
-ctrl.add('SetpointNames',{'altiSP','pitchSP','rollSP','yawSP'},...
-    'SetpointUnits',{'m','deg','deg','deg'});
+ctrl.add('SetpointNames',{'altiSP','pitchSP','yawSP'},...
+    'SetpointUnits',{'m','deg','deg'});
 
 % tether controllers
 ctrl.tetherAlti.kp.setValue(0,'(m/s)/(m)');
@@ -252,28 +250,20 @@ ctrl.rudder.tau.setValue(0.5,'s');
 
 ctrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
 
-
 ctrl.outputSat.upperLimit.setValue(0,'');
 ctrl.outputSat.lowerLimit.setValue(0,'');
 
 % Calculate setpoints
-timeVec = 0:0.1*sqrt(scaleFactor):duration_s;
+timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
 ctrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
 ctrl.altiSP.Value.DataInfo.Units = 'm';
 
 ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 
-Yswitch = 10*scaleFactor;
-rollAmp = 20;
-rollPeriod = 100*sqrt(scaleFactor);
-
-ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(rollPeriod))),timeVec);
-ctrl.rollSP.Value.Data(timeVec<0) = 0;
-ctrl.rollSP.Value.DataInfo.Units = 'deg';
-
 ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
+
 
 
 %% Run first sim
@@ -285,23 +275,21 @@ tsc1 = parseLogsout;
 clearvars logsout
 
 %% Scaling
-scaleFactor = 0.01;
-duration_s = duration_s*sqrt(scaleFactor);
+lengthScaleFactor = 0.01;
+densityScaleFactor = 1;
+duration_s = duration_s*sqrt(lengthScaleFactor);
 % Scale up/down
-env.scale(scaleFactor);
+env.scale(lengthScaleFactor,densityScaleFactor);
 % Scale up/down
-vhcl.scale(scaleFactor);
+vhcl.scale(lengthScaleFactor,densityScaleFactor);
 % Scale up/down
-gndStn.scale(scaleFactor);
+gndStn.scale(lengthScaleFactor,densityScaleFactor);
 % Scale up/down
-thr.scale(scaleFactor);
+thr.scale(lengthScaleFactor,densityScaleFactor);
 % Scale up/down
-wnch.scale(scaleFactor);
-
-Yswitch = Yswitch*scaleFactor;
-
+wnch.scale(lengthScaleFactor,densityScaleFactor);
 % Scale up/down
-ctrl = ctrl.scale(scaleFactor);
+ctrl = ctrl.scale(lengthScaleFactor);
 
 
 %% Run second sim
@@ -315,7 +303,7 @@ tsc2 = parseLogsout;
 sigs = fieldnames(tsc2);
 for ii = 1:length(sigs)
     try
-        tsc2.(sigs{ii}).Time = tsc2.(sigs{ii}).Time/sqrt(scaleFactor);
+        tsc2.(sigs{ii}).Time = tsc2.(sigs{ii}).Time/sqrt(lengthScaleFactor);
     catch
         warning('Skipping %s',sigs{ii})
     end
@@ -361,7 +349,7 @@ ylabel('Yaw, [rad]')
 
 
 subplot(3,2,2)
-plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(1,:,:))*scaleFactor,...
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(1,:,:))*lengthScaleFactor,...
     'DisplayName','Nominal','LineWidth',1.5,'Color','k',...
     'LineStyle','-')
 grid on
@@ -373,7 +361,7 @@ xlabel('Normalized Time')
 ylabel('X Normed')
 
 subplot(3,2,4)
-plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(2,:,:))*scaleFactor,...
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(2,:,:))*lengthScaleFactor,...
     'DisplayName','Nominal','LineWidth',1.5,'Color','k',...
     'LineStyle','-')
 grid on
@@ -385,7 +373,7 @@ xlabel('Normalized Time')
 ylabel('Y Normed')
 
 subplot(3,2,6)
-plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(3,:,:))*scaleFactor,...
+plot(tsc1.positionVec.Time,squeeze(tsc1.positionVec.Data(3,:,:))*lengthScaleFactor,...
     'DisplayName','Nominal','LineWidth',1.5,'Color','k','LineStyle','-')
 grid on
 hold on
