@@ -82,6 +82,7 @@ elems(9).SampleTime = -1;
 elems(9).Complexity = 'real';
 elems(9).Unit = 'rad/s';
 
+
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the all actuator controller';

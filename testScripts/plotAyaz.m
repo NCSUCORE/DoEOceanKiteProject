@@ -16,6 +16,7 @@ parseLogsout
 Lscale = lengthScaleFactor;
 Dscale = densityScaleFactor;
 
+
 % % % extract the important variables into dummy variables
 time = tsc.positionVec.Time.*(1/Lscale^0.5);
 sol_Rcm_o = squeeze(tsc.positionVec.Data).*(1/Lscale);
