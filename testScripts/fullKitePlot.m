@@ -121,7 +121,7 @@ for ii = 1:n_steps
     title(['Time = ',sprintf('%0.2f', time(ii)),' s'])
     
     try
-        waitforbuttonpress
+%         waitforbuttonpress
     catch
         break
     end
@@ -130,12 +130,12 @@ for ii = 1:n_steps
 end
 
 
-% if make_video == 1
-%     open(video)
-%     for i = 1:length(F)
-%         writeVideo(video, F(i));
-%     end
-%     close(video)
-% end
+if make_video == 1
+    open(video)
+    for i = 1:length(F)
+        writeVideo(video, F(i));
+    end
+    close(video)
+end
 
 

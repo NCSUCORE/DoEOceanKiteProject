@@ -13,17 +13,17 @@ classdef flow < handle
     methods
         function obj = flow
             obj.velVec      = SIM.parameter('Unit','m/s');
-            obj.density     = SIM.parameter('Unit','kg/m^3','NoScale',true);
+            obj.density     = SIM.parameter('Unit','kg/m^3','NoScale',false);
             obj.speed       = SIM.parameter('Unit','m/s');
             obj.elevation   = SIM.parameter('Unit','deg');
             obj.heading     = SIM.parameter('Unit','deg');
         end
         
         % Function to scale the object
-        function obj = scale(obj,scaleFactor)
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}).scale(scaleFactor);
+                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
         end
         

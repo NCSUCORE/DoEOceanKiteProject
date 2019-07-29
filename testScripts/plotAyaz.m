@@ -13,12 +13,9 @@ line_wd = 1;
 parseLogsout
 
 %% Scale factors
-Lscale = scaleFactor;
-if Lscale==1
-    run_no = 1;
-else
-    run_no = 2;
-end
+Lscale = lengthScaleFactor;
+Dscale = densityScaleFactor;
+
 
 % % % extract the important variables into dummy variables
 time = tsc.positionVec.Time.*(1/Lscale^0.5);
@@ -29,10 +26,14 @@ sol_euler = squeeze(tsc.eulerAngles.Data);
 
 %% plot states
 plotProps{1} = 'rgb';
-if run_no == 1
+if Lscale == 1 && Dscale == 1
     plotProps{2} = '-';
-elseif run_no == 2
+elseif Lscale ~= 1 && Dscale == 1
     plotProps{2} = '--';
+elseif Lscale == 1 && Dscale ~= 1
+    plotProps{2} = ':';
+elseif Lscale ~= 1 && Dscale ~= 1
+    plotProps{2} = '.-';
 end
 
 ss = get(0,'ScreenSize');
@@ -105,40 +106,40 @@ figure(fn)
 set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
-
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,tsc.ctrlSurfDeflection.Data',plotProps,...
-    {'$\delta_{port-alrn}$','$\delta_{stbd-alrn}$','$\delta_{elevator}$','$\delta_{rudder}$'},...
-    'Angle (deg)','Control surface defelctions');
+% 
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,tsc.ctrlSurfDeflection.Data',plotProps,...
+%     {'$\delta_{port-alrn}$','$\delta_{stbd-alrn}$','$\delta_{elevator}$','$\delta_{rudder}$'},...
+%     'Angle (deg)','Control surface defelctions');
 
 
 
 %% local forces
-% angle of attack
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
-    {'Port wing','Stbd wing','H-stab','V-stab'},...
-    'Angle (deg)','Angle of attack');
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.CL.Data),plotProps,...
-    {'Port wing','Stbd wing','H-stab','V-stab'},...
-    'CL','Lift coefficient');
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.CD.Data),plotProps,...
-    {'Port wing','Stbd wing','H-stab','V-stab'},...
-    'CD','Drag coefficient');
-
+% % % angle of attack
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
+%     {'Port wing','Stbd wing','H-stab','V-stab'},...
+%     'Angle (deg)','Angle of attack');
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.CL.Data),plotProps,...
+%     {'Port wing','Stbd wing','H-stab','V-stab'},...
+%     'CL','Lift coefficient');
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.CD.Data),plotProps,...
+%     {'Port wing','Stbd wing','H-stab','V-stab'},...
+%     'CD','Drag coefficient');
+% 
     
 
 

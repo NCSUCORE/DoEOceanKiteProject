@@ -10,7 +10,7 @@ mag.Data = zeros;
 
 % % run this to set magnitude to average magnitude %
 % mag.Data = mean(mag.Data)*ones(size(mag.Data));
-% 
+
 % % run this to set average direction %
 % for i = 1:3
 %     position.Data(:,i) = mean(position.Data(:,i))*ones(size(position.Data(:,i)));
@@ -81,72 +81,74 @@ airbThrPltfrm(1).posVec = [0 1/2 1/2]';
 % number of tethers
 numNodes = 4;
 
-thrs = OCT.tethers;
-thrs.numTethers.setValue(3,'');
-thrs.numNodes.setValue(numNodes,'')
-thrs.build;
+thr = OCT.tethers;
+thr.numTethers.setValue(3,'');
+thr.numNodes.setValue(numNodes,'')
+thr.build;
 
-thrs.tether1.initGndNodePos.setValue(anchThrGnd(1).posVec,'m');
-thrs.tether1.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(1).posVec(:),'m');
-thrs.tether1.initGndNodeVel.setValue([0 0 0],'m/s');
-thrs.tether1.initAirNodeVel.setValue(initVel,'m/s');
-thrs.tether1.diameter.setValue(.05,'m');
-thrs.tether1.youngsMod.setValue(3.8e9,'Pa');
-thrs.tether1.dampingRatio.setValue(.05,'');
-thrs.tether1.dragCoeff.setValue(.5,'');
-thrs.tether1.density.setValue(1300,'kg/m^3');
-thrs.tether1.vehicleMass.setValue(platformMass,'kg');
-thrs.tether1.setDragEnable(true,'');
-thrs.tether1.setSpringDamperEnable(true,'');
-thrs.tether1.setNetBuoyEnable(true,'');
-tetherLengths(1) = norm(thrs.tether1.initAirNodePos.Value-thrs.tether1.initGndNodePos.Value);
+thr.tether1.initGndNodePos.setValue(anchThrGnd(1).posVec,'m');
+thr.tether1.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(1).posVec(:),'m');
+thr.tether1.initGndNodeVel.setValue([0 0 0],'m/s');
+thr.tether1.initAirNodeVel.setValue(initVel,'m/s');
+thr.tether1.diameter.setValue(.05,'m');
+thr.tether1.youngsMod.setValue(3.8e9,'Pa');
+thr.tether1.dampingRatio.setValue(.05,'');
+thr.tether1.dragCoeff.setValue(.5,'');
+thr.tether1.density.setValue(1300,'kg/m^3');
+thr.tether1.vehicleMass.setValue(platformMass,'kg');
+thr.tether1.setDragEnable(true,'');
+thr.tether1.setSpringDamperEnable(true,'');
+thr.tether1.setNetBuoyEnable(true,'');
+tetherLengths(1) = norm(thr.tether1.initAirNodePos.Value-thr.tether1.initGndNodePos.Value);
 
-thrs.tether2.initGndNodePos.setValue(anchThrGnd(2).posVec,'m');
-thrs.tether2.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(2).posVec(:),'m');
-thrs.tether2.initGndNodeVel.setValue([0 0 0],'m/s');
-thrs.tether2.initAirNodeVel.setValue(initVel,'m/s');
-thrs.tether2.diameter.setValue(.05,'m');
-thrs.tether2.youngsMod.setValue(3.8e9,'Pa');
-thrs.tether2.dampingRatio.setValue(.05,'');
-thrs.tether2.dragCoeff.setValue(.5,'');
-thrs.tether2.density.setValue(1300,'kg/m^3');
-thrs.tether2.vehicleMass.setValue(platformMass,'kg');
-thrs.tether2.setDragEnable(true,'');
-thrs.tether2.setSpringDamperEnable(true,'');
-thrs.tether2.setNetBuoyEnable(true,'');
-tetherLengths(2) = norm(thrs.tether2.initAirNodePos.Value-thrs.tether2.initGndNodePos.Value);
+thr.tether2.initGndNodePos.setValue(anchThrGnd(2).posVec,'m');
+thr.tether2.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(2).posVec(:),'m');
+thr.tether2.initGndNodeVel.setValue([0 0 0],'m/s');
+thr.tether2.initAirNodeVel.setValue(initVel,'m/s');
+thr.tether2.diameter.setValue(.05,'m');
+thr.tether2.youngsMod.setValue(3.8e9,'Pa');
+thr.tether2.dampingRatio.setValue(.05,'');
+thr.tether2.dragCoeff.setValue(.5,'');
+thr.tether2.density.setValue(1300,'kg/m^3');
+thr.tether2.vehicleMass.setValue(platformMass,'kg');
+thr.tether2.setDragEnable(true,'');
+thr.tether2.setSpringDamperEnable(true,'');
+thr.tether2.setNetBuoyEnable(true,'');
+tetherLengths(2) = norm(thr.tether2.initAirNodePos.Value-thr.tether2.initGndNodePos.Value);
 
-thrs.tether3.initGndNodePos.setValue(anchThrGnd(3).posVec,'m');
-thrs.tether3.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(3).posVec(:),'m');
-thrs.tether3.initGndNodeVel.setValue([0 0 0],'m/s');
-thrs.tether3.initAirNodeVel.setValue(initVel,'m/s');
-thrs.tether3.diameter.setValue(.05,'m');
-thrs.tether3.youngsMod.setValue(3.8e9,'Pa');
-thrs.tether3.dampingRatio.setValue(.05,'');
-thrs.tether3.dragCoeff.setValue(.5,'');
-thrs.tether3.density.setValue(1300,'kg/m^3');
-thrs.tether3.vehicleMass.setValue(platformMass,'kg');
-thrs.tether3.setDragEnable(true,'');
-thrs.tether3.setSpringDamperEnable(true,'');
-thrs.tether3.setNetBuoyEnable(true,'');
-tetherLengths(3) = norm(thrs.tether3.initAirNodePos.Value-thrs.tether3.initGndNodePos.Value);
+thr.tether3.initGndNodePos.setValue(anchThrGnd(3).posVec,'m');
+thr.tether3.initAirNodePos.setValue(initPos(:)+rotation_sequence(initEulAng)*anchThrPltfrm(3).posVec(:),'m');
+thr.tether3.initGndNodeVel.setValue([0 0 0],'m/s');
+thr.tether3.initAirNodeVel.setValue(initVel,'m/s');
+thr.tether3.diameter.setValue(.05,'m');
+thr.tether3.youngsMod.setValue(3.8e9,'Pa');
+thr.tether3.dampingRatio.setValue(.05,'');
+thr.tether3.dragCoeff.setValue(.5,'');
+thr.tether3.density.setValue(1300,'kg/m^3');
+thr.tether3.vehicleMass.setValue(platformMass,'kg');
+thr.tether3.setDragEnable(true,'');
+thr.tether3.setSpringDamperEnable(true,'');
+thr.tether3.setNetBuoyEnable(true,'');
+tetherLengths(3) = norm(thr.tether3.initAirNodePos.Value-thr.tether3.initGndNodePos.Value);
 
-wins = OCT.winches;
-wins.setNumWinches(3,'');
-wins.build;
-wins.setTetherInitLength(vhcl,env,thrs);
+wnch = OCT.winches;
+wnch.setNumWinches(3,'');
+wnch.build;
 
-wins.winch1.maxSpeed.setValue(0.4,'m/s');
-wins.winch1.timeConst.setValue(1,'s');
-wins.winch1.maxAccel.setValue(inf,'m/s^2')
+wnch.winch1.maxSpeed.setValue(0.4,'m/s');
+wnch.winch1.timeConst.setValue(1,'s');
+wnch.winch1.maxAccel.setValue(inf,'m/s^2')
+wnch.winch1.initLength.setValue(tetherLengths(1),'m')
 
-wins.winch2.maxSpeed.setValue(0.4,'m/s');
-wins.winch2.timeConst.setValue(1,'s');
-wins.winch2.maxAccel.setValue(inf,'m/s^2')
+wnch.winch2.maxSpeed.setValue(0.4,'m/s');
+wnch.winch2.timeConst.setValue(1,'s');
+wnch.winch2.maxAccel.setValue(inf,'m/s^2')
+wnch.winch2.initLength.setValue(tetherLengths(2),'m')
 
-wins.winch3.maxSpeed.setValue(0.4,'m/s');
-wins.winch3.timeConst.setValue(1,'s');
-wins.winch3.maxAccel.setValue(inf,'m/s^2')
+wnch.winch3.maxSpeed.setValue(0.4,'m/s');
+wnch.winch3.timeConst.setValue(1,'s');
+wnch.winch3.maxAccel.setValue(inf,'m/s^2')
+wnch.winch3.initLength.setValue(tetherLengths(3),'m')
 
 ctrl = CTR.controller;
 ctrl.add('FPIDNames',{'surge','sway','heave'},...
@@ -158,16 +160,16 @@ ctrl.add('SaturationNames',{'outputSat'});
 ctrl.add('SetpointNames',{'surgeSP','swaySP','heaveSP'},...
     'SetpointUnits',{'m','m','m'});
 
-ctrl.surge.kp.setValue(1,'(m/s)/(m)');
-ctrl.surge.kd.setValue(0*ctrl.surge.kp.Value,'(m/s)/(m/s)');
+ctrl.surge.kp.setValue(.05,'(m/s)/(m)');
+ctrl.surge.kd.setValue(12*ctrl.surge.kp.Value,'(m/s)/(m/s)');
 ctrl.surge.tau.setValue(.1,'s');
 
-ctrl.sway.kp.setValue(1,'(m/s)/(m)');
-ctrl.sway.kd.setValue(0*ctrl.sway.kp.Value,'(m/s)/(m/s)');
+ctrl.sway.kp.setValue(.05,'(m/s)/(m)');
+ctrl.sway.kd.setValue(12*ctrl.sway.kp.Value,'(m/s)/(m/s)');
 ctrl.sway.tau.setValue(.1,'s');
 
-ctrl.heave.kp.setValue(1,'(m/s)/(m)');
-ctrl.heave.kd.setValue(0*ctrl.heave.kp.Value,'(m/s)/(m/s)');
+ctrl.heave.kp.setValue(.15,'(m/s)/(m)');
+ctrl.heave.kd.setValue(12*ctrl.heave.kp.Value,'(m/s)/(m/s)');
 ctrl.heave.tau.setValue(.1,'s');
 
 ctrl.outputSat.upperLimit.setValue(.4,'');
@@ -181,32 +183,25 @@ ctrl.swaySP.Value = timeseries(0*ones(size(timeV)),timeV);
 ctrl.heaveSP.Value = timeseries(100*ones(size(timeV)),timeV);
 % ctrl.surgeSP.Value.DataInfo.Units = 'm';
 
-surge1 = -dist + sqrt(dist^2+1);
-surge1 = 0
-surge2 = -dist + sqrt(dist^2+1-2*dist*cosd(30));
-surge3 = -dist + sqrt(dist^2+1-2*dist*cosd(120));
-surgeVec = [0 0 0]';
-% surgeVec = [surge1 surge2 surge3]';
-% surgeVec = surgeVec/norm(surgeVec);
-swayNum = -dist + sqrt(dist^2+1^2-2*dist*cosd(60));
+surgeVec = [0 -.5 .5]';
+surgeVec = [-swayNum -1 -swayNum]';
+surgeVec = surgeVec/norm(surgeVec);
+% surgeVec = [0 0 0]';
+swayVec = [-1 -swayNum -swayNum]';
+swayVec = swayVec/norm(swayVec);
 swayVec = [0 0 0]';
-% swayVec = [-1 -swayNum -swayNum]';
-% swayVec = swayVec/norm(swayVec);
-heaveNum = -sqrt(mean(ctrl.heaveSP.Value.Data)^2+dist^2) + sqrt((mean(ctrl.heaveSP.Value.Data)+1)^2+dist^2);
-heaveVec = [0 0 0]';
-heaveVec = [heaveNum heaveNum heaveNum]';
+heaveVec = [1 1 1]';
 heaveVec = heaveVec/norm(heaveVec);
+heaveVec = [0 0 0]';
 
-% ctrl.thrAllocationMat.setValue(-1.*[surge1 surge2 surge3;-1 -swayNum -swayNum;-heaveNum -heaveNum -heaveNum]','1/s')
 ctrl.thrAllocationMat.setValue([surgeVec,swayVec,heaveVec],'1/s')
-ctrl.thrAllocationMat.Value
 
 % circulation data
 v = 0;
 vsquared = v^2;
 cd = .8;
 A = platformVolume^(2/3);
-oceanPeriod = 15;
+oceanPeriod = 20;
 xOn = 1; % 1 = on, 0 = off
 zOn = 1;
 
@@ -219,24 +214,23 @@ sim('groundStation001_th')
 
 parseLogsout
 
-
 %%
 close all
 
 parseLogsout
-figure
+% figure
 oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);
 diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
-plot(tsc.subBodyPos.Time,diff)
-xlabel('Time, t [s]')
-ylabel('Distance from Ocean Surface [m]')
+% plot(tsc.subBodyPos.Time,diff)
+% xlabel('Time, t [s]')
+% ylabel('Distance from Ocean Surface [m]')
 
 % Plot position
 figure
 subplot(3,1,1)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)),'k')
 hold on
-plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'r')
+plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('X Pos [m]')
@@ -244,7 +238,7 @@ ylabel('X Pos [m]')
 subplot(3,1,2)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(2,:,:)),'k')
 hold on
-plot(timeV,squeeze(ctrl.swaySP.Value.Data),'r')
+plot(timeV,squeeze(ctrl.swaySP.Value.Data),'r--')
 grid on
 xlabel('Time, t [s]')
 ylabel('Y Pos [m]')
@@ -252,44 +246,70 @@ ylabel('Y Pos [m]')
 subplot(3,1,3)
 plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
 hold on
-plot(tsc.subBodyPos.Time,oH)
-plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'r')
+% plot(tsc.subBodyPos.Time,oH)
+plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'r--')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
+% saveas(gcf,'controlled_zeroData_surge.png')
+
+%%
 
 % Plot Euler angles
 figure
 subplot(3,1,1)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,'k')
+hold on
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Roll, [deg]')
 
 subplot(3,1,2)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi,'k')
+hold on
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Pitch, [deg]')
 
 subplot(3,1,3)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi,'k')
+hold on
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')
 grid on
 xlabel('Time, t [s]')
 ylabel('Yaw, [deg]')
+saveas(gcf,'controlled_avgData_eul.png')
 
-% Animate some stuff
+% figure
+% plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
+% hold on
+% plot(tsc.subBodyPos.Time,oH)
+% plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'r--')
+% grid on
+% xlabel('Time, t [s]')
+% ylabel('Z Pos [m]')
+% saveas(gcf,'controlled_zeroData_z.png')
 
-figure
-tsc.tetherLengths.plot
-legend('1: pos y','2: pos x, neg y','3: neg x, neg y')
+% figure
+% tsc.oceanForce.plot
 
+% figure
+% tsc.tetherLengths.plot
+% legend('1: pos y','2: pos x, neg y','3: neg x, neg y')
+% 
 figure
 tsc.winchSpeeds.plot
 legend('1','2','3')
+xlabel('Time, t [s]')
+ylabel('Winch Speed [m/s]')
+title('')
+saveas(gcf,'controlled_avgData_winchSpeed.png')
 
+%%
 timeStep = 1;
-% fileName = 'sub_circ.gif';
+fileName = 'sub_avgData.gif';
 
 % Resample data to the animation framerate
 timeVec = 0:timeStep:tsc.subBodyPos.Time(end);
@@ -320,20 +340,20 @@ h.thr(ii) = plot3(...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(2,:,1),...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(3,:,1),...
     'Color','k','Marker','o','LineWidth',1.5);
-% xlim([0,9])
-% ylim([-5,3])
-% zlim([90,100])
+xlim([-2,6])
+ylim([-4,4])
+zlim([92,100])
 hold on
 end
 h.title = title(sprintf('Time = %d',tsc.subBodyPos.Time(1)));
 
 set(gca,'FontSize',24)
-% 
-% frame = getframe(h.fig );
-% im = frame2im(frame);
-% [imind,cm] = rgb2ind(im,256);
 
-% imwrite(imind,cm,fileName,'gif', 'Loopcount',inf);
+frame = getframe(h.fig );
+im = frame2im(frame);
+[imind,cm] = rgb2ind(im,256);
+
+imwrite(imind,cm,fileName,'gif', 'Loopcount',inf);
 
 for ii = 2:numel(timeVec)
     
@@ -354,10 +374,10 @@ for ii = 2:numel(timeVec)
     
     drawnow
     
-%     frame = getframe(h.fig); 
-%     im = frame2im(frame); 
-%     [imind,cm] = rgb2ind(im,256);
-%     imwrite(imind,cm,fileName,'gif','WriteMode','append','DelayTime',0.05);
+    frame = getframe(h.fig); 
+    im = frame2im(frame); 
+    [imind,cm] = rgb2ind(im,256);
+    imwrite(imind,cm,fileName,'gif','WriteMode','append','DelayTime',0.05);
     
 end
 
@@ -367,65 +387,107 @@ for j = 1:3
     initPos(j) = mean(tsc.subBodyPos.Data(j,:,:));
 end
 oceanDepth = initPos(3);
+xOn = 1; % 1 = on, 0 = off
+zOn = 1;
 
 sim('groundStation001_th')
 
-parseLogsout
-
 %%
 
-figure
+parseLogsout
+% figure
 oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);
 diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;
-plot(tsc.subBodyPos.Time,diff)
+plot(tsc.subBodyPos.Time,diff,'k')
 xlabel('Time, t [s]')
 ylabel('Distance from Ocean Surface [m]')
+saveas(gcf,'partSub_avgData_under.png')
+
 % Plot position
 figure
 subplot(3,1,1)
-plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)))
+plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)),'k')
+hold on
+% plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'--g')
+plot(timeV,initPos(1).*ones(length(timeV)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('X Pos [m]')
 
 subplot(3,1,2)
-plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(2,:,:)))
+plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(2,:,:)),'k')
+hold on
+% plot(timeV,squeeze(ctrl.swaySP.Value.Data),'g--')
+plot(timeV,initPos(2).*ones(length(timeV)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Y Pos [m]')
 
 subplot(3,1,3)
-plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)))
+plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
 hold on
-plot(tsc.subBodyPos.Time,oH,'r')
+plot(tsc.subBodyPos.Time,oH)
+% plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
+plot(timeV,initPos(3).*ones(length(timeV)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Z Pos [m]')
+saveas(gcf,'partSub_avgData.png')
 
 % Plot Euler angles
 figure
 subplot(3,1,1)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,'k')
+hold on
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Roll, [deg]')
 
 subplot(3,1,2)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi,'k')
+hold on
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Pitch, [deg]')
 
 subplot(3,1,3)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi)
+plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi,'k')
+hold on
+plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--g')
 grid on
 xlabel('Time, t [s]')
 ylabel('Yaw, [deg]')
+saveas(gcf,'partSub_avgData_eul.png')
 
+figure
+plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
+hold on
+plot(tsc.subBodyPos.Time,oH)
+% plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'g--')
+grid on
+xlabel('Time, t [s]')
+ylabel('Z Pos [m]')
+
+saveas(gcf,'partSub_avgData_z.png')
+
+% figure
+% tsc.oceanForce.plot
+
+% figure
+% tsc.tetherLengths.plot
+% legend('1: pos y','2: pos x, neg y','3: neg x, neg y')
+% 
+% figure
+% tsc.winchSpeeds.plot
+% legend('1','2','3')
+
+%%
 % Animate some stuff
 
 timeStep = 1;
-fileName = 'partSub_circ.gif';
+fileName = 'partSub_avgData.gif';
 
 % Resample data to the animation framerate
 timeVec = 0:timeStep:tsc.subBodyPos.Time(end);
@@ -456,9 +518,9 @@ h.thr(ii) = plot3(...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(2,:,1),...
     tsc.anchThrNodeBusArry(ii).nodePositions.Data(3,:,1),...
     'Color','k','Marker','o','LineWidth',1.5);
-% xlim([0,9])
-% ylim([-5,3])
-% zlim([90,100])
+xlim([0,8])
+ylim([-4,4])
+zlim([92,100])
 hold on
 end
 h.title = title(sprintf('Time = %d',tsc.subBodyPos.Time(1)));

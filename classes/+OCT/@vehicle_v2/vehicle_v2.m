@@ -550,11 +550,11 @@ classdef vehicle_v2 < dynamicprops
         
         %% other methods
         % Function to scale the object
-        function obj = scale(obj,scaleFactor)
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             
             props = findAttrValue(obj,'SetAccess','private');
             for ii = 1:numel(props)
-                obj.(props{ii}).scale(scaleFactor);
+                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
         end % end scale
        

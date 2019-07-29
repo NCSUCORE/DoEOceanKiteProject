@@ -17,7 +17,6 @@ TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
 CONTROLLER      = 'oneTetherThreeSurfaceCtrl';
-VARIANTSUBSYSTEM = 'NNodeTether';
 
 
 %% Create busses
