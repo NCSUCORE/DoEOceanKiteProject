@@ -86,6 +86,8 @@ vhcl.setInitialCmVel([0;0;0],'m/s');
 vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
 vhcl.setInitialAngVel([0;0;0],'rad/s');
 
+vhcl.scale(scaleFactor);
+
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile4','');
 
@@ -262,6 +264,10 @@ ctrl.altiSP.Value.DataInfo.Units = 'm';
 ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 
+Yswitch = 10*scaleFactor;
+rollAmp = 20;
+rollPeriod = 100*sqrt(scaleFactor);
+
 ctrl.rollSP.Value = timeseries(20*sign(sin(2*pi*timeVec/(rollPeriod))),timeVec);
 ctrl.rollSP.Value.Data(timeVec<0) = 0;
 ctrl.rollSP.Value.DataInfo.Units = 'deg';
@@ -280,18 +286,20 @@ clearvars logsout
 
 %% Scaling
 scaleFactor = 0.01;
-densityScaleFactor = 1;
 duration_s = duration_s*sqrt(scaleFactor);
 % Scale up/down
-env.scale(scaleFactor,densityScaleFactor);
+env.scale(scaleFactor);
 % Scale up/down
-vhcl.scale(scaleFactor,densityScaleFactor);
+vhcl.scale(scaleFactor);
 % Scale up/down
-gndStn.scale(scaleFactor,densityScaleFactor);
+gndStn.scale(scaleFactor);
 % Scale up/down
-thr.scale(scaleFactor,densityScaleFactor);
+thr.scale(scaleFactor);
 % Scale up/down
-wnch.scale(scaleFactor,densityScaleFactor);
+wnch.scale(scaleFactor);
+
+Yswitch = Yswitch*scaleFactor;
+
 % Scale up/down
 ctrl = ctrl.scale(scaleFactor);
 
