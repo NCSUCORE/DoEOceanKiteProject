@@ -2,7 +2,7 @@
 
 
 %% animations plots
-resampleDataRate = 0.5;
+resampleDataRate = 4;
 signals = fieldnames(tsc);
 time = 0:resampleDataRate:tsc.(signals{1}).Time(end);
 

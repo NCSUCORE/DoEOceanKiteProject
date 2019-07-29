@@ -1,7 +1,7 @@
 clear;
 % clc
 format compact
-% close all
+close all
 
 make_video = 0;
 
@@ -35,7 +35,7 @@ env.water.velVec.setValue([1 0 0],'m/s');
 
 %% common parameters
 numTethers = 3;
-thrNumNodes = 2;
+thrNumNodes = 4;
 numTurbines = 2;
 
 %% lifiting body
