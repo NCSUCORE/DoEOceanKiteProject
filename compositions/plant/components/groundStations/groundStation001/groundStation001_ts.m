@@ -18,7 +18,7 @@ load('pos.mat')
 % end
 
 % create buses required to run code
-createThreeTetherThreeSurfaceCtrlBus
+createAnchorThetherCtrlBus
 createConstantUniformFlowEnvironmentBus
 createThrAttachPtKinematicsBus
 createThrTenVecBus
@@ -29,7 +29,7 @@ sim_time = 300; % (s)
 % environmental properties
 env = ENV.env;
 env.addFlow({'water'},'FlowDensities',1000);    % density (kg/m^3)
-env.water.velVec.setValue([0 0 0],'m/s');
+env.water.velVec.setValue([.1 0 0],'m/s');      % set velocity for tether nodes
 grav = env.gravAccel.Value;                     % grav = 9.81 m/s^2
 rho = env.water.density.Value;
 
@@ -48,7 +48,7 @@ initEulAng = (pi/180).*[0 0 0]; % vector input in degrees, converted to radians
 initAngVel = [0 0 0];           % (rad/s)
 
 % distance FROM center of mass TO center of buoyancy
-CB2CMVec = [0 0 objectHeight/4];    % (m)
+CM2CBVec = [0 0 objectHeight/4];    % (m)
 
 % distance from airborne tether tension to center of mass
 airTethDist = [0 0 objectHeight/2]; % (m)
@@ -225,16 +225,16 @@ parseLogsout
 
 % plot showing distance from ocean surface
 figure
-oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.subBodyPos.Time);  % ocean depth as a function of time
-diff = squeeze(tsc.subBodyPos.Data(3,:,:)) - oH;                        % platform z-position minus ocean depth
-plot(tsc.subBodyPos.Time,diff)
+oH = oceanDepth + waveAmp*sin(2*pi/(wavePeriod).*tsc.posVecGnd.Time);  % ocean depth as a function of time
+diff = squeeze(tsc.posVecGnd.Data(3,:,:)) - oH;                        % platform z-position minus ocean depth
+plot(tsc.posVecGnd.Time,diff)
 xlabel('Time, t [s]')
 ylabel('Distance from Ocean Surface [m]')
 
 % Plot x,y,z position
 figure
 subplot(3,1,1)
-plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(1,:,:)),'k')
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(1,:,:)),'k')
 hold on
 plot(timeV,squeeze(ctrl.surgeSP.Value.Data),'--r')      % plot surge set point (optional)
 % plot(timeV,initPos(1).*ones(length(timeV)),'--g')     % plot initial position (optional)
@@ -243,7 +243,7 @@ xlabel('Time, t [s]')
 ylabel('X Pos [m]')
 
 subplot(3,1,2)
-plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(2,:,:)),'k')
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(2,:,:)),'k')
 hold on
 plot(timeV,squeeze(ctrl.swaySP.Value.Data),'r--')       % plot sway set point (optional)
 % plot(timeV,initPos(2).*ones(length(timeV)),'--g')     % plot initial position (optional)
@@ -252,9 +252,9 @@ xlabel('Time, t [s]')
 ylabel('Y Pos [m]')
 
 subplot(3,1,3)
-plot(tsc.subBodyPos.Time,squeeze(tsc.subBodyPos.Data(3,:,:)),'k')
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(3,:,:)),'k')
 hold on
-% plot(tsc.subBodyPos.Time,oH)
+% plot(tsc.posVecGnd.Time,oH)
 plot(timeV,squeeze(ctrl.heaveSP.Value.Data),'r--')      % plot heave set point (optional)
 % plot(timeV,initPos(3).*ones(length(timeV)),'--g')     % plot initial position (optional)
 grid on
@@ -267,25 +267,25 @@ ylabel('Z Pos [m]')
 % Plot Euler angles
 figure
 subplot(3,1,1)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,'k')
+plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(1,:,:))*180/pi,'k')
 hold on
-plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')  % plot zero axis
+plot(tsc.posVecGnd.Time,zeros(length(tsc.posVecGnd.Time)),'--r')  % plot zero axis
 grid on
 xlabel('Time, t [s]')
 ylabel('Roll, [deg]')
 
 subplot(3,1,2)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi,'k')
+plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(2,:,:))*180/pi,'k')
 hold on
-plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')  % plot zero axis
+plot(tsc.posVecGnd.Time,zeros(length(tsc.posVecGnd.Time)),'--r')  % plot zero axis
 grid on
 xlabel('Time, t [s]')
 ylabel('Pitch, [deg]')
 
 subplot(3,1,3)
-plot(tsc.subBodyPos.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi,'k')
+plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(3,:,:))*180/pi,'k')
 hold on
-plot(tsc.subBodyPos.Time,zeros(length(tsc.subBodyPos.Time)),'--r')  % plot zero axis
+plot(tsc.posVecGnd.Time,zeros(length(tsc.posVecGnd.Time)),'--r')  % plot zero axis
 grid on
 xlabel('Time, t [s]')
 ylabel('Yaw, [deg]')
@@ -320,11 +320,11 @@ timeStep = 1;
 fileName = 'gifName.gif';
 
 % Resample data to the animation framerate
-timeVec = 0:timeStep:tsc.subBodyPos.Time(end);
+timeVec = 0:timeStep:tsc.posVecGnd.Time(end);
 numTethers = numel(tsc.anchThrNodeBusArry);
 for ii= 1:numTethers
     tsc.anchThrNodeBusArry(ii).nodePositions = resample(tsc.anchThrNodeBusArry(ii).nodePositions,timeVec);
-    tsc.subBodyPos = resample(tsc.subBodyPos,timeVec);
+    tsc.posVecGnd = resample(tsc.posVecGnd,timeVec);
 end   
 
 
@@ -334,9 +334,9 @@ h.fig.Position = [1          41        1920         750]; % Set to full screen (
 % Plot a bunch of stuff at the first time step
 % Plot the position
 h.position = scatter3(...
-    tsc.subBodyPos.Data(1,:,1),...
-    tsc.subBodyPos.Data(2,:,1),...
-    tsc.subBodyPos.Data(3,:,1),...
+    tsc.posVecGnd.Data(1,:,1),...
+    tsc.posVecGnd.Data(2,:,1),...
+    tsc.posVecGnd.Data(3,:,1),...
     'CData',[1 0 0],'Marker','o','LineWidth',1.5);
 
 grid on
@@ -354,7 +354,7 @@ h.thr(ii) = plot3(...
 % zlim([92,100])
 hold on
 end
-h.title = title(sprintf('Time = %d',tsc.subBodyPos.Time(1)));
+h.title = title(sprintf('Time = %d',tsc.posVecGnd.Time(1)));
 
 set(gca,'FontSize',24)
 
@@ -367,9 +367,9 @@ imwrite(imind,cm,fileName,'gif', 'Loopcount',inf);
 for ii = 2:numel(timeVec)
     
     % Update the position dot
-    h.position.XData = tsc.subBodyPos.Data(1,:,ii);
-    h.position.YData = tsc.subBodyPos.Data(2,:,ii);
-    h.position.ZData = tsc.subBodyPos.Data(3,:,ii);
+    h.position.XData = tsc.posVecGnd.Data(1,:,ii);
+    h.position.YData = tsc.posVecGnd.Data(2,:,ii);
+    h.position.ZData = tsc.posVecGnd.Data(3,:,ii);
     
     % Update the tether geometry
     for jj = 1:numTethers
@@ -379,7 +379,7 @@ for ii = 2:numel(timeVec)
     end
     
     % Update the title
-    h.title.String = sprintf('Time = %d',tsc.subBodyPos.Time(ii));
+    h.title.String = sprintf('Time = %d',tsc.posVecGnd.Time(ii));
     
     drawnow
     
@@ -396,7 +396,7 @@ end
 % find average position of previous simulation to determine partially
 % submerged position
 for j = 1:3
-    initPos(j) = mean(tsc.subBodyPos.Data(j,:,:));
+    initPos(j) = mean(tsc.posVecGnd.Data(j,:,:));
 end
 % use z position as new ocean depth
 oceanDepth = initPos(3);
