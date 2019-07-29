@@ -1,12 +1,11 @@
 clear;
 % clc
 format compact
-close all
+% close all
 
 make_video = 0;
 
-
-lengthScaleFactor = 1/1;
+lengthScaleFactor = 1/100;
 densityScaleFactor = 1/1;
 duration_s  = 400*sqrt(lengthScaleFactor);
 
@@ -293,17 +292,17 @@ ctrl.scale(lengthScaleFactor);
 
 %% Run the simulation
 try
-    load_system('OCTModel')
-    set_param('OCTModel','Profile','on')
+%     load_system('OCTModel')
+%     set_param('OCTModel','Profile','off')
     simWithMonitor('OCTModel',2)
 catch
-    load_system('OCTModel')
-    set_param('OCTModel','Profile','on')
+%     load_system('OCTModel')
+%     set_param('OCTModel','Profile','on')
     simWithMonitor('OCTModel',2)
 end
 % Run stop callback to plot everything
 
-% plotAyaz
+plotAyaz
 
 % fullKitePlot
 
