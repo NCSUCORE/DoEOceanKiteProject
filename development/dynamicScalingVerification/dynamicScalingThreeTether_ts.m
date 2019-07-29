@@ -1,4 +1,4 @@
-% clear;
+clear
 clearvars logsout
 clc
 format compact
@@ -8,17 +8,19 @@ densityScaleFactor = 1;
 duration_s = 500;
 
 %% Set up simulation
-VEHICLE         = 'vehicle000';
-WINCH           = 'winch000';
-TETHERS         = 'tether000';
-GROUNDSTATION   = 'groundStation000';
-ENVIRONMENT     = 'constantUniformFlow';
-CONTROLLER      = 'threeTetherThreeSurfaceCtrl';
+VEHICLE          = 'vehicle000';
+WINCH            = 'winch000';
+TETHERS          = 'tether000';
+GROUNDSTATION    = 'groundStation000';
+ENVIRONMENT      = 'constantUniformFlow';
+FLIGHTCONTROLLER = 'threeTetherThreeSurfaceCtrl';
+GNDSTNCONTROLLER = 'oneDoF';
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
 createThreeTetherThreeSurfaceCtrlBus;
+createOneDoFGndStnCtrlBus;
 
 %% Set up environment
 % Create
@@ -120,7 +122,7 @@ gndStn.freeSpnEnbl.setValue(false,'');
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(3,'');
-thr.setNumNodes(thrNumNodes,'');
+thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values

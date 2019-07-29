@@ -23,6 +23,6 @@ CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the one tether, three surface controller';
 
-assignin('base','ctrlBus',CONTROL)
+assignin('base','fltCtrlBus',CONTROL)
 
 end
