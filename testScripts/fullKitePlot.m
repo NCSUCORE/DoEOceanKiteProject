@@ -1,8 +1,8 @@
 
 
-
 %% animations plots
-resampleDataRate = 2;
+parseLogsout
+resampleDataRate = 4;
 signals = fieldnames(tsc);
 time = 0:resampleDataRate:tsc.(signals{1}).Time(end);
 
@@ -10,8 +10,6 @@ tscResample.positionVec = resample(tsc.positionVec,time);
 tscResample.velocityVec = resample(tsc.velocityVec,time);
 tscResample.eulerAngles = resample(tsc.eulerAngles,time);
 tscResample.angularVel = resample(tsc.angularVel,time);
-
-
 
 nNodes = thr.numNodes.Value;
 nTethers = thr.numTethers.Value;
@@ -69,9 +67,17 @@ for ii = 1:nTethers
 end
 
 %% plot
-fn = fn+1;
+if exist('fn','var')
+    fn = fn+1;
+else
+    fn = 1;
+end
 figure(fn)
 set(gcf,'Position',[200 100 2*560 2*420])
+% colors
+red = 1/255*[228,26,28];
+black = 1/255*[0,0,0];
+line_wd = 1;
 
 % % % video setting
 video = VideoWriter('vid_Test', 'Motion JPEG AVI');

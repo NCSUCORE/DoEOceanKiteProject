@@ -3,7 +3,9 @@ clear;
 format compact
 % close all
 
-lengthScaleFactor = 1/1;
+make_video = 0;
+
+lengthScaleFactor = 1/100;
 densityScaleFactor = 1/1;
 duration_s  = 400*sqrt(lengthScaleFactor);
 
@@ -32,7 +34,7 @@ env.water.velVec.setValue([1 0 0],'m/s');
 
 %% common parameters
 numTethers = 3;
-thrNumNodes = 4;
+thrNumNodes = 2;
 numTurbines = 2;
 
 %% lifiting body
@@ -290,13 +292,17 @@ ctrl.scale(lengthScaleFactor);
 
 %% Run the simulation
 try
+%     load_system('OCTModel')
+%     set_param('OCTModel','Profile','off')
     simWithMonitor('OCTModel',2)
 catch
+%     load_system('OCTModel')
+%     set_param('OCTModel','Profile','on')
     simWithMonitor('OCTModel',2)
 end
 % Run stop callback to plot everything
 
 plotAyaz
 
-fullKitePlot
+% fullKitePlot
 
