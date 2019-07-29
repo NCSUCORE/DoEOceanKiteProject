@@ -1,5 +1,4 @@
-% Notify the user
-fprintf('\nOpening project, running OCTProject_init.m\n')
+% User is notified automatically that this file is run
 % Change anything with "Interpreter" in the name to use Latex formatting
 props = get(groot, 'factory');
 fnames = fieldnames(props);
@@ -24,5 +23,6 @@ end
 % Refresh simulink customizations
 % sl_refresh_customizations
 
-clearvars
+% Clear the variables created by this script
+clearvars props fnames ii propName
 fprintf('Done\n')
