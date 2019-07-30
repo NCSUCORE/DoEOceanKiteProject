@@ -16,13 +16,12 @@ parseLogsout
 Lscale = lengthScaleFactor;
 Dscale = densityScaleFactor;
 
-
 % % % extract the important variables into dummy variables
 time = tsc.positionVec.Time.*(1/Lscale^0.5);
 sol_Rcm_o = squeeze(tsc.positionVec.Data).*(1/Lscale);
 sol_Vcmo = squeeze(tsc.velocityVec.Data).*(1/Lscale^0.5);
 sol_euler = squeeze(tsc.eulerAngles.Data);
-% sol_OwB = squeeze(tsc.angularVel.Data).*(Lscale^0.5);
+sol_OwB = squeeze(tsc.angularVel.Data).*(Lscale^0.5);
 
 %% plot states
 plotProps{1} = 'rgb';
@@ -85,6 +84,19 @@ subplot(3,1,3)
 plot(time,squeeze(tsc.yawSetpoint.Data),'k--',...
     'DisplayName','$\theta_{sp}$');
 
+%% other angles
+% elevation angle
+elevAngle = (180/pi)*atan2(sol_Rcm_o(3,:),sqrt(sum(sol_Rcm_o(1:2,:).^2,1)));
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+
+% azimuth angle
+azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
+
+vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
+    {'Elevation','Azimuth'},'Angle (deg)','Other angles');
+% 
 % % % % angular velocities
 % fn = fn+1;
 % figure(fn)
@@ -98,7 +110,7 @@ fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,tsc.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
-    {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release');
+    {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
 
 
 fn = fn+1;

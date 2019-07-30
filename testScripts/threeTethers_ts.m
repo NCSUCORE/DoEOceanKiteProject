@@ -3,8 +3,10 @@ clc
 format compact
 % close all
 
-lengthScaleFactor = 1/100;
-densityScaleFactor = 1/1000;
+cd(fileparts(mfilename('fullpath')));
+
+lengthScaleFactor = 1/1;
+densityScaleFactor = 1/1;
 duration_s  = 400*sqrt(lengthScaleFactor);
 
 %% Set up simulation
@@ -75,7 +77,7 @@ wnch.setTetherInitLength(vhcl,env,thr);
 load('ayazThreeTetCtrl.mat');
 
 % switching values
-ctrl.ySwitch.setValue(5,'m');
+ctrl.ySwitch.setValue(12,'m');
 ctrl.rollAmp.setValue(20,'deg');
 
 % set setpoints
@@ -83,30 +85,25 @@ timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
 ctrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
 ctrl.altiSP.Value.DataInfo.Units = 'm';
 
-ctrl.pitchSP.Value = timeseries(7*ones(size(timeVec)),timeVec);
+ctrl.pitchSP.Value = timeseries(10*ones(size(timeVec)),timeVec);
 ctrl.pitchSP.Value.DataInfo.Units = 'deg';
 
 ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
 ctrl.yawSP.Value.DataInfo.Units = 'deg';
 
-%% scale
-% environment
+%% scale 
+% scale environment
 env.scale(lengthScaleFactor,densityScaleFactor);
-
-% vehicle
+% scale vehicle
 vhcl.scale(lengthScaleFactor,densityScaleFactor);
 vhcl.calcFluidDynamicCoefffs;
-
-% ground station
+% scale ground station
 gndStn.scale(lengthScaleFactor,densityScaleFactor);
-
-% tethers
+% scale tethers
 thr.scale(lengthScaleFactor,densityScaleFactor);
-
-% winches
+% scale winches
 wnch.scale(lengthScaleFactor,densityScaleFactor);
-
-% controller
+% scale controller
 ctrl.scale(lengthScaleFactor);
 
 
