@@ -88,17 +88,6 @@ classdef sixDoFStation < dynamicprops
             obj.centOfBuoy.setValue(val,unit);
         end
         
-        % Tether attachment points
-        function setThrAttchPt1(obj,val,unit)
-            obj.thrAttchPt1.setValue(val,unit);
-        end
-        function setThrAttchPt2(obj,val,unit)
-            obj.thrAttchPt2.setValue(val,unit);
-        end
-        function setThrAttchPt3(obj,val,unit)
-            obj.thrAttchPt3.setValue(val,unit);
-        end
-        
         % Initial conditions
         function setInitPos(obj,val,unit)
             obj.initPos.setValue(val,unit);
