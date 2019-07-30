@@ -1,7 +1,7 @@
 clear
 clc
 format compact
-close all
+% close all
 
 cd(fileparts(mfilename('fullpath')));
 
@@ -32,7 +32,7 @@ load('ayazThreeTetEnv.mat')
 env.water.velVec.setValue([1 0 0]','m/s');
 
 %% lifiting body
-load('joshThreeTetVhcl.mat')
+load('ayazThreeTetVhcl.mat')
 
 % % % initial conditions
 vhcl.setInitialCmPos([0;0;50],'m');

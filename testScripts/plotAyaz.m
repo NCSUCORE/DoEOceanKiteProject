@@ -154,40 +154,40 @@ vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
 % 
     
 %% plot forces
-% % % fluid forces
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.FFluidBdy.Data).*(1/Lscale^3),plotProps,...
-    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Fluid forces');
-
-% % % gravity forces
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.FGravBdy.Data).*(1/Lscale^3),plotProps,...
-    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Gravity forces');
-
-% % % buoyancy forces
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.FBuoyBdy.Data).*(1/Lscale^3),plotProps,...
-    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Buoyancy forces');
-
-% % % tether forces
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
-    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
-
-% % % total forces
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
-    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
+% % % % fluid forces
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.FFluidBdy.Data).*(1/Lscale^3),plotProps,...
+%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Fluid forces');
+% 
+% % % % gravity forces
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.FGravBdy.Data).*(1/Lscale^3),plotProps,...
+%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Gravity forces');
+% 
+% % % % buoyancy forces
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.FBuoyBdy.Data).*(1/Lscale^3),plotProps,...
+%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Buoyancy forces');
+% 
+% % % % tether forces
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
+%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
+% 
+% % % % total forces
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
+%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
 
 
 
