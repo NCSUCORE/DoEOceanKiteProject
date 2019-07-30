@@ -25,6 +25,7 @@ gndStn.freeSpnEnbl.setValue(true,'');
 %% save file in its respective directory
 currentMfileLoc = fileparts(mfilename('fullpath'));
 
+
 if isempty(gndStn.initAngPos.Value) || isempty(gndStn.initAngVel.Value)
     save(strcat(currentMfileLoc,'\ayazThreeTetGndStn.mat'),'gndStn');
 else
