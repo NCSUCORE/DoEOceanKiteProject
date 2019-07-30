@@ -1,7 +1,6 @@
-classdef station < dynamicprops
+classdef oneDoFStation < dynamicprops
     
-    %VEHICLE Summary of this class goes here
-    %   Detailed explanation goes here
+    %STATION Class definition for a ground station
     
     properties (SetAccess = private)
         numTethers
@@ -25,7 +24,8 @@ classdef station < dynamicprops
             obj.posVec      = SIM.parameter('Unit','m');
         end
         
-        % Function to build the ground station
+        % Function to build the ground station (add tether attachment
+        % properties)
         function obj = build(obj,varargin)
             % Populate cell array of default names
             defThrName = {};
