@@ -6,24 +6,31 @@ createWaveFlowEnvironmentBus
 createThrAttachPtKinematicsBus
 createThrTenVecBus
 
-sim_time = 2;
+WINCH            = 'winch000';
 
-env = ENV.waveFlow;
-env.density.setValue(1000,'kg/m^3');
-env.wavePeriod.setValue(20,'s');
-env.waveAmplitude.setValue(1.5,'m');
-env.oceanDepth.setValue(105,'m');
-env.pltfrmAppFlwMag.setValue(0.6,'m/s');
+sim_time = 100;
+
+env = ENV.env;
+env.addFlow({'water'},{'waveFlow'},'FlowDensities',1000)
+env.water.density.setValue(1000,'kg/m^3');
+env.water.wavePeriod.setValue(20,'s');
+env.water.waveAmplitude.setValue(1.5,'m');
+env.water.oceanDepth.setValue(105,'m');
+env.water.pltfrmAppFlwMag.setValue(0,'m/s');
+env.water.flowVelocityVec.setValue([0 0 0]','m/s');
 
 gndStn = OCT.sixDoFStation;
 
 buoyF = 1.5;
 gndStn.setVolume(3.5,'m^3');
-gndStn.setMass(gndStn.volume.Value*(env.density.Value/buoyF),'kg');
+gndStn.setMass(gndStn.volume.Value*(env.water.density.Value/buoyF),'kg');
 gndStn.setInertiaMatrix(((1/6)*gndStn.mass.Value*gndStn.volume.Value^(2/3)).*eye(3),'kg*m^2');
 gndStn.setCentOfBuoy([0 0 gndStn.volume.Value^(1/3)/2],'m');
 
+gndStn.setDragCoefficient(0.8,'');
+
 dist = 100;
+gndStn.airThrAttchPt.setPosVec([0 0 ((gndStn.volume.Value)^(1/3))/2],'m');
 gndStn.bdyThrAttchPt1.setPosVec([0 1 0],'m');
 gndStn.bdyThrAttchPt2.setPosVec([cosd(30) -.5 0],'m');
 gndStn.bdyThrAttchPt3.setPosVec([-cosd(30) -.5 0],'m');
@@ -33,7 +40,7 @@ gndStn.gndThrAttchPt3.setPosVec(dist.*gndStn.bdyThrAttchPt3.posVec.Value,'m');
 
 gndStn.setInitPos([0 0 100],'m');
 gndStn.setInitEulAng([0 0 0],'rad');
-gndStn.setInitVel([0 0 0],'m/s');
+gndStn.setInitVel([1e-3 0 0],'m/s');
 gndStn.setInitAngVel([0 0 0],'rad/s');
 
 gndStn.anchThrs.setNumNodes(4,'');
@@ -168,3 +175,49 @@ sim('groundStation001_th')
 
 % save data to workspace as tsc
 parseLogsout
+
+%% 
+figure
+subplot(3,1,1)
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(1,:,:)))
+grid on
+title('Position')
+subplot(3,1,2)
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(2,:,:)))
+grid on
+subplot(3,1,3)
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(3,:,:)))
+grid on
+
+figure
+subplot(3,1,1)
+plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(1,:,:)))
+grid on
+title('Euler Angles')
+subplot(3,1,2)
+plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(2,:,:)))
+grid on
+subplot(3,1,3)
+plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(3,:,:)))
+grid on
+
+figure
+subplot(5,1,1)
+plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAirbThrBdy.Data(2,:,:)))
+grid on
+
+subplot(5,1,2)
+plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAnchThrBdy.Data(2,:,:)))
+grid on
+subplot(5,1,3)
+plot(tsc.posVecGnd.Time,squeeze(tsc.FGravBdy.Data(2,:,:)))
+grid on
+subplot(5,1,4)
+plot(tsc.posVecGnd.Time,squeeze(tsc.FBuoyBdy.Data(2,:,:)))
+grid on
+subplot(5,1,5)
+plot(tsc.posVecGnd.Time,squeeze(tsc.oceanForce.Data(2,:,:)))
+grid on
+
+linkaxes(findall(gcf,'Type','axes'),'x');
+

@@ -5,11 +5,11 @@ if numNodes < 2  || floor(numNodes)~=numNodes
     return
 end
 
-% if numNodes==2
-%     set_param(gcb,'LabelModeActiveChoice','twoNodeTether')
-% else
-%     set_param(gcb,'LabelModeActiveChoice','NNodeTether')
-% end
+if numNodes > 2
+   set_param(gcb,'OverrideUsingVariant','NNodeTether')  
+else
+   set_param(gcb,'OverrideUsingVariant','twoNodeTether') 
+end
 
 createThrTenVecBus
 createThrNodeBus(numNodes)

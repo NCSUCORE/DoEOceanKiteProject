@@ -14,6 +14,6 @@ CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the anchor tether controller';
 
-assignin('base','ctrlBus',CONTROL)
+assignin('base','gndStnCtrlBus',CONTROL)
 
 end

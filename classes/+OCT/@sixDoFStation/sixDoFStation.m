@@ -20,6 +20,9 @@ classdef sixDoFStation < dynamicprops
         gndThrAttchPt1
         gndThrAttchPt2
         gndThrAttchPt3
+        
+        % Drag coefficient
+        dragCoeff
                 
         % Initial conditions
         initPos
@@ -53,6 +56,9 @@ classdef sixDoFStation < dynamicprops
             obj.gndThrAttchPt2 	= OCT.thrAttch;
             obj.gndThrAttchPt3 	= OCT.thrAttch;
                        
+            % Drag coefficient
+            obj.dragCoeff       = SIM.parameter('Unit','','Description','Drag coefficient of submerged bit of platform');
+            
             % Initial conditions
             obj.initPos         = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
             obj.initVel         = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
@@ -86,6 +92,10 @@ classdef sixDoFStation < dynamicprops
         end
         function setCentOfBuoy(obj,val,unit)
             obj.centOfBuoy.setValue(val,unit);
+        end
+        % Drag coefficient
+        function setDragCoefficient(obj,val,unit)
+            obj.dragCoeff.setValue(val,unit);
         end
         
         % Initial conditions
