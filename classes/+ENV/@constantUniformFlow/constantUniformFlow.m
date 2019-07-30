@@ -1,6 +1,5 @@
-classdef flow < handle
-    %FLOW Summary of this class goes here
-    %   Detailed explanation goes here
+classdef constantUniformFlow < handle
+    %CONSTANT UNIVFORM FLOW
     
     properties
         velVec
@@ -11,7 +10,7 @@ classdef flow < handle
     end
     
     methods
-        function obj = flow
+        function obj = constantUniformFlow
             obj.velVec      = SIM.parameter('Unit','m/s');
             obj.density     = SIM.parameter('Unit','kg/m^3','NoScale',false);
             obj.speed       = SIM.parameter('Unit','m/s');
