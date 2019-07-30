@@ -63,44 +63,69 @@ classdef sixDoFStation < dynamicprops
         % Setters
         % Inertial properties
         function setMass(obj,val,unit)
-        	obj.mass.setValue(val,unit);
+            obj.mass.setValue(val,unit);
         end
         function setInertiaMatrix(obj,val,unit)
-        	obj.inertiaMatrix.setValue(val,unit);
+            obj.inertiaMatrix.setValue(val,unit);
         end
         % Buoyancy properties
         function setVolume(obj,val,unit)
-        	obj.volume.setValue(val,unit);
+            obj.volume.setValue(val,unit);
         end
         function setCentOfBuoy(obj,val,unit)
-        	obj.centOfBuoy.setValue(val,unit);
+            obj.centOfBuoy.setValue(val,unit);
         end
         
         % Tether attachment points
         function setThrAttchPt1(obj,val,unit)
-        	obj.thrAttchPt1.setValue(val,unit);
+            obj.thrAttchPt1.setValue(val,unit);
         end
         function setThrAttchPt2(obj,val,unit)
-        	obj.thrAttchPt2.setValue(val,unit);
+            obj.thrAttchPt2.setValue(val,unit);
         end
         function setThrAttchPt3(obj,val,unit)
-        	obj.thrAttchPt3.setValue(val,unit);
+            obj.thrAttchPt3.setValue(val,unit);
         end
         
         % Initial conditions
         function setInitPos(obj,val,unit)
-        	obj.initPos.setValue(val,unit);
+            obj.initPos.setValue(val,unit);
         end
         function setInitVel(obj,val,unit)
-        	obj.initVel.setValue(val,unit);
+            obj.initVel.setValue(val,unit);
         end
         function setInitEulAng(obj,val,unit)
-        	obj.initEulAng.setValue(val,unit);
+            obj.initEulAng.setValue(val,unit);
         end
         function setInitAngVel(obj,val,unit)
-        	obj.initAngVel.setValue(val,unit);
+            obj.initAngVel.setValue(val,unit);
         end
-        
+        function val = struct(obj,className)
+            % Function returns all properties of the specified class in a
+            % 1xN struct useable in a for loop in simulink
+            % Example classnames: OCT.turb, OCT.aeroSurf
+            props = sort(obj.getPropsByClass(className));
+            if numel(props)<1
+                return
+            end
+            subProps = properties(obj.(props{1}));
+            for ii = 1:length(props)
+                for jj = 1:numel(subProps)
+                    val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
+                end
+            end
+        end
+        % Function to get properties according to their class
+        % May be able to vectorize this somehow
+        function val = getPropsByClass(obj,className)
+            props = properties(obj);
+            val = {};
+            for ii = 1:length(props)
+                if isa(obj.(props{ii}),className)
+                    val{end+1} = props{ii};
+                end
+            end
+        end
     end
 end
 
