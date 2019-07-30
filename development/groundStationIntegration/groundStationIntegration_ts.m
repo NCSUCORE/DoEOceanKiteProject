@@ -3,13 +3,17 @@ clear
 clc
 gndStn = OCT.sixDoFStation;
 
+gndStn.struct('OCT.thrAttch','gnd');
 gndStn.setVolume(3.5,'m^3');
 gndStn.setMass(1000*gndStn.volume.Value,'kg');
 gndStn.setInertiaMatrix(((1/6)*gndStn.mass.Value*gndStn.volume.Value^(2/3)).*eye(3),'kg*m^2');
 gndStn.setCentOfBuoy([0 0 0]','m');
+
 gndStn.setThrAttchPt1([5 0 0]','m');
 gndStn.setThrAttchPt2(rotation_sequence([0 0  120]*pi/180)*gndStn.thrAttchPt1.Value,'m');
 gndStn.setThrAttchPt3(rotation_sequence([0 0 -120]*pi/180)*gndStn.thrAttchPt1.Value,'m');
+
+
 gndStn.setInitPos([0 0 0]','m');
 gndStn.setInitVel([0 0 0],'m/s');
 gndStn.setInitEulAng([0 0 0],'rad');
