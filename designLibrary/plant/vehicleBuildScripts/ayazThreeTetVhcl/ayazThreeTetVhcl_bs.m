@@ -13,7 +13,7 @@ vhcl = OCT.vehicle_v2;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.05,'');
+vhcl.setBuoyFactor(1.0,'');
 
 % % % volume and inertias
 vhcl.setVolume(945352023.474*1e-9,'m^3');

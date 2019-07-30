@@ -1,13 +1,13 @@
 clear
 clc
 format compact
-% close all
+close all
 
 cd(fileparts(mfilename('fullpath')));
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 400*sqrt(lengthScaleFactor);
+duration_s  = 1000*sqrt(lengthScaleFactor);
 
 %% Set up simulation
 VEHICLE         = 'vehicle000';
@@ -32,7 +32,7 @@ load('ayazThreeTetEnv.mat')
 env.water.velVec.setValue([1 0 0]','m/s');
 
 %% lifiting body
-load('ayazThreeTetVhcl.mat')
+load('joshThreeTetVhcl.mat')
 
 % % % initial conditions
 vhcl.setInitialCmPos([0;0;50],'m');
@@ -77,8 +77,8 @@ wnch.setTetherInitLength(vhcl,env,thr);
 load('ayazThreeTetCtrl.mat');
 
 % switching values
-ctrl.ySwitch.setValue(12,'m');
-ctrl.rollAmp.setValue(20,'deg');
+ctrl.ySwitch.setValue(8,'m');
+ctrl.rollAmp.setValue(25,'deg');
 
 % set setpoints
 timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
