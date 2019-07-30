@@ -112,21 +112,7 @@ classdef sixDoFStation < dynamicprops
         function setInitAngVel(obj,val,unit)
             obj.initAngVel.setValue(val,unit);
         end
-        function val = struct(obj,className)
-            % Function returns all properties of the specified class in a
-            % 1xN struct useable in a for loop in simulink
-            % Example classnames: OCT.turb, OCT.aeroSurf
-            props = sort(obj.getPropsByClass(className));
-            if numel(props)<1
-                return
-            end
-            subProps = properties(obj.(props{1}));
-            for ii = 1:length(props)
-                for jj = 1:numel(subProps)
-                    val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
-                end
-            end
-        end
+       
         % Function to get properties according to their class
         % May be able to vectorize this somehow
         function val = getPropsByClass(obj,className)
@@ -138,8 +124,6 @@ classdef sixDoFStation < dynamicprops
                 end
             end
         end
-<<<<<<< HEAD
-=======
         function val = struct(obj,className,prefix)
             % Function returns all properties of the specified class in a
             % 1xN struct useable in a for loop in simulink
@@ -157,18 +141,7 @@ classdef sixDoFStation < dynamicprops
             end
         end
         
-        % Function to get properties according to their class
-        % May be able to vectorize this somehow
-        function val = getPropsByClass(obj,className)
-            props = properties(obj);
-            val = {};
-            for ii = 1:length(props)
-                if isa(obj.(props{ii}),className)
-                    val{end+1} = props{ii};
-                end
-            end
-        end
->>>>>>> 87dd0a1d4cec94a7d555d0def7abd43a110b3c35
+       
     end
 end
 
