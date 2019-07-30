@@ -4,8 +4,8 @@ props = get(groot, 'factory');
 fnames = fieldnames(props);
 fnames = fnames(contains(fnames,'interpreter','IgnoreCase',true));
 for ii = 1:length(fnames)
-   propName = strrep(fnames{ii},'factory','default');
-   set(groot,propName,'latex')
+    propName = strrep(fnames{ii},'factory','default');
+    set(groot,propName,'latex')
 end
 
 % Change figure backgrounds to white
@@ -17,7 +17,9 @@ if strcmpi(getenv('username'),'mcobb') % User is Mitchell
     % Normalize default figure units
     set(0, 'defaultFigureUnits', 'normalized')
     % Set the default figure to full screen on the left monitor
-    set(0, 'defaultFigurePosition', [0    0.0370    1.0000    0.8917])
+    if strcmpi(getenv('computername'),'VERMILLIONLAB1')
+        set(0, 'defaultFigurePosition', [1.0000    0.0370    1.0000    0.8917])
+    end
 end
 
 % Refresh simulink customizations
