@@ -5,7 +5,7 @@ format compact
 
 make_video = 0;
 
-lengthScaleFactor = 1/100;
+lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 400*sqrt(lengthScaleFactor);
 
@@ -145,7 +145,7 @@ thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
-thr.tether1.setNetBuoyEnable(false,'');
+thr.tether1.setNetBuoyEnable(true,'');
 thr.tether1.setDiameter(thrDia,'m');
 
 thr.tether2.initGndNodePos.setValue(gndStn.thrAttch2.posVec.Value(:),'m');
@@ -159,7 +159,7 @@ thr.tether2.dragCoeff.setValue(0.5,'');
 thr.tether2.density.setValue(1300,'kg/m^3');
 thr.tether2.setDragEnable(true,'');
 thr.tether2.setSpringDamperEnable(true,'');
-thr.tether2.setNetBuoyEnable(false,'');
+thr.tether2.setNetBuoyEnable(true,'');
 thr.tether2.setDiameter(thrDia*sqrt(2),'m');
 
 thr.tether3.initGndNodePos.setValue(gndStn.thrAttch3.posVec.Value(:),'m');
@@ -173,7 +173,7 @@ thr.tether3.dragCoeff.setValue(0.5,'');
 thr.tether3.density.setValue(1300,'kg/m^3');
 thr.tether3.setDragEnable(true,'');
 thr.tether3.setSpringDamperEnable(true,'');
-thr.tether3.setNetBuoyEnable(false,'');
+thr.tether3.setNetBuoyEnable(true,'');
 thr.tether3.setDiameter(thrDia,'m');
 
 % thr.designTetherDiameter(vhcl,env);

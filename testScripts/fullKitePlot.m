@@ -2,7 +2,7 @@
 
 %% animations plots
 parseLogsout
-resampleDataRate = 4;
+resampleDataRate = 0.5;
 signals = fieldnames(tsc);
 time = 0:resampleDataRate:tsc.(signals{1}).Time(end);
 
@@ -81,7 +81,7 @@ line_wd = 1;
 
 % % % video setting
 video = VideoWriter('vid_Test', 'Motion JPEG AVI');
-video.FrameRate = 20*1/resampleDataRate;
+video.FrameRate = 10*1/resampleDataRate;
 
 mov(1:n_steps)=struct('cdata',[],'colormap',[]);
 set(gca,'nextplot','replacechildren');
