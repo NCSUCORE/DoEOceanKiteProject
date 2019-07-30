@@ -1,9 +1,9 @@
-clear;
+clear
 clc
 format compact
 
 % this is the build script for creating a vechile using class definition
-% vehicle_v2 for a three tethered system that is being used by ayaz
+% 'vehicle_v2' for a three tethered system that is being used by ayaz
 
 % the script saves the variable 'vhcl' to a 'ayazThreeTetVhcl.mat'
 
@@ -60,24 +60,19 @@ vhcl.setVsNACA('0012','');
 vhcl.setVsClMax(1.75,'');
 vhcl.setVsClMin(-1.75,'');
 
-% % % initial conditions
-% vhcl.setInitialCmPos([0;0;50],'m');
-% vhcl.setInitialCmVel([0;0;0],'m/s');
-% vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
-% vhcl.setInitialAngVel([0;0;0],'rad/s');
-
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile4','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 
+%% save file in its respective directory
+currentMfileLoc = fileparts(mfilename('fullpath'));
 
-%% 
 if isempty(vhcl.initPosVecGnd.Value) || isempty(vhcl.initEulAngBdy.Value) ||...
         isempty(vhcl.initAngVelVecBdy.Value) || isempty(vhcl.initVelVecGnd.Value)
     
-    save('ayazThreeTetVhcl','vhcl')
+    save(strcat(currentMfileLoc,'\ayazThreeTetVhcl.mat'),'vhcl')
 else
     error('Please do not specify initial conditions in build script')
 end

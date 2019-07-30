@@ -819,9 +819,9 @@ classdef vehicle_v2 < dynamicprops
             
             
         end
+        
         output = struct(obj,className);
         output = getPropsByClass(obj,className);
-        
         
         
         % plotting functions
