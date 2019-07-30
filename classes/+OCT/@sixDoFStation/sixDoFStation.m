@@ -10,11 +10,17 @@ classdef sixDoFStation < dynamicprops
         volume
         centOfBuoy % Vector from CoM to CoB
         
-        % Tether attachment points
-        thrAttchPt1
-        thrAttchPt2
-        thrAttchPt3
-        
+        % Tether attachment point to the vehicle
+        airThrAttchPt
+        % Tether attachment point of anchor tether with body
+        bdyThrAttchPt1
+        bdyThrAttchPt2
+        bdyThrAttchPt3
+        % Tether attachment point of anchor tether with ground
+        gndThrAttchPt1
+        gndThrAttchPt2
+        gndThrAttchPt3
+                
         % Initial conditions
         initPos
         initVel
@@ -36,11 +42,17 @@ classdef sixDoFStation < dynamicprops
             obj.volume          = SIM.parameter('Unit','m^3','Description','Total volume used in buoyancy calculation');
             obj.centOfBuoy      = SIM.parameter('Unit','m','Description','Vector from CoM to CoB, in body frame.');
             
-            % Tether attachment points
-            obj.thrAttchPt1     = SIM.parameter('Unit','m','Description','Vector from CoB to tether attachment point 1, in body frame.');
-            obj.thrAttchPt2     = SIM.parameter('Unit','m','Description','Vector from CoB to tether attachment point 2, in body frame.');
-            obj.thrAttchPt3     = SIM.parameter('Unit','m','Description','Vector from CoB to tether attachment point 3, in body frame.');
-            
+            % Tether attachment point to the vehicle
+            obj.airThrAttchPt   = OCT.thrAttch;
+            % Tether attachment point of anchor tether with body
+            obj.bdyThrAttchPt1  = OCT.thrAttch;
+            obj.bdyThrAttchPt2  = OCT.thrAttch;
+            obj.bdyThrAttchPt3  = OCT.thrAttch;
+            % Tether attachment point of anchor tether with ground
+            obj.gndThrAttchPt1 	= OCT.thrAttch;
+            obj.gndThrAttchPt2 	= OCT.thrAttch;
+            obj.gndThrAttchPt3 	= OCT.thrAttch;
+                       
             % Initial conditions
             obj.initPos         = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
             obj.initVel         = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
@@ -100,7 +112,34 @@ classdef sixDoFStation < dynamicprops
         function setInitAngVel(obj,val,unit)
         	obj.initAngVel.setValue(val,unit);
         end
+        function val = struct(obj,className,prefix)
+            % Function returns all properties of the specified class in a
+            % 1xN struct useable in a for loop in simulink
+            % Example classnames: OCT.turb, OCT.aeroSurf
+            props = sort(obj.getPropsByClass(className));
+            props = props(contains(props,prefix,'IgnoreCase',true)); % Sort on the ones containing the prefix
+            if numel(props)<1
+                return
+            end
+            subProps = properties(obj.(props{1}));
+            for ii = 1:length(props)
+                for jj = 1:numel(subProps)
+                    val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
+                end
+            end
+        end
         
+        % Function to get properties according to their class
+        % May be able to vectorize this somehow
+        function val = getPropsByClass(obj,className)
+            props = properties(obj);
+            val = {};
+            for ii = 1:length(props)
+                if isa(obj.(props{ii}),className)
+                    val{end+1} = props{ii};
+                end
+            end
+        end
     end
 end
 
