@@ -8,7 +8,7 @@ classdef waveFlow < handle
         waveAmplitude
         oceanDepth
         pltfrmAppFlwMag
-        velVec
+        flowVelocityVec
         
     end
     
@@ -21,7 +21,7 @@ classdef waveFlow < handle
             obj.waveAmplitude   = SIM.parameter('Unit','m','Description','Wave height above/below oceanDepth');
             obj.oceanDepth      = SIM.parameter('Unit','m','Description','Depth of the ocean');
             obj.pltfrmAppFlwMag = SIM.parameter('Unit','m/s','Description','Apparent flow velocity magnitude applied to platform');
-            obj.velVec          = SIM.parameter('Unit','','Description','Flow velocity vector applied to anchor tethers');
+            obj.flowVelocityVec          = SIM.parameter('Unit','','Description','Flow velocity vector applied to anchor tethers');
         end
         
         % Function to scale the object
