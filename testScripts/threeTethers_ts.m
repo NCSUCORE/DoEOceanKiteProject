@@ -34,7 +34,7 @@ env.water.velVec.setValue([1 0 0],'m/s');
 
 %% common parameters
 numTethers = 3;
-thrNumNodes = 2;
+thrNumNodes = 5;
 numTurbines = 2;
 
 %% lifiting body
@@ -302,7 +302,7 @@ catch
 end
 % Run stop callback to plot everything
 
-plotAyaz
+% plotAyaz
 
 % fullKitePlot
 
