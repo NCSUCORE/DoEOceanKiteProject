@@ -3,8 +3,8 @@ clc
 format compact
 % close all
 
-lengthScaleFactor = 1/1;
-densityScaleFactor = 1/1;
+lengthScaleFactor = 1/100;
+densityScaleFactor = 1/1000;
 duration_s  = 400*sqrt(lengthScaleFactor);
 
 %% Set up simulation
@@ -121,7 +121,7 @@ catch
     simWithMonitor('OCTModel',2)
 end
 
-% plotAyaz
+plotAyaz
 
 % fullKitePlot
 
