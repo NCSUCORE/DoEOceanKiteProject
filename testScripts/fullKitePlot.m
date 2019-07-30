@@ -1,8 +1,18 @@
-
+% make a 3d animation of the system and save it to a video file if
+% make_video = 1
 
 %% animations plots
 parseLogsout
-resampleDataRate = 0.5;
+
+make_video = 0;
+
+% plotting time interval
+resampleDataRate = 2;
+
+% % % video setting
+video = VideoWriter('vid_Test', 'Motion JPEG AVI');
+video.FrameRate = 10*1/resampleDataRate;
+
 signals = fieldnames(tsc);
 time = 0:resampleDataRate:tsc.(signals{1}).Time(end);
 
@@ -78,10 +88,6 @@ set(gcf,'Position',[200 100 2*560 2*420])
 red = 1/255*[228,26,28];
 black = 1/255*[0,0,0];
 line_wd = 1;
-
-% % % video setting
-video = VideoWriter('vid_Test', 'Motion JPEG AVI');
-video.FrameRate = 10*1/resampleDataRate;
 
 mov(1:n_steps)=struct('cdata',[],'colormap',[]);
 set(gca,'nextplot','replacechildren');
