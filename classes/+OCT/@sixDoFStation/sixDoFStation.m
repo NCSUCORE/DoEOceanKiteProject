@@ -48,7 +48,6 @@ classdef sixDoFStation < dynamicprops
             obj.initAngVel      = SIM.parameter('Unit','rad/s','Description','Initial angular velocity of the station in the ground frame, radians per sec');
             
             % Anchor tethers
-%             obj.numNodes = SIM.parameter('Unit','','NoScale',true,'Description','Number of nodes on each anchor tether');
             obj.anchThrs = OCT.tethers;
         end
         
@@ -100,12 +99,6 @@ classdef sixDoFStation < dynamicprops
         end
         function setInitAngVel(obj,val,unit)
         	obj.initAngVel.setValue(val,unit);
-        end
-        function setNumNodes(obj,val,unit)
-            obj.numNodes.setValue(val,unit);
-            obj.anchThrs.setNumTethers(3,'');
-            obj.anchThrs.setNumNodes(obj.numNodes.Value,'');
-            obj.anchThrs.build;
         end
         
     end
