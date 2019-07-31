@@ -38,8 +38,6 @@ env.water.setFlowVelocityVec([1 0 0]','m/s');
 buoyF = 1.5; % Buoyancy factor
 dist = env.water.oceanDepth.Value-5; % Nominal depth of center of mass
 
-
-
 gndStn = OCT.sixDoFStation;
 gndStn.setVolume(3.5,'m^3');
 gndStn.setMass(gndStn.volume.Value*(env.water.density.Value/buoyF),'kg');
