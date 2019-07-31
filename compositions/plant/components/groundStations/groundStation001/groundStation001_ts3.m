@@ -31,13 +31,14 @@ gndStn.setCentOfBuoy([0 0 gndStn.volume.Value^(1/3)/2],'m');
 gndStn.setDragCoefficient(0.8,'');
 
 dist = 100;
-gndStn.airThrAttchPt.setPosVec([0 0 ((gndStn.volume.Value)^(1/3))/2],'m');
-gndStn.bdyThrAttchPt1.setPosVec([0 1 0],'m');
-gndStn.bdyThrAttchPt2.setPosVec([cosd(30) -.5 0],'m');
-gndStn.bdyThrAttchPt3.setPosVec([-cosd(30) -.5 0],'m');
-gndStn.gndThrAttchPt1.setPosVec(dist.*gndStn.bdyThrAttchPt1.posVec.Value,'m');
-gndStn.gndThrAttchPt2.setPosVec(dist.*gndStn.bdyThrAttchPt2.posVec.Value,'m');
-gndStn.gndThrAttchPt3.setPosVec(dist.*gndStn.bdyThrAttchPt3.posVec.Value,'m');
+gndStn.addThrAttch('airAttchPt',[0 0 ((gndStn.volume.Value)^(1/3))/2])
+
+gndStn.addThrAttch('bdyThrAttchPt1',[0 1 0]);
+gndStn.addThrAttch('bdyThrAttchPt2',[cosd(30) -.5 0]);
+gndStn.addThrAttch('bdyThrAttchPt3',[-cosd(30) -.5 0]);
+gndStn.addThrAttch('gndThrAttchPt1',dist.*gndStn.bdyThrAttchPt1.posVec.Value);
+gndStn.addThrAttch('gndThrAttchPt2',dist.*gndStn.bdyThrAttchPt2.posVec.Value);
+gndStn.addThrAttch('gndThrAttchPt3',dist.*gndStn.bdyThrAttchPt3.posVec.Value);
 
 gndStn.setInitPos([0 0 100],'m');
 gndStn.setInitEulAng([0 0 0],'rad');
