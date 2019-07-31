@@ -12,12 +12,12 @@ followKite=false;
 range1=100;
 
 manual=false;
-frames = 50;
+frames = 100;
 waittime = .1; 
 
-gifit = false;
-filename="output.gif";
-gifWaitTime = .15;
+gifit = true;
+filename="animation.gif";
+gifWaitTime = .05;
 
 % dispTimeVec = timevec(end);
 % dispTimeVec = linspace(90,114,40);
