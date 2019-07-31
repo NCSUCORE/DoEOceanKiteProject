@@ -14,16 +14,16 @@ video = VideoWriter('vid_Test', 'Motion JPEG AVI');
 video.FrameRate = 10*1/resampleDataRate;
 
 signals = fieldnames(tsc);
-time = 0:resampleDataRate:tsc.(signals{1}).Time(end);
+timeAnim = 0:resampleDataRate:tsc.(signals{1}).Time(end);
 
-tscResample.positionVec = resample(tsc.positionVec,time);
-tscResample.velocityVec = resample(tsc.velocityVec,time);
-tscResample.eulerAngles = resample(tsc.eulerAngles,time);
-tscResample.angularVel = resample(tsc.angularVel,time);
+tscResample.positionVec = resample(tsc.positionVec,timeAnim);
+tscResample.velocityVec = resample(tsc.velocityVec,timeAnim);
+tscResample.eulerAngles = resample(tsc.eulerAngles,timeAnim);
+tscResample.angularVel = resample(tsc.angularVel,timeAnim);
 
 nNodes = thr.numNodes.Value;
 nTethers = thr.numTethers.Value;
-n_steps = length(time);
+n_steps = length(timeAnim);
 
 sol_Rcm_o = squeeze(tscResample.positionVec.Data);
 sol_Vcmo = squeeze(tscResample.velocityVec.Data);
@@ -37,7 +37,7 @@ s_R1_o = cell(nTethers,1);
 sol_outline = cell(5,1);
 
 for ii = 1:nTethers
-    intVar = resample(tsc.thrNodeBus(ii).nodePositions,time);
+    intVar = resample(tsc.thrNodeBus(ii).nodePositions,timeAnim);
     s_R{ii} = intVar.Data;
     s_R1_o{ii} = s_R{ii}(:,1,:);
     s_Rn_o{ii} = s_R{ii}(:,end,:);
@@ -130,7 +130,7 @@ for ii = 1:n_steps
         grid on
     end
     
-    title(['Time = ',sprintf('%0.2f', time(ii)),' s'])
+    title(['Time = ',sprintf('%0.2f', timeAnim(ii)),' s'])
     
     try
 %         waitforbuttonpress

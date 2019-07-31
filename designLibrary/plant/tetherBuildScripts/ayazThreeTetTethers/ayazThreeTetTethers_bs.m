@@ -23,7 +23,7 @@ thr.tether1.dragCoeff.setValue(0.5,'');
 thr.tether1.density.setValue(1300,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
-thr.tether1.setNetBuoyEnable(true,'');
+thr.tether1.setNetBuoyEnable(false,'');
 thr.tether1.setDiameter(thrDia,'m');
 
 thr.tether2.youngsMod.setValue(4e9,'Pa');
@@ -32,7 +32,7 @@ thr.tether2.dragCoeff.setValue(0.5,'');
 thr.tether2.density.setValue(1300,'kg/m^3');
 thr.tether2.setDragEnable(true,'');
 thr.tether2.setSpringDamperEnable(true,'');
-thr.tether2.setNetBuoyEnable(true,'');
+thr.tether2.setNetBuoyEnable(false,'');
 thr.tether2.setDiameter(thrDia*sqrt(2),'m');
 
 thr.tether3.youngsMod.setValue(4e9,'Pa');
@@ -41,7 +41,7 @@ thr.tether3.dragCoeff.setValue(0.5,'');
 thr.tether3.density.setValue(1300,'kg/m^3');
 thr.tether3.setDragEnable(true,'');
 thr.tether3.setSpringDamperEnable(true,'');
-thr.tether3.setNetBuoyEnable(true,'');
+thr.tether3.setNetBuoyEnable(false,'');
 thr.tether3.setDiameter(thrDia,'m');
 
 % check if all the initial conditions are empty
