@@ -10,13 +10,13 @@ densityScaleFactor = 1/1;
 duration_s  = 1000*sqrt(lengthScaleFactor);
 
 %% Set up simulation
-VEHICLE         = 'vehicle000';
-WINCH           = 'winch000';
-TETHERS         = 'tether000';
-GROUNDSTATION   = 'groundStation000';
-ENVIRONMENT     = 'constantUniformFlow';
+VEHICLE               = 'vehicle000';
+WINCH                 = 'winch000';
+TETHERS               = 'tether000';
+GROUNDSTATION         = 'groundStation000';
+ENVIRONMENT           = 'constantUniformFlow';
 FLIGHTCONTROLLER      = 'threeTetherThreeSurfaceCtrl';
-GNDSTNCONTROLLER = 'oneDoF';
+GNDSTNCONTROLLER      = 'oneDoF';
 
 
 

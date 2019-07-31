@@ -263,7 +263,7 @@ fltCtrl.add('FPIDNames',{'tetherAlti','tetherPitch','tetherRoll','elevators','ai
     'FPIDOutputUnits',{'m/s','m/s','m/s','deg','deg','deg'});
 
 % add control allocation matrix (implemented as a simple gain)
-fltCtrl.add('GainNames',{'ctrlSurfAllocationMat','thrAllocationMat','ySwitch','rollAmp'},...
+fltCtrl.add('GainNames',{'fltCtrlSurfAllocationMat','thrAllocationMat','ySwitch','rollAmp'},...
     'GainUnits',{'','','m','deg'});
 
 fltCtrl.ySwitch.setValue(5,'m');
@@ -311,7 +311,7 @@ fltCtrl.rudder.ki.setValue(0,'(deg)/(deg*s)');
 fltCtrl.rudder.kd.setValue(0,'(deg)/(deg/s)');
 fltCtrl.rudder.tau.setValue(0.5,'s');
 
-fltCtrl.ctrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
+fltCtrl.fltCtrlSurfAllocationMat.setValue([-1 0 0; 1 0 0; 0 -1 0; 0 0 1],'');
 
 fltCtrl.outputSat.upperLimit.setValue(0,'');
 fltCtrl.outputSat.lowerLimit.setValue(0,'');
