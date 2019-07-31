@@ -12,12 +12,13 @@ sim_time = 100;
 
 env = ENV.env;
 env.addFlow({'water'},{'waveFlow'},'FlowDensities',1000)
-env.water.density.setValue(1000,'kg/m^3');
-env.water.wavePeriod.setValue(20,'s');
-env.water.waveAmplitude.setValue(1.5,'m');
-env.water.oceanDepth.setValue(105,'m');
-env.water.pltfrmAppFlwMag.setValue(0,'m/s');
-env.water.flowVelocityVec.setValue([0 0 0]','m/s');
+env.water.setDensity(1000,'kg/m^3');
+env.water.setWavePeriod(20,'s');
+env.water.setWaveAmplitude(1.5,'m');
+env.water.setWaveHeading(90,'deg');
+env.water.setOceanDepth(105,'m');
+env.water.setPltfrmAppFlwMag(1,'m/s');
+env.water.setFlowVelocityVec([1 0 0]','m/s');
 
 gndStn = OCT.sixDoFStation;
 
@@ -58,11 +59,6 @@ gndStn.anchThrs.tether1.dampingRatio.setValue(.05,'');           % zeta, damping
 gndStn.anchThrs.tether1.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether1.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether1.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-% gndStn.anchThrs.tether1.setDragEnable(true,'');                  % intermediate nodes experience drag
-% gndStn.anchThrs.tether1.setSpringDamperEnable(true,'');          % tether has damping
-% gndStn.anchThrs.tether1.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
-% calculate tether length using initial positions of anchor and body nodes
-tetherLengths(1) = norm(gndStn.anchThrs.tether1.initAirNodePos.Value(:)-gndStn.anchThrs.tether1.initGndNodePos.Value(:));
 
 % set tether 2 properties
 gndStn.anchThrs.tether2.initGndNodePos.setValue(gndStn.gndThrAttchPt2.posVec.Value,'m'); % initial anchor node position
@@ -75,11 +71,6 @@ gndStn.anchThrs.tether2.dampingRatio.setValue(.05,'');           % zeta, damping
 gndStn.anchThrs.tether2.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether2.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether2.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-% gndStn.anchThrs.tether2.setDragEnable(true,'');                  % intermediate nodes experience drag
-% gndStn.anchThrs.tether2.setSpringDamperEnable(true,'');          % tether has damping
-% gndStn.anchThrs.tether2.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
-% calculate tether length using initial positions of anchor and body nodes
-tetherLengths(2) = norm(gndStn.anchThrs.tether2.initAirNodePos.Value(:)-gndStn.anchThrs.tether2.initGndNodePos.Value(:));
 
 % set tether 3 properties
 gndStn.anchThrs.tether3.initGndNodePos.setValue(gndStn.gndThrAttchPt3.posVec.Value,'m');
@@ -92,11 +83,6 @@ gndStn.anchThrs.tether3.dampingRatio.setValue(.05,'');           % zeta, damping
 gndStn.anchThrs.tether3.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether3.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether3.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-% gndStn.anchThrs.tether3.setDragEnable(true,'');                  % intermediate nodes experience drag
-% gndStn.anchThrs.tether3.setSpringDamperEnable(true,'');          % tether has damping
-% gndStn.anchThrs.tether3.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
-% calculate tether length using initial positions of anchor and body nodes
-tetherLengths(3) = norm(gndStn.anchThrs.tether3.initAirNodePos.Value(:)-gndStn.anchThrs.tether3.initGndNodePos.Value(:));
 
 % anchor tether winches
 wnch = OCT.winches;                                     % initiate winch creation
@@ -106,17 +92,17 @@ wnch.build;                                             % builds winches in code
 wnch.winch1.maxSpeed.setValue(0.4,'m/s');               % set maximum speed
 wnch.winch1.timeConst.setValue(.1,'s');                 % set time constant
 wnch.winch1.maxAccel.setValue(.5,'m/s^2')               % set maximum accleration
-wnch.winch1.initLength.setValue(tetherLengths(1),'m')   % set initial length
+wnch.winch1.initLength.setValue(norm(gndStn.anchThrs.tether1.initAirNodePos.Value(:)-gndStn.anchThrs.tether1.initGndNodePos.Value(:)),'m')   % set initial length
 
 wnch.winch2.maxSpeed.setValue(0.4,'m/s');               % set maximum speed
 wnch.winch2.timeConst.setValue(.1,'s');                 % set time constant
 wnch.winch2.maxAccel.setValue(.5,'m/s^2')               % set maximum accleration
-wnch.winch2.initLength.setValue(tetherLengths(2),'m')   % set initial length
+wnch.winch2.initLength.setValue(norm(gndStn.anchThrs.tether2.initAirNodePos.Value(:)-gndStn.anchThrs.tether2.initGndNodePos.Value(:)),'m')   % set initial length
 
 wnch.winch3.maxSpeed.setValue(0.4,'m/s');               % set maximum speed
 wnch.winch3.timeConst.setValue(.1,'s');                 % set time constant
 wnch.winch3.maxAccel.setValue(.5,'m/s^2')               % set maximum accleration
-wnch.winch3.initLength.setValue(tetherLengths(3),'m')   % set initial length
+wnch.winch3.initLength.setValue(norm(gndStn.anchThrs.tether3.initAirNodePos.Value(:)-gndStn.anchThrs.tether3.initGndNodePos.Value(:)),'m')   % set initial length
 
 % create anchor tether winch controller
 % initiate controller creation
@@ -179,20 +165,28 @@ parseLogsout
 %% Position
 figure
 subplot(3,1,1)
-plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(1,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(1,:,:)),...
+    'Color','k','LineWidth',1.5)
+ylabel('x, [m]')
 grid on
 title('Position')
 subplot(3,1,2)
-plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(2,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(2,:,:)),...
+    'Color','k','LineWidth',1.5)
+ylabel('y, [m]')
 grid on
 subplot(3,1,3)
-plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(3,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(3,:,:)),...
+    'Color','k','LineWidth',1.5)
+ylabel('z, [m]')
 grid on
+set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Euler Angles
 figure
 subplot(3,1,1)
 plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(1,:,:)))
+
 grid on
 title('Euler Angles')
 subplot(3,1,2)
@@ -201,26 +195,6 @@ grid on
 subplot(3,1,3)
 plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(3,:,:)))
 grid on
-
-%% Y Components of Forces
-figure
-subplot(5,1,1)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAirbThrGnd.Data(2,:,:)))
-grid on
-subplot(5,1,2)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAnchThrGnd.Data(2,:,:)))
-grid on
-subplot(5,1,3)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FGravGnd.Data(2,:,:)))
-grid on
-subplot(5,1,4)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FBuoyGnd.Data(2,:,:)))
-grid on
-subplot(5,1,5)
-plot(tsc.posVecGnd.Time,squeeze(tsc.oceanForceGnd.Data(2,:,:)))
-grid on
-
-linkaxes(findall(gcf,'Type','axes'),'x');
 
 %% Plot anchor tethers at first time step
 timeVec = 0:1:tsc.posVecGnd.Time(end);

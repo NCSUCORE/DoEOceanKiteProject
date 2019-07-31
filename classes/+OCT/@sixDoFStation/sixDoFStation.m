@@ -10,16 +10,16 @@ classdef sixDoFStation < dynamicprops
         volume
         centOfBuoy % Vector from CoM to CoB
         
-        % Tether attachment point to the vehicle
-        airThrAttchPt
-        % Tether attachment point of anchor tether with body
-        bdyThrAttchPt1
-        bdyThrAttchPt2
-        bdyThrAttchPt3
-        % Tether attachment point of anchor tether with ground
-        gndThrAttchPt1
-        gndThrAttchPt2
-        gndThrAttchPt3
+%         % Tether attachment point to the vehicle
+%         airThrAttchPt
+%         % Tether attachment point of anchor tether with body
+%         bdyThrAttchPt1
+%         bdyThrAttchPt2
+%         bdyThrAttchPt3
+%         % Tether attachment point of anchor tether with ground
+%         gndThrAttchPt1
+%         gndThrAttchPt2
+%         gndThrAttchPt3
         
         % Drag coefficient
         dragCoeff
@@ -45,16 +45,16 @@ classdef sixDoFStation < dynamicprops
             obj.volume          = SIM.parameter('Unit','m^3','Description','Total volume used in buoyancy calculation');
             obj.centOfBuoy      = SIM.parameter('Unit','m','Description','Vector from CoM to CoB, in body frame.');
             
-            % Tether attachment point to the vehicle
-            obj.airThrAttchPt   = OCT.thrAttch;
-            % Tether attachment point of anchor tether with body
-            obj.bdyThrAttchPt1  = OCT.thrAttch;
-            obj.bdyThrAttchPt2  = OCT.thrAttch;
-            obj.bdyThrAttchPt3  = OCT.thrAttch;
-            % Tether attachment point of anchor tether with ground
-            obj.gndThrAttchPt1 	= OCT.thrAttch;
-            obj.gndThrAttchPt2 	= OCT.thrAttch;
-            obj.gndThrAttchPt3 	= OCT.thrAttch;
+%             % Tether attachment point to the vehicle
+%             obj.airThrAttchPt   = OCT.thrAttch;
+%             % Tether attachment point of anchor tether with body
+%             obj.bdyThrAttchPt1  = OCT.thrAttch;
+%             obj.bdyThrAttchPt2  = OCT.thrAttch;
+%             obj.bdyThrAttchPt3  = OCT.thrAttch;
+%             % Tether attachment point of anchor tether with ground
+%             obj.gndThrAttchPt1 	= OCT.thrAttch;
+%             obj.gndThrAttchPt2 	= OCT.thrAttch;
+%             obj.gndThrAttchPt3 	= OCT.thrAttch;
                        
             % Drag coefficient
             obj.dragCoeff       = SIM.parameter('Unit','','Description','Drag coefficient of submerged bit of platform');
@@ -68,7 +68,12 @@ classdef sixDoFStation < dynamicprops
             % Anchor tethers
             obj.anchThrs = OCT.tethers;
         end
-        
+        % Method to add tether attachment points
+        function obj = addThrAttch(obj,Name,posVec)
+            addprop(obj,Name);
+            obj.(Name) = OCT.thrAttch;
+            obj.(Name).setPosVec(posVec,'m');
+        end
         
         % Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
