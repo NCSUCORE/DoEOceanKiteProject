@@ -15,12 +15,16 @@ WINCH           = 'winch000';
 TETHERS         = 'tether000';
 GROUNDSTATION   = 'groundStation000';
 ENVIRONMENT     = 'constantUniformFlow';
-CONTROLLER      = 'threeTetherThreeSurfaceCtrl';
+FLIGHTCONTROLLER      = 'threeTetherThreeSurfaceCtrl';
+GNDSTNCONTROLLER = 'oneDoF';
+
+
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
 createThreeTetherThreeSurfaceCtrlBus;
+createOneDoFGndStnCtrlBus;
 
 %% common parameters
 numTethers = 3;
@@ -32,7 +36,7 @@ load('ayazThreeTetEnv.mat')
 env.water.velVec.setValue([1 0 0]','m/s');
 
 %% lifiting body
-load('joshThreeTetVhcl.mat')
+load('ayazThreeTetVhcl.mat')
 
 % % % initial conditions
 vhcl.setInitialCmPos([0;0;50],'m');
@@ -77,19 +81,19 @@ wnch.setTetherInitLength(vhcl,env,thr);
 load('ayazThreeTetCtrl.mat');
 
 % switching values
-ctrl.ySwitch.setValue(8,'m');
-ctrl.rollAmp.setValue(25,'deg');
+fltCtrl.ySwitch.setValue(8,'m');
+fltCtrl.rollAmp.setValue(25,'deg');
 
 % set setpoints
 timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
-ctrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
-ctrl.altiSP.Value.DataInfo.Units = 'm';
+fltCtrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
+fltCtrl.altiSP.Value.DataInfo.Units = 'm';
 
-ctrl.pitchSP.Value = timeseries(10*ones(size(timeVec)),timeVec);
-ctrl.pitchSP.Value.DataInfo.Units = 'deg';
+fltCtrl.pitchSP.Value = timeseries(10*ones(size(timeVec)),timeVec);
+fltCtrl.pitchSP.Value.DataInfo.Units = 'deg';
 
-ctrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
-ctrl.yawSP.Value.DataInfo.Units = 'deg';
+fltCtrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
+fltCtrl.yawSP.Value.DataInfo.Units = 'deg';
 
 %% scale 
 % scale environment
@@ -104,7 +108,7 @@ thr.scale(lengthScaleFactor,densityScaleFactor);
 % scale winches
 wnch.scale(lengthScaleFactor,densityScaleFactor);
 % scale controller
-ctrl.scale(lengthScaleFactor);
+fltCtrl.scale(lengthScaleFactor);
 
 
 %% Run the simulation

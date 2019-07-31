@@ -1,4 +1,4 @@
-clear
+clear all
 clc
 format compact
 
@@ -10,7 +10,8 @@ format compact
 %% Set up environment
 % Create
 env = ENV.env;
-env.addFlow({'water'},'FlowDensities',1000);
+env.addFlow({'water'},{'constantUniformFlow'},'FlowDensities',1000)
+% env.density.setValue(1000,'kg/m^3');
 
 %% save file in its respective directory
 currentMfileLoc = fileparts(mfilename('fullpath'));

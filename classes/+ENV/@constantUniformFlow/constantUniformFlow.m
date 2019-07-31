@@ -13,12 +13,9 @@ classdef constantUniformFlow < handle
     end
     
     methods
-<<<<<<< HEAD:classes/+ENV/@constantUniformFlow/constantUniformFlow.m
-        function obj = constantUniformFlow
-=======
+        
         %% contructor
-        function obj = flow
->>>>>>> master:classes/+ENV/@flow/flow.m
+        function obj = constantUniformFlow
             obj.velVec      = SIM.parameter('Unit','m/s');
             obj.density     = SIM.parameter('Unit','kg/m^3','NoScale',false);
         end
@@ -49,7 +46,7 @@ classdef constantUniformFlow < handle
             end
         end
         
-
+        
         
     end
 end
