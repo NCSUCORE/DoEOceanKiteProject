@@ -567,6 +567,22 @@ classdef vehicle_v2 < dynamicprops
             minDef = -30;
             maxDef = 30;
             
+            sNames = {'portWing','stbdWing','hStab','vStab'};
+            
+            testEmpty = NaN(9,4);
+            
+            for ii = 1:4
+                testEmpty(1,ii) = isempty(obj.(sNames{ii}).aeroCentPosVec.Value);
+                testEmpty(2,ii) = isempty(obj.(sNames{ii}).refArea.Value);
+                testEmpty(3,ii) = isempty(obj.(sNames{ii}).CL.Value);
+                testEmpty(4,ii) = isempty(obj.(sNames{ii}).CD.Value);
+                testEmpty(5,ii) = isempty(obj.(sNames{ii}).alpha.Value);
+                testEmpty(6,ii) = isempty(obj.(sNames{ii}).GainCL.Value);
+                testEmpty(7,ii) = isempty(obj.(sNames{ii}).GainCD.Value);
+                testEmpty(8,ii) = isempty(obj.(sNames{ii}).MaxCtrlDeflDn.Value);
+                testEmpty(9,ii) = isempty(obj.(sNames{ii}).MaxCtrlDeflUp.Value);
+            end
+            
             if isfile(fileLoc)
             load(fileLoc,'aeroStruct');
             
@@ -611,7 +627,8 @@ classdef vehicle_v2 < dynamicprops
             obj.vStab.MaxCtrlDeflDn.setValue(minDef,'deg');
             obj.vStab.MaxCtrlDeflUp.setValue(maxDef,'deg');
 
-            
+            elseif any(testEmpty,'all')~=1
+                
             else
                 fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
                     ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
@@ -814,10 +831,7 @@ classdef vehicle_v2 < dynamicprops
                 end
                     
             end
-            
-            
-            
-            
+
         end
         
         output = struct(obj,className);
