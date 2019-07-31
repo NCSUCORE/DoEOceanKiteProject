@@ -58,11 +58,11 @@ gndStn.anchThrs.tether1.dampingRatio.setValue(.05,'');           % zeta, damping
 gndStn.anchThrs.tether1.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether1.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether1.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-gndStn.anchThrs.tether1.setDragEnable(true,'');                  % intermediate nodes experience drag
-gndStn.anchThrs.tether1.setSpringDamperEnable(true,'');          % tether has damping
-gndStn.anchThrs.tether1.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
+% gndStn.anchThrs.tether1.setDragEnable(true,'');                  % intermediate nodes experience drag
+% gndStn.anchThrs.tether1.setSpringDamperEnable(true,'');          % tether has damping
+% gndStn.anchThrs.tether1.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
 % calculate tether length using initial positions of anchor and body nodes
-tetherLengths(1) = norm(gndStn.anchThrs.tether1.initAirNodePos.Value-gndStn.anchThrs.tether1.initGndNodePos.Value);
+tetherLengths(1) = norm(gndStn.anchThrs.tether1.initAirNodePos.Value(:)-gndStn.anchThrs.tether1.initGndNodePos.Value(:));
 
 % set tether 2 properties
 gndStn.anchThrs.tether2.initGndNodePos.setValue(gndStn.gndThrAttchPt2.posVec.Value,'m'); % initial anchor node position
@@ -75,11 +75,11 @@ gndStn.anchThrs.tether2.dampingRatio.setValue(.05,'');           % zeta, damping
 gndStn.anchThrs.tether2.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether2.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether2.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-gndStn.anchThrs.tether2.setDragEnable(true,'');                  % intermediate nodes experience drag
-gndStn.anchThrs.tether2.setSpringDamperEnable(true,'');          % tether has damping
-gndStn.anchThrs.tether2.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
+% gndStn.anchThrs.tether2.setDragEnable(true,'');                  % intermediate nodes experience drag
+% gndStn.anchThrs.tether2.setSpringDamperEnable(true,'');          % tether has damping
+% gndStn.anchThrs.tether2.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
 % calculate tether length using initial positions of anchor and body nodes
-tetherLengths(2) = norm(gndStn.anchThrs.tether2.initAirNodePos.Value-gndStn.anchThrs.tether2.initGndNodePos.Value);
+tetherLengths(2) = norm(gndStn.anchThrs.tether2.initAirNodePos.Value(:)-gndStn.anchThrs.tether2.initGndNodePos.Value(:));
 
 % set tether 3 properties
 gndStn.anchThrs.tether3.initGndNodePos.setValue(gndStn.gndThrAttchPt3.posVec.Value,'m');
@@ -92,11 +92,11 @@ gndStn.anchThrs.tether3.dampingRatio.setValue(.05,'');           % zeta, damping
 gndStn.anchThrs.tether3.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether3.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether3.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-gndStn.anchThrs.tether3.setDragEnable(true,'');                  % intermediate nodes experience drag
-gndStn.anchThrs.tether3.setSpringDamperEnable(true,'');          % tether has damping
-gndStn.anchThrs.tether3.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
+% gndStn.anchThrs.tether3.setDragEnable(true,'');                  % intermediate nodes experience drag
+% gndStn.anchThrs.tether3.setSpringDamperEnable(true,'');          % tether has damping
+% gndStn.anchThrs.tether3.setNetBuoyEnable(true,'');               % intermediate nodes have buoyancy
 % calculate tether length using initial positions of anchor and body nodes
-tetherLengths(3) = norm(gndStn.anchThrs.tether3.initAirNodePos.Value-gndStn.anchThrs.tether3.initGndNodePos.Value);
+tetherLengths(3) = norm(gndStn.anchThrs.tether3.initAirNodePos.Value(:)-gndStn.anchThrs.tether3.initGndNodePos.Value(:));
 
 % anchor tether winches
 wnch = OCT.winches;                                     % initiate winch creation
@@ -176,7 +176,7 @@ sim('groundStation001_th')
 % save data to workspace as tsc
 parseLogsout
 
-%% 
+%% Position
 figure
 subplot(3,1,1)
 plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(1,:,:)))
@@ -189,6 +189,7 @@ subplot(3,1,3)
 plot(tsc.posVecGnd.Time,squeeze(tsc.posVecGnd.Data(3,:,:)))
 grid on
 
+%% Euler Angles
 figure
 subplot(3,1,1)
 plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(1,:,:)))
@@ -201,23 +202,79 @@ subplot(3,1,3)
 plot(tsc.posVecGnd.Time,squeeze(tsc.eulerAngleVec.Data(3,:,:)))
 grid on
 
+%% Y Components of Forces
 figure
 subplot(5,1,1)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAirbThrBdy.Data(2,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAirbThrGnd.Data(2,:,:)))
 grid on
-
 subplot(5,1,2)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAnchThrBdy.Data(2,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.FNetAnchThrGnd.Data(2,:,:)))
 grid on
 subplot(5,1,3)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FGravBdy.Data(2,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.FGravGnd.Data(2,:,:)))
 grid on
 subplot(5,1,4)
-plot(tsc.posVecGnd.Time,squeeze(tsc.FBuoyBdy.Data(2,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.FBuoyGnd.Data(2,:,:)))
 grid on
 subplot(5,1,5)
-plot(tsc.posVecGnd.Time,squeeze(tsc.oceanForce.Data(2,:,:)))
+plot(tsc.posVecGnd.Time,squeeze(tsc.oceanForceGnd.Data(2,:,:)))
 grid on
 
 linkaxes(findall(gcf,'Type','axes'),'x');
+
+%% Plot anchor tethers at first time step
+timeVec = 0:1:tsc.posVecGnd.Time(end);
+fileName = 'animation.gif';
+for ii= 1:3
+    tsc.anchThrNodeBusArry(ii).nodePositions = resample(tsc.anchThrNodeBusArry(ii).nodePositions,timeVec);
+end
+figure
+h.thr1 = plot3(...
+    tsc.anchThrNodeBusArry(1).nodePositions.Data(1,:,1),...
+    tsc.anchThrNodeBusArry(1).nodePositions.Data(2,:,1),...
+    tsc.anchThrNodeBusArry(1).nodePositions.Data(3,:,1),...
+    'LineWidth',1.5,'Color','k','Marker','o');
+xlabel('x position')
+ylabel('y position')
+zlabel('z position')
+hold on
+grid on
+h.thr2 = plot3(...
+    tsc.anchThrNodeBusArry(2).nodePositions.Data(1,:,1),...
+    tsc.anchThrNodeBusArry(2).nodePositions.Data(2,:,1),...
+    tsc.anchThrNodeBusArry(2).nodePositions.Data(3,:,1),...
+    'LineWidth',1.5,'Color','k','Marker','o');
+h.thr3 = plot3(...
+    tsc.anchThrNodeBusArry(3).nodePositions.Data(1,:,1),...
+    tsc.anchThrNodeBusArry(3).nodePositions.Data(2,:,1),...
+    tsc.anchThrNodeBusArry(3).nodePositions.Data(3,:,1),...
+    'LineWidth',1.5,'Color','k','Marker','o');
+h.title = title(sprintf('Time = %.1f',timeVec(1)));
+set(gca,'FontSize',24')
+
+frame = getframe(gcf );
+im = frame2im(frame);
+[imind,cm] = rgb2ind(im,256);
+
+imwrite(imind,cm,fileName,'gif', 'Loopcount',inf,'DelayTime',0.2);
+for ii = 2:numel(timeVec)
+    h.thr1.XData =  tsc.anchThrNodeBusArry(1).nodePositions.Data(1,:,ii);
+    h.thr1.YData =  tsc.anchThrNodeBusArry(1).nodePositions.Data(2,:,ii);
+    h.thr1.ZData =  tsc.anchThrNodeBusArry(1).nodePositions.Data(3,:,ii);
+    
+    h.thr2.XData =  tsc.anchThrNodeBusArry(2).nodePositions.Data(1,:,ii);
+    h.thr2.YData =  tsc.anchThrNodeBusArry(2).nodePositions.Data(2,:,ii);
+    h.thr2.ZData =  tsc.anchThrNodeBusArry(2).nodePositions.Data(3,:,ii);
+    
+    h.thr3.XData =  tsc.anchThrNodeBusArry(3).nodePositions.Data(1,:,ii);
+    h.thr3.YData =  tsc.anchThrNodeBusArry(3).nodePositions.Data(2,:,ii);
+    h.thr3.ZData =  tsc.anchThrNodeBusArry(3).nodePositions.Data(3,:,ii);
+    
+    h.title.String = sprintf('Time = %.1f',timeVec(ii));
+    frame = getframe(gcf );
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    imwrite(imind,cm,fileName,'gif','WriteMode','append');
+    drawnow
+end
 
