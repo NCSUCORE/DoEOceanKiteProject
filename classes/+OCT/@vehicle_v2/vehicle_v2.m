@@ -328,19 +328,19 @@ classdef vehicle_v2 < dynamicprops
         end
         
         % initial conditions
-        function setInitialCmPos(obj,val,units)
+        function setInitPosVecGnd(obj,val,units)
             obj.initPosVecGnd.setValue(reshape(val,3,1),units);
         end             
 
-        function setInitialCmVel(obj,val,units)
+        function setInitVelVecGnd(obj,val,units)
             obj.initVelVecGnd.setValue(reshape(val,3,1),units);
         end
         
-        function setInitialEuler(obj,val,units)
+        function setInitEulAngBdy(obj,val,units)
             obj.initEulAngBdy.setValue(reshape(val,3,1),units);
         end
         
-        function setInitialAngVel(obj,val,units)
+        function setInitAngVelVecBdy(obj,val,units)
             obj.initAngVelVecBdy.setValue(reshape(val,3,1),units);
         end
         

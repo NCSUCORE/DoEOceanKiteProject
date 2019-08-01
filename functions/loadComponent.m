@@ -18,7 +18,9 @@ parse(p,name);
 
 % if user did not include .mat file extension, append it
 if ~strcmpi(p.Results.name(end-3:end),'.mat')
-    p.Results.name = [p.Results.name '.mat'];
+    fName = [p.Results.name '.mat'];
+else
+    fName = p.Results.name;
 end
 
 if nargin>1 % If the user provides additional path specifications, go look there
@@ -30,8 +32,8 @@ if nargin>1 % If the user provides additional path specifications, go look there
         'compositions',... % compositions folder
         varargin{:},... % whatever the user specified
         'library',... % library within that
-        strrep(p.Results.name,'.mat',''),... % folder within library
-        p.Results.name); % .mat file name
+        strrep(fName,'.mat',''),... % folder within library
+        fName); % .mat file name
     if nargout == 0 % If they didn't specify output variable name, use the variable name saved in the .mat file
         evalin('caller',sprintf('load(''%s'');',fPath)); % load in caller workspace
         return % return
@@ -52,11 +54,11 @@ if nargin>1 % If the user provides additional path specifications, go look there
 else % User did not provide full path specification
     
     % Attempt to load it (filename must be unique)
-    fPath = which(p.Results.name,'-all'); % Search for the file
+    fPath = which(fName,'-all'); % Search for the file
     if numel(fPath)>1 % If the filename is not unique
         % Tell the user that idk which one to load, because there are
         % multiple, provide path to each non-unique file
-        str = sprintf('%s is not a unique filename (IDK which one to load).\nFiles of that name were found at:\n',p.Results.name);
+        str = sprintf('%s is not a unique filename (IDK which one to load).\nFiles of that name were found at:\n',fName);
         str = [str sprintf('%s\n',fPath{:})];
         str = [str sprintf('Please specify additional arguments to select a specific .mat file\n')];
         error(str)
