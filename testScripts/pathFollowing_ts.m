@@ -1,33 +1,35 @@
 clc;clear all
-bdclose OCTModel
-OCTModel
+% bdclose OCTModel
+% OCTModel
 
-scaleFactor = 1;
-duration_s  = 1000*sqrt(scaleFactor);
+
+
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
-lengthScaleFactor = 1;
+lengthScaleFactor = 1/1;
+densityScaleFactor = 1/1;
+duration_s  = 1000*sqrt(lengthScaleFactor);
 %% Set up simulation
-VEHICLE = 'vehicle000';
-WINCH = 'winch000';
-TETHERS = 'tether000';
-GROUNDSTATION = 'groundStation000';
-ENVIRONMENT = 'constantUniformFlow';
-CONTROLLER = 'pathFollowingController';
-
+VEHICLE               = 'vehicle000';
+WINCH                 = 'winch000';
+TETHERS               = 'tether000';
+GROUNDSTATION         = 'groundStation000';
+ENVIRONMENT           = 'constantUniformFlow';
+FLIGHTCONTROLLER      = 'pathFollowingController';
+GNDSTNCONTROLLER      = 'oneDoF';
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
 createOneTetherThreeSurfaceCtrlBus;
-
+createOneDoFGndStnCtrlBus;
+% createPathFollowingControllerCtrlBus;
 %% Set up environment
 % Create
-env = ENV.env;
-env.addFlow({'water'},'FlowDensities',1000);
+loadComponent('pathFollowingEnv.mat')
 % Set Values
 flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%8
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 % Scale up/down
-env.scale(scaleFactor,scaleFactor);
+
 
 %% Path Choice
  pathIniRadius = 125; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%7
@@ -37,7 +39,7 @@ env.scale(scaleFactor,scaleFactor);
  pathFuncName='circleOnSphere'; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%6
  pathParamVec=[pi/8 3*pi/8,0,pathIniRadius];%Circle
 
-swapableID=fopen('../../functions/pathGeometryFunctions/swapablePath.m','w');
+swapableID=fopen('swapablePath.m','w');
 fprintf(swapableID,['function [posGround,varargout] = swapablePath(pathVariable,geomParams)\n',...
            '     func = @%s;\n',...
            '     posGround = func(pathVariable,geomParams);\n',...
@@ -49,10 +51,10 @@ fclose(swapableID);
 
 %% Create Vehicle and Initial conditions
 % Create
-vhcl = OCT.vehicle;
-vhcl.numTethers.setValue(1,'');
-vhcl.numTurbines.setValue(2,'');
-vhcl.build('partDsgn1_hsIncAng_lookupTables.mat');
+% vhcl = OCT.vehicle;
+% vhcl.numTethers.setValue(1,'');
+% vhcl.numTurbines.setValue(2,'');
+% vhcl.build('partDsgn1_hsIncAng_lookupTables.mat');
 
 %IC's
 tetherLength = pathIniRadius;
@@ -89,105 +91,60 @@ ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(t
 
 ini_Vcm_body = [-velMag;0;0];
 ini_eul=[ini_roll ini_pitch ini_yaw];
-vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
-vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
+%vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
+%vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 
 %% Vehicle Parameters
-% Set Values
-% vhcl.mass.Value = (8.9360e+04)*(1/4)^3;%0.8*(945.352);
-% vhcl.Ixx.Value = 14330000*(1/4)^5;%(6.303e9)*10^-6;
-% vhcl.Iyy.Value = 143200*(1/4)^5;%2080666338.077*10^-6;
-% vhcl.Izz.Value = 15300000*(1/4)^5;%(8.32e9)*10^-6;
-% vhcl.Ixy.Value = 0;
-% vhcl.Ixz.Value = 0;%81875397*10^-6;
-% vhcl.Iyz.Value = 0;
-% vhcl.volume.Value = 111.7*(1/4)^3;%9453552023*10^-6;
 
-vhcl.Ixx.setValue(6303,'kg*m^2');
-vhcl.Iyy.setValue(2080.7,'kg*m^2');
-vhcl.Izz.setValue(8320.4,'kg*m^2');
-vhcl.Ixy.setValue(0,'kg*m^2');
-vhcl.Ixz.setValue(81.87,'kg*m^2');
-vhcl.Iyz.setValue(0,'kg*m^2');
-vhcl.volume.setValue(0.9454,'m^3');
-vhcl.mass.setValue(945.4,'kg'); %old=859.4
-vhcl.centOfBuoy.setValue([0 0 0]','m');
-vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
+loadComponent('pathFollowingVhcl.mat')
 
-vhcl.turbine1.diameter.setValue(0,'m');
-vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
-vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
-vhcl.turbine1.powerCoeff.setValue(0.5,'');
-vhcl.turbine1.dragCoeff.setValue(0.8,'');
+% % % initial conditions
+vhcl.setInitialCmPos(ini_Rcm,'m');
+vhcl.setInitialCmVel(ini_Vcm_body,'m/s');
+vhcl.setInitialEuler(ini_eul,'rad');
+vhcl.setInitialAngVel([0;0;0],'rad/s');
 
-vhcl.turbine2.diameter.setValue(0,'m');
-vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
-vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
-vhcl.turbine2.powerCoeff.setValue(0.5,'');
-vhcl.turbine2.dragCoeff.setValue(0.8,'');
+% % % plot
+% vhcl.plot
+% vhcl.plotCoeffPolars
+% vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
+% 
+% vhcl.turbine1.diameter.setValue(0,'m');
+% vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
+% vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
+% vhcl.turbine1.powerCoeff.setValue(0.5,'');
+% vhcl.turbine1.dragCoeff.setValue(0.8,'');
+% 
+% vhcl.turbine2.diameter.setValue(0,'m');
+% vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
+% vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
+% vhcl.turbine2.powerCoeff.setValue(0.5,'');
+% vhcl.turbine2.dragCoeff.setValue(0.8,'');
 
 % Scale up/down
 %vhcl.scale(scaleFactor);
 
 %% Ground Station
-% Create
-gndStn = OCT.station;
-gndStn.numTethers.setValue(1,'');
-gndStn.build;
+loadComponent('pathFollowingGndStn.mat')
 
-% Set values
-gndStn.inertia.setValue(1,'kg*m^2');
-gndStn.posVec.setValue([0 0 0],'m');
-gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)'); 
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
-gndStn.thrAttch1.posVec.setValue([0 0 0],'m');
-gndStn.freeSpnEnbl.setValue(false,'');
-
-% Scale up/down
-gndStn.scale(scaleFactor,scaleFactor);
 
 %% Tethers
 % Create
-thr = OCT.tethers;
-thr.setNumTethers(1,'');
-thr.setNumNodes(2,'');
-thr.build;
+loadComponent('pathFollowingTether.mat')
 
 % Set parameter values
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
-thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttchPts.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(50e9,'Pa');
-thr.tether1.dampingRatio.setValue(0.75,'');
-thr.tether1.dragCoeff.setValue(0.5,'');
-thr.tether1.density.setValue(1300,'kg/m^3');
-thr.tether1.setDragEnable(true,'');
-thr.tether1.setSpringDamperEnable(true,'');
-thr.tether1.setNetBuoyEnable(true,'');
-thr.tether1.setDiameter(0.0144,'m');
 
-% thr.designTetherDiameter(vhcl,env);
-
-% Scale up/down
-thr.scale(scaleFactor);
-
-%% Winches
-% Create
-wnch = OCT.winches;
-wnch.numWinches.setValue(1,'');
-wnch.build;
-% Set values
-wnch.winch1.maxSpeed.setValue(0.4,'m/s');
-wnch.winch1.timeConst.setValue(1,'s');
-wnch.winch1.maxAccel.setValue(inf,'m/s^2');
-
-wnch = wnch.setTetherInitLength(vhcl,env,thr);
-
-% Scale up/down
-wnch.scale(scaleFactor,scaleFactor);
+%% winches
+loadComponent('pathFollowingWinch.mat');
+% set initial conditions
+wnch.setTetherInitLength(vhcl,env,thr);
 
 %% Controller
 
@@ -208,19 +165,24 @@ pathCtrl.add('GainNames',...
               'constantPitchSig','winchSpeedOut','winchSpeedIn','maxR',...
               'minR','outRanges','elevatorReelInDef'},...
              'GainUnits',...
-             {'(deg)/(N*m)','rad','','','deg','m/s','m/s','m','m','',...
+             {'(deg)/(m^3)','rad','','','deg','m/s','m/s','m','m','',...
               'deg'})
 
-allMat = zeros(4,3);
-allMat(1,1)=-1/(2*vhcl.aeroSurf1.GainCL.Value(2)*...
-    vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
-allMat(2,1)=-1*allMat(1,1);
-allMat(3,2)=-1/(vhcl.aeroSurf3.GainCL.Value(2)*...
-    vhcl.aeroSurf3.refArea.Value*abs(vhcl.aeroSurf3.aeroCentPosVec.Value(1)));
-allMat(4,3)=1/(vhcl.aeroSurf4.GainCL.Value(2)*...%Could be negative
-    vhcl.aeroSurf4.refArea.Value*abs(vhcl.aeroSurf4.aeroCentPosVec.Value(1))); 
-pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
+ allMat = zeros(4,3);
+ allMat(1,1)=-1/(2*vhcl.portWing.GainCL.Value(2)*...
+     vhcl.portWing.refArea.Value*abs(vhcl.portWing.aeroCentPosVec.Value(2)));
+ allMat(2,1)=-1*allMat(1,1);
+ allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
+     vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
+ allMat(4,3)= -1/(vhcl.vStab.GainCL.Value(2)*...
+     vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
+ pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
 
+
+% pathCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
+%                                 1.1584         0         0;
+%                                 0             -2.0981    0;
+%                                 0              0         4.8067],'(deg)/(N*m)');
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 pathCtrl.searchSize.setValue(.5,'');
 
@@ -286,79 +248,91 @@ end
 % pathCtrl.rollMoment.kd.setValue(.3*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
  % pathCtrl.rollMoment.kd.setValue(3*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 % pathCtrl.perpErrorVal.setValue(8*pi/180,'rad');
-%pathCtrl.scale(scaleFactor);
+%pathCtrl.scale(scaleFactor);%% scale 
+%% Scale
+% scale environment
+env.scale(lengthScaleFactor,densityScaleFactor);
+% scale vehicle
+vhcl.scale(lengthScaleFactor,densityScaleFactor);
+vhcl.calcFluidDynamicCoefffs;
+% scale ground station
+gndStn.scale(lengthScaleFactor,densityScaleFactor);
+% scale tethers
+thr.scale(lengthScaleFactor,densityScaleFactor);
+% scale winches
+wnch.scale(lengthScaleFactor,densityScaleFactor);
+% scale controller
+% pathCtrl.scale(lengthScaleFactor)
 %% Run the simulation
-traditionalBool = 1;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%2
-
-MMAddBool = 0;
+traditionalBool = 1;
 simWithMonitor('OCTModel')
 parseLogsout;
-%%
-newfold='trad/circ/15mps'; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%1
-mkdir(newfold) 
-cd(newfold)
-
-plotPosition
-saveas(gcf,'position.png')
-savefig('pos.fig')
-plotVelocity
-saveas(gcf,'velocity.png')
-savefig('vel.fig')
-plotTenVecMags
-saveas(gcf,'tension.png')
-savefig('ten.fig')
-plotSphericalCoordinates
-saveas(gcf,'spherical.png')
-savefig('sph.fig')
-
-figure
- timevec=tsc.velAngleAdjustedError.Time;
- ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
-plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*ten)
-xlabel('time (s)')
-ylabel('Power (Watts)')
- [~,i1]=min(abs(timevec - 200));
- [~,i2]=min(abs(timevec -400)); %(timevec(end)/2)));
- [~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
-poweri1 = poweri1 + i1;
-[~,i3]=min(abs(timevec - (timevec(end)/2)));
-[~,i4]=min(abs(timevec - timevec(end)));
-i4=i4-1;
-[~,poweri2]=min(tsc.winchSpeeds.Data(i3:i4).*ten(i3:i4));
-poweri2 = poweri2 + i3;
-% Manual Override. Rerun with this to choose times
-%           t1 = input("time for first measurement");
-%             [~,poweri1]=min(abs(timevec - t1));
-%             t2 = input("time for second measurement");
-%             [~,poweri2]=min(abs(timevec - t2));
-hold on
-ylims=ylim;
-plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
-plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
-ylim(ylims);
- meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
-title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
-saveas(gcf,'power.png')
-savefig('pow.fig')
-
-velmags = sqrt(sum((tsc.velocityVec.Data(:,:,:)).^2,1));
-meanVelocity = mean(squeeze(velmags));
-meanTension = mean(squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))));
-meanLOverD = mean(squeeze(sqrt(sum(tsc.FLiftBdy.Data.^2,1)))./squeeze(sqrt(sum(tsc.FDragBdy.Data.^2,1))));
-meanAlpha = mean(squeeze(tsc.alphaLocal.Data(1,1,:)));
-
-fid=fopen('means.txt','w');
-fprintf(fid,strcat('Mean Power = %e Watts\n',...
-             'Mean Velocity = %f m/s\n',...
-             'Mean Tension = %e Newtons\n',...
-             'Mean L/D = %f\n',...
-             'Mean Angle of Attack = %f degrees\n'),...
-            meanPower,meanVelocity,meanTension,meanLOverD,meanAlpha);
-fclose(fid);
-save('allvars')
-kiteAxesPlot
-close all
-cd ../../../..
+%% Saving for Presentation
+% newfold='trad/circ/15mps'; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%1
+% mkdir(newfold) 
+% cd(newfold)
+% 
+% plotPosition
+% saveas(gcf,'position.png')
+% savefig('pos.fig')
+% plotVelocity
+% saveas(gcf,'velocity.png')
+% savefig('vel.fig')
+% plotTenVecMags
+% saveas(gcf,'tension.png')
+% savefig('ten.fig')
+% plotSphericalCoordinates
+% saveas(gcf,'spherical.png')
+% savefig('sph.fig')
+% 
+% figure
+%  timevec=tsc.velAngleAdjustedError.Time;
+%  ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
+% plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*ten)
+% xlabel('time (s)')
+% ylabel('Power (Watts)')
+%  [~,i1]=min(abs(timevec - 200));
+%  [~,i2]=min(abs(timevec -400)); %(timevec(end)/2)));
+%  [~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
+% poweri1 = poweri1 + i1;
+% [~,i3]=min(abs(timevec - (timevec(end)/2)));
+% [~,i4]=min(abs(timevec - timevec(end)));
+% i4=i4-1;
+% [~,poweri2]=min(tsc.winchSpeeds.Data(i3:i4).*ten(i3:i4));
+% poweri2 = poweri2 + i3;
+% % Manual Override. Rerun with this to choose times
+% %           t1 = input("time for first measurement");
+% %             [~,poweri1]=min(abs(timevec - t1));
+% %             t2 = input("time for second measurement");
+% %             [~,poweri2]=min(abs(timevec - t2));
+% hold on
+% ylims=ylim;
+% plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
+% plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
+% ylim(ylims);
+%  meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
+% title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
+% saveas(gcf,'power.png')
+% savefig('pow.fig')
+% 
+% velmags = sqrt(sum((tsc.velocityVec.Data(:,:,:)).^2,1));
+% meanVelocity = mean(squeeze(velmags));
+% meanTension = mean(squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1))));
+% meanLOverD = mean(squeeze(sqrt(sum(tsc.FLiftBdy.Data.^2,1)))./squeeze(sqrt(sum(tsc.FDragBdy.Data.^2,1))));
+% meanAlpha = mean(squeeze(tsc.alphaLocal.Data(1,1,:)));
+% 
+% fid=fopen('means.txt','w');
+% fprintf(fid,strcat('Mean Power = %e Watts\n',...
+%              'Mean Velocity = %f m/s\n',...
+%              'Mean Tension = %e Newtons\n',...
+%              'Mean L/D = %f\n',...
+%              'Mean Angle of Attack = %f degrees\n'),...
+%             meanPower,meanVelocity,meanTension,meanLOverD,meanAlpha);
+% fclose(fid);
+% save('allvars')
+% kiteAxesPlot
+% close all
+% cd ../../../..
  %% %% Plot choices
 % % errorSigsPlot = 0;
 % % velMagsPlot = 1;
