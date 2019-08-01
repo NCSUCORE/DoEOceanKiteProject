@@ -471,6 +471,10 @@ classdef vehicle_v2 < dynamicprops
                     
                     val(1).posVec.setValue(obj.Rbridle_cm.Value,'m');
                     
+                    val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
+                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVecBdy.Value,val(1).posVec.Value),'m/s');
+                    
+                    
                 case 3
                     port_thr = obj.surfaceOutlines.port_wing.Value(:,2);
                     %                        + [obj.wingChord.Value*obj.wingTR.Value/2;0;0];
