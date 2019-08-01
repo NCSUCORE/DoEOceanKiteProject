@@ -7,7 +7,7 @@ cd(fileparts(mfilename('fullpath')));
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1000*sqrt(lengthScaleFactor);
+duration_s  = 400*sqrt(lengthScaleFactor);
 
 %% Set up simulation
 VEHICLE               = 'vehicle000';
@@ -124,5 +124,5 @@ end
 
 plotAyaz
 
-% fullKitePlot
+fullKitePlot
 
