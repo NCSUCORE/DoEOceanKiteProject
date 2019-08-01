@@ -3,12 +3,12 @@ clc
 format compact
 
 % this is the build script for creating a vechile using class definition
-% 'vehicle_v2' for a three tethered system that is being used by ayaz
+% 'vehicle' for a three tethered system that is being used by ayaz
 
 % the script saves the variable 'vhcl' to a 'ayazThreeTetVhcl.mat'
 
 %% lifiting body
-vhcl = OCT.vehicle_v2;
+vhcl = OCT.vehicle;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
