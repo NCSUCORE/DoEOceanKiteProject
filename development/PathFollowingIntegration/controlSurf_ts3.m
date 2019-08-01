@@ -9,12 +9,12 @@ lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 1000*sqrt(lengthScaleFactor);
 %% Set up simulation
-VEHICLE = 'vehicle000';
-WINCH = 'winch000';
-TETHERS = 'tether000';
-GROUNDSTATION = 'groundStation000';
-ENVIRONMENT = 'constantUniformFlow';
-CONTROLLER = 'pathFollowingController';
+VEHICLE               = 'vehicle000';
+WINCH                 = 'winch000';
+TETHERS               = 'tether000';
+GROUNDSTATION         = 'groundStation000';
+ENVIRONMENT           = 'constantUniformFlow';
+FLIGHTCONTROLLER      = 'pathFollowingController';
 GNDSTNCONTROLLER      = 'oneDoF';
 %% Create busses
 createConstantUniformFlowEnvironmentBus
@@ -23,8 +23,7 @@ createOneTetherThreeSurfaceCtrlBus;
 createOneDoFGndStnCtrlBus;
 %% Set up environment
 % Create
-env = ENV.env;
-env.addFlow({'water'},'FlowDensities',1000);
+loadComponent('pathFollowingEnv.mat')
 % Set Values
 flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%8
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
@@ -96,7 +95,7 @@ ini_eul=[ini_roll ini_pitch ini_yaw];
 
 %% Vehicle Parameters
 
-load('pathFollowingVhcl.mat')
+loadComponent('pathFollowingVhcl.mat')
 
 % % % initial conditions
 vhcl.setInitialCmPos(ini_Rcm,'m');
@@ -125,14 +124,14 @@ vhcl.setInitialAngVel([0;0;0],'rad/s');
 %vhcl.scale(scaleFactor);
 
 %% Ground Station
-load('pathFollowingGndStn.mat')
+loadComponent('pathFollowingGndStn.mat')
 
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Tethers
 % Create
-load('pathFollowingTether.mat')
+loadComponent('pathFollowingTether.mat')
 
 % Set parameter values
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
@@ -142,7 +141,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% winches
-load('pathFollowingWinch.mat');
+loadComponent('pathFollowingWinch.mat');
 % set initial conditions
 wnch.setTetherInitLength(vhcl,env,thr);
 
