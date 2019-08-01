@@ -86,14 +86,12 @@ fltCtrl.rollAmp.setValue(25,'deg');
 
 % set setpoints
 timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
-fltCtrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
-fltCtrl.altiSP.Value.DataInfo.Units = 'm';
+fltCtrl.altiSP.setValue(50*ones(size(timeVec)),'m',timeVec);
 
-fltCtrl.pitchSP.Value = timeseries(10*ones(size(timeVec)),timeVec);
-fltCtrl.pitchSP.Value.DataInfo.Units = 'deg';
+fltCtrl.pitchSP.setValue(10*ones(size(timeVec)),'deg',timeVec);
 
-fltCtrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
-fltCtrl.yawSP.Value.DataInfo.Units = 'deg';
+fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
+
 
 %% scale 
 % scale environment
