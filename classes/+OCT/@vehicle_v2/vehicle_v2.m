@@ -62,7 +62,7 @@ classdef vehicle_v2 < dynamicprops
         initPosVecGnd
         initVelVecGnd
         initEulAng
-        initAngVelVecBdy
+        initAngVelVec
     end
     
     properties (Dependent)
@@ -149,7 +149,7 @@ classdef vehicle_v2 < dynamicprops
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
             obj.initVelVecGnd           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the inertial frame');
             obj.initEulAng              = SIM.parameter('Unit','rad','Description','Initial Euler angles');
-            obj.initAngVelVecBdy        = SIM.parameter('Unit','rad/s','Description','Initial angular velocities');
+            obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
         end
         
         %% setters
@@ -340,8 +340,8 @@ classdef vehicle_v2 < dynamicprops
             obj.initEulAng.setValue(val(:),units);
         end
         
-        function setInitAngVelVecBdy(obj,val,units)
-            obj.initAngVelVecBdy.setValue(reshape(val,3,1),units);
+        function setInitAngVelVec(obj,val,units)
+            obj.initAngVelVec.setValue(val(:),units);
         end
         
         %% getters
@@ -472,7 +472,7 @@ classdef vehicle_v2 < dynamicprops
                     val(1).posVec.setValue(obj.Rbridle_cm.Value,'m');
                     
                     val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVecBdy.Value,val(1).posVec.Value),'m/s');
+                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
                     
                     
                 case 3
@@ -491,13 +491,13 @@ classdef vehicle_v2 < dynamicprops
                     val(3).setPosVec(stbd_thr,'m');
                     
                     val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVecBdy.Value,val(1).posVec.Value),'m/s');
+                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
                     
                     val(2).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVecBdy.Value,val(2).posVec.Value),'m/s');
+                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(2).posVec.Value),'m/s');
                     
                     val(3).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVecBdy.Value,val(3).posVec.Value),'m/s');
+                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(3).posVec.Value),'m/s');
                     
                 otherwise
                     error('No get method programmed for %d tether attachment points',obj.numTethers.Value);

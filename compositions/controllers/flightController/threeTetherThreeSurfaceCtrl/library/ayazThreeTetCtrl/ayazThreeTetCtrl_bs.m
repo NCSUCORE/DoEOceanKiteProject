@@ -68,17 +68,16 @@ fltCtrl.outputSat.lowerLimit.setValue(0,'');
 
 
 %% save file in its respective directory
-% currentMfileLoc = fileparts(mfilename('fullpath'));
+currentMfileLoc = fileparts(mfilename('fullpath'));
 
 if isempty(fltCtrl.altiSP.Value.Data) || isempty(fltCtrl.pitchSP.Value.Data) || isempty(fltCtrl.yawSP.Value.Data)...
         || isempty(fltCtrl.ySwitch.Value) || isempty(fltCtrl.rollAmp.Value)
-%     save(strcat(currentMfileLoc,'\ayazThreeTetfltCtrl.mat'),'fltCtrl');
+    save(fullfile(fileparts(which(mfilename)),strrep(mfilename,'_bs','')),'fltCtrl')
 else
     error('Please do not specify setpoints in build script')
 end
 
 % Save the variable
-save(fullfile(fileparts(which(mfilename)),strrep(mfilename,'_bs','')),'fltCtrl')
-clearvars fltCtrl ans
+clearvars currentMfileLoc ans fltCtrl
 
 

@@ -44,7 +44,7 @@ loadComponent('ayazThreeTetEnv');
 vhcl.setInitPosVecGnd([0 0 100],'m');
 vhcl.setInitVelVecGnd([0 0 0],'m/s');
 vhcl.setInitEulAng([0 7 0]*pi/180,'rad');
-vhcl.setInitAngVelVecBdy([0 0 0],'rad/s');
+vhcl.setInitAngVelVec([0 0 0],'rad/s');
 
 % Ground station
 gndStn.setInitAngPos(0,'rad');
