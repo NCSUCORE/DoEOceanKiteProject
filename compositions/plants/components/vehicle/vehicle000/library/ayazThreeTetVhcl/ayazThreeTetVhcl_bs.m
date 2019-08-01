@@ -72,7 +72,7 @@ currentMfileLoc = fileparts(mfilename('fullpath'));
 if isempty(vhcl.initPosVecGnd.Value) || isempty(vhcl.initEulAngBdy.Value) ||...
         isempty(vhcl.initAngVelVecBdy.Value) || isempty(vhcl.initVelVecGnd.Value)
     
-    save(strcat(currentMfileLoc,'\joshThreeTetVhcl.mat'),'vhcl')
+    save(strcat(currentMfileLoc,'\ayazThreeTetVhcl.mat'),'vhcl')
 else
     error('Please do not specify initial conditions in build script')
 end
