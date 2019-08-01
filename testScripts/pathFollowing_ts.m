@@ -1,13 +1,14 @@
 clc;clear all
-% bdclose OCTModel
-% OCTModel
+if slreportgen.utils.isModelLoaded('OCTModel')
+    OCTModel
+end
 
 
 
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1000*sqrt(lengthScaleFactor);
+duration_s  = 300*sqrt(lengthScaleFactor);
 %% Set up simulation
 VEHICLE               = 'vehicle000';
 WINCH                 = 'winch000';
@@ -29,15 +30,13 @@ loadComponent('pathFollowingEnv.mat')
 flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%8
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 % Scale up/down
-
-
 %% Path Choice
  pathIniRadius = 125; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%7
  %pathFuncName='lemOfBooth';
  %pathParamVec=[.73,.8,.3,0,pathIniRadius];%Lem
  %pathParamVec=[1,1.7,.36,0,pathIniRadius];%Lem
  pathFuncName='circleOnSphere'; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%6
- pathParamVec=[pi/8 3*pi/8,0,pathIniRadius];%Circle
+ pathParamVec=[pi/8,-3*pi/8,0,pathIniRadius];%Circle
 
 swapableID=fopen('swapablePath.m','w');
 fprintf(swapableID,[... %This should be removed eventually. Changing the file programmatically is bad form
@@ -52,7 +51,7 @@ fclose(swapableID);
 
 %% Set Vehicle initial conditions
 tetherLength = pathIniRadius;
-initVelMag= 6;
+initVelMag= 20;
 onpath = true;
 if onpath
     pathParamStart = .17;
@@ -168,17 +167,10 @@ pathCtrl.maxR.setValue(200,'m')
 pathCtrl.minR.setValue(100,'m')
  pathCtrl.outRanges.setValue([.5 1;...
                               2 2],''); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%3
-% pathCtrl.outRanges.setValue([0 .13;...
-%                             .360 .635;...
-%                             .860 1],'');
-
-%  pathCtrl.outRanges.setValue([0 .17;...
-%                              .35 .65;...
-%                             .85 1],'');
 %pathCtrl.outRanges.setValue([0 .125;...
- %                            .375 .625;...
-  %                           .875 1],'');
-pathCtrl.elevatorReelInDef.setValue(25,'deg')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+%                             .375 .625;...
+%                             .875 1],'');
+pathCtrl.elevatorReelInDef.setValue(0,'deg')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
 
 pathCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 pathCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
@@ -210,7 +202,7 @@ case 1
     pathCtrl.rollMoment.kd.setValue(2*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 case 1.5
     pathCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-    pathCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+    pathCtrl.rollMoment.kp.setValue(6e5,'(N*m)/(rad)');
     pathCtrl.rollMoment.kd.setValue(.5*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
     pathCtrl.velAng.tau.setValue(.01,'s');
     pathCtrl.rollMoment.tau.setValue (.01,'s');
@@ -240,7 +232,7 @@ wnch.scale(lengthScaleFactor,densityScaleFactor);
 % scale controller
 % pathCtrl.scale(lengthScaleFactor)
 %% Run the simulation
-traditionalBool = 1;
+traditionalBool = 0;
 simWithMonitor('OCTModel')
 parseLogsout;
 %% Saving for Presentation
