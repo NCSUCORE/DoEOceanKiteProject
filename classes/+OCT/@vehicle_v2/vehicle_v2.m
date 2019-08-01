@@ -61,7 +61,7 @@ classdef vehicle_v2 < dynamicprops
         % intial conditions
         initPosVecGnd
         initVelVecGnd
-        initEulAngBdy
+        initEulAng
         initAngVelVecBdy
     end
     
@@ -148,7 +148,7 @@ classdef vehicle_v2 < dynamicprops
             % initial conditions
             obj.initPosVecGnd = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
             obj.initVelVecGnd = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the inertial frame');
-            obj.initEulAngBdy         = SIM.parameter('Unit','rad','Description','Initial Euler angles');
+            obj.initEulAng         = SIM.parameter('Unit','rad','Description','Initial Euler angles');
             obj.initAngVelVecBdy        = SIM.parameter('Unit','rad/s','Description','Initial angular velocities');
         end
         
@@ -336,8 +336,8 @@ classdef vehicle_v2 < dynamicprops
             obj.initVelVecGnd.setValue(reshape(val,3,1),units);
         end
         
-        function setInitEulAngBdy(obj,val,units)
-            obj.initEulAngBdy.setValue(reshape(val,3,1),units);
+        function setinitEulAng(obj,val,units)
+            obj.initEulAng.setValue(reshape(val,3,1),units);
         end
         
         function setInitAngVelVecBdy(obj,val,units)
