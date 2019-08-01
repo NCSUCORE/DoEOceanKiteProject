@@ -27,41 +27,41 @@ vhcl.setCentOfBuoy([0;0;0],'m');
 vhcl.setRbridle_cm([0;0;0],'m');
 
 % % % wing
-vhcl.setRwingLE_cm([-1;0;0],'m');
+vhcl.setRwingLE_cm([0;0;0],'m');
 vhcl.setWingChord(1,'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
-vhcl.setWingSweep(2,'deg');
-vhcl.setWingDihedral(0,'deg');
+vhcl.setWingSweep(5,'deg');
+vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
-vhcl.setWingNACA('4412','');
-vhcl.setWingClMax(1.75,'');
-vhcl.setWingClMin(-1.75,'');
+vhcl.setWingNACA('2412','');
+vhcl.setWingClMax(1.7,'');
+vhcl.setWingClMin(-1.7,'');
 
 % % % H-stab
 vhcl.setRhsLE_wingLE([6;0;0],'m');
-vhcl.setHsChord(0.6,'m');
+vhcl.setHsChord(0.5,'m');
 vhcl.setHsAR(8,'');
 vhcl.setHsTR(0.8,'');
-vhcl.setHsSweep(5,'deg');
+vhcl.setHsSweep(10,'deg');
 vhcl.setHsDihedral(0,'deg');
-vhcl.setHsIncidence(0,'deg');
-vhcl.setHsNACA('0012','');
-vhcl.setHsClMaxl(1.75,'');
-vhcl.setHsClMin(-1.75,'');
+vhcl.setHsIncidence(-13.5,'deg');
+vhcl.setHsNACA('0015','');
+vhcl.setHsClMaxl(1.7,'');
+vhcl.setHsClMin(-1.7,'');
 
 % % % V-stab
 vhcl.setRvs_wingLE([6;0;0],'m');
 vhcl.setVsChord(0.6,'m');
-vhcl.setVsSpan(2.5,'m');
+vhcl.setVsSpan(2.0,'m');
 vhcl.setVsTR(0.8,'');
-vhcl.setVsSweep(10,'deg');
-vhcl.setVsNACA('0012','');
-vhcl.setVsClMax(1.75,'');
-vhcl.setVsClMin(-1.75,'');
+vhcl.setVsSweep(15,'deg');
+vhcl.setVsNACA('0015','');
+vhcl.setVsClMax(1.7,'');
+vhcl.setVsClMin(-1.7,'');
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile7','');
+vhcl.setFluidCoeffsFileName('someFile2','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
