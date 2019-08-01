@@ -15,12 +15,12 @@ TETHERS = 'tether000';
 GROUNDSTATION = 'groundStation000';
 ENVIRONMENT = 'constantUniformFlow';
 CONTROLLER = 'pathFollowingController';
-
+GNDSTNCONTROLLER      = 'oneDoF';
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createPlantBus;
 createOneTetherThreeSurfaceCtrlBus;
-
+createOneDoFGndStnCtrlBus;
 %% Set up environment
 % Create
 env = ENV.env;
@@ -168,21 +168,21 @@ pathCtrl.add('GainNames',...
              {'(deg)/(N*m)','rad','','','deg','m/s','m/s','m','m','',...
               'deg'})
 
-% allMat = zeros(4,3);
-% allMat(1,1)=-1/(2*vhcl.aeroSurf1.GainCL.Value(2)*...
-%     vhcl.aeroSurf1.refArea.Value*abs(vhcl.aeroSurf1.aeroCentPosVec.Value(2)));
-% allMat(2,1)=-1*allMat(1,1);
-% allMat(3,2)=-1/(vhcl.aeroSurf3.GainCL.Value(2)*...
-%     vhcl.aeroSurf3.refArea.Value*abs(vhcl.aeroSurf3.aeroCentPosVec.Value(1)));
-% allMat(4,3)=1/(vhcl.aeroSurf4.GainCL.Value(2)*...%Could be negative
-%     vhcl.aeroSurf4.refArea.Value*abs(vhcl.aeroSurf4.aeroCentPosVec.Value(1))); 
-% pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
+ allMat = zeros(4,3);
+ allMat(1,1)=-1/(2*vhcl.portWing.GainCL.Value(2)*...
+     vhcl.portWing.refArea.Value*abs(vhcl.portWing.aeroCentPosVec.Value(2)));
+ allMat(2,1)=-1*allMat(1,1);
+ allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
+     vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
+ allMat(4,3)= -1/(vhcl.vStab.GainCL.Value(2)*...
+     vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
+ pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(N*m)');
 
 
-pathCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
-                                1.1584         0         0;
-                                0             -2.0981    0;
-                                0              0         4.8067],'(deg)/(N*m)');
+% pathCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
+%                                 1.1584         0         0;
+%                                 0             -2.0981    0;
+%                                 0              0         4.8067],'(deg)/(N*m)');
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 pathCtrl.searchSize.setValue(.5,'');
 

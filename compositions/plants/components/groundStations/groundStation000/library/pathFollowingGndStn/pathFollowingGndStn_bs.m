@@ -8,8 +8,8 @@ format compact
 % the script saves the variable 'gndStn' to a 'pathFollowingGndStn.mat'
 %% Ground Station
 % Create
-gndStn = OCT.station;
-gndStn.numTethers.setValue(3,'');
+gndStn = OCT.oneDoFStation;
+gndStn.numTethers.setValue(1,'');
 gndStn.build;
 
 % Set values
