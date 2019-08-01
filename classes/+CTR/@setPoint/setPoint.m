@@ -7,10 +7,10 @@ classdef setPoint
     end
     
     methods
-        function obj = setPoint
+        function obj = setPoint(unit)
             %SETPOINT Construct an instance of this class
             %   Detailed explanation goes here
-            obj.Value = timeseries;
+            obj.Value = SIM.parameter('Value',timeseries(0,0),'Unit',unit);
         end
         
         % Function to scale the object

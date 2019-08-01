@@ -15,7 +15,7 @@ classdef parameter < handle
         %% Constructor
         function obj = parameter(varargin)
             p = inputParser;
-            addParameter(p,'Value',[],@(x) isnumeric(x) || islogical(x))
+            addParameter(p,'Value',[],@(x) isnumeric(x) || islogical(x) || isa(x,'timeseries'))
             addParameter(p,'Min',[],@isnumeric)
             addParameter(p,'Max',[],@isnumeric)
             addParameter(p,'Unit','',@ischar)
@@ -52,10 +52,15 @@ classdef parameter < handle
                 for ii = 1:length(scaleUnitList)
                     units = strrep(units,scaleUnitList{ii},strcat(lengthFactorList{ii},densityFactorList{ii}));
                 end
-                obj.Value = obj.Value*eval(units);
+                if isa(obj.Value,'timeseries')
+                    obj.Value.Data = obj.Value.Data*eval(units);
+                    obj.Value.Time = obj.Value.Time*sqrt(lengthScale);
+                else
+                    obj.Value = obj.Value*eval(units);
+                end
             end
         end % end scale
-        function setValue(hobj,val,unit)
+        function setValue(hobj,val,unit,varargin)
             if nargin < 2
                 warning(['No unit provided for' hobj.Description '. Using default which is ' hobj.Unit]);
             end
@@ -68,8 +73,18 @@ classdef parameter < handle
                 warning(ME.message);
                 rethrow(ME);
             end
-            hobj.Value = val;
-            hobj.Unit = unit;
+            if isa(hobj.Value,'timeseries')
+                
+                if ~isempty(varargin) % user specified new time vector, overwrite the whole timeseries with the new one
+                    hobj.Value = timeseries(val,varargin{1});
+                    hObj.Value.DataInfo.Units = unit;
+                else
+                    hobj.Value.Data = val;
+                end
+            else
+                hobj.Value = val;
+                hobj.Unit = unit;
+            end
         end % end set.Value
         
         %% Getters

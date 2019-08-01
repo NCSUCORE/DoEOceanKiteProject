@@ -54,7 +54,8 @@ classdef controller < dynamicprops
             if ~isempty(p.Results.SetpointNames)
                 for ii = 1:numel(p.Results.SetpointNames)
                     obj.addprop(p.Results.SetpointNames{ii});
-                    obj.(p.Results.SetpointNames{ii}) = CTR.setPoint;
+                    obj.(p.Results.SetpointNames{ii}) =...
+                        SIM.parameter('Value',timeseries(0,0),'Unit',p.Results.SetpointUnits{ii});
                 end
             end
             
