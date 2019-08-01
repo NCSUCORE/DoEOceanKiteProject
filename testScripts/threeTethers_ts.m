@@ -1,11 +1,11 @@
 clear
-clc
+% clc
 format compact
 % close all
 
 cd(fileparts(mfilename('fullpath')));
 
-lengthScaleFactor = 1/1;
+lengthScaleFactor = 1/100;
 densityScaleFactor = 1/1;
 duration_s  = 400*sqrt(lengthScaleFactor);
 
@@ -100,7 +100,6 @@ fltCtrl.yawSP.Value.DataInfo.Units = 'deg';
 env.scale(lengthScaleFactor,densityScaleFactor);
 % scale vehicle
 vhcl.scale(lengthScaleFactor,densityScaleFactor);
-vhcl.calcFluidDynamicCoefffs;
 % scale ground station
 gndStn.scale(lengthScaleFactor,densityScaleFactor);
 % scale tethers
@@ -124,5 +123,5 @@ end
 
 plotAyaz
 
-fullKitePlot
+% fullKitePlot
 
