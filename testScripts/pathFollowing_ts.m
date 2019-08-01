@@ -40,7 +40,8 @@ env.water.velVec.setValue([flowspeed 0 0],'m/s');
  pathParamVec=[pi/8 3*pi/8,0,pathIniRadius];%Circle
 
 swapableID=fopen('swapablePath.m','w');
-fprintf(swapableID,['function [posGround,varargout] = swapablePath(pathVariable,geomParams)\n',...
+fprintf(swapableID,[... %This should be removed eventually. Changing the file programmatically is bad form
+           'function [posGround,varargout] = swapablePath(pathVariable,geomParams)\n',...
            '     func = @%s;\n',...
            '     posGround = func(pathVariable,geomParams);\n',...
            '     if nargout == 2\n',...
@@ -49,21 +50,14 @@ fprintf(swapableID,['function [posGround,varargout] = swapablePath(pathVariable,
            'end'],pathFuncName);
 fclose(swapableID);
 
-%% Create Vehicle and Initial conditions
-% Create
-% vhcl = OCT.vehicle;
-% vhcl.numTethers.setValue(1,'');
-% vhcl.numTurbines.setValue(2,'');
-% vhcl.build('partDsgn1_hsIncAng_lookupTables.mat');
-
-%IC's
+%% Set Vehicle initial conditions
 tetherLength = pathIniRadius;
-velMag= 6;
+initVelMag= 6;
 onpath = true;
 if onpath
     pathParamStart = .17;
     [ini_Rcm,ini_Vcm]=swapablePath(pathParamStart,pathParamVec);
-    ini_Vcm=velMag*ini_Vcm;
+    ini_Vcm=initVelMag*ini_Vcm;
     [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
     tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
                -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
@@ -78,7 +72,7 @@ else
     ini_Rcm = tetherLength*[cos(long).*cos(lat);
                             sin(long).*cos(lat);
                             sin(lat);];
-    ini_Vcm= velMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+    ini_Vcm= initVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 end
 
 ini_pitch=atan2(ini_Vcm(3),sqrt(ini_Vcm(1)^2+ini_Vcm(2)^2));
@@ -89,46 +83,28 @@ bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
 ini_roll=(pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ)));
 
-ini_Vcm_body = [-velMag;0;0];
+ini_Vcm_body = [-initVelMag;0;0];
 ini_eul=[ini_roll ini_pitch ini_yaw];
-%vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
-%vhcl.setICs('InitPos',ini_Rcm,'InitVel',ini_Vcm_body,'InitEulAng',ini_eul);
 
 %% Vehicle Parameters
-
 loadComponent('pathFollowingVhcl.mat')
 
 % % % initial conditions
-vhcl.setInitialCmPos(ini_Rcm,'m');
-vhcl.setInitialCmVel(ini_Vcm_body,'m/s');
-vhcl.setInitialEuler(ini_eul,'rad');
-vhcl.setInitialAngVel([0;0;0],'rad/s');
+vhcl.setInitPosVecGnd(ini_Rcm,'m');
+vhcl.setInitVelVecGnd(ini_Vcm_body,'m/s');
+vhcl.setInitEulAng(ini_eul,'rad');
+vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
 % % % plot
 % vhcl.plot
 % vhcl.plotCoeffPolars
-% vhcl.thrAttch1.posVec.setValue([0 0 0]','m');
-% 
-% vhcl.turbine1.diameter.setValue(0,'m');
-% vhcl.turbine1.axisUnitVec.setValue([1 0 0]','');
-% vhcl.turbine1.attachPtVec.setValue([-1.25 -5 0]','m');
-% vhcl.turbine1.powerCoeff.setValue(0.5,'');
-% vhcl.turbine1.dragCoeff.setValue(0.8,'');
-% 
-% vhcl.turbine2.diameter.setValue(0,'m');
-% vhcl.turbine2.axisUnitVec.setValue([1 0 0]','');
-% vhcl.turbine2.attachPtVec.setValue([-1.25  5 0]','m');
-% vhcl.turbine2.powerCoeff.setValue(0.5,'');
-% vhcl.turbine2.dragCoeff.setValue(0.8,'');
-
-% Scale up/down
-%vhcl.scale(scaleFactor);
 
 %% Ground Station
 loadComponent('pathFollowingGndStn.mat')
 
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
+gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
 
 %% Tethers
 % Create
@@ -136,13 +112,13 @@ loadComponent('pathFollowingTether.mat')
 
 % Set parameter values
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
-thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% winches
-loadComponent('pathFollowingWinch.mat');
+loadComponent('oneDOFWnch.mat');
 % set initial conditions
 wnch.setTetherInitLength(vhcl,env,thr);
 

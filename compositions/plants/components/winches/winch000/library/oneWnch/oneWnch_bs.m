@@ -1,4 +1,4 @@
-% Script to build 3 identical winches
+% Script to build 1 identical winches
 wnch = OCT.winches;
 wnch.numWinches.setValue(1,'');
 wnch.build;

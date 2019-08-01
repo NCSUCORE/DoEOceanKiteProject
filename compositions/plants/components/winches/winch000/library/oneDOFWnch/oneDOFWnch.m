@@ -23,7 +23,6 @@ wnch.winch1.maxAccel.setValue(inf,'m/s^2');
 testEmpty = NaN(1,3);
 for ii = 1:wnch.numWinches.Value
     testEmpty(1,ii) = isempty(wnch.(strcat('winch',num2str(ii))).initLength.Value);
-    
 end
 
 %% save file in its respective directory

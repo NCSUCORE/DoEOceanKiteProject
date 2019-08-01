@@ -8,7 +8,7 @@ format compact
 % the script saves the variable 'vhcl' to a 'pathFollowingVhcl.mat'
 
 %% lifiting body
-vhcl = OCT.vehicle_v2;
+vhcl = OCT.vehicle;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
