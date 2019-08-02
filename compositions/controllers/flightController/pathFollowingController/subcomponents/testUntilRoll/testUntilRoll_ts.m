@@ -15,7 +15,7 @@ path_init = tetherLength*[cos(long).*cos(lat);
          sin(lat);];
 initPos = [path_init(1);path_init(2);path_init(3);];
 initVelAng = 45;%degrees
-initVelTan= velMag*[cosd(initVelAng);sind(initVelAng);0];
+init_Vel_Tan= velMag*[cosd(initVelAng);sind(initVelAng);0];
 
 maxBank=45*pi/180;
 kpVelAng=maxBank/(pi/2); %max bank divided by large error
