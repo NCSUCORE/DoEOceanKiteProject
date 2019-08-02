@@ -1,6 +1,6 @@
 classdef thrAttch
-    %THRATTCH Summary of this class goes here
-    %   Detailed explanation goes here
+    %THRATTCH Tether attachment point (where does the tether attach to the
+    %vehicle, platform, or ground.
     
     properties (SetAccess = private)
         posVec

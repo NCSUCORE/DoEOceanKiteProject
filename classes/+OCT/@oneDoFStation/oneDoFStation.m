@@ -1,6 +1,8 @@
 classdef oneDoFStation < dynamicprops
     
-    %STATION Class definition for a ground station
+    %ONEDOFSTATION Class definition for a "fixed" ground station that can
+    %rotate about it's z axis (or it can be locked so that it doesn't
+    %rotate.
     
     properties (SetAccess = private)
         numTethers
@@ -12,16 +14,21 @@ classdef oneDoFStation < dynamicprops
         posVec
     end
     
+    properties (Hidden)
+        % structs tracking the tether attachment point
+        % https://www.mathworks.com/matlabcentral/answers/48831-set-methods-for-dynamic-properties-with-unknown-names
+        propNames = {};
+        propVals  = {};
+    end
     methods
         function obj = oneDoFStation
-            %VEHICLE Construct an instance of this class
             obj.numTethers  = SIM.parameter('NoScale',true);
-            obj.inertia     = SIM.parameter('Unit','kg*m^2');
-            obj.dampCoeff   = SIM.parameter('Unit','(N*m)/(rad/s)');
-            obj.initAngPos  = SIM.parameter('Unit','rad');
-            obj.initAngVel  = SIM.parameter('Unit','rad/s');
-            obj.freeSpnEnbl = SIM.parameter('NoScale',true);
-            obj.posVec      = SIM.parameter('Unit','m');
+            obj.inertia     = SIM.parameter('Unit','kg*m^2','Description','Izz rotational inertia about about platform z axis');
+            obj.dampCoeff   = SIM.parameter('Unit','(N*m)/(rad/s)','Description','Rotational damping coefficient of platform');
+            obj.initAngPos  = SIM.parameter('Unit','rad','Description','Initial angular position');
+            obj.initAngVel  = SIM.parameter('Unit','rad/s','Description','Initial angular velocity');
+            obj.freeSpnEnbl = SIM.parameter('NoScale',true,'Description','Boolean variable, true = free spinning, false = no rotation');
+            obj.posVec      = SIM.parameter('Unit','m','Description','Position relative to ground coordinate origin');
         end
         function setNumTethers(obj,val,unit)
             obj.numTethers.setValue(val,unit);
@@ -44,24 +51,22 @@ classdef oneDoFStation < dynamicprops
         function setPosVec(obj,val,unit)
             obj.posVec.setValue(val,unit);
         end
-        
-        
         % Function to build the ground station (add tether attachment
         % properties)
-        function obj = build(obj,varargin)
-            % Populate cell array of default names
-            defThrName = {};
+        function obj = build(obj)
             for ii = 1:obj.numTethers.Value
-                defThrName{ii} = sprintf('thrAttch%d',ii);
+                prop = obj.addprop(sprintf('thrAttch%d',ii));
+                prop.GetMethod = @(obj)getThrAttchPt(obj,sprintf('thrAttch%d',ii));
+                obj.(sprintf('thrAttch%d',ii)) = OCT.thrAttch;
+                obj.propNames{ii} = sprintf('thrAttch%d',ii);
+                obj.propVals{ii} = OCT.thrAttch;
             end
-            p = inputParser;
-            addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
-            parse(p,varargin{:})
-            
-            % Create tethers
-            for ii = 1:obj.numTethers.Value
-                obj.addprop(p.Results.TetherNames{ii});
-                obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
+        end
+        
+        function val = getThrAttchPt(obj,propName)
+            val = obj.propVals{find(strcmp(obj.propNames,propName))};
+            if ~isempty(val.posVec.Value)  && ~isempty(obj.initAngVel.Value)
+                val.setVelVec(cross([0 0 obj.initAngVel.Value],val.posVec.Value),'m/s');
             end
         end
         
@@ -73,18 +78,20 @@ classdef oneDoFStation < dynamicprops
             end
         end
         
-        
         function val = struct(obj,className)
             % Function returns all properties of the specified class in a
             % 1xN struct useable in a for loop in simulink
             % Example classnames: OCT.turb, OCT.aeroSurf
             props = sort(obj.getPropsByClass(className));
             if numel(props)<1
-                return
+                error('No properties of that type')
             end
             subProps = properties(obj.(props{1}));
             for ii = 1:length(props)
                 for jj = 1:numel(subProps)
+                    if jj == 2
+                       x =1 ;
+                    end
                     val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
                 end
             end
