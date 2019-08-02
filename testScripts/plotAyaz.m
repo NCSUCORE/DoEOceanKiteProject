@@ -37,8 +37,8 @@ end
 
 ss = get(0,'ScreenSize');
 ss = [ss(3) ss(4)];
-fig_wid = 560;
-fig_hgt = 420;
+fig_wid = 1.5*560;
+fig_hgt = 1.5*420;
 max_horz = floor(ss(1)/fig_wid);
 max_vert = floor(ss(2)/fig_hgt);
 locs = zeros(max_horz*max_vert,4);
@@ -57,16 +57,16 @@ figure(fn);
 set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,sol_Rcm_o,plotProps,...
     {'$x_{cm}$','$y_{cm}$','$z_{cm}$'},'Position (m)','CM position');
-subplot(3,1,3)
+% subplot(3,1,3)
 
 
-% % % cm velocity
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,sol_Vcmo,plotProps,...
-    {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
-
+% % % % cm velocity
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,sol_Vcmo,plotProps,...
+%     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
+% 
 % % % euler angles
 fn = fn+1;
 figure(fn)
@@ -74,6 +74,7 @@ set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,sol_euler*180/pi,plotProps,...
     {'$\phi$','$\theta$','$\psi$'},'Angle (deg)','Euler Angles');
 % % % setpoints
+if Lscale == 1 && Dscale == 1
 subplot(3,1,1)
 plot(time,squeeze(tsc.rollSetpoint.Data),'k--',...
     'DisplayName','$\phi_{sp}$');
@@ -83,42 +84,42 @@ plot(time,squeeze(tsc.pitchSetpoint.Data),'k--',...
 subplot(3,1,3)
 plot(time,squeeze(tsc.yawSetpoint.Data),'k--',...
     'DisplayName','$\theta_{sp}$');
-
-%% other angles
-% elevation angle
-elevAngle = (180/pi)*atan2(sol_Rcm_o(3,:),sqrt(sum(sol_Rcm_o(1:2,:).^2,1)));
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-
-% azimuth angle
-azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
-
-vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
-    {'Elevation','Azimuth'},'Angle (deg)','Other angles');
-% 
-% % % % angular velocities
+end
+% %% other angles
+% % elevation angle
+% elevAngle = (180/pi)*atan2(sol_Rcm_o(3,:),sqrt(sum(sol_Rcm_o(1:2,:).^2,1)));
 % fn = fn+1;
 % figure(fn)
 % set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,sol_OwB,plotProps,...
-%     {'$\omega_{x}$','$\omega_{y}$','$\omega_{z}$'},'Ang vel (rad/s)','Angular velocities');
-
-
-%% plot control signals
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,tsc.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
-    {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
-
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
-    {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
 % 
+% % azimuth angle
+% azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
+% 
+% vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
+%     {'Elevation','Azimuth'},'Angle (deg)','Other angles');
+% % 
+% % % % % angular velocities
+% % fn = fn+1;
+% % figure(fn)
+% % set(gcf,'Position',locs(fn,:))
+% % vectorPlotter(time,sol_OwB,plotProps,...
+% %     {'$\omega_{x}$','$\omega_{y}$','$\omega_{z}$'},'Ang vel (rad/s)','Angular velocities');
+% 
+% 
+% %% plot control signals
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,tsc.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
+%     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
+% 
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
+%     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
+% % 
 % 
 % fn = fn+1;
 % figure(fn)

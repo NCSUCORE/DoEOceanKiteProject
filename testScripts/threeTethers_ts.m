@@ -1,5 +1,5 @@
 clear
-% clc
+clc
 format compact
 % close all
 
@@ -7,7 +7,7 @@ cd(fileparts(mfilename('fullpath')));
 
 lengthScaleFactor = 1/100;
 densityScaleFactor = 1/1;
-duration_s  = 400*sqrt(lengthScaleFactor);
+duration_s  = 1000*sqrt(lengthScaleFactor);
 
 %% Set up simulation
 VEHICLE               = 'vehicle000';
@@ -17,8 +17,6 @@ GROUNDSTATION         = 'groundStation000';
 ENVIRONMENT           = 'constantUniformFlow';
 FLIGHTCONTROLLER      = 'threeTetherThreeSurfaceCtrl';
 GNDSTNCONTROLLER      = 'oneDoF';
-
-
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
@@ -81,8 +79,8 @@ wnch.setTetherInitLength(vhcl,env,thr);
 load('ayazThreeTetCtrl.mat');
 
 % switching values
-fltCtrl.ySwitch.setValue(8,'m');
-fltCtrl.rollAmp.setValue(25,'deg');
+fltCtrl.ySwitch.setValue(15,'m');
+fltCtrl.rollAmp.setValue(20,'deg');
 
 % set setpoints
 timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
