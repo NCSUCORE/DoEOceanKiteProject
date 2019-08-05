@@ -8,6 +8,8 @@ format compact
 % the script saves the variable 'gndStn' to a 'ayazThreeTetGndStn.mat'
 
 %% Ground Station
+GROUNDSTATION         = 'groundStation000';
+
 % Create
 gndStn = OCT.oneDoFStation;
 gndStn.numTethers.setValue(3,'');
@@ -17,17 +19,13 @@ gndStn.build;
 gndStn.inertia.setValue(1,'kg*m^2');
 gndStn.posVec.setValue([0 0 0],'m');
 gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)');
-gndStn.thrAttch1.posVec.setValue([-0.0254   -5.0000         0]','m');
-gndStn.thrAttch2.posVec.setValue([6.4000         0         0]','m');
-gndStn.thrAttch3.posVec.setValue([-0.0254    5.0000         0]','m');
-gndStn.freeSpnEnbl.setValue(true,'');
+gndStn.thrAttch1.setPosVec([-0.0254   -5.0000         0]','m');
+gndStn.thrAttch2.setPosVec([6.4000         0         0]','m');
+gndStn.thrAttch3.setPosVec([-0.0254    5.0000         0]','m');
+gndStn.setFreeSpnEnbl(true,'');
 
 %% save file in its respective directory
-currentMfileLoc = fileparts(mfilename('fullpath'));
+saveBuildFile('gndStn',mfilename,'variant','GROUNDSTATION');
 
-if isempty(gndStn.initAngPos.Value) || isempty(gndStn.initAngVel.Value)
-    save(strcat(currentMfileLoc,'\ayazThreeTetGndStn.mat'),'gndStn');
-else
-    error('Please do not specify initial conditions in build script')
-end
+
 

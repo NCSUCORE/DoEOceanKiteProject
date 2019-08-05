@@ -4,9 +4,6 @@ duration_s = 100;
 lengthScaleFactor = 1;
 densityScaleFactor = 1;
 
-
-
-
 %% Pick Variants
 VEHICLE          = 'vehicle000';
 WINCH            = 'winch000';
@@ -19,8 +16,8 @@ GNDSTNCONTROLLER = 'oneDoF';
 %% Create Busses
 createConstantUniformFlowEnvironmentBus
 createThreeTetherThreeSurfaceCtrlBus
-createOneDoFGndStnCtrlBus
-createPlantBus
+oneDoF_bc
+plant_bc
 
 %% Load components
 % Flight Controller
@@ -49,13 +46,10 @@ vhcl.setInitAngVelVec([0 0 0],'rad/s');
 % Ground station
 gndStn.setInitAngPos(0,'rad');
 gndStn.setInitAngVel(0,'rad/s');
+
 gndStn.thrAttch1.setPosVec(vhcl.thrAttchPts(1).posVec.Value,'m');
 gndStn.thrAttch2.setPosVec(vhcl.thrAttchPts(2).posVec.Value,'m');
 gndStn.thrAttch3.setPosVec(vhcl.thrAttchPts(3).posVec.Value,'m');
-
-gndStn.thrAttch1.setVelVec([0 0 0]','m/s');
-gndStn.thrAttch2.setVelVec([0 0 0]','m/s');
-gndStn.thrAttch3.setVelVec([0 0 0]','m/s');
 
 % Find air node positions in ground frame
 airNodePos{1} = vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts(1).posVec.Value(:);
@@ -82,13 +76,13 @@ thr.tether1.setInitAirNodePos(airNodePos{1},'m');
 thr.tether2.setInitAirNodePos(airNodePos{1},'m');
 thr.tether3.setInitAirNodePos(airNodePos{1},'m');
 
-thr.tether1.setInitGndNodeVel([0 0 0],'m/s');
+thr.tether1.setInitGndNodeVel([0 0 0]','m/s');
 thr.tether2.setInitGndNodeVel([0 0 0]','m/s');
 thr.tether3.setInitGndNodeVel([0 0 0]','m/s');
 
-thr.tether1.setInitAirNodeVel(vhcl.thrAttchPts(1).velVec.Value(:),'m/s');
-thr.tether2.setInitAirNodeVel(vhcl.thrAttchPts(2).velVec.Value(:),'m/s');
-thr.tether3.setInitAirNodeVel(vhcl.thrAttchPts(3).velVec.Value(:),'m/s');
+% thr.tether1.setInitAirNodeVel(vhcl.thrAttchPts(1).velVec.Value(:),'m/s');
+% thr.tether2.setInitAirNodeVel(vhcl.thrAttchPts(2).velVec.Value(:),'m/s');
+% thr.tether3.setInitAirNodeVel(vhcl.thrAttchPts(3).velVec.Value(:),'m/s');
 
 thr.tether1.setVehicleMass(vhcl.mass.Value,vhcl.mass.Unit);
 thr.tether2.setVehicleMass(vhcl.mass.Value,vhcl.mass.Unit);
@@ -101,7 +95,17 @@ env.water.setVelVec([1 0 0],'m/s');
 timeVec = 0:0.1:duration_s;
 fltCtrl.yawSP.setValue(zeros(size(timeVec)),'deg',timeVec);
 fltCtrl.altiSP.setValue(vhcl.initPosVecGnd.Value(3),'m');
-
 fltCtrl.ySwitch.setValue(3,'m');
 fltCtrl.rollAmp.setValue(10,'deg');
+
+% gndStn.struct('OCT.thrAttch').velVec
+
+
+
+%% Run the simulation
 sim('OCTModel')
+
+stopCallback
+
+
+

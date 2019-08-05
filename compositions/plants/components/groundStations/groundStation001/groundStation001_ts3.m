@@ -1,9 +1,9 @@
 clear;clc;
 close all
 
-createAnchorThetherCtrlBus
+anchorThetherCtrl_bc
 createWaveFlowEnvironmentBus
-createThrAttachPtKinematicsBus
+thrAttachPtKinematics_bc
 createThrTenVecBus
 
 WINCH            = 'winch000';

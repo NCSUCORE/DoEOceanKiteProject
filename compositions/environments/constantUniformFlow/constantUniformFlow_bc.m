@@ -1,4 +1,4 @@
-function createConstantUniformFlowEnvironmentBus()
+function constantUniformFlow_bc()
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'flowVelocityVec';

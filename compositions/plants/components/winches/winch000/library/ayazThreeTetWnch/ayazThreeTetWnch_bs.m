@@ -8,6 +8,9 @@ format compact
 % the script saves the variable 'wnch' to a 'ayazThreeTetWnch.mat'
 
 %% Winches
+%% winch variant
+WINCH                 = 'winch000';
+
 % Create
 wnch = OCT.winches;
 wnch.numWinches.setValue(3,'');
@@ -35,10 +38,5 @@ for ii = 1:3
 end
 
 %% save file in its respective directory
-currentMfileLoc = fileparts(mfilename('fullpath'));
+saveBuildFile('wnch',mfilename,'variant','WINCH');
 
-if all(testEmpty,'all')
-    save(strcat(currentMfileLoc,'\ayazThreeTetWnch.mat'),'wnch');
-else
-    error('Please do not specify initial conditions in build script')
-end

@@ -8,6 +8,9 @@ format compact
 % the script saves the variable 'thr' to a 'ayazThreeTetTethers.mat'
 
 %% Tethers
+
+TETHERS               = 'tether000';
+
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(3,'');
@@ -55,10 +58,4 @@ testEmpty(4,ii) = isempty(thr.(strcat('tether',num2str(ii))).initGndNodeVel.Valu
 end
 
 %% save file in its respective directory
-currentMfileLoc = fileparts(mfilename('fullpath'));
-
-if all(testEmpty,'all')
-    save(strcat(currentMfileLoc,'\ayazThreeTetTethers.mat'),'thr');
-else
-    error('Please do not specify initial conditions in build script')
-end
+saveBuildFile('thr',mfilename,'variant','TETHERS');

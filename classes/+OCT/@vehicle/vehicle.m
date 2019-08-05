@@ -499,8 +499,8 @@ classdef vehicle < dynamicprops
                     
                     val(1).posVec.setValue(obj.Rbridle_cm.Value,'m');
                     
-                    val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
+%                     val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
+%                         rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
                     
                     
                 case 3
@@ -518,15 +518,15 @@ classdef vehicle < dynamicprops
                     val(2).setPosVec(aft_thr,'m');
                     val(3).setPosVec(stbd_thr,'m');
                     
-                    val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
-                    
-                    val(2).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(2).posVec.Value),'m/s');
-                    
-                    val(3).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(3).posVec.Value),'m/s');
-                    
+%                     val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
+%                         rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
+%                     
+%                     val(2).setVelVec(obj.initVelVecGnd.Value(:)+...
+%                         rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(2).posVec.Value),'m/s');
+%                     
+%                     val(3).setVelVec(obj.initVelVecGnd.Value(:)+...
+%                         rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(3).posVec.Value),'m/s');
+%                     
                 otherwise
                     error('No get method programmed for %d tether attachment points',obj.numTethers.Value);
             end

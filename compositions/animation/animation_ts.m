@@ -15,8 +15,8 @@ VARIANTSUBSYSTEM = 'NNodeTether';
 
 %% Create busses
 createConstantUniformFlowEnvironmentBus
-createPlantBus;
-createOneTetherThreeSurfaceCtrlBus;
+plant_bc;
+oneTetherThreeSurfaceCtrl_bc;
 
 
 %% Set up environment

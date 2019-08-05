@@ -5,13 +5,14 @@
 parseLogsout
 
 make_video = 0;
+LS = lengthScaleFactor;
 
 % plotting time interval
-resampleDataRate = 2;
+resampleDataRate = 0.5*sqrt(LS);
 
 % % % video setting
 video = VideoWriter('vid_Test', 'Motion JPEG AVI');
-video.FrameRate = 10*1/resampleDataRate;
+video.FrameRate = 2*1/resampleDataRate;
 
 signals = fieldnames(tsc);
 timeAnim = 0:resampleDataRate:tsc.(signals{1}).Time(end);
@@ -66,14 +67,19 @@ bx = zeros(nTethers,2);
 by = zeros(nTethers,2);
 bz = zeros(nTethers,2);
 
+plotMargin = 5*LS;
+
 for ii = 1:nTethers
     [xmin,xmax] = bounds(squeeze(s_R{ii}(1,:,:)),'all');
     [ymin,ymax] = bounds(squeeze(s_R{ii}(2,:,:)),'all');
     [zmin,zmax] = bounds(squeeze(s_R{ii}(3,:,:)),'all');
     
-    bx(ii,:) = round([floor(xmin-5),ceil(xmax+5)],-1);
-    by(ii,:) = round([floor(ymin-5),ceil(ymax+5)],-1);
-    bz(ii,:) = round([floor(zmin-5),ceil(zmax+5)],-1);
+    bx(ii,:) = [xmin - mod(xmin,plotMargin) - plotMargin,...
+        xmax - mod(xmax,plotMargin) + plotMargin];
+    by(ii,:) = [ymin - mod(ymin,plotMargin) - plotMargin,...
+        ymax - mod(ymax,plotMargin) + plotMargin];
+    bz(ii,:) = [zmin - mod(zmin,plotMargin) - plotMargin,...
+        zmax - mod(zmax,plotMargin) + plotMargin];
 end
 
 %% plot
@@ -122,9 +128,9 @@ for ii = 1:n_steps
     
     if ii == 1
         xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)')
-        xlim([-max(abs(bx(:)))-10 max(abs(bx(:)))+10]);
+        xlim([-max(abs(bx(:)))-(10*LS) max(abs(bx(:)))+(10*LS)]);
         ylim([-max(abs(by(:))) max(abs(by(:)))]);
-        zlim([0 max(bz(:))]);
+        zlim([0 max(bz(:)) + (5*LS)]);
 %         axis equal
         hold on
         grid on
