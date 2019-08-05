@@ -19,10 +19,10 @@ FLIGHTCONTROLLER      = 'threeTetherThreeSurfaceCtrl';
 GNDSTNCONTROLLER      = 'oneDoF';
 
 %% Create busses
-createConstantUniformFlowEnvironmentBus
-plant_bc;
-createThreeTetherThreeSurfaceCtrlBus;
-oneDoF_bc;
+% createConstantUniformFlowEnvironmentBus
+% plant_bc;
+% createThreeTetherThreeSurfaceCtrlBus;
+% oneDoF_bc;
 
 %% common parameters
 numTethers = 3;

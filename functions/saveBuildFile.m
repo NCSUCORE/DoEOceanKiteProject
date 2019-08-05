@@ -1,26 +1,22 @@
-function saveBuildFile(object,objectName,BSfileName,varargin)
+function saveBuildFile(object,BSfileName,varargin)
 
 % this script stores the object parameters of into a .mat file which has
 % the same name as the script thats being used to create the file
 % INPUTS
-% object: object you which to save
-% objectName: the variable you wish use to save the object as eg. x = 1. in
-% here 'x' would be the objectName
+% object: object you which to save as a string
 % BSfilename, name of the script you are using to build the .mat file
 % I recomment using typing the command 'mfilename' in this space
 % optional inputs
 % use these if you wish to save the variant associated with the object in the .mat
-% eg. variantVariableName = 'VEHICLE',variantVariable = VEHICLE
+% eg. saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
 
 
 p = inputParser;
-addRequired(p,'object',@isobject);
-addRequired(p,'objectName',@ischar);
+addRequired(p,'object',@ischar);
 addRequired(p,'BSfileName',@ischar);
-addParameter(p,'variantVariableName','',@ischar);
-addParameter(p,'variantVariable','',@ischar);
+addParameter(p,'variant','',@ischar);
 
-parse(p,object,objectName,BSfileName,varargin{:});
+parse(p,object,BSfileName,varargin{:});
 
 [currentMfileLoc,currentMfileName,~] = fileparts(which(p.Results.BSfileName));
 
@@ -46,15 +42,15 @@ else
     end
 end
 
-eval([p.Results.objectName ' =  p.Results.object;']);
+eval([p.Results.object ' =  evalin(''caller'',p.Results.object);']);
 
 
 if all(emptyCheck)
     if isempty(p.UsingDefaults)
-        eval([p.Results.variantVariableName, ' = ''', p.Results.variantVariable,''';']);
-        save(strcat(currentMfileLoc,saveFileName),p.Results.objectName,p.Results.variantVariableName);
+        eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
+        save(strcat(currentMfileLoc,saveFileName),p.Results.object,p.Results.variant);
     else
-        save(strcat(currentMfileLoc,saveFileName),p.Results.objectName);
+        save(strcat(currentMfileLoc,saveFileName),p.Results.object);
     end
 else
     error('Please do not specify initial conditions in build script')
