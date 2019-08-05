@@ -8,9 +8,10 @@ format compact
 % the script saves the variable 'vhcl' and 'vhcl_variant' to a mat file
 
 %% lifiting body
-vhcl_variant = 'partitionedLiftingBodyVariant';
+%% variant
+VEHICLE               = 'vehicle000';
 
-
+%% build
 vhcl = OCT.vehicle;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
@@ -70,20 +71,23 @@ vhcl.setFluidCoeffsFileName('someFile7','');
 vhcl.calcFluidDynamicCoefffs
 
 %% save file in its respective directory
-[currentMfileLoc,currentMfileName,~] = fileparts(mfilename('fullpath'));
+saveBuildFile(vhcl,'vhcl',mfilename,'variantVariableName','VEHICLE','variantVariable',VEHICLE);
 
-if endsWith(currentMfileName,'_bs')
-    saveFileName = strcat('\',erase(currentMfileName,'_bs'),'.mat');
-else
-    saveFileName = currentMfileName;
-end
-
-if isempty(vhcl.initPosVecGnd.Value) || isempty(vhcl.initEulAngBdy.Value) ||...
-        isempty(vhcl.initAngVelVecBdy.Value) || isempty(vhcl.initVelVecGnd.Value)
-    
-    save(strcat(currentMfileLoc,saveFileName),'vhcl')
-else
-    error('Please do not specify initial conditions in build script')
-end
+% 
+% [currentMfileLoc,currentMfileName,~] = fileparts(mfilename('fullpath'));
+% 
+% if endsWith(currentMfileName,'_bs')
+%     saveFileName = strcat('\',erase(currentMfileName,'_bs'),'.mat');
+% else
+%     saveFileName = currentMfileName;
+% end
+% 
+% if isempty(vhcl.initPosVecGnd.Value) || isempty(vhcl.initEulAngBdy.Value) ||...
+%         isempty(vhcl.initAngVelVecBdy.Value) || isempty(vhcl.initVelVecGnd.Value)
+%     
+%     save(strcat(currentMfileLoc,saveFileName),'vhcl')
+% else
+%     error('Please do not specify initial conditions in build script')
+% end
 
 
