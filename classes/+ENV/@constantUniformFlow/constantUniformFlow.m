@@ -19,7 +19,12 @@ classdef constantUniformFlow < handle
             obj.velVec      = SIM.parameter('Unit','m/s');
             obj.density     = SIM.parameter('Unit','kg/m^3','NoScale',false);
         end
-        
+        function setVelVec(obj,val,unit)
+            obj.velVec.setValue(val,unit);
+        end
+        function setDensity(obj,val,unit)
+            obj.density(val,unit);
+        end
         %% getters
         function val = get.speed(obj)
             val = SIM.parameter('Value',sqrt(sum(obj.velVec.Value.^2)),...

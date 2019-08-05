@@ -54,7 +54,8 @@ classdef controller < dynamicprops
             if ~isempty(p.Results.SetpointNames)
                 for ii = 1:numel(p.Results.SetpointNames)
                     obj.addprop(p.Results.SetpointNames{ii});
-                    obj.(p.Results.SetpointNames{ii}) = CTR.setPoint;
+                    obj.(p.Results.SetpointNames{ii}) =...
+                        SIM.parameter('Value',timeseries(0,0),'Unit',p.Results.SetpointUnits{ii});
                 end
             end
             
@@ -64,11 +65,7 @@ classdef controller < dynamicprops
         function obj = scale(obj,lengthScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
-                if isa(obj.(props{ii}),'CTR.setPoint')
-                    obj.(props{ii}) = obj.(props{ii}).scale(lengthScaleFactor);
-                else
-                    obj.(props{ii}).scale(lengthScaleFactor);
-                end
+                obj.(props{ii}).scale(lengthScaleFactor);
             end
         end
     end

@@ -81,24 +81,24 @@ for t=dispTimeVec
     %velocity vec (unscaled)
     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i),'w','lineWidth',1.2)
 
-    % %closest point
-    % starpos=tsc.star_pos.Data(i,:);
-    % starpos=tetherLength*starpos/norm(starpos);
-    % scatter3(starpos(1),starpos(2),starpos(3),'k','filled')
+    %closest point
+    starpos=tsc.star_pos.Data(i,:);
+    starpos=tetherLength*starpos/norm(starpos);
+    scatter3(starpos(1),starpos(2),starpos(3),'k','filled')
 
-    % %perp, tan, and weighted av
-    % startanvec=tsc.tan_unit.Data(i,:);
-    % startanvec=7*startanvec;
-    % 
-    % starperpvec=tsc.perp_unit.Data(i,:);
-    % starperpvec = 7*starperpvec;
-    % 
-    % dispVelVecDes=tsc.velVectorDes.Data(i,:);
-    % dispVelVecDes = 10*dispVelVecDes;
-    % 
-    % quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),dispVelVecDes(1),dispVelVecDes(2),dispVelVecDes(3),'r','lineWidth',2)
-    % quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),starperpvec(1),starperpvec(2),starperpvec(3),'g','lineWidth',2)
-    % quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),startanvec(1),startanvec(2),startanvec(3),'b','lineWidth',2)
+%     %perp, tan, and weighted av
+%     startanvec=tsc.tan_unit.Data(i,:);
+%     startanvec=7*startanvec;
+%     
+%     starperpvec=tsc.perp_unit.Data(i,:);
+%     starperpvec = 7*starperpvec;
+%     
+%     dispVelVecDes=tsc.velVectorDes.Data(i,:);
+%     dispVelVecDes = 10*dispVelVecDes;
+%     
+%     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),dispVelVecDes(1),dispVelVecDes(2),dispVelVecDes(3),'r','lineWidth',2)
+%     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),starperpvec(1),starperpvec(2),starperpvec(3),'g','lineWidth',2)
+%     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),startanvec(1),startanvec(2),startanvec(3),'b','lineWidth',2)
 
     %% Window Options
     if min(tsc.positionVec.Data(3,1,:))>0

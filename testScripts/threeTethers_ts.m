@@ -37,10 +37,10 @@ env.water.velVec.setValue([1 0 0]','m/s');
 load('joshThreeTetVhcl.mat')
 
 % % % initial conditions
-vhcl.setInitialCmPos([0;0;50],'m');
-vhcl.setInitialCmVel([0;0;0],'m/s');
-vhcl.setInitialEuler([0;1;0]*pi/180,'rad');
-vhcl.setInitialAngVel([0;0;0],'rad/s');
+vhcl.setInitPosVecGnd([0;0;50],'m');
+vhcl.setInitVelVecGnd([0;0;0],'m/s');
+vhcl.setInitEulAng([0;1;0]*pi/180,'rad');
+vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
 % % % plot
 % vhcl.plot
@@ -62,7 +62,7 @@ for ii = 1:3
     thr.(strcat('tether',num2str(ii))).initGndNodePos.setValue...
         (gndStn.(strcat('thrAttch',num2str(ii))).posVec.Value(:),'m');
     thr.(strcat('tether',num2str(ii))).initAirNodePos.setValue...
-        (vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAngBdy.Value)*vhcl.thrAttchPts(ii).posVec.Value,'m');
+        (vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts(ii).posVec.Value,'m');
     thr.(strcat('tether',num2str(ii))).initGndNodeVel.setValue([0 0 0]','m/s');
     thr.(strcat('tether',num2str(ii))).initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
     thr.(strcat('tether',num2str(ii))).vehicleMass.setValue(vhcl.mass.Value,'kg');
@@ -84,14 +84,12 @@ fltCtrl.rollAmp.setValue(20,'deg');
 
 % set setpoints
 timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
-fltCtrl.altiSP.Value = timeseries(50*ones(size(timeVec)),timeVec);
-fltCtrl.altiSP.Value.DataInfo.Units = 'm';
+fltCtrl.altiSP.setValue(50*ones(size(timeVec)),'m',timeVec);
 
-fltCtrl.pitchSP.Value = timeseries(10*ones(size(timeVec)),timeVec);
-fltCtrl.pitchSP.Value.DataInfo.Units = 'deg';
+fltCtrl.pitchSP.setValue(10*ones(size(timeVec)),'deg',timeVec);
 
-fltCtrl.yawSP.Value = timeseries(0*ones(size(timeVec)),timeVec);
-fltCtrl.yawSP.Value.DataInfo.Units = 'deg';
+fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
+
 
 %% scale 
 % scale environment
