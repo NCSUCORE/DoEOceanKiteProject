@@ -75,21 +75,4 @@ x = 1;
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
 
-% 
-% [currentMfileLoc,currentMfileName,~] = fileparts(mfilename('fullpath'));
-% 
-% if endsWith(currentMfileName,'_bs')
-%     saveFileName = strcat('\',erase(currentMfileName,'_bs'),'.mat');
-% else
-%     saveFileName = currentMfileName;
-% end
-% 
-% if isempty(vhcl.initPosVecGnd.Value) || isempty(vhcl.initEulAngBdy.Value) ||...
-%         isempty(vhcl.initAngVelVecBdy.Value) || isempty(vhcl.initVelVecGnd.Value)
-%     
-%     save(strcat(currentMfileLoc,saveFileName),'vhcl')
-% else
-%     error('Please do not specify initial conditions in build script')
-% end
-
 

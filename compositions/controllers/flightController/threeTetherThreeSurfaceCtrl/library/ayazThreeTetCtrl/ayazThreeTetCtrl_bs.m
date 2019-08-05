@@ -8,6 +8,8 @@ format compact
 % the script saves the variable 'fltCtrl' to a 'ayazThreeTetfltCtrl.mat'
 
 %% Set up controller
+FLIGHTCONTROLLER      = 'threeTetherThreeSurfaceCtrl';
+
 % Create
 fltCtrl = CTR.controller;
 % add filtered PID controllers
@@ -68,16 +70,7 @@ fltCtrl.outputSat.lowerLimit.setValue(0,'');
 
 
 %% save file in its respective directory
-currentMfileLoc = fileparts(mfilename('fullpath'));
+saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 
-if isempty(fltCtrl.altiSP.Value.Data) || isempty(fltCtrl.pitchSP.Value.Data) || isempty(fltCtrl.yawSP.Value.Data)...
-        || isempty(fltCtrl.ySwitch.Value) || isempty(fltCtrl.rollAmp.Value)
-    save(fullfile(fileparts(which(mfilename)),strrep(mfilename,'_bs','')),'fltCtrl')
-else
-    error('Please do not specify setpoints in build script')
-end
-
-% Save the variable
-clearvars currentMfileLoc ans fltCtrl
 
 
