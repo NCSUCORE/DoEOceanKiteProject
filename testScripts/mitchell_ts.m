@@ -80,9 +80,9 @@ thr.tether1.setInitGndNodeVel([0 0 0]','m/s');
 thr.tether2.setInitGndNodeVel([0 0 0]','m/s');
 thr.tether3.setInitGndNodeVel([0 0 0]','m/s');
 
-thr.tether1.setInitAirNodeVel(vhcl.thrAttchPts(1).velVec.Value(:),'m/s');
-thr.tether2.setInitAirNodeVel(vhcl.thrAttchPts(2).velVec.Value(:),'m/s');
-thr.tether3.setInitAirNodeVel(vhcl.thrAttchPts(3).velVec.Value(:),'m/s');
+% thr.tether1.setInitAirNodeVel(vhcl.thrAttchPts(1).velVec.Value(:),'m/s');
+% thr.tether2.setInitAirNodeVel(vhcl.thrAttchPts(2).velVec.Value(:),'m/s');
+% thr.tether3.setInitAirNodeVel(vhcl.thrAttchPts(3).velVec.Value(:),'m/s');
 
 thr.tether1.setVehicleMass(vhcl.mass.Value,vhcl.mass.Unit);
 thr.tether2.setVehicleMass(vhcl.mass.Value,vhcl.mass.Unit);
@@ -98,11 +98,14 @@ fltCtrl.altiSP.setValue(vhcl.initPosVecGnd.Value(3),'m');
 fltCtrl.ySwitch.setValue(3,'m');
 fltCtrl.rollAmp.setValue(10,'deg');
 
-gndStn.struct('OCT.thrAttch').velVec
+% gndStn.struct('OCT.thrAttch').velVec
 
 
 
 %% Run the simulation
 sim('OCTModel')
+
+stopCallback
+
 
 
