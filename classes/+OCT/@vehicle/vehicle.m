@@ -566,7 +566,7 @@ classdef vehicle < dynamicprops
             val.setSideDragCoeff(obj.fuseSideDragCoeff.Value,'');
             val.setEndDragCoeff(obj.fuseEndDragCoeff.Value,'');
             %Calculated
-            val.setRCmToEnd(obj.RhsLE_wingLE.Value + obj.RhsLE_wingLE.Value,'m');
+            val.setRCmToEnd(obj.RhsLE_wingLE.Value + obj.RwingLE_cm.Value,'m');
         end
         % aerodynamic forces moment arms
         function val = get.fluidMomentArms(obj)
