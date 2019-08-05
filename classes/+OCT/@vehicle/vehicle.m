@@ -471,8 +471,8 @@ classdef vehicle < dynamicprops
                     
                     val(1).posVec.setValue(obj.Rbridle_cm.Value,'m');
                     
-                    val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
-                        rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
+%                     val(1).setVelVec(obj.initVelVecGnd.Value(:)+...
+%                         rotation_sequence(obj.initEulAng.Value)*cross(obj.initAngVelVec.Value,val(1).posVec.Value),'m/s');
                     
                     
                 case 3

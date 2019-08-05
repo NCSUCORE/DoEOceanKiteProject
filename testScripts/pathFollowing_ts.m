@@ -108,7 +108,7 @@ loadComponent('pathFollowingGndStn.mat')
 
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
-gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
+% gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
 
 %% Tethers
 % Create
