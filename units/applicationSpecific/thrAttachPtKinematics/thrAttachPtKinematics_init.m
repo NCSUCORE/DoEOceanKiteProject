@@ -1,1 +1,1 @@
-createThrAttachPtKinematicsBus
+thrAttachPtKinematics_bc

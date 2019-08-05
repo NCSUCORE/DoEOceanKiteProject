@@ -8,7 +8,7 @@ sim_time = 10;
 
 createThreeTetherThreeSurfaceCtrlBus
 createConstantUniformFlowEnvironmentBus
-createThrAttachPtKinematicsBus
+thrAttachPtKinematics_bc
 createThrTenVecBus
 
 % Platform dynamic parameters

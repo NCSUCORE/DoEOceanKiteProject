@@ -7,7 +7,7 @@ modularPlant_init
 
 angVel = [0 0 1];
 
-createThrAttachPtKinematicsBus(gndStnMmtArms)
+thrAttachPtKinematics_bc(gndStnMmtArms)
 
 sim('thrAttachPtKinematics_th')
 

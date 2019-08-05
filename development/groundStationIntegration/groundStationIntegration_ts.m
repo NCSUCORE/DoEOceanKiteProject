@@ -19,8 +19,8 @@ GNDSTNCONTROLLER = 'anchorTetherCtrl';
 %% Create busses
 createWaveFlowEnvironmentBus
 createThreeTetherThreeSurfaceCtrlBus
-createAnchorThetherCtrlBus
-createPlantBus
+anchorThetherCtrl_bc
+plant_bc
 
 %% Set up environment
 env = ENV.env;

@@ -16,7 +16,7 @@ tetherLengths = [200 200]; % m
 
 %% Create busses
 createThrTenVecBus
-createThrAttachPtKinematicsBus
+thrAttachPtKinematics_bc
 createConstantUniformFlowEnvironmentBus
 
 %% Construct objects

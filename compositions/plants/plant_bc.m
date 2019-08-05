@@ -1,4 +1,4 @@
-function createPlantBus
+function plant_bc
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;

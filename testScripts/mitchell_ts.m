@@ -16,8 +16,8 @@ GNDSTNCONTROLLER = 'oneDoF';
 %% Create Busses
 createConstantUniformFlowEnvironmentBus
 createThreeTetherThreeSurfaceCtrlBus
-createOneDoFGndStnCtrlBus
-createPlantBus
+oneDoF_bc
+plant_bc
 
 %% Load components
 % Flight Controller

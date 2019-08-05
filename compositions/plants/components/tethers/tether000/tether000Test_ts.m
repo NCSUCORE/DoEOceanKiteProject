@@ -59,7 +59,7 @@ timeVec = 0:.01:simDuration;
 
 %% Create busses
 createThrTenVecBus
-createThrAttachPtKinematicsBus
+thrAttachPtKinematics_bc
 createConstantUniformFlowEnvironmentBus
 
 %% Construct objects

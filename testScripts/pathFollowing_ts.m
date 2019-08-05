@@ -3,8 +3,6 @@ if slreportgen.utils.isModelLoaded('OCTModel')
     OCTModel
 end
 
-
-
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
@@ -18,10 +16,10 @@ ENVIRONMENT           = 'constantUniformFlow';
 FLIGHTCONTROLLER      = 'pathFollowingController';
 GNDSTNCONTROLLER      = 'oneDoF';
 %% Create busses
-createConstantUniformFlowEnvironmentBus
-createPlantBus;
-createOneTetherThreeSurfaceCtrlBus;
-createOneDoFGndStnCtrlBus;
+% createConstantUniformFlowEnvironmentBus
+% plant_bc;
+% oneTetherThreeSurfaceCtrl_bc;
+% oneDoFGndStnCtrl_bc;
 % createPathFollowingControllerCtrlBus;
 %% Set up environment
 % Create

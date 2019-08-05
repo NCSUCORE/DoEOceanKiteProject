@@ -19,7 +19,7 @@ GNDSTNCONTROLLER = 'oneDoF';
 %% Create busses
 createConstantUniformFlowEnvironmentBus
 createThreeTetherThreeSurfaceCtrlBus;
-createOneDoFGndStnCtrlBus;
+oneDoF_bc;
 
 %% Set up environment
 % Create

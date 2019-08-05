@@ -1,4 +1,4 @@
-function createThrAttachPtKinematicsBus
+function thrAttachPtKinematics_bc
 % Create output bus for thrAttachPtKinematics_ul block.  This function is
 % automatically called by the mask initialization,
 % thrAttachPtKinematics_init whenever the thrAttachPtKinematics_ul block is
