@@ -12,12 +12,6 @@ duration_s  = 1000*sqrt(lengthScaleFactor);
 %% Set up simulation
 GNDSTNCONTROLLER      = 'oneDoF';
 
-%% Create busses
-% createConstantUniformFlowEnvironmentBus
-% plant_bc;
-% createThreeTetherThreeSurfaceCtrlBus;
-% oneDoF_bc;
-
 %% common parameters
 numTethers = 3;
 thrNumNodes = 2;
@@ -46,7 +40,6 @@ load('ayazThreeTetGndStn.mat')
 
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
-
 
 %% Tethers
 load('ayazThreeTetTethers.mat')
@@ -79,11 +72,8 @@ fltCtrl.rollAmp.setValue(20,'deg');
 % set setpoints
 timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
 fltCtrl.altiSP.setValue(50*ones(size(timeVec)),'m',timeVec);
-
 fltCtrl.pitchSP.setValue(10*ones(size(timeVec)),'deg',timeVec);
-
 fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
-
 
 %% scale 
 % scale environment
@@ -99,17 +89,10 @@ wnch.scale(lengthScaleFactor,densityScaleFactor);
 % scale controller
 fltCtrl.scale(lengthScaleFactor);
 
-
 %% Run the simulation
-try
-%     load_system('OCTModel')
-%     set_param('OCTModel','Profile','off')
-    simWithMonitor('OCTModel',2)
-catch
-%     load_system('OCTModel')
-%     set_param('OCTModel','Profile','on')
-    simWithMonitor('OCTModel',2)
-end
+% load_system('OCTModel')
+% set_param('OCTModel','Profile','off')
+simWithMonitor('OCTModel',2)
 
 plotAyaz
 
