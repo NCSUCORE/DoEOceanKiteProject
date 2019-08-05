@@ -34,7 +34,7 @@ load('ayazThreeTetEnv.mat')
 env.water.velVec.setValue([1 0 0]','m/s');
 
 %% lifiting body
-load('joshThreeTetVhcl.mat')
+load('ayazThreeTetVhcl.mat')
 
 % % % initial conditions
 vhcl.setInitPosVecGnd([0;0;50],'m');
