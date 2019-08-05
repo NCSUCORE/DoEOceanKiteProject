@@ -37,8 +37,8 @@ end
 
 ss = get(0,'ScreenSize');
 ss = [ss(3) ss(4)];
-fig_wid = 1.5*560;
-fig_hgt = 1.5*420;
+fig_wid = 1*560;
+fig_hgt = 1*420;
 max_horz = floor(ss(1)/fig_wid);
 max_vert = floor(ss(2)/fig_hgt);
 locs = zeros(max_horz*max_vert,4);
@@ -60,13 +60,13 @@ vectorPlotter(time,sol_Rcm_o,plotProps,...
 % subplot(3,1,3)
 
 
-% % % % cm velocity
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,sol_Vcmo,plotProps,...
-%     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
-% 
+% % % cm velocity
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,sol_Vcmo,plotProps,...
+    {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
+
 % % % euler angles
 fn = fn+1;
 figure(fn)
