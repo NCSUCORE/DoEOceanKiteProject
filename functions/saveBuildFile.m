@@ -1,15 +1,14 @@
 function saveBuildFile(object,BSfileName,varargin)
 
-% this script stores the object parameters of into a .mat file which has
+% this script stores the object parameters into a .mat file which has
 % the same name as the script thats being used to create the file
 % INPUTS
-% object: object you which to save as a string
+% object: object you which to save passed as a string
 % BSfilename, name of the script you are using to build the .mat file
-% I recomment using typing the command 'mfilename' in this space
+% I recommend using typing the command 'mfilename' in this space
 % optional inputs
 % use these if you wish to save the variant associated with the object in the .mat
 % eg. saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
-
 
 p = inputParser;
 addRequired(p,'object',@ischar);
