@@ -6,23 +6,24 @@ end
 startControl= 1; %duration_s for 0 control signals. Does not apply to constant elevator angle
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  =75*sqrt(lengthScaleFactor);
+duration_s  = 75*sqrt(lengthScaleFactor);
 %% Set up simulation
-VEHICLE               = 'vehicle000';
-WINCH                 = 'winch000';
-TETHERS               = 'tether000';
-GROUNDSTATION         = 'groundStation000';
-ENVIRONMENT           = 'constantUniformFlow';
-FLIGHTCONTROLLER      = 'pathFollowingController';
-GNDSTNCONTROLLER      = 'oneDoF';
+% VEHICLE               = 'vehicle000';
+% WINCH                 = 'winch000';
+% TETHERS               = 'tether000';
+% GROUNDSTATION         = 'groundStation000';
+% ENVIRONMENT           = 'constantUniformFlow';
+% FLIGHTCONTROLLER      = 'pathFollowingController';
+% GNDSTNCONTROLLER      = 'oneDoF';
 %% Create busses
 %  createConstantUniformFlowEnvironmentBus
 %  plant_bc;
 %  oneTetherThreeSurfaceCtrl_bc;
 %  oneDoFGndStnCtrl_bc;
 %  createPathFollowingControllerCtrlBus;
-loadComponent('pathFollowingControllerRequiredBusses');
+% loadComponent('pathFollowingControllerRequiredBusses');
 
+loadComponent('basicILC');
 %% Set up environment
 % Create
 loadComponent('pathFollowingEnv.mat')
