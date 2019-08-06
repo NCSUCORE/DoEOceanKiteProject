@@ -46,6 +46,10 @@ eval([p.Results.object ' =  evalin(''caller'',p.Results.object);']);
 
 if all(emptyCheck)
     if isempty(p.UsingDefaults)
+        % Check if the variant specifier exists in the caller workspace
+        if ~evalin( 'base', sprintf('exist(''%s'',''var'') == 1;',p.Results.variant ))
+           error('Variant specifier %s does not exist in workspace.\nPlease specify the relevant variant',p.Results.variant ); 
+        end
         eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
         save(strcat(currentMfileLoc,saveFileName),p.Results.object,p.Results.variant);
     else
