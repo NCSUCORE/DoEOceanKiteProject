@@ -8,17 +8,13 @@ format compact
 % the script saves the variable 'ctrl' to a 'ayazThreeTetEnv.mat'
 
 %% Set up environment
+ENVIRONMENT           = 'constantUniformFlow';
+
 % Create
 env = ENV.env;
 env.addFlow({'water'},{'constantUniformFlow'},'FlowDensities',1000)
 % env.density.setValue(1000,'kg/m^3');
 
 %% save file in its respective directory
-currentMfileLoc = fileparts(mfilename('fullpath'));
-
-if isempty(env.water.velVec.Value)
-    save(strcat(currentMfileLoc,'\pathFollowingEnv.mat'),'env');
-else
-    error('Please do not specify flow velocity in build script')
-end
+saveBuildFile('env',mfilename,'variant','ENVIRONMENT');
 
