@@ -81,10 +81,10 @@ for t=dispTimeVec
     %velocity vec (unscaled)
     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i),'w','lineWidth',1.2)
 
-    %closest point
-    starpos=tsc.star_pos.Data(i,:);
-    starpos=tetherLength*starpos/norm(starpos);
-    scatter3(starpos(1),starpos(2),starpos(3),'k','filled')
+%     %closest point
+%     starpos=tsc.star_pos.Data(i,:);
+%     starpos=tetherLength*starpos/norm(starpos);
+%     scatter3(starpos(1),starpos(2),starpos(3),'k','filled')
 
 %     %perp, tan, and weighted av
 %     startanvec=tsc.tan_unit.Data(i,:);

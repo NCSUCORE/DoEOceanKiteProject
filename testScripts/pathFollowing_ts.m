@@ -16,11 +16,13 @@ ENVIRONMENT           = 'constantUniformFlow';
 FLIGHTCONTROLLER      = 'pathFollowingController';
 GNDSTNCONTROLLER      = 'oneDoF';
 %% Create busses
-% createConstantUniformFlowEnvironmentBus
-% plant_bc;
-% oneTetherThreeSurfaceCtrl_bc;
-% oneDoFGndStnCtrl_bc;
-% createPathFollowingControllerCtrlBus;
+%  createConstantUniformFlowEnvironmentBus
+%  plant_bc;
+%  oneTetherThreeSurfaceCtrl_bc;
+%  oneDoFGndStnCtrl_bc;
+%  createPathFollowingControllerCtrlBus;
+loadComponent('pathFollowingControllerRequiredBusses');
+
 %% Set up environment
 % Create
 loadComponent('pathFollowingEnv.mat')
