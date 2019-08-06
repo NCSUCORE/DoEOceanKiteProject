@@ -1,4 +1,5 @@
 % Script to build 3 identical winches
+WINCH = 'winch000';
 wnch = OCT.winches;
 wnch.numWinches.setValue(3,'');
 wnch.build;
@@ -18,6 +19,5 @@ wnch.winch3.timeConst.setValue(0.05,'s');
 wnch.winch3.maxAccel.setValue(inf,'m/s^2');
 wnch.winch3.initLength.setValue(50.01,'m');
 
-% Save the variable
-save(fullfile(fileparts(which(mfilename)),strrep(mfilename,'_bs','')),'wnch')
-clearvars wnch ans
+%% save file in its respective directory
+saveBuildFile('wnch',mfilename,'variant','WINCH');

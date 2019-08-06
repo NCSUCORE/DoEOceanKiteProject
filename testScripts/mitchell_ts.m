@@ -4,26 +4,13 @@ duration_s = 100;
 lengthScaleFactor = 1;
 densityScaleFactor = 1;
 
-%% Pick Variants
-VEHICLE          = 'vehicle000';
-WINCH            = 'winch000';
-TETHERS          = 'tether000';
-GROUNDSTATION    = 'groundStation000';
-ENVIRONMENT      = 'constantUniformFlow';
-FLIGHTCONTROLLER = 'threeTetherThreeSurfaceCtrl';
-GNDSTNCONTROLLER = 'oneDoF';
-
-%% Create Busses
-createConstantUniformFlowEnvironmentBus
-createThreeTetherThreeSurfaceCtrlBus
-oneDoF_bc
-plant_bc
-
 %% Load components
 % Flight Controller
 loadComponent('ayazThreeTetCtrl');
 % Ground station controller
-% N/A, No controller currently developed
+loadComponent('oneDoFGSCtrlBasic');
+% High Level Con
+loadComponent('basicILC')
 % Ground station
 loadComponent('ayazThreeTetGndStn');
 % Winches 
@@ -34,6 +21,7 @@ loadComponent('ayazThreeTetTethers');
 loadComponent('ayazThreeTetVhcl');
 % Environment
 loadComponent('ayazThreeTetEnv');
+
 
 %% Set initial conditions and dependent properties in the plant
 
@@ -80,10 +68,6 @@ thr.tether1.setInitGndNodeVel([0 0 0]','m/s');
 thr.tether2.setInitGndNodeVel([0 0 0]','m/s');
 thr.tether3.setInitGndNodeVel([0 0 0]','m/s');
 
-% thr.tether1.setInitAirNodeVel(vhcl.thrAttchPts(1).velVec.Value(:),'m/s');
-% thr.tether2.setInitAirNodeVel(vhcl.thrAttchPts(2).velVec.Value(:),'m/s');
-% thr.tether3.setInitAirNodeVel(vhcl.thrAttchPts(3).velVec.Value(:),'m/s');
-
 thr.tether1.setVehicleMass(vhcl.mass.Value,vhcl.mass.Unit);
 thr.tether2.setVehicleMass(vhcl.mass.Value,vhcl.mass.Unit);
 thr.tether3.setVehicleMass(vhcl.mass.Value,vhcl.mass.Unit);
@@ -97,10 +81,6 @@ fltCtrl.yawSP.setValue(zeros(size(timeVec)),'deg',timeVec);
 fltCtrl.altiSP.setValue(vhcl.initPosVecGnd.Value(3),'m');
 fltCtrl.ySwitch.setValue(3,'m');
 fltCtrl.rollAmp.setValue(10,'deg');
-
-% gndStn.struct('OCT.thrAttch').velVec
-
-
 
 %% Run the simulation
 sim('OCTModel')
