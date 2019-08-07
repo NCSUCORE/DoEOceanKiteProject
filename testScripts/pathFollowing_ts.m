@@ -31,7 +31,7 @@ pathIniRadius = 125;
 %pathParamVec=[.73,.8,.4,0,pathIniRadius];%Lem
 %pathParamVec=[1,1.7,.36,0,pathIniRadius];%Lem
 pathFuncName='circleOnSphere';
-pathParamVec=[pi/8,-3*pi/8,0,pathIniRadius];%Circle
+pathParamVec=[pi/8,3*pi/8,0,pathIniRadius];%Circle
 
 swapableID=fopen('swapablePath.m','w');
 fprintf(swapableID,[... %This should be removed eventually. Changing the file programmatically is bad form
@@ -49,7 +49,7 @@ tetherLength = pathIniRadius;
 initVelMag = 6;
 onpath = true;
 if onpath
-    pathParamStart = .1;
+    pathParamStart = 0;
     [ini_Rcm,iniucm]=swapablePath(pathParamStart,pathParamVec);
     iniVcm=initVelMag*iniucm;
     [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
@@ -133,7 +133,7 @@ fltCtrl.outRanges.setValue([.5 1;...
 %                             .375 .625;...
 %                             .875 1],''); %fig 8
 fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
-fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
+fltCtrl.winchSpeedOut.setValue(flowspeed/5,'m/s')
 
 fltCtrl.traditionalBool.setValue(0,'')
 
@@ -153,8 +153,8 @@ case 1
     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 case 1.5
     fltCtrl.perpErrorVal.setValue(5*pi/180,'rad');
-    fltCtrl.rollMoment.kp.setValue(6e5,'(N*m)/(rad)');
-    fltCtrl.rollMoment.kd.setValue(3*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
+    fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
     fltCtrl.velAng.tau.setValue(.01,'s');
     fltCtrl.rollMoment.tau.setValue (.01,'s');
 case 2
@@ -182,4 +182,5 @@ wnch.scale(lengthScaleFactor,densityScaleFactor);
 traditionalBool = 0;
 simWithMonitor('OCTModel')
 parseLogsout;
-stopCallback
+%stopCallback
+
