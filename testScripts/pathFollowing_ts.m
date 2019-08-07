@@ -1,11 +1,11 @@
 clc;clear
-if slreportgen.utils.isModelLoaded('OCTModel')
+if ~slreportgen.utils.isModelLoaded('OCTModel')
     OCTModel
 end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  =75*sqrt(lengthScaleFactor);
+duration_s  = 75*sqrt(lengthScaleFactor);
 %% Load components
 % Flight Controller
 loadComponent('pathFollowingController');
@@ -27,11 +27,11 @@ loadComponent('pathFollowingEnv');
 %% Path Choice
 pathIniRadius = 125;
 
-%pathFuncName='lemOfBooth';
+pathFuncName='lemOfBooth';
 %pathParamVec=[.73,.8,.4,0,pathIniRadius];%Lem
-%pathParamVec=[1,1.7,.36,0,pathIniRadius];%Lem
-pathFuncName='circleOnSphere';
-pathParamVec=[pi/8,3*pi/8,0,pathIniRadius];%Circle
+pathParamVec=[1,1.7,.36,0,pathIniRadius];%Lem
+% pathFuncName='circleOnSphere';
+% pathParamVec=[pi/8,3*pi/8,0,pathIniRadius];%Circle
 
 swapableID=fopen('swapablePath.m','w');
 fprintf(swapableID,[... %This should be removed eventually. Changing the file programmatically is bad form
@@ -97,7 +97,7 @@ vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2
+flowspeed = 2; %m/s options are .1, .5, 1, 1.5, and 2
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 
 %% Ground Station IC's and dependant properties

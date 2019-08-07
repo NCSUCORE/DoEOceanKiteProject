@@ -1,4 +1,7 @@
 close all;clear;clc;format compact
+if ~slreportgen.utils.isModelLoaded('OCTModel')
+    OCTModel
+end
 
 duration_s = 100;
 lengthScaleFactor  = 1;
