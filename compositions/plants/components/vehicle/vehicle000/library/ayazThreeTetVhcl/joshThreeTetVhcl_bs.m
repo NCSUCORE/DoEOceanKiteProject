@@ -3,13 +3,15 @@ clc
 format compact
 
 % this is the build script for creating a vechile using class definition
-% 'vehicle_v2' for a three tethered system that is being used by ayaz
+% 'vehicle' for a three tethered system that is being used by ayaz
 
 % the script saves the variable 'vhcl' to a 'ayazThreeTetVhcl.mat'
 
+%% variant
+VEHICLE               = 'vehicle000';
+
 %% lifiting body
 vhcl = OCT.vehicle;
-
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
@@ -67,20 +69,7 @@ vhcl.setFluidCoeffsFileName('someFile2','');
 vhcl.calcFluidDynamicCoefffs
 
 %% save file in its respective directory
-[currentMfileLoc,currentMfileName,~] = fileparts(mfilename('fullpath'));
+saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
 
-if endsWith(currentMfileName,'_bs')
-    saveFileName = strcat('\',erase(currentMfileName,'_bs'),'.mat');
-else
-    saveFileName = currentMfileName;
-end
-
-if isempty(vhcl.initPosVecGnd.Value) || isempty(vhcl.initEulAngBdy.Value) ||...
-        isempty(vhcl.initAngVelVecBdy.Value) || isempty(vhcl.initVelVecGnd.Value)
-    
-    save(strcat(currentMfileLoc,saveFileName),'vhcl')
-else
-    error('Please do not specify initial conditions in build script')
-end
 
 

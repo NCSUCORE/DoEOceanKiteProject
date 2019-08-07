@@ -70,8 +70,6 @@ vhcl.setFluidCoeffsFileName('someFile7','');
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 
-x = 1;
-
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
 
