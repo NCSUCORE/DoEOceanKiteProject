@@ -7,7 +7,7 @@ cd(fileparts(mfilename('fullpath')));
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1000*sqrt(lengthScaleFactor);
+duration_s  = 600*sqrt(lengthScaleFactor);
 
 %% Set up simulation
 GNDSTNCONTROLLER      = 'oneDoF';
@@ -33,6 +33,9 @@ vhcl.setInitAngVelVec([0;0;0],'rad/s');
 % % % plot
 % vhcl.plot
 % vhcl.plotCoeffPolars
+
+% High Level Con
+loadComponent('basicILC');
 
 
 %% Ground Station
@@ -96,5 +99,5 @@ simWithMonitor('OCTModel',2)
 
 plotAyaz
 
-% fullKitePlot
+fullKitePlot
 

@@ -37,8 +37,8 @@ end
 
 ss = get(0,'ScreenSize');
 ss = [ss(3) ss(4)];
-fig_wid = 1*560;
-fig_hgt = 1*420;
+fig_wid = 1.0*560;
+fig_hgt = 1.0*420;
 max_horz = floor(ss(1)/fig_wid);
 max_vert = floor(ss(2)/fig_hgt);
 locs = zeros(max_horz*max_vert,4);
