@@ -62,6 +62,8 @@ else % User did not provide full path specification
         str = [str sprintf('%s\n',fPath{:})];
         str = [str sprintf('Please specify additional arguments to select a specific .mat file\n')];
         error(str)
+    elseif numel(fPath)==0
+        error(".mat file not found")
     else % File name is unique
         if nargout == 0 % If they didn't specify output variable name, use the variable name saved in the .mat file
             evalin('caller',sprintf('load(''%s'');',fPath{1})); % load in caller workspace

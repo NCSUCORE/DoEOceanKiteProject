@@ -11,4 +11,3 @@ ENVIRONMENT = 'constantUniformFlow';
 
 saveBuildFile('env',mfilename,'variant','ENVIRONMENT');
 
-

@@ -2,6 +2,8 @@ clear
 clc
 format compact
 
+
+GROUNDSTATION         = 'groundStation000';
 % this is the build script for creating a ground station using class definition
 % 'station' for a three tethered system that is being used by ayaz
 
@@ -20,11 +22,5 @@ gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
 gndStn.freeSpnEnbl.setValue(false,'');
 
 %% save file in its respective directory
-currentMfileLoc = fileparts(mfilename('fullpath'));
-
-if isempty(gndStn.initAngPos.Value) || isempty(gndStn.initAngVel.Value)
-    save(strcat(currentMfileLoc,'\pathFollowingGndStn.mat'),'gndStn');
-else
-    error('Please do not specify initial conditions in build script')
-end
+saveBuildFile('gndStn',mfilename,'variant','GROUNDSTATION');
 

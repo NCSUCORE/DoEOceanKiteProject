@@ -82,8 +82,24 @@ fltCtrl.altiSP.setValue(vhcl.initPosVecGnd.Value(3),'m');
 fltCtrl.ySwitch.setValue(3,'m');
 fltCtrl.rollAmp.setValue(10,'deg');
 
+
+%% Scale
+% scale environment
+env.scale(lengthScaleFactor,densityScaleFactor);
+% scale vehicle
+vhcl.scale(lengthScaleFactor,densityScaleFactor);
+vhcl.calcFluidDynamicCoefffs;
+% scale ground station
+gndStn.scale(lengthScaleFactor,densityScaleFactor);
+% scale tethers
+thr.scale(lengthScaleFactor,densityScaleFactor);
+% scale winches
+wnch.scale(lengthScaleFactor,densityScaleFactor);
+% scale controller
+% pathCtrl.scale(lengthScaleFactor)
+
 %% Run the simulation
-sim('OCTModel')
+simWithMonitor('OCTModel')
 
 stopCallback
 
