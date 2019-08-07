@@ -2,8 +2,8 @@ function ilcPathOpt_bc()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
-elems(1).Name = 'dummy';
-elems(1).Dimensions = 1;
+elems(1).Name = 'basisParams';
+% elems(1).Dimensions = -1;
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;
