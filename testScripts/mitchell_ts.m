@@ -1,7 +1,7 @@
 close all;clear;clc;format compact
 
 duration_s = 100;
-lengthScaleFactor = 1;
+lengthScaleFactor  = 1;
 densityScaleFactor = 1;
 
 %% Load components
