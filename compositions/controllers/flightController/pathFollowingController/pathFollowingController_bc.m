@@ -30,7 +30,7 @@ elems(3).Unit = 'rad';
 
 elems(4) = Simulink.BusElement;
 elems(4).Name = 'closestPathVariable';
-elems(4).Dimensions = 2;
+elems(4).Dimensions = 1;
 elems(4).DimensionsMode = 'Fixed';
 elems(4).DataType = 'double';
 elems(4).SampleTime = -1;

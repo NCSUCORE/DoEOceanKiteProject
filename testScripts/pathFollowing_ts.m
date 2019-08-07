@@ -8,11 +8,11 @@ densityScaleFactor = 1/1;
 duration_s  = 75*sqrt(lengthScaleFactor);
 %% Load components
 % Flight Controller
-loadComponent('pathFollowingController');
+loadComponent('firstBuildPathFollowing');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High Level Con
-loadComponent('basicILC')
+loadComponent('testConstBasisParams')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches 

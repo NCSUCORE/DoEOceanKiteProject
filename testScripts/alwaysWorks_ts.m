@@ -12,8 +12,8 @@ densityScaleFactor = 1;
 loadComponent('ayazThreeTetCtrl');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
-% High Level Con
-loadComponent('testConstBasisParams')
+% High Level Controller
+loadComponent('hiLvlDummy')
 % Ground station
 loadComponent('ayazThreeTetGndStn');
 % Winches 
