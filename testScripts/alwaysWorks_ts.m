@@ -13,7 +13,7 @@ loadComponent('ayazThreeTetCtrl');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High Level Con
-loadComponent('basicILC')
+loadComponent('testConstBasisParams')
 % Ground station
 loadComponent('ayazThreeTetGndStn');
 % Winches 
