@@ -58,6 +58,11 @@ classdef vehicle < dynamicprops
         stbdWing
         hStab
         vStab
+        % fuselage
+        fuseDiameter
+        fuseRCmToNose
+        fuseSideDragCoeff
+        fuseEndDragCoeff
         % intial conditions
         initPosVecGnd
         initVelVecGnd
@@ -73,6 +78,7 @@ classdef vehicle < dynamicprops
         surfaceOutlines
         thrAttchPts
         turbines
+        fuse
         fluidMomentArms
         fluidRefArea
     end
@@ -145,6 +151,12 @@ classdef vehicle < dynamicprops
             obj.vStab = OCT.aeroSurf;
             obj.vStab.spanUnitVec.setValue([0;0;1],'');
             obj.vStab.chordUnitVec.setValue([1;0;0],'');
+            
+            obj.fuseDiameter             = SIM.parameter('Unit','m');
+            obj.fuseRCmToNose            = SIM.parameter('Unit','m','Description','Vector from the kite CM to the front of the fuselage');
+            obj.fuseSideDragCoeff        = SIM.parameter('Description','Drag Coeff if at 90 degrees angle of attack');
+            obj.fuseEndDragCoeff         = SIM.parameter('Description','Drag Coeff if at 0 degrees angle of attack');
+            
             % initial conditions
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
             obj.initVelVecGnd           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the inertial frame');
@@ -325,6 +337,22 @@ classdef vehicle < dynamicprops
         
         function setVsClMin(obj,val,units)
             obj.vsClMin.setValue(val,units);
+        end
+        % fuselage 
+        function setFuseDiameter(obj,val,units)
+            obj.fuseDiameter.setValue(val,units);
+        end
+        
+        function setFuseRCmToNose(obj,val,units)
+            obj.fuseRCmToNose.setValue(val,units);
+        end             
+        
+        function setFuseSideDragCoeff(obj,val,units)
+            obj.fuseSideDragCoeff.setValue(val,units);
+        end
+        
+        function setFuseEndDragCoeff(obj,val,units)
+            obj.fuseEndDragCoeff.setValue(val,units);
         end
         
         % initial conditions
@@ -530,6 +558,16 @@ classdef vehicle < dynamicprops
             
         end
         
+        %fuselage
+        function val = get.fuse(obj)
+            val = OCT.fuselage;
+            val.setDiameter(obj.fuseDiameter.Value,'m');
+            val.setRCmToNose(obj.fuseRCmToNose.Value,'m');
+            val.setSideDragCoeff(obj.fuseSideDragCoeff.Value,'');
+            val.setEndDragCoeff(obj.fuseEndDragCoeff.Value,'');
+            %Calculated
+            val.setRCmToEnd(obj.RhsLE_wingLE.Value + obj.RwingLE_cm.Value,'m');
+        end
         % aerodynamic forces moment arms
         function val = get.fluidMomentArms(obj)
             portWingArm = obj.surfaceOutlines.port_wing.Value(:,2).*[0;0.5;0.5] +...

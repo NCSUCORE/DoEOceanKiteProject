@@ -2,9 +2,9 @@
 parseLogsout;
 figure
 ax=axes;
-pathvals=swapablePath(linspace(0,1,1000),pathCtrl.pathParams.Value);
+pathvals=swapablePath(linspace(0,1,1000),fltCtrl.pathParams.Value);
 timevec=tsc.positionVec.Time;
-tetherLength=pathCtrl.pathParams.Value(end);
+tetherLength=fltCtrl.pathParams.Value(end);
 %% Options
 grow = true;
 
@@ -29,7 +29,7 @@ for t=dispTimeVec
 
     if grow
         tetherLength = norm(posG);
-        pathvals=swapablePath(linspace(0,1,1000),[pathCtrl.pathParams.Value(1:end-1) tetherLength]);
+        pathvals=swapablePath(linspace(0,1,1000),[fltCtrl.pathParams.Value(1:end-1) tetherLength]);
     end
     plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
     hold on
@@ -81,10 +81,10 @@ for t=dispTimeVec
     %velocity vec (unscaled)
     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),tsc.velocityVec.Data(1,i),tsc.velocityVec.Data(2,i),tsc.velocityVec.Data(3,i),'w','lineWidth',1.2)
 
-    %closest point
-    starpos=tsc.star_pos.Data(i,:);
-    starpos=tetherLength*starpos/norm(starpos);
-    scatter3(starpos(1),starpos(2),starpos(3),'k','filled')
+%     %closest point
+%     starpos=tsc.star_pos.Data(i,:);
+%     starpos=tetherLength*starpos/norm(starpos);
+%     scatter3(starpos(1),starpos(2),starpos(3),'k','filled')
 
 %     %perp, tan, and weighted av
 %     startanvec=tsc.tan_unit.Data(i,:);

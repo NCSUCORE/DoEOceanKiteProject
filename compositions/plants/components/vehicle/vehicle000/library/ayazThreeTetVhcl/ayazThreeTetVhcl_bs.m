@@ -64,6 +64,12 @@ vhcl.setVsNACA('0012','');
 vhcl.setVsClMax(1.75,'');
 vhcl.setVsClMin(-1.75,'');
 
+% % % Fuselage (could use more realistic numbers)
+vhcl.setFuseDiameter(1,'m')
+vhcl.setFuseEndDragCoeff(0,'')
+vhcl.setFuseSideDragCoeff(0,'')
+vhcl.setFuseRCmToNose([-2;0;0],'m')
+
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile7','');
 
