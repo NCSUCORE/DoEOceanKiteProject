@@ -2,7 +2,7 @@ function pathFollowingController_bc()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
-elems(1).Name = 'vectorSig';
+elems(1).Name = 'ctrlSurfDeflection';
 elems(1).Dimensions = [4 1];
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
