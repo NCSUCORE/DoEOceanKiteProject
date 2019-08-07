@@ -8,7 +8,7 @@ make_video = 0;
 LS = lengthScaleFactor;
 
 % plotting time interval
-resampleDataRate = 0.5*sqrt(LS);
+resampleDataRate = 2*sqrt(LS);
 
 % % % video setting
 video = VideoWriter('vid_Test', 'Motion JPEG AVI');
