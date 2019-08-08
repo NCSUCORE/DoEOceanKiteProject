@@ -35,7 +35,7 @@ vhcl.setInitAngVelVec([0;0;0],'rad/s');
 % vhcl.plotCoeffPolars
 
 % High Level Con
-loadComponent('basicILC');
+loadComponent('hiLvlDummy');
 
 
 %% Ground Station
@@ -99,5 +99,5 @@ simWithMonitor('OCTModel',2)
 
 plotAyaz
 
-fullKitePlot
+% fullKitePlot
 
