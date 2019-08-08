@@ -1,4 +1,5 @@
 FLIGHTCONTROLLER = 'pathFollowingController';
+
 pathCtrl = CTR.controller;
 
 pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
@@ -17,15 +18,15 @@ pathCtrl.add('GainNames',...
              {'(deg)/(m^3)','rad','','','deg','m/s','m/s','m','m','',...
               'deg'})
 
- allMat = zeros(4,3);
- allMat(1,1)=-1/(2*vhcl.portWing.GainCL.Value(2)*...
-     vhcl.portWing.refArea.Value*abs(vhcl.portWing.aeroCentPosVec.Value(2)));
- allMat(2,1)=-1*allMat(1,1);
- allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
-     vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
- allMat(4,3)= 1/(vhcl.vStab.GainCL.Value(2)*...
-     vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
- pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
+%  allMat = zeros(4,3);
+%  allMat(1,1)=-1/(2*vhcl.portWing.GainCL.Value(2)*...
+%      vhcl.portWing.refArea.Value*abs(vhcl.portWing.aeroCentPosVec.Value(2)));
+%  allMat(2,1)=-1*allMat(1,1);
+%  allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
+%      vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
+%  allMat(4,3)= 1/(vhcl.vStab.GainCL.Value(2)*...
+%      vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
+%  pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
 
 
 pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable

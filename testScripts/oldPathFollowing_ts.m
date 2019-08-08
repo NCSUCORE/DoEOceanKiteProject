@@ -259,35 +259,35 @@ parseLogsout;
 % saveas(gcf,'spherical.png')
 % savefig('sph.fig')
 % 
-% figure
-%  timevec=tsc.velAngleAdjustedError.Time;
-%  ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
-% plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*ten)
-% xlabel('time (s)')
-% ylabel('Power (Watts)')
-%  [~,i1]=min(abs(timevec - 200));
-%  [~,i2]=min(abs(timevec -400)); %(timevec(end)/2)));
-%  [~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
-% poweri1 = poweri1 + i1;
-% [~,i3]=min(abs(timevec - (timevec(end)/2)));
-% [~,i4]=min(abs(timevec - timevec(end)));
-% i4=i4-1;
-% [~,poweri2]=min(tsc.winchSpeeds.Data(i3:i4).*ten(i3:i4));
-% poweri2 = poweri2 + i3;
-% % Manual Override. Rerun with this to choose times
-% %           t1 = input("time for first measurement");
-% %             [~,poweri1]=min(abs(timevec - t1));
-% %             t2 = input("time for second measurement");
-% %             [~,poweri2]=min(abs(timevec - t2));
-% hold on
-% ylims=ylim;
-% plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
-% plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
-% ylim(ylims);
-%  meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
-% title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
-% saveas(gcf,'power.png')
-% savefig('pow.fig')
+figure
+ timevec=tsc.velocityVec.Time;
+ ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
+plot(tsc.thrReleaseSpeeds.Time,tsc.thrReleaseSpeeds.Data.*ten)
+xlabel('time (s)')
+ylabel('Power (Watts)')
+ [~,i1]=min(abs(timevec - 200));
+ [~,i2]=min(abs(timevec -400)); %(timevec(end)/2)));
+ [~,poweri1]=min(tsc.thrReleaseSpeeds.Data(i1:i2).*ten(i1:i2));
+poweri1 = poweri1 + i1;
+[~,i3]=min(abs(timevec - (timevec(end)/2)));
+[~,i4]=min(abs(timevec - timevec(end)));
+i4=i4-1;
+[~,poweri2]=min(tsc.thrReleaseSpeeds.Data(i3:i4).*ten(i3:i4));
+poweri2 = poweri2 + i3;
+% Manual Override. Rerun with this to choose times
+%           t1 = input("time for first measurement");
+%             [~,poweri1]=min(abs(timevec - t1));
+%             t2 = input("time for second measurement");
+%             [~,poweri2]=min(abs(timevec - t2));
+hold on
+ylims=ylim;
+plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
+plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
+ylim(ylims);
+ meanPower = mean(tsc.thrReleaseSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
+title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
+saveas(gcf,'power.png')
+savefig('pow.fig')
 % 
 % velmags = sqrt(sum((tsc.velocityVec.Data(:,:,:)).^2,1));
 % meanVelocity = mean(squeeze(velmags));

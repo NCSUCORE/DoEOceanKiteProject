@@ -13,11 +13,11 @@ range1=100;
 
 manual=false;
 frames = 100;
-waittime = .1; 
+waittime = .001; 
 
 gifit = true;
 filename="animation.gif";
-gifWaitTime = .05;
+gifWaitTime = .005;
 
 % dispTimeVec = timevec(end);
 % dispTimeVec = linspace(90,114,40);
