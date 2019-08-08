@@ -65,6 +65,8 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 wnch.setTetherInitLength(vhcl,env,thr);
 
+dynamicCalc = 'Quaternions2';
+
 %% Set up controller
 load('ayazThreeTetCtrl.mat');
 
