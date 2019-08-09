@@ -33,3 +33,6 @@ octave-workspace
 # Video files
 *.avi
 *.gif
+
+# compiled simulink models
+*.slxc

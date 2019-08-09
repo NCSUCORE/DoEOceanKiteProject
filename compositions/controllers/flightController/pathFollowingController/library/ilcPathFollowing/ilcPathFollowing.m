@@ -1,42 +1,40 @@
+% Set the relevant variant
 FLIGHTCONTROLLER = 'pathFollowingController';
 
+% Create the controller object
 pathCtrl = CTR.controller;
 
-pathCtrl.add('SaturationNames',{'maxBank','controlSigMax'})
+% Add saturations for max bank angle and control signal
+pathCtrl.add(...
+    'SaturationNames',{'maxBank','controlSigMax'});
+
+% Set the values on the saturations
 pathCtrl.controlSigMax.lowerLimit.setValue(-30,'');
 pathCtrl.controlSigMax.upperLimit.setValue(30,'');
 
-pathCtrl.add('FPIDNames',{'velAng','rollMoment','yawMoment'},...
-    'FPIDErrorUnits',{'rad','rad','rad'},...
-    'FPIDOutputUnits',{'rad','N*m','N*m'})
+% Add filtered PID controllers
+pathCtrl.add(...
+    'FPIDNames',{'velAng','rollMoment','yawMoment'},... % Controller names
+    'FPIDErrorUnits',{'rad','rad','rad'},... % Units on error (input) signals
+    'FPIDOutputUnits',{'rad','N*m','N*m'}) % Units on output signals
 
 pathCtrl.add('GainNames',...
-             {'ctrlAllocMat','perpErrorVal','pathParams','searchSize',...
+             {'ctrlAllocMat','perpErrorVal','searchSize',...
               'constantPitchSig','winchSpeedOut','winchSpeedIn','maxR',...
               'minR','outRanges','elevatorReelInDef'},...
              'GainUnits',...
-             {'(deg)/(m^3)','rad','','','deg','m/s','m/s','m','m','',...
+             {'(deg)/(m^3)','rad','','deg','m/s','m/s','m','m','',...
               'deg'})
 
-%  allMat = zeros(4,3);
-%  allMat(1,1)=-1/(2*vhcl.portWing.GainCL.Value(2)*...
-%      vhcl.portWing.refArea.Value*abs(vhcl.portWing.aeroCentPosVec.Value(2)));
-%  allMat(2,1)=-1*allMat(1,1);
-%  allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
-%      vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
-%  allMat(4,3)= 1/(vhcl.vStab.GainCL.Value(2)*...
-%      vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
-%  pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
+          
+% Size of range of path parameters to search 1 = entire path.
+pathCtrl.searchSize.setValue(0.5,'');
 
-
-pathCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
-pathCtrl.searchSize.setValue(.5,'');
-
-pathCtrl.winchSpeedIn.setValue(-0*flowspeed/3,'m/s')
-pathCtrl.winchSpeedOut.setValue(0*flowspeed/3,'m/s')
+% Spool in/out max radius
 pathCtrl.maxR.setValue(200,'m')
 pathCtrl.minR.setValue(100,'m')
- pathCtrl.outRanges.setValue([.5 1;...
+
+pathCtrl.outRanges.setValue([.5 1;...
                               2 2],'');
 pathCtrl.elevatorReelInDef.setValue(0,'deg')
 

@@ -22,6 +22,7 @@ classdef controller < dynamicprops
             addParameter(p,'GainNames',{},@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'GainUnits',{},@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'SaturationNames',{},@(x) all(cellfun(@(x) isa(x,'char'),x)))
+            addParameter(p,'SaturationUnits',{},@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'SetpointNames',{},@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'SetpointUnits',{},@(x) all(cellfun(@(x) isa(x,'char'),x)))
             parse(p,varargin{:})

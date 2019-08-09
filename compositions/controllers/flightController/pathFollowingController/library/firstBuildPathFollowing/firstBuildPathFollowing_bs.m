@@ -1,5 +1,3 @@
-
-
 FLIGHTCONTROLLER = 'pathFollowingController';
 
 %Properties that must be user defined (defined in the test script)
