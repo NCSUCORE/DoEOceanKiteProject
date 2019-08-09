@@ -35,7 +35,7 @@ vhcl.setInitAngVelVec([0;0;0],'rad/s');
 % vhcl.plotCoeffPolars
 
 % High Level Con
-loadComponent('basicILC');
+loadComponent('hiLvlDummy');
 
 
 %% Ground Station
@@ -64,6 +64,8 @@ end
 load('ayazThreeTetWnch.mat');
 % set initial conditions
 wnch.setTetherInitLength(vhcl,env,thr);
+
+dynamicCalc = 'Quaternions2';
 
 %% Set up controller
 load('ayazThreeTetCtrl.mat');
@@ -99,5 +101,5 @@ simWithMonitor('OCTModel',2)
 
 plotAyaz
 
-fullKitePlot
+% fullKitePlot
 

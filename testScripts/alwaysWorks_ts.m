@@ -7,6 +7,9 @@ duration_s = 100;
 lengthScaleFactor  = 1;
 densityScaleFactor = 1;
 
+%% unncessary extra variable cause I am being lazy
+dynamicCalc = 'Quaternions2';
+
 %% Load components
 % Flight Controller
 loadComponent('ayazThreeTetCtrl');
