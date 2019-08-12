@@ -1,3 +1,6 @@
+% Script to build a path following controller to follow that can be used
+% with the upper level path-optimization ILC. -MC
+
 % Set the relevant variant
 FLIGHTCONTROLLER = 'pathFollowingController';
 

@@ -6,6 +6,8 @@ end
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 500*sqrt(lengthScaleFactor);
+dynamicCalc = '';
+
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -26,7 +28,7 @@ loadComponent('pathFollowingEnv');
 
 %% Path Choice
 pathIniRadius = 125;
-
+fltCtrl.pathFuncHandle.setValue(@lemOfBooth,'')
 pathFuncName='lemOfBooth';
 %pathParamVec=[.73,.8,.4,0,pathIniRadius];%Lem
 pathParamVec=[1,1.4,-.36,0,pathIniRadius];%Lem
