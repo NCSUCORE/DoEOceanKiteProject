@@ -26,64 +26,71 @@ loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('pathFollowingEnv');
 
-%% Path Choice
-pathIniRadius = 125;
-fltCtrl.pathFuncHandle.setValue(@lemOfBooth,'')
-pathFuncName='lemOfBooth';
-%pathParamVec=[.73,.8,.4,0,pathIniRadius];%Lem
-pathParamVec=[1,1.4,-.36,0,pathIniRadius];%Lem
-%  pathFuncName='circleOnSphere';
-%  pathParamVec=[pi/8,-3*pi/8,0,pathIniRadius];%Circle
+vhcl.setICsOnPath(...
+    0.25,...
+    fltCtrl.fcnName.Value,...
+    hiLvlCtrl.basisParams.Value,...
+    6)
 
-swapableID=fopen('swapablePath.m','w');
-fprintf(swapableID,[... %This should be removed eventually. Changing the file programmatically is bad form
-           'function [posGround,varargout] = swapablePath(pathVariable,geomParams)\n',...
-           '     func = @%s;\n',...
-           '     posGround = func(pathVariable,geomParams);\n',...
-           '     if nargout == 2\n',...
-           '          [~,varargout{1}] = func(pathVariable,geomParams);\n',...
-           '     end\n',...
-           'end'],pathFuncName);
-fclose(swapableID);
+% %% Vehicle IC's and dependant properties
+% tetherLength = hiLvlCtrl.basisParams.Value(5);
+% initVelMag = 6;
+% onpath = true;
+% 
+% 
+% if onpath
+%     pathParamStart = 0;
+%     pathParamVec = hiLvlCtrl.basisParams.Value;
+%     [ini_Rcm,iniucm]=lemOfBooth(pathParamStart,pathParamVec);
+%     iniVcm=initVelMag*iniucm;
+%     [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
+%     tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
+%                -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+%                cos(lat)            0          -sin(lat);];
+% else
+%     long = -1.9*pi/8;
+%     lat = -pi/4;
+%     initVelAng = 90;%degrees
+%     
+%     tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
+%                -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+%                cos(lat)            0          -sin(lat);];
+%     ini_Rcm = tetherLength*[cos(long).*cos(lat);
+%                             sin(long).*cos(lat);
+%                             sin(lat);];
+%     iniVcm = initVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
+% end
+% 
+% ini_pitch = atan2(iniVcm(3),sqrt(iniVcm(1)^2+iniVcm(2)^2));
+% ini_yaw   = atan2(-iniVcm(2),-iniVcm(1));
+% 
+% [bodyToGr,~]=rotation_sequence([0 ini_pitch ini_yaw]);
+% bodyY_before_roll=bodyToGr*[0 1 0]';
+% tanZ=tanToGr*[0 0 1]';
+% 
+% 
+% ini_roll=((pi/2)+acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ))));
+% 
+% 
+% [ini_roll ini_pitch ini_yaw]*180/pi
+% vhcl.initEulAng.Value*180/pi
+% 
+% iniVcm 
+% vhcl.initVelVecGnd.Value
 
-%% Vehicle IC's and dependant properties
-tetherLength = pathIniRadius;
-initVelMag = 6;
-onpath = true;
-if onpath
-    pathParamStart = .6;
-    [ini_Rcm,iniucm]=swapablePath(pathParamStart,pathParamVec);
-    iniVcm=initVelMag*iniucm;
-    [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
-    tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
-               -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
-               cos(lat)            0          -sin(lat);];
-else
-    long = -1.9*pi/8;
-    lat = -pi/4;
-    initVelAng = 90;%degrees
-    
-    tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
-               -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
-               cos(lat)            0          -sin(lat);];
-    ini_Rcm = tetherLength*[cos(long).*cos(lat);
-                            sin(long).*cos(lat);
-                            sin(lat);];
-    iniVcm = initVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
-end
+vhcl.plot('EulerAngles',vhcl.initEulAng.Value,'Position',vhcl.initPosVecGnd.Value)
+hold on
+pathPos = lemOfBooth(linspace(0,1),hiLvlCtrl.basisParams.Value);
+plot3(pathPos(1,:),pathPos(2,:),pathPos(3,:))
+quiver3(...
+    vhcl.initPosVecGnd.Value(1),...
+    vhcl.initPosVecGnd.Value(2),...
+    vhcl.initPosVecGnd.Value(3),...
+    vhcl.initVelVecGnd.Value(1),...
+    vhcl.initVelVecGnd.Value(2),...
+    vhcl.initVelVecGnd.Value(3));
 
-ini_pitch=atan2(iniVcm(3),sqrt(iniVcm(1)^2+iniVcm(2)^2));
-ini_yaw=atan2(-iniVcm(2),-iniVcm(1));
 
-[bodyToGr,~]=rotation_sequence([0 ini_pitch ini_yaw]);
-bodyY_before_roll=bodyToGr*[0 1 0]';
-tanZ=tanToGr*[0 0 1]';
-
-if (strcmp(pathFuncName,'lemOfBooth')&& pathParamVec(3) < 0 ) ||  (strcmp(pathFuncName,'circleOnSphere')&& pathParamVec(2)<0) 
-ini_roll=((pi/2)+acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ))));
-else 
-    ini_roll=((pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ))));
-end
 ini_Vcm_body = [-initVelMag;0;0];
 ini_eul=[ini_roll ini_pitch ini_yaw];
 
@@ -211,17 +218,17 @@ parseLogsout;
 figure
  timevec=tsc.velocityVec.Time;
  ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
-plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*ten)
+plot(tsc.thrReleaseSpeeds.Time,tsc.thrReleaseSpeeds.Data.*ten)
 xlabel('time (s)')
 ylabel('Power (Watts)')
  [~,i1]=min(abs(timevec - 0));
  [~,i2]=min(abs(timevec -100)); %(timevec(end)/2)));
- [~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
+ [~,poweri1]=min(tsc.thrReleaseSpeeds.Data(i1:i2).*ten(i1:i2));
 poweri1 = poweri1 + i1;
 [~,i3]=min(abs(timevec - (timevec(end)/2)));
 [~,i4]=min(abs(timevec - timevec(end)));
 i4=i4-1;
-[~,poweri2]=min(tsc.winchSpeeds.Data(i3:i4).*ten(i3:i4));
+[~,poweri2]=min(tsc.thrReleaseSpeeds.Data(i3:i4).*ten(i3:i4));
 poweri2 = poweri2 + i3;
 % Manual Override. Rerun with this to choose times
 %            t1 = input("time for first measurement");
@@ -233,7 +240,7 @@ ylims=ylim;
 plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
 plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
 ylim(ylims);
- meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
+ meanPower = mean(tsc.thrReleaseSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
 title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
 saveas(gcf,'power.png')
 savefig('pow.fig')

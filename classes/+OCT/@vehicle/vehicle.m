@@ -165,7 +165,6 @@ classdef vehicle < dynamicprops
         end
         
         %% setters
-        
         function setFluidDensity(obj,val,units)
             obj.fluidDensity.setValue(val,units)
         end
@@ -370,6 +369,24 @@ classdef vehicle < dynamicprops
         
         function setInitAngVelVec(obj,val,units)
             obj.initAngVelVec.setValue(val(:),units);
+        end
+        
+        function setICsOnPath(obj,pathPos,pathFunc,geomParams,speed)
+            % Sets initial conditions of the vehicle to be on the path
+            [initPos,initVel] = eval(sprintf('%s(pathPos,geomParams)',pathFunc));
+            obj.setInitPosVecGnd(initPos,'m');
+            obj.setInitVelVecGnd(initVel*speed,'m/s');
+            
+            % Initial body z points radially out
+            bdyZ = initPos./sqrt(sum(initPos.^2));
+            % Initial body x points backwards (opposite velocity(
+            bdyX = -initVel;
+            % Initial body y is calculated from the cross product of z & x
+            bdyY = cross(bdyZ,bdyX);
+            % Calculate euler angles from the rotation matrix
+            obj.setInitEulAng(flip(rotm2eul([bdyX(:)'; bdyY(:)'; bdyZ(:)']')),'rad')
+            
+            obj.setInitAngVelVec([0 0 0],'rad/s');
         end
         
         %% getters
@@ -890,60 +907,71 @@ classdef vehicle < dynamicprops
         
         
         % plotting functions
-        function plot(obj)
+        function plot(obj,varargin)
             
-            fh = findobj( 'Type', 'Figure', 'Name', 'Design');
+            p = inputParser;
+            addParameter(p,'FigHandle',[],@(x) isa(x,'matlab.ui.Figure'));
+            addParameter(p,'EulerAngles',[0 0 0],@isnumeric)
+            addParameter(p,'Position',[0 0 0]',@isnumeric)
+            parse(p,varargin{:})
             
-            if isempty(fh)
+            R = rotation_sequence(p.Results.EulerAngles);
+            
+            if isempty(p.Results.FigHandle)
                 fh = figure;
                 fh.Name ='Design';
             else
-                figure(fh);
+                fh = p.Results.FigHandle;
             end
             
             fs = fieldnames(obj.surfaceOutlines);
             
             for ii = 1:6
-                plot3(obj.surfaceOutlines.(fs{ii}).Value(1,:),...
-                    obj.surfaceOutlines.(fs{ii}).Value(2,:),...
-                    obj.surfaceOutlines.(fs{ii}).Value(3,:),...
+                pts = R*obj.surfaceOutlines.(fs{ii}).Value;
+                plot3(pts(1,:)+p.Results.Position(1),...
+                    pts(2,:)+p.Results.Position(2),...
+                    pts(3,:)+p.Results.Position(3),...
                     'LineWidth',1.2,'Color','k','LineStyle','-');
                 hold on
             end
             
             for ii = 1:obj.numTethers.Value
-                pTet = plot3(obj.thrAttchPts(ii).posVec.Value(1),...
-                    obj.thrAttchPts(ii).posVec.Value(2),...
-                    obj.thrAttchPts(ii).posVec.Value(3),...
+                pts = R*obj.thrAttchPts(ii).posVec.Value;
+                pTet = plot3(pts(1)+p.Results.Position(1),...
+                    pts(2)+p.Results.Position(2),...
+                    pts(3)+p.Results.Position(3),...
                     'r+');
                 
             end
             
             for ii = 1:obj.numTurbines.Value
-                pTurb = plot3(obj.turbines(ii).attachPtVec.Value(1),...
-                    obj.turbines(ii).attachPtVec.Value(2),...
-                    obj.turbines(ii).attachPtVec.Value(3),...
+                pts = R*obj.turbines(ii).attachPtVec.Value;
+                pTurb = plot3(pts(1)+p.Results.Position(1),...
+                    pts(2)+p.Results.Position(2),...
+                    pts(3)+p.Results.Position(3),...
                     'm+');
             end
             
             for ii = 1:4
-                pMom = plot3(obj.fluidMomentArms.Value(1,ii),...
-                    obj.fluidMomentArms.Value(2,ii),...
-                    obj.fluidMomentArms.Value(3,ii),...
+                pts = R*obj.fluidMomentArms.Value(:,ii);
+                pMom = plot3(pts(1)+p.Results.Position(1),...
+                    pts(2)+p.Results.Position(2),...
+                    pts(3)+p.Results.Position(3),...
                     'b+');
                 
             end
             
-            pCM = plot3(0,0,0,'r*');
+            pCM = plot3(0+p.Results.Position(1),0+p.Results.Position(2),0+p.Results.Position(3),'r*');
+            pOrigin = plot3(0,0,0,'kx');
             grid on
             axis equal
             xlabel('X (m)')
             ylabel('Y (m)')
             zlabel('Z (m)')
             view(-45,30)
-            legend([pCM,pTet,pTurb,pMom],{'CM','Tethered pts.','Turbine pts.','Aero force pts.'},...
+            legend([pCM,pTet,pTurb,pMom,pOrigin],{'CM','Tethered pts.','Turbine pts.','Aero force pts.','Coordinate Origin'},...
                 'Location','northeast')
-            
+            set(gca,'DataAspectRatio',[1 1 1])
         end
         
         function plotCoeffPolars(obj)

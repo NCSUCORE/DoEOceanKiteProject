@@ -4,9 +4,9 @@ HILVLCONTROLLER = 'constantBasisParameters';
 hiLvlCtrl.add('GainNames',...
     {'basisParams'},...
     'GainUnits',...
-    {'[deg deg]'});
+    {''});
 
-hiLvlCtrl.basisParams.setValue([10 10],'[deg deg]');
+hiLvlCtrl.basisParams.setValue([1 1.4 30*pi/180 0 125],'');
 
 
 %% save file in its respective directory
