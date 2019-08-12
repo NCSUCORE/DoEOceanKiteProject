@@ -15,6 +15,7 @@ classdef vehicle < dynamicprops
         Ixy
         Ixz
         Iyz
+        addedMISwitch
         % center of buoyancy
         centOfBuoy
         % bridle location
@@ -99,6 +100,7 @@ classdef vehicle < dynamicprops
             obj.Ixy            = SIM.parameter('Unit','kg*m^2','Description','Ixy');
             obj.Ixz            = SIM.parameter('Unit','kg*m^2','Description','Ixz');
             obj.Iyz            = SIM.parameter('Unit','kg*m^2','Description','Iyz');
+            obj.addedMISwitch  = SIM.parameter('Value',1,'Unit','','Description','False turns off added mass and inertia');
             % some vectors
             obj.Rbridle_cm    = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
             obj.centOfBuoy        = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
@@ -207,6 +209,10 @@ classdef vehicle < dynamicprops
         
         function setIyz(obj,val,units)
             obj.Iyz.setValue(val,units);
+        end
+        
+        function setAddedMISwitch(obj,val,units)
+            obj.addedMISwitch.setValue(val,units);
         end
         
         function setCentOfBuoy(obj,val,units)
@@ -424,15 +430,26 @@ classdef vehicle < dynamicprops
                 HS_span*(HS_chord/2)^2 + 1.98*VS_span*(VS_chord/2)^2);
             
             % store
-            val = SIM.parameter('Value',[m_added_x 0 0;0 m_added_y 0; 0 0 m_added_z],...
-                'Unit','kg','Description','Added mass of the system in the body frame');
-            
+            if obj.addedMISwitch.Value
+                val = SIM.parameter('Value',[m_added_x 0 0;0 m_added_y 0; 0 0 m_added_z],...
+                    'Unit','kg','Description','Added mass of the system in the body frame');
+            else
+                val = SIM.parameter('Value',zeros(3),...
+                    'Unit','kg','Description','Added mass of the system in the body frame');
+            end
         end
         
         % added inertia
         function val = get.addedInertia(obj)
-            val = SIM.parameter('Value',zeros(3,3),...
-                'Unit','kg*m^2','Description','Added inertia of the system in the body frame'); 
+            if obj.addedMISwitch.Value
+                %This is where to put added inertia when its added to the
+                %model
+                val = SIM.parameter('Value',zeros(3,3),...
+                    'Unit','kg*m^2','Description','Added inertia of the system in the body frame'); 
+            else
+                val = SIM.parameter('Value',zeros(3,3),...
+                    'Unit','kg*m^2','Description','Added inertia of the system in the body frame'); 
+            end
         end
         
         % surface outlines
