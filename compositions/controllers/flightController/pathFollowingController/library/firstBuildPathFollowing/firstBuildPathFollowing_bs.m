@@ -1,7 +1,8 @@
 FLIGHTCONTROLLER = 'pathFollowingController';
 
 fltCtrl = CTR.pthFlwCtrl;
-
+fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
 
 fltCtrl.velAng.tau.setValue(.01,'s');
 
