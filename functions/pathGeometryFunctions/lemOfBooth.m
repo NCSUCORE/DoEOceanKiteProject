@@ -21,6 +21,7 @@ function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
     else
         radius = 1;
     end
+    pathVariable = pathVariable(:)';
     
     long=@(x) longCurve+(aBooth.*sin(x)./(1+(aBooth./bBooth).^2.*cos(x).^2));
     lat=@(x) latCurve+((aBooth./bBooth).^2.*sin(x).*cos(x)./(1 + (aBooth./bBooth).^2.*cos(x).^2));

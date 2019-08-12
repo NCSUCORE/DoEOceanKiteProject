@@ -1,4 +1,4 @@
-clc;clear
+% clc;clear
 if ~slreportgen.utils.isModelLoaded('OCTModel')
     OCTModel
 end
@@ -6,6 +6,9 @@ end
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 500*sqrt(lengthScaleFactor);
+%% unncessary extra variable cause I am being lazy
+dynamicCalc = '';
+
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -29,7 +32,7 @@ pathIniRadius = 125;
 
 pathFuncName='lemOfBooth';
 %pathParamVec=[.73,.8,.4,0,pathIniRadius];%Lem
-pathParamVec=[1,1.4,-.36,0,pathIniRadius];%Lem
+pathParamVec=[1,1.4,.36,0,pathIniRadius];%Lem
 %  pathFuncName='circleOnSphere';
 %  pathParamVec=[pi/8,-3*pi/8,0,pathIniRadius];%Circle
 
@@ -91,6 +94,8 @@ vhcl.setInitVelVecGnd(ini_Vcm_body,'m/s');
 vhcl.setInitEulAng(ini_eul,'rad');
 vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
+% % % Turn off Added Mass and Inertia
+vhcl.setAddedMISwitch(0,'');
 % % % plot
 % vhcl.plot
 % vhcl.plotCoeffPolars
@@ -124,7 +129,7 @@ allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
    vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
 allMat(4,3)= 1/(vhcl.vStab.GainCL.Value(2)*...
    vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
-%pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
+fltCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
 
 fltCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 % fltCtrl.outRanges.setValue([ 0.49   1.0000;
@@ -137,10 +142,10 @@ fltCtrl.outRanges.setValue( [0    0.1250;
                         0.3450    0.6250;
                    0.8500    1.0000;],'');
 
-fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
-                                1.1584         0         0;
-                                0             -2.0981    0;
-                                0              0         4.8067],'(deg)/(m^3)');
+% fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
+%                                 1.1584         0         0;
+%                                 0             -2.0981    0;
+%                                 0              0         4.8067],'(deg)/(m^3)');
 fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
@@ -157,16 +162,16 @@ case 0.5
     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
     fltCtrl.rollMoment.kd.setValue(.6*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 case 1  
-%     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-%     fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-%     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-     fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-     fltCtrl.velAng.tau.setValue(.8,'s');
+%    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+%    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+%    fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+    fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    fltCtrl.velAng.tau.setValue(.8,'s');
     fltCtrl.rollMoment.tau.setValue (.8,'s');
     fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
 case 1.5
 %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
 %     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
@@ -174,10 +179,10 @@ case 1.5
 %     fltCtrl.velAng.tau.setValue(.01,'s');
 %     fltCtrl.rollMoment.tau.setValue (.01,'s');
     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-    fltCtrl.rollMoment.kd.setValue(150000,'(N*m)/(rad/s)');
-    fltCtrl.velAng.tau.setValue(.01,'s');
-    fltCtrl.rollMoment.tau.setValue (.01,'s');
+    fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
+    fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    fltCtrl.velAng.tau.setValue(.8,'s');
+    fltCtrl.rollMoment.tau.setValue (.8,'s');
 case 2
     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');   
     fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
@@ -200,45 +205,44 @@ wnch.scale(lengthScaleFactor,densityScaleFactor);
 % fltCtrl.scale(lengthScaleFactor)
 
 %% Run the simulation
-traditionalBool = 0;
 simWithMonitor('OCTModel')
 parseLogsout;
 %stopCallback
 %% plots
 
-figure
- timevec=tsc.velocityVec.Time;
- ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
-plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*ten)
-xlabel('time (s)')
-ylabel('Power (Watts)')
- [~,i1]=min(abs(timevec - 0));
- [~,i2]=min(abs(timevec -100)); %(timevec(end)/2)));
- [~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
-poweri1 = poweri1 + i1;
-[~,i3]=min(abs(timevec - (timevec(end)/2)));
-[~,i4]=min(abs(timevec - timevec(end)));
-i4=i4-1;
-[~,poweri2]=min(tsc.winchSpeeds.Data(i3:i4).*ten(i3:i4));
-poweri2 = poweri2 + i3;
-% Manual Override. Rerun with this to choose times
-%            t1 = input("time for first measurement");
-%             [~,poweri1]=min(abs(timevec - t1));
-%              t2 = input("time for second measurement");
-%              [~,poweri2]=min(abs(timevec - t2));
-hold on
-ylims=ylim;
-plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
-plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
-ylim(ylims);
- meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
-title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
-saveas(gcf,'power.png')
-savefig('pow.fig')
-
-plotVelocity
-saveas(gcf,'velocity.png')
-savefig('vel.fig')
-plotTenVecMags
-saveas(gcf,'tension.png')
-kiteAxesPlot
+% figure
+%  timevec=tsc.velocityVec.Time;
+%  ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
+% plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*ten)
+% xlabel('time (s)')
+% ylabel('Power (Watts)')
+%  [~,i1]=min(abs(timevec - 0));
+%  [~,i2]=min(abs(timevec -100)); %(timevec(end)/2)));
+%  [~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
+% poweri1 = poweri1 + i1;
+% [~,i3]=min(abs(timevec - (timevec(end)/2)));
+% [~,i4]=min(abs(timevec - timevec(end)));
+% i4=i4-1;
+% [~,poweri2]=min(tsc.winchSpeeds.Data(i3:i4).*ten(i3:i4));
+% poweri2 = poweri2 + i3;
+% % Manual Override. Rerun with this to choose times
+% %            t1 = input("time for first measurement");
+% %             [~,poweri1]=min(abs(timevec - t1));
+% %              t2 = input("time for second measurement");
+% %              [~,poweri2]=min(abs(timevec - t2));
+% hold on
+% ylims=ylim;
+% plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
+% plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
+% ylim(ylims);
+%  meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
+% title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
+% saveas(gcf,'power.png')
+% savefig('pow.fig')
+% 
+% plotVelocity
+% saveas(gcf,'velocity.png')
+% savefig('vel.fig')
+% plotTenVecMags
+% saveas(gcf,'tension.png')
+% kiteAxesPlot
