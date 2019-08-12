@@ -371,12 +371,11 @@ classdef vehicle < dynamicprops
             obj.initAngVelVec.setValue(val(:),units);
         end
         
-        function setICsOnPath(obj,pathPos,pathFunc,geomParams,speed)
+        function setICsOnPath(obj,initPathPos,pathFunc,geomParams,speed)
             % Sets initial conditions of the vehicle to be on the path
-            [initPos,initVel] = eval(sprintf('%s(pathPos,geomParams)',pathFunc));
+            [initPos,initVel] = eval(sprintf('%s(initPathPos,geomParams)',pathFunc));
             obj.setInitPosVecGnd(initPos,'m');
             obj.setInitVelVecGnd(initVel*speed,'m/s');
-            
             % Initial body z points radially out
             bdyZ = initPos./sqrt(sum(initPos.^2));
             % Initial body x points backwards (opposite velocity(
@@ -385,7 +384,7 @@ classdef vehicle < dynamicprops
             bdyY = cross(bdyZ,bdyX);
             % Calculate euler angles from the rotation matrix
             obj.setInitEulAng(flip(rotm2eul([bdyX(:)'; bdyY(:)'; bdyZ(:)']')),'rad')
-            
+            % Initial angular velocity is zero
             obj.setInitAngVelVec([0 0 0],'rad/s');
         end
         
