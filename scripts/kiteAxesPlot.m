@@ -15,7 +15,7 @@ manual=false;
 frames = 100;
 waittime = .001; 
 
-gifit = true;
+gifit = false;
 filename="animation.gif";
 gifWaitTime = .005;
 

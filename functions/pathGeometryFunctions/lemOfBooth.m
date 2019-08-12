@@ -11,7 +11,7 @@ function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
 %   posGround is the position in the ground frame at the given pathVar
 %   The second output, if requested is a ground frame unit vector in the
 %       direction tangent to the curve (the direction to go)
-    pathVariable = pathVariable * 2*pi;
+    pathVariable = 2*pi - (pathVariable * 2*pi);
     aBooth=geomParams(1);
     bBooth=geomParams(2);
     latCurve=geomParams(3);
@@ -21,11 +21,11 @@ function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
     else
         radius = 1;
     end
-    pathVariable = pathVariable(:)';
+    pathVariable = pathVariable(:)'; %Make it a row vector
     
     long=@(x) longCurve+(aBooth.*sin(x)./(1+(aBooth./bBooth).^2.*cos(x).^2));
     lat=@(x) latCurve+((aBooth./bBooth).^2.*sin(x).*cos(x)./(1 + (aBooth./bBooth).^2.*cos(x).^2));
-    path = @(x)radius * [cos(long(x)).*cos(+lat(x));...
+    path = @(x)radius * [cos(long(x)).*cos(lat(x));...
                          sin(long(x)).*cos(lat(x));...
                          sin(lat(x));];
     posGround=path(pathVariable);
