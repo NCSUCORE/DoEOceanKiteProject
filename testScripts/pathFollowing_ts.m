@@ -207,6 +207,7 @@ wnch.scale(lengthScaleFactor,densityScaleFactor);
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
+kiteAxesPlot
 %stopCallback
 %% plots
 
