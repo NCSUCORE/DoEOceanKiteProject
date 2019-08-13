@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     11359,        357]
-NotebookOptionsPosition[     10753,        332]
-NotebookOutlinePosition[     11128,        348]
-CellTagsIndexPosition[     11085,        345]
+NotebookDataLength[     10139,        307]
+NotebookOptionsPosition[      9595,        285]
+NotebookOutlinePosition[      9970,        301]
+CellTagsIndexPosition[      9927,        298]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -30,9 +30,6 @@ Cell["\<\
 Convert from normalized path variable to path variable in radians\
 \>", "Text",
  CellChangeTimes->{{3.774619421918751*^9, 3.774619444382069*^9}}],
-
-Cell[BoxData[
- RowBox[{"<<", "ToMatlab.m"}]], "Input"],
 
 Cell[CellGroupData[{
 
@@ -152,10 +149,10 @@ Cell[BoxData[
        SubscriptBox["Z", "0"]}], "+", 
       SubscriptBox["Z", "1"]}], "]"}]}]}], "}"}]], "Output",
  CellChangeTimes->{{3.7746198022056837`*^9, 3.774619843622239*^9}, 
-   3.7746199170587325`*^9}]
+   3.7746199170587325`*^9, 3.7746207736080365`*^9, 3.7746208862840385`*^9, {
+   3.7746209849196377`*^9, 3.7746210010316253`*^9}, 3.77470601954722*^9, 
+   3.774708061668875*^9}]
 }, Open  ]],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"Simplify", "[", 
@@ -174,6 +171,7 @@ Cell[BoxData[
        RowBox[{"-", 
         RowBox[{"Cos", "[", 
          RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}]}], " ", 
+       "\[IndentingNewLine]", 
        RowBox[{"Cos", "[", 
         RowBox[{
          RowBox[{
@@ -181,7 +179,7 @@ Cell[BoxData[
           RowBox[{"Sin", "[", 
            RowBox[{"4", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["Z", "0"]}], "-", 
-         SubscriptBox["Z", "1"]}], "]"}], " ", 
+         SubscriptBox["Z", "1"]}], "]"}], " ", "\[IndentingNewLine]", 
        RowBox[{"Sin", "[", 
         RowBox[{
          RowBox[{
@@ -190,13 +188,14 @@ Cell[BoxData[
            RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["A", "0"]}], "+", 
          SubscriptBox["A", "1"]}], "]"}], " ", 
-       SubscriptBox["A", "0"]}], "+", 
+       SubscriptBox["A", "0"]}], "+", "\[IndentingNewLine]", 
       RowBox[{"2", " ", 
        RowBox[{"Cos", "[", 
         RowBox[{"\[Pi]", " ", 
          RowBox[{"(", 
           RowBox[{"3", "+", 
            RowBox[{"4", " ", "s"}]}], ")"}]}], "]"}], " ", 
+       "\[IndentingNewLine]", 
        RowBox[{"Cos", "[", 
         RowBox[{
          RowBox[{
@@ -204,7 +203,7 @@ Cell[BoxData[
           RowBox[{"Sin", "[", 
            RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["A", "0"]}], "+", 
-         SubscriptBox["A", "1"]}], "]"}], " ", 
+         SubscriptBox["A", "1"]}], "]"}], " ", "\[IndentingNewLine]", 
        RowBox[{"Sin", "[", 
         RowBox[{
          RowBox[{
@@ -213,13 +212,14 @@ Cell[BoxData[
            RowBox[{"4", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["Z", "0"]}], "-", 
          SubscriptBox["Z", "1"]}], "]"}], " ", 
-       SubscriptBox["Z", "0"]}]}], ")"}]}], ",", 
+       SubscriptBox["Z", "0"]}]}], ")"}]}], ",", "\[IndentingNewLine]", 
    RowBox[{"\[Pi]", " ", "R", " ", 
-    RowBox[{"(", 
+    RowBox[{"(", "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{
        RowBox[{"Cos", "[", 
         RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
+       "\[IndentingNewLine]", 
        RowBox[{"Cos", "[", 
         RowBox[{
          RowBox[{
@@ -227,7 +227,7 @@ Cell[BoxData[
           RowBox[{"Sin", "[", 
            RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["A", "0"]}], "+", 
-         SubscriptBox["A", "1"]}], "]"}], " ", 
+         SubscriptBox["A", "1"]}], "]"}], " ", "\[IndentingNewLine]", 
        RowBox[{"Cos", "[", 
         RowBox[{
          RowBox[{
@@ -236,13 +236,14 @@ Cell[BoxData[
            RowBox[{"4", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["Z", "0"]}], "-", 
          SubscriptBox["Z", "1"]}], "]"}], " ", 
-       SubscriptBox["A", "0"]}], "+", 
+       SubscriptBox["A", "0"]}], "+", "\[IndentingNewLine]", 
       RowBox[{"2", " ", 
        RowBox[{"Cos", "[", 
         RowBox[{"\[Pi]", " ", 
          RowBox[{"(", 
           RowBox[{"3", "+", 
-           RowBox[{"4", " ", "s"}]}], ")"}]}], "]"}], " ", 
+           RowBox[{"4", " ", "s"}]}], ")"}]}], "]"}], "\[IndentingNewLine]", 
+       " ", 
        RowBox[{"Sin", "[", 
         RowBox[{
          RowBox[{
@@ -250,7 +251,7 @@ Cell[BoxData[
           RowBox[{"Sin", "[", 
            RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["A", "0"]}], "+", 
-         SubscriptBox["A", "1"]}], "]"}], " ", 
+         SubscriptBox["A", "1"]}], "]"}], " ", "\[IndentingNewLine]", 
        RowBox[{"Sin", "[", 
         RowBox[{
          RowBox[{
@@ -259,7 +260,7 @@ Cell[BoxData[
            RowBox[{"4", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
           SubscriptBox["Z", "0"]}], "-", 
          SubscriptBox["Z", "1"]}], "]"}], " ", 
-       SubscriptBox["Z", "0"]}]}], ")"}]}], ",", 
+       SubscriptBox["Z", "0"]}]}], ")"}]}], ",", "\[IndentingNewLine]", 
    RowBox[{"2", " ", "\[Pi]", " ", "R", " ", 
     RowBox[{"Cos", "[", 
      RowBox[{"\[Pi]", " ", 
@@ -274,61 +275,13 @@ Cell[BoxData[
         RowBox[{"4", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
        SubscriptBox["Z", "0"]}], "-", 
       SubscriptBox["Z", "1"]}], "]"}], " ", 
-    SubscriptBox["Z", "0"]}]}], "}"}]], "Output",
- CellChangeTimes->{{3.7746198542552233`*^9, 3.7746198622676353`*^9}, {
-  3.774619902867053*^9, 3.774619938039872*^9}}]
-}, Open  ]],
+    SubscriptBox["Z", "0"]}]}], "}"}]], "Input",
+ CellChangeTimes->{{3.7747080673751364`*^9, 3.7747080738395844`*^9}, {
+  3.7747081307677097`*^9, 3.774708145695533*^9}, {3.7747082190212526`*^9, 
+  3.7747082234074287`*^9}}],
 
-Cell[BoxData[
- RowBox[{"ToMatlab", "[", 
-  RowBox[{"\[Pi]", " ", "R", " ", 
-   RowBox[{"(", 
-    RowBox[{
-     RowBox[{
-      RowBox[{"-", 
-       RowBox[{"Cos", "[", 
-        RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}]}], " ", 
-      RowBox[{"Cos", "[", 
-       RowBox[{
-        RowBox[{
-         FractionBox["1", "2"], " ", 
-         RowBox[{"Sin", "[", 
-          RowBox[{"4", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
-         SubscriptBox["Z", "0"]}], "-", 
-        SubscriptBox["Z", "1"]}], "]"}], " ", 
-      RowBox[{"Sin", "[", 
-       RowBox[{
-        RowBox[{
-         FractionBox["1", "2"], " ", 
-         RowBox[{"Sin", "[", 
-          RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
-         SubscriptBox["A", "0"]}], "+", 
-        SubscriptBox["A", "1"]}], "]"}], " ", 
-      SubscriptBox["A", "0"]}], "+", 
-     RowBox[{"2", " ", 
-      RowBox[{"Cos", "[", 
-       RowBox[{"\[Pi]", " ", 
-        RowBox[{"(", 
-         RowBox[{"3", "+", 
-          RowBox[{"4", " ", "s"}]}], ")"}]}], "]"}], " ", 
-      RowBox[{"Cos", "[", 
-       RowBox[{
-        RowBox[{
-         FractionBox["1", "2"], " ", 
-         RowBox[{"Sin", "[", 
-          RowBox[{"2", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
-         SubscriptBox["A", "0"]}], "+", 
-        SubscriptBox["A", "1"]}], "]"}], " ", 
-      RowBox[{"Sin", "[", 
-       RowBox[{
-        RowBox[{
-         FractionBox["1", "2"], " ", 
-         RowBox[{"Sin", "[", 
-          RowBox[{"4", " ", "\[Pi]", " ", "s"}], "]"}], " ", 
-         SubscriptBox["Z", "0"]}], "-", 
-        SubscriptBox["Z", "1"]}], "]"}], " ", 
-      SubscriptBox["Z", "0"]}]}], ")"}]}], "]"}]], "Input",
- CellChangeTimes->{{3.7746207536643734`*^9, 3.774620763325837*^9}}]
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.7746209620355167`*^9, 3.7746209682979417`*^9}}]
 },
 WindowSize->{1920, 997},
 WindowMargins->{{1912, Automatic}, {Automatic, -8}},
@@ -349,16 +302,13 @@ CellTagsIndex->{}
 Notebook[{
 Cell[558, 20, 268, 6, 74, "Text"],
 Cell[829, 28, 155, 3, 45, "Text"],
-Cell[987, 33, 54, 1, 45, "Input"],
 Cell[CellGroupData[{
-Cell[1066, 38, 1694, 47, 201, "Input"],
-Cell[2763, 87, 2126, 67, 65, "Output"]
+Cell[1009, 35, 1694, 47, 201, "Input"],
+Cell[2706, 84, 2275, 69, 65, "Output"]
 }, Open  ]],
-Cell[CellGroupData[{
-Cell[4926, 159, 211, 5, 45, "Input"],
-Cell[5140, 166, 3897, 112, 167, "Output"]
-}, Open  ]],
-Cell[9052, 281, 1697, 49, 82, "Input"]
+Cell[4996, 156, 211, 5, 45, "Input"],
+Cell[5210, 163, 4282, 117, 858, InheritFromParent],
+Cell[9495, 282, 96, 1, 45, "Input"]
 }
 ]
 *)

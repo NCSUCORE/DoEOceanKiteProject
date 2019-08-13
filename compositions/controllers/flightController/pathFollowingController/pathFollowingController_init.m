@@ -1,10 +1,4 @@
-% pathLoc = @(s)swapablePath(s,pathCtrl.pathParams.Value);
-% centralAngle = @(s)acos(dot(initPosForInitSStar,pathLoc(s))/...
-%                    (norm(pathLoc(s))*norm(initPosForInitSStar)));
-% sVals = linspace(0,1,1000);
-% angles = zeros(length(sVals),1);
-% for i=1:length(sVals)
-%     angles(i)=centralAngle(sVals(i));
-% end
-% [~,minIndex]=min(angles);
-% initS=sVals(minIndex);
+% x = 1;
+set_param([gcb '/courseFollow/pathGeometry'],'LabelModeActiveChoice',pathCtrl.fcnName.Value)
+set_param([gcb '/courseFollow/For Iterator Subsystem/pathGeometry'] ,'LabelModeActiveChoice',pathCtrl.fcnName.Value)
+set_param([gcb '/courseFollow/For Iterator Subsystem/pathGeometry1'],'LabelModeActiveChoice',pathCtrl.fcnName.Value)

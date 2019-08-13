@@ -1,4 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Dyn Press');
+figure('Name','Dyn Press');
 
 for ii = 1:numel(tsc.dynPress.Data(1,:,1))
    subplot(numel(tsc.dynPress.Data(1,:,1)),1,ii)

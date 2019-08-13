@@ -1,4 +1,5 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Spherical Position');
+figure('Name','Spherical Position');
+
 subplot(3,1,1)
 plot(tsc.positionVec.Time,squeeze(sqrt(sum(tsc.positionVec.Data.^2,1))),...
     'LineStyle','-','Color','k','LineWidth',1.5)

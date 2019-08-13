@@ -13,30 +13,51 @@ function [gndPos,tanVec] = lemOfGerono(pathVar,geomParams)
 %   Variable names here were chosen to match the notebook
 %   lemOfGeronoTanVec.nb
 
-A0 = geomParams(1);
-Z0 = geomParams(2);
-A1 = geomParams(3);
-Z1 = geomParams(4);
+A0 = geomParams(1)*pi/180;
+Z0 = geomParams(2)*pi/180;
+A1 = geomParams(3)*pi/180;
+Z1 = geomParams(4)*pi/180;
 R  = geomParams(5);
 
 % Calculate path position in rad, phi from the normalized path variable, s.
-phi = (pathVar(:)*2*pi+3*pi/2);
+phi = (pathVar(:)*2+3/2)*pi;
 
 % Calculate azimuth and zenith in degrees
-a =     (A0/2)*cos(  phi(:)) + A1;
-z = 90-((Z0/2)*sin(2*phi(:)) + Z1);
+a =         (A0/2)*cos(  phi(:)) + A1;
+z = (pi/2)-((Z0/2)*sin(2*phi(:)) + Z1);
 
 % Convert sphereical to cartesian
 % http://mathworld.wolfram.com/SphericalCoordinates.html
 gndPos = nan(numel(phi),3);
 tanVec = gndPos;
 
-gndPos(:,1) = R.*cosd(a).*sind(z);
-gndPos(:,2) = R.*sind(a).*sind(z);
-gndPos(:,3) = R.*cosd(z);
+gndPos(:,1) = R.*cos(a).*sin(z);
+gndPos(:,2) = R.*sin(a).*sin(z);
+gndPos(:,3) = R.*cos(z);
 
-tanVec(:,1) = pi*R*(-cos(2*pi*s)*cos((Z0/2)*sin(4*pi*s)-Z1)*sin((A0/2)*sin(2*pi*s)-A1)+2*cos((3+4*s)*cos((Z0/2)*sin(4*pi*s)-Z1)*sin((A0/2)*sin(2*pi*s)-A1));
-tanVec(:,2) = ;
-tanVec(:,3) = ;
+tanVec(:,1) = pi.*R.*(...
+    -cos(2.*pi.*pathVar(:))...
+    .*cos((1/2).*sin(4.*pi.*pathVar(:)).*Z0-Z1)...
+    .*sin((1/2).*sin(2.*pi.*pathVar(:)).*A0+A1).*A0...
+    +...
+    2.*cos(pi.*(3+4.*pathVar(:)))...
+    .*cos((1/2).*sin(2.*pi.*pathVar(:)).*A0+A1)...
+    .*sin((1/2).*sin(4.*pi.*pathVar(:)).*Z0-Z1).*Z0);
+
+tanVec(:,2) = pi.*R.*(...
+    cos(2.*pi.*pathVar(:))...
+    .*cos((1/2).*sin(2.*pi.*pathVar(:)).*A0+A1)...
+    .*cos((1/2).*sin(4.*pi.*pathVar(:)).*Z0-Z1).*A0...
+    +...
+    2.*cos(pi.*(3+4.*pathVar(:)))...
+    .*sin((1/2).*sin(2.*pi.*pathVar(:)).*A0+A1)...
+    .*sin((1/2).*sin(4.*pi.*pathVar(:)).*Z0-Z1).*Z0);
+
+tanVec(:,3) = 2.*pi.*R.*cos(pi.*(3+4.*pathVar(:))).*cos((1/2).*sin(4.*pi.*pathVar(:)).*Z0-Z1).*Z0;
+
+tanVec = tanVec./repmat(sqrt(sum(tanVec.^2,2)),[1 3]);
+
+gndPos = gndPos';
+tanVec = tanVec';
 end
 

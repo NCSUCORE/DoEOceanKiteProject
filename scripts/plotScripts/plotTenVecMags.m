@@ -1,3 +1,5 @@
+figure('Name','Air Ten Mag')
+
 for ii = 1:numel(tsc.airTenVecBusArry)
     figure('Position',[ 1 41 1920 963],'Units','pixels','Name',sprintf('Thr %d Net Force Mag',ii));
     subplot(numel(tsc.airTenVecBusArry),1,ii)

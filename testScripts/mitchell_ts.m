@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 30*sqrt(lengthScaleFactor);
+duration_s  = 60*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -26,31 +26,9 @@ loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('pathFollowingEnv');
 
-
-%%
-fltCtrl.setFcnName('lemOfBooth','');
-
-%% Set vehicle initial conditions
-vhcl.setICsOnPath(...
-    0,... % Initial path position
-    fltCtrl.fcnName.Value,... % Name of path function
-    hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    6) % Initial speed
-
-
-vhcl.setAddedMISwitch(false,'');
-% Plot some things to check it
-% vhcl.plot('EulerAngles',vhcl.initEulAng.Value,'Position',vhcl.initPosVecGnd.Value)
-% hold on
-% pathPos = lemOfBooth(linspace(0,1),hiLvlCtrl.basisParams.Value);
-% plot3(pathPos(1,:),pathPos(2,:),pathPos(3,:))
-% quiver3(...
-%     vhcl.initPosVecGnd.Value(1),...
-%     vhcl.initPosVecGnd.Value(2),...
-%     vhcl.initPosVecGnd.Value(3),...
-%     vhcl.initVelVecGnd.Value(1),...
-%     vhcl.initVelVecGnd.Value(2),...
-%     vhcl.initVelVecGnd.Value(3));
+%% Set basis parameters for high level controller
+% hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
+hiLvlCtrl.basisParams.setValue([.75,1,.36,0,125],'') % Lemniscate of Booth
 
 
 %% Environment IC's and dependant properties
@@ -63,15 +41,15 @@ gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 %gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
 
-%% Tethers IC's and dependant properties
-thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
-thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
-thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
-thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+fltCtrl.setFcnName('lemOfBooth','');
 
-%% winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr);
+%% Set vehicle initial conditions
+vhcl.setICsOnPath(...
+    0,... % Initial path position
+    fltCtrl.fcnName.Value,... % Name of path function
+    hiLvlCtrl.basisParams.Value,... % Geometry parameters
+    6) % Initial speed
+vhcl.setAddedMISwitch(false,'');
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.outRanges.setValue( [...
@@ -86,10 +64,20 @@ fltCtrl.ctrlAllocMat.setValue([...
      0              0         4.8067],'(deg)/(m^3)');
 fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
-
 fltCtrl.traditionalBool.setValue(0,'')
 
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
+
+%% Tethers IC's and dependant properties
+thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+
+
+%% winches IC's and dependant properties
+wnch.setTetherInitLength(vhcl,env,thr);
 
 %% gain tuning based on flow speed
 switch norm(env.water.velVec.Value)
@@ -135,6 +123,10 @@ fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad
 fltCtrl.velAng.kd.setValue(1.5*fltCtrl.velAng.kp.Value,'(rad)/(rad/s)');
 fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 
+% Turn off spooling controller (get rid of this later)
+fltCtrl.setWinchSpeedIn(0,'m/s');
+fltCtrl.setWinchSpeedOut(0,'m/s');
+
 %% Scale
 % scale environment
 env.scale(lengthScaleFactor,densityScaleFactor);
@@ -153,6 +145,9 @@ fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
+
+%% Plot things
+plotThrReleaseSpeeds
 
 %% Animate the results
 vhcl.animateSim(tsc,0.1,'PathFunc',fltCtrl.fcnName.Value)

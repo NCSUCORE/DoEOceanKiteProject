@@ -1,3 +1,5 @@
+figure('Name','Air Ten Vec')
+
 for ii = 1:numel(tsc.airTenVecBusArry)
     figure('Position',[ 1 41 1920 963],'Units','pixels','Name',sprintf('Thr %d Air Node Frce Components',ii));
     subplot(3,1,1)

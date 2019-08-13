@@ -1,5 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels',...
-    'Name','Drag Force, Body Frame');
+figure('Name','Drag Force, Body Frame');
 subplot(3,1,1)
 plot(tsc.FDragBdy.Time,squeeze(tsc.FDragBdy.Data(1,:,:)),...
     'LineStyle','-','Color','k','LineWidth',1.5)
