@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 500*sqrt(lengthScaleFactor);
+duration_s  = 30*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -13,7 +13,7 @@ dynamicCalc = '';
 loadComponent('firstBuildPathFollowing');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
-% High Level Con
+% High level controller
 loadComponent('testConstBasisParams')
 % Ground station
 loadComponent('pathFollowingGndStn');
@@ -32,11 +32,13 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    0.6,... % Initial path position
+    0,... % Initial path position
     fltCtrl.fcnName.Value,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     6) % Initial speed
 
+
+vhcl.setAddedMISwitch(false,'');
 % Plot some things to check it
 % vhcl.plot('EulerAngles',vhcl.initEulAng.Value,'Position',vhcl.initPosVecGnd.Value)
 % hold on
@@ -65,7 +67,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
+thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% winches IC's and dependant properties
@@ -151,4 +153,6 @@ fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
-%stopCallback
+
+%% Animate the results
+vhcl.animateSim(tsc,0.1,'PathFunc',fltCtrl.fcnName.Value)

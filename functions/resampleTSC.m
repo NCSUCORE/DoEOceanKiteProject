@@ -1,4 +1,7 @@
 function tscNew = resampleTSC(tscOld,t)
+% RESAMPLETSC function to resample tsc to new time steps, useful for
+% animations.  Input t can be either a time step (scalar) or vector, which
+% will be interpreted as a vector of time steps to resample to.
 
 fieldNames = fieldnames(tscOld);
 endTime = [];
