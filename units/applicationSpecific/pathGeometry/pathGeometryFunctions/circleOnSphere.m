@@ -20,6 +20,7 @@ function [posGround,varargout] = circleOnSphere(pathVariable,geomParams)
     else
         sphereRadius = 1;
     end
+    pathVariable = pathVariable(:)'; %make it a row vector
     
     long=@(x) radius*(longCurve+cos(x));
     lat=@(x) radius*(latCurve+sin(x));
