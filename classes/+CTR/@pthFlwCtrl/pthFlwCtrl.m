@@ -12,7 +12,7 @@ classdef pthFlwCtrl < handle
        
         controlSigMax
         % SIM.parameters
-         winchSpeedIn
+        winchSpeedIn
         winchSpeedOut
         ctrlAllocMat
         searchSize
@@ -98,7 +98,7 @@ classdef pthFlwCtrl < handle
             obj.elevatorReelInDef.setValue(val,unit);
         end
         function setMaxR(obj,val,unit)
-            obj.maxR.setValue(val,unit);
+            obj.maxR.setValue(val,unit) ;
         end
         function setFcnName(obj,val,unit)
             obj.fcnName.setValue(val,unit);

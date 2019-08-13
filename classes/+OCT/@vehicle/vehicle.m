@@ -66,7 +66,7 @@ classdef vehicle < dynamicprops
         fuseEndDragCoeff
         % intial conditions
         initPosVecGnd
-        initVelVecGnd
+        initVelVecBdy
         initEulAng
         initAngVelVec
     end
@@ -161,7 +161,7 @@ classdef vehicle < dynamicprops
             
             % initial conditions
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
-            obj.initVelVecGnd           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the inertial frame');
+            obj.initVelVecBdy           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the body frame ');
             obj.initEulAng              = SIM.parameter('Unit','rad','Description','Initial Euler angles');
             obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
         end
@@ -362,11 +362,11 @@ classdef vehicle < dynamicprops
         
         % initial conditions
         function setInitPosVecGnd(obj,val,units)
-            obj.initPosVecGnd.setValue(reshape(val,3,1),units);
+            obj.initPosVecGnd.setValue(val(:),units);
         end             
 
-        function setInitVelVecGnd(obj,val,units)
-            obj.initVelVecGnd.setValue(reshape(val,3,1),units);
+        function setInitVelVecBdy(obj,val,units)
+            obj.initVelVecBdy.setValue(val(:),units);
         end
         
         function setInitEulAng(obj,val,units)
@@ -381,7 +381,7 @@ classdef vehicle < dynamicprops
             % Sets initial conditions of the vehicle to be on the path
             [initPos,initVel] = eval(sprintf('%s(initPathPos,geomParams)',pathFunc));
             obj.setInitPosVecGnd(initPos,'m');
-            obj.setInitVelVecGnd(initVel*speed,'m/s');
+            obj.setInitVelVecBdy([-speed 0 0],'m/s');
             % Initial body z points radially out
             bdyZ = initPos./sqrt(sum(initPos.^2));
             % Initial body x points backwards (opposite velocity(
@@ -1082,7 +1082,7 @@ classdef vehicle < dynamicprops
             
         end
         
-        % matlab function
+        val = animateSim(obj,tsc,fltCtrl)
 
         
 

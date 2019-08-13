@@ -32,7 +32,7 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    0.25,... % Initial path position
+    0.6,... % Initial path position
     fltCtrl.fcnName.Value,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     6) % Initial speed

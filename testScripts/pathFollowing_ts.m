@@ -6,6 +6,8 @@ end
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 500*sqrt(lengthScaleFactor);
+dynamicCalc = '';
+
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -15,7 +17,7 @@ loadComponent('oneDoFGSCtrlBasic');
 loadComponent('testConstBasisParams')
 % Ground station
 loadComponent('pathFollowingGndStn');
-% Winches 
+% Winches
 loadComponent('oneDOFWnch');
 % Tether
 loadComponent('pathFollowingTether');
@@ -26,7 +28,7 @@ loadComponent('pathFollowingEnv');
 
 %% Path Choice
 pathIniRadius = 125;
-
+fltCtrl.setFcnName('lemOfBooth','');
 pathFuncName='lemOfBooth';
 %pathParamVec=[.73,.8,.4,0,pathIniRadius];%Lem
 pathParamVec=[1,1.4,-.36,0,pathIniRadius];%Lem
@@ -35,13 +37,13 @@ pathParamVec=[1,1.4,-.36,0,pathIniRadius];%Lem
 
 swapableID=fopen('swapablePath.m','w');
 fprintf(swapableID,[... %This should be removed eventually. Changing the file programmatically is bad form
-           'function [posGround,varargout] = swapablePath(pathVariable,geomParams)\n',...
-           '     func = @%s;\n',...
-           '     posGround = func(pathVariable,geomParams);\n',...
-           '     if nargout == 2\n',...
-           '          [~,varargout{1}] = func(pathVariable,geomParams);\n',...
-           '     end\n',...
-           'end'],pathFuncName);
+    'function [posGround,varargout] = swapablePath(pathVariable,geomParams)\n',...
+    '     func = @%s;\n',...
+    '     posGround = func(pathVariable,geomParams);\n',...
+    '     if nargout == 2\n',...
+    '          [~,varargout{1}] = func(pathVariable,geomParams);\n',...
+    '     end\n',...
+    'end'],pathFuncName);
 fclose(swapableID);
 
 %% Vehicle IC's and dependant properties
@@ -54,19 +56,19 @@ if onpath
     iniVcm=initVelMag*iniucm;
     [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
     tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
-               -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
-               cos(lat)            0          -sin(lat);];
+        -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+        cos(lat)            0          -sin(lat);];
 else
     long = -1.9*pi/8;
     lat = -pi/4;
     initVelAng = 90;%degrees
     
     tanToGr = [-sin(lat)*cos(long) -sin(long) -cos(lat)*cos(long);
-               -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
-               cos(lat)            0          -sin(lat);];
+        -sin(lat)*sin(long) cos(long)  -cos(lat)*sin(long);
+        cos(lat)            0          -sin(lat);];
     ini_Rcm = tetherLength*[cos(long).*cos(lat);
-                            sin(long).*cos(lat);
-                            sin(lat);];
+        sin(long).*cos(lat);
+        sin(lat);];
     iniVcm = initVelMag*tanToGr*[cosd(initVelAng);sind(initVelAng);0];
 end
 
@@ -77,9 +79,9 @@ ini_yaw=atan2(-iniVcm(2),-iniVcm(1));
 bodyY_before_roll=bodyToGr*[0 1 0]';
 tanZ=tanToGr*[0 0 1]';
 
-if (strcmp(pathFuncName,'lemOfBooth')&& pathParamVec(3) < 0 ) ||  (strcmp(pathFuncName,'circleOnSphere')&& pathParamVec(2)<0) 
-ini_roll=((pi/2)+acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ))));
-else 
+if (strcmp(pathFuncName,'lemOfBooth')&& pathParamVec(3) < 0 ) ||  (strcmp(pathFuncName,'circleOnSphere')&& pathParamVec(2)<0)
+    ini_roll=((pi/2)+acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ))));
+else
     ini_roll=((pi/2)-acos(dot(bodyY_before_roll,tanZ)/(norm(bodyY_before_roll)*norm(tanZ))));
 end
 ini_Vcm_body = [-initVelMag;0;0];
@@ -87,7 +89,7 @@ ini_eul=[ini_roll ini_pitch ini_yaw];
 
 % % % initial conditions
 vhcl.setInitPosVecGnd(ini_Rcm,'m');
-vhcl.setInitVelVecGnd(ini_Vcm_body,'m/s');
+vhcl.setInitVelVecBdy(ini_Vcm_body,'m/s');
 vhcl.setInitEulAng(ini_eul,'rad');
 vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
@@ -109,7 +111,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
+thr.tether1.initAirNodeVel.setValue(rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% winches IC's and dependant properties
@@ -118,71 +120,73 @@ wnch.setTetherInitLength(vhcl,env,thr);
 %% Controller User Def. Parameters and dependant properties
 allMat = zeros(4,3);
 allMat(1,1)=-1/(2*vhcl.portWing.GainCL.Value(2)*...
-   vhcl.portWing.refArea.Value*abs(vhcl.portWing.aeroCentPosVec.Value(2)));
+    vhcl.portWing.refArea.Value*abs(vhcl.portWing.aeroCentPosVec.Value(2)));
 allMat(2,1)=-1*allMat(1,1);
 allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
-   vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
+    vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
 allMat(4,3)= 1/(vhcl.vStab.GainCL.Value(2)*...
-   vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
+    vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1)));
 %pathCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
 
-fltCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
+% fltCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 % fltCtrl.outRanges.setValue([ 0.49   1.0000;
 %     2.0000    2.0000],''); %circle
-   
+
 %fltCtrl.outRanges.setValue([0 .125;...
 %                             .375 .625;...
 %                             .875 1],''); %fig 8
 fltCtrl.outRanges.setValue( [0    0.1250;
-                        0.3450    0.6250;
-                   0.8500    1.0000;],'');
+    0.3450    0.6250;
+    0.8500    1.0000;],'');
 
 fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
-                                1.1584         0         0;
-                                0             -2.0981    0;
-                                0              0         4.8067],'(deg)/(m^3)');
+    1.1584         0         0;
+    0             -2.0981    0;
+    0              0         4.8067],'(deg)/(m^3)');
 fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
 fltCtrl.traditionalBool.setValue(0,'')
-fltCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
-%% gain tuning based on flow speed 
+% fltCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
+%% gain tuning based on flow speed
 switch norm(env.water.velVec.Value)
-case 0.1
-    fltCtrl.perpErrorVal.setValue(7*pi/180,'rad');
-    fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
-    fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-case 0.5
-    fltCtrl.perpErrorVal.setValue(4*pi/180,'rad');
-    fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
-    fltCtrl.rollMoment.kd.setValue(.6*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-case 1  
-%     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-%     fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-%     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-     fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-     fltCtrl.velAng.tau.setValue(.8,'s');
-    fltCtrl.rollMoment.tau.setValue (.8,'s');
-    fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
-case 1.5
-%     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-%     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
-%     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%     fltCtrl.velAng.tau.setValue(.01,'s');
-%     fltCtrl.rollMoment.tau.setValue (.01,'s');
-    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-    fltCtrl.rollMoment.kd.setValue(150000,'(N*m)/(rad/s)');
-    fltCtrl.velAng.tau.setValue(.01,'s');
-    fltCtrl.rollMoment.tau.setValue (.01,'s');
-case 2
-    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');   
-    fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
-    fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    case 0.1
+        fltCtrl.perpErrorVal.setValue(7*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    case 0.5
+        fltCtrl.perpErrorVal.setValue(4*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(.6*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    case 1
+        %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+        %     fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+        %     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        fltCtrl.velAng.tau.setValue(.8,'s');
+        fltCtrl.rollMoment.tau.setValue (.8,'s');
+        fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+        fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    case 1.5
+        %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+        %     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
+        %     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        %     fltCtrl.velAng.tau.setValue(.01,'s');
+        %     fltCtrl.rollMoment.tau.setValue (.01,'s');
+        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(150000,'(N*m)/(rad/s)');
+        fltCtrl.velAng.tau.setValue(.01,'s');
+        fltCtrl.rollMoment.tau.setValue (.01,'s');
+    case 2
+        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 end
+
+fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 
 %% Scale
 % scale environment
@@ -203,18 +207,20 @@ wnch.scale(lengthScaleFactor,densityScaleFactor);
 traditionalBool = 0;
 simWithMonitor('OCTModel')
 parseLogsout;
+
+vhcl.animateSim(tsc,fltCtrl)
 %stopCallback
 %% plots
 
 figure
- timevec=tsc.velocityVec.Time;
- ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
+timevec=tsc.velocityVec.Time;
+ten=squeeze(sqrt(sum(tsc.FThrNetBdy.Data.^2,1)));
 plot(tsc.winchSpeeds.Time,tsc.winchSpeeds.Data.*ten)
 xlabel('time (s)')
 ylabel('Power (Watts)')
- [~,i1]=min(abs(timevec - 0));
- [~,i2]=min(abs(timevec -100)); %(timevec(end)/2)));
- [~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
+[~,i1]=min(abs(timevec - 0));
+[~,i2]=min(abs(timevec -100)); %(timevec(end)/2)));
+[~,poweri1]=min(tsc.winchSpeeds.Data(i1:i2).*ten(i1:i2));
 poweri1 = poweri1 + i1;
 [~,i3]=min(abs(timevec - (timevec(end)/2)));
 [~,i4]=min(abs(timevec - timevec(end)));
@@ -231,7 +237,7 @@ ylims=ylim;
 plot([timevec(poweri1) timevec(poweri1)], [-1e6 1e6],'r--')
 plot([timevec(poweri2) timevec(poweri2)], [-1e6 1e6],'r--')
 ylim(ylims);
- meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
+meanPower = mean(tsc.winchSpeeds.Data(poweri1:poweri2).*ten(poweri1:poweri2));
 title(sprintf('Power vs Time; Average Power between lines = %4.2f Watts',meanPower));
 saveas(gcf,'power.png')
 savefig('pow.fig')
