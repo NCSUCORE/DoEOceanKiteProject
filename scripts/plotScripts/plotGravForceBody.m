@@ -1,4 +1,5 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Gravitational Force, Body Frame');
+figure('Name','Gravitational Force, Body Frame');
+
 subplot(3,1,1)
 plot(tsc.FGravBdy.Time,tsc.FGravBdy.Data(:,1),...
     'LineStyle','-','Color','k','LineWidth',1.5)

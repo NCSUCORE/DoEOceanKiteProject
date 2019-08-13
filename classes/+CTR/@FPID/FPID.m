@@ -2,7 +2,7 @@ classdef FPID < handle
     %@FPID Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties  (SetAccess = private)
         kp
         ki
         kd
@@ -26,7 +26,20 @@ classdef FPID < handle
                 obj.(props{ii}).scale(scaleFactor);
             end
         end
-       
+        function setKp(obj,val,unit)
+            obj.kp.setValue(val,unit);
+        end
+        function setKi(obj,val,unit)
+            obj.ki.setValue(val,unit);
+        end
+        function setKd(obj,val,unit)
+            obj.kd.setValue(val,unit);
+        end
+        function setTau(obj,val,unit)
+            obj.tau.setValue(val,unit);
+        end
+        
+        
     end
 end
 

@@ -1,4 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Velocity');
+figure('Name','Velocity');
 subplot(3,1,1)
 plot(tsc.velocityVec.Time,squeeze(tsc.velocityVec.Data(1,:,:)),...
     'LineStyle','-','Color','k','LineWidth',1.5)

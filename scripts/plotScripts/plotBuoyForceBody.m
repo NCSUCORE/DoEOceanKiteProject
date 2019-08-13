@@ -1,4 +1,5 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Buoyant Force, Body Frame');
+figure('Name','Buoyant Force, Body Frame');
+
 subplot(3,1,1)
 plot(tsc.FBuoyBdy.Time,tsc.FBuoyBdy.Data(:,1),...
     'LineStyle','-','Color','k','LineWidth',1.5)

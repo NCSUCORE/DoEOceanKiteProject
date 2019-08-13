@@ -1,4 +1,5 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Ctrl Surf Deflections');
+figure('Name','Ctrl Surf Deflections');
+
 subplot(4,1,1)
 plot(tsc.portAileronDefl.Time,tsc.portAileronDefl.Data,...
     'LineStyle','-','Color','k','LineWidth',1.5)

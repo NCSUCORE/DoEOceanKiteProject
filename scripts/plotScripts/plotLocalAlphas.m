@@ -1,4 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Local AoA');
+figure('Name','Local AoAs')
 
 for ii = 1:numel(tsc.alphaLocal.data(:,:,1))
     subplot(numel(tsc.alphaLocal.data(:,:,1)),1,ii)

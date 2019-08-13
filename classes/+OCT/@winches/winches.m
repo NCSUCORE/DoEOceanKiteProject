@@ -74,7 +74,7 @@ classdef winches < dynamicprops
                 env.gravAccel.Value*[0;0;1];
             
             % calculate lift forces for wing and HS, ignore VS
-            Vrel = env.water.velVec.Value - vhcl.initVelVecGnd.Value;
+            Vrel = env.water.velVec.Value - rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value;
             q = 0.5*env.water.density.Value*(norm(Vrel))^2;
             aeroSurfs = vhcl.getPropsByClass('OCT.aeroSurf');
             F_aero = [0;0;0];

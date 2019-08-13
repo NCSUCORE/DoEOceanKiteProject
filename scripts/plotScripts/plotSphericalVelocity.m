@@ -1,4 +1,4 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Spherical Velocity');
+figure('Name','Spherical Velocity');
 
 subplot(3,1,1)
 plot(tsc.positionVec.Time,squeeze(dot(tsc.velocityVec.Data,tsc.positionVec.Data./sqrt(sum((tsc.positionVec.Data).^2,1)))),...

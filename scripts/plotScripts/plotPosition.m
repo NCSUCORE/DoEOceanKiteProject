@@ -1,4 +1,5 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Position');
+figure('Name','Position');
+
 subplot(3,1,1)
 plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(1,:,:)),...
     'LineStyle','-','Color','k','LineWidth',1.5)

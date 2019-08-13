@@ -28,11 +28,11 @@ loadComponent('pathFollowingVhcl');
 loadComponent('pathFollowingEnv');
 
 %% Path Choice
-pathIniRadius = 125;
+pathIniRadius =125;
 
 pathFuncName='lemOfBooth';
-%pathParamVec=[.73,.8,.4,0,pathIniRadius];%Lem
-pathParamVec=[1,1.4,.36,0,pathIniRadius];%Lem
+pathParamVec=[.73,.6,.36,0,pathIniRadius];%Lem
+%pathParamVec=[1,1.4,.36,0,pathIniRadius];%Lem
 %  pathFuncName='circleOnSphere';
 %  pathParamVec=[pi/8,-3*pi/8,0,pathIniRadius];%Circle
 
@@ -52,7 +52,7 @@ tetherLength = pathIniRadius;
 initVelMag = 6;
 onpath = true;
 if onpath
-    pathParamStart = .6;
+    pathParamStart = .4;
     [ini_Rcm,iniucm]=swapablePath(pathParamStart,pathParamVec);
     iniVcm=initVelMag*iniucm;
     [long,lat,~]=cart2sph(ini_Rcm(1),ini_Rcm(2),ini_Rcm(3));
@@ -90,7 +90,7 @@ ini_eul=[ini_roll ini_pitch ini_yaw];
 
 % % % initial conditions
 vhcl.setInitPosVecGnd(ini_Rcm,'m');
-vhcl.setInitVelVecGnd(ini_Vcm_body,'m/s');
+vhcl.setInitVelVecBdy(ini_Vcm_body,'m/s');
 vhcl.setInitEulAng(ini_eul,'rad');
 vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
@@ -102,7 +102,7 @@ vhcl.setAddedMISwitch(0,'');
 
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2
+flowspeed = .5; %m/s options are .1, .5, 1, 1.5, and 2
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 
 %% Ground Station IC's and dependant properties
@@ -129,7 +129,7 @@ allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
    vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
 allMat(4,3)= 1/(vhcl.vStab.GainCL.Value(2)*...
    vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
-fltCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
+%fltCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
 
 fltCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 % fltCtrl.outRanges.setValue([ 0.49   1.0000;
@@ -142,10 +142,10 @@ fltCtrl.outRanges.setValue( [0    0.1250;
                         0.3450    0.6250;
                    0.8500    1.0000;],'');
 
-% fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
-%                                 1.1584         0         0;
-%                                 0             -2.0981    0;
-%                                 0              0         4.8067],'(deg)/(m^3)');
+fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
+                                1.1584         0         0;
+                                0             -2.0981    0;
+                                0              0         4.8067],'(deg)/(m^3)');
 fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
@@ -154,13 +154,13 @@ fltCtrl.pathParams.setValue(pathParamVec,''); %Unscalable
 %% gain tuning based on flow speed 
 switch norm(env.water.velVec.Value)
 case 0.1
-    fltCtrl.perpErrorVal.setValue(7*pi/180,'rad');
-    fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
+   fltCtrl.perpErrorVal.setValue(3*pi*180,'rad');
+    fltCtrl.rollMoment.kp.setValue(1e5,'(N*m)/(rad)');
     fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 case 0.5
     fltCtrl.perpErrorVal.setValue(4*pi/180,'rad');
-    fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
-    fltCtrl.rollMoment.kd.setValue(.6*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    fltCtrl.rollMoment.kp.setValue(2e5,'(N*m)/(rad)');
+    fltCtrl.rollMoment.kd.setValue(.4*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 case 1  
 %    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
 %    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
@@ -246,4 +246,28 @@ kiteAxesPlot
 % savefig('vel.fig')
 % plotTenVecMags
 % saveas(gcf,'tension.png')
-% kiteAxesPlot
+ kiteAxesPlot
+
+
+%tsc.FLiftBdy.plot
+
+
+figure (3)
+  lifta=tsc.FLiftBdy.Data(:,:,:);
+   liftaMag = sqrt(sum((lifta).^2,1));
+  draga=tsc.FDragBdy.Data(:,:,:);
+   dragaMag = sqrt(sum((draga).^2,1));
+   lVd = liftaMag./dragaMag;
+    plot(tsc.velocityVec.Time, squeeze(lVd));
+    
+    xlabel('time (s)')
+    ylabel('FLift/FDrag')
+    hold on
+    
+ figure (4)
+    plot(tsc.velocityVec.Time,squeeze(tsc.FFluidBdy.data(1,:,:)))
+    
+    xlabel('time (s)')
+    ylabel('FfluidX (N)')
+        
+    %thrust = liftaMag.*sin(squeeze((pi/180).*tsc.alphaLocal.Data(:,1,:)))-dragaMag.*cos(squeeze((pi/180).*tsc.alphaLocal.Data(:,1,:)))

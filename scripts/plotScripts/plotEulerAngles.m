@@ -1,4 +1,5 @@
-figure('Position',[ 1 41 1920 963],'Units','pixels','Name','Euler Angles');
+figure('Name','Euler Angles');
+
 subplot(3,1,1)
 plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,...
     'LineStyle','-','Color','k','LineWidth',1.5)

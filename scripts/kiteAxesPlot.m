@@ -2,9 +2,9 @@
 parseLogsout;
 figure
 ax=axes;
-pathvals=swapablePath(linspace(0,1,1000),fltCtrl.pathParams.Value);
+pathvals=swapablePath(linspace(0,1,1000),hiLvlCtrl.basisParams.Value);
 timevec=tsc.positionVec.Time;
-tetherLength=fltCtrl.pathParams.Value(end);
+tetherLength=hiLvlCtrl.basisParams.Value(end);
 %% Options
 grow = true;
 
@@ -29,7 +29,7 @@ for t=dispTimeVec
 
     if grow
         tetherLength = norm(posG);
-        pathvals=swapablePath(linspace(0,1,1000),[fltCtrl.pathParams.Value(1:end-1) tetherLength]);
+        pathvals=swapablePath(linspace(0,1,1000),[hiLvlCtrl.basisParams.Value(1:end-1) tetherLength]);
     end
     plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
     hold on
