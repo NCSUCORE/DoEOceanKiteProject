@@ -19,6 +19,8 @@ addParameter(p,'View',[71,22],@isnumeric) % Camera view angle [azimuth elevation
 addParameter(p,'FontSize',get(0,'defaultAxesFontSize'),@isnumeric) % Font size
 addParameter(p,'PlotTracer',true,@islogical) % Plot tracer yes/no
 addParameter(p,'TracerDuration',5,@isnumeric) % Time duration in seconds spanned by tracer
+addParameter(p,'PathPosition',false,@islogical) % closest point on the path
+addParameter(p,'NavigationVecs',false,@islogical) % Plot normal and tangent vectors
 
 parse(p,tsc,timeStep,varargin{:})
 
@@ -81,6 +83,41 @@ if ~isempty(p.Results.PathFunc)
         path(3,:),...
         'LineStyle','-','Color','k');
 end
+
+% Plot current path position
+if p.Results.PathPosition
+    pt = eval(sprintf('%s(tsc.currentPathVar.Data(1),tsc.basisParams.Data(:,:,1))',...
+        p.Results.PathFunc));
+    h.pathPosition = plot3(pt(1),pt(2),pt(3),'ro');
+end
+
+if p.Results.NavigationVecs
+    posData = squeeze(tsc.positionVec.Data)';
+    r = sqrt(sum(posData.^2,2));
+    len = 0.1*max(r);
+    pathPt = eval(sprintf('%s(tsc.currentPathVar.Data(1),tsc.basisParams.Data(:,:,1))',...
+        p.Results.PathFunc));
+    h.tanVec = quiver3(...
+        pathPt(1),pathPt(2),pathPt(3),...
+        len*tsc.tanVec.Data(1,1),...
+        len*tsc.tanVec.Data(1,2),...
+        len*tsc.tanVec.Data(1,3),...
+        'MaxHeadSize',0,'Color','r','LineStyle','-');
+    h.perpVec = quiver3(...
+        posData(1,1),posData(1,2),posData(1,3),...
+        len*tsc.perpVec.Data(1,1,1),...
+        len*tsc.perpVec.Data(2,1,1),...
+        len*tsc.perpVec.Data(3,1,1),...
+        'MaxHeadSize',0,'Color','g','LineStyle','-');
+    h.desVec = quiver3(...
+        posData(1,1),posData(1,2),posData(1,3),...
+        len*tsc.velVectorDes.Data(1,1),...
+        len*tsc.velVectorDes.Data(1,2),...
+        len*tsc.velVectorDes.Data(1,3),...
+        'MaxHeadSize',0,'Color','b','LineStyle','-');
+    
+end
+
 % Set the font size
 set(gca,'FontSize',p.Results.FontSize);
 
@@ -111,6 +148,39 @@ for ii = 1:length(tsc.eulerAngles.Time)
         h.path.ZData = path(3,:);
     end
     
+    % Plot current path position
+    if p.Results.PathPosition
+        pt = eval(sprintf('%s(tsc.currentPathVar.Data(ii),tsc.basisParams.Data(:,:,ii))',...
+            p.Results.PathFunc));
+        h.pathPosition.XData = pt(1);
+        h.pathPosition.YData = pt(2);
+        h.pathPosition.ZData = pt(3);
+    end
+    if p.Results.NavigationVecs
+        pathPt = eval(sprintf('%s(tsc.currentPathVar.Data(ii),tsc.basisParams.Data(:,:,ii))',...
+            p.Results.PathFunc));
+        h.tanVec.XData = pathPt(1);
+        h.tanVec.YData = pathPt(2);
+        h.tanVec.ZData = pathPt(3);
+        h.tanVec.UData = len*tsc.tanVec.Data(ii,1);
+        h.tanVec.VData = len*tsc.tanVec.Data(ii,2);
+        h.tanVec.WData = len*tsc.tanVec.Data(ii,3);
+        
+        h.perpVec.XData = tsc.positionVec.Data(1,:,ii);
+        h.perpVec.YData = tsc.positionVec.Data(2,:,ii);
+        h.perpVec.ZData = tsc.positionVec.Data(3,:,ii);
+        h.perpVec.UData = len*tsc.perpVec.Data(ii,1);
+        h.perpVec.VData = len*tsc.perpVec.Data(ii,2);
+        h.perpVec.WData = len*tsc.perpVec.Data(ii,3);
+        
+        
+        h.desVec.XData = tsc.positionVec.Data(1,:,ii);
+        h.desVec.YData = tsc.positionVec.Data(2,:,ii);
+        h.desVec.ZData = tsc.positionVec.Data(3,:,ii);
+        h.desVec.UData = len*tsc.velVectorDes.Data(ii,1);
+        h.desVec.VData = len*tsc.velVectorDes.Data(ii,2);
+        h.desVec.WData = len*tsc.velVectorDes.Data(ii,3);
+    end
     h.title.String = sprintf('Time = %.1f',tsc.eulerAngles.Time(ii));
     drawnow
 end

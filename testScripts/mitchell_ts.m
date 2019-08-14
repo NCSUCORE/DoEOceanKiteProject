@@ -28,7 +28,7 @@ loadComponent('pathFollowingEnv');
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
-hiLvlCtrl.basisParams.setValue([.75,1,.36,0,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.75,1.5,.36,0,125],'') % Lemniscate of Booth
 
 
 %% Environment IC's and dependant properties
@@ -108,7 +108,8 @@ switch norm(env.water.velVec.Value)
         %     fltCtrl.rollMoment.tau.setValue (.01,'s');
         fltCtrl.setPerpErrorVal(3*pi/180,'rad');
         fltCtrl.rollMoment.setKp(3e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.setKd(150000,'(N*m)/(rad/s)');
+%         fltCtrl.rollMoment.setKd(150000,'(N*m)/(rad/s)');
+        fltCtrl.rollMoment.setKd(0000,'(N*m)/(rad/s)');
         fltCtrl.velAng.setTau(.01,'s');
         fltCtrl.rollMoment.setTau(.01,'s');
     case 2
@@ -120,7 +121,7 @@ switch norm(env.water.velVec.Value)
 end
 
 fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-fltCtrl.velAng.kd.setValue(1.5*fltCtrl.velAng.kp.Value,'(rad)/(rad/s)');
+fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 
 % Turn off spooling controller (get rid of this later)
@@ -150,4 +151,7 @@ parseLogsout;
 plotThrReleaseSpeeds
 
 %% Animate the results
-vhcl.animateSim(tsc,0.1,'PathFunc',fltCtrl.fcnName.Value)
+vhcl.animateSim(tsc,0.1,...
+    'PathFunc',fltCtrl.fcnName.Value,...
+    'PathPosition',true,...
+    'NavigationVecs',true)
