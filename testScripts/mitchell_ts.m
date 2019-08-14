@@ -108,8 +108,8 @@ switch norm(env.water.velVec.Value)
         %     fltCtrl.rollMoment.tau.setValue (.01,'s');
         fltCtrl.setPerpErrorVal(3*pi/180,'rad');
         fltCtrl.rollMoment.setKp(3e5,'(N*m)/(rad)');
-%         fltCtrl.rollMoment.setKd(150000,'(N*m)/(rad/s)');
-        fltCtrl.rollMoment.setKd(0000,'(N*m)/(rad/s)');
+        fltCtrl.rollMoment.setKd(150000,'(N*m)/(rad/s)');
+%         fltCtrl.rollMoment.setKd(0000,'(N*m)/(rad/s)');
         fltCtrl.velAng.setTau(.01,'s');
         fltCtrl.rollMoment.setTau(.01,'s');
     case 2
@@ -121,8 +121,9 @@ switch norm(env.water.velVec.Value)
 end
 
 fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
+fltCtrl.velAng.kd.setValue(0.5,'(rad)/(rad/s)');
 fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+fltCtrl.rollMoment.ki.setValue(1e10,'(N*m)/(rad*s)');
 
 % Turn off spooling controller (get rid of this later)
 fltCtrl.setWinchSpeedIn(0,'m/s');
@@ -148,7 +149,59 @@ simWithMonitor('OCTModel')
 parseLogsout;
 
 %% Plot things
+% Tether Release Speeds
 plotThrReleaseSpeeds
+% Desired And Achieved Moments
+figure
+subplot(3,1,1)
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(1,:,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual');
+grid on
+hold on
+plot(tsc.rollMomCtrl.Time,tsc.rollMomCtrl.Data,...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired');
+xlabel('Time, [s]')
+ylabel('Roll Moment [Nm]')
+legend
+
+subplot(3,1,2)
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(2,:,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual');
+grid on
+hold on
+plot(tsc.pitchMomCtrl.Time,tsc.pitchMomCtrl.Data,...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired');
+xlabel('Time, [s]')
+ylabel('Pitch Moment [Nm]')
+legend
+
+subplot(3,1,3)
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual');
+grid on
+hold on
+plot(tsc.yawMomCtrl.Time,tsc.yawMomCtrl.Data,...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired');
+xlabel('Time, [s]')
+ylabel('Yaw Moment [Nm]')
+legend 
+
+linkaxes(findall(gcf,'Type','axes'),'x')
+set(findall(gcf,'Type','axes'),'FontSize',16)
+
+figure
+tsc.tanRollDes.plot
+grid on
+hold on
+tsc.tanRoll.plot
+
+
 
 %% Animate the results
 vhcl.animateSim(tsc,0.1,...

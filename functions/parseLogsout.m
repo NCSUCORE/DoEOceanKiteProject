@@ -28,10 +28,13 @@ names = names(cellfun(@(x) ~isempty(x),names));
 % add each signal to the struct
 for ii = 1:length(names)
     ts = logsout.getElement(names{ii});
-    try
-    tsc.(cleanString(names{ii})) = ts.Values;
-    catch
+    if isa(ts,'Simulink.SimulationData.Signal')
+        tsc.(cleanString(names{ii})) = ts.Values;
+    else
+       warning('Duplicate signal names %s, skipping', names{ii})
+       break
     end
+    
 end
 
 if nargout == 0
