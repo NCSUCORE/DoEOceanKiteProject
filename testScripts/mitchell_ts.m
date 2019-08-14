@@ -6,7 +6,7 @@ end
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 1000*sqrt(lengthScaleFactor);
-flowspeed = 1.9;
+flowspeed = 2;
 pathFunc = 'lemOfBooth';
 dynamicCalc = '';
 
@@ -29,7 +29,7 @@ loadComponent('pathFollowingVhcl');
 loadComponent('pathFollowingEnv');
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,150],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,175],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
@@ -46,22 +46,6 @@ vhcl.setICsOnPath(...
     3*flowspeed) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
-%% Controller User Def. Parameters and dependant properties
-fltCtrl.setFcnName(pathFunc,'');
-fltCtrl.outRanges.setValue( [...
-    0           0.1250;
-    0.3450      0.6250;
-    0.8500      1.0000;],'');
-
-fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
-fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
-fltCtrl.traditionalBool.setValue(0,'')
-
-fltCtrl.controlSigMax.upperLimit.setValue(30,'')
-fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
-
-fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
-
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
@@ -73,7 +57,22 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 
-%% Set flight controller gains
+%% Controller User Def. Parameters and dependant properties
+fltCtrl.setFcnName(pathFunc,'');
+
+% Spooling/tether control parameters
+fltCtrl.outRanges.setValue( [...
+    0           0.1250;
+    0.3450      0.6250;
+    0.8500      1.0000;],'');
+
+fltCtrl.winchSpeedIn.setValue(-flowspeed/10,'m/s')
+fltCtrl.winchSpeedOut.setValue(flowspeed/10,'m/s')
+fltCtrl.winchSpeedIn.setValue(0,'m/s')
+fltCtrl.winchSpeedOut.setValue(0,'m/s')
+fltCtrl.traditionalBool.setValue(1,'')
+
+% Control surface parameters
 fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.velAng.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
@@ -86,18 +85,17 @@ fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
 
+fltCtrl.controlSigMax.upperLimit.setValue(30,'')
+fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
+
 fltCtrl.startControl.setValue(3,'s');
 
-fltCtrl.traditionalBool.setValue(1,'')
+% Set initial conditions
+fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 
-% Turn off spooling controller (fix tether length)
-fltCtrl.setWinchSpeedIn(0,'m/s');
-fltCtrl.setWinchSpeedOut(0,'m/s');
 
 %% Run the simulation
 simWithMonitor('OCTModel')
-
-%%
 parseLogsout;
 
 %% Plot things
@@ -157,6 +155,9 @@ for ii = 1:4
     xlabel('Time, [s]')
     ylabel('Cmd Defl 1')
 end
+
+%% Plot magnitudes of tether tension
+plotTenVecMags
 
 %% Plot tangent roll tracking
 figure

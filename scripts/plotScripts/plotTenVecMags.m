@@ -1,8 +1,8 @@
 figure('Name','Air Ten Mag')
 
 for ii = 1:numel(tsc.airTenVecBusArry)
-    figure('Position',[ 1 41 1920 963],'Units','pixels','Name',sprintf('Thr %d Net Force Mag',ii));
-    subplot(numel(tsc.airTenVecBusArry),1,ii)
+%     figure('Position',[ 1 41 1920 963],'Units','pixels','Name',sprintf('Thr %d Net Force Mag',ii));
+%     subplot(numel(tsc.airTenVecBusArry),1,ii)
     plot(tsc.airTenVecBusArry(ii).tenVec.Time,squeeze(sqrt(sum(tsc.airTenVecBusArry(ii).tenVec.Data(:,:,:).^2))),...
         'LineStyle','-','Color','k','LineWidth',1.5,'DisplayName','Air')
     grid on
