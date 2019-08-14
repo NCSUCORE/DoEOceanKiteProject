@@ -5,7 +5,9 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 200*sqrt(lengthScaleFactor);
+duration_s  = 1000*sqrt(lengthScaleFactor);
+flowspeed = 1.9;
+pathFunc = 'lemOfBooth';
 dynamicCalc = '';
 
 %% Load components
@@ -27,30 +29,25 @@ loadComponent('pathFollowingVhcl');
 loadComponent('pathFollowingEnv');
 
 %% Set basis parameters for high level controller
-% hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
 hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,150],'') % Lemniscate of Booth
 
-
 %% Environment IC's and dependant properties
-% Set Values
-flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
-%gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
-fltCtrl.setFcnName('lemOfBooth','');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
     0,... % Initial path position
-    fltCtrl.fcnName.Value,... % Name of path function
+    pathFunc,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    6) % Initial speed
+    3*flowspeed) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Controller User Def. Parameters and dependant properties
+fltCtrl.setFcnName(pathFunc,'');
 fltCtrl.outRanges.setValue( [...
     0           0.1250;
     0.3450      0.6250;
@@ -76,7 +73,7 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 
-%% gain tuning based on flow speed
+%% Set flight controller gains
 fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.velAng.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
@@ -93,24 +90,9 @@ fltCtrl.startControl.setValue(3,'s');
 
 fltCtrl.traditionalBool.setValue(1,'')
 
-% Turn off spooling controller (get rid of this later)
+% Turn off spooling controller (fix tether length)
 fltCtrl.setWinchSpeedIn(0,'m/s');
 fltCtrl.setWinchSpeedOut(0,'m/s');
-
-%% Scale
-% scale environment
-env.scale(lengthScaleFactor,densityScaleFactor);
-% scale vehicle
-vhcl.scale(lengthScaleFactor,densityScaleFactor);
-vhcl.calcFluidDynamicCoefffs;
-% scale ground station
-gndStn.scale(lengthScaleFactor,densityScaleFactor);
-% scale tethers
-thr.scale(lengthScaleFactor,densityScaleFactor);
-% scale winches
-wnch.scale(lengthScaleFactor,densityScaleFactor);
-% scale controller
-fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
 %% Run the simulation
 simWithMonitor('OCTModel')
@@ -187,7 +169,7 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
 legend
 
 %% Animate the results
-vhcl.animateSim(tsc,0.1,...
+vhcl.animateSim(tsc,0.5,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
     'NavigationVecs',true)

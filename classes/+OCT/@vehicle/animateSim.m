@@ -62,7 +62,8 @@ end
 view(p.Results.View)
 
 % Title
-h.title = title(sprintf('Time = %.1f',0));
+h.title = title({sprintf('Time = %.1f s',0),...
+    sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,1)))});
 
 % Tracer
 if p.Results.PlotTracer
@@ -181,7 +182,8 @@ for ii = 1:length(tsc.eulerAngles.Time)
         h.desVec.VData = len*tsc.velVectorDes.Data(ii,2);
         h.desVec.WData = len*tsc.velVectorDes.Data(ii,3);
     end
-    h.title.String = sprintf('Time = %.1f',tsc.eulerAngles.Time(ii));
+    h.title.String = {sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),...
+        sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii)))};
     drawnow
 end
 
