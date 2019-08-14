@@ -1,30 +1,14 @@
 figure('Name','Ctrl Surf Deflections');
 
-subplot(4,1,1)
-plot(tsc.portAileronDefl.Time,tsc.portAileronDefl.Data,...
+numSurfs = numel(tsc.ctrlSurfDeflection.Data(:,:,1));
+for ii = 1:numSurfs
+    subplot(numSurfs,1,ii)
+    plot(tsc.ctrlSurfDeflection.Time,...
+        squeeze(tsc.ctrlSurfDeflection.Data(ii,:,:)),...
     'LineStyle','-','Color','k','LineWidth',1.5)
-xlabel('Time, [s]')
-ylabel('$\delta_{ail}^{prt}$, [deg]')
-
-subplot(4,1,2)
-plot(tsc.stbAileronDefl.Time,tsc.stbAileronDefl.Data,...
-    'LineStyle','-','Color','k','LineWidth',1.5)
-xlabel('Time, [s]')
-ylabel('$\delta_{ail}^{sbd}$, [deg]')
-
-subplot(4,1,3)
-plot(tsc.elevDefl.Time,tsc.elevDefl.Data,...
-    'LineStyle','-','Color','k','LineWidth',1.5)
-xlabel('Time, [s]')
-ylabel('$\delta_{elev}$, [deg]')
-
-
-subplot(4,1,4)
-plot(tsc.ruddDefl.Time,tsc.ruddDefl.Data,...
-    'LineStyle','-','Color','k','LineWidth',1.5)
-xlabel('Time, [s]')
-ylabel('$\delta_{rudd}$, [deg]')
-
+    xlabel('Time, [s]')
+    ylabel(sprintf('$ \\delta_{%d}$, [deg]',ii))
+end
 
 set(findall(gcf,'Type','axes'),'FontSize',20)
 linkaxes(findall(gcf,'Type','axes'),'x')

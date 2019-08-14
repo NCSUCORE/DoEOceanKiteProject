@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 60*sqrt(lengthScaleFactor);
+duration_s  = 200*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -28,7 +28,7 @@ loadComponent('pathFollowingEnv');
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
-hiLvlCtrl.basisParams.setValue([.75,1.5,.36,0,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,150],'') % Lemniscate of Booth
 
 
 %% Environment IC's and dependant properties
@@ -40,7 +40,6 @@ env.water.velVec.setValue([flowspeed 0 0],'m/s');
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 %gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
-
 fltCtrl.setFcnName('lemOfBooth','');
 
 %% Set vehicle initial conditions
@@ -57,14 +56,12 @@ fltCtrl.outRanges.setValue( [...
     0.3450      0.6250;
     0.8500      1.0000;],'');
 
-fltCtrl.ctrlAllocMat.setValue([...
-    -1.1584         0         0;
-     1.1584         0         0;
-     0             -2.0981    0;
-     0              0         4.8067],'(deg)/(m^3)');
 fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 fltCtrl.traditionalBool.setValue(0,'')
+
+fltCtrl.controlSigMax.upperLimit.setValue(30,'')
+fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 
@@ -80,50 +77,21 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 wnch.setTetherInitLength(vhcl,env,thr);
 
 %% gain tuning based on flow speed
-switch norm(env.water.velVec.Value)
-    case 0.1
-        fltCtrl.setPerpErrorVal(7*pi/180,'rad');
-        fltCtrl.rollMoment.setKp(4e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.setKd(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-    case 0.5
-        fltCtrl.setPerpErrorVal(4*pi/180,'rad');
-        fltCtrl.rollMoment.setKp(4e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.setKd(.6*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-    case 1
-        %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-        %     fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-        %     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-        fltCtrl.setPerpErrorVal(3*pi/180,'rad');
-        fltCtrl.rollMoment.setKp(3e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.setKd(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-        fltCtrl.velAng.setTau(.8,'s');
-        fltCtrl.rollMoment.setTau(.8,'s');
-        fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-        fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
-    case 1.5
-        %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-        %     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
-        %     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-        %     fltCtrl.velAng.tau.setValue(.01,'s');
-        %     fltCtrl.rollMoment.tau.setValue (.01,'s');
-        fltCtrl.setPerpErrorVal(3*pi/180,'rad');
-        fltCtrl.rollMoment.setKp(3e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.setKd(150000,'(N*m)/(rad/s)');
-%         fltCtrl.rollMoment.setKd(0000,'(N*m)/(rad/s)');
-        fltCtrl.velAng.setTau(.01,'s');
-        fltCtrl.rollMoment.setTau(.01,'s');
-    case 2
-        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-        fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-    otherwise
-        error('Controller tuning for that flow speed is not implemented')
-end
+fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
+fltCtrl.velAng.ki.setValue(0,'(rad)/(rad*s)');
+fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
 
-fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-fltCtrl.velAng.kd.setValue(0.5,'(rad)/(rad/s)');
-fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-fltCtrl.rollMoment.ki.setValue(1e10,'(N*m)/(rad*s)');
+fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
+fltCtrl.rollMoment.kd.setValue((1e4)/(40*pi/180),'(N*m)/(rad/s)');
+
+fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
+fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
+fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
+
+fltCtrl.startControl.setValue(3,'s');
+
+fltCtrl.traditionalBool.setValue(1,'')
 
 % Turn off spooling controller (get rid of this later)
 fltCtrl.setWinchSpeedIn(0,'m/s');
@@ -146,11 +114,11 @@ fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
 %% Run the simulation
 simWithMonitor('OCTModel')
+
+%%
 parseLogsout;
 
 %% Plot things
-% Tether Release Speeds
-plotThrReleaseSpeeds
 % Desired And Achieved Moments
 figure
 subplot(3,1,1)
@@ -159,52 +127,68 @@ plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(1,:,:)),...
     'DisplayName','Actual');
 grid on
 hold on
-plot(tsc.rollMomCtrl.Time,tsc.rollMomCtrl.Data,...
+plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,1),...
     'LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired');
 xlabel('Time, [s]')
 ylabel('Roll Moment [Nm]')
 legend
-
 subplot(3,1,2)
 plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(2,:,:)),...
     'LineWidth',1.5,'LineStyle','-','Color','k',...
     'DisplayName','Actual');
 grid on
 hold on
-plot(tsc.pitchMomCtrl.Time,tsc.pitchMomCtrl.Data,...
+plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,2),...
     'LineWidth',1.5,'LineStyle','--','Color','r',...
-    'DisplayName','Desired');
-xlabel('Time, [s]')
+    'DisplayName','Desired');xlabel('Time, [s]')
 ylabel('Pitch Moment [Nm]')
 legend
-
 subplot(3,1,3)
 plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
     'LineWidth',1.5,'LineStyle','-','Color','k',...
     'DisplayName','Actual');
 grid on
 hold on
-plot(tsc.yawMomCtrl.Time,tsc.yawMomCtrl.Data,...
+plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
     'LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired');
 xlabel('Time, [s]')
 ylabel('Yaw Moment [Nm]')
-legend 
+legend
 
 linkaxes(findall(gcf,'Type','axes'),'x')
 set(findall(gcf,'Type','axes'),'FontSize',16)
 
+%% Plot local angles of attack
+plotLocalAlphas
+
+%% Plot control surf deflections
+plotControlSurfaceDeflections
+
+%% Plot ctrlCmds
 figure
-tsc.tanRollDes.plot
+for ii = 1:4
+    subplot(4,1,ii)
+    plot(tsc.ctrlCmds.Time,tsc.ctrlCmds.Data(:,ii),...
+        'LineWidth',1.5,'LineStyle','-','Color','k')
+    xlabel('Time, [s]')
+    ylabel('Cmd Defl 1')
+end
+
+%% Plot tangent roll tracking
+figure
+tsc.tanRoll.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual Tan Roll');
 grid on
 hold on
-tsc.tanRoll.plot
-
-
+tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired Tan Roll');
+legend
 
 %% Animate the results
 vhcl.animateSim(tsc,0.1,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
     'NavigationVecs',true)
+
