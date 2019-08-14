@@ -1,7 +1,7 @@
 figure
 hold on
 % pathParams = pathCtrl.pathParams.Value;
-pathParams = [pi/4,1.7,.7854,0,tetherLength]; %Lem
+pathParams = [.73,1,.37,0,125]; %Lem
 % pathParams = [.4,3*pi/8,0,tetherLength];%Circle
 pathvals=lemOfBooth(linspace(0,1,1000),pathParams);
 tetherLength=pathParams(end);
