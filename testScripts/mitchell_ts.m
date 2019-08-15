@@ -7,7 +7,7 @@ lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 1000*sqrt(lengthScaleFactor);
 flowspeed = 2;
-pathFunc = 'lemOfBooth';
+PATHGEOMETRY = 'lemOfBooth';
 dynamicCalc = '';
 
 %% Load components
@@ -41,7 +41,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
     0,... % Initial path position
-    pathFunc,... % Name of path function
+    PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     3*flowspeed) % Initial speed
 vhcl.setAddedMISwitch(false,'');
@@ -58,7 +58,7 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 wnch.setTetherInitLength(vhcl,env,thr);
 
 %% Controller User Def. Parameters and dependant properties
-fltCtrl.setFcnName(pathFunc,'');
+fltCtrl.setFcnName(PATHGEOMETRY,'');
 
 % Spooling/tether control parameters
 fltCtrl.outRanges.setValue( [...
