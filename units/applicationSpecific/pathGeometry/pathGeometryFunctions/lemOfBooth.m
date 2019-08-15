@@ -39,7 +39,11 @@ function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
                           -sin(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1))).*sin(longCurve + (aBooth.*sin(x))./((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1));
                           cos(latCurve + (aBooth.^2.*cos(x).*sin(x))./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)))];
         dPathdS = @(x) (dPathdLat(x).*dLatdS(x)) + (dPathdLong(x).*dLongdS(x));
-        tangentVec=-dPathdS(pathVariable);
+        if (geomParams(3) < 0 ) 
+        tangentVec = dPathdS(pathVariable);
+        else 
+        tangentVec = -dPathdS(pathVariable);
+        end
         varargout{1}=tangentVec./sqrt(sum(tangentVec.^2,1));
     end
 end

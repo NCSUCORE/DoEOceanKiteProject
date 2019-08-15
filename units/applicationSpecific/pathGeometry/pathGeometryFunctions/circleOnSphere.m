@@ -11,7 +11,7 @@ function [posGround,varargout] = circleOnSphere(pathVariable,geomParams)
 %   The second output, if requested is a ground frame unit vector in the
 %       direction tangent to the curve (the direction to go)
 
-    pathVariable = (pathVariable) * 2*pi;
+    pathVariable = 2*pi - (pathVariable * 2*pi);
     radius = geomParams(1);
     latCurve = geomParams(2);
     longCurve = geomParams(3);
@@ -38,7 +38,12 @@ function [posGround,varargout] = circleOnSphere(pathVariable,geomParams)
                           -sin(radius.*(longCurve + cos(x))).*sin(radius.*(latCurve + sin(x)))
                                    cos(radius.*(latCurve + sin(x)))];
         dPathdS = @(x) (dPathdLat(x).*dLatdS(x)) + (dPathdLong(x).*dLongdS(x));
-        tangentVec=-dPathdS(pathVariable);
+         if latCurve >0 
+            tangentVec = dPathdS(pathVariable);
+        else 
+           tangentVec = -dPathdS(pathVariable);
+        end
+        
         varargout{1}=tangentVec./norm(tangentVec);
     end
 end
