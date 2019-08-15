@@ -10,7 +10,7 @@ velCMBdy  = 2*[-2 0 -0.1];
 angVelBdy = [0 0 0]*pi/180;
 
 velWndBdy = [0 0 0];
-momDesBdy = [1e4 0 0];
+momDesBdy = -1e4*[1 1 1];
 
 sim('ctrlAllocMatrix_th')
 
@@ -24,3 +24,11 @@ fprintf('\nAbsolute Error\n')
 abs(momDesBdy(:)-moment.Data(:))
 fprintf('\nPercent Error\n')
 100*abs(momDesBdy(:)-moment.Data(:))./momDesBdy(:)
+
+A.Data
+B.Data
+C.Data
+D.Data
+E.Data
+
+D.Data*(momDesBdy(:)-sum(A.Data,2))
