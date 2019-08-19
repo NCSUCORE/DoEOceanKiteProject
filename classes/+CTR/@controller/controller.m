@@ -63,10 +63,10 @@ classdef controller < dynamicprops
         end
         
         % Function to scale the object
-        function obj = scale(obj,lengthScaleFactor)
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}).scale(lengthScaleFactor);
+                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
         end
     end

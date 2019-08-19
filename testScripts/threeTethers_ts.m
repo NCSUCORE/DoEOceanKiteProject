@@ -26,7 +26,7 @@ load('ayazThreeTetVhcl.mat')
 
 % % % initial conditions
 vhcl.setInitPosVecGnd([0;0;50],'m');
-vhcl.setInitVelVecGnd([0;0;0],'m/s');
+vhcl.setInitVelVecBdy([0;0;0],'m/s');
 vhcl.setInitEulAng([0;1;0]*pi/180,'rad');
 vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
@@ -54,7 +54,7 @@ for ii = 1:3
     thr.(strcat('tether',num2str(ii))).initAirNodePos.setValue...
         (vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts(ii).posVec.Value,'m');
     thr.(strcat('tether',num2str(ii))).initGndNodeVel.setValue([0 0 0]','m/s');
-    thr.(strcat('tether',num2str(ii))).initAirNodeVel.setValue(vhcl.initVelVecGnd.Value(:),'m/s');
+    thr.(strcat('tether',num2str(ii))).initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.(strcat('tether',num2str(ii))).vehicleMass.setValue(vhcl.mass.Value,'kg');
     
 end
@@ -92,7 +92,7 @@ thr.scale(lengthScaleFactor,densityScaleFactor);
 % scale winches
 wnch.scale(lengthScaleFactor,densityScaleFactor);
 % scale controller
-fltCtrl.scale(lengthScaleFactor);
+fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
 %% Run the simulation
 % load_system('OCTModel')
