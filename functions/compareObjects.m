@@ -16,6 +16,18 @@ function compareObjects(obj1,obj2,varargin)
         name2=inputname(2);
     end
     props = properties(obj1);
+    props2 = properties(obj2);
+    for j = 1:length(props) %This really ugly code appends unique entries to the end of the property list
+        ii=1;
+        while ii < length(props2)
+            if isequal(props2{ii},props{j})
+                props2(ii)=[];  
+                ii=length(props2)+2;              
+            end
+            ii=ii+1;
+        end
+    end
+    props(end+1:end+length(props2)) = props2;
     for i = 1:length(props)
         try
             if isprop(obj1.(props{i}),'Value') && isprop(obj2.(props{i}),'Value')
@@ -27,7 +39,7 @@ function compareObjects(obj1,obj2,varargin)
                                 ' %6.3f, and %s had a value of %6.3f.\n'],...
                                 prefix,props{i},name1,val1,name2,val2)
                     else
-                        if ~isempty(inputname(1)) 
+                        if ~isempty(inputname(1)) %Only for 
                             fprintf('for the property %s.%s, %s had a value of <a href="matlab:disp([newline '' %s.%s.Value='']);disp(%s.%s.Value)">value</a> and %s had a value of <a href="matlab:disp([newline '' %s.%s.Value='']);disp(%s.%s.Value)">value</a>\n',...%fprintf([strrep(%s.%s,class(eval(%s)),%s) ''='' eval(strrep(%s.%s,class(eval(%s)),%s))
                                     prefix,props{i},name1,name1,props{i},name1,props{i},name2,name2,props{i},name2,props{i});%prefix,props{i},name1,name1)
                         else
