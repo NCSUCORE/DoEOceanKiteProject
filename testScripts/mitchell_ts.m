@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 200*sqrt(lengthScaleFactor);
+duration_s  = 500*sqrt(lengthScaleFactor);
 flowspeed = 2;
 PATHGEOMETRY = 'lemOfBooth';
 dynamicCalc = '';
@@ -28,7 +28,7 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('pathFollowingEnv');
-
+SPOOLINGCONTROLLER = 'trad';
 %% Set basis parameters for high level controller
 hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,175],'') % Lemniscate of Booth
 
@@ -69,8 +69,10 @@ fltCtrl.outRanges.setValue( [...
 
 fltCtrl.winchSpeedIn.setValue(-flowspeed/10,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/10,'m/s')
-fltCtrl.winchSpeedIn.setValue(0,'m/s')
-fltCtrl.winchSpeedOut.setValue(0,'m/s')
+fltCtrl.setMinR(100,'m')
+fltCtrl.setMaxR(200,'m')
+%fltCtrl.winchSpeedIn.setValue(0,'m/s')
+%fltCtrl.winchSpeedOut.setValue(0,'m/s')
 fltCtrl.traditionalBool.setValue(1,'')
 
 % Control surface parameters
