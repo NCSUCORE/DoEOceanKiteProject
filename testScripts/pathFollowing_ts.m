@@ -8,8 +8,8 @@ densityScaleFactor = 1/1;
 duration_s  = 300*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 SPOOLINGCONTROLLER = 'nonTrad';
-PATHGEOMETRY = 'lemOfBooth'
-controlAllocationBit = 1;
+PATHGEOMETRY = 'lemOfBooth';
+controlAllocationBit = 0;
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -34,7 +34,7 @@ fltCtrl.setFcnName('lemOfBooth','');
 % fltCtrl.setFcnName('lemOfGerono','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
-hiLvlCtrl.basisParams.setValue([.73,.8,.36,0,125],'');% Lemniscate of Booth
+  hiLvlCtrl.basisParams.setValue([.73,.8,.36,0,125],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,125],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 
@@ -47,7 +47,7 @@ vhcl.setICsOnPath(...
 vhcl.setAddedMISwitch(false,'');
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = 1; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
+flowspeed = .5; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 
 %% Ground Station IC's and dependant properties
@@ -61,11 +61,14 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.density.setValue(0,'kg/m^3');
+thr.tether1.density.setValue(1300,'kg/m^3');
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 
 %% Controller User Def. Parameters and dependant properties
+
+
+
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
 fltCtrl.setSearchSize(.5,'');
@@ -94,8 +97,8 @@ fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
                                 1.1584         0         0;
                                 0             -2.0981    0;
                                 0              0         4.8067],'(deg)/(m^3)');
-fltCtrl.winchSpeedIn.setValue(0*-flowspeed/3,'m/s')
-fltCtrl.winchSpeedOut.setValue(0*flowspeed/3,'m/s')
+fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
+fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
 fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
 fltCtrl.velAng.kd.setValue(1.5*fltCtrl.velAng.kp.Value,'(rad)/(rad/s)');
@@ -109,9 +112,9 @@ fltCtrl.velAng.tau.setValue(.01,'s');
 
 fltCtrl.traditionalBool.setValue(0,'')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
-% fltCtrl.elevatorReelInDef.setValue(0,'deg')
+ fltCtrl.elevatorReelInDef.setValue(25,'deg')
 
-fltCtrl.yawMoment.kp.setValue(0*5e5,'(N*m)/(rad)')
+fltCtrl.yawMoment.kp.setValue(0*5e5,'(N*m)/(rad)')%************************************************I made this zero. JR********************************
 %% gain tuning based on flow speed 
 switch norm(env.water.velVec.Value)
     case 0.1
@@ -119,9 +122,10 @@ switch norm(env.water.velVec.Value)
         fltCtrl.rollMoment.kp.setValue(1e5,'(N*m)/(rad)');
         fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
     case 0.5
-        fltCtrl.perpErrorVal.setValue(4*pi/180,'rad');
-        fltCtrl.rollMoment.kp.setValue(2e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.kd.setValue(.4*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        fltCtrl.perpErrorVal.setValue(7*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(2e3,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+         fltCtrl.rollMoment.tau.setValue (.01,'s');
     case 1  
     %    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
     %    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
