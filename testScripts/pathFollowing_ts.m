@@ -1,4 +1,4 @@
-% clc;clear
+ clc;clear
 if ~slreportgen.utils.isModelLoaded('OCTModel')
     OCTModel
 end
@@ -7,7 +7,9 @@ lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 300*sqrt(lengthScaleFactor);
 dynamicCalc = '';
-%SPOOLINGCONTROLLER = 'nonTrad';
+SPOOLINGCONTROLLER = 'nonTrad';
+PATHGEOMETRY = 'lemOfBooth'
+controlAllocationBit = 1;
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -32,7 +34,7 @@ fltCtrl.setFcnName('lemOfBooth','');
 % fltCtrl.setFcnName('lemOfGerono','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
-hiLvlCtrl.basisParams.setValue([.5,1,.1,0,50],'');% Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.73,.8,.36,0,125],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,125],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 
@@ -45,7 +47,7 @@ vhcl.setICsOnPath(...
 vhcl.setAddedMISwitch(false,'');
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = .1; %m/s options are .1, .5, 1, 1.5, and 2
+flowspeed = 1; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 
 %% Ground Station IC's and dependant properties
@@ -59,18 +61,17 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-
+thr.tether1.density.setValue(0,'kg/m^3');
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
-
 fltCtrl.setSearchSize(.5,'');
 fltCtrl.setMinR(100,'m')
 fltCtrl.setMaxR(200,'m')
-fltCtrl.setElevatorReelInDef(25,'deg')
+
 fltCtrl.setStartControl(1,'s')
 
 allMat = zeros(4,3);
@@ -81,7 +82,7 @@ allMat(3,2)=-1/(vhcl.hStab.GainCL.Value(2)*...
    vhcl.hStab.refArea.Value*abs(vhcl.hStab.aeroCentPosVec.Value(1)));
 allMat(4,3)= 1/(vhcl.vStab.GainCL.Value(2)*...
    vhcl.vStab.refArea.Value*abs(vhcl.vStab.aeroCentPosVec.Value(1))); 
-fltCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
+%fltCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
 
 % fltCtrl.outRanges.setValue([ 0.49   1.0000;
 %     2.0000    2.0000],''); %circle
@@ -89,67 +90,67 @@ fltCtrl.outRanges.setValue( [0    0.1250;
                         0.3750    0.6250;
                    0.8750    1.0000;],'');
 
-% fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
-%                                 1.1584         0         0;
-%                                 0             -2.0981    0;
-%                                 0              0         4.8067],'(deg)/(m^3)');
-fltCtrl.winchSpeedIn.setValue(-0*flowspeed/3,'m/s')
+fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
+                                1.1584         0         0;
+                                0             -2.0981    0;
+                                0              0         4.8067],'(deg)/(m^3)');
+fltCtrl.winchSpeedIn.setValue(0*-flowspeed/3,'m/s')
 fltCtrl.winchSpeedOut.setValue(0*flowspeed/3,'m/s')
 
-fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(60*(pi/180)),'(rad)/(rad)');
+fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
 fltCtrl.velAng.kd.setValue(1.5*fltCtrl.velAng.kp.Value,'(rad)/(rad/s)');
-fltCtrl.velAng.tau.setValue(.8,'s');
+fltCtrl.velAng.tau.setValue(.01,'s');
 
-fltCtrl.perpErrorVal.setValue(10*pi/180,'rad');
-
-fltCtrl.rollMoment.kp.setValue(5e5,'(N*m)/(rad)');
-fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-fltCtrl.rollMoment.tau.setValue (.8,'s');
+% fltCtrl.perpErrorVal.setValue(10*pi/180,'rad');
+% 
+% % fltCtrl.rollMoment.kp.setValue(5e5,'(N*m)/(rad)');
+% % fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+% fltCtrl.rollMoment.tau.setValue (.8,'s');
 
 fltCtrl.traditionalBool.setValue(0,'')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
-fltCtrl.elevatorReelInDef.setValue(0,'deg')
+% fltCtrl.elevatorReelInDef.setValue(0,'deg')
 
-fltCtrl.yawMoment.kp.setValue(5e5,'(N*m)/(rad)')
+fltCtrl.yawMoment.kp.setValue(0*5e5,'(N*m)/(rad)')
 %% gain tuning based on flow speed 
-% switch norm(env.water.velVec.Value)
-%     case 0.1
-%        fltCtrl.perpErrorVal.setValue(3*pi*180,'rad');
-%         fltCtrl.rollMoment.kp.setValue(1e5,'(N*m)/(rad)');
-%         fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%     case 0.5
-%         fltCtrl.perpErrorVal.setValue(4*pi/180,'rad');
-%         fltCtrl.rollMoment.kp.setValue(2e5,'(N*m)/(rad)');
-%         fltCtrl.rollMoment.kd.setValue(.4*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%     case 1  
-%     %    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-%     %    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-%     %    fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-%         fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-%         fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%         fltCtrl.velAng.tau.setValue(.8,'s');
-%         fltCtrl.rollMoment.tau.setValue (.8,'s');
-%         fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-%         fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
-%     case 1.5
-%     %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-%     %     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
-%     %     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%     %     fltCtrl.velAng.tau.setValue(.01,'s');
-%     %     fltCtrl.rollMoment.tau.setValue (.01,'s');
-%         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-%         fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
-%         fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%         fltCtrl.velAng.tau.setValue(.8,'s');
-%         fltCtrl.rollMoment.tau.setValue (.8,'s');
-%     case 2
-%         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');   
-%         fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
-%         fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-%     otherwise
-%             error('Controller tuning for that flow speed is not implemented')
-% end
+switch norm(env.water.velVec.Value)
+    case 0.1
+       fltCtrl.perpErrorVal.setValue(3*pi*180,'rad');
+        fltCtrl.rollMoment.kp.setValue(1e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    case 0.5
+        fltCtrl.perpErrorVal.setValue(4*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(2e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(.4*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    case 1  
+    %    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+    %    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+    %    fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        fltCtrl.velAng.tau.setValue(.8,'s');
+        fltCtrl.rollMoment.tau.setValue (.8,'s');
+        fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+        fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+    case 1.5
+    %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+    %     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
+    %     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    %     fltCtrl.velAng.tau.setValue(.01,'s');
+    %     fltCtrl.rollMoment.tau.setValue (.01,'s');
+        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
+        fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        fltCtrl.velAng.tau.setValue(.8,'s');
+        fltCtrl.rollMoment.tau.setValue (.8,'s');
+    case 2
+        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');   
+        fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+    otherwise
+            error('Controller tuning for that flow speed is not implemented')
+end
 
 %% Scale
 % scale environment
@@ -169,7 +170,7 @@ fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
-kiteAxesPlot
+%kiteAxesPlot
 %stopCallback
 %% plots
 
