@@ -7,10 +7,10 @@ lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 500*sqrt(lengthScaleFactor);
 flowspeed = 1.5;
-PATHGEOMETRY = 'lemOfBooth';
+
 SPOOLINGCONTROLLER = 'nonTrad';
+
 dynamicCalc = '';
-SPOOLINGCONTROLLER = 'nonTrad';
 
 % ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
 controlAllocationBit = 0;
@@ -32,11 +32,7 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('pathFollowingEnv');
-<<<<<<< HEAD
-% SPOOLINGCONTROLLER = 'trad';
-=======
-%SPOOLINGCONTROLLER = 'trad';
->>>>>>> 052fa3d932909e9aae070f9f3e8772b19830d2cc
+
 %% Set basis parameters for high level controller
 hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,175],'') % Lemniscate of Booth
 

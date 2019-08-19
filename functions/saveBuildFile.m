@@ -1,4 +1,4 @@
-function saveBuildFile(object,BSfileName,varargin)
+function varargout = saveBuildFile(object,BSfileName,varargin)
 
 % this script stores the object parameters into a .mat file which has
 % the same name as the script thats being used to create the file
@@ -45,19 +45,23 @@ eval([p.Results.object ' =  evalin(''caller'',p.Results.object);']);
 
 
 if all(emptyCheck)
+    saveFile = strcat(currentMfileLoc,saveFileName);
     if isempty(p.UsingDefaults)
         % Check if the variant specifier exists in the caller workspace
         if ~evalin( 'base', sprintf('exist(''%s'',''var'') == 1;',p.Results.variant ))
            error('Variant specifier %s does not exist in workspace.\nPlease specify the relevant variant',p.Results.variant ); 
         end
         eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
-        save(strcat(currentMfileLoc,saveFileName),p.Results.object,p.Results.variant);
+        save(saveFile,p.Results.object,p.Results.variant);
     else
-        save(strcat(currentMfileLoc,saveFileName),p.Results.object);
+        save(saveFile,p.Results.object);
     end
 else
     error('Please do not specify initial conditions in build script')
 end
 
+if nargout > 0 
+    varargout{1} = saveFile;
+end
 
 end
