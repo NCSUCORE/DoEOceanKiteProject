@@ -8,6 +8,7 @@ densityScaleFactor = 1/1;
 duration_s  = 500*sqrt(lengthScaleFactor);
 flowspeed = 2;
 PATHGEOMETRY = 'lemOfBooth';
+SPOOLINGCONTROLLER = 'nonTrad';
 dynamicCalc = '';
 
 
@@ -28,7 +29,7 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('pathFollowingEnv');
-SPOOLINGCONTROLLER = 'trad';
+% SPOOLINGCONTROLLER = 'trad';
 %% Set basis parameters for high level controller
 hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,175],'') % Lemniscate of Booth
 
