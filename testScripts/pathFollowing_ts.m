@@ -7,7 +7,8 @@ lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 300*sqrt(lengthScaleFactor);
 dynamicCalc = '';
-
+PATHGEOMETRY = 'lemOfBooth';
+%SPOOLINGCONTROLLER = 'nonTrad';
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
