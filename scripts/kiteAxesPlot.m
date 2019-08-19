@@ -2,7 +2,7 @@
 parseLogsout;
 figure
 ax=axes;
-pathvals=swapablePath(linspace(0,1,1000),hiLvlCtrl.basisParams.Value);
+pathvals=lemOfBooth(linspace(0,1,1000),fltCtrl.pathParams.Value);
 timevec=tsc.positionVec.Time;
 tetherLength=hiLvlCtrl.basisParams.Value(end);
 %% Options
@@ -19,9 +19,10 @@ gifit = false;
 filename="animation.gif";
 gifWaitTime = .005;
 
+dispTimeVec = 35;
 % dispTimeVec = timevec(end);
 % dispTimeVec = linspace(90,114,40);
-dispTimeVec = linspace(0,timevec(end),frames);
+% dispTimeVec = linspace(0,timevec(end),frames);
 %% Execution
 for t=dispTimeVec
     [~,i]=min(abs(timevec-t));
@@ -29,7 +30,7 @@ for t=dispTimeVec
 
     if grow
         tetherLength = norm(posG);
-        pathvals=lemOfBooth(linspace(0,1,1000),[hiLvlCtrl.basisParams.Value(1:end-1) tetherLength]);
+        pathvals=lemOfBooth(linspace(0,1,1000),[fltCtrl.pathParams.Value(1:end-1) tetherLength]);
     end
     plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
     hold on
@@ -87,18 +88,18 @@ for t=dispTimeVec
 %     scatter3(starpos(1),starpos(2),starpos(3),'k','filled')
 
     %perp, tan, and weighted av
-    startanvec=tsc.tan_unit.Data(i,:);
-    startanvec=7*startanvec;
+%     startanvec=tsc.tan_unit.Data(i,:);
+%     startanvec=7*startanvec;
+%     
+%     starperpvec=tsc.perp_unit.Data(i,:);
+%     starperpvec = 7*starperpvec;
+%     
+%     dispVelVecDes=tsc.velVectorDes.Data(i,:);
+%     dispVelVecDes = 10*dispVelVecDes;
     
-    starperpvec=tsc.perp_unit.Data(i,:);
-    starperpvec = 7*starperpvec;
-    
-    dispVelVecDes=tsc.velVectorDes.Data(i,:);
-    dispVelVecDes = 10*dispVelVecDes;
-    
-    quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),dispVelVecDes(1),dispVelVecDes(2),dispVelVecDes(3),'r','lineWidth',2)
-    quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),starperpvec(1),starperpvec(2),starperpvec(3),'g','lineWidth',2)
-    quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),startanvec(1),startanvec(2),startanvec(3),'b','lineWidth',2)
+%     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),dispVelVecDes(1),dispVelVecDes(2),dispVelVecDes(3),'r','lineWidth',2)
+%     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),starperpvec(1),starperpvec(2),starperpvec(3),'g','lineWidth',2)
+%     quiver3(tsc.positionVec.Data(1,i),tsc.positionVec.Data(2,i),tsc.positionVec.Data(3,i),startanvec(1),startanvec(2),startanvec(3),'b','lineWidth',2)
 
     %% Window Options
     if min(tsc.positionVec.Data(3,1,:))>0

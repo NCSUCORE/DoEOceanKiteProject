@@ -44,7 +44,7 @@ function [posGround,varargout] = racetrack(pathVariable,geomParams)
                 dLatdS = @(x) 0;
                 dPathdLong =  @(x) [-cos(lat(x)).*sin(long(x));
                                     cos(lat(x)).*cos(long(x));
-                                    zeros(size(pathVariable))];
+                                    0];
                 dPathdLat = @(x) [-cos(long(x)).*sin(lat(x));
                                   -sin(lat(x)).*sin(long(x));
                                   cos(lat(x))];
@@ -68,7 +68,7 @@ function [posGround,varargout] = racetrack(pathVariable,geomParams)
                 dLatdS = @(x) radius*sin((x-.25)*(pi/.25))*(pi/.25);
                 dPathdLong =  @(x) [-cos(lat(x)).*sin(long(x));
                                     cos(lat(x)).*cos(long(x));
-                                    zeros(size(pathVariable))];
+                                    0];
                 dPathdLat = @(x) [-cos(long(x)).*sin(lat(x));
                                   -sin(lat(x)).*sin(long(x));
                                   cos(lat(x))];
@@ -92,7 +92,7 @@ function [posGround,varargout] = racetrack(pathVariable,geomParams)
                 dLatdS = @(x) 0;
                 dPathdLong =  @(x) [-cos(lat(x)).*sin(long(x));
                                     cos(lat(x)).*cos(long(x));
-                                    zeros(size(pathVariable))];
+                                    0];
                 dPathdLat = @(x) [-cos(long(x)).*sin(lat(x));
                                   -sin(lat(x)).*sin(long(x));
                                   cos(lat(x))];
@@ -117,7 +117,7 @@ function [posGround,varargout] = racetrack(pathVariable,geomParams)
                 dLatdS = @(x) -radius*sin((x-.25)*(pi/.25))*(pi/.25);
                 dPathdLong =  @(x) [-cos(lat(x)).*sin(long(x));
                                     cos(lat(x)).*cos(long(x));
-                                    zeros(size(pathVariable))];
+                                    0];
                 dPathdLat = @(x) [-cos(long(x)).*sin(lat(x));
                                   -sin(lat(x)).*sin(long(x));
                                   cos(lat(x))];
