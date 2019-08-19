@@ -1,9 +1,8 @@
-function varargout = compareObjects(obj1,obj2,varargin)
+function compareObjects(obj1,obj2,varargin)
 %uses the properties of object 1
 %obj1 is the first argument obj2 is the second in the structure
 %***varargin is used recursively. There is no need to use it when calling
 %       compare objects***
-
     if isempty(varargin)
         prefix = class(obj1);
     else
@@ -17,46 +16,52 @@ function varargout = compareObjects(obj1,obj2,varargin)
         name2=inputname(2);
     end
     props = properties(obj1);
-    output = (nargout >= 1);
-    diffs = [];
+    props2 = properties(obj2);
+    for j = 1:length(props) %This really ugly code appends unique entries to the end of the property list
+        ii=1;
+        while ii < length(props2)
+            if isequal(props2{ii},props{j})
+                props2(ii)=[];  
+                ii=length(props2)+2;              
+            end
+            ii=ii+1;
+        end
+    end
+    props(end+1:end+length(props2)) = props2;
     for i = 1:length(props)
-            ind = length(diffs)+1;
-            diffs(ind).name = props{i};
         try
             if isprop(obj1.(props{i}),'Value') && isprop(obj2.(props{i}),'Value')
                 val1 = obj1.(props{i}).Value;
                 val2 = obj2.(props{i}).Value;
-                if val1 == val2
-                    diffs(ind) = [];
-                else
-                    diffs(ind).name = props{i};
-                    diffs(ind).(name1) = val1;
-                    diffs(ind).(name2) = val2;
-                    fprintf(['For the property %s.%s, %s had a value of'...
-                            ' %f, and %s had a value of %f.\n'],...
-                            prefix,props{i},name1,val1,name2,val2)
+                if ~isequal(val1,val2)
+                    if max(size(val1))==1 || max(size(val2))==1
+                        fprintf(['For the property %s.%s, %s had a value of'...
+                                ' %6.3f, and %s had a value of %6.3f.\n'],...
+                                prefix,props{i},name1,val1,name2,val2)
+                    else
+                        if ~isempty(inputname(1)) %Only for 
+                            fprintf('for the property %s.%s, %s had a value of <a href="matlab:disp([newline '' %s.%s.Value='']);disp(%s.%s.Value)">value</a> and %s had a value of <a href="matlab:disp([newline '' %s.%s.Value='']);disp(%s.%s.Value)">value</a>\n',...%fprintf([strrep(%s.%s,class(eval(%s)),%s) ''='' eval(strrep(%s.%s,class(eval(%s)),%s))
+                                    prefix,props{i},name1,name1,props{i},name1,props{i},name2,name2,props{i},name2,props{i});%prefix,props{i},name1,name1)
+                        else
+                            fprintf(['For the property %s.%s, %s and %s'...
+                                     ' had different, non-singular values\n'],...
+                                     prefix,props{i},name1,name2);
+                        end
+                    end
                 end
             else
-                subprops = compareObjects(obj1.(props{i}),obj2.(props{i}),[prefix '.' props{i}],name1,name2);
-                if ~isempty(subprops)
-                    diffs(ind).subprops = subprops;
-                else
-                    diffs(ind) = [];
-                end
+                compareObjects(obj1.(props{i}),obj2.(props{i}),[prefix '.' props{i}],name1,name2);
             end
         catch ex
             if ex.identifier == "MATLAB:structRefFromNonStruct" ||...
-                    ex.identifier == "MATLAB:nonLogicalConditional"
-                diffs(ind).missingFromObj2 = "Yes";
-                fprintf('The property %s.%s was missing from one of the objects',...
+                    ex.identifier == "MATLAB:nonLogicalConditional" ||...
+                    ex.identifier == "MATLAB:noSuchMethodOrField"
+                fprintf('The property %s.%s was missing from one of the objects\n',...
                             prefix,props{i})
             else
                 fprintf('There was an error while evaluating property %s.%s\n',...
                             prefix,props{i})
             end
         end
-    end
-    if nargout >= 1
-        varargout{1} = diffs;
     end
 end

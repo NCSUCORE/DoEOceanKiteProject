@@ -89,9 +89,9 @@ classdef vehicle < dynamicprops
         function obj = vehicle
             %VEHICLE Construct an instance of this class
             obj.fluidDensity = SIM.parameter('Unit','kg/m^3','Description','Fluid density');
-            obj.numTethers  = SIM.parameter('Description','Number of tethers');
-            obj.numTurbines = SIM.parameter('Description','Number of turbines');
-            obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor');
+            obj.numTethers  = SIM.parameter('Description','Number of tethers','NoScale',true);
+            obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
+            obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor','NoScale',true);
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
             obj.Ixx            = SIM.parameter('Unit','kg*m^2','Description','Ixx');
@@ -105,59 +105,59 @@ classdef vehicle < dynamicprops
             obj.Rbridle_cm    = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
             obj.centOfBuoy        = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
             % fluid coeffs file name
-            obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data');
+            obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data','NoScale',true);
             % defining aerodynamic surfaces
             obj.RwingLE_cm    = SIM.parameter('Unit','m','Description','Vector going from CM to wing leading edge');
             obj.wingChord     = SIM.parameter('Unit','m','Description','Wing root chord');
-            obj.wingAR        = SIM.parameter('Description','Wing Aspect ratio');
-            obj.wingTR        = SIM.parameter('Description','Wing Taper ratio');
+            obj.wingAR        = SIM.parameter('Description','Wing Aspect ratio','NoScale',true);
+            obj.wingTR        = SIM.parameter('Description','Wing Taper ratio','NoScale',true);
             obj.wingSweep     = SIM.parameter('Unit','deg','Description','Wing sweep angle');
             obj.wingDihedral  = SIM.parameter('Unit','deg','Description','Wing dihedral angle');
             obj.wingIncidence = SIM.parameter('Unit','deg','Description','Wing flow incidence angle');
-            obj.wingNACA      = SIM.parameter('Description','Wing NACA airfoil');
-            obj.wingClMax     = SIM.parameter('Description','Wing airfoil maximum lift coefficient');
-            obj.wingClMin     = SIM.parameter('Description','Wing airfoil minimum lift coefficient');
+            obj.wingNACA      = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
+            obj.wingClMax     = SIM.parameter('Description','Wing airfoil maximum lift coefficient','NoScale',true);
+            obj.wingClMin     = SIM.parameter('Description','Wing airfoil minimum lift coefficient','NoScale',true);
             % H-stab
             obj.RhsLE_wingLE  = SIM.parameter('Unit','m','Description','Vector going from wing leading edge to H-stab leading edge');
             obj.hsChord     = SIM.parameter('Unit','m','Description','H-stab root chord');
-            obj.hsAR        = SIM.parameter('Description','H-stab Aspect ratio');
-            obj.hsTR        = SIM.parameter('Description','H-stab Taper ratio');
+            obj.hsAR        = SIM.parameter('Description','H-stab Aspect ratio','NoScale',true);
+            obj.hsTR        = SIM.parameter('Description','H-stab Taper ratio','NoScale',true);
             obj.hsSweep     = SIM.parameter('Unit','deg','Description','H-stab sweep angle');
             obj.hsDihedral  = SIM.parameter('Unit','deg','Description','H-stab dihedral angle');
             obj.hsIncidence = SIM.parameter('Unit','deg','Description','H-stab flow incidence angle');
-            obj.hsNACA      = SIM.parameter('Description','H-stab NACA airfoil');
-            obj.hsClMax     = SIM.parameter('Description','H-stab airfoil maximum lift coefficient');
-            obj.hsClMin     = SIM.parameter('Description','H-stab airfoil minimum lift coefficient');
+            obj.hsNACA      = SIM.parameter('Description','H-stab NACA airfoil','NoScale',true);
+            obj.hsClMax     = SIM.parameter('Description','H-stab airfoil maximum lift coefficient','NoScale',true);
+            obj.hsClMin     = SIM.parameter('Description','H-stab airfoil minimum lift coefficient','NoScale',true);
             % V-stab
             obj.Rvs_wingLE    = SIM.parameter('Unit','m','Description','Vector going from wing leading edge to V-stab leading edge');
             obj.vsChord     = SIM.parameter('Unit','m','Description','V-stab root chord');
             obj.vsSpan      = SIM.parameter('Unit','m','Description','V-stab span');
-            obj.vsTR        = SIM.parameter('Description','V-stab Taper ratio');
+            obj.vsTR        = SIM.parameter('Description','V-stab Taper ratio','NoScale',true);
             obj.vsSweep     = SIM.parameter('Unit','deg','Description','V-stab sweep angle');
-            obj.vsNACA      = SIM.parameter('Description','V-stab NACA airfoil');
-            obj.vsClMax     = SIM.parameter('Description','V-stab airfoil maximum lift coefficient');
-            obj.vsClMin     = SIM.parameter('Description','V-stab airfoil minimum lift coefficient');
+            obj.vsNACA      = SIM.parameter('Description','V-stab NACA airfoil','NoScale',true);
+            obj.vsClMax     = SIM.parameter('Description','V-stab airfoil maximum lift coefficient','NoScale',true);
+            obj.vsClMin     = SIM.parameter('Description','V-stab airfoil minimum lift coefficient','NoScale',true);
             % aerodynamic surfaces
             obj.portWing = OCT.aeroSurf;
-            obj.portWing.spanUnitVec.setValue([0;1;0],'');
-            obj.portWing.chordUnitVec.setValue([1;0;0],'');
+            obj.portWing.spanUnitVec.setValue([0;1;0],'','NoScale',true);
+            obj.portWing.chordUnitVec.setValue([1;0;0],'','NoScale',true);
             
             obj.stbdWing = OCT.aeroSurf;
-            obj.stbdWing.spanUnitVec.setValue([0;1;0],'');
-            obj.stbdWing.chordUnitVec.setValue([1;0;0],'');
+            obj.stbdWing.spanUnitVec.setValue([0;1;0],'','NoScale',true);
+            obj.stbdWing.chordUnitVec.setValue([1;0;0],'','NoScale',true);
             
             obj.hStab = OCT.aeroSurf;
-            obj.hStab.spanUnitVec.setValue([0;1;0],'');
-            obj.hStab.chordUnitVec.setValue([1;0;0],'');
+            obj.hStab.spanUnitVec.setValue([0;1;0],'','NoScale',true);
+            obj.hStab.chordUnitVec.setValue([1;0;0],'','NoScale',true);
             
             obj.vStab = OCT.aeroSurf;
-            obj.vStab.spanUnitVec.setValue([0;0;1],'');
-            obj.vStab.chordUnitVec.setValue([1;0;0],'');
+            obj.vStab.spanUnitVec.setValue([0;0;1],'','NoScale',true);
+            obj.vStab.chordUnitVec.setValue([1;0;0],'','NoScale',true);
             
             obj.fuseDiameter             = SIM.parameter('Unit','m');
             obj.fuseRCmToNose            = SIM.parameter('Unit','m','Description','Vector from the kite CM to the front of the fuselage');
-            obj.fuseSideDragCoeff        = SIM.parameter('Description','Drag Coeff if at 90 degrees angle of attack');
-            obj.fuseEndDragCoeff         = SIM.parameter('Description','Drag Coeff if at 0 degrees angle of attack');
+            obj.fuseSideDragCoeff        = SIM.parameter('Description','Drag Coeff if at 90 degrees angle of attack','NoScale',true);
+            obj.fuseEndDragCoeff         = SIM.parameter('Description','Drag Coeff if at 0 degrees angle of attack','NoScale',true);
             
             % initial conditions
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');

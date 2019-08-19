@@ -6,11 +6,14 @@ end
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 500*sqrt(lengthScaleFactor);
-flowspeed = 2;
+flowspeed = 1.5;
 PATHGEOMETRY = 'lemOfBooth';
 SPOOLINGCONTROLLER = 'nonTrad';
 dynamicCalc = '';
+SPOOLINGCONTROLLER = 'nonTrad';
 
+% ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
+controlAllocationBit = 0;
 
 %% Load components
 % Flight Controller
@@ -29,7 +32,11 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('pathFollowingEnv');
+<<<<<<< HEAD
 % SPOOLINGCONTROLLER = 'trad';
+=======
+%SPOOLINGCONTROLLER = 'trad';
+>>>>>>> 052fa3d932909e9aae070f9f3e8772b19830d2cc
 %% Set basis parameters for high level controller
 hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,175],'') % Lemniscate of Booth
 
@@ -42,7 +49,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    0,... % Initial path position
+    .4,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     3*flowspeed) % Initial speed
@@ -99,6 +106,10 @@ fltCtrl.startControl.setValue(3,'s');
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 
+fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
+                                1.1584         0         0;
+                                0             -2.0981    0;
+                                0              0         4.8067],'(deg)/(m^3)');
 
 %% Run the simulation
 simWithMonitor('OCTModel')
