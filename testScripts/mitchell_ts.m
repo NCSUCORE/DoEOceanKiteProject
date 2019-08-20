@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 6*sqrt(lengthScaleFactor);
+duration_s  = 10*sqrt(lengthScaleFactor);
 flowspeed = 2;
 
 SPOOLINGCONTROLLER = 'nonTrad';
@@ -76,19 +76,20 @@ fltCtrl.winchSpeedOut.setValue(0,'m/s')
 fltCtrl.traditionalBool.setValue(1,'')
 
 % Control surface parameters
-% fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
-fltCtrl.velAng.kp.setValue(0,'(rad)/(rad)');
+fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
+% fltCtrl.velAng.kp.setValue(0,'(rad)/(rad)');
 fltCtrl.velAng.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
+fltCtrl.velAng.tau.setValue(1e-3,'s');
 
-% fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
-fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
+% fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue(0,'(N*m)/(rad/s)');
+fltCtrl.rollMoment.kd.setValue((1e4)/(20*pi/180),'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
-% fltCtrl.yawMoment.kp.setValue((4e4)/(2*pi/180),'(N*m)/(rad)');
-fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
+fltCtrl.yawMoment.kp.setValue((1e4)/(2*pi/180),'(N*m)/(rad)');
+% fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
 fltCtrl.yawMoment.tau.setValue(0,'s');
@@ -96,7 +97,7 @@ fltCtrl.yawMoment.tau.setValue(0,'s');
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
-fltCtrl.startControl.setValue(3,'s');
+fltCtrl.startControl.setValue(0,'s');
 
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
@@ -112,7 +113,9 @@ parseLogsout;
 
 %% Plot the matrices
 plotMatrixTimeseries(tsc.BMatrix)
+linkaxes(findall(gcf,'Type','axes'),'xy')
 plotMatrixTimeseries(tsc.CMatrix)
+linkaxes(findall(gcf,'Type','axes'),'xy')
 
 %% Plot things
 % Desired And Achieved Moments
@@ -184,40 +187,33 @@ xlabel('Time, t [s]')
 ylabel({'Rudder Defl [deg]'})
 
 subplot(3,1,3)
-tsc.yawMomCtrl.plot('LineWidth',1.5,'LineStyle','-','Color','k')
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual');
 grid on
 hold on
 plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
     'LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired');
 xlabel('Time, t [s]')
-ylabel({'Yaw Mom.','Des. [Nm]'})
 legend
 
 linkaxes(findall(gcf,'Type','axes'),'x')
 set(findall(gcf,'Type','axes'),'FontSize',16)
 
-%% Compare decoupled quadratic solutions to linearized solutions
+%% Compare different solution methods
 figure
+lineStyles = {'-','--','-.',':'};
 for ii = 1:3
     subplot(3,1,ii)
-    plot(tsc.deflVec.Time,tsc.deflVec.Data(ii,:),...
-        'LineWidth',1.5,'LineStyle','-','Color','k',...
-        'DisplayName','LinearSolution');
-    grid on
-    hold on
-    plot(tsc.deflVec.Time,squeeze(tsc.deflVec2.Data(1,ii,:)),...
-        'LineWidth',1.5,'LineStyle','--','Color','g',...
-        'DisplayName','LinearSolution2');
-    data = eval(sprintf('tsc.r%d1.Data',ii));
-    plot(tsc.deflVec.Time,data,...
-        'LineWidth',1.5,'LineStyle','-','Color','r',...
-        'DisplayName',sprintf('r%d1',ii));
-    data = eval(sprintf('tsc.r%d2.Data',ii));
-    plot(tsc.deflVec.Time,data,...
-        'LineWidth',1.5,'LineStyle','-','Color','b',...
-        'DisplayName',sprintf('r%d2',ii));
-    ylim([min(tsc.deflVec.Data(ii,:)) max(tsc.deflVec.Data(ii,:))]);
+    set(gca,'NextPlot','add')
+    for jj = 1:4
+        plot(tsc.(sprintf('d%d',jj)).Time,...
+            tsc.(sprintf('d%d',jj)).Data(:,ii),...
+            'LineWidth',1.5,...
+            'DisplayName',sprintf('d%d',jj),...
+            'LineStyle',lineStyles{jj});
+    end
     xlabel('Time, [s]')
 legend    
 end
@@ -236,7 +232,7 @@ legend
 
 
 %% Animate the results
-vhcl.animateSim(tsc,0.1,...
+vhcl.animateSim(tsc,0.5,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
     'NavigationVecs',true)
