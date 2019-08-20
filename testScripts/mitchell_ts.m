@@ -5,8 +5,8 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 500*sqrt(lengthScaleFactor);
-flowspeed = 1.5;
+duration_s  = 20*sqrt(lengthScaleFactor);
+flowspeed = 2;
 
 SPOOLINGCONTROLLER = 'nonTrad';
 
@@ -21,7 +21,7 @@ loadComponent('firstBuildPathFollowing');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('testConstBasisParams')
+loadComponent('constBoothLem')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -45,7 +45,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    .4,... % Initial path position
+    0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     3*flowspeed) % Initial speed
@@ -73,10 +73,8 @@ fltCtrl.outRanges.setValue( [...
 
 fltCtrl.winchSpeedIn.setValue(-flowspeed/10,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/10,'m/s')
-fltCtrl.setMinR(100,'m')
-fltCtrl.setMaxR(200,'m')
-%fltCtrl.winchSpeedIn.setValue(0,'m/s')
-%fltCtrl.winchSpeedOut.setValue(0,'m/s')
+fltCtrl.winchSpeedIn.setValue(0,'m/s')
+fltCtrl.winchSpeedOut.setValue(0,'m/s')
 fltCtrl.traditionalBool.setValue(1,'')
 
 % Control surface parameters
@@ -259,7 +257,7 @@ set(findall(gcf,'Type','axes'),'FontSize',16)
 % tsc.r32.plot
 
 %% Animate the results
-vhcl.animateSim(tsc,0.5,...
+vhcl.animateSim(tsc,0.1,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
     'NavigationVecs',true)
