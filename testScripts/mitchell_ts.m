@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 20*sqrt(lengthScaleFactor);
+duration_s  = 6*sqrt(lengthScaleFactor);
 flowspeed = 2;
 
 SPOOLINGCONTROLLER = 'nonTrad';
@@ -71,23 +71,24 @@ fltCtrl.outRanges.setValue( [...
     0.3450      0.6250;
     0.8500      1.0000;],'');
 
-fltCtrl.winchSpeedIn.setValue(-flowspeed/10,'m/s')
-fltCtrl.winchSpeedOut.setValue(flowspeed/10,'m/s')
 fltCtrl.winchSpeedIn.setValue(0,'m/s')
 fltCtrl.winchSpeedOut.setValue(0,'m/s')
 fltCtrl.traditionalBool.setValue(1,'')
 
 % Control surface parameters
-fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
+% fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
+fltCtrl.velAng.kp.setValue(0,'(rad)/(rad)');
 fltCtrl.velAng.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
 
-fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
+% fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((1e4)/(40*pi/180),'(N*m)/(rad/s)');
+fltCtrl.rollMoment.kd.setValue(0,'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
-fltCtrl.yawMoment.kp.setValue((4e4)/(2*pi/180),'(N*m)/(rad)');
+% fltCtrl.yawMoment.kp.setValue((4e4)/(2*pi/180),'(N*m)/(rad)');
+fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
 fltCtrl.yawMoment.tau.setValue(0,'s');
@@ -109,6 +110,10 @@ fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
 simWithMonitor('OCTModel')
 parseLogsout;
 
+%% Plot the matrices
+plotMatrixTimeseries(tsc.BMatrix)
+plotMatrixTimeseries(tsc.CMatrix)
+
 %% Plot things
 % Desired And Achieved Moments
 figure
@@ -118,6 +123,7 @@ plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(1,:,:)),...
     'DisplayName','Actual');
 grid on
 hold on
+title('Desired and Achieved Moments')
 plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,1),...
     'LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired');
@@ -151,40 +157,25 @@ legend
 linkaxes(findall(gcf,'Type','axes'),'x')
 set(findall(gcf,'Type','axes'),'FontSize',16)
 
-%% Plot local angles of attack
-plotLocalAlphas
 
 %% Plot control surf deflections
 plotControlSurfaceDeflections
 
-%% Plot ctrlCmds
-figure
-for ii = 1:4
-    subplot(4,1,ii)
-    plot(tsc.ctrlCmds.Time,tsc.ctrlCmds.Data(:,ii),...
-        'LineWidth',1.5,'LineStyle','-','Color','k')
-    xlabel('Time, [s]')
-    ylabel('Cmd Defl 1')
-end
-
 %% Plot yaw moment controller things
 figure
-subplot(4,1,1)
-tsc.betaRad.plot('LineWidth',1.5,'LineStyle','-','Color','k','DisplayName','Actual')
+subplot(3,1,1)
+tsc.betaRad.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual')
 grid on
 hold on
-tsc.betaSP.plot('LineWidth',1.5,'LineStyle','--','Color','r','DisplayName','Setpoint')
+tsc.betaSP.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Setpoint')
 xlabel('Time, t [s]')
 ylabel('$\beta$,[rad]')
 legend
+title('Yaw controller breakdown')
 
-subplot(4,1,2)
-tsc.yawMomCtrl.plot('LineWidth',1.5,'LineStyle','-','Color','k')
-grid on
-xlabel('Time, t [s]')
-ylabel({'Yaw Mom.','Ctrl Out [Nm]'})
-
-subplot(4,1,3)
+subplot(3,1,2)
 plot(tsc.ctrlSurfDeflection.Time,...
     squeeze(tsc.ctrlSurfDeflection.Data(4,:,:)),...
     'LineWidth',1.5,'LineStyle','-','Color','k')
@@ -192,29 +183,40 @@ grid on
 xlabel('Time, t [s]')
 ylabel({'Rudder Defl [deg]'})
 
+subplot(3,1,3)
+tsc.yawMomCtrl.plot('LineWidth',1.5,'LineStyle','-','Color','k')
+grid on
+hold on
+plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired');
+xlabel('Time, t [s]')
+ylabel({'Yaw Mom.','Des. [Nm]'})
+legend
+
 linkaxes(findall(gcf,'Type','axes'),'x')
 set(findall(gcf,'Type','axes'),'FontSize',16)
-
-%% Plot magnitudes of tether tension
-plotTenVecMags
-
 
 %% Compare decoupled quadratic solutions to linearized solutions
 figure
 for ii = 1:3
     subplot(3,1,ii)
     plot(tsc.deflVec.Time,tsc.deflVec.Data(ii,:),...
-        'LineWidth',1.5,'LineStyle','-','Color','k','DisplayName','LinearSolution');
+        'LineWidth',1.5,'LineStyle','-','Color','k',...
+        'DisplayName','LinearSolution');
     grid on
     hold on
     plot(tsc.deflVec.Time,squeeze(tsc.deflVec2.Data(1,ii,:)),...
-        'LineWidth',1.5,'LineStyle','--','Color','g','DisplayName','LinearSolution2');
+        'LineWidth',1.5,'LineStyle','--','Color','g',...
+        'DisplayName','LinearSolution2');
     data = eval(sprintf('tsc.r%d1.Data',ii));
     plot(tsc.deflVec.Time,data,...
-        'LineWidth',1.5,'LineStyle','-','Color','r','DisplayName',sprintf('r%d1',ii));
+        'LineWidth',1.5,'LineStyle','-','Color','r',...
+        'DisplayName',sprintf('r%d1',ii));
     data = eval(sprintf('tsc.r%d2.Data',ii));
     plot(tsc.deflVec.Time,data,...
-        'LineWidth',1.5,'LineStyle','-','Color','b','DisplayName',sprintf('r%d2',ii));
+        'LineWidth',1.5,'LineStyle','-','Color','b',...
+        'DisplayName',sprintf('r%d2',ii));
     ylim([min(tsc.deflVec.Data(ii,:)) max(tsc.deflVec.Data(ii,:))]);
     xlabel('Time, [s]')
 legend    
@@ -232,29 +234,6 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired Tan Roll');
 legend
 
-%%
-figure
-subplot(3,1,1)
-tsc.r11.plot
-grid on
-hold on
-% tsc.r12.plot
-
-subplot(3,1,2)
-% tsc.r21.plot
-grid on
-hold on
-tsc.r22.plot
-
-subplot(3,1,3)
-% tsc.r31.plot
-grid on
-hold on
-tsc.r32.plot
-
-linkaxes(findall(gcf,'Type','axes'),'x')
-set(findall(gcf,'Type','axes'),'FontSize',16)
-% tsc.r32.plot
 
 %% Animate the results
 vhcl.animateSim(tsc,0.1,...
