@@ -2,7 +2,7 @@
 parseLogsout;
 figure
 ax=axes;
-pathvals=lemOfBooth(linspace(0,1,1000),fltCtrl.pathParams.Value);
+pathvals=lemOfBooth(linspace(0,1,1000),hiLvlCtrl.basisParams.Value);
 timevec=tsc.positionVec.Time;
 tetherLength=hiLvlCtrl.basisParams.Value(end);
 %% Options
@@ -19,8 +19,8 @@ gifit = false;
 filename="animation.gif";
 gifWaitTime = .005;
 
-dispTimeVec = 35;
-% dispTimeVec = timevec(end);
+% dispTimeVec = 35;
+dispTimeVec = timevec(end);
 % dispTimeVec = linspace(90,114,40);
 % dispTimeVec = linspace(0,timevec(end),frames);
 %% Execution
@@ -30,7 +30,7 @@ for t=dispTimeVec
 
     if grow
         tetherLength = norm(posG);
-        pathvals=lemOfBooth(linspace(0,1,1000),[fltCtrl.pathParams.Value(1:end-1) tetherLength]);
+        pathvals=lemOfBooth(linspace(0,1,1000),[hiLvlCtrl.basisParams.Value(1:end-1) tetherLength]);
     end
     plot3(pathvals(1,:),pathvals(2,:),pathvals(3,:),'lineWidth',.5)
     hold on
