@@ -20,9 +20,9 @@ filename="animation.gif";
 gifWaitTime = .005;
 
 % dispTimeVec = 35;
-dispTimeVec = timevec(end);
+% dispTimeVec = timevec(end);
 % dispTimeVec = linspace(90,114,40);
-% dispTimeVec = linspace(0,timevec(end),frames);
+dispTimeVec = linspace(0,timevec(end),frames);
 %% Execution
 for t=dispTimeVec
     [~,i]=min(abs(timevec-t));

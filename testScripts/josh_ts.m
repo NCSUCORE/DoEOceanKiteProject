@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 500*sqrt(lengthScaleFactor);
+duration_s  = 300*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 SPOOLINGCONTROLLER = 'nonTrad';
 PATHGEOMETRY = 'lemOfBooth';
@@ -34,8 +34,8 @@ fltCtrl.setFcnName('lemOfBooth','');
 % fltCtrl.setFcnName('lemOfGerono','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
-%   hiLvlCtrl.basisParams.setValue([.73,1.4,.36,0,50],'');% Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,200],'');% Lemniscate of Booth
+  hiLvlCtrl.basisParams.setValue([.73,1.4,.36,0,125],'');% Lemniscate of Booth
+% hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
@@ -46,7 +46,7 @@ vhcl.setICsOnPath(...
 vhcl.setAddedMISwitch(false,'');
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = .1; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
+flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -58,7 +58,7 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.density.setValue(1300,'kg/m^3');
+thr.tether1.density.setValue(1000,'kg/m^3');
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 %% ALL Controller Properties
@@ -85,7 +85,7 @@ fltCtrl.setStartControl(1,'s')
     fltCtrl.rollMoment.kd.setValue(5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
     fltCtrl.rollMoment.tau.setValue(0.01,'s');
 
-    fltCtrl.yawMoment.kp.setValue(0*(1e4)/(2*pi/180),'(N*m)/(rad)');
+    fltCtrl.yawMoment.kp.setValue(0 / (2*pi/180),'(N*m)/(rad)');
     fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
     fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
     fltCtrl.yawMoment.tau.setValue(0.01,'s');
@@ -141,52 +141,51 @@ fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
-kiteAxesPlot
+% kiteAxesPlot
 %stopCallback
 %% Desired And Achieved Moments
-figure
-subplot(3,1,1)
-plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(1,:,:)),...
-    'LineWidth',1.5,'LineStyle','-','Color','k',...
-    'DisplayName','Actual');
-grid on
-hold on
-title('Desired and Achieved Moments')
-plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,1),...
-    'LineWidth',1.5,'LineStyle','--','Color','r',...
-    'DisplayName','Desired');
-xlabel('Time, [s]')
-ylabel('Roll Moment [Nm]')
-legend
-subplot(3,1,2)
-plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(2,:,:)),...
-    'LineWidth',1.5,'LineStyle','-','Color','k',...
-    'DisplayName','Actual');
-grid on
-hold on
-plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,2),...
-    'LineWidth',1.5,'LineStyle','--','Color','r',...
-    'DisplayName','Desired');xlabel('Time, [s]')
-ylabel('Pitch Moment [Nm]')
-legend
-subplot(3,1,3)
-plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
-    'LineWidth',1.5,'LineStyle','-','Color','k',...
-    'DisplayName','Actual');
-grid on
-hold on
-plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
-    'LineWidth',1.5,'LineStyle','--','Color','r',...
-    'DisplayName','Desired');
-xlabel('Time, [s]')
-ylabel('Yaw Moment [Nm]')
-legend
-
-linkaxes(findall(gcf,'Type','axes'),'x')
-set(findall(gcf,'Type','axes'),'FontSize',16)
-%% Control Surf Def
-plotControlSurfaceDeflections
-
+% figure
+% subplot(3,1,1)
+% plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(1,:,:)),...
+%     'LineWidth',1.5,'LineStyle','-','Color','k',...
+%     'DisplayName','Actual');
+% grid on
+% hold on
+% title('Desired and Achieved Moments')
+% plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,1),...
+%     'LineWidth',1.5,'LineStyle','--','Color','r',...
+%     'DisplayName','Desired');
+% xlabel('Time, [s]')
+% ylabel('Roll Moment [Nm]')
+% legend
+% subplot(3,1,2)
+% plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(2,:,:)),...
+%     'LineWidth',1.5,'LineStyle','-','Color','k',...
+%     'DisplayName','Actual');
+% grid on
+% hold on
+% plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,2),...
+%     'LineWidth',1.5,'LineStyle','--','Color','r',...
+%     'DisplayName','Desired');xlabel('Time, [s]')
+% ylabel('Pitch Moment [Nm]')
+% legend
+% subplot(3,1,3)
+% plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
+%     'LineWidth',1.5,'LineStyle','-','Color','k',...
+%     'DisplayName','Actual');
+% grid on
+% hold on
+% plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
+%     'LineWidth',1.5,'LineStyle','--','Color','r',...
+%     'DisplayName','Desired');
+% xlabel('Time, [s]')
+% ylabel('Yaw Moment [Nm]')
+% legend
+% 
+% linkaxes(findall(gcf,'Type','axes'),'x')
+% set(findall(gcf,'Type','axes'),'FontSize',16)
+% %% Control Surf Def
+% plotControlSurfaceDeflections
 %% Plot yaw moment controller things
 figure
 subplot(3,1,1)
@@ -225,12 +224,12 @@ legend
 linkaxes(findall(gcf,'Type','axes'),'x')
 set(findall(gcf,'Type','axes'),'FontSize',16)
 
-%% Plot tangent roll tracking
-figure
-tsc.tanRoll.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
-    'DisplayName','Actual Tan Roll');
-grid on
-hold on
-tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
-    'DisplayName','Desired Tan Roll');
-legend
+% %% Plot tangent roll tracking
+% figure
+% tsc.tanRoll.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
+%     'DisplayName','Actual Tan Roll');
+% grid on
+% hold on
+% tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
+%     'DisplayName','Desired Tan Roll');
+% legend
