@@ -5,7 +5,8 @@ for ii = 1:numSurfs
     subplot(numSurfs,1,ii)
     plot(tsc.ctrlSurfDeflection.Time,...
         squeeze(tsc.ctrlSurfDeflection.Data(ii,:,:)),...
-    'LineStyle','-','Color','k','LineWidth',1.5)
+        'LineStyle','-','Color','k','LineWidth',1.5)
+    grid on
     xlabel('Time, [s]')
     ylabel(sprintf('$ \\delta_{%d}$, [deg]',ii))
 end

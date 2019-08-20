@@ -45,7 +45,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    0,... % Initial path position
+    0.75,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     (11.5/2)*flowspeed) % Initial speed
@@ -107,6 +107,8 @@ fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
                                 0             -2.0981    0;
                                 0              0         4.8067],'(deg)/(m^3)');
 fltCtrl.elevatorReelInDef.setValue(0,'deg')
+
+pitchKp = (1e5)/(2*pi/180);
                             
 %% Run the simulation
 simWithMonitor('OCTModel')
@@ -167,7 +169,7 @@ plotControlSurfaceDeflections
 
 %% Plot yaw moment controller things
 figure
-subplot(3,1,1)
+subplot(4,1,1)
 tsc.betaRad.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
     'DisplayName','Actual')
 grid on
@@ -179,7 +181,7 @@ ylabel('$\beta$,[rad]')
 legend
 title('Yaw controller breakdown')
 
-subplot(3,1,2)
+subplot(4,1,2)
 plot(tsc.ctrlSurfDeflection.Time,...
     squeeze(tsc.ctrlSurfDeflection.Data(4,:,:)),...
     'LineWidth',1.5,'LineStyle','-','Color','k')
@@ -187,7 +189,7 @@ grid on
 xlabel('Time, t [s]')
 ylabel({'Rudder Defl [deg]'})
 
-subplot(3,1,3)
+subplot(4,1,3)
 plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
     'LineWidth',1.5,'LineStyle','-','Color','k',...
     'DisplayName','Actual');
@@ -197,6 +199,17 @@ plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
     'LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired');
 xlabel('Time, t [s]')
+legend
+
+subplot(4,1,4)
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidPartBdy.Data(1,2,:)+tsc.MFluidPartBdy.Data(3,2,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','AdverseYaw');
+grid on
+hold on
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidPartBdy.Data(1,4,:)),...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Rudder Yaw');
 legend
 
 linkaxes(findall(gcf,'Type','axes'),'x')
@@ -231,13 +244,12 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired Tan Roll');
 legend
 
+
 %% Animate the results
-vhcl.animateSim(tsc,0.25,...
+vhcl.animateSim(tsc,0.1,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
-    'NavigationVecs',false,...
-    'LocalAero',true,...
-    'FluidMoments',true,...
+    'NavigationVecs',true,...
     'Pause',false)
 
 
