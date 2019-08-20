@@ -918,7 +918,7 @@ classdef vehicle < dynamicprops
             
         end
         
-        output = struct(obj,className);
+        [output,varargout] = struct(obj,className);
         output = getPropsByClass(obj,className);
         
         
@@ -1094,6 +1094,7 @@ classdef vehicle < dynamicprops
         % Function to animate the vehicle
         
         val = animateSim(obj,tsc,timeStep,varargin)
+        val = animateBody(obj,tsc,timeStep,varargin)
     end
  
 end

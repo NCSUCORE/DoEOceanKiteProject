@@ -21,6 +21,9 @@ addParameter(p,'PlotTracer',true,@islogical) % Plot tracer yes/no
 addParameter(p,'TracerDuration',5,@isnumeric) % Time duration in seconds spanned by tracer
 addParameter(p,'PathPosition',false,@islogical) % closest point on the path
 addParameter(p,'NavigationVecs',false,@islogical) % Plot normal and tangent vectors
+addParameter(p,'LocalAero',false,@islogical) % Plot local aerodynamic force vectors
+addParameter(p,'FluidMoments',false,@islogical)% Add moments to the table readout
+addParameter(p,'Pause',false,@islogical) % Pause after every image update
 
 parse(p,tsc,timeStep,varargin{:})
 
@@ -71,7 +74,7 @@ if p.Results.PlotTracer
         nan([round(p.Results.TracerDuration/p.Results.timeStep) 1]),...
         nan([round(p.Results.TracerDuration/p.Results.timeStep) 1]),...
         nan([round(p.Results.TracerDuration/p.Results.timeStep) 1]),...
-        'Color','r','LineStyle','-');
+        'Color','r','LineStyle','-','LineWidth',1.5);
 end
 
 % Plot the path
@@ -117,6 +120,73 @@ if p.Results.NavigationVecs
         len*tsc.velVectorDes.Data(1,3),...
         'MaxHeadSize',0,'Color','b','LineStyle','-');
     
+end
+
+if p.Results.LocalAero || p.FluidMoments.Moments
+    h.table = uitable(h.fig,'Units','Normalized','FontSize',16,...
+        'Position',[0.0099    0.0197    0.2880    0.9668],...
+        'ColumnWidth','auto',...
+        'ColumnName',{'Description','Value'},...
+        'ColumnWidth',{150,200});
+end
+
+if p.Results.LocalAero
+    [aeroStruct,surfNames] = obj.struct('OCT.aeroSurf');
+    FLiftPart = rotation_sequence(tsc.eulerAngles.Data(:,:,1))*tsc.FLiftBdyPart.Data(:,:,1);
+    FDragPart = rotation_sequence(tsc.eulerAngles.Data(:,:,1))*tsc.FDragBdyPart.Data(:,:,1);
+    vAppPart  = rotation_sequence(tsc.eulerAngles.Data(:,:,1))*tsc.vAppLclBdy.Data(:,:,1);
+    
+    uLiftPart = FLiftPart./sqrt(sum(FLiftPart.^2,1));
+    uDragPart = FDragPart./sqrt(sum(FDragPart.^2,1));
+    uAppPart = vAppPart./sqrt(sum(vAppPart.^2,1));
+    
+    xlim(tsc.positionVec.Data(1,:,1)+obj.fuse.length.Value*[-1.5 1.5])
+    ylim(tsc.positionVec.Data(2,:,1)+obj.fuse.length.Value*[-1.5 1.5])
+    zlim(tsc.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
+    
+
+    for ii = 1:numel(surfNames)
+    h.table.Data = [h.table.Data;...
+        {surfNames{ii}},{''};...
+        {'V App'} ,{sprintf('%0.2f',sqrt(sum(vAppPart(ii).^2,1)))};...
+        {'F Lift'},{sprintf('%0.0f',sqrt(sum(FLiftPart(ii).^2,1)))};...
+        {'F Drag'},{sprintf('%0.0f',sqrt(sum(FDragPart(ii).^2,1)))}];
+    
+        aeroCentVec = tsc.positionVec.Data(:,:,1)+...
+            rotation_sequence(tsc.eulerAngles.Data(:,:,1))*aeroStruct(ii).aeroCentPosVec(:);
+        h.liftVecs(ii) = quiver3(...
+            aeroCentVec(1),...
+            aeroCentVec(2),...
+            aeroCentVec(3),...
+            uLiftPart(1,ii),...
+            uLiftPart(2,ii),...
+            uLiftPart(3,ii),...
+            'Color','g','LineWidth',1.5,'LineStyle','-');
+        h.dragVecs(ii) = quiver3(...
+            aeroCentVec(1),...
+            aeroCentVec(2),...
+            aeroCentVec(3),...
+            uDragPart(1,ii),...
+            uDragPart(2,ii),...
+            uDragPart(3,ii),...
+            'Color','r','LineWidth',1.5,'LineStyle','-');
+        h.vAppVecs(ii) = quiver3(...
+            aeroCentVec(1),...
+            aeroCentVec(2),...
+            aeroCentVec(3),...
+            -uAppPart(1,ii),...
+            -uAppPart(2,ii),...
+            -uAppPart(3,ii),...
+            'Color','b','LineWidth',1.5,'LineStyle','-');
+    end
+end
+
+if p.Results.FluidMoments
+    fluidStartRow = size(h.table.Data,1);
+    h.table.Data = [h.table.Data;
+        {'M Fluid Roll'} ,{sprintf('%0.0f',tsc.MFluidBdy.Data(1,1,1))};...
+        {'M Fluid Pitch'},{sprintf('%0.0f',tsc.MFluidBdy.Data(2,1,1))};...
+        {'M Fluid Yaw'}  ,{sprintf('%0.0f',tsc.MFluidBdy.Data(3,1,1))}];
 end
 
 % Set the font size
@@ -182,9 +252,63 @@ for ii = 1:length(tsc.eulerAngles.Time)
         h.desVec.VData = len*tsc.velVectorDes.Data(ii,2);
         h.desVec.WData = len*tsc.velVectorDes.Data(ii,3);
     end
+    if p.Results.LocalAero
+        aeroStruct = obj.struct('OCT.aeroSurf');
+        FLiftPart = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*tsc.FLiftBdyPart.Data(:,:,ii);
+        FDragPart = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*tsc.FDragBdyPart.Data(:,:,ii);
+        vAppPart  = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*tsc.vAppLclBdy.Data(:,:,ii);
+        
+        uLiftPart = FLiftPart./sqrt(sum(FLiftPart.^2,1));
+        uDragPart = FDragPart./sqrt(sum(FDragPart.^2,1));
+        uAppPart  = vAppPart./sqrt(sum(vAppPart.^2,1));
+        for jj = 1:numel(aeroStruct)
+            h.table.Data{4*jj-2,2} = sprintf('%0.2f',sqrt(sum(vAppPart(jj).^2,1)));
+            h.table.Data{4*jj-1,2} = sprintf('%0.0f',sqrt(sum(FLiftPart(jj).^2,1)));
+            h.table.Data{4*jj+0,2} = sprintf('%0.0f',sqrt(sum(FDragPart(jj).^2,1)));
+            
+            aeroCentVec = tsc.positionVec.Data(:,:,ii)+...
+                rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*aeroStruct(jj).aeroCentPosVec(:);
+
+            h.liftVecs(jj).XData = aeroCentVec(1);
+            h.liftVecs(jj).YData = aeroCentVec(2);
+            h.liftVecs(jj).ZData = aeroCentVec(3);
+            h.liftVecs(jj).UData = uLiftPart(1,jj);
+            h.liftVecs(jj).VData = uLiftPart(2,jj);
+            h.liftVecs(jj).WData = uLiftPart(3,jj);
+            
+            h.dragVecs(jj).XData = aeroCentVec(1);
+            h.dragVecs(jj).YData = aeroCentVec(2);
+            h.dragVecs(jj).ZData = aeroCentVec(3);
+            h.dragVecs(jj).UData = uDragPart(1,jj);
+            h.dragVecs(jj).VData = uDragPart(2,jj);
+            h.dragVecs(jj).WData = uDragPart(3,jj);
+            
+            h.vAppVecs(jj).XData = aeroCentVec(1);
+            h.vAppVecs(jj).YData = aeroCentVec(2);
+            h.vAppVecs(jj).ZData = aeroCentVec(3);
+            h.vAppVecs(jj).UData = -uAppPart(1,jj);
+            h.vAppVecs(jj).VData = -uAppPart(2,jj);
+            h.vAppVecs(jj).WData = -uAppPart(3,jj);
+            
+            xlim(tsc.positionVec.Data(1,:,ii)+obj.fuse.length.Value*[-1.5 1.5])
+            ylim(tsc.positionVec.Data(2,:,ii)+obj.fuse.length.Value*[-1.5 1.5])
+            zlim(tsc.positionVec.Data(3,:,ii)+obj.fuse.length.Value*[-1.5 1.5])
+        end
+    end
+    
+    if p.Results.FluidMoments
+        h.table.Data{fluidStartRow+1,2}   = sprintf('%0.0f',tsc.MFluidBdy.Data(1,1,ii));
+        h.table.Data{fluidStartRow+2,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(2,1,ii));
+        h.table.Data{fluidStartRow+3,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(3,1,ii));
+    end
+
+    
     h.title.String = {sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),...
         sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii)))};
     drawnow
+    if p.Results.Pause
+        pause
+    end
 end
 
 end

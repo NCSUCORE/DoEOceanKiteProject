@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 10*sqrt(lengthScaleFactor);
+duration_s  = 100*sqrt(lengthScaleFactor);
 flowspeed = 2;
 
 SPOOLINGCONTROLLER = 'nonTrad';
@@ -48,8 +48,9 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    3*flowspeed) % Initial speed
+    (11.5/2)*flowspeed) % Initial speed
 vhcl.setAddedMISwitch(false,'');
+vhcl.inertia.setValue(diag(diag(vhcl.inertia.Value)),'kg*m^2');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
@@ -85,17 +86,16 @@ fltCtrl.velAng.tau.setValue(1e-3,'s');
 fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
 % fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((1e4)/(20*pi/180),'(N*m)/(rad/s)');
+fltCtrl.rollMoment.kd.setValue((1e4)/(10*pi/180),'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
-fltCtrl.yawMoment.kp.setValue((1e4)/(2*pi/180),'(N*m)/(rad)');
-% fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
-fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
-fltCtrl.yawMoment.tau.setValue(0,'s');
+fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
+% fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
+% fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
+% fltCtrl.yawMoment.tau.setValue(0.001,'s');
 
-fltCtrl.controlSigMax.upperLimit.setValue(30,'')
-fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
+fltCtrl.controlSigMax.upperLimit.setValue(300,'')
+fltCtrl.controlSigMax.lowerLimit.setValue(-300,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
@@ -106,7 +106,8 @@ fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
                                 1.1584         0         0;
                                 0             -2.0981    0;
                                 0              0         4.8067],'(deg)/(m^3)');
-
+fltCtrl.elevatorReelInDef.setValue(0,'deg')
+                            
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
@@ -230,10 +231,13 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired Tan Roll');
 legend
 
-
 %% Animate the results
-vhcl.animateSim(tsc,0.5,...
+vhcl.animateSim(tsc,0.25,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
-    'NavigationVecs',true)
+    'NavigationVecs',false,...
+    'LocalAero',true,...
+    'FluidMoments',true,...
+    'Pause',true)
+
 
