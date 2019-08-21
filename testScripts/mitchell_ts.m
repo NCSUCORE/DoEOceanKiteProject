@@ -77,11 +77,11 @@ fltCtrl.winchSpeedOut.setValue(0,'m/s')
 fltCtrl.traditionalBool.setValue(1,'')
 
 % Control surface parameters
-fltCtrl.velAng.kp.setValue(0.2,'(rad)/(rad)');
-% fltCtrl.velAng.kp.setValue(0,'(rad)/(rad)');
-fltCtrl.velAng.ki.setValue(0,'(rad)/(rad*s)');
-fltCtrl.velAng.kd.setValue(0,'(rad)/(rad/s)');
-fltCtrl.velAng.tau.setValue(1e-3,'s');
+fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
+% fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)');
+fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
+fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
+fltCtrl.tanRoll.tau.setValue(1e-3,'s');
 
 fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
 % fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')

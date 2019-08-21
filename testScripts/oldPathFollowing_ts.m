@@ -187,9 +187,9 @@ pathCtrl.yawMoment.kd.setValue(10*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 % pathCtrl.yawMoment.kd.setValue(5*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
 %pathCtrl.yawMoment.tau.setValue(.01,'s');
 
-pathCtrl.velAng.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-pathCtrl.velAng.kd.setValue(1.5*pathCtrl.velAng.kp.Value,'(rad)/(rad/s)');
-pathCtrl.velAng.tau.setValue(.01,'s');
+pathCtrl.tanRoll.kp.setValue(pathCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+pathCtrl.tanRoll.kd.setValue(1.5*pathCtrl.tanRoll.kp.Value,'(rad)/(rad/s)');
+pathCtrl.tanRoll.tau.setValue(.01,'s');
 pathCtrl.rollMoment.tau.setValue (.01,'s');
 
 %% gain tuning based on flow speed 
@@ -210,7 +210,7 @@ case 1.5
     pathCtrl.perpErrorVal.setValue(5*pi/180,'rad');
     pathCtrl.rollMoment.kp.setValue(6e5,'(N*m)/(rad)');
     pathCtrl.rollMoment.kd.setValue(3*pathCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-    pathCtrl.velAng.tau.setValue(.01,'s');
+    pathCtrl.tanRoll.tau.setValue(.01,'s');
     pathCtrl.rollMoment.tau.setValue (.01,'s');
 case 2
     pathCtrl.perpErrorVal.setValue(3*pi/180,'rad');   

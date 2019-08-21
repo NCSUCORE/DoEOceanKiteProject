@@ -62,7 +62,7 @@ thr.tether1.density.setValue(1000,'kg/m^3');
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 %% ALL Controller Properties
-%Initilization and General
+%General
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 fltCtrl.setStartControl(1,'s')
 
@@ -74,10 +74,10 @@ fltCtrl.setStartControl(1,'s')
     fltCtrl.maxBank.upperLimit.setValue(45*pi/180,'');
     fltCtrl.maxBank.lowerLimit.setValue(-45*pi/180,'');
 
-    fltCtrl.velAng.kp.setValue(0.1,'(rad)/(rad)');
-    fltCtrl.velAng.ki.setValue(0,'(rad)/(rad*s)');
-    fltCtrl.velAng.kd.setValue(1.5*fltCtrl.velAng.kp.Value,'(rad)/(rad/s)');
-    fltCtrl.velAng.tau.setValue(0.01,'s');
+    fltCtrl.tanRoll.kp.setValue(0.1,'(rad)/(rad)');
+    fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
+    fltCtrl.tanRoll.kd.setValue(1.5*fltCtrl.tanRoll.kp.Value,'(rad)/(rad/s)');
+    fltCtrl.tanRoll.tau.setValue(0.01,'s');
 
 %Level 3 Moment Selection
     fltCtrl.rollMoment.kp.setValue(2500 / (10*pi/180),'(N*m)/(rad)'); %This needs to be scheduled with flow speed

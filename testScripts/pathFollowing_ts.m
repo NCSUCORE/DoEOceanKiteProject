@@ -100,9 +100,9 @@ fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
 fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
 fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
-fltCtrl.velAng.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
-fltCtrl.velAng.kd.setValue(1.5*fltCtrl.velAng.kp.Value,'(rad)/(rad/s)');
-fltCtrl.velAng.tau.setValue(.01,'s');
+fltCtrl.tanRoll.kp.setValue(fltCtrl.maxBank.upperLimit.Value/(100*(pi/180)),'(rad)/(rad)');
+fltCtrl.tanRoll.kd.setValue(1.5*fltCtrl.tanRoll.kp.Value,'(rad)/(rad/s)');
+fltCtrl.tanRoll.tau.setValue(.01,'s');
 
 % fltCtrl.perpErrorVal.setValue(10*pi/180,'rad');
 % 
@@ -133,7 +133,7 @@ switch norm(env.water.velVec.Value)
         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
         fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
         fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-        fltCtrl.velAng.tau.setValue(.8,'s');
+        fltCtrl.tanRoll.tau.setValue(.8,'s');
         fltCtrl.rollMoment.tau.setValue (.8,'s');
         fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
         fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
@@ -141,12 +141,12 @@ switch norm(env.water.velVec.Value)
     %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
     %     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
     %     fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-    %     fltCtrl.velAng.tau.setValue(.01,'s');
+    %     fltCtrl.tanRoll.tau.setValue(.01,'s');
     %     fltCtrl.rollMoment.tau.setValue (.01,'s');
         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
         fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
         fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-        fltCtrl.velAng.tau.setValue(.8,'s');
+        fltCtrl.tanRoll.tau.setValue(.8,'s');
         fltCtrl.rollMoment.tau.setValue (.8,'s');
     case 2
         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');   

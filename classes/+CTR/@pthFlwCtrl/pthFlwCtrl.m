@@ -4,12 +4,11 @@ classdef pthFlwCtrl < handle
     
     properties (SetAccess = private)
         % FPID controllers
-        velAng
+        tanRoll
         yawMoment
         rollMoment
         % Saturations
         maxBank
-       
         controlSigMax
         % SIM.parameters
         winchSpeedIn
@@ -30,7 +29,7 @@ classdef pthFlwCtrl < handle
     methods
         function obj = pthFlwCtrl
             %PTHFLWCTRL 
-            obj.velAng              = CTR.FPID('rad','rad');
+            obj.tanRoll              = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
             
@@ -52,20 +51,8 @@ classdef pthFlwCtrl < handle
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable');
         end
         
-        function setVelAng(obj,val,unit)
-            obj.velAng.setValue(val,unit);
-        end
-        function setYawMoment(obj,val,unit)
-            obj.yawMoment.setValue(val,unit);
-        end
-        function setMaxBank(obj,val,unit)
-            obj.maxBank.setValue(val,unit);
-        end
         function setWinchSpeedIn(obj,val,unit)
             obj.winchSpeedIn.setValue(val,unit);
-        end
-        function setControlSigMax(obj,val,unit)
-            obj.controlSigMax.setValue(val,unit);
         end
         function setWinchSpeedOut(obj,val,unit)
             obj.winchSpeedOut.setValue(val,unit);
@@ -84,9 +71,6 @@ classdef pthFlwCtrl < handle
         end
         function setPerpErrorVal(obj,val,unit)
             obj.perpErrorVal.setValue(val,unit);
-        end
-        function setRollMoment(obj,val,unit)
-            obj.rollMoment.setValue(val,unit);
         end
         function setStartControl(obj,val,unit)
             obj.startControl.setValue(val,unit);
