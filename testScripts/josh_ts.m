@@ -11,6 +11,12 @@ SPOOLINGCONTROLLER = 'nonTrad';
 PATHGEOMETRY = 'lemOfBooth';
 % ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
 controlAllocationBit = 0;
+
+%% PLOT BITS
+DAMPlot = false; % desired and achieved moments
+CSDPlot = false; % control surface deflections
+YMCTPlot = false; % yaw moment controller things
+TRTPlot = false; % tangent roll things
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -144,49 +150,55 @@ parseLogsout;
 % kiteAxesPlot
 %stopCallback
 %% Desired And Achieved Moments
-% figure
-% subplot(3,1,1)
-% plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(1,:,:)),...
-%     'LineWidth',1.5,'LineStyle','-','Color','k',...
-%     'DisplayName','Actual');
-% grid on
-% hold on
-% title('Desired and Achieved Moments')
-% plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,1),...
-%     'LineWidth',1.5,'LineStyle','--','Color','r',...
-%     'DisplayName','Desired');
-% xlabel('Time, [s]')
-% ylabel('Roll Moment [Nm]')
-% legend
-% subplot(3,1,2)
-% plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(2,:,:)),...
-%     'LineWidth',1.5,'LineStyle','-','Color','k',...
-%     'DisplayName','Actual');
-% grid on
-% hold on
-% plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,2),...
-%     'LineWidth',1.5,'LineStyle','--','Color','r',...
-%     'DisplayName','Desired');xlabel('Time, [s]')
-% ylabel('Pitch Moment [Nm]')
-% legend
-% subplot(3,1,3)
-% plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
-%     'LineWidth',1.5,'LineStyle','-','Color','k',...
-%     'DisplayName','Actual');
-% grid on
-% hold on
-% plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
-%     'LineWidth',1.5,'LineStyle','--','Color','r',...
-%     'DisplayName','Desired');
-% xlabel('Time, [s]')
-% ylabel('Yaw Moment [Nm]')
-% legend
-% 
-% linkaxes(findall(gcf,'Type','axes'),'x')
-% set(findall(gcf,'Type','axes'),'FontSize',16)
-% %% Control Surf Def
-% plotControlSurfaceDeflections
+if DAMPlot
+figure
+subplot(3,1,1)
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(1,:,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual');
+grid on
+hold on
+title('Desired and Achieved Moments')
+plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,1),...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired');
+xlabel('Time, [s]')
+ylabel('Roll Moment [Nm]')
+legend
+subplot(3,1,2)
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(2,:,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual');
+grid on
+hold on
+plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,2),...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired');xlabel('Time, [s]')
+ylabel('Pitch Moment [Nm]')
+legend
+subplot(3,1,3)
+plot(tsc.MFluidBdy.Time,squeeze(tsc.MFluidBdy.Data(3,:,:)),...
+    'LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual');
+grid on
+hold on
+plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,3),...
+    'LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired');
+xlabel('Time, [s]')
+ylabel('Yaw Moment [Nm]')
+legend
+
+linkaxes(findall(gcf,'Type','axes'),'x')
+set(findall(gcf,'Type','axes'),'FontSize',16)
+
+end 
+%% Control Surf Def
+if CSDPlot
+plotControlSurfaceDeflections
+end
 %% Plot yaw moment controller things
+if YMCTPlot
 figure
 subplot(3,1,1)
 tsc.betaRad.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
@@ -223,13 +235,15 @@ legend
 
 linkaxes(findall(gcf,'Type','axes'),'x')
 set(findall(gcf,'Type','axes'),'FontSize',16)
-
-% %% Plot tangent roll tracking
-% figure
-% tsc.tanRoll.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
-%     'DisplayName','Actual Tan Roll');
-% grid on
-% hold on
-% tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
-%     'DisplayName','Desired Tan Roll');
-% legend
+end
+%% Plot tangent roll tracking
+if TRTPlot
+figure
+tsc.tanRoll.plot('LineWidth',1.5,'LineStyle','-','Color','k',...
+    'DisplayName','Actual Tan Roll');
+grid on
+hold on
+tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
+    'DisplayName','Desired Tan Roll');
+legend
+end

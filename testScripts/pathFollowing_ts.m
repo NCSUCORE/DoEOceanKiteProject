@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 300*sqrt(lengthScaleFactor);
+duration_s  = 600*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 SPOOLINGCONTROLLER = 'nonTrad';
 PATHGEOMETRY = 'lemOfBooth';
@@ -34,8 +34,8 @@ fltCtrl.setFcnName('lemOfBooth','');
 % fltCtrl.setFcnName('lemOfGerono','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
-  hiLvlCtrl.basisParams.setValue([.73,.8,.36,0,125],'');% Lemniscate of Booth
-% hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,125],'');% Lemniscate of Booth
+ % hiLvlCtrl.basisParams.setValue([.73,.8,.36,0,125],'');% Lemniscate of Booth
+ hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,125],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 
 %% Set vehicle initial conditions
@@ -47,7 +47,7 @@ vhcl.setICsOnPath(...
 vhcl.setAddedMISwitch(false,'');
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = .5; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
+flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 
 %% Ground Station IC's and dependant properties
@@ -122,21 +122,18 @@ switch norm(env.water.velVec.Value)
         fltCtrl.rollMoment.kp.setValue(1e5,'(N*m)/(rad)');
         fltCtrl.rollMoment.kd.setValue(.2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
     case 0.5
-        fltCtrl.perpErrorVal.setValue(7*pi/180,'rad');
+        fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
         fltCtrl.rollMoment.kp.setValue(2e3,'(N*m)/(rad)');
-        fltCtrl.rollMoment.kd.setValue(.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        fltCtrl.rollMoment.kd.setValue(1.8*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
          fltCtrl.rollMoment.tau.setValue (.01,'s');
     case 1  
     %    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
     %    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
     %    fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-        fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.kd.setValue(2*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-        fltCtrl.tanRoll.tau.setValue(.8,'s');
-        fltCtrl.rollMoment.tau.setValue (.8,'s');
-        fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-        fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+        fltCtrl.rollMoment.kp.setValue(3e4,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(1.8*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+ 
     case 1.5
     %     fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
     %     fltCtrl.rollMoment.kp.setValue(4e5,'(N*m)/(rad)');
@@ -144,10 +141,9 @@ switch norm(env.water.velVec.Value)
     %     fltCtrl.tanRoll.tau.setValue(.01,'s');
     %     fltCtrl.rollMoment.tau.setValue (.01,'s');
         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');
-        fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
-        fltCtrl.rollMoment.kd.setValue(4.5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-        fltCtrl.tanRoll.tau.setValue(.8,'s');
-        fltCtrl.rollMoment.tau.setValue (.8,'s');
+        fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kd.setValue(1.8*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
+        
     case 2
         fltCtrl.perpErrorVal.setValue(3*pi/180,'rad');   
         fltCtrl.rollMoment.kp.setValue(5.9e5,'(N*m)/(rad)');
