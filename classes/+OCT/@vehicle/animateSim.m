@@ -7,12 +7,16 @@ addRequired(p,'timeStep',@isnumeric);
 
 % Save parameters
 addParameter(p,'PathFunc',[],@ischar); % Path geometry function that we're tracing
+
 addParameter(p,'SaveGif',false,@islogical) % Boolean switch to save a gif
-addParameter(p,'GifPath',[]);
+addParameter(p,'GifPath',fullfile(fileparts(which('OCTProject.prj')),'output'));
 addParameter(p,'GifFile','animation.gif');
+addParameter(p,'GifTimeStep',timeStep,@isnumeric)
+
 addParameter(p,'SaveMPEG',false,@islogical) % Boolean switch to save a MPEG
-addParameter(p,'MPEGPath',[]);
-addParameter(p,'MPEGFile','animation.mpeg');
+addParameter(p,'MPEGPath',fullfile(fileparts(which('OCTProject.prj')),'output'));
+addParameter(p,'MPEGFile','animation.gif');
+
 % Plot features
 addParameter(p,'PlotAxes',true,@islogical); % Plot coordinate system unit vectors
 addParameter(p,'View',[71,22],@isnumeric) % Camera view angle [azimuth elevation]
@@ -27,6 +31,14 @@ addParameter(p,'Pause',false,@islogical) % Pause after every image update
 
 parse(p,tsc,timeStep,varargin{:})
 
+% If the user wants to save something and the specified directory does not
+% exist, create it
+if p.Results.SaveGif && ~exist(p.Results.GifPath, 'dir')
+    mkdir(p.Results.GifPath)
+end
+if p.Results.SaveMPEG && ~exist(p.Results.MPEGPath, 'dir')
+    mkdir(p.Results.MPEGPath)
+end
 % Resample the timeseries to the specified framerate
 tsc = resampleTSC(tsc,p.Results.timeStep);
 
@@ -192,6 +204,16 @@ end
 % Set the font size
 set(gca,'FontSize',p.Results.FontSize);
 
+% % Save gif of results
+% if p.Results.SaveGif
+%     gifFilePath = fullfile(fileparts(which('OCTProject.prj')),'output',p.Results.GifFile);
+%     frame = getframe(h.fig); 
+%     im = frame2im(frame);
+%     [imind,cm] = rgb2ind(im,256);
+%     imwrite(imind,cm,gifFilePath,'gif', 'Loopcount',inf); 
+% end
+
+
 for ii = 1:length(tsc.eulerAngles.Time)
     for jj = 1:numel(hStatic)
         % Rotate and translate all aero surfaces
@@ -297,7 +319,7 @@ for ii = 1:length(tsc.eulerAngles.Time)
     end
     
     if p.Results.FluidMoments
-        h.table.Data{fluidStartRow+1,2}   = sprintf('%0.0f',tsc.MFluidBdy.Data(1,1,ii));
+        h.table.Data{fluidStartRow+1,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(1,1,ii));
         h.table.Data{fluidStartRow+2,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(2,1,ii));
         h.table.Data{fluidStartRow+3,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(3,1,ii));
     end
@@ -306,6 +328,20 @@ for ii = 1:length(tsc.eulerAngles.Time)
     h.title.String = {sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),...
         sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii)))};
     drawnow
+    
+    % Save gif of results
+    if p.Results.SaveGif
+        frame = getframe(h.fig);
+        im = frame2im(frame);
+        [imind,cm] = rgb2ind(im,256);
+        if ii == 1
+            imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif', 'Loopcount',inf);
+        else
+            imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif','WriteMode','append','DelayTime',p.Results.GifTimeStep)
+        end
+    end
+
+
     if p.Results.Pause
         pause
     end
