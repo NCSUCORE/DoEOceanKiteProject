@@ -12,9 +12,6 @@ SPOOLINGCONTROLLER = 'nonTrad';
 
 dynamicCalc = '';
 
-% ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
-controlAllocationBit = 0;
-
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -109,7 +106,34 @@ fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
 fltCtrl.elevatorReelInDef.setValue(0,'deg')
 
 pitchKp = (1e5)/(2*pi/180);
-                            
+
+%% Screw up the aerodynamics in the controller
+% vhcl2 = vhcl;
+% vhcl2.portWing.CL.setValue(1.1*vhcl2.portWing.CL.Value,'')
+% vhcl2.portWing.CD.setValue(1.1*vhcl2.portWing.CD.Value,'')
+% vhcl2.portWing.GainCL.setValue(1.1*vhcl2.portWing.GainCL.Value,'1/deg')
+% vhcl2.portWing.GainCD.setValue(1.1*vhcl2.portWing.GainCD.Value,'1/deg')
+% 
+% vhcl2.stbdWing.CL.setValue(1.1*vhcl2.stbdWing.CL.Value,'')
+% vhcl2.stbdWing.CD.setValue(1.1*vhcl2.stbdWing.CD.Value,'')
+% vhcl2.stbdWing.GainCL.setValue(1.1*vhcl2.stbdWing.GainCL.Value,'1/deg')
+% vhcl2.stbdWing.GainCD.setValue(1.1*vhcl2.stbdWing.GainCD.Value,'1/deg')
+% 
+% vhcl2.hStab.CL.setValue(1.1*vhcl2.hStab.CL.Value,'')
+% vhcl2.hStab.CD.setValue(1.1*vhcl2.hStab.CD.Value,'')
+% vhcl2.hStab.GainCL.setValue(1.1*vhcl2.hStab.GainCL.Value,'1/deg')
+% vhcl2.hStab.GainCD.setValue(1.1*vhcl2.hStab.GainCD.Value,'1/deg')
+% 
+% vhcl2.vStab.CL.setValue(1.1*vhcl2.vStab.CL.Value,'')
+% vhcl2.vStab.CD.setValue(1.1*vhcl2.vStab.CD.Value,'')
+% vhcl2.vStab.GainCL.setValue(1.1*vhcl2.vStab.GainCL.Value,'1/deg')
+% vhcl2.vStab.GainCD.setValue(1.1*vhcl2.vStab.GainCD.Value,'1/deg')
+% 
+% vhcl.portWing.aeroCentPosVec.setValue(vhcl.portWing.aeroCentPosVec.Value*1.1,'m')
+% vhcl.stbdWing.aeroCentPosVec.setValue(vhcl.stbdWing.aeroCentPosVec.Value*1.1,'m')
+% vhcl.hStab.aeroCentPosVec.setValue(vhcl.hStab.aeroCentPosVec.Value*1.1,'m')
+% vhcl.vStab.aeroCentPosVec.setValue(vhcl.vStab.aeroCentPosVec.Value*1.1,'m')
+                         
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
