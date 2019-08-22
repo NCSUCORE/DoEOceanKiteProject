@@ -35,7 +35,7 @@ vhcl.setInitAngVelVec([0;0;0],'rad/s');
 % vhcl.plotCoeffPolars
 
 % High Level Con
-loadComponent('hiLvlDummy');
+loadComponent('constBoothLem');
 
 
 %% Ground Station
@@ -65,7 +65,7 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 wnch.setTetherInitLength(vhcl,env,thr);
 
-dynamicCalc = 'Quaternions2';
+dynamicCalc = 'Quaternions';
 
 %% Set up controller
 load('ayazThreeTetCtrl.mat');

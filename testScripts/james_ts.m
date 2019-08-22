@@ -5,10 +5,12 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 200*sqrt(lengthScaleFactor);
+duration_s  = 2000*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 SPOOLINGCONTROLLER = 'nonTrad';
 PATHGEOMETRY = 'lemOfBooth';
+% ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
+controlAllocationBit = 0;
 
 %% PLOT BITS
 DAMPlot = true; % desired and achieved moments
@@ -44,7 +46,7 @@ fltCtrl.setFcnName('lemOfBooth','');
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = 2; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
+flowspeed = .1; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
@@ -73,14 +75,16 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 fltCtrl.setStartControl(0,'s')
 
 %Level 1, Velocity Angle Selection
-fltCtrl.setSearchSize(.5,'');
-fltCtrl.perpErrorVal.setValue(3*pi/180,'rad')
+    fltCtrl.setSearchSize(.5,'');
+    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad')
 
 %Level 2, Tangent Roll Selection
-fltCtrl.maxBank.upperLimit.setValue(45*pi/180,'');
-fltCtrl.maxBank.lowerLimit.setValue(-45*pi/180,'');
+    fltCtrl.maxBank.upperLimit.setValue(45*pi/180,'');
+    fltCtrl.maxBank.lowerLimit.setValue(-45*pi/180,'');
+
 
 fltCtrl.tanRoll.kp.setValue(.2,'(rad)/(rad)');
+% fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.tanRoll.tau.setValue(.01,'s');
@@ -88,11 +92,11 @@ fltCtrl.tanRoll.tau.setValue(.01,'s');
 %Level 3 Moment Selection
 
 
-fltCtrl.rollMoment.kp.setValue((3e3)/(10*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
 % fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue(fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-fltCtrl.rollMoment.tau.setValue(.01,'s');
+fltCtrl.rollMoment.kd.setValue((2e4)/(10*pi/180),'(N*m)/(rad/s)');
+fltCtrl.rollMoment.tau.setValue(.001,'s');
 
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 % fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
@@ -250,7 +254,7 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired Tan Roll');
 legend
 end
-vhcl.animateSim(tsc,1,...
+vhcl.animateSim(tsc,10,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
     'NavigationVecs',true,...
