@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 300*sqrt(lengthScaleFactor);
+duration_s  = 200*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 SPOOLINGCONTROLLER = 'nonTrad';
 PATHGEOMETRY = 'lemOfBooth';
@@ -41,7 +41,7 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
  % hiLvlCtrl.basisParams.setValue([.73,1.4,.36,0,125],'');% Lemniscate of Booth
-  hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,125],'')
+  hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,50],'')
 % hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Environment IC's and dependant properties
@@ -76,27 +76,27 @@ fltCtrl.setStartControl(0,'s')
 
 %Level 1, Velocity Angle Selection
     fltCtrl.setSearchSize(.5,'');
-    fltCtrl.perpErrorVal.setValue(7*pi/180,'rad')
+    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad')
 
 %Level 2, Tangent Roll Selection
     fltCtrl.maxBank.upperLimit.setValue(45*pi/180,'');
     fltCtrl.maxBank.lowerLimit.setValue(-45*pi/180,'');
 
 
-fltCtrl.tanRoll.kp.setValue(.6,'(rad)/(rad)');
+fltCtrl.tanRoll.kp.setValue(1,'(rad)/(rad)');
 % fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
-fltCtrl.tanRoll.tau.setValue(1e-3,'s');
+fltCtrl.tanRoll.tau.setValue(.01,'s');
 
 %Level 3 Moment Selection
 
 
-fltCtrl.rollMoment.kp.setValue((6e4)/(10*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue((3e4)/(10*pi/180),'(N*m)/(rad)')
 % fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((6e4)/(10*pi/180),'(N*m)/(rad/s)');
-fltCtrl.rollMoment.tau.setValue(0.3,'s');
+fltCtrl.rollMoment.kd.setValue((2e4)/(10*pi/180),'(N*m)/(rad/s)');
+fltCtrl.rollMoment.tau.setValue(.01,'s');
 
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 % fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
@@ -118,8 +118,8 @@ fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
     %           0              0         4.8067]; 
     fltCtrl.ctrlAllocMat.setValue(allMat,'(deg)/(m^3)');
     
-    fltCtrl.controlSigMax.upperLimit.setValue(30,'')
-    fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
+    fltCtrl.controlSigMax.upperLimit.setValue(20,'')
+    fltCtrl.controlSigMax.lowerLimit.setValue(-20,'')
 
 %Winch Controller
     fltCtrl.traditionalBool.setValue(0,'')
@@ -127,7 +127,7 @@ fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
     fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
     fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
-    fltCtrl.elevatorReelInDef.setValue(20,'deg')
+    fltCtrl.elevatorReelInDef.setValue(15,'deg')
 
     fltCtrl.setMinR(100,'m')
     fltCtrl.setMaxR(200,'m')
@@ -254,5 +254,11 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired Tan Roll');
 legend
 end
+vhcl.animateSim(tsc,1,...
+    'PathFunc',fltCtrl.fcnName.Value,...
+    'PathPosition',true,...
+    'NavigationVecs',true,...
+    'Pause',false)
+
 
 hold off
