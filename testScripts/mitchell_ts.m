@@ -21,7 +21,7 @@ loadComponent('firstBuildPathFollowing');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('constBoothLem')
+loadComponent('varRadiusBooth')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
