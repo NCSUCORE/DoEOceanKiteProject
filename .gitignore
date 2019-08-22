@@ -36,3 +36,13 @@ octave-workspace
 
 # compiled simulink models
 *.slxc
+
+# images and videos
+.gif
+.GIF
+.png
+.PNG
+.jpeg
+.JPEG
+.fig
+.FIG

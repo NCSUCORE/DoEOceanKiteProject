@@ -6,7 +6,7 @@ end
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 100*sqrt(lengthScaleFactor);
-flowspeed = 2;
+flowspeed = 0.5;
 
 SPOOLINGCONTROLLER = 'nonTrad';
 
@@ -24,7 +24,7 @@ loadComponent('pathFollowingGndStn');
 % Winches
 loadComponent('oneDOFWnch');
 % Tether
-loadComponent('pathFollowingTether');
+loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
@@ -275,7 +275,7 @@ vhcl.animateSim(tsc,0.1,...
     'PathPosition',true,...
     'NavigationVecs',true,...
     'Pause',false,...
-    'SaveGif',true,...
-    'GifTimeStep',1)
+    'SaveGif',false,...
+    'ZoomIn',false)
 
 

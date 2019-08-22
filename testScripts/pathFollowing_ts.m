@@ -22,7 +22,7 @@ loadComponent('pathFollowingGndStn');
 % Winches 
 loadComponent('oneDOFWnch');
 % Tether
-loadComponent('pathFollowingTether');
+loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
