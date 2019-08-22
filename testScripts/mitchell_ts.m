@@ -34,7 +34,7 @@ loadComponent('pathFollowingVhcl');
 loadComponent('pathFollowingEnv');
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,175],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
@@ -45,12 +45,12 @@ gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    0.75,... % Initial path position
+    0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     (11.5/2)*flowspeed) % Initial speed
-vhcl.setAddedMISwitch(false,'');
-vhcl.inertia.setValue(diag(diag(vhcl.inertia.Value)),'kg*m^2');
+vhcl.setAddedMISwitch(true,'');
+% vhcl.inertia.setValue(diag(diag(vhcl.inertia.Value)),'kg*m^2');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
@@ -94,8 +94,8 @@ fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 % fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
 % fltCtrl.yawMoment.tau.setValue(0.001,'s');
 
-fltCtrl.controlSigMax.upperLimit.setValue(300,'')
-fltCtrl.controlSigMax.lowerLimit.setValue(-300,'')
+fltCtrl.controlSigMax.upperLimit.setValue(30,'')
+fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
