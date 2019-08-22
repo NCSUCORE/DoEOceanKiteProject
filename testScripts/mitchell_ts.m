@@ -216,23 +216,23 @@ linkaxes(findall(gcf,'Type','axes'),'x')
 set(findall(gcf,'Type','axes'),'FontSize',16)
 
 %% Compare different solution methods
-figure
-lineStyles = {'-','--','-.',':'};
-for ii = 1:3
-    subplot(3,1,ii)
-    set(gca,'NextPlot','add')
-    for jj = 1:4
-        plot(tsc.(sprintf('d%d',jj)).Time,...
-            tsc.(sprintf('d%d',jj)).Data(:,ii),...
-            'LineWidth',1.5,...
-            'DisplayName',sprintf('d%d',jj),...
-            'LineStyle',lineStyles{jj});
-    end
-    xlabel('Time, [s]')
-legend    
-end
-linkaxes(findall(gcf,'Type','axes'),'x')
-set(findall(gcf,'Type','axes'),'FontSize',16)
+% figure
+% lineStyles = {'-','--','-.',':'};
+% for ii = 1:3
+%     subplot(3,1,ii)
+%     set(gca,'NextPlot','add')
+%     for jj = 1:4
+%         plot(tsc.(sprintf('d%d',jj)).Time,...
+%             tsc.(sprintf('d%d',jj)).Data(:,ii),...
+%             'LineWidth',1.5,...
+%             'DisplayName',sprintf('d%d',jj),...
+%             'LineStyle',lineStyles{jj});
+%     end
+%     xlabel('Time, [s]')
+% legend    
+% end
+% linkaxes(findall(gcf,'Type','axes'),'x')
+% set(findall(gcf,'Type','axes'),'FontSize',16)
 
 %% Plot tangent roll tracking
 figure
