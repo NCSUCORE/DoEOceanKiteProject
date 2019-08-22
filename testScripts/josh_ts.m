@@ -13,10 +13,10 @@ PATHGEOMETRY = 'lemOfBooth';
 controlAllocationBit = 0;
 
 %% PLOT BITS
-DAMPlot = false; % desired and achieved moments
-CSDPlot = false; % control surface deflections
+DAMPlot = true; % desired and achieved moments
+CSDPlot = true; % control surface deflections
 YMCTPlot = false; % yaw moment controller things
-TRTPlot = false; % tangent roll things
+TRTPlot = true; % tangent roll things
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -40,20 +40,22 @@ fltCtrl.setFcnName('lemOfBooth','');
 % fltCtrl.setFcnName('lemOfGerono','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
-  hiLvlCtrl.basisParams.setValue([.73,1.4,.36,0,125],'');% Lemniscate of Booth
+ % hiLvlCtrl.basisParams.setValue([.73,1.4,.36,0,125],'');% Lemniscate of Booth
+  hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,125],'')
 % hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
+%% Environment IC's and dependant properties
+% Set Values
+flowspeed = 2; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
+env.water.velVec.setValue([flowspeed 0 0],'m/s');
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
     .4,... % Initial path position
     fltCtrl.fcnName.Value,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    6) % Initial speed
-vhcl.setAddedMISwitch(false,'');
-%% Environment IC's and dependant properties
-% Set Values
-flowspeed = 1.5; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
-env.water.velVec.setValue([flowspeed 0 0],'m/s');
+    (11.5/2)*flowspeed) % Initial speed
+vhcl.setAddedMISwitch(true,''); %true to have added mass on
+
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
@@ -64,37 +66,42 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.density.setValue(1000,'kg/m^3');
+thr.tether1.density.setValue(1300,'kg/m^3');
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 %% ALL Controller Properties
 %General
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
-fltCtrl.setStartControl(1,'s')
+fltCtrl.setStartControl(0,'s')
 
 %Level 1, Velocity Angle Selection
     fltCtrl.setSearchSize(.5,'');
-    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad')
+    fltCtrl.perpErrorVal.setValue(7*pi/180,'rad')
 
 %Level 2, Tangent Roll Selection
     fltCtrl.maxBank.upperLimit.setValue(45*pi/180,'');
     fltCtrl.maxBank.lowerLimit.setValue(-45*pi/180,'');
 
-    fltCtrl.tanRoll.kp.setValue(0.1,'(rad)/(rad)');
-    fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
-    fltCtrl.tanRoll.kd.setValue(1.5*fltCtrl.tanRoll.kp.Value,'(rad)/(rad/s)');
-    fltCtrl.tanRoll.tau.setValue(0.01,'s');
+
+fltCtrl.tanRoll.kp.setValue(.6,'(rad)/(rad)');
+% fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)');
+fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
+fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
+fltCtrl.tanRoll.tau.setValue(1e-3,'s');
 
 %Level 3 Moment Selection
-    fltCtrl.rollMoment.kp.setValue(2500 / (10*pi/180),'(N*m)/(rad)'); %This needs to be scheduled with flow speed
-    fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-    fltCtrl.rollMoment.kd.setValue(5*fltCtrl.rollMoment.kp.Value,'(N*m)/(rad/s)');
-    fltCtrl.rollMoment.tau.setValue(0.01,'s');
 
-    fltCtrl.yawMoment.kp.setValue(0 / (2*pi/180),'(N*m)/(rad)');
-    fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
-    fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
-    fltCtrl.yawMoment.tau.setValue(0.01,'s');
+
+fltCtrl.rollMoment.kp.setValue((6e4)/(10*pi/180),'(N*m)/(rad)')
+% fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
+fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
+fltCtrl.rollMoment.kd.setValue((6e4)/(10*pi/180),'(N*m)/(rad/s)');
+fltCtrl.rollMoment.tau.setValue(0.3,'s');
+
+fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
+% fltCtrl.yawMoment.ki.setValue(0,'(N*m)/(rad*s)');
+% fltCtrl.yawMoment.kd.setValue(0,'(N*m)/(rad/s)');
+% fltCtrl.yawMoment.tau.setValue(0.001,'s');
 
 %Control Allocation
     allMat = zeros(4,3);
@@ -117,10 +124,10 @@ fltCtrl.setStartControl(1,'s')
 %Winch Controller
     fltCtrl.traditionalBool.setValue(0,'')
 
-    fltCtrl.winchSpeedIn.setValue(-0*flowspeed/3,'m/s')
-    fltCtrl.winchSpeedOut.setValue(0*flowspeed/3,'m/s')
+    fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
+    fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
-    fltCtrl.elevatorReelInDef.setValue(0,'deg')
+    fltCtrl.elevatorReelInDef.setValue(20,'deg')
 
     fltCtrl.setMinR(100,'m')
     fltCtrl.setMaxR(200,'m')
@@ -128,8 +135,8 @@ fltCtrl.setStartControl(1,'s')
     % fltCtrl.outRanges.setValue([0.49   1.0000;
     %                             2.0000    2.0000],''); %circle
     fltCtrl.outRanges.setValue( [0    0.1250;
-                                 0.3750    0.6250;
-                                 0.8750    1.0000;],'');
+                                 0.3450    0.6250;
+                                 0.8500    1.0000;],'');
 %% Scale
 % scale environment
 env.scale(lengthScaleFactor,densityScaleFactor);
@@ -247,3 +254,5 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired Tan Roll');
 legend
 end
+
+hold off
