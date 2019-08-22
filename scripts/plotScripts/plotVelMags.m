@@ -3,5 +3,5 @@
     velmags = sqrt(sum((vels).^2,1));
     plot(tsc.velocityVec.Time, squeeze(velmags));
     xlabel('time (s)')
-    ylabel('ground frame velocity (m)')
+    ylabel('ground frame velocity (m/s)')
     hold on
