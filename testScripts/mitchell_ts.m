@@ -10,8 +10,8 @@ flowspeed = 0.5;
 
 SPOOLINGCONTROLLER = 'nonTrad';
 
-% dynamicCalc = '';
-dynamicCalc = 'Quaternions';
+dynamicCalc = '';
+% dynamicCalc = 'Quaternions';
 
 %% Load components
 % Flight Controller
