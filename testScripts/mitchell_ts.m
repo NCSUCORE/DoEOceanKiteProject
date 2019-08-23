@@ -10,7 +10,8 @@ flowspeed = 0.5;
 
 SPOOLINGCONTROLLER = 'nonTrad';
 
-dynamicCalc = '';
+% dynamicCalc = '';
+dynamicCalc = 'Quaternions';
 
 %% Load components
 % Flight Controller
@@ -270,7 +271,7 @@ legend
 
 
 %% Animate the results
-vhcl.animateSim(tsc,0.1,...
+vhcl.animateSim(tsc,0.5,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
     'NavigationVecs',true,...
