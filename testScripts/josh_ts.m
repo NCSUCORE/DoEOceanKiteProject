@@ -5,7 +5,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 200*sqrt(lengthScaleFactor);
+duration_s  = 1000*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 SPOOLINGCONTROLLER = 'nonTrad';
 PATHGEOMETRY = 'lemOfBooth';
@@ -39,12 +39,12 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
  % hiLvlCtrl.basisParams.setValue([.73,1.4,.36,0,125],'');% Lemniscate of Booth
-  hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,125],'')
+  hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,50],'')
 % hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = 2; %m/s options are .1, .5, 1, 1.5, and 2 ************************************************************************************************************Right Here*************************************************88
+flowspeed = .165; %m/s
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
