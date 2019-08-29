@@ -6,3 +6,7 @@
 %still end up with conflicts if you changed a file that was changed since
 %the commit you actually build off.
 !git rebase origin/master
+
+%% if you are getting commit issues and want to rebase anyway use
+% !git checkout origin/master -f
+% !git rebase --continue

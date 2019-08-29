@@ -5,9 +5,9 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1000*sqrt(lengthScaleFactor);
+duration_s  = 500*sqrt(lengthScaleFactor);
 dynamicCalc = '';
-SPOOLINGCONTROLLER = 'nonTrad';
+SPOOLINGCONTROLLER = 'intra';
 PATHGEOMETRY = 'lemOfBooth';
 
 %% PLOT BITS
@@ -39,12 +39,12 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
  % hiLvlCtrl.basisParams.setValue([.73,1.4,.36,0,125],'');% Lemniscate of Booth
-  hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,50],'')
+  hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,125],'')
 % hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Environment IC's and dependant properties
 % Set Values
-flowspeed = .165; %m/s
+flowspeed = 1; %m/s
 env.water.velVec.setValue([flowspeed 0 0],'m/s');
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
@@ -123,7 +123,7 @@ fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
     fltCtrl.winchSpeedIn.setValue(-flowspeed/3,'m/s')
     fltCtrl.winchSpeedOut.setValue(flowspeed/3,'m/s')
 
-    fltCtrl.elevatorReelInDef.setValue(20,'deg')
+    fltCtrl.elevatorReelInDef.setValue(20,'deg') %~2.8 degrees AoA
 
     fltCtrl.setMinR(100,'m')
     fltCtrl.setMaxR(200,'m')
@@ -131,8 +131,9 @@ fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
     % fltCtrl.outRanges.setValue([0.49   1.0000;
     %                             2.0000    2.0000],''); %circle
     fltCtrl.outRanges.setValue( [0    0.1250;
-                                 0.3450    0.6250;
-                                 0.8500    1.0000;],'');
+                                 0.3750    0.6250;
+                                 0.87500    1.0000;],'');
+% fltCtrl.outRanges.setValue([0 1;2 2]);
 %% Scale
 % scale environment
 env.scale(lengthScaleFactor,densityScaleFactor);
