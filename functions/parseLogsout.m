@@ -22,20 +22,25 @@ catch
 end
 
 % get names of signals
-names = logsout.getElementNames;
+ names = logsout.getElementNames;
 % get rid of unnamed signals (empty strings)
 names = names(cellfun(@(x) ~isempty(x),names));
 % add each signal to the struct
 for ii = 1:length(names)
     ts = logsout.getElement(names{ii});
-    if isa(ts,'Simulink.SimulationData.Signal')
+    if names{ii}=="time"
+        warning("'time' is not a valid signal name")
+    elseif isa(ts,'Simulink.SimulationData.Signal')
         tsc.(cleanString(names{ii})) = ts.Values;
+        if ~exist('timevec','var')
+            timevec = ts.Values.Time;
+        end
     else
        warning('Duplicate signal names %s, skipping', names{ii})
        break
-    end
-    
+    end    
 end
+tsc.time = timevec;
 
 if nargout == 0
     % Assign tsc in base workspace
