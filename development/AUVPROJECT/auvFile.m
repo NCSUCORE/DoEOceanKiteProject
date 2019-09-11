@@ -4,7 +4,7 @@ clear all;
 %% Constants
 
 % full charge
-socLimitUpper = 100;
+socLimitUpper = 1;
 
 % recharge
 socLimitLower = .30;
@@ -31,7 +31,7 @@ secondsForDistance = 0;
 
 %% time loop 
 % i = time
-while ( i < = 10000)
+while ( i <= 10000)
     if simFlag == 0
      secondsForDistance = secondsForDistance + 1;
     else
