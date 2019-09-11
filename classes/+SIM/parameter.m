@@ -76,7 +76,9 @@ classdef parameter < handle
                 rethrow(ME);
             end
             if isa(hobj.Value,'timeseries')
-                 if ~isempty(varargin) % user specified new time vector, overwrite the whole timeseries with the new one
+                if isa(val,'timeseries')
+                    hobj.Value=val;
+                elseif ~isempty(varargin) % user specified new time vector, overwrite the whole timeseries with the new one
                     hobj.Value = timeseries(val,varargin{1});
                     hObj.Value.DataInfo.Units = unit;
                 else
