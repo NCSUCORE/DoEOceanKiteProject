@@ -1,5 +1,8 @@
+% ENV.env is a container class meant to contain instances of "flow" that
+% represent different operating conditions (constant flow, variable flow,
+% etc).
 classdef env < dynamicprops
-    properties
+    properties (SetAccess = private)
         gravAccel
     end
     methods
@@ -14,7 +17,7 @@ classdef env < dynamicprops
             addRequired(p,'FlowTypes',@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'FlowDensities',[],@(x) all(isnumeric(x)))
             parse(p,FlowNames,FlowTypes,varargin{:})
-            % Create winches
+            % Create properties of env according to the specified classes
             for ii = 1:numel(p.Results.FlowNames)
                 obj.addprop(p.Results.FlowNames{ii});
                 obj.(p.Results.FlowNames{ii}) = ENV.(p.Results.FlowTypes{ii});

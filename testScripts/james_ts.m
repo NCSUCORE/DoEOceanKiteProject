@@ -1,3 +1,4 @@
+clear
 
 if ~slreportgen.utils.isModelLoaded('OCTModel')
     OCTModel

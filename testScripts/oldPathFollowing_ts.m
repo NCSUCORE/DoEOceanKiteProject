@@ -23,7 +23,7 @@ duration_s  = 75*sqrt(lengthScaleFactor);
 %  createPathFollowingControllerCtrlBus;
 % loadComponent('pathFollowingControllerRequiredBusses');
 
-loadComponent('basicILC');
+loadComponent('fig8ILC');
 %% Set up environment
 % Create
 loadComponent('pathFollowingEnv.mat')

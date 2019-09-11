@@ -3,7 +3,7 @@ function ilcPathOpt_bc()
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'basisParams';
-elems(1).Dimensions = 2;
+elems(1).Dimensions = [5 1];
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;

@@ -1,5 +1,6 @@
 hiLvlCtrl = CTR.controller;
 HILVLCONTROLLER = 'ilcPathOpt';
+PATHGEOMETRY = 'lemOfBooth';
 
 hiLvlCtrl.add('GainNames',...
     {...
@@ -36,10 +37,10 @@ hiLvlCtrl.pathVarUpperLim.Description = 'ILC trigger upper path variable limit, 
 hiLvlCtrl.pathVarUpperLim.setValue(0.03,'');
 % ILC doesn't start until the system completes this number of laps:
 hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC, in order to let transients die out.';
-hiLvlCtrl.numInitLaps.setValue(5,'');
+hiLvlCtrl.numInitLaps.setValue(1,'');
 % Weighting on path tracking in the performance index:
 hiLvlCtrl.distPenaltyWght.Description = 'Weight on path tracking penalty (interior angle) in the ILC performance index.';
-hiLvlCtrl.distPenaltyWght.setValue(10000,'W/deg');
+hiLvlCtrl.distPenaltyWght.setValue(100,'W/deg');
 % Initial basis parameters
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
@@ -50,14 +51,15 @@ hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in 
 hiLvlCtrl.forgettingFactor.setValue(0.99,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
-hiLvlCtrl.trustRegion.setValue([],'[]');
+hiLvlCtrl.trustRegion.setValue([0.1 0.1 0 0 0],'[]');
 % Persistent excitation
 hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.';
-hiLvlCtrl.excitationAmp.setValue([],'[]');
+hiLvlCtrl.excitationAmp.setValue([0.01 0.01 0 0 0],'[]');
 % Output filter time constant
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.';
 hiLvlCtrl.filtTimeConst.setValue(0.05,'s');
 
 
 %% save file in its respective directory
-saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
+saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
+save(saveFile,'PATHGEOMETRY','-append')

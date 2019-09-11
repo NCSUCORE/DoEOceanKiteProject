@@ -5,10 +5,10 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 100*sqrt(lengthScaleFactor);
+duration_s  = 1000*sqrt(lengthScaleFactor);
 flowspeed = 0.5;
 
-SPOOLINGCONTROLLER = 'intra';
+SPOOLINGCONTROLLER = 'multi';
 batteryMaxEnergy = inf;
 dynamicCalc = '';
 % dynamicCalc = 'Quaternions';
@@ -19,7 +19,7 @@ loadComponent('firstBuildPathFollowing');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('varRadiusBooth')
+loadComponent('fig8ILC')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -32,7 +32,7 @@ loadComponent('pathFollowingVhcl');
 %loadComponent('pathFollowingEnv');
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.basisParams.setValue([.75,1,20*pi/180,0,125],'') % Lemniscate of Booth
+hiLvlCtrl.initBasisParams.setValue([.75,1,20*pi/180,0,125],'[]') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
 flowspeed = 2;
@@ -47,7 +47,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
-    hiLvlCtrl.basisParams.Value,... % Geometry parameters
+    hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
     (11.5/2)*flowspeed) % Initial speed
 vhcl.setAddedMISwitch(true,'');
 % vhcl.inertia.setValue(diag(diag(vhcl.inertia.Value)),'kg*m^2');
@@ -72,8 +72,8 @@ fltCtrl.outRanges.setValue( [...
     0.3450      0.6250;
     0.8500      1.0000;],'');
 
-fltCtrl.winchSpeedIn.setValue(0,'m/s')
-fltCtrl.winchSpeedOut.setValue(0,'m/s')
+fltCtrl.winchSpeedIn.setValue(2/3,'m/s')
+fltCtrl.winchSpeedOut.setValue(2/3,'m/s')
 fltCtrl.traditionalBool.setValue(1,'')
 
 % Control surface parameters
@@ -100,7 +100,7 @@ fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 fltCtrl.startControl.setValue(0,'s');
 
 % Set initial conditions
-fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
+fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
 
 fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
                                 1.1584         0         0;

@@ -1,6 +1,6 @@
 hiLvlCtrl = CTR.controller;
 HILVLCONTROLLER = 'ilcPathOpt';
-
+PATHGEOMETRY = 'lemOfBooth';
 hiLvlCtrl.add('GainNames',...
     {...
     'pathVarLowerLim',...
@@ -38,4 +38,5 @@ hiLvlCtrl.excitationAmp.setValue([0 0],'[deg deg]');
 hiLvlCtrl.filtTimeConst.setValue(0.1,'s');
 
 %% save file in its respective directory
-saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
+saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
+save(saveFile,'PATHGEOMETRY','-append')
