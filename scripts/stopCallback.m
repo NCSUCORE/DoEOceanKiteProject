@@ -21,11 +21,5 @@ plotEverything
 
 % Get handles to all the figures
 fprintf('Saving all resulting plots. \n')
-figHandles = findobj('Type', 'figure');
-for ii = 1:length(figHandles)
-    fileName = regexp(figHandles(ii).Name,'[\w*]','match');
-    fileName = [fileName{:}];
-    savePlot(figHandles(ii),folderName,fileName)
-end
-clearvars figHandles fileName folderName ii 
+saveAllPlots('Folder',folderName)
 fprintf('Done. \n')

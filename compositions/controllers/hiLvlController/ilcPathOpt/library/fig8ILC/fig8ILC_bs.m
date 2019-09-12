@@ -13,7 +13,9 @@ hiLvlCtrl.add('GainNames',...
     'forgettingFactor',...
     'trustRegion',...
     'excitationAmp',...
-    'filtTimeConst'},...
+    'filtTimeConst',...
+    'optEnable',...
+    },...
     'GainUnits',...
     {...
     '',...%pathVarLowerLim no units
@@ -26,7 +28,8 @@ hiLvlCtrl.add('GainNames',...
     '[]',...%trustRegion same units as basis parameters
     '[]',...%excitationAmp same units as basis parameter
     's',...%filtTimeConst seconds
-	});%
+	'[]',...%boolean vector describing which basis parameters to optimize
+    });%
 
 % Set the limits the trigger the update
 % To trigger update, path variable must fall below lower limit, then go
@@ -40,7 +43,7 @@ hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC,
 hiLvlCtrl.numInitLaps.setValue(1,'');
 % Weighting on path tracking in the performance index:
 hiLvlCtrl.distPenaltyWght.Description = 'Weight on path tracking penalty (interior angle) in the ILC performance index.';
-hiLvlCtrl.distPenaltyWght.setValue(100,'W/deg');
+hiLvlCtrl.distPenaltyWght.setValue(5e4,'W/deg');
 % Initial basis parameters
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
@@ -51,13 +54,15 @@ hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in 
 hiLvlCtrl.forgettingFactor.setValue(0.99,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
-hiLvlCtrl.trustRegion.setValue([0.1 0.1 0 0 0],'[]');
+hiLvlCtrl.trustRegion.setValue([0.05 0.1 inf inf inf],'[]');
 % Persistent excitation
 hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.';
-hiLvlCtrl.excitationAmp.setValue([0.01 0.01 0 0 0],'[]');
+hiLvlCtrl.excitationAmp.setValue([0.01 0.02 0 0 0],'[]');
 % Output filter time constant
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.';
 hiLvlCtrl.filtTimeConst.setValue(0.05,'s');
+% Optimization enable
+hiLvlCtrl.optEnable.setValue([1 1 0 0 0],'[]');
 
 
 %% save file in its respective directory
