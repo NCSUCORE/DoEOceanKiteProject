@@ -5,9 +5,11 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 2000*sqrt(lengthScaleFactor);
+duration_s  = 1000*sqrt(lengthScaleFactor);
 
-SPOOLINGCONTROLLER = 'intraSpoolingController';
+SPOOLINGCONTROLLER = 'multiSpoolingController';
+% SPOOLINGCONTROLLER = 'intraSpoolingController';
+% SPOOLINGCONTROLLER = 'intraSpoolNetZeroPI';
 batteryMaxEnergy = inf;
 dynamicCalc = '';
 
@@ -232,6 +234,9 @@ zlabel('Z Position')
 daspect([1 1 1])
 view([63.256 32.88])
 set(gca,'FontSize',24)
+
+%% Plot tether length error in iteration domain
+
 
 %% Save all the plots
 saveAllPlots

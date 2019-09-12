@@ -48,16 +48,16 @@ hiLvlCtrl.distPenaltyWght.setValue(3.5e5,'W/deg');
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
 hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient';
-hiLvlCtrl.learningGain.setValue(1,'[]');
+hiLvlCtrl.learningGain.setValue(1e-5,'[]');
 % Forgetting factor of RLS estimator
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update';
-hiLvlCtrl.forgettingFactor.setValue(0.99,'');
+hiLvlCtrl.forgettingFactor.setValue(0.9,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
-hiLvlCtrl.trustRegion.setValue([0.05 0.1 inf inf inf],'[]');
+hiLvlCtrl.trustRegion.setValue([0.05 0.1 inf inf inf]/2,'[]');
 % Persistent excitation
 hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.';
-hiLvlCtrl.excitationAmp.setValue([0.01 0.02 0 0 0],'[]');
+hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0],'[]');
 % Output filter time constant
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.';
 hiLvlCtrl.filtTimeConst.setValue(0.05,'s');
