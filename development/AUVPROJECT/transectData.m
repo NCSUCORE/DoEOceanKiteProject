@@ -29,7 +29,7 @@ end
  vq = interp1(xPosAL,maxV,xq);
  
  
- plot(xq,vq)
+% plot(xq,vq)
  
 
 
@@ -38,10 +38,6 @@ end
 % u(time,station,z): u velocity
 % v(time,station,z): v velocity
 
-% plot(u(3000,1:16,9))
-% title('xflow')
-% ylabel('flowspeed')
-% xlabel('substation')
 if botherJames == 1
 figure(3)
 for i = 1:100:length(time)
@@ -52,13 +48,3 @@ for i = 1:100:length(time)
  
 end 
 end 
-%distance in m from station 1 = x
-%V = station flow speed mag at picked time step
-
-%radius of earth 6.371 million meters
-
-% 
-% 
-% V = sqrt(sum([u(600,1:16,:),v(600,1:16,:);]'.^2))'; 
-% %xq = length of x )
-% vq = interp1(x,v,xq
