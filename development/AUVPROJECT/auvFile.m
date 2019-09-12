@@ -45,8 +45,13 @@ flowTimeCost             = randi(10,1,100);
 
 % VEHICLE POSITION TO POSITION STAGE PENALTY (TIME)
 vhclPosChangeTimePenalty = posInt/vhclVelMag ; %tau
+
 % COST TO REAL IN AN OUT THE KITE 
 startKiteCost = 300; %seconds
+
+% Total matrix of indexes for the best previous at each current
+totalIndexMat = [];
+
 %% final cost computation 
 
             terminalCost              = [];
@@ -54,25 +59,35 @@ startKiteCost = 300; %seconds
   for j = 1:length(possibleBatteryLife)
       
             terminalBatteryRemaining  = socLimitUpper*100 - possibleBatteryLife(j); 
-            timeToChargeToFull        = flowTimeCost(100)*(100-terminalBatteryRemaining);
+            timeToChargeToFull        = flowTimeCost(100)*(100-terminalBatteryRemaining) + startKiteCost;
             terminalCost              = [terminalCost,timeToChargeToFull]; 
             
   end 
 %% for loop 
 
-for i = numStages:-1:1 
+%stage before the last backwards to 
+for i = numStages-1:-1:2 
     
             smallestCostMat          = [];
             indexMat                 = [];
     %number of states in current stage
     for ii = length(possibleBatteryLife):-1:1
         
+            %as you change stages, the cost to finish at each state combo is
+            %carried back
+            if exist('initialStateCostPerStage')
+            intialStateCost          = initialStateCostPerStage(ii);
+            else
+            intialStateCost          = 0;     
+            end
+            
+            
+            
             %velocity of wind at current stage
             %possible battery lifes 
-            vWind                    = flowSpeeds(i-1);
+            vWind                    = flowSpeeds(i);
             stateBatteryLife         = possibleBatteryLife(ii); 
-            %if you cannot make it to next position, you have to stop and
-            %charge until you can
+            
             
 %%%%%%%%%%%%%%%%% DRAG DYNAMICS
             Cd                       = 1; 
@@ -81,6 +96,7 @@ for i = numStages:-1:1
             dragForce                = .5.*densityOfFluid.*vAppMag.^2 .*aRef.*Cd;
 
 %%%%%%%%%%%%%%%%%INCREASE IN CHARGE COST 
+            
             dragEnergy               = dragForce * posInt; 
             propulsionEnergy         = propulsionPower * vhclPosChangeTimePenalty ;  
             energySpentToMovePercent = ceil(100*(dragEnergy + propulsionEnergy)/batteryMaxEnergy);
@@ -97,20 +113,25 @@ for i = numStages:-1:1
             totalAddedStageCost      = 0;
             end
             costToFinishMat          = [];
-            disp(batteryEnergyRemaining)
-        %number of stages in previous stage
+%             disp(batteryEnergyRemaining)
+        
+        % possible battery life = states
         for iii = length(possibleBatteryLife):-1:1           
 
             timeChargeOnePercentPrev = flowTimeCost(i); 
             timePenaltyCharging      = timeChargeOnePercentPrev*((iii-1)-batteryEnergyRemaining);
-            %disp(timePenaltyCharging) 
-            %termina
+%             disp(timePenaltyCharging) 
+            
             if timePenaltyCharging   == 0 
-            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + terminalCost(length(possibleBatteryLife)+1-iii) + startKiteCost;  
+            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + intialStateCost;  
             elseif timePenaltyCharging <0 
             costToFinish             = NaN;
             else
-            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + timePenaltyCharging + terminalCost(length(possibleBatteryLife)+1-iii) + startKiteCost;
+            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + timePenaltyCharging + startKiteCost + intialStateCost;
+            end
+            
+            if i == numStages
+                costToFinish = costToFinish + terminalCost(1+length(possibleBatteryLife)-iii);
             end
             
             costToFinishMat          =[costToFinishMat,costToFinish];
@@ -121,15 +142,48 @@ for i = numStages:-1:1
             indexMat                 =[indexMat;index]; 
 
     end   
-    
-    
+            %gets updated after the completion of finding the lowest cost
+            %per state in a stage
+            initialStateCostPerStage = smallestCostMat;
+            totalIndexMat            =[totalIndexMat, indexMat];
+        
     
 end
 %% cost for initial position to finish
 
+           vWind                    = flowSpeeds(1);
+            stateBatteryLife         = possibleBatteryLife(end); 
+            
+%%%%%%%%%%%%%%%%% INITIAL DRAG DYNAMICS
+            Cd                       = 1; 
+            vApp                     = vWind - vhclVelocity;
+            vAppMag                  = sqrt(sum(vApp.^2));
+            dragForce                = .5.*densityOfFluid.*vAppMag.^2 .*aRef.*Cd;
+    
+            dragEnergy               = dragForce * posInt; 
+            propulsionEnergy         = propulsionPower * vhclPosChangeTimePenalty ;  
+            energySpentToMovePercent = ceil(100*(dragEnergy + propulsionEnergy)/batteryMaxEnergy);
+            batteryEnergyRemaining   = stateBatteryLife - energySpentToMovePercent;
+            timeChargeOnePercentInit = flowTimeCost(1);
+            initCostToFinishMat      = [];
+for iii = length(possibleBatteryLife):-1:1
+
+            timePenaltyCharging      = timeChargeOnePercentInit*((iii-1)-batteryEnergyRemaining);
+       
+            if timePenaltyCharging   == 0 
+            initCostToFinish         =  vhclPosChangeTimePenalty;  
+            elseif timePenaltyCharging <0 
+            initCostToFinish         = NaN;
+            else
+            initCostToFinish         = vhclPosChangeTimePenalty + timePenaltyCharging + startKiteCost ;
+            end
+            initCostToFinishMat      =[initCostToFinishMat,costToFinish];
+end
 
 
-
+            [smallestCostInit,indexInit]      = min(costToFinishMat);
+            
+            
 
 
 
