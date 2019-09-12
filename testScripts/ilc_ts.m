@@ -7,7 +7,7 @@ lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 2000*sqrt(lengthScaleFactor);
 
-SPOOLINGCONTROLLER = 'intra';
+SPOOLINGCONTROLLER = 'intraSpoolingController';
 batteryMaxEnergy = inf;
 dynamicCalc = '';
 
