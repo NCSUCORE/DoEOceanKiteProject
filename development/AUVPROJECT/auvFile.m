@@ -1,6 +1,8 @@
+clc; 
+clear all; 
 
-clc;
-clear all;
+transectData
+
 %% Constants
 %number of stages 
 numStages                = length(vq);
@@ -49,23 +51,25 @@ startKiteCost = 300; %seconds
 
             terminalCost              = [];
             
-  for j = 1:numStages 
+  for j = 1:length(possibleBatteryLife)
       
-            terminalBatteryRemaining  = socLimitUpper*100 - (possibleBatteryLife(j)+1); 
-            timeToChargeToFull        = flowTimeCost(100)*terminalBatteryRemaining;
+            terminalBatteryRemaining  = socLimitUpper*100 - possibleBatteryLife(j); 
+            timeToChargeToFull        = flowTimeCost(100)*(100-terminalBatteryRemaining);
             terminalCost              = [terminalCost,timeToChargeToFull]; 
             
   end 
 %% for loop 
 
-for i = 1:numStages 
+for i = numStages:-1:1 
     
+            smallestCostMat          = [];
+            indexMat                 = [];
     %number of states in current stage
-    for ii = numStages:-1:1
+    for ii = length(possibleBatteryLife):-1:1
         
             %velocity of wind at current stage
             %possible battery lifes 
-            vWind                    = flowSpeeds(ii);
+            vWind                    = flowSpeeds(i-1);
             stateBatteryLife         = possibleBatteryLife(ii); 
             %if you cannot make it to next position, you have to stop and
             %charge until you can
@@ -79,35 +83,44 @@ for i = 1:numStages
 %%%%%%%%%%%%%%%%%INCREASE IN CHARGE COST 
             dragEnergy               = dragForce * posInt; 
             propulsionEnergy         = propulsionPower * vhclPosChangeTimePenalty ;  
-            energySpentToMovePercent = ceil(dragEnergy + propulsionEnergy)/batteryMaxEnergy;
+            energySpentToMovePercent = ceil(100*(dragEnergy + propulsionEnergy)/batteryMaxEnergy);
             batteryEnergyRemaining   = stateBatteryLife - energySpentToMovePercent;
-            timeToChargeOnePercent   = flowTimeCost(ii);
+            timeChargeOnePercentCur  = flowTimeCost(i-1);
             %if you cannot make it to next position, you have to stop and
-            %charge until you can
-            if batteryEnergyRemaining < 0   
-            timePenaltyCantMakeIt    = timeToChargeOnePercent * (energySpentToMovePercent - batteryEnergyRemaining);
+            %charge until you can make it. Your battery in the next stage
+            %is now zero starting out
+            if batteryEnergyRemaining< 0   
+            timePenaltyCantMakeIt    = timeChargeOnePercentCur * (energySpentToMovePercent - batteryEnergyRemaining);
+            batteryEnergyRemaining   = 0;
             totalAddedStageCost      = timePenaltyCantMakeIt + startKiteCost;
             else
             totalAddedStageCost      = 0;
             end
             costToFinishMat          = [];
+            disp(batteryEnergyRemaining)
         %number of stages in previous stage
-        for iii = 1: numStages           
+        for iii = length(possibleBatteryLife):-1:1           
 
-            
-            timePenaltyCharging      = timeToChargeOnePercent*(batteryEnergyRemaining+1-iii);
+            timeChargeOnePercentPrev = flowTimeCost(i); 
+            timePenaltyCharging      = timeChargeOnePercentPrev*((iii-1)-batteryEnergyRemaining);
+            %disp(timePenaltyCharging) 
+            %termina
             if timePenaltyCharging   == 0 
-            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + terminalCost(iii);  
+            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + terminalCost(length(possibleBatteryLife)+1-iii) + startKiteCost;  
+            elseif timePenaltyCharging <0 
+            costToFinish             = NaN;
             else
-            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + timePenaltyCharging + terminalCost(iii);
+            costToFinish             = totalAddedStageCost + vhclPosChangeTimePenalty + timePenaltyCharging + terminalCost(length(possibleBatteryLife)+1-iii) + startKiteCost;
             end
             
             costToFinishMat          =[costToFinishMat,costToFinish];
         end
         
-           [bestCost,index]          = min(costToFinishMat);
+           [smallestCost,index]      = min(costToFinishMat);
+            smallestCostMat          =[smallestCostMat, smallestCost];
+            indexMat                 =[indexMat;index]; 
 
-    end
+    end   
     
     
     
