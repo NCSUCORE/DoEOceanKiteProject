@@ -279,7 +279,9 @@ for ii = 1:length(tsc.eulerAngles.Time)
     
     % Update the path
     if ~isempty(p.Results.PathFunc)
-        path = eval(sprintf('%s(linspace(0,1,1000),tsc.basisParams.Data(:,:,ii))',...
+        currentBasisParams = tsc.basisParams.Data(:,:,ii);
+        currentBasisParams(end) = norm(tsc.positionVec.Data(:,1,ii)) ;
+        path = eval(sprintf('%s(linspace(0,1,1000),currentBasisParams)',...
             p.Results.PathFunc));
         h.path.XData = path(1,:);
         h.path.YData = path(2,:);
@@ -288,7 +290,9 @@ for ii = 1:length(tsc.eulerAngles.Time)
     
     % Update current path position
     if p.Results.PathPosition
-        pt = eval(sprintf('%s(tsc.currentPathVar.Data(ii),tsc.basisParams.Data(:,:,ii))',...
+        currentBasisParams = tsc.basisParams.Data(:,:,ii);
+        currentBasisParams(end) = norm(tsc.positionVec.Data(:,1,ii)) ;
+        pt = eval(sprintf('%s(tsc.currentPathVar.Data(ii),currentBasisParams)',...
             p.Results.PathFunc));
         h.pathPosition.XData = pt(1);
         h.pathPosition.YData = pt(2);
