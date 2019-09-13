@@ -43,7 +43,8 @@ hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC,
 hiLvlCtrl.numInitLaps.setValue(1,'');
 % Weighting on path tracking in the performance index:
 hiLvlCtrl.distPenaltyWght.Description = 'Weight on path tracking penalty (interior angle) in the ILC performance index.';
-hiLvlCtrl.distPenaltyWght.setValue(3.5e5,'W/deg');
+hiLvlCtrl.distPenaltyWght.setValue(1e5,'W/deg');
+% hiLvlCtrl.distPenaltyWght.setValue(0,'W/deg');
 % Initial basis parameters
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law

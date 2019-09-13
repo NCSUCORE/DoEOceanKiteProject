@@ -5,11 +5,11 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1000*sqrt(lengthScaleFactor);
+duration_s  = 2000*sqrt(lengthScaleFactor);
 
-SPOOLINGCONTROLLER = 'multiSpoolingController';
+% SPOOLINGCONTROLLER = 'multiSpoolingController';
 % SPOOLINGCONTROLLER = 'intraSpoolingController';
-% SPOOLINGCONTROLLER = 'intraSpoolNetZeroPI';
+SPOOLINGCONTROLLER = 'intraSpoolNetZeroPI';
 batteryMaxEnergy = inf;
 dynamicCalc = '';
 
@@ -26,6 +26,7 @@ loadComponent('pathFollowingGndStn');
 loadComponent('oneDOFWnch');
 % Tether
 loadComponent('fiveNodeSingleTether');
+% loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
@@ -49,7 +50,8 @@ vhcl.setICsOnPath(...
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
     (11.5/2)*flowspeed) % Initial speed
-vhcl.setAddedMISwitch(true,'');
+vhcl.setAddedMISwitch(false,'');
+
 % vhcl.inertia.setValue(diag(diag(vhcl.inertia.Value)),'kg*m^2');
 
 %% Tethers IC's and dependant properties
@@ -58,7 +60,6 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequenc
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-
 
 %% winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
@@ -101,7 +102,7 @@ fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
                                 1.1584         0         0;
                                 0             -2.0981    0;
                                 0              0         4.8067],'(deg)/(m^3)');
-fltCtrl.elevatorReelInDef.setValue(0,'deg')
+fltCtrl.elevatorReelInDef.setValue(23,'deg')
 
 pitchKp = (1e5)/(2*pi/180);
 
@@ -242,12 +243,13 @@ set(gca,'FontSize',24)
 saveAllPlots
 
 %% Animate the results
-vhcl.animateSim(tsc,1,...
+vhcl.animateSim(tsc,1.25,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',false,...
     'NavigationVecs',false,...
     'Pause',false,...
-    'SaveGif',false,...
+    'SaveGif',true,...
+    'GifTimeStep',0.075,...
     'ZoomIn',false)
 
 
