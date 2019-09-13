@@ -1,21 +1,13 @@
+%% Script to run ILC path optimization
 clc;clear;close all
-if ~slreportgen.utils.isModelLoaded('OCTModel')
-    OCTModel
-end
-
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
 duration_s  = 2000*sqrt(lengthScaleFactor);
-
-% SPOOLINGCONTROLLER = 'multiSpoolingController';
-% SPOOLINGCONTROLLER = 'intraSpoolingController';
-SPOOLINGCONTROLLER = 'intraSpoolNetZeroPI';
-batteryMaxEnergy = inf;
 dynamicCalc = '';
 
 %% Load components
 % Flight Controller
-loadComponent('firstBuildPathFollowing');
+loadComponent('pathFollowingForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
@@ -26,7 +18,6 @@ loadComponent('pathFollowingGndStn');
 loadComponent('oneDOFWnch');
 % Tether
 loadComponent('fiveNodeSingleTether');
-% loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
@@ -52,8 +43,6 @@ vhcl.setICsOnPath(...
     (11.5/2)*flowspeed) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
-% vhcl.inertia.setValue(diag(diag(vhcl.inertia.Value)),'kg*m^2');
-
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
@@ -61,57 +50,19 @@ thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
-%% winches IC's and dependant properties
+%% Winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr);
 
 %% Controller User Def. Parameters and dependant properties
-fltCtrl.setFcnName(PATHGEOMETRY,'');
-
-% Spooling/tether control parameters
-fltCtrl.outRanges.setValue( [...
-    0           0.1250;
-    0.3450      0.6250;
-    0.8500      1.0000;],'');
-
-fltCtrl.winchSpeedIn.setValue(-2/3,'m/s')
-fltCtrl.winchSpeedOut.setValue(2/3,'m/s')
-fltCtrl.traditionalBool.setValue(1,'')
-
-% Control surface parameters
-fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
-fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
-fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
-fltCtrl.tanRoll.tau.setValue(1e-3,'s');
-
-fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
-fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((1e4)/(10*pi/180),'(N*m)/(rad/s)');
-fltCtrl.rollMoment.tau.setValue(0.001,'s');
-
-fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
-
-fltCtrl.controlSigMax.upperLimit.setValue(30,'')
-fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
-
-fltCtrl.startControl.setValue(0,'s');
-
+fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
-
-fltCtrl.ctrlAllocMat.setValue([-1.1584         0         0;
-                                1.1584         0         0;
-                                0             -2.0981    0;
-                                0              0         4.8067],'(deg)/(m^3)');
-fltCtrl.elevatorReelInDef.setValue(23,'deg')
-
-pitchKp = (1e5)/(2*pi/180);
 
 
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
 
-%% Plot things
 %% Plot basis parameters vs time and iteration number
 iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
 figure('Name','Basis Parameters')
@@ -235,9 +186,6 @@ zlabel('Z Position')
 daspect([1 1 1])
 view([63.256 32.88])
 set(gca,'FontSize',24)
-
-%% Plot tether length error in iteration domain
-
 
 %% Save all the plots
 saveAllPlots
