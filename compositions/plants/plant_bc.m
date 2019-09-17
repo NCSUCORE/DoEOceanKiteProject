@@ -82,6 +82,15 @@ elems(9).SampleTime = -1;
 elems(9).Complexity = 'real';
 elems(9).Unit = 'rad/s';
 
+elems(10) = Simulink.BusElement;
+elems(10).Name = 'thrFlowPollPos';
+% elems(9).Dimensions = [3 1];
+elems(10).DimensionsMode = 'Fixed';
+elems(10).DataType = 'Bus: thrPollPosBus';
+elems(10).SampleTime = -1;
+elems(10).Complexity = 'real';
+% elems(10).Unit = 'rad/s';
+
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
