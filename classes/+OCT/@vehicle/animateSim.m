@@ -38,6 +38,8 @@ addParameter(p,'View',[71,22],@isnumeric)
 addParameter(p,'FontSize',get(0,'defaultAxesFontSize'),@isnumeric)
 % Tracer (streaming red line behind the model)
 addParameter(p,'PlotTracer',true,@islogical)
+% Color tracer according to power production/consumption
+addParameter(p,'ColorTracer',false,@islogical)
 % How long (in seconds) to keep the tracer on for
 addParameter(p,'TracerDuration',5,@isnumeric)
 % Plot a red dot on the closest point on the path
@@ -52,6 +54,8 @@ addParameter(p,'FluidMoments',false,@islogical)
 addParameter(p,'Pause',false,@islogical)
 % Zoom in the plot axes to focus on the body
 addParameter(p,'ZoomIn',false,@islogical)
+% Colorbar on right showing iteration power
+addParameter(p,'PowerBar',false,@islogical)
 
 % ---Parse the output---
 parse(p,tsc,timeStep,varargin{:})
@@ -66,6 +70,13 @@ end
 if p.Results.SaveMPEG && ~exist(p.Results.MPEGPath, 'dir')
     mkdir(p.Results.MPEGPath)
 end
+
+% Resample mean power to iteration domain
+if p.Results.PowerBar
+    iterMeanPower = resample(tsc.meanPower,tsc.estGradient.Time);
+%     iterMeanPower = resample(iterMeanPower,tsc.estGradient.Time);
+end
+
 % Resample the timeseries to the specified framerate
 tsc = resampleTSC(tsc,p.Results.timeStep);
 
@@ -97,11 +108,10 @@ end
 
 % Plot the tracer (empty/NAN's)
 if p.Results.PlotTracer
-    h.tracer = plot3(...
-        nan([round(p.Results.TracerDuration/p.Results.timeStep) 1]),...
-        nan([round(p.Results.TracerDuration/p.Results.timeStep) 1]),...
-        nan([round(p.Results.TracerDuration/p.Results.timeStep) 1]),...
-        'Color','r','LineStyle','-','LineWidth',1.5);
+    for ii = 1:round(p.Results.TracerDuration/p.Results.timeStep)
+       h.tracer(ii) = line([nan nan],[nan nan],[nan nan],...
+           'Color','r','LineWidth',2);
+    end
 end
 
 % Plot the path
@@ -112,7 +122,9 @@ if ~isempty(p.Results.PathFunc)
         path(1,:),...
         path(2,:),...
         path(3,:),...
-        'LineStyle','-','Color','k');
+        'LineStyle','-',...
+        'Color',0.5*[1 1 1],...
+        'LineWidth',1.5);
 end
 
 % Plot current path position
@@ -236,7 +248,26 @@ for ii = 1:numel(tsc.thrNodeBus)
         squeeze(tsc.thrNodeBus.nodePositions.Data(1,:,1)),...
         squeeze(tsc.thrNodeBus.nodePositions.Data(2,:,1)),...
         squeeze(tsc.thrNodeBus.nodePositions.Data(3,:,1)),...
-        'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o');
+        'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
+        'MarkerSize',4,'MarkerFaceColor','k');
+end
+
+% Add the color bar
+if p.Results.PowerBar
+    h.colorBar = colorbar;
+    h.colorBar.Label.String = 'Iteration Mean Power';
+    h.colorBar.Label.Interpreter = 'Latex';
+    h.colorBar.Limits = [min(iterMeanPower.Data) max(iterMeanPower.Data)];
+    caxis([min(iterMeanPower.Data) max(iterMeanPower.Data)])
+    colormap('hot')
+    h.powerIndicatorArrow = ...
+        annotation('TextArrow',...
+        [h.colorBar.Position(1)-.025 h.colorBar.Position(1)],...
+        h.colorBar.Position(2)*[1 1],...
+        'String',sprintf('Iter. %d',max([tsc.iterationNumber.Data(1),1])),...
+        'FontSize',p.Results.FontSize,...
+        'HeadStyle','none',...
+        'LineWidth',1.5);
 end
 
 % Set the font size
@@ -272,9 +303,27 @@ for ii = 1:length(tsc.eulerAngles.Time)
     end
     % Update the tracer
     if p.Results.PlotTracer
-        h.tracer.XData = [h.tracer.XData(2:end) tsc.positionVec.Data(1,:,ii)];
-        h.tracer.YData = [h.tracer.YData(2:end) tsc.positionVec.Data(2,:,ii)];
-        h.tracer.ZData = [h.tracer.ZData(2:end) tsc.positionVec.Data(3,:,ii)];
+        delete(h.tracer(1));
+
+        newLine = line(...
+            [h.tracer(end).XData(end) tsc.positionVec.Data(1,:,ii)],...
+            [h.tracer(end).YData(end) tsc.positionVec.Data(2,:,ii)],...
+            [h.tracer(end).ZData(end) tsc.positionVec.Data(3,:,ii)],...
+            'Color','r','LineWidth',2);
+    
+        h.tracer(end).XData(end+1) = newLine.XData(1);
+        h.tracer(end).YData(end+1) = newLine.YData(1);
+        h.tracer(end).ZData(end+1) = newLine.ZData(1);
+
+        if p.Results.ColorTracer
+            newColor = [1 0 0];
+           if tsc.winchPower.Data(ii)>0
+               newColor = [0 0.75 0];
+           end
+           newLine.Color = newColor;
+        end
+        h.tracer = [h.tracer(2:end) newLine];
+        uistack(h.tracer(end),'top');
     end
     
     % Update the path
@@ -385,6 +434,14 @@ for ii = 1:length(tsc.eulerAngles.Time)
     % Update the title
     h.title.String = {sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),...
         sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii)))};
+    
+    if p.Results.PowerBar
+        yPos = interp1(h.colorBar.Limits,...
+            [h.colorBar.Position(2) h.colorBar.Position(2)+h.colorBar.Position(4)],...
+            iterMeanPower.Data(max([tsc.iterationNumber.Data(ii) 1])));
+        h.powerIndicatorArrow.Y = yPos*[1 1];
+        h.powerIndicatorArrow.String = sprintf('Iter. %d',tsc.iterationNumber.Data(ii));
+    end
     
     % Set the plot limits to zoom in on the body
     if p.Results.ZoomIn
