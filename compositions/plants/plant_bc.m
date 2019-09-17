@@ -84,12 +84,20 @@ elems(9).Unit = 'rad/s';
 
 elems(10) = Simulink.BusElement;
 elems(10).Name = 'thrFlowPollPos';
-% elems(9).Dimensions = [3 1];
 elems(10).DimensionsMode = 'Fixed';
 elems(10).DataType = 'Bus: thrPollPosBus';
 elems(10).SampleTime = -1;
 elems(10).Complexity = 'real';
-% elems(10).Unit = 'rad/s';
+
+elems(11) = Simulink.BusElement;
+elems(11).Name = 'vhclFlowPollPos';
+elems(11).Dimensions = [3 4]; %Note this assumes 4 fluid dynamic surfaces
+elems(11).DimensionsMode = 'Fixed';
+elems(11).DataType = 'double';
+elems(11).SampleTime = -1;
+elems(11).Complexity = 'real';
+elems(11).Unit = 'm';
+
 
 
 CONTROL = Simulink.Bus;
