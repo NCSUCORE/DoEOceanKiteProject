@@ -21,15 +21,13 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-%loadComponent('pathFollowingEnv');
+loadComponent('constXYZT');
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([.75,1,20*pi/180,0,125],'[]') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
-flowspeed = 2;
-flowType = 'constantUniformFlow';
-variableFlow_bs
+env.water.flowVec.setValue([2 0 0]','m/s')
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -40,7 +38,7 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
-    (11.5/2)*flowspeed) % Initial speed
+    (11.5/2)*norm(env.water.flowVec.Value)) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties

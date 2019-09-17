@@ -91,7 +91,7 @@ elems(10).Complexity = 'real';
 
 elems(11) = Simulink.BusElement;
 elems(11).Name = 'vhclFlowPollPos';
-elems(11).Dimensions = [3 4]; %Note this assumes 4 fluid dynamic surfaces
+elems(11).Dimensions = [3 5]; %Note this assumes 4 fluid dynamic surfaces + fuselage
 elems(11).DimensionsMode = 'Fixed';
 elems(11).DataType = 'double';
 elems(11).SampleTime = -1;
