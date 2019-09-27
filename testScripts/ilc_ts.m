@@ -5,6 +5,8 @@ densityScaleFactor = 1/1;
 duration_s  = 2000*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
+% set_param('OCTModel','Profile','off')
+
 %% Load components
 % Flight Controller
 loadComponent('pathFollowingForILC');
@@ -12,6 +14,7 @@ loadComponent('pathFollowingForILC');
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
 loadComponent('fig8ILC')
+% loadComponent('constBoothLem')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -21,12 +24,15 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
+% loadComponent('constT_XYZvarZ_Ramp');
 loadComponent('constXYZT');
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.initBasisParams.setValue([.75,1,20*pi/180,0,125],'[]') % Lemniscate of Booth
+hiLvlCtrl.initBasisParams.setValue([1,1.1,20*pi/180,0,125 0.25 0.175],'[]') % Lemniscate of Booth
+% hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
+% env.water.nominal100mFlowVec.setValue([2 0 0]','m/s')
 env.water.flowVec.setValue([2 0 0]','m/s')
 
 %% Ground Station IC's and dependant properties
@@ -55,6 +61,8 @@ wnch.setTetherInitLength(vhcl,env,thr);
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
+fltCtrl.winchSpeedIn.setValue(-norm(env.water.flowVec.Value)/3,'m/s');
+fltCtrl.winchSpeedOut.setValue(norm(env.water.flowVec.Value)/3,'m/s');
 
 
 %% Run the simulation
@@ -65,17 +73,17 @@ parseLogsout;
 iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
 figure('Name','Basis Parameters')
 subplot(2,1,1)
-plot(tsc.basisParams.Time,...
-    squeeze(tsc.basisParams.Data(1,:,:)),...
-    'DisplayName','$b_1$',...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
+% plot(tsc.basisParams.Time,...
+%     squeeze(tsc.basisParams.Data(6,:,:)),...
+%     'DisplayName','$b_1$',...
+%     'Color','k',...
+%     'LineStyle','-',...
+%     'LineWidth',2)
 hold on
 grid on
 plot(tsc.basisParams.Time,...
-    squeeze(tsc.basisParams.Data(2,:,:)),...
-    'DisplayName','$b_2$',...
+    squeeze(tsc.basisParams.Data(7,:,:)),...
+    'DisplayName','$b_7$',...
     'Color','k',...
     'LineStyle','--',...
     'LineWidth',2)
@@ -84,15 +92,15 @@ ylabel({'Basis','Parameters'})
 legend
 
 subplot(2,1,2)
-stairs(squeeze(iterBasisParams.Data(1,:,:)),...
-    'DisplayName','$b_1$',...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
+% stairs(squeeze(iterBasisParams.Data(6,:,:)),...
+%     'DisplayName','$b_1$',...
+%     'Color','k',...
+%     'LineStyle','-',...
+%     'LineWidth',2)
 hold on
 grid on
-stairs(squeeze(iterBasisParams.Data(2,:,:)),...
-    'DisplayName','$b_2$',...
+stairs(squeeze(iterBasisParams.Data(7,:,:)),...
+    'DisplayName','$b_7$',...
     'Color','k',...
     'LineStyle','--',...
     'LineWidth',2)
@@ -141,49 +149,76 @@ xlabel('Iteration Number')
 ylabel({'Mean','Power'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
-%% Plot Mean Distance To Path
+%% Plot final tether length at each iteration
 figure('Name','Mean Ang To Path')
-iterDist = resample(tsc.meanDistToPath,tsc.estGradient.Time);
+iterThrLength = resample(tsc.thrLength,tsc.estGradient.Time);
 subplot(2,1,1)
-iterDist.plot('Color','k',...
+iterThrLength.plot('Color','k',...
     'LineStyle','-',...
     'LineWidth',2)
 xlabel('Time, [s]')
-ylabel({'Mean Ang.','To Path, [rad]'})
+ylabel({'Final Thr','Length, [m]'})
 
 subplot(2,1,2)
-stairs(iterDist.Data,...
+stairs(iterThrLength.Data,...
     'Color','k',...
     'LineStyle','-',...
     'LineWidth',2)
 xlabel('Iteration Number')
-ylabel({'Mean Ang.','To Path, [rad]'})
+ylabel({'Final Thr','Length, [m]'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
-%% Plot initial and final path geometry
-iterations = [1 5 10 24 25];
-lineStyles = {'-','--','-.',':',':'};
-pathFcn = @(x) eval(sprintf('%s(linspace(0,1,100),x)',fltCtrl.fcnName.Value));
-iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
-figure('Name','Path Geometry Comparison')
-for ii = 1:length(iterations)
-    iterNum = min(iterations(ii),numel(iterBasisParams.Time));
-   pathPts = pathFcn(iterBasisParams.Data(:,:,iterNum));
-   plot3(pathPts(1,:),pathPts(2,:),pathPts(3,:),...
-       'Color','k',...
-       'LineWidth',1.5,...
-       'DisplayName',sprintf('Iteration %d',iterNum),...
-       'LineStyle',lineStyles{ii})
-   hold on
-   grid on
+%% Plot the estimated gradient
+figure('Name','Estimated Gradient','Position',[-0.5625   -0.1824    0.5625    1.6694])
+numBP = numel(tsc.estGradient.Data(end,:));
+for ii = 1:numBP
+    subplot(numBP,1,ii)
+    stairs(tsc.estGradient.Data(:,ii),...
+        'LineWidth',1.5,...
+        'Color','k')
+    xlabel('Iteration Num')
+    ylabel(sprintf('$\\frac{dJ}{db_%d}$',ii))
 end
-legend
-xlabel('X Position')
-ylabel('Y Position')
-zlabel('Z Position')
-daspect([1 1 1])
-view([63.256 32.88])
-set(gca,'FontSize',24)
+set(findall(gcf,'Type','axes'),'FontSize',18)
+
+%% Plot J, grad, BP Breakdown
+figure('Name','ILC Breakdown')
+subplot(4,1,1)
+stairs(iterPerf.Data,...
+    'Color','k',...
+    'LineStyle','-',...
+    'LineWidth',2)
+xlabel('Iteration Number')
+ylabel({'Performance','Index'})
+
+subplot(4,1,2)
+stairs(tsc.estGradient.Data(:,1),...
+    'LineWidth',1.5,...
+    'Color','k')
+xlabel('Iteration Num')
+ylabel(sprintf('$\\frac{dJ}{db_%d}$',ii))
+
+subplot(4,1,3)
+stairs(squeeze(tsc.deltaBasisParamsSat.Data),...
+    'LineWidth',1.5,...
+    'Color','k')
+xlabel('Iteration Num')
+ylabel(sprintf('$\\delta b_%d$',ii))
+
+
+subplot(4,1,4)
+stairs(squeeze(iterBasisParams.Data(7,:,:)),...
+    'DisplayName','$b_7$',...
+    'Color','k',...
+    'LineStyle','--',...
+    'LineWidth',2)
+xlabel('Iteration Number')
+ylabel('$b_1$')
+
+
+set(findall(gcf,'Type','axes'),'FontSize',18)
+linkaxes(findall(gcf,'Type','axes'),'x')
+
 
 %% Save all the plots
 saveAllPlots

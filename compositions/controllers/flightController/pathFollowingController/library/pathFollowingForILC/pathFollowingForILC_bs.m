@@ -1,5 +1,5 @@
 FLIGHTCONTROLLER = 'pathFollowingController';
-SPOOLINGCONTROLLER = 'intraSpoolNetZeroPI';
+SPOOLINGCONTROLLER = 'intraSpoolingController';
 
 fltCtrl = CTR.pthFlwCtrl;
 
@@ -14,14 +14,14 @@ fltCtrl.setStartControl(1,'s')
 
 
 % Spooling/tether control parameters
-fltCtrl.outRanges.setValue( [...
-    0           0.1250;
-    0.3450      0.6250;
-    0.8500      1.0000;],'');
+% fltCtrl.outRanges.setValue( [...
+%     0           0.1250;
+%     0.3450      0.6250;
+%     0.8500      1.0000;],'');
 
-fltCtrl.winchSpeedIn.setValue(-2/3,'m/s')
-fltCtrl.winchSpeedOut.setValue(2/3,'m/s')
-fltCtrl.traditionalBool.setValue(1,'')
+% fltCtrl.winchSpeedIn.setValue(-2/3,'m/s')
+% fltCtrl.winchSpeedOut.setValue(2/3,'m/s')
+% fltCtrl.traditionalBool.setValue(1,'')
 
 % Control surface parameters
 fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');

@@ -98,6 +98,14 @@ elems(11).SampleTime = -1;
 elems(11).Complexity = 'real';
 elems(11).Unit = 'm';
 
+elems(12) = Simulink.BusElement;
+elems(12).Name = 'avgTetherLength';
+elems(12).Dimensions = 1; %Note this assumes 4 fluid dynamic surfaces + fuselage
+elems(12).DimensionsMode = 'Fixed';
+elems(12).DataType = 'double';
+elems(12).SampleTime = -1;
+elems(12).Complexity = 'real';
+elems(12).Unit = 'm';
 
 
 CONTROL = Simulink.Bus;

@@ -20,7 +20,7 @@ function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
     else
         pathVariable = 2*pi - (pathVariable * 2*pi);
     end
-    if length(geomParams)==5
+    if length(geomParams)>=5
         radius = geomParams(5);
     else
         radius = 1;

@@ -1,9 +1,15 @@
 function ilcPathOpt_bc()
 % Creates output bus used by allActuatorCtrl_cl
 
+try
+    basisParamsDims = evalin('base','size(hiLvlCtrl.basisParams.Value);');
+catch
+    basisParamsDims = evalin('base','size(hiLvlCtrl.initBasisParams.Value);');
+end
+
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'basisParams';
-elems(1).Dimensions = [5 1];
+elems(1).Dimensions = basisParamsDims;
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;

@@ -7,7 +7,7 @@ hiLvlCtrl.add('GainNames',...
     'pathVarLowerLim',...
     'pathVarUpperLim',...
     'numInitLaps',...
-    'distPenaltyWght',...
+    'penaltyWeight',...
     'initBasisParams',...
     'learningGain',...
     'forgettingFactor',...
@@ -21,7 +21,7 @@ hiLvlCtrl.add('GainNames',...
     '',...%pathVarLowerLim no units
     '',...%pathVarUpperLim no units
     '',...%numInitLaps no units 
-    'W/deg',...%distPenaltyWght 
+    '',...%distPenaltyWght 
     '[]',...%initBasisParams various units
     '[]',... %learningGain various units (basis param units) per gradient units
     '',...%forgettingFactor no units
@@ -35,35 +35,36 @@ hiLvlCtrl.add('GainNames',...
 % To trigger update, path variable must fall below lower limit, then go
 % above upper limit.
 hiLvlCtrl.pathVarLowerLim.Description = 'ILC trigger lower path variable limit, ILC triggers when path var falls below low lim then goes above upper lim.';
-hiLvlCtrl.pathVarLowerLim.setValue(0.01,'');
+hiLvlCtrl.pathVarLowerLim.setValue(0.05,'');
 hiLvlCtrl.pathVarUpperLim.Description = 'ILC trigger upper path variable limit, ILC triggers when path var falls below low lim then goes above upper lim.';
-hiLvlCtrl.pathVarUpperLim.setValue(0.03,'');
+hiLvlCtrl.pathVarUpperLim.setValue(0.95,'');
 % ILC doesn't start until the system completes this number of laps:
 hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC, in order to let transients die out.';
 hiLvlCtrl.numInitLaps.setValue(1,'');
 % Weighting on path tracking in the performance index:
-hiLvlCtrl.distPenaltyWght.Description = 'Weight on path tracking penalty (interior angle) in the ILC performance index.';
-hiLvlCtrl.distPenaltyWght.setValue(1e5,'W/deg');
-% hiLvlCtrl.distPenaltyWght.setValue(0,'W/deg');
+% hiLvlCtrl.distPenaltyWght.Description = 'Weight on path tracking penalty (interior angle) in the ILC performance index.';
+% hiLvlCtrl.distPenaltyWght.setValue(10e4/(1^2),'W/deg');
+hiLvlCtrl.penaltyWeight.setValue(1,'');
 % Initial basis parameters
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
 hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient';
-hiLvlCtrl.learningGain.setValue(1e-5,'[]');
+% hiLvlCtrl.learningGain.setValue(0.001/1e8,'[]');
+hiLvlCtrl.learningGain.setValue(sqrt(0.03/100),'[]');
 % Forgetting factor of RLS estimator
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update';
-hiLvlCtrl.forgettingFactor.setValue(0.9,'');
+hiLvlCtrl.forgettingFactor.setValue(0.99,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
-hiLvlCtrl.trustRegion.setValue([0.05 0.1 inf inf inf]/2,'[]');
+hiLvlCtrl.trustRegion.setValue([inf inf inf inf inf inf 0.1],'[]');
 % Persistent excitation
 hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.';
-hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0],'[]');
+hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0 0 0],'[]');
 % Output filter time constant
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.';
 hiLvlCtrl.filtTimeConst.setValue(0.05,'s');
 % Optimization enable
-hiLvlCtrl.optEnable.setValue([1 1 0 0 0],'[]');
+hiLvlCtrl.optEnable.setValue([0 0 0 0 0 0 1],'[]');
 
 
 %% save file in its respective directory
