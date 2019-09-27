@@ -7,7 +7,7 @@ hiLvlCtrl.add('GainNames',...
     'GainUnits',...
     {''});
 
-hiLvlCtrl.basisParams.setValue([.73,.6,.36,0,125],'');
+hiLvlCtrl.basisParams.setValue([.73,.6,.36,0,125,0.25,0.125],'');
 
 
 %% save file in its respective directory

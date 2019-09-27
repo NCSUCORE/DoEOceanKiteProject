@@ -9,7 +9,7 @@ densityScaleFactor = 1/1;
 duration_s  = 20000*sqrt(lengthScaleFactor);
 
 dynamicCalc = '';
- SPOOLINGCONTROLLER = 'intra';
+ SPOOLINGCONTROLLER = 'intraSpoolingController';
 % ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
 controlAllocationBit = 0;
 
@@ -37,7 +37,8 @@ loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-%loadComponent('variableFlow');
+loadComponent('constXYZ_TvarSineWave');
+%loadComponent('constXYZT');
 
 %% Choose Path Shape and Set basis parameters for high level controller
 %fltCtrl.setFcnName('ellipse','');
@@ -46,14 +47,15 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
  % hiLvlCtrl.basisParams.setValue([1.1,.5,.4,0,200],'');% ellipse
-  hiLvlCtrl.basisParams.setValue([1.1,1.4,.36,0,200],'')
+  hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,125,0.25,0.125],'')
  %hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
  %hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Environment IC's and dependant properties
 % Set Values
- flowspeed = 2;
- flowType = 'constantUniformFlow';
- variableFlow_bs
+ flowspeed = 1.5;
+ 
+ %env.water.flowVec.setValue([1.5,0,0],'m/s')
+
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
     .4,... % Initial path position
@@ -148,7 +150,7 @@ fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 %                                   0.6    .85;],'');
 %% Scale
 % scale environment
-env.scale(lengthScaleFactor,densityScaleFactor);
+%env.scale(lengthScaleFactor,densityScaleFactor);
 % scale vehicle
 vhcl.scale(lengthScaleFactor,densityScaleFactor);
 vhcl.calcFluidDynamicCoefffs;
