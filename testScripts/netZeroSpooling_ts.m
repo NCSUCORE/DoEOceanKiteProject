@@ -11,7 +11,6 @@ loadComponent('pathFollowingForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-% loadComponent('fig8ILC')
 loadComponent('constBoothLem')
 % Ground station
 loadComponent('pathFollowingGndStn');
@@ -29,7 +28,6 @@ loadComponent('constXYZT');
 hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,125 0.25 0.125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
-% env.water.nominal100mFlowVec.setValue([2 0 0]','m/s')
 env.water.flowVec.setValue([2 0 0]','m/s')
 
 %% Ground Station IC's and dependant properties
