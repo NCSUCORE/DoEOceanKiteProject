@@ -77,7 +77,7 @@ classdef winches < dynamicprops
             
             switch class(env.water)
                     
-                case {'ENV.constT_XYZvarZ_Ramp','ENV.constXYZ_TvarSineWave'}   
+                case {'ENV.constT_XYZvarZ_Ramp','ENV.constXYZ_TvarSineWave','ENV.constXY_ZTvarADCP'}   
                     Vrel = env.water.nominal100mFlowVec.Value - rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value;
                     
                 case 'ENV.constXYZT'
