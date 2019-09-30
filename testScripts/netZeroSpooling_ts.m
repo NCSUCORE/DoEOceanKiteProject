@@ -21,8 +21,9 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-% loadComponent('constT_XYZvarZ_Ramp');
 loadComponent('constXYZT');
+
+SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,125 0.25 0.125],'') % Lemniscate of Booth
