@@ -2,7 +2,7 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 2000*sqrt(lengthScaleFactor);
+duration_s  = 200*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -26,7 +26,7 @@ loadComponent('constXYZT');
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,125 0.25 0.125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,100 0.25 0.125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
 env.water.flowVec.setValue([2 0 0]','m/s')
