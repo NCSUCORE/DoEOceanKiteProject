@@ -39,7 +39,8 @@ loadComponent('pathFollowingVhcl');
 % Environment
 %loadComponent('constXYZ_TvarSineWave');
 %loadComponent('constXYZT');
-loadComponent('constXY_ZTvarADCP');
+%loadComponent('constXY_ZTvarADCP');
+loadComponent('constX_YZTvarADCPTurb');
 %% Choose Path Shape and Set basis parameters for high level controller
 %fltCtrl.setFcnName('ellipse','');
 % fltCtrl.setFcnName('circleOnSphere','');

@@ -7,11 +7,14 @@ classdef constX_YZTvarADCPTurb < dynamicprops
         depth
         depthArray
         gravAccel
-        flowTSeries
+        flowTSeriesX
+        flowTSeriesY
+        flowTSeriesZ
         startADCPTime
         endADCPTime
         flowType
         nominal100mFlowVec
+        yBreakPoints
     end
     
     properties (Dependent)
@@ -28,12 +31,15 @@ classdef constX_YZTvarADCPTurb < dynamicprops
             obj.gravAccel                   = SIM.parameter('Unit','m/s^2');
             obj.density                     = SIM.parameter('Unit','kg/m^3','NoScale',false);
             obj.depth                       = SIM.parameter('Unit','m','NoScale',true);
-            obj.flowTSeries                 = SIM.parameter('Unit','','NoScale',true);
+            obj.flowTSeriesX                = SIM.parameter('Unit','','NoScale',true);
+            obj.flowTSeriesY                = SIM.parameter('Unit','','NoScale',true);
+            obj.flowTSeriesZ                = SIM.parameter('Unit','','NoScale',true);
             obj.flowType                    = SIM.parameter('Unit','','NoScale',true);
             obj.nominal100mFlowVec          = SIM.parameter('Unit','m/s');
             obj.startADCPTime               = SIM.parameter('Unit','s','NoScale',true);
             obj.endADCPTime                 = SIM.parameter('Unit','s','NoScale',true);
             obj.depthArray                  = SIM.parameter('Unit','m','NoScale',true);
+            obj.yBreakPoints                = SIM.parameter('Unit','m','NoScale',true);
             
         end
         
@@ -61,7 +67,11 @@ classdef constX_YZTvarADCPTurb < dynamicprops
             depthMat = linspace(0,obj.depth.Value,obj.depth.Value);
             obj.depthArray.setValue(depthMat,'m');
         end
-
+        
+        function setYBreakPoints(obj,val,unit)
+            obj.yBreakPoints.setValue(val,unit);
+        end
+        
         function setStartADCPTime(obj,val,unit)
             obj.startADCPTime.setValue(val,unit);
         end
@@ -75,9 +85,18 @@ classdef constX_YZTvarADCPTurb < dynamicprops
         end
         
          function setFlowTSeries(obj,unit)
+             if ~exist('turbGrid.mat')
+             [val1,val2,val3] = createADCPTimeSeriesTurb(obj);
+             obj.flowTSeriesX.setValue(val1,unit);
+             obj.flowTSeriesY.setValue(val2,unit);
+             obj.flowTSeriesZ.setValue(val3,unit);
              
-             val = createADCPTimeSeriesTurb(obj);
-             obj.flowTSeries.setValue(val,unit);
+             else
+             [val1,val2,val3] = createADCPTimeSeriesTurb2(obj);
+             obj.flowTSeriesX.setValue(val1,unit);
+             obj.flowTSeriesY.setValue(val2,unit);
+             obj.flowTSeriesZ.setValue(val3,unit);
+             end
         end
         
         
