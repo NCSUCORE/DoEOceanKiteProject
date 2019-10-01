@@ -64,7 +64,7 @@ hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0 0 0],'[]');
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.';
 hiLvlCtrl.filtTimeConst.setValue(0.05,'s');
 % Optimization enable
-hiLvlCtrl.optEnable.setValue([0 0 0 0 0 0 1],'[]');
+hiLvlCtrl.optEnable.setValue([1 0 1 0 0 ],'[]');
 
 
 %% save file in its respective directory

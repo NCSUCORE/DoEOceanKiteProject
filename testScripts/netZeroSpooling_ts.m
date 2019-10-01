@@ -2,7 +2,7 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1000*sqrt(lengthScaleFactor);
+duration_s  = 400*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -23,13 +23,11 @@ loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('constXYZT');
 
-SPOOLINGCONTROLLER = 'netZeroSpoolingController';
-
 %% Set basis parameters for high level controller
-hiLvlCtrl.basisParams.setValue([1,1.5,20*pi/180,0,150 0.25 0.125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.5,20*pi/180,0,125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
-env.water.flowVec.setValue([1 0 0]','m/s')
+env.water.flowVec.setValue([2 0 0]','m/s')
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -70,7 +68,6 @@ tsc.LThr.plot
 grid on
 hold on
 tsc.LThrSP.plot
-
  
 
 %% Animate the results

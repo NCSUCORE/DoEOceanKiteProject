@@ -1,5 +1,5 @@
 FLIGHTCONTROLLER = 'pathFollowingController';
-SPOOLINGCONTROLLER = 'intraSpoolingController';
+SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
 fltCtrl = CTR.pthFlwCtrl;
 
