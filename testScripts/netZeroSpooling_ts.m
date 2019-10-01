@@ -23,8 +23,6 @@ loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('constXYZT');
 
-SPOOLINGCONTROLLER = 'netZeroSpoolingController';
-
 %% Set basis parameters for high level controller
 hiLvlCtrl.basisParams.setValue([1,1.5,20*pi/180,0,150 0.25 0.125],'') % Lemniscate of Booth
 
