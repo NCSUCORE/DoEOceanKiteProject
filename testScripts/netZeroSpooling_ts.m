@@ -24,7 +24,7 @@ loadComponent('pathFollowingVhcl');
 loadComponent('constXYZT');
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.basisParams.setValue([1,1.5,20*pi/180,0,125 0.25 0.125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.5,20*pi/180,0,125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
 env.water.flowVec.setValue([2 0 0]','m/s')
