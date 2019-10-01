@@ -214,7 +214,7 @@ end
              V_f_gridFinished = V_f_gridInt1(:,:,601:end);
              W_f_gridFinished = W_f_gridInt1(:,:,601:end);            
              
-%              save('turbGrid.mat','U_f_gridFinished','V_f_gridFinished','W_f_gridFinished','y')
+              save('turbGrid.mat','U_f_gridFinished','V_f_gridFinished','W_f_gridFinished','y')
              
              
               interpedDataTime = permute(interpedDataTime,[1,3,2]);
