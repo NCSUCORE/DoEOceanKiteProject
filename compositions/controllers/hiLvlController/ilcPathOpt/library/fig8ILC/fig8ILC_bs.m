@@ -40,23 +40,23 @@ hiLvlCtrl.pathVarUpperLim.Description = 'ILC trigger upper path variable limit, 
 hiLvlCtrl.pathVarUpperLim.setValue(0.95,'');
 % ILC doesn't start until the system completes this number of laps:
 hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC, in order to let transients die out.';
-hiLvlCtrl.numInitLaps.setValue(1,'');
+hiLvlCtrl.numInitLaps.setValue(10,'');
 % Weighting on path tracking in the performance index:
 % hiLvlCtrl.distPenaltyWght.Description = 'Weight on path tracking penalty (interior angle) in the ILC performance index.';
-% hiLvlCtrl.distPenaltyWght.setValue(10e4/(1^2),'W/deg');
-hiLvlCtrl.penaltyWeight.setValue(1,'');
+hiLvlCtrl.penaltyWeight.setValue(0,'');
+% hiLvlCtrl.penaltyWeight.setValue(2e4/0.004,'');
 % Initial basis parameters
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
 hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient';
 % hiLvlCtrl.learningGain.setValue(0.001/1e8,'[]');
-hiLvlCtrl.learningGain.setValue(sqrt(0.03/100),'[]');
+hiLvlCtrl.learningGain.setValue(0.05/1.9e4,'[]');
 % Forgetting factor of RLS estimator
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update';
 hiLvlCtrl.forgettingFactor.setValue(0.99,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
-hiLvlCtrl.trustRegion.setValue([inf inf inf inf inf inf 0.1],'[]');
+hiLvlCtrl.trustRegion.setValue([0.05 inf inf inf inf],'[]');
 % Persistent excitation
 hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.';
 hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0 0 0],'[]');
@@ -64,7 +64,7 @@ hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0 0 0],'[]');
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.';
 hiLvlCtrl.filtTimeConst.setValue(0.05,'s');
 % Optimization enable
-hiLvlCtrl.optEnable.setValue([1 0 1 0 0 ],'[]');
+hiLvlCtrl.optEnable.setValue([1 0 0 0 0 ],'[]');
 
 
 %% save file in its respective directory
