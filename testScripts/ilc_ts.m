@@ -2,7 +2,7 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 2000*sqrt(lengthScaleFactor);
+duration_s  = 4000*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 % set_param('OCTModel','Profile','off')
@@ -26,7 +26,7 @@ loadComponent('pathFollowingVhcl');
 loadComponent('constXYZT');
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.initBasisParams.setValue([0.6,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
+hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
@@ -69,7 +69,8 @@ parseLogsout;
 
 %% Plot basis parameters vs time and iteration number
 iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
-figure('Name','Basis Parameters')
+figure('Name','Basis Parameters',...
+    'Position',[-0.5625   -0.1824    0.5625    1.6694])
 subplot(2,1,1)
 plot(tsc.basisParams.Time,...
     squeeze(tsc.basisParams.Data(1,:,:)),...
@@ -110,7 +111,8 @@ set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Performance Index
 % Resample to plot against iteration index
-figure('Name','Performance Index')
+figure('Name','Performance Index',...
+    'Position',[0.5005    0.0380    0.4990    0.8833])
 iterPerf = resample(tsc.perfIndx,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPerf.plot('Color','k',...
@@ -129,7 +131,8 @@ ylabel({'Performance','Index'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Mean Power
-figure('Name','Mean Power')
+figure('Name','Mean Power',...
+    'Position',[1.0005    0.0380    0.4990    0.8833])
 iterPower = resample(tsc.meanPower,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPower.plot('Color','k',...
@@ -148,7 +151,8 @@ ylabel({'Mean','Power'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Penalty Term in Performance Index
-figure('Name','Penalty Term')
+figure('Name','Penalty Term',...
+    'Position',[1.5005    0.0380    0.4990    0.8833])
 iterPenaltyTerm = resample(tsc.penaltyTerm,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPenaltyTerm.plot('Color','k',...
@@ -167,7 +171,8 @@ ylabel({'Penalty','Term'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot the estimated gradient
-figure('Name','Estimated Gradient')
+figure('Name','Estimated Gradient',...
+    'Position',[0.5005    0.0380    0.4990    0.8833])
 numBP = numel(tsc.estGradient.Data(end,:));
 for ii = 1:numBP
     subplot(numBP,1,ii)
@@ -179,59 +184,21 @@ for ii = 1:numBP
 end
 set(findall(gcf,'Type','axes'),'FontSize',18)
 
-%% Plot J, grad, BP Breakdown
-figure('Name','ILC Breakdown')
-subplot(4,1,1)
-stairs(iterPerf.Data,...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-xlabel('Iteration Number')
-ylabel({'Performance','Index'})
-
-subplot(4,1,2)
-stairs(tsc.estGradient.Data(:,1),...
-    'LineWidth',1.5,...
-    'Color','k')
-xlabel('Iteration Num')
-ylabel(sprintf('$\\frac{dJ}{db_%d}$',1))
-
-subplot(4,1,3)
-stairs(squeeze(tsc.deltaBasisParamsSat.Data),...
-    'LineWidth',1.5,...
-    'Color','k')
-xlabel('Iteration Num')
-ylabel(sprintf('$\\delta b_%d$',1))
-
-
-subplot(4,1,4)
-stairs(squeeze(iterBasisParams.Data(1,:,:)),...
-    'DisplayName','$b_7$',...
-    'Color','k',...
-    'LineStyle','--',...
-    'LineWidth',2)
-xlabel('Iteration Number')
-ylabel('$b_1$')
-
-
-set(findall(gcf,'Type','axes'),'FontSize',18)
-linkaxes(findall(gcf,'Type','axes'),'x')
-
 
 %% Save all the plots
-saveAllPlots
+% saveAllPlots
 
 %% Animate the results
-vhcl.animateSim(tsc,1.5,...
-    'PathFunc',fltCtrl.fcnName.Value,...
-    'PathPosition',false,...
-    'NavigationVecs',false,...
-    'Pause',false,...
-    'SaveGif',false,...
-    'GifTimeStep',0.05,...
-    'ZoomIn',false,...
-    'FontSize',24,...
-    'PowerBar',true,...
-    'ColorTracer',true);
+% vhcl.animateSim(tsc,1.5,...
+%     'PathFunc',fltCtrl.fcnName.Value,...
+%     'PathPosition',false,...
+%     'NavigationVecs',false,...
+%     'Pause',false,...
+%     'SaveGif',false,...
+%     'GifTimeStep',0.05,...
+%     'ZoomIn',false,...
+%     'FontSize',24,...
+%     'PowerBar',true,...
+%     'ColorTracer',true);
 
 
