@@ -2,7 +2,7 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 4000*sqrt(lengthScaleFactor);
+duration_s  = 10000*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 % set_param('OCTModel','Profile','off')
@@ -27,10 +27,8 @@ loadComponent('constXYZT');
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
-% hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,125],'') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
-% env.water.nominal100mFlowVec.setValue([2 0 0]','m/s')
 env.water.flowVec.setValue([2 0 0]','m/s')
 
 %% Ground Station IC's and dependant properties
@@ -59,8 +57,8 @@ wnch.setTetherInitLength(vhcl,env,thr);
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
-fltCtrl.winchSpeedIn.setValue(-norm(env.water.flowVec.Value)/3,'m/s');
-fltCtrl.winchSpeedOut.setValue(norm(env.water.flowVec.Value)/3,'m/s');
+% fltCtrl.winchSpeedIn.setValue(-norm(env.water.flowVec.Value)/3,'m/s');
+% fltCtrl.winchSpeedOut.setValue(norm(env.water.flowVec.Value)/3,'m/s');
 
 
 %% Run the simulation
@@ -81,8 +79,8 @@ plot(tsc.basisParams.Time,...
 hold on
 grid on
 plot(tsc.basisParams.Time,...
-    squeeze(tsc.basisParams.Data(3,:,:)),...
-    'DisplayName','$b_3$',...
+    squeeze(tsc.basisParams.Data(2,:,:)),...
+    'DisplayName','$b_2$',...
     'Color','k',...
     'LineStyle','--',...
     'LineWidth',2)
@@ -98,8 +96,8 @@ stairs(squeeze(iterBasisParams.Data(1,:,:)),...
     'LineWidth',2)
 hold on
 grid on
-stairs(squeeze(iterBasisParams.Data(3,:,:)),...
-    'DisplayName','$b_3$',...
+stairs(squeeze(iterBasisParams.Data(2,:,:)),...
+    'DisplayName','$b_2$',...
     'Color','k',...
     'LineStyle','--',...
     'LineWidth',2)
@@ -112,7 +110,7 @@ set(findall(gcf,'Type','axes'),'FontSize',24)
 %% Plot Performance Index
 % Resample to plot against iteration index
 figure('Name','Performance Index',...
-    'Position',[0.5005    0.0380    0.4990    0.8833])
+    'Position',[0.0005    0.0380    0.4990    0.8833])
 iterPerf = resample(tsc.perfIndx,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPerf.plot('Color','k',...
@@ -181,24 +179,10 @@ for ii = 1:numBP
         'Color','k')
     xlabel('Iteration Num')
     ylabel(sprintf('$\\frac{dJ}{db_%d}$',ii))
+    grid on
 end
 set(findall(gcf,'Type','axes'),'FontSize',18)
+linkaxes(findall(gcf,'Type','axes'),'xy')
 
-
-%% Save all the plots
-% saveAllPlots
-
-%% Animate the results
-% vhcl.animateSim(tsc,1.5,...
-%     'PathFunc',fltCtrl.fcnName.Value,...
-%     'PathPosition',false,...
-%     'NavigationVecs',false,...
-%     'Pause',false,...
-%     'SaveGif',false,...
-%     'GifTimeStep',0.05,...
-%     'ZoomIn',false,...
-%     'FontSize',24,...
-%     'PowerBar',true,...
-%     'ColorTracer',true);
-
-
+%%
+stopCallback

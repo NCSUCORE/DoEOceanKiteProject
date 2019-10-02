@@ -56,7 +56,7 @@ hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in 
 hiLvlCtrl.forgettingFactor.setValue(0.99,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
-hiLvlCtrl.trustRegion.setValue([0.05 inf inf inf inf],'[]');
+hiLvlCtrl.trustRegion.setValue([0.05 0.05 inf inf inf],'[]');
 % Persistent excitation
 hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.';
 hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0 0 0],'[]');
@@ -64,7 +64,7 @@ hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0 0 0],'[]');
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.';
 hiLvlCtrl.filtTimeConst.setValue(0.05,'s');
 % Optimization enable
-hiLvlCtrl.optEnable.setValue([1 0 0 0 0 ],'[]');
+hiLvlCtrl.optEnable.setValue([1 1 0 0 0 ],'[]');
 
 
 %% save file in its respective directory
