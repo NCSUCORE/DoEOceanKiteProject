@@ -23,7 +23,7 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-loadComponent('constXYZT');
+loadComponent('constXY_ZTvarADCP');
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
