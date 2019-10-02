@@ -13,7 +13,7 @@ classdef winches < dynamicprops
         end
         
         function obj = setNumWinches(obj,val,units)
-           obj.numWinches.setValue(val,units); 
+            obj.numWinches.setValue(val,units);
         end
         
         function obj = build(obj,varargin)
@@ -67,7 +67,7 @@ classdef winches < dynamicprops
         end
         
         % set intial length
-        function obj = setTetherInitLength(obj,vhcl,env,thr)
+        function obj = setTetherInitLength(obj,vhcl,env,thr,flowVelocity)
             % calculate total external forces except tethers
             F_grav = vhcl.mass.Value*env.gravAccel.Value*[0;0;-1];
             F_buoy =  env.water.density.Value*vhcl.volume.Value*...
@@ -75,15 +75,15 @@ classdef winches < dynamicprops
             
             % calculate lift forces for wing and HS, ignore VS
             
-            switch class(env.water)
-                    
-                case {'ENV.constT_XYZvarZ_Ramp','ENV.constXYZ_varT_SineWave','ENV.constXY_ZvarT_ADCP','ENV.constX_YZvarT_ADCPTurb'}   
-                    Vrel = env.water.nominal100mFlowVec.Value - rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value;
-                    
-                case 'ENV.constXYZT'
-                    Vrel = env.water.flowVec.Value - rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value;
-           
-            end
+            %             switch class(env.water)
+            %
+            %                 case {'ENV.constT_XYZvarZ_Ramp','ENV.constXYZ_varT_SineWave','ENV.constXY_ZvarT_ADCP','ENV.constX_YZvarT_ADCPTurb'}
+            Vrel = flowVelocity - rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value;
+            
+            %                 case 'ENV.constXYZT'
+            %                     Vrel = env.water.flowVec.Value - rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value;
+            %
+            %             end
             
             
             q = 0.5*env.water.density.Value*(norm(Vrel))^2;
@@ -132,7 +132,7 @@ classdef winches < dynamicprops
                         (pi/4)*thr.tether3.diameter.Value^2);
                     
                     obj.winch3.initLength.setValue(L3 + delta_L3,obj.winch3.initLength.Unit);
-                
+                    
                 otherwise
                     error(['Method not progerammed for %d winches.',thr.numWinches.Value])
             end

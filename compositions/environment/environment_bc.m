@@ -1,8 +1,8 @@
 function  environment_bc
 
 % Create linkFlowVecsBus
-numNodes = evalin('base','thr.numNodes.Value'); % Get the number of nodes
-numTethers = evalin('base','thr.numTethers.Value'); % Get the number of tethers
+numNodes    = evalin('base','thr.numNodes.Value');   % Get the number of nodes
+numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'linkFlowVecs';

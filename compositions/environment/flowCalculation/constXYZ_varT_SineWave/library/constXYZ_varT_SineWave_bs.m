@@ -5,17 +5,17 @@
 %% Set up environment
 % Create
 %duration_s is needed in workspace to run this file
-env = ENV.constXYZ_varT_SineWave;
+env = ENV.env;
 env.gravAccel.setValue(9.81,'m/s^2')
 env.addFlow({'water'},{'constXYZ_varT_SineWave'},'FlowDensities',1000)
-env.waveBias.setValue(1.5,'')
-env.amplitude.setValue(0,'')
-env.frequency.setValue(.001,'1/s')
-env.phase.setValue(0,'rad')
-env.azimuth.setValue(0,'rad')
-env.elevation.setValue(0,'rad')
+env.water.waveBias.setValue(1.5,'')
+env.water.amplitude.setValue(0,'')
+env.water.frequency.setValue(.001,'1/s')
+env.water.phase.setValue(0,'rad')
+env.water.azimuth.setValue(0,'rad')
+env.water.elevation.setValue(0,'rad')
 environment_bc
-env.water.nominal100mFlowVec.setValue( 1.5,'m/s') 
+% env.water.nominal100mFlowVec.setValue( 1.5,'m/s') 
 FLOWCALCULATION = 'constXYZ_varT_SineWave';
 
  saveBuildFile('env',mfilename,'variant','FLOWCALCULATION');

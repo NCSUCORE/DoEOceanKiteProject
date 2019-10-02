@@ -1,37 +1,37 @@
-classdef constXYZ_varT_SineWave < dynamicprops
+classdef constXYZ_varT_SineWave 
     %time varying sine wave flow 
     
     properties (SetAccess = private)
-        velVec
+%         velVec
         density
         amplitude
         waveBias
         gravAccel
         frequency
         phase
-        nominal100mFlowVec % Flow speed at 100m depth/altitude
+%         nominal100mFlowVec % Flow speed at 100m depth/altitude
         azimuth
         elevation
     end
     
     properties (Dependent)
-        speed
+%         speed
 %         elevation
-        heading   
+%         heading   
     end
     
     methods
         
         %% contructor
         function obj = constXYZ_varT_SineWave
-            obj.velVec                      = SIM.parameter('Unit','m/s');
+%             obj.velVec                      = SIM.parameter('Unit','m/s');
             obj.gravAccel                   = SIM.parameter('Unit','m/s^2');
             obj.density                     = SIM.parameter('Unit','kg/m^3','NoScale',false);
             obj.amplitude                   = SIM.parameter('Unit','','NoScale',true);
             obj.waveBias                    = SIM.parameter('Unit','','NoScale',true);
             obj.frequency                   = SIM.parameter('Unit','1/s','NoScale',true);
             obj.phase                       = SIM.parameter('Unit','rad','NoScale',true);
-            obj.nominal100mFlowVec          = SIM.parameter('Unit','m/s');
+%             obj.nominal100mFlowVec          = SIM.parameter('Unit','m/s');
             obj.azimuth                     = SIM.parameter('Unit','rad','NoScale',true);
             obj.elevation                   = SIM.parameter('Unit','rad','NoScale',true);
         end
@@ -77,32 +77,32 @@ classdef constXYZ_varT_SineWave < dynamicprops
         end
         
         
-        function obj = addFlow(obj,FlowNames,FlowTypes,varargin)
-            p = inputParser;
-            addRequired(p,'FlowNames',@(x) all(cellfun(@(x) isa(x,'char'),x)))
-            addRequired(p,'FlowTypes',@(x) all(cellfun(@(x) isa(x,'char'),x)))
-            addParameter(p,'FlowDensities',[],@(x) all(isnumeric(x)))
-            parse(p,FlowNames,FlowTypes,varargin{:})
-            % Create winches
-            for ii = 1:numel(p.Results.FlowNames)
-                obj.addprop(p.Results.FlowNames{ii});
-                obj.(p.Results.FlowNames{ii}) = ENV.(p.Results.FlowTypes{ii});
-                if ~isempty(p.Results.FlowDensities)
-                    obj.(p.Results.FlowNames{ii}).density.setValue(p.Results.FlowDensities(ii),'kg/m^3');
-                end
-            end
-        end
-        
-        
+%         function obj = addFlow(obj,FlowNames,FlowTypes,varargin)
+%             p = inputParser;
+%             addRequired(p,'FlowNames',@(x) all(cellfun(@(x) isa(x,'char'),x)))
+%             addRequired(p,'FlowTypes',@(x) all(cellfun(@(x) isa(x,'char'),x)))
+%             addParameter(p,'FlowDensities',[],@(x) all(isnumeric(x)))
+%             parse(p,FlowNames,FlowTypes,varargin{:})
+%             % Create winches
+%             for ii = 1:numel(p.Results.FlowNames)
+%                 obj.addprop(p.Results.FlowNames{ii});
+%                 obj.(p.Results.FlowNames{ii}) = ENV.(p.Results.FlowTypes{ii});
+%                 if ~isempty(p.Results.FlowDensities)
+%                     obj.(p.Results.FlowNames{ii}).density.setValue(p.Results.FlowDensities(ii),'kg/m^3');
+%                 end
+%             end
+%         end
+%         
+%         
         
      
         
         
         %% getters
-        function val = get.speed(obj)
-            val = SIM.parameter('Value',sqrt(sum(obj.velVec.Value.^2)),...
-                'Unit','m/s');
-        end
+%         function val = get.speed(obj)
+%             val = SIM.parameter('Value',sqrt(sum(obj.velVec.Value.^2)),...
+%                 'Unit','m/s');
+%         end
         
 %         function val = get.elevation(obj)
 %             val =  SIM.parameter('Value',acosd(obj.velVec.Value(3)./sqrt(obj.velVec.Value(1)^2+obj.velVec.Value(2).^2)),...
@@ -110,11 +110,11 @@ classdef constXYZ_varT_SineWave < dynamicprops
 %             
 %         end
         
-        function val = get.heading(obj)
-            val = SIM.parameter('Value',atan2d(obj.velVec.Value(2),obj.velVec.Value(1)),...
-                'Unit','deg');
-        end
-        
+%         function val = get.heading(obj)
+%             val = SIM.parameter('Value',atan2d(obj.velVec.Value(2),obj.velVec.Value(1)),...
+%                 'Unit','deg');
+%         end
+%         
       
         
     

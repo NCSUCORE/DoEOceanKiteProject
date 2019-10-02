@@ -1,5 +1,5 @@
 classdef ADCP
-    %ADCP Summary of this class goes here
+    %ADCP
     %   Documentation on 'ADCP.mat' is located in the documentation folder
     %   under ADCP_data_README.pdf
     
@@ -12,7 +12,7 @@ classdef ADCP
     end
     
     methods
-        function obj = ADCP
+        function obj = ADCP % Constructor
             load(fullfile(which('ADCPData.mat')));
             % Create vector of datetimes, t = datetime(Y,M,D,H,MI,S), see
             % https://www.mathworks.com/help/matlab/ref/datetime.html#d117e274976
@@ -22,9 +22,9 @@ classdef ADCP
             data = cat(3,SerEmmpersec./1000,SerNmmpersec./1000,SerVmmpersec./1000);
             data = permute(data,[3 2 1]);
             obj.flowVecTSeries = timeseries(data,obj.timeVec);
-            obj.flowVecTSeries.UserData.Description = 'At each time step 3xN matrix.  Columns correspond to depths, rows correspond to east, north and up directions.';
+            obj.flowVecTSeries.UserData.Description = 'At each time step 3x62 matrix.  Columns correspond to depths, rows correspond to east, north and up directions.';
             obj.flowDirTSeries = timeseries(SerDir10thDeg',obj.timeVec);
-            obj.depths = RDIBin1Mid:RDIBinSize:RDIBin1Mid+RDIBinSize*(SerBins(end)-1);
+            obj.depths = RDIBin1Mid-RDIBinSize/2:RDIBinSize:RDIBin1Mid+RDIBinSize*(SerBins(end)-1)-RDIBinSize/2;
         end
         
         function animate(obj)

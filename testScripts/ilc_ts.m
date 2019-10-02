@@ -23,13 +23,13 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-loadComponent('constXY_ZTvarADCP');
+loadComponent('constXYZ_varT_SineWave');
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
-env.water.flowVec.setValue([2 0 0]','m/s')
+% env.water.flowVec.setValue([2 0 0]','m/s')
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -40,7 +40,7 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
-    (11.5/2)*norm(env.water.flowVec.Value)) % Initial speed
+    (11.5/2)*norm([env.water.amplitude.Value+env.water.waveBias.Value 0 0])) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
@@ -51,7 +51,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr);
+wnch.setTetherInitLength(vhcl,env,thr,[env.water.amplitude.Value+env.water.waveBias.Value 0 0]);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m

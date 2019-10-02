@@ -2,7 +2,7 @@
 % 'Numerical modeling of turbulence and its effect on ocean current
 % turbines' by parakram pyakurel
 
-function [op] = turbulence_generator2(~,U_mean_or_flow,TI,f_min, f_max, P, Q, C, N_mid_freq,pos_data)
+function [op] = turbulence_generator2(obj,U_mean_or_flow,TI,f_min, f_max, P, Q, C, N_mid_freq,pos_data)
 
 %% delta_rij
 [n_elem,~] = size(pos_data);

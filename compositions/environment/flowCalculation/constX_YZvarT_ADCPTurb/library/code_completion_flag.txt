@@ -1,3 +1,0 @@
-Turbulent inlet plane generation completed on 30-Sep-2019 13:38:32 
- 
-Data saved successfully to file turb_data.mat 
