@@ -7,6 +7,7 @@ classdef ADCP
         dateTimes
         timeVec
         flowVecTSeries
+        flowDirTSeries
         depths
     end
     
@@ -21,6 +22,8 @@ classdef ADCP
             data = cat(3,SerEmmpersec./1000,SerNmmpersec./1000,SerVmmpersec./1000);
             data = permute(data,[3 2 1]);
             obj.flowVecTSeries = timeseries(data,obj.timeVec);
+            obj.flowVecTSeries.UserData.Description = 'At each time step 3xN matrix.  Columns correspond to depths, rows correspond to east, north and up directions.';
+            obj.flowDirTSeries = timeseries(SerDir10thDeg',obj.timeVec);
             obj.depths = RDIBin1Mid:RDIBinSize:RDIBin1Mid+RDIBinSize*(SerBins(end)-1);
         end
         
