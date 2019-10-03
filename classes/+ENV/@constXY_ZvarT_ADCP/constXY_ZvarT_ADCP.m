@@ -85,7 +85,7 @@ classdef constXY_ZvarT_ADCP
 %         end
         
         function val = get.depthArray(obj)
-            val = SIM.parameter('Value',obj.adcp.depths,'Unit','m/s');
+            val  = SIM.parameter('Value',obj.adcp.depths.Value,'Unit','m');
         end
 
         
