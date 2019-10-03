@@ -9,6 +9,8 @@ classdef constX_YZvarT_ADCPTurb
         startADCPTime
         endADCPTime
         yBreakPoints
+        flowVecTSeries
+        flowDirTSeries
         TI
         f_min
         f_max
@@ -58,12 +60,42 @@ classdef constX_YZvarT_ADCPTurb
             obj.yBreakPoints.setValue(val,unit);
         end
         
-        function setStartADCPTime(obj,val,unit)
+%         function setStartADCPTime(obj,val,unit)
+%             obj.startADCPTime.setValue(val,unit);
+%         end
+%         
+%         function setEndADCPTime(obj,val,unit)
+%             obj.endADCPTime.setValue(val,unit);
+%         end
+
+ function obj = setStartADCPTime(obj,val,unit)
             obj.startADCPTime.setValue(val,unit);
+            
+            if obj.startADCPTime.Value<=obj.endADCPTime.Value
+                [vecTSeries,dirTSeries] = obj.adcp.crop(obj.startADCPTime.Value,obj.endADCPTime.Value);
+                obj.flowVecTSeries = SIM.parameter(...
+                    'Value',vecTSeries,...
+                    'Unit' ,vecTSeries.DataInfo.Units);
+                obj.flowDirTSeries = SIM.parameter(...
+                    'Value',dirTSeries,...
+                    'Unit' ,dirTSeries.DataInfo.Units);
+            else
+                error('Start time must be <= end time')
+            end
         end
-        
-        function setEndADCPTime(obj,val,unit)
+        function obj = setEndADCPTime(obj,val,unit)
             obj.endADCPTime.setValue(val,unit);
+            if obj.startADCPTime.Value<=obj.endADCPTime.Value
+                [vecTSeries,dirTSeries] = obj.adcp.crop(obj.startADCPTime.Value,obj.endADCPTime.Value);
+                obj.flowVecTSeries = SIM.parameter(...
+                    'Value',vecTSeries,...
+                    'Unit' ,vecTSeries.DataInfo.Units);
+                obj.flowDirTSeries = SIM.parameter(...
+                    'Value',dirTSeries,...
+                    'Unit' ,dirTSeries.DataInfo.Units);
+            else
+                error('Start time must be <= end time')
+            end
         end
         function setTI(obj,val,unit)
             obj.TI.setValue(val,unit);

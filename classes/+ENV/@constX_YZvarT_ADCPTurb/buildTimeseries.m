@@ -4,9 +4,7 @@ filePath = fullfile(fileparts(which('OCTProject.prj')),...
 load(filePath)
 
 timeVec = 0:1:obj.endADCPTime.Value-1-obj.startADCPTime.Value ;
-val = obj.adcp.flowVecTSeries;
-val = getsampleusingtime(val,obj.startADCPTime.Value,obj.endADCPTime.Value);
-val.Time = val.Time-val.Time(1);
+val = obj.flowVecTSeries.Value;
 selTime = permute(val.Data,[3,1,2]);
 tenMinTimeInterval =  ceil((val.Time(end)+600)/600);
 %%% adding to adcp data

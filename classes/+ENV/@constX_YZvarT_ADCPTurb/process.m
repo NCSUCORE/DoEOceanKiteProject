@@ -1,9 +1,7 @@
 function process(obj)
 % function to generate turbGrid.mat
 % Called as a method of ENV.constX_YZvarT_ADCPTurb
-val = obj.adcp.flowVecTSeries;
-val = getsampleusingtime(val,obj.startADCPTime.Value,obj.endADCPTime.Value);
-val.Time = val.Time-val.Time(1);
+val = obj.flowVecTSeries.Value;
 tenMinTimeInterval =  ceil((val.Time(end)+600)/600);
 magDepth = [];
 selTime = permute(val.Data,[1 3 2]);
