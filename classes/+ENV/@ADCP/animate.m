@@ -55,7 +55,7 @@ xlabel('$v_z$ [m/s]')
 ylabel('Height from sea floor [m]')
 
 h.title = annotation('textbox', [0 0.875 1 0.1], ...
-    'String', datestr(obj.dateTimes(1),'dd-mmm-yyyy HH:MM:SS'), ...
+    'String', datestr(obj.flowVecTSeries.Value.TimeInfo.StartDate,'dd-mmm-yyyy HH:MM:SS'), ...
     'EdgeColor', 'none', ...
     'HorizontalAlignment', 'center',...
     'FontSize',22);
@@ -72,12 +72,18 @@ if p.Results.SaveGif
     imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif', 'Loopcount',inf);
 end
 
-for ii = 2:size(obj.flowVecTSeries.Data,3)
-    h.title.String = datestr(obj.dateTimes(ii),'dd-mmm-yyyy HH:MM:SS');
-    h.magPlot.XData = sqrt(sum(obj.flowVecTSeries.Data(:,:,ii).^2));
-    h.EPlot.XData = obj.flowVecTSeries.Data(1,:,ii);
-    h.NPlot.XData = obj.flowVecTSeries.Data(2,:,ii);
-    h.ZPlot.XData = obj.flowVecTSeries.Data(3,:,ii);
+for ii = 2:size(obj.flowVecTSeries.Value.Data,3)
+    % Change the title
+    h.title.String = datestr(...
+        obj.flowVecTSeries.Value.TimeInfo.StartDate...
+        +seconds(obj.flowVecTSeries.Value.Time(ii)),...
+        'dd-mmm-yyyy HH:MM:SS');
+    
+    % Change the plotted data
+    h.magPlot.XData = sqrt(sum(obj.flowVecTSeries.Value.Data(:,:,ii).^2));
+    h.EPlot.XData   = obj.flowVecTSeries.Value.Data(1,:,ii);
+    h.NPlot.XData   = obj.flowVecTSeries.Value.Data(2,:,ii);
+    h.ZPlot.XData   = obj.flowVecTSeries.Value.Data(3,:,ii);
     drawnow
     % Save gif of results
     if p.Results.SaveGif
