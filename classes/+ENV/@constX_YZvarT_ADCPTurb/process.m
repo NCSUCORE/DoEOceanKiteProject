@@ -17,7 +17,7 @@ magDepthAVG = .5*(magDepth(1:end-1,:)+ magDepth(2:end,:));
 % create grid in the Y-Z plane
 y = obj.yBreakPoints.Value;
 % z = 140:5:200;% only for testing
-z = obj.adcp.depths;
+z = obj.adcp.depths.Value;
 [Y,Z] = meshgrid(y,z);
 X = zeros(size(Y));
 y_pos = NaN(numel(Y),1);
