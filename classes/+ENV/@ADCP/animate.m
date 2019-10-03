@@ -2,7 +2,6 @@ function animate(obj,varargin)
 %% Input parsing
 p = inputParser;
 
-
 % ---Parameters for saving a gif---
 % Switch to enable saving 0 = don't save
 addParameter(p,'SaveGif',false,@islogical)
@@ -28,28 +27,28 @@ end
 
 h.fig = figure;
 subplot(1,4,1);
-h.magPlot = plot(sqrt(sum(obj.flowVecTSeries.Data(:,:,1).^2)),obj.depths.Value,...
+h.magPlot = plot(sqrt(sum(obj.flowVecTSeries.Value.Data(:,:,1).^2)),obj.depths.Value,...
     'LineWidth',1.5,'Color','k');
 grid on
 xlabel('Speed [m/s]')
 ylabel('Height from sea floor [m]')
 
 subplot(1,4,2);
-h.EPlot = plot(obj.flowVecTSeries.Data(1,:,1),obj.depths.Value,...
+h.EPlot = plot(obj.flowVecTSeries.Value.Data(1,:,1),obj.depths.Value,...
     'LineWidth',1.5,'Color','k');
 grid on
 xlabel('$v_x$ [m/s]')
 ylabel('Height from sea floor [m]')
 
 subplot(1,4,3);
-h.NPlot = plot(obj.flowVecTSeries.Data(2,:,1),obj.depths.Value,...
+h.NPlot = plot(obj.flowVecTSeries.Value.Data(2,:,1),obj.depths.Value,...
     'LineWidth',1.5,'Color','k');
 grid on
 xlabel('$v_y$ [m/s]')
 ylabel('Height from sea floor [m]')
 
 subplot(1,4,4);
-h.ZPlot = plot(obj.flowVecTSeries.Data(3,:,1),obj.depths.Value,...
+h.ZPlot = plot(obj.flowVecTSeries.Value.Data(3,:,1),obj.depths.Value,...
     'LineWidth',1.5,'Color','k');
 grid on
 xlabel('$v_z$ [m/s]')
