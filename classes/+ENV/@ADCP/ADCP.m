@@ -17,11 +17,22 @@ classdef ADCP
             % Optional arguments to crop date
             addParameter(p,'startTime',0,@isnumeric)
             addParameter(p,'endTime',inf,@isnumeric)
+            addParameter(p,'DataFile','',@ischar)
             
             % ---Parse the output---
             parse(p,varargin{:})
-
-            load(fullfile(which('ADCPData.mat')));
+            % Look in the folder containing this file for a .mat file
+            dataFile = dir(fullfile(fileparts(fullfile(which('OCTProject.prj'))),'classes','+ENV','@ADCP','*.mat'));
+            if ~isempty(p.Results.DataFile) % If the user specifies a file, load it
+                load(p.Results.DataFile)
+            else % Otherwise look in this directory and try to load whatever's there
+                if numel(dataFile)==1
+                    % If there's just one file, load it
+                    load(fullfile(dataFile.folder,dataFile.name));
+                else % Otherwise throw an error
+                    error('Error: Found more than one potential data file in %s',dataFile(1).folder)
+                end
+            end
             % Create vector of datetimes, t = datetime(Y,M,D,H,MI,S), see
             % https://www.mathworks.com/help/matlab/ref/datetime.html#d117e274976
             dateTimes = datetime(SerYear+2000,SerMon,SerDay,SerHour,SerMin,SerSec,SerHund*0.1);

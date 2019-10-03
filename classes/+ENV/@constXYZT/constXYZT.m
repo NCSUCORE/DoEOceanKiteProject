@@ -16,7 +16,7 @@ classdef constXYZT < handle
         %% contructor
         function obj = constXYZT
             obj.flowVec      = SIM.parameter('Unit','m/s');
-            obj.density     = SIM.parameter('Unit','kg/m^3','NoScale',false);
+            obj.density      = SIM.parameter('Unit','kg/m^3','NoScale',false);
         end
         function setflowVec(obj,val,unit)
             obj.flowVec.setValue(val,unit);
