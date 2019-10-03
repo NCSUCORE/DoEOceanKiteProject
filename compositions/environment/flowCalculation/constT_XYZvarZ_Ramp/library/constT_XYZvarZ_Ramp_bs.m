@@ -1,7 +1,3 @@
-clear all;clc;format compact
-
-%% Set up environment
-% Create
 env = ENV.env;
 env.addFlow({'water'},{'constT_XYZvarZ_Ramp'},'FlowDensities',1000)
 
