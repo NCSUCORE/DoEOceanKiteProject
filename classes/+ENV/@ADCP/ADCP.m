@@ -42,6 +42,7 @@ classdef ADCP
             % Add description
             flowTimeseries.UserData.Description = ...
                 'At each time step 3x62 matrix.  Columns correspond to depths, rows correspond to east, north and up directions.';
+            flowTimeseries.DataInfo.Units = 'm/s';
             % Store into SIM.parameter object
             obj.flowVecTSeries = SIM.parameter('Value',flowTimeseries,'Unit','m/s');
             
@@ -55,6 +56,7 @@ classdef ADCP
             % Add description
             dirTimeseries.UserData.Description = ...
                 'Flow direction in degrees at each depth.';
+            dirTimeseries.DataInfo.Units = 'deg';
             % Store into SIM.parameter object
             obj.flowDirTSeries = SIM.parameter('Value',dirTimeseries,'Unit','deg');
             
@@ -69,7 +71,11 @@ classdef ADCP
         animate(obj,varargin)
         
         % Method to crop data
-        function crop(obj,startTime,endTime)
+        function [flowTimeseries,dirTimeseries] = crop(obj,startTime,endTime)
+            % Set endTime to max possible value
+            endTime = min([endTime ...
+                obj.flowVecTSeries.Value.Time(end)...
+                obj.flowDirTSeries.Value.Time(end)]);
             % --Crop flow velocity vector timeseries--
             flowTimeseries = getsampleusingtime(obj.flowVecTSeries.Value,...
                 datenum(obj.flowVecTSeries.Value.TimeInfo.StartDate+seconds(startTime)),...
@@ -78,10 +84,11 @@ classdef ADCP
             flowTimeseries.TimeInfo.StartDate = ...
                 obj.flowVecTSeries.Value.TimeInfo.StartDate + ...
                 seconds(flowTimeseries.Time(1));
+            flowTimeseries.DataInfo.Units = obj.flowVecTSeries.Value.DataInfo.Units;
             % Reset time vector to start at 0
             flowTimeseries.Time = flowTimeseries.Time-flowTimeseries.Time(1);
             % Store into the parameter
-            obj.flowVecTSeries.setValue(flowTimeseries,'m/s')
+%             obj.flowVecTSeries.setValue(flowTimeseries,'m/s')
             
             % --Crop the flow direction timeseries
             dirTimeseries = getsampleusingtime(obj.flowDirTSeries.Value,...
@@ -91,10 +98,11 @@ classdef ADCP
             dirTimeseries.TimeInfo.StartDate = ...
                 obj.flowDirTSeries.Value.TimeInfo.StartDate + ...
                 seconds(dirTimeseries.Time(1));
+            dirTimeseries.DataInfo.Units = obj.flowDirTSeries.Value.DataInfo.Units;
             % Reset time vector to start at 0
             dirTimeseries.Time = dirTimeseries.Time-dirTimeseries.Time(1);
             % Store into the parameter
-            obj.flowDirTSeries.setValue(dirTimeseries,'deg')
+%             obj.flowDirTSeries.setValue(dirTimeseries,'deg')
             
         end
         
