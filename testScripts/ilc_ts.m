@@ -2,10 +2,8 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 10000*sqrt(lengthScaleFactor);
+duration_s  = 1*sqrt(lengthScaleFactor);
 dynamicCalc = '';
-
-% set_param('OCTModel','Profile','off')
 
 %% Load components
 % Flight Controller
@@ -23,7 +21,7 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-loadComponent('constXYZ_varT_SineWave');
+loadComponent('constXY_ZvarT_ADCP');
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
@@ -40,7 +38,7 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
-    (11.5/2)*norm([env.water.amplitude.Value+env.water.waveBias.Value 0 0])) % Initial speed
+    (11.5/2)*norm(env.water.flowVecTSeries.Value.Data(:,30,1))) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
@@ -51,14 +49,12 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr,[env.water.amplitude.Value+env.water.waveBias.Value 0 0]);
+wnch.setTetherInitLength(vhcl,env,thr,[norm(env.water.flowVecTSeries.Value.Data(:,30,1)) 0 0]);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
-% fltCtrl.winchSpeedIn.setValue(-norm(env.water.flowVec.Value)/3,'m/s');
-% fltCtrl.winchSpeedOut.setValue(norm(env.water.flowVec.Value)/3,'m/s');
 
 
 %% Run the simulation
