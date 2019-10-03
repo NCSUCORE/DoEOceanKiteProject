@@ -48,7 +48,7 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
  % hiLvlCtrl.basisParams.setValue([1.1,.5,.4,0,200],'');% ellipse
-  hiLvlCtrl.basisParams.setValue([1,1.4,.36,.45,125,0.25,0.125],'')
+  hiLvlCtrl.basisParams.setValue([1,1.4,.36,.3,125,0.25,0.125],'')
  %hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
  %hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Environment IC's and dependant properties
@@ -77,7 +77,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.density.setValue(1000,'kg/m^3');
 %% winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr);
+wnch.setTetherInitLength(vhcl,env,thr,[1.5,0,0]);
 %% ALL Controller Properties
 %General
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
@@ -266,7 +266,7 @@ tsc.tanRollDes.plot('LineWidth',1.5,'LineStyle','--','Color','r',...
     'DisplayName','Desired Tan Roll');
 legend
 end
-vhcl.animateSim(tsc,3,...
+vhcl.animateSim(tsc,1,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',true,...
     'NavigationVecs',true,...

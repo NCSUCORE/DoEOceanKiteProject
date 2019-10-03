@@ -7,9 +7,7 @@ classdef constX_YZvarT_ADCPTurb < dynamicprops
         %         depth
         depthArray
         gravAccel
-        flowTSeriesX
-        flowTSeriesY
-        flowTSeriesZ
+       
         startADCPTime
         endADCPTime
         %         flowType
@@ -37,9 +35,6 @@ classdef constX_YZvarT_ADCPTurb < dynamicprops
         function obj = constX_YZvarT_ADCPTurb
             obj.gravAccel                   = SIM.parameter('Unit','m/s^2');
             obj.density                     = SIM.parameter('Unit','kg/m^3','NoScale',false);
-%             obj.flowTSeriesX                = SIM.parameter('Unit','','NoScale',true);
-%             obj.flowTSeriesY                = SIM.parameter('Unit','','NoScale',true);
-%             obj.flowTSeriesZ                = SIM.parameter('Unit','','NoScale',true);
             obj.startADCPTime               = SIM.parameter('Value',0,'Unit','s','NoScale',true);
             obj.endADCPTime                 = SIM.parameter('Value',inf,'Unit','s','NoScale',true);
             obj.yBreakPoints                = SIM.parameter('Unit','m','NoScale',true);
@@ -62,11 +57,11 @@ classdef constX_YZvarT_ADCPTurb < dynamicprops
             val = obj.adcp.flowVecTSeries;
             val = getsampleusingtime(val,obj.startADCPTime.Value,obj.endADCPTime.Value);
             val.Time = val.Time-val.Time(1);
-            tenMinTimeInterval = ceil(val.Time(end)/600);
+            tenMinTimeInterval =  ceil((val.Time(end)+600)/600);
             magDepth = [];
             selTime = permute(val.Data,[1 3 2]);
             for ii = 1:62
-                magDepthT = .001* sqrt(sum(selTime(:,:,ii).^2,2));
+                magDepthT = sqrt(sum(selTime(:,:,ii).^2,2));
                 
                 %magnitude of xyz at each depth per time
                 magDepth = [magDepth,magDepthT];
@@ -239,21 +234,23 @@ classdef constX_YZvarT_ADCPTurb < dynamicprops
             filePath = fullfile(fileparts(which('OCTProject.prj')),...
                 'classes','+ENV','@constX_YZvarT_ADCPTurb','turbGrid.mat');
             load(filePath)
+            
+            timeVec = 0:1:obj.endADCPTime.Value-1-obj.startADCPTime.Value ;
             val = obj.adcp.flowVecTSeries;
             val = getsampleusingtime(val,obj.startADCPTime.Value,obj.endADCPTime.Value);
             val.Time = val.Time-val.Time(1);
-            selTime = permute(val.Data,[1 3 2]);
-            tenMinTimeInterval = ceil(val.Time(end)/600);
+            selTime = permute(val.Data,[3,1,2]);
+            tenMinTimeInterval =  ceil((val.Time(end)+600)/600);
             %%% adding to adcp data
             for iii = 1:length(obj.depthArray)
-                vq = linspace(1,tenMinTimeInterval+1,tenMinTimeInterval*600);
+                vq = linspace(1,tenMinTimeInterval,tenMinTimeInterval*600);
                 xDatForInterp = selTime(:,1,iii);
                 yDatForInterp = selTime(:,2,iii);
                 zDatForInterp = selTime(:,3,iii);
                 interpedDataTimeX = interp1(xDatForInterp,vq);
                 interpedDataTimeY = interp1(yDatForInterp,vq);
                 interpedDataTimeZ = interp1(zDatForInterp,vq);
-                interpedDataTime(:,:,iii) = [ .001*interpedDataTimeX; .001*interpedDataTimeY; .001*interpedDataTimeZ];
+                interpedDataTime(:,:,iii) = [ interpedDataTimeX;interpedDataTimeY; interpedDataTimeZ];
             end
             interpedDataTime = permute(interpedDataTime,[1,3,2]);
             
