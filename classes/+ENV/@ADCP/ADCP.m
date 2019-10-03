@@ -1,9 +1,9 @@
 classdef ADCP
-    %ADCP
+    %ADCP Class to hold ADCP data
     %   Documentation on 'ADCP.mat' is located in the documentation folder
     %   under ADCP_data_README.pdf
     
-    properties
+    properties (SetAccess = private)
         dateTimes
         timeVec
         flowVecTSeries
@@ -24,58 +24,10 @@ classdef ADCP
             obj.flowVecTSeries = timeseries(data,obj.timeVec);
             obj.flowVecTSeries.UserData.Description = 'At each time step 3x62 matrix.  Columns correspond to depths, rows correspond to east, north and up directions.';
             obj.flowDirTSeries = timeseries(SerDir10thDeg',obj.timeVec);
-            obj.depths = RDIBin1Mid-RDIBinSize/2:RDIBinSize:RDIBin1Mid+RDIBinSize*(SerBins(end)-1)-RDIBinSize/2;
+            obj.depths = SIM.parameter('Value',RDIBin1Mid-RDIBinSize/2:RDIBinSize:RDIBin1Mid+RDIBinSize*(SerBins(end)-1)-RDIBinSize/2,'Unit','m/s');
         end
         
-        function animate(obj)
-            figure
-            subplot(1,4,1);
-            h.magPlot = plot(sqrt(sum(obj.flowVecTSeries.Data(:,:,1).^2)),obj.depths,...
-                'LineWidth',1.5,'Color','k');
-            grid on
-            xlabel('Speed [m/s]')
-            ylabel('Height from sea floor [m]')
-            
-            subplot(1,4,2);
-            h.EPlot = plot(obj.flowVecTSeries.Data(1,:,1),obj.depths,...
-                'LineWidth',1.5,'Color','k');
-            grid on
-            xlabel('$v_x$ [m/s]')
-            ylabel('Height from sea floor [m]')
-            
-            subplot(1,4,3);
-            h.NPlot = plot(obj.flowVecTSeries.Data(2,:,1),obj.depths,...
-                'LineWidth',1.5,'Color','k');
-            grid on
-            xlabel('$v_y$ [m/s]')
-            ylabel('Height from sea floor [m]')
-            
-            subplot(1,4,4);
-            h.ZPlot = plot(obj.flowVecTSeries.Data(3,:,1),obj.depths,...
-                'LineWidth',1.5,'Color','k');
-            grid on
-            xlabel('$v_z$ [m/s]')
-            ylabel('Height from sea floor [m]')
-            
-            h.title = annotation('textbox', [0 0.875 1 0.1], ...
-                'String', datestr(obj.dateTimes(1),'dd-mmm-yyyy HH:MM:SS'), ...
-                'EdgeColor', 'none', ...
-                'HorizontalAlignment', 'center',...
-                'FontSize',22);
-            
-            linkaxes(findall(gcf,'Type','axes'),'xy')
-            xlim([-5 5])
-            set(findall(gcf,'Type','axes'),'FontSize',16)
-            
-            for ii = 2:size(obj.flowVecTSeries.Data,3)
-                h.title.String = datestr(obj.dateTimes(ii),'dd-mmm-yyyy HH:MM:SS');
-                h.magPlot.XData = sqrt(sum(obj.flowVecTSeries.Data(:,:,ii).^2));
-                h.EPlot.XData = obj.flowVecTSeries.Data(1,:,ii);
-                h.NPlot.XData = obj.flowVecTSeries.Data(2,:,ii);
-                h.ZPlot.XData = obj.flowVecTSeries.Data(3,:,ii);
-                drawnow
-            end
-        end
+        animate(obj,varargin)
         
     end
 end
