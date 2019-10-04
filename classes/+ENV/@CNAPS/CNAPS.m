@@ -1,36 +1,19 @@
 classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
+    
+    
     %CNAPS Summary of this class goes here
     %   Detailed explanation goes here
- %PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
+    %PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
+    % I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
     properties (SetAccess = private)
         flowVecTSeries
         depths
-    end 
+    end
     %PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
+    % I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
     methods
         function obj = CNAPS(varargin)
-             % Input parsing
+            % Input parsing
             p = inputParser;
             
             % Optional arguments to crop date
@@ -52,48 +35,52 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
                     error('Error: Found more than one potential data file in %s',dataFile(1).folder)
                 end
             end
-           %PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
-            % Get time vector
-            timeVec   =(time-735600)*600;
+            
+            % Get time vector first 100 hours, time is given in days,
+            % starting at 735600 for some reason unknown to me 
+            
+           timeVec =(time(1:1000)-735600)*3600*24;
             
             % --Build timeseries for the flow vector--
             % Convert loaded data to m/s and concatenate along 3rd dimension
-            data = cat(3,SerEmmpersec./1000,SerNmmpersec./1000,SerVmmpersec./1000);
-            % Permure data to correct dimension for timeseries
+            data = cnapsMat;
+            
+            % Permute data to correct dimension for timeseries
             data = permute(data,[3 2 1]);
-            % Create timeseries object and crop to specified times
-            flowTimeseries = getsampleusingtime(...
-                timeseries(data,timeVec),...
-                p.Results.startTime,p.Results.endTime);
+            % Create timeseries object and crop to specified times WILL BE
+            %              USED EVENTUALLY
+            
+            flowTimeseries = timeseries(data,timeVec);
             % Add start datetime to the time info
-            flowTimeseries.TimeInfo.StartDate = dateTimes(1);
+%             flowTimeseries.TimeInfo.StartDate = dateTimes(1);
             % Add description
             flowTimeseries.UserData.Description = ...
-                'At each time step 3x62 matrix.  Columns correspond to depths, rows correspond to east, north and up directions.';
+                'At each time step 2x8 matrix.  Columns correspond to depths, rows correspond to east, and north directions.';
             flowTimeseries.DataInfo.Units = 'm/s';
             % Store into SIM.parameter object
             obj.flowVecTSeries = SIM.parameter('Value',flowTimeseries,'Unit','m/s');
-       
-        %PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
+            
+            
+            
+            obj.depths = SIM.parameter('Value',0:25:25*8, 'Unit','m');
+        end
         
-         obj.depths = SIM.parameter(...
-                'Value',...
-                RDIBin1Mid-RDIBinSize/2:RDIBinSize:RDIBin1Mid+RDIBinSize*(SerBins(end)-1)-RDIBinSize/2,...
-                'Unit','m');
-        end
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
-        end
+         function flowTimeseries = crop(obj,startTime,endTime)
+            % Set endTime to max possible value
+            endTime = min([endTime ...
+                obj.flowVecTSeries.Value.Time(end)]);
+            % --Crop flow velocity vector timeseries--
+            flowTimeseries = getsampleusingtime(obj.flowVecTSeries.Value,startTime,endTime);
+            % Set start time 
+%             flowTimeseries.TimeInfo.StartDate = ...
+%                 obj.flowVecTSeries.Value.TimeInfo.StartDate + ...
+%                 seconds(flowTimeseries.Time(1));
+            flowTimeseries.DataInfo.Units = obj.flowVecTSeries.Value.DataInfo.Units;
+            % Reset time vector to start at 0
+            flowTimeseries.Time = flowTimeseries.Time-flowTimeseries.Time(1);
+         end
+        
+        
     end
 end
-%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMESV%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
-% I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
+
