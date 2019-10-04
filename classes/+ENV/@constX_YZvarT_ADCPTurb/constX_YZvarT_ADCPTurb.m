@@ -43,7 +43,7 @@ classdef constX_YZvarT_ADCPTurb
             obj.Q                           = SIM.parameter('Unit','Hz');
             obj.C                           = SIM.parameter('Unit','');
             obj.N_mid_freq                  = SIM.parameter('Unit','');
-            
+  
             obj.adcp = ENV.ADCP;
         end
         
@@ -60,6 +60,10 @@ classdef constX_YZvarT_ADCPTurb
             obj.yBreakPoints.setValue(val,unit);
         end
         
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4bd10b36dcc9d4b8905eb98bf8c5851292ebd088
  function obj = setStartADCPTime(obj,val,unit)
             obj.startADCPTime.setValue(val,unit);
             
@@ -111,16 +115,19 @@ classdef constX_YZvarT_ADCPTurb
             obj.N_mid_freq.setValue(val,unit);
         end
         
+        
+        
         % getters
         function val = get.depthArray(obj)
             val = obj.adcp.depths;
         end
         
+        
         % function to generate turbGrid.mat
         process(obj)
         
         % function to build timeseries from turbGrid.mat
-        buildTimeseries(obj)
+       obj =  buildTimeseries(obj)
         
         % turbulence generator
         val = turbulence_generator2(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10);

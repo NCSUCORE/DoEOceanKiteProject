@@ -39,8 +39,8 @@ loadComponent('pathFollowingVhcl');
 % Environment
 %loadComponent('constXYZ_varT_SineWave');
 %loadComponent('constXYZT');
-loadComponent('constXY_ZvarT_ADCP');
-% loadComponent('constX_YZvarT_ADCPTurb');
+%loadComponent('constXY_ZvarT_ADCP');
+ loadComponent('constX_YZvarT_ADCPTurb');
 %% Choose Path Shape and Set basis parameters for high level controller
 %fltCtrl.setFcnName('ellipse','');
 % fltCtrl.setFcnName('circleOnSphere','');
@@ -48,7 +48,7 @@ fltCtrl.setFcnName('lemOfBooth','');
 
 % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
  % hiLvlCtrl.basisParams.setValue([1.1,.5,.4,0,200],'');% ellipse
-  hiLvlCtrl.basisParams.setValue([1,1.4,.36,.77,125,0.25,0.125],'')
+  hiLvlCtrl.basisParams.setValue([.7,1,.36,.77,125,0.25,0.125],'')
  %hiLvlCtrl.basisParams.setValue([.73,1,.36,0,50],'');% Lemniscate of Booth
  %hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
 %% Environment IC's and dependant properties
