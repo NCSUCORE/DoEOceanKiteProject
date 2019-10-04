@@ -5,8 +5,8 @@ env = ENV.env;
 env.gravAccel.setValue(9.81,'m/s^2')
 env.addFlow({'water'},{'constX_YZvarT_ADCPTurb'},'FlowDensities',1000)
 
-env.water = env.water.setStartADCPTime(400000,'s');
-env.water =   env.water.setEndADCPTime(410000,'s');
+env.water = env.water.setStartADCPTime(300000,'s');
+env.water =   env.water.setEndADCPTime(310000,'s');
 
 env.water.yBreakPoints.setValue(0:1:10,'m');
 
