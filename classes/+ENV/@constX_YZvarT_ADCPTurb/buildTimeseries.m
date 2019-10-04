@@ -1,4 +1,4 @@
-function buildTimeseries(obj)
+function obj = buildTimeseries(obj)
 filePath = fullfile(fileparts(which('OCTProject.prj')),...
     'classes','+ENV','@constX_YZvarT_ADCPTurb','turbGrid.mat');
 load(filePath)
@@ -8,7 +8,7 @@ val = obj.flowVecTSeries.Value;
 selTime = permute(val.Data,[3,1,2]);
 tenMinTimeInterval =  ceil((val.Time(end)+600)/600);
 %%% adding to adcp data
-for iii = 1:length(obj.depthArray)
+for iii = 1:length(obj.depthArray.Value)
     vq = linspace(1,tenMinTimeInterval,tenMinTimeInterval*600);
     xDatForInterp = selTime(:,1,iii);
     yDatForInterp = selTime(:,2,iii);

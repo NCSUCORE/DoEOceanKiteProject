@@ -1,10 +1,10 @@
-function process(obj)
+function obj =  process(obj)
 % function to generate turbGrid.mat
 % Called as a method of ENV.constX_YZvarT_ADCPTurb
 val = obj.flowVecTSeries.Value;
 tenMinTimeInterval =  ceil((val.Time(end)+600)/600);
 magDepth = [];
-selTime = permute(val.Data,[1 3 2]);
+selTime = permute(val.Data,[3,1,2]);
 for ii = 1:62
     magDepthT = sqrt(sum(selTime(:,:,ii).^2,2));
     
@@ -31,7 +31,7 @@ U_mean = [];
 % 10 minute interval
 for iii = 1:tenMinTimeInterval
     for j  = 1:length(y)
-        U_meanTemp = magDepthAVG(iii,:)';
+        U_meanTemp =magDepth(iii,:)';
         U_mean =  [U_mean;U_meanTemp];
     end
     turb_param = obj.turbulence_generator2(U_mean,...
