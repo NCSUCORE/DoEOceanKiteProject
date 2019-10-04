@@ -180,5 +180,19 @@ end
 set(findall(gcf,'Type','axes'),'FontSize',18)
 linkaxes(findall(gcf,'Type','axes'),'xy')
 
+% Plot tether length vs time
+figure('Name','Tether Length Tracking')
+tsc.LThr.plot('DisplayName','Tether Length')
+grid on
+hold on
+tsc.LThrSP.plot('DisplayName','Tether Length Setpoint')
+legend
+xlabel('Time, [s]')
+ylabel('Length [m]')
+title('Tether Length Tracking')
+set(gca,'FontSize',18)
+
+
+
 %%
-stopCallback
+% stopCallback

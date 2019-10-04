@@ -60,14 +60,6 @@ classdef constX_YZvarT_ADCPTurb
             obj.yBreakPoints.setValue(val,unit);
         end
         
-%         function setStartADCPTime(obj,val,unit)
-%             obj.startADCPTime.setValue(val,unit);
-%         end
-%         
-%         function setEndADCPTime(obj,val,unit)
-%             obj.endADCPTime.setValue(val,unit);
-%         end
-
  function obj = setStartADCPTime(obj,val,unit)
             obj.startADCPTime.setValue(val,unit);
             
