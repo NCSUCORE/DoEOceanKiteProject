@@ -62,7 +62,7 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
             
             
             
-            obj.depths = SIM.parameter('Value',0:25:25*8, 'Unit','m');
+            obj.depths = SIM.parameter('Value',0:25:25*7, 'Unit','m');
         end
         
          function flowTimeseries = crop(obj,startTime,endTime)

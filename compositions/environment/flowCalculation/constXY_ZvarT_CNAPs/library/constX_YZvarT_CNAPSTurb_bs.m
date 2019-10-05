@@ -24,7 +24,7 @@ env.water.setN_mid_freq(5,'');
 % figure(2)
 % plot(squeeze(env.water.flowVecTSeries.Value.Data(2,:,:)))
 % ylim([-.5 1])
- env.water.process
+ %env.water.process
 env.water = env.water.buildTimeseries;
 environment_bc
 FLOWCALCULATION = 'constX_YZvarT_CNAPSTurb';

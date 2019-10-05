@@ -18,9 +18,9 @@ classdef constX_YZvarT_CNAPSTurb
         Q
         C
         N_mid_freq
-        %         flowTSX
-        %         flowTSY
-        %         flowTSZ
+        flowTSX
+        flowTSY
+        flowTSZ
     end
     
     properties (Access = private)
@@ -121,6 +121,7 @@ classdef constX_YZvarT_CNAPSTurb
         
         % function to build timeseries from turbGrid.mat
         obj =  buildTimeseries(obj)
+        
         
         % turbulence generator
         val = turbulence_generator2(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10);

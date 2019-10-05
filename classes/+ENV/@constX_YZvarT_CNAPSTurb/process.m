@@ -2,11 +2,12 @@ function obj =  process(obj)
 % function to generate turbGrid.mat
 % Called as a method of ENV.constX_YZvarT_CNAPSTurb
 val = obj.flowVecTSeries.Value;
-sZ = size(obj.flowVecTSeries.Value.data);
+valData = permute(val.data, [3,1,2]);
+sZ = size(valData);
 magDepth = [];
-for ii = 1:sZ(2)
-    magDepthT = sqrt(sum(val.data(:,1,:).^2,1));
-     
+for ii = 1:sZ(3)
+    magDepthT = sqrt( sum(valData(:,:,ii).^2,2));
+    
     %magnitude of xyz at each depth per time
     magDepth = [magDepth,magDepthT];
 end
@@ -59,14 +60,14 @@ fclose(fid)
 %% Post Process
 % Time
 timeStep = 1;
-tf = 600;
+tf = 3600;
 time = 1:timeStep:tf;
 n_steps = length(time);
 % pre-allocation
 U_f_grid = NaN([size(Y) n_steps]);
 V_f_grid = NaN([size(Y) n_steps]);
 W_f_grid = NaN([size(Y) n_steps]);
-for ip = 1:tenMinTimeInterval
+for ip = 1:hourInterval
     % pre-allocation
     uf_int = NaN(1,obj.N_mid_freq.Value);
     vf_int = NaN(1,obj.N_mid_freq.Value);
@@ -118,7 +119,7 @@ end
 U_f_gridInt1 = NaN(size(U_f_grid(:,:,:,1)));
 V_f_gridInt1 = NaN(size(V_f_grid(:,:,:,1)));
 W_f_gridInt1 = NaN(size(W_f_grid(:,:,:,1)));
-for ip = 1:tenMinTimeInterval
+for ip = 1:hourInterval
     %concatination on the thrid dimension per ten minute interval
     U_f_gridInt1 = cat(3,U_f_gridInt1,U_f_grid(:,:,:,ip));
     V_f_gridInt1 = cat(3,V_f_gridInt1,V_f_grid(:,:,:,ip));
@@ -128,10 +129,10 @@ end
 % + 1 for time zero
 %did this a weird way to concatenate variable sizes in three
 %dimensions
-U_f_gridFinished = U_f_gridInt1(:,:,601:end);
-V_f_gridFinished = V_f_gridInt1(:,:,601:end);
-W_f_gridFinished = W_f_gridInt1(:,:,601:end);
+U_f_gridFinished = U_f_gridInt1(:,:,3601:end);
+V_f_gridFinished = V_f_gridInt1(:,:,3601:end);
+W_f_gridFinished = W_f_gridInt1(:,:,3601:end);
 filePath = fullfile(fileparts(which('OCTProject.prj')),...
-    'classes','+ENV','@constX_YZvarT_ADCPTurb','turbGrid.mat');
+    'classes','+ENV','@constX_YZvarT_CNAPSTurb','turbGrid2.mat');
 save(filePath,'U_f_gridFinished','V_f_gridFinished','W_f_gridFinished','y')
 end
