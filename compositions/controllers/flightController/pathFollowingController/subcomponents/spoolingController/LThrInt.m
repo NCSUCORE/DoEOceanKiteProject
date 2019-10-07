@@ -1,9 +1,9 @@
-function [de,thrLenSP] = LThrInt(s,sigmaVec,vOut,vIn,L0,deltaVec,deIn,deOut)
+function thrLenSP = LThrInt(s,sigmaVec,vOut,vIn,L0,deltaVec)
 
 sc = sigmaVec(1);
 sw = sigmaVec(2);
 thrLenSP = zeros(size(s));
-de = deOut*ones(size(thrLenSP));
+% de = deOut*ones(size(thrLenSP));
 
 % Region 1:     0           to sc-sw
 % Region 2:     sc-sw       to sc+sw
@@ -21,7 +21,7 @@ r4 = and(s>=0.5+sc-sw   ,s< 0.5+sc+sw);
 r5 = and(s>=0.5+sc+sw   ,s<=1);
 
 % Set the elevator deflection
-de(or(r2,r4)) = deIn;
+% de(or(r2,r4)) = deIn;
 
 % Region 1
 thrLenSP(r1) = L0+...
