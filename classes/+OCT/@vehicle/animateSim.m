@@ -463,8 +463,6 @@ for ii = 1:length(tsc.eulerAngles.Time)
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif','WriteMode','append','DelayTime',p.Results.GifTimeStep)
         end
     end
-
-
     if p.Results.Pause
         pause
     end

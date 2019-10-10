@@ -81,6 +81,9 @@ classdef ADCP
         % Method to animate the flow profile
         animate(obj,varargin)
         
+        % Method to animate the flow heading
+        animate3D(obj,varargin)
+        
         % Method to crop data
         function [flowTimeseries,dirTimeseries] = crop(obj,startTime,endTime)
             % Set endTime to max possible value

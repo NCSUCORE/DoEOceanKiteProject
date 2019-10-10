@@ -5,16 +5,13 @@ densityScaleFactor = 1/1;
 duration_s  = 1000*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
-% set_param('OCTModel','Profile','off')
-
 %% Load components
 % Flight Controller
 loadComponent('pathFollowingForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-% loadComponent('fig8ILC')
-loadComponent('constBoothLem')
+loadComponent('fig8ILC')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -24,16 +21,15 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-% loadComponent('constT_XYZvarZ_Ramp');
-loadComponent('constXYZT');
+loadComponent('constXY_ZvarT_ADCP');
 
-%% Set basis parameters for high level controller
-% hiLvlCtrl.initBasisParams.setValue([1,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.1,20*pi/180,0,125 0.25 0.09],'') % Lemniscate of Booth
+
 
 %% Environment IC's and dependant properties
-% env.water.nominal100mFlowVec.setValue([2 0 0]','m/s')
-env.water.flowVec.setValue([2 0 0]','m/s')
+% env.water.flowVec.setValue([2 0 0]','m/s')
+
+%% Set basis parameters for high level controller
+hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,45*pi/180,125],'[]') % Lemniscate of Booth
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -43,8 +39,8 @@ gndStn.initAngVel.setValue(0,'rad/s');
 vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
-    hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    (11.5/2)*norm(env.water.flowVec.Value)) % Initial speed
+    hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
+    (11.5/2)*norm(env.water.flowVecTSeries.Value.Data(:,30,1))) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
@@ -55,14 +51,13 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr);
+wnch.setTetherInitLength(vhcl,env,thr,env.water.flowVecTSeries.Value.Data(:,30,1));
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
-fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
-fltCtrl.winchSpeedIn.setValue(-2/3,'m/s');
-fltCtrl.winchSpeedOut.setValue(2/3,'m/s');
+fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
+
 
 %% Run the simulation
 simWithMonitor('OCTModel')
@@ -70,7 +65,8 @@ parseLogsout;
 
 %% Plot basis parameters vs time and iteration number
 iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
-figure('Name','Basis Parameters')
+figure('Name','Basis Parameters',...
+    'Position',[-0.5625   -0.1824    0.5625    1.6694])
 subplot(2,1,1)
 plot(tsc.basisParams.Time,...
     squeeze(tsc.basisParams.Data(1,:,:)),...
@@ -111,7 +107,8 @@ set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Performance Index
 % Resample to plot against iteration index
-figure('Name','Performance Index')
+figure('Name','Performance Index',...
+    'Position',[0.0005    0.0380    0.4990    0.8833])
 iterPerf = resample(tsc.perfIndx,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPerf.plot('Color','k',...
@@ -130,7 +127,8 @@ ylabel({'Performance','Index'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Mean Power
-figure('Name','Mean Power')
+figure('Name','Mean Power',...
+    'Position',[1.0005    0.0380    0.4990    0.8833])
 iterPower = resample(tsc.meanPower,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPower.plot('Color','k',...
@@ -148,68 +146,62 @@ xlabel('Iteration Number')
 ylabel({'Mean','Power'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
-%% Plot Mean Distance To Path
-figure('Name','Mean Ang To Path')
-iterDist = resample(tsc.meanDistToPath,tsc.estGradient.Time);
+%% Plot Penalty Term in Performance Index
+figure('Name','Penalty Term',...
+    'Position',[1.5005    0.0380    0.4990    0.8833])
+iterPenaltyTerm = resample(tsc.penaltyTerm,tsc.estGradient.Time);
 subplot(2,1,1)
-iterDist.plot('Color','k',...
+iterPenaltyTerm.plot('Color','k',...
     'LineStyle','-',...
     'LineWidth',2)
 xlabel('Time, [s]')
-ylabel({'Mean Ang.','To Path, [rad]'})
+ylabel({'Penalty','Term'})
 
 subplot(2,1,2)
-stairs(iterDist.Data,...
+stairs(iterPenaltyTerm.Data,...
     'Color','k',...
     'LineStyle','-',...
     'LineWidth',2)
 xlabel('Iteration Number')
-ylabel({'Mean Ang.','To Path, [rad]'})
+ylabel({'Penalty','Term'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
-%% Plot initial and final path geometry
-iterations = [1 5 10 24 25];
-lineStyles = {'-','--','-.',':',':'};
-pathFcn = @(x) eval(sprintf('%s(linspace(0,1,100),x)',fltCtrl.fcnName.Value));
-iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
-figure('Name','Path Geometry Comparison')
-for ii = 1:length(iterations)
-    iterNum = min(iterations(ii),numel(iterBasisParams.Time));
-   pathPts = pathFcn(iterBasisParams.Data(:,:,iterNum));
-   plot3(pathPts(1,:),pathPts(2,:),pathPts(3,:),...
-       'Color','k',...
-       'LineWidth',1.5,...
-       'DisplayName',sprintf('Iteration %d',iterNum),...
-       'LineStyle',lineStyles{ii})
-   hold on
-   grid on
+%% Plot the estimated gradient
+figure('Name','Estimated Gradient',...
+    'Position',[0.5005    0.0380    0.4990    0.8833])
+numBP = numel(tsc.estGradient.Data(end,:));
+for ii = 1:numBP
+    subplot(numBP,1,ii)
+    stairs(tsc.estGradient.Data(:,ii),...
+        'LineWidth',1.5,...
+        'Color','k')
+    xlabel('Iteration Num')
+    ylabel(sprintf('$\\frac{dJ}{db_%d}$',ii))
+    grid on
 end
+set(findall(gcf,'Type','axes'),'FontSize',18)
+linkaxes(findall(gcf,'Type','axes'),'xy')
+
+% Plot tether length vs time
+figure('Name','Tether Length Tracking')
+tsc.LThr.plot('DisplayName','Tether Length')
+grid on
+hold on
+tsc.LThrSP.plot('DisplayName','Tether Length Setpoint')
 legend
-xlabel('X Position')
-ylabel('Y Position')
-zlabel('Z Position')
-daspect([1 1 1])
-view([63.256 32.88])
-set(gca,'FontSize',24)
-
-% 
-figure
-tsc.tetherLengths.plot
-
-%% Save all the plots
-% saveAllPlots
-
-%% Animate the results
-% vhcl.animateSim(tsc,1,...
-%     'PathFunc',fltCtrl.fcnName.Value,...
-%     'PathPosition',false,...
-%     'NavigationVecs',false,...
-%     'Pause',false,...
-%     'SaveGif',true,...
-%     'GifTimeStep',0.05,...
-%     'ZoomIn',false,...
-%     'FontSize',24,...
-%     'PowerBar',true,...
-%     'ColorTracer',true);
+xlabel('Time, [s]')
+ylabel('Length [m]')
+title('Tether Length Tracking')
+set(gca,'FontSize',18)
 
 
+
+%%
+% stopCallback
+
+vhcl.animateSim(tsc,2,...
+    'PathFunc',fltCtrl.fcnName.Value,...
+    'PathPosition',false,...
+    'NavigationVecs',false,...
+    'Pause',false,...
+    'PlotTracer',true)

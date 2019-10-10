@@ -21,14 +21,13 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-% loadComponent('constXYZT');
-%loadComponent('constX_YZvarT_CNAPSTurb');
-loadComponent('constX_YZvarT_ADCPTurb');
+loadComponent('constXYZT');
+
 %% Set basis parameters for high level controller
-hiLvlCtrl.initBasisParams.setValue([.7,1.1,20*pi/180,.77,125],'[]') % Lemniscate of Booth
+hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
-% env.water.flowVec.setValue([2 0 0]','m/s')
+env.water.flowVec.setValue([2 0 0]','m/s')
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -39,7 +38,7 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
-    (11.5/2)*norm([.4 0 0])) % Initial speed
+    (11.5/2)*norm(env.water.flowVec.Value)) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
@@ -50,7 +49,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr,[norm([.4 0 0]) 0 0]);
+wnch.setTetherInitLength(vhcl,env,thr,[norm(env.water.flowVec.Value) 0 0]);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
@@ -61,7 +60,6 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
-tscIter = parseIterations(tsc);
 
 %% Plot basis parameters vs time and iteration number
 iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
@@ -194,65 +192,13 @@ ylabel('Length [m]')
 title('Tether Length Tracking')
 set(gca,'FontSize',18)
 
-%% Plot Tether Length at different iterations
-figure('Name','Tether Length Tracking')
-iterationsToPlot = [3 14];
-colors = {'b','r'};
-
-ax1 = subplot(2,1,1);
-ax2 = subplot(2,1,2);
-hold(ax1,'on')
-hold(ax2,'on')
-
-
-grid(ax1,'on')
-grid(ax2,'on')
-
-xlabel(ax1,'Iteration Time [s]')
-ylabel(ax1,'Length [m]')
-
-xlabel(ax2,'Path Variable')
-ylabel(ax2,'Length [m]')
-
-for ii = 1:length(iterationsToPlot)
-    % Plot Actual
-   plot(...
-       tscIter{iterationsToPlot(ii)}.LThr.Time-tscIter{iterationsToPlot(ii)}.LThr.Time(1),...
-       tscIter{iterationsToPlot(ii)}.LThr.Data,...
-       'DisplayName',sprintf('Iter %d Actual',iterationsToPlot(ii)),....
-       'Parent',ax1,'LineStyle','-','Color',colors{ii},'LineWidth',1.5);
-   plot(...
-       tscIter{iterationsToPlot(ii)}.currentPathVar.Data(1:end-1),...
-       tscIter{iterationsToPlot(ii)}.LThr.Data(1:end-1),...
-       'DisplayName',sprintf('Iter %d Actual',iterationsToPlot(ii)),....
-       'Parent',ax2,'LineStyle','-','Color',colors{ii},'LineWidth',1.5);
-   % Plot setpoints
-   plot(...
-       tscIter{iterationsToPlot(ii)}.LThrSP.Time-tscIter{iterationsToPlot(ii)}.LThrSP.Time(1),...
-       tscIter{iterationsToPlot(ii)}.LThrSP.Data,...
-       'DisplayName',sprintf('Iter %d Setpoint',iterationsToPlot(ii)),....
-       'Parent',ax1,'LineStyle','--','Color',colors{ii},'LineWidth',1.5);
-   plot(...
-       tscIter{iterationsToPlot(ii)}.currentPathVar.Data(1:end-1),...
-       tscIter{iterationsToPlot(ii)}.LThrSP.Data(1:end-1),...
-       'DisplayName',sprintf('Iter %d Setpoint',iterationsToPlot(ii)),....
-       'Parent',ax2,'LineStyle','--','Color',colors{ii},'LineWidth',1.5);
-end
-legend(ax1)
-legend(ax2)
-set(findall(gcf,'Type','axes'),'FontSize',18)
-
-%% Plot tether tracking over time
-figure('Name','Time Domain Tether Length Tracking')
-tsc.LThr.plot
-grid on
-hold on
-tsc.LThrSP.plot
-
-%% Plot spooling parameters
-figure
-tsc.sigmaVec.plot
 
 
 %%
 % stopCallback
+vhcl.animateSim(tsc,1,...
+    'PathFunc',fltCtrl.fcnName.Value,...
+    'PathPosition',true,...
+    'NavigationVecs',true,...
+    'Pause',false,...
+    'PlotTracer',true)

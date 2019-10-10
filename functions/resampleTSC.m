@@ -8,7 +8,9 @@ endTime = [];
 for ii = 1:numel(fieldNames)
     switch class(tscOld.(fieldNames{ii}))
         case 'timeseries'
+            if ~isempty(tscOld.(fieldNames{ii}).Time)
             endTime = max([endTime tscOld.(fieldNames{ii}).Time(end)]);
+            end
         case 'struct'
             subFieldNames = fieldnames(tscOld.(fieldNames{ii}));
             for jj = 1:numel(subFieldNames)
