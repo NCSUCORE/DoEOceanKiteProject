@@ -2,7 +2,7 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1500*sqrt(lengthScaleFactor);
+duration_s  = 7200*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -32,7 +32,7 @@ env.water.plotMags
 % env.water.setStartADCPTime(1.48e7,'s')
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.initBasisParams.setValue([0.4,1.1,30*pi/180,45*pi/180,175],'[]') % Lemniscate of Booth
+hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,45*pi/180,175],'[]') % Lemniscate of Booth
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -69,8 +69,13 @@ parseLogsout;
 
 %% Plot basis parameters vs time and iteration number
 iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
-figure('Name','Basis Parameters',...
-    'Position',[-0.5625   -0.1824    0.5625    1.6694])
+if strcmpi(getenv('username'),'M.Cobb')
+    figure('Name','Basis Parameters',...
+        'Position',1e3*[0.0010    0.0410    1.5360    0.7488]);
+else
+    figure('Name','Basis Parameters',...
+        'Position',[-0.5625   -0.1824    0.5625    1.6694])
+end
 subplot(2,1,1)
 plot(tsc.basisParams.Time,...
     squeeze(tsc.basisParams.Data(1,:,:)),...
@@ -111,8 +116,13 @@ set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Performance Index
 % Resample to plot against iteration index
-figure('Name','Performance Index',...
-    'Position',[0.0005    0.0380    0.4990    0.8833])
+if strcmpi(getenv('username'),'M.Cobb')
+    figure('Name','Basis Parameters',...
+        'Position',1e3*[0.0010    0.0410    1.5360    0.7488]);
+else
+    figure('Name','Basis Parameters',...
+        'Position',[-0.5625   -0.1824    0.5625    1.6694])
+end
 iterPerf = resample(tsc.perfIndx,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPerf.plot('Color','k',...
@@ -131,8 +141,13 @@ ylabel({'Performance','Index'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Mean Power
-figure('Name','Mean Power',...
-    'Position',[1.0005    0.0380    0.4990    0.8833])
+if strcmpi(getenv('username'),'M.Cobb')
+    figure('Name','Basis Parameters',...
+        'Position',1e3*[0.0010    0.0410    1.5360    0.7488]);
+else
+    figure('Name','Basis Parameters',...
+        'Position',[-0.5625   -0.1824    0.5625    1.6694])
+end
 iterPower = resample(tsc.meanPower,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPower.plot('Color','k',...
@@ -151,8 +166,13 @@ ylabel({'Mean','Power'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot Penalty Term in Performance Index
-figure('Name','Penalty Term',...
-    'Position',[1.5005    0.0380    0.4990    0.8833])
+if strcmpi(getenv('username'),'M.Cobb')
+    figure('Name','Basis Parameters',...
+        'Position',1e3*[0.0010    0.0410    1.5360    0.7488]);
+else
+    figure('Name','Basis Parameters',...
+        'Position',[-0.5625   -0.1824    0.5625    1.6694])
+end
 iterPenaltyTerm = resample(tsc.penaltyTerm,tsc.estGradient.Time);
 subplot(2,1,1)
 iterPenaltyTerm.plot('Color','k',...
@@ -171,8 +191,13 @@ ylabel({'Penalty','Term'})
 set(findall(gcf,'Type','axes'),'FontSize',24)
 
 %% Plot the estimated gradient
-figure('Name','Estimated Gradient',...
-    'Position',[0.5005    0.0380    0.4990    0.8833])
+if strcmpi(getenv('username'),'M.Cobb')
+    figure('Name','Basis Parameters',...
+        'Position',1e3*[0.0010    0.0410    1.5360    0.7488]);
+else
+    figure('Name','Basis Parameters',...
+        'Position',[-0.5625   -0.1824    0.5625    1.6694])
+end
 numBP = numel(tsc.estGradient.Data(end,:));
 for ii = 1:numBP
     subplot(numBP,1,ii)
@@ -198,8 +223,23 @@ ylabel('Length [m]')
 title('Tether Length Tracking')
 set(gca,'FontSize',18)
 
-%%
-% stopCallback
+
+%% Plot flow speed at fuselage center
+if strcmpi(getenv('username'),'M.Cobb')
+    figure('Name','Flow Speed',...
+        'Position',1e3*[0.0010    0.0410    1.5360    0.7488]);
+else
+    figure('Name','Basis Parameters',...
+        'Position',[-0.5625   -0.1824    0.5625    1.6694])
+end
+plot(...
+    tsc.vhclFlowVecs.Time,...
+    squeeze(sqrt(sum(tsc.vhclFlowVecs.Data(:,end,:).^2,1))),...
+    'Color','k','LineWidth',1.5)
+grid on
+xlabel('Time [s]')
+ylabel('Flow Speed At CoM [m/s]')
+set(gca,'FontSize',18)
 
 %%
 vhcl.animateSim(tsc,2,...
