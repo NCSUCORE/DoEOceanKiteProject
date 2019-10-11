@@ -40,7 +40,7 @@ hiLvlCtrl.pathVarUpperLim.Description = 'ILC trigger upper path variable limit, 
 hiLvlCtrl.pathVarUpperLim.setValue(0.95,'');
 % ILC doesn't start until the system completes this number of laps:
 hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC, in order to let transients die out.';
-hiLvlCtrl.numInitLaps.setValue(10,'');
+hiLvlCtrl.numInitLaps.setValue(5,'');
 % Weighting on path tracking in the performance index:
 % hiLvlCtrl.distPenaltyWght.Description = 'Weight on path tracking penalty (interior angle) in the ILC performance index.';
 hiLvlCtrl.penaltyWeight.setValue(1.4e4/10e-3,'');

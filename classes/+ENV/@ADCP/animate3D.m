@@ -1,4 +1,4 @@
-function animateHeading(obj,varargin)
+function animate3D(obj,varargin)
 %% Input parsing
 p = inputParser;
 
@@ -76,6 +76,13 @@ if strcmpi(getenv('username'),'M.Cobb') % If this is on mitchells laptop
     h.fig.Position = 1e3*[1.0178    0.0418    0.5184    0.7408];
 end
 
+if p.Results.SaveGif
+    frame = getframe(h.fig);
+    im = frame2im(frame);
+    [imind,cm] = rgb2ind(im,256);
+    imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif', 'Loopcount',inf);
+end
+
 for ii = 2:numel(flowTimeseries.Time)
     h.allVecs.UData = flowTimeseries.Data(1,:,ii);
     h.allVecs.VData = flowTimeseries.Data(2,:,ii);
@@ -85,6 +92,13 @@ for ii = 2:numel(flowTimeseries.Time)
     h.instantMean.VData = mean(squeeze(flowTimeseries.Data(2,:,ii)));
     
     drawnow
-    
+    % Save gif of results
+    if p.Results.SaveGif
+        frame = getframe(h.fig);
+        im = frame2im(frame);
+        [imind,cm] = rgb2ind(im,256);
+        imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif','WriteMode','append','DelayTime',p.Results.GifTimeStep)
+        
+    end
 end
 end

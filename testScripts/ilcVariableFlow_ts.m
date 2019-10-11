@@ -2,7 +2,7 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 1000*sqrt(lengthScaleFactor);
+duration_s  = 1500*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -24,12 +24,15 @@ loadComponent('pathFollowingVhcl');
 loadComponent('constXY_ZvarT_ADCP');
 
 
-
 %% Environment IC's and dependant properties
-% env.water.flowVec.setValue([2 0 0]','m/s')
+env.water = env.water.setEndADCPTime(1.505e7,'s');
+env.water = env.water.setStartADCPTime(1.48e7,'s');
+env.water.plotMags
+% env.water.setEndADCPTime(1.505e7,'s')
+% env.water.setStartADCPTime(1.48e7,'s')
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,45*pi/180,125],'[]') % Lemniscate of Booth
+hiLvlCtrl.initBasisParams.setValue([0.4,1.1,30*pi/180,45*pi/180,175],'[]') % Lemniscate of Booth
 
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
@@ -52,6 +55,7 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,env,thr,env.water.flowVecTSeries.Value.Data(:,30,1));
+wnch.winch1.setMaxSpeed(inf,'m/s')
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
@@ -194,14 +198,14 @@ ylabel('Length [m]')
 title('Tether Length Tracking')
 set(gca,'FontSize',18)
 
-
-
 %%
 % stopCallback
 
+%%
 vhcl.animateSim(tsc,2,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PathPosition',false,...
     'NavigationVecs',false,...
     'Pause',false,...
     'PlotTracer',true)
+

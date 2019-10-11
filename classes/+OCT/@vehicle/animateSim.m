@@ -285,7 +285,8 @@ daspect([1 1 1])
 
 % Create a title
 h.title = title({sprintf('Time = %.1f s',0),...
-    sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,1)))});
+    sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,1))),...
+    sprintf('Flow Speed = %.1f m/s',norm(tsc.vhclFlowVecs.Data(:,end,1)))});
 
 % Update the graphics handles with new data
 for ii = 1:length(tsc.eulerAngles.Time)
@@ -432,8 +433,11 @@ for ii = 1:length(tsc.eulerAngles.Time)
         h.thr{jj}.ZData = squeeze(tsc.thrNodeBus.nodePositions.Data(3,:,ii));
     end
     % Update the title
-    h.title.String = {sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),...
-        sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii)))};
+    h.title.String = {...
+        sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),...
+        sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii))),...
+        sprintf('Flow Speed = %.1f m/s',norm(tsc.vhclFlowVecs.Data(:,end,ii)))};
+    
     
     if p.Results.PowerBar
         yPos = interp1(h.colorBar.Limits,...
