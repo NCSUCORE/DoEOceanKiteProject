@@ -95,7 +95,7 @@ classdef constXY_ZvarT_ADCP
             mags(mags>5) = 5;
             times = repmat(obj.flowVecTSeries.Value.Time(:),[1 numel(obj.depthArray.Value)]);
             depths = repmat(obj.depthArray.Value(:)',[numel(obj.flowVecTSeries.Value.Time) 1]);
-            h.surf = contourf(times,depths,mags',[0:1:5]);
+            h.surf = contourf(times,depths,mags',[0:0.25:5]);
             xlabel('Time [s]')
             ylabel('Dist from sea floor [m]')
             h.colorbar = colorbar;
