@@ -16,9 +16,11 @@ wnch.numWinches.setValue(1,'');
 wnch.build;
 
 % Set values
-wnch.winch1.maxSpeed.setValue(.4,'m/s');
+wnch.winch1.maxSpeed.setValue(inf,'m/s');
 wnch.winch1.timeConst.setValue(1,'s');
 wnch.winch1.maxAccel.setValue(inf,'m/s^2');
+wnch.winch1.motorEfficiency.setValue(1,'')
+wnch.winch1.generatorEfficiency.setValue(1,'')
 
 %% save file in its respective directory
 saveBuildFile('wnch',mfilename,'variant','WINCH');
