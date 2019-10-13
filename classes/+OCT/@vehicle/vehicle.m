@@ -8,7 +8,7 @@ classdef vehicle < dynamicprops
         numTethers
         numTurbines
         buoyFactor
-        volume
+        
         Ixx
         Iyy
         Izz
@@ -72,6 +72,7 @@ classdef vehicle < dynamicprops
     end
     
     properties (Dependent)
+        volume
         mass
         inertia
         addedMass
@@ -93,7 +94,7 @@ classdef vehicle < dynamicprops
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
             obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor','NoScale',true);
             % mass, volume and inertia
-            obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
+%             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
             obj.Ixx            = SIM.parameter('Unit','kg*m^2','Description','Ixx');
             obj.Iyy            = SIM.parameter('Unit','kg*m^2','Description','Iyy');
             obj.Izz            = SIM.parameter('Unit','kg*m^2','Description','Izz');
@@ -183,9 +184,9 @@ classdef vehicle < dynamicprops
             obj.buoyFactor.setValue(val,units);
         end
         
-        function setVolume(obj,val,units)
-            obj.volume.setValue(val,units);
-        end
+%         function setVolume(obj,val,units)
+%             obj.volume.setValue(val,units);
+%         end
         
         function setIxx(obj,val,units)
             obj.Ixx.setValue(val,units);
@@ -397,9 +398,107 @@ classdef vehicle < dynamicprops
         %% getters
         % mass
         function val = get.mass(obj)
+            
             val = SIM.parameter('Value',obj.fluidDensity.Value*obj.volume.Value/...
                 obj.buoyFactor.Value,...
                 'Unit','kg','Description','Vehicle mass');
+        end
+        % volume
+        function val = get.volume(obj)
+            % Read in geometry from .dat files stored in
+            % +OCT/@vehicle/airfoilGeometryFiles
+            basePath = fileparts(which('OCTProject.prj'));
+            airfoilPath = fullfile(basePath,'classes','+OCT','@vehicle','airfoilGeometryFiles');
+
+            wingShapeData = dlmread([airfoilPath filesep sprintf('NACA%s',obj.wingNACA.Value) '.dat'],' ',1,0);
+            wingShapeData = wingShapeData(:,[1 6]); % dlm read reads in a bunch of zeros, get rid of them
+            wingShapeData(end,:) = wingShapeData(1,:); % close the cross sectional profile
+            
+            hStabShapeData = dlmread([airfoilPath filesep sprintf('NACA%s',obj.hsNACA.Value) '.dat'],' ',1,0);
+            hStabShapeData = hStabShapeData(:,[1 6]); % dlm read reads in a bunch of zeros, get rid of them
+            hStabShapeData(end,:) = hStabShapeData(1,:); % close the cross sectional profile
+            
+            vStabShapeData = dlmread([airfoilPath filesep sprintf('NACA%s',obj.vsNACA.Value) '.dat'],' ',1,0);
+            vStabShapeData = vStabShapeData(:,[1 6]); % dlm read reads in a bunch of zeros, get rid of them
+            vStabShapeData(end,:) = vStabShapeData(1,:); % close the cross sectional profile
+            surfOutlines = obj.surfaceOutlines;
+            % All raw geometry data is scaled to 1 m chord, scale up to get
+            % correct dimensions
+            pWingRootChord = norm(surfOutlines.port_wing.Value(:,1)...
+                -surfOutlines.port_wing.Value(:,4));
+            pWingTipChord = norm(surfOutlines.port_wing.Value(:,2)...
+                -surfOutlines.port_wing.Value(:,3));
+            
+            sWingRootChord = norm(surfOutlines.stbd_wing.Value(:,1)...
+                -surfOutlines.stbd_wing.Value(:,4));
+            sWingTipChord = norm(surfOutlines.stbd_wing.Value(:,2)...
+                -surfOutlines.stbd_wing.Value(:,3));
+            
+            pHsRootChord = norm(surfOutlines.port_hs.Value(:,1)...
+                -surfOutlines.port_hs.Value(:,4));
+            pHsTipChord = norm(surfOutlines.port_hs.Value(:,2)...
+                -surfOutlines.port_hs.Value(:,3));
+            
+            sHsRootChord = norm(surfOutlines.stbd_hs.Value(:,1)...
+                -surfOutlines.stbd_hs.Value(:,4));
+            sHsTipChord = norm(surfOutlines.stbd_hs.Value(:,2)...
+                -surfOutlines.stbd_hs.Value(:,3));
+            
+            vsRootChord = norm(surfOutlines.top_vs.Value(:,1)...
+                -surfOutlines.top_vs.Value(:,4));
+            vsTipChord = norm(surfOutlines.top_vs.Value(:,2)...
+                -surfOutlines.top_vs.Value(:,3));
+
+            pWingShapeRoot  = wingShapeData*pWingRootChord;
+            pWingShapeTip   = wingShapeData*pWingTipChord;
+            sWingShapeRoot  = wingShapeData*sWingRootChord;
+            sWingShapeTip   = wingShapeData*sWingTipChord;
+            sHsShapeRoot    = hStabShapeData*sHsRootChord;
+            sHsShapeTip     = hStabShapeData*sHsTipChord;
+            pHsShapeRoot    = hStabShapeData*pHsRootChord;
+            pHsShapeTip     = hStabShapeData*pHsTipChord;
+            vsShapeRoot     = vStabShapeData*vsRootChord;
+            vsShapeTip      = vStabShapeData*vsTipChord;
+            
+            % In general, it's really hard to get the volume defined by a
+            % set of points in 3D.  (see monte carlo integration methods)
+            % Instead, I'll use the following method.
+            % For the wing and stabilizer, assume the airfoil profiles are
+            % oriented in the x-z plane, and the vertical stabilizer
+            % profiles are in the x-y plane, then the volume of each fluid
+            % dynamic surface would be given by:
+            % V = L*(A1 + A2)/2
+            % Where L is the separation distance in y for the wing and
+            % horizontal stabilizer, and in z for the vertical stabilizer,
+            % and A1 and A2 are the area of the profile at the tips.
+            pWingAreaRoot   = polyarea(pWingShapeRoot(:,1),pWingShapeRoot(:,2));
+			pWingAreaTip    = polyarea(pWingShapeTip(:,1),pWingShapeTip(:,2));
+			sWingAreaRoot   = polyarea(sWingShapeRoot(:,1),sWingShapeRoot(:,2));
+			sWingAreaTip    = polyarea(sWingShapeTip(:,1),sWingShapeTip(:,2));
+			sHsAreaRoot     = polyarea(sHsShapeRoot(:,1),sHsShapeRoot(:,2));
+			sHsAreaTip      = polyarea(sHsShapeTip(:,1),sHsShapeTip(:,2));
+			pHsAreaRoot     = polyarea(pHsShapeRoot(:,1),pHsShapeRoot(:,2));
+			pHsAreaTip      = polyarea(pHsShapeTip(:,1),pHsShapeTip(:,2));
+			vsAreaRoot      = polyarea(vsShapeRoot(:,1),vsShapeRoot(:,2));
+			vsAreaTip       = polyarea(vsShapeTip(:,1),vsShapeTip(:,2));
+            
+            pWingSepDist = abs(surfOutlines.port_wing.Value(2,2)-surfOutlines.port_wing.Value(2,1));
+            sWingSepDist = abs(surfOutlines.stbd_wing.Value(2,2)-surfOutlines.stbd_wing.Value(2,1));
+            pHsSepDist   = abs(surfOutlines.port_hs.Value(2,2)-surfOutlines.port_hs.Value(2,1));
+            sHsSepDist   = abs(surfOutlines.stbd_hs.Value(2,2)-surfOutlines.stbd_hs.Value(2,1));
+            vsSepDist    = abs(surfOutlines.top_vs.Value(3,2)-surfOutlines.top_vs.Value(3,1));
+            
+            pWingVol = pWingSepDist*(pWingAreaRoot+pWingAreaTip)/2;
+            sWingVol = sWingSepDist*(sWingAreaRoot+sWingAreaTip)/2;
+            sHsVol   = sHsSepDist*(sHsAreaRoot+sHsAreaTip)/2;
+            pHsVol   = pHsSepDist*(pHsAreaRoot+pHsAreaTip)/2;
+            vsVol    = vsSepDist*(vsAreaRoot+vsAreaTip)/2;
+            
+            % Volume of fluid dynamic surfaces + volume of fuselage
+            fluidSurfVol = pWingVol + sWingVol + sHsVol + pHsVol + vsVol + obj.fuse.volume.Value;
+            
+            val = SIM.parameter('Value',fluidSurfVol,'Unit','m^3');
+            
         end
         
         % inertia

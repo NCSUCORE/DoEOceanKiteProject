@@ -13,6 +13,7 @@ classdef fuselage < handle
     properties (Dependent)
         length
         aeroCentPosVec
+        volume
     end
     
     methods
@@ -46,6 +47,12 @@ classdef fuselage < handle
             obj.endDragCoeff.setValue(val,units);
         end
         %% Getters 
+        function val = get.volume(obj)
+            vol = obj.length.Value*pi*(obj.diameter.Value/2)^2 ... % Volume of a cylinder with flat ends
+                  -(obj.diameter.Value^3-(4/3)*pi*(obj.diameter.Value/2)^3); % Subtract off missing volume round off the ends
+            val = SIM.parameter('Value',vol,'Unit','m^3');
+        end
+        
         function val = get.length(obj)
             val = SIM.parameter('Value',norm(obj.rCmToNose.Value-obj.rCmToEnd.Value),...
                 'Unit','m','Description','Total length of fuselage');
