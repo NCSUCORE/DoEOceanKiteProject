@@ -1,17 +1,19 @@
-figure('Name','Aero Coeffs')
+figure('Name','Aero Loads')
+numPlots = size(tsc.FLiftBdyPart.Data(:,:,1),2);
+mag = sqrt(sum(tsc.FLiftBdyPart.Data.^2,1))...
+    + sqrt(sum(tsc.FDragBdyPart.Data.^2,1));
 
-for ii = 1:numel(tsc.dynPress.Data(1,:,1))
-    subplot(numel(tsc.dynPress.Data(1,:,1)),1,ii)
-    plot(tsc.CL.Time,squeeze(tsc.CL.Data(1,ii,:)),...
-        'LineStyle','-','Color','k','LineWidth',1.5,'DisplayName','$C_L$');
+% Plot magnitudes at fluid dynamic centers
+for ii = 1:numPlots
+    subplot(numPlots,1,ii)
+    plot(tsc.FLiftBdyPart.Time,squeeze(mag(:,ii,:)),...
+        'Color','k','LineWidth',1.5)
     grid on
-    hold on
-    plot(tsc.CD.Time,squeeze(tsc.CD.Data(1,ii,:)),...
-        'LineStyle','--','Color',0.5*[1 1 1],'LineWidth',1.5,'DisplayName','$C_D$');
-    xlabel('Time, t [s]')
-    ylabel(sprintf('$C_L^{%d}$,  $C_D^{%d}$',ii,ii),'Interpreter','Latex')
-    legend
+    xlabel('Time [s]')
+    ylabel(sprintf('$F_%d^{Fluid}$',ii))
 end
 
 % set(findall(gcf,'Type','axes'),'FontSize',20)
 linkaxes(findall(gcf,'Type','axes'),'x')
+set(findall(gcf,'Type','axes'),'FontSize',18)
+clear numplots ii mag
