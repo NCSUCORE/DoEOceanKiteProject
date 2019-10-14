@@ -1,8 +1,8 @@
 %% Script to run ILC path optimization
- tetherLengths = [ 50 125 200];
+ tetherLengths = [ 50 131 206];
  flowSpeeds = [ 2 1.5 1 .5 ];
  for ppp = 2:2
-     for qqq = 3:3
+     for qqq = 1:1
 clc;close all
 clearvars -except ppp qqq flowSpeeds tetherLengths
 if ~slreportgen.utils.isModelLoaded('OCTModel')
@@ -10,7 +10,7 @@ if ~slreportgen.utils.isModelLoaded('OCTModel')
 end
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 3600*sqrt(lengthScaleFactor);
+duration_s  = 1000*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
@@ -34,15 +34,21 @@ loadComponent('pathFollowingVhcl');
 %loadComponent('constX_YZvarT_ADCPTurb');
 %loadComponent('constXY_ZvarT_ADCP');
 loadComponent('constXYZT');
- SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipse';
-PATHGEOMETRY = 'ellipse';
+%  SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
+% PATHGEOMETRY = 'ellipse';
 %% Set basis parameters for high level controller
-%hiLvlCtrl.basisParams.setValue([1,.7,.36,0,tetherLengths(ppp)],'') % Lemniscate of Booth
- hiLvlCtrl.basisParams.setValue([.8,.7,.36,0,tetherLengths(ppp)],'');   
+% hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,tetherLengths(ppp)],'') % Lemniscate of Booth
+%  hiLvlCtrl.basisParams.setValue([.6,.8,.36,0,tetherLengths(ppp)],'');   
 % [3*pi/8,pi/8,pi/8,0,125]% ellipse
 %% Environment IC's and dependant properties
  env.water.flowVec.setValue([flowSpeeds(qqq) 0 0]','m/s')
 
+ 
+ %% ellipse 
+ 
+  SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
+  PATHGEOMETRY = 'ellipse';
+  hiLvlCtrl.basisParams.setValue([.7,.8,.41,0,tetherLengths(ppp)],''); % ellipse
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
@@ -72,8 +78,8 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 wnch.setTetherInitLength(vhcl,env,thr,[flowSpeeds(qqq),0,0]);
 
 %% Controller User Def. Parameters and dependant properties
-% fltCtrl.setFcnName(PATHGEOMETRY,''); 
- fltCtrl.setFcnName('ellipse','');% PATHGEOMETRY is defined in fig8ILC_bs.m
+fltCtrl.setFcnName(PATHGEOMETRY,''); 
+%  fltCtrl.setFcnName('ellipse','');% PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 % fltCtrl.winchSpeedIn.setValue(-norm(env.water.flowVec.Value)/3,'m/s');
@@ -151,8 +157,8 @@ ylabel('Power (Watts)')
 timevec=tsc.winchPower.Time;
 xlim([0,timevec(end)])
 
- [~,i1]=min(abs(timevec - 600));
- [~,i2]=min(abs(timevec -1000)); %(timevec(end)/2)));
+ [~,i1]=min(abs(timevec - 200));
+ [~,i2]=min(abs(timevec -400)); %(timevec(end)/2)));
  [~,poweri1]=min(tsc.winchPower.Data(i1:i2));
  poweri1 = poweri1 + i1;
 [~,i3]=min(abs(timevec - (timevec(end)/2)));
