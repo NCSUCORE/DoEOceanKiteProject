@@ -34,11 +34,11 @@ loadComponent('pathFollowingVhcl');
 %loadComponent('constX_YZvarT_ADCPTurb');
 %loadComponent('constXY_ZvarT_ADCP');
 loadComponent('constXYZT');
-% SPOOLINGCONTROLLER = 'netZeroSpoolingController2';
-% PATHGEOMETRY = 'ellipse';
+ SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipse';
+PATHGEOMETRY = 'ellipse';
 %% Set basis parameters for high level controller
-hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,tetherLengths(ppp)],'') % Lemniscate of Booth
-% hiLvlCtrl.basisParams.setValue([1,1,.5,0,tetherLengths(ppp)],'');   
+%hiLvlCtrl.basisParams.setValue([1,.7,.36,0,tetherLengths(ppp)],'') % Lemniscate of Booth
+ hiLvlCtrl.basisParams.setValue([.8,.7,.36,0,tetherLengths(ppp)],'');   
 % [3*pi/8,pi/8,pi/8,0,125]% ellipse
 %% Environment IC's and dependant properties
  env.water.flowVec.setValue([flowSpeeds(qqq) 0 0]','m/s')
@@ -72,8 +72,8 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 wnch.setTetherInitLength(vhcl,env,thr,[flowSpeeds(qqq),0,0]);
 
 %% Controller User Def. Parameters and dependant properties
-fltCtrl.setFcnName(PATHGEOMETRY,''); 
-% fltCtrl.setFcnName('ellipse','');% PATHGEOMETRY is defined in fig8ILC_bs.m
+% fltCtrl.setFcnName(PATHGEOMETRY,''); 
+ fltCtrl.setFcnName('ellipse','');% PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
 % fltCtrl.winchSpeedIn.setValue(-norm(env.water.flowVec.Value)/3,'m/s');
@@ -151,8 +151,8 @@ ylabel('Power (Watts)')
 timevec=tsc.winchPower.Time;
 xlim([0,timevec(end)])
 
- [~,i1]=min(abs(timevec - 1500));
- [~,i2]=min(abs(timevec -2000)); %(timevec(end)/2)));
+ [~,i1]=min(abs(timevec - 600));
+ [~,i2]=min(abs(timevec -1000)); %(timevec(end)/2)));
  [~,poweri1]=min(tsc.winchPower.Data(i1:i2));
  poweri1 = poweri1 + i1;
 [~,i3]=min(abs(timevec - (timevec(end)/2)));
