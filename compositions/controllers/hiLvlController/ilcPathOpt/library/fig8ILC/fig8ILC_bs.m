@@ -54,10 +54,10 @@ hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Mult
 hiLvlCtrl.learningGain.setValue(0.05/1.9e4,'[]');
 % Forgetting factor of RLS estimator
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update';
-hiLvlCtrl.forgettingFactor.setValue(0.99,'');
+hiLvlCtrl.forgettingFactor.setValue(0.97,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
-hiLvlCtrl.trustRegion.setValue([0.05 0.05 inf inf inf],'[]');
+hiLvlCtrl.trustRegion.setValue([0.06 0.06 inf inf inf],'[]');
 % Persistent excitation
 hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.';
 hiLvlCtrl.excitationAmp.setValue([0 0 0 0 0 0 0],'[]');

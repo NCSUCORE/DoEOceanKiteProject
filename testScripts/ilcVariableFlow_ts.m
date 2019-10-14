@@ -2,7 +2,7 @@
 clc;clear;close all
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-duration_s  = 7200*sqrt(lengthScaleFactor);
+duration_s  = 3600*sqrt(lengthScaleFactor);
 dynamicCalc = '';
 
 %% Load components
