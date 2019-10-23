@@ -5,7 +5,7 @@ fltCtrl = CTR.pthFlwCtrl;
 
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
-fltCtrl.setPerpErrorVal(3*pi/180,'rad');
+fltCtrl.setPerpErrorVal(6*pi/180,'rad');
 fltCtrl.setSearchSize(.5,'');
 fltCtrl.setMinR(100,'m')
 fltCtrl.setMaxR(200,'m')
@@ -29,9 +29,9 @@ fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.tanRoll.tau.setValue(1e-3,'s');
 
-fltCtrl.rollMoment.kp.setValue((1e4)/(10*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue((11e4)/(10*pi/180),'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((1e4)/(10*pi/180),'(N*m)/(rad/s)');
+fltCtrl.rollMoment.kd.setValue((11e4)/(10*pi/180),'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
