@@ -47,12 +47,16 @@ fltCtrl.rollMoment.tau.Unit = 's'
 fltCtrl.rollMoment.tau.NoScale = false
 fltCtrl.rollMoment.tau.Description = 'Time Constant'
 fltCtrl.maxBank.upperLimit.Value = 3.4907e-01
+fltCtrl.maxBank.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.upperLimit.NoScale = false
 fltCtrl.maxBank.lowerLimit.Value = -3.4907e-01
+fltCtrl.maxBank.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.lowerLimit.NoScale = false
 fltCtrl.controlSigMax.upperLimit.Value = Inf
+fltCtrl.controlSigMax.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.upperLimit.NoScale = false
 fltCtrl.controlSigMax.lowerLimit.Value = -Inf
+fltCtrl.controlSigMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.lowerLimit.NoScale = false
 fltCtrl.winchSpeedIn.Unit = 'm/s'
 fltCtrl.winchSpeedIn.NoScale = false
@@ -64,8 +68,10 @@ fltCtrl.ctrlAllocMat.Unit = '(deg)/(m^3)'
 fltCtrl.ctrlAllocMat.NoScale = false
 fltCtrl.ctrlAllocMat.Description = 'Control allocation matrix for control surfaces'
 fltCtrl.searchSize.Value = 5.0000e-01
+fltCtrl.searchSize.Unit is unitless or has no unit specified
 fltCtrl.searchSize.NoScale = true
 fltCtrl.searchSize.Description = 'Range of normalized path variable to search'
+fltCtrl.traditionalBool.Unit is unitless or has no unit specified
 fltCtrl.traditionalBool.NoScale = true
 fltCtrl.traditionalBool.Description = 'Switch for inter vs intra cycle spooling.  Should be phased out in favor of variant subsystem'
 fltCtrl.minR.Value = 1.0000e+02
@@ -80,6 +86,7 @@ fltCtrl.startControl.Value = 1.0000e+00
 fltCtrl.startControl.Unit = 's'
 fltCtrl.startControl.NoScale = false
 fltCtrl.startControl.Description = 'Time at which we switch the roll controller on'
+fltCtrl.outRanges.Unit is unitless or has no unit specified
 fltCtrl.outRanges.NoScale = false
 fltCtrl.outRanges.Description = 'Upper/lower limits of path variable for spooling'
 fltCtrl.elevatorReelInDef.Value = 2.0000e+01
@@ -90,7 +97,9 @@ fltCtrl.maxR.Value = 2.0000e+02
 fltCtrl.maxR.Unit = 'm'
 fltCtrl.maxR.NoScale = false
 fltCtrl.maxR.Description = 'Maximum radius for spooling switching'
+fltCtrl.fcnName.Unit is unitless or has no unit specified
 fltCtrl.fcnName.NoScale = true
 fltCtrl.fcnName.Description = 'Name of the path shape function you want to use.'
+fltCtrl.initPathVar.Unit is unitless or has no unit specified
 fltCtrl.initPathVar.NoScale = false
 fltCtrl.initPathVar.Description = 'Initial path variable'

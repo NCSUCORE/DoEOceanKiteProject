@@ -55,10 +55,10 @@ if all(emptyCheck)
         end
         eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
         save(saveFile,p.Results.object,p.Results.variant);
-        saveClass(evalin('caller',p.Results.object),txtFile,p.Results.object);
+        saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
     else
         save(saveFile,p.Results.object);
-        saveClass(evalin('caller',p.Results.object),txtFile,p.Results.object);
+        saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
     end
 else
     error('Please do not specify initial conditions in build script')

@@ -1,4 +1,4 @@
-function saveClass(obj,fulltxtFilePath,name)
+function saveClassTxt(obj,fulltxtFilePath,name)
     FID=fopen(fulltxtFilePath,'w+');    
     if nargin ==3
         cycleProps(FID,name,obj);
@@ -50,6 +50,8 @@ function saveline(FID,name,obj)
             else
                 fprintf(FID,'%s is non-string and non-numeric and takes up %.4e bytes\n',name,getSize(obj));
             end
+        elseif endsWith(name,'Unit')
+            fprintf(FID,'%s is unitless or has no unit specified\n',name)
         end
     catch
         fprintf(FID,'%s could not display and takes up %.4e bytes\n',name,getSize(obj));
