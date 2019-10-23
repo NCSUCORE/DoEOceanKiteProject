@@ -47,12 +47,14 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
             data = cnapsMat(:,1:9,:); % 10 depths for 4, 11 depths for 5,12 depths for 6 
             
             % Permute data to correct dimension for timeseries
-            data = permute(data,[3 2 1]);
-           
+            dataStep1 = permute(data,[3 2 1]);
+            dataStep2 = squeeze(sqrt(sum(dataStep1.^2,1)));
+            dataStep2(:,:,2) = zeros(size(squeeze(sqrt(sum(dataStep1.^2,1)))));
+            dataStep3 = permute(dataStep2,[3,1,2]);
             for i = 1:1000
                 flowDir = [];
                 for ii = 1:9
-                    dirT = rad2deg(atan2(data(1,ii,i),data(2,ii,i)));
+                    dirT = rad2deg(atan2(dataStep3 (2,ii,:),dataStep3 (1,ii,:)));
                     flowDir = [flowDir, dirT];
                 end
                 data2(:,:,i) = flowDir;
@@ -60,7 +62,7 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
             % Create timeseries object and crop to specified times WILL BE
             %              USED EVENTUALLY
             dirTimeseries = timeseries(data2,timeVec); 
-            flowTimeseries = timeseries(data,timeVec);
+            flowTimeseries = timeseries(dataStep3,timeVec);
             % Add start datetime to the time info
 %             flowTimeseries.TimeInfo.StartDate = dateTimes(1);
             % Add description
