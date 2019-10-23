@@ -21,6 +21,7 @@ parse(p,object,BSfileName,varargin{:});
 
 if endsWith(currentMfileName,'_bs')
     saveFileName = strcat('\',erase(currentMfileName,'_bs'),'.mat');
+    txtFileName = strcat('\',erase(currentMfileName,'_bs'),'.txt');
 else
     saveFileName = currentMfileName;
 end
@@ -46,6 +47,7 @@ eval([p.Results.object ' =  evalin(''caller'',p.Results.object);']);
 
 if all(emptyCheck)
     saveFile = strcat(currentMfileLoc,saveFileName);
+    txtFile = strcat(currentMfileLoc,txtFileName);
     if isempty(p.UsingDefaults)
         % Check if the variant specifier exists in the caller workspace
         if ~evalin( 'base', sprintf('exist(''%s'',''var'') == 1;',p.Results.variant ))
@@ -53,8 +55,10 @@ if all(emptyCheck)
         end
         eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
         save(saveFile,p.Results.object,p.Results.variant);
+        saveClass(evalin('caller',p.Results.object),txtFile,p.Results.object);
     else
         save(saveFile,p.Results.object);
+        saveClass(evalin('caller',p.Results.object),txtFile,p.Results.object);
     end
 else
     error('Please do not specify initial conditions in build script')

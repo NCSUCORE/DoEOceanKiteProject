@@ -3,9 +3,9 @@ function simLogsout = simWithMonitor(model,timestep)
         timestep=2;
     end
     try
-        sim_monitor_start(model,timestep)
+        simMonitorStart(model,timestep)
         sim(model)
-        sim_monitor_end(model)
+        simMonitorEnd(model)
     catch e
         fprintf(2,'\nsimWithMonitor caught an error.\n')
         fprintf(2,'The identifier was:\n     %s\n',e.identifier);
@@ -13,7 +13,7 @@ function simLogsout = simWithMonitor(model,timestep)
         if ~isempty(e.cause)
             fprintf(2,'The cause was:\n     %s\n',e.cause{1}.message);
         end
-        sim_monitor_end(model)
+        simMonitorEnd(model)
     end
     if exist('logsout','var')
         assignin('base', 'logsout', logsout);
@@ -30,7 +30,7 @@ function myTimerFcn(myTimerObj, ~, model,timestep)
         time,timestep*(myTimerObj.TasksExecuted-1));
     end
 end
-function [] = sim_monitor_start(model,timestep)
+function [] = simMonitorStart(model,timestep)
     %model should be a string of the name of the model you are about to run
     %timestep (optional) allows control over how often the text will print
 
@@ -47,14 +47,4 @@ function [] = sim_monitor_start(model,timestep)
     sim_timer.StopFcn = @(myTimerObj, thisEvent)disp(...
         strcat("Timer for ", model, " Stopped"));
     start(sim_timer)
-end
-
-function [] = sim_monitor_end(model)
-    %Finds the timer opened by the sim_monitor_start call using the same
-    %model, closes it, and deletes it.
-    %Should run without error if given a model without a running timer.
-    sim_timer=timerfind("Name",strcat(model,"_timer"));
-    stop(sim_timer);
-    delete(sim_timer);
-    fprintf(2,'\n')
 end
