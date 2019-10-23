@@ -8,6 +8,7 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
     properties (SetAccess = private)
         flowVecTSeries
         depths
+        flowDirTSeries
     end
     %PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOBER 8
     % I KNOW ITS SUPER JANKY AND IM SORRY - JAMES
@@ -24,7 +25,7 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
             % ---Parse the output---
             parse(p,varargin{:})
             % Look in the folder containing this file for a .mat file
-            dataFile = dir(fullfile(fileparts(fullfile(which('OCTProject.prj'))),'classes','+ENV','@CNAPS','*.mat'));
+            dataFile = dir(fullfile(fileparts(fullfile(which('OCTProject.prj'))),'classes','+ENV','@CNAPS','cnapsMat.mat'));
             if ~isempty(p.Results.DataFile) % If the user specifies a file, load it
                 load(p.Results.DataFile)
             else % Otherwise look in this directory and try to load whatever's there
@@ -43,29 +44,39 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
             
             % --Build timeseries for the flow vector--
             % Convert loaded data to m/s and concatenate along 3rd dimension
-            data = cnapsMat;
+            data = cnapsMat(:,1:9,:); % 10 depths for 4, 11 depths for 5,12 depths for 6 
             
             % Permute data to correct dimension for timeseries
             data = permute(data,[3 2 1]);
+           
+            for i = 1:1000
+                flowDir = [];
+                for ii = 1:9
+                    dirT = rad2deg(atan2(data(1,ii,i),data(2,ii,i)));
+                    flowDir = [flowDir, dirT];
+                end
+                data2(:,:,i) = flowDir;
+            end
             % Create timeseries object and crop to specified times WILL BE
             %              USED EVENTUALLY
-            
+            dirTimeseries = timeseries(data2,timeVec); 
             flowTimeseries = timeseries(data,timeVec);
             % Add start datetime to the time info
 %             flowTimeseries.TimeInfo.StartDate = dateTimes(1);
             % Add description
             flowTimeseries.UserData.Description = ...
-                'At each time step 2x8 matrix.  Columns correspond to depths, rows correspond to east, and north directions.';
+                'At each time step 2xdepth matrix.  Columns correspond to depths, rows correspond to east, and north directions.';
             flowTimeseries.DataInfo.Units = 'm/s';
             % Store into SIM.parameter object
             obj.flowVecTSeries = SIM.parameter('Value',flowTimeseries,'Unit','m/s');
+            obj.flowDirTSeries = SIM.parameter('Value',dirTimeseries,'Unit','deg');
             
             
-            
-            obj.depths = SIM.parameter('Value',0:25:25*7, 'Unit','m');
+            depthsSt3 = [0 25 50 75 100 125 150 175 200];         
+            obj.depths = SIM.parameter('Value',depthsSt3, 'Unit','m');
         end
         
-         function flowTimeseries = crop(obj,startTime,endTime)
+         function [ flowTimeseries,  dirTimeseries]  = crop(obj,startTime,endTime)
             % Set endTime to max possible value
             endTime = min([endTime ...
                 obj.flowVecTSeries.Value.Time(end)]);
@@ -78,9 +89,17 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
             flowTimeseries.DataInfo.Units = obj.flowVecTSeries.Value.DataInfo.Units;
             % Reset time vector to start at 0
             flowTimeseries.Time = flowTimeseries.Time-flowTimeseries.Time(1);
+            
+              dirTimeseries = getsampleusingtime(obj.flowDirTSeries.Value ,startTime,endTime);
+            % Set start time
+%             dirTimeseries.TimeInfo.StartDate = ...
+%                 obj.flowDirTSeries.Value.TimeInfo.StartDate + ...
+%                 seconds(dirTimeseries.Time(1));
+            dirTimeseries.DataInfo.Units = obj.flowDirTSeries.Value.DataInfo.Units;
+            % Reset time vector to start at 0
+            dirTimeseries.Time = dirTimeseries.Time-dirTimeseries.Time(1);
          end
-        
-        
+         
     end
 end
 
