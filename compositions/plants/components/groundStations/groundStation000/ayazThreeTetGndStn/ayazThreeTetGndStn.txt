@@ -1,0 +1,28 @@
+gndStn.numTethers.Value = 3.0000e+00
+gndStn.numTethers.Unit is unitless or has no unit specified
+gndStn.numTethers.NoScale = true
+gndStn.inertia.Value = 1.0000e+00
+gndStn.inertia.Unit = 'kg*m^2'
+gndStn.inertia.NoScale = false
+gndStn.dampCoeff.Value = 1.0000e+00
+gndStn.dampCoeff.Unit = '(N*m)/(rad/s)'
+gndStn.dampCoeff.NoScale = false
+gndStn.initAngPos.Unit = 'rad'
+gndStn.initAngPos.NoScale = false
+gndStn.initAngVel.Unit = 'rad/s'
+gndStn.initAngVel.NoScale = false
+gndStn.freeSpnEnbl.Value = true
+gndStn.freeSpnEnbl.Unit is unitless or has no unit specified
+gndStn.freeSpnEnbl.NoScale = true
+gndStn.posVec.Value = [0 0 0]
+gndStn.posVec.Unit = 'm'
+gndStn.posVec.NoScale = false
+gndStn.thrAttch2.posVec.Value = [6.4;0;0]
+gndStn.thrAttch2.posVec.Unit = 'm'
+gndStn.thrAttch2.posVec.NoScale = false
+gndStn.thrAttch1.posVec.Value = [-0.0254;-5;0]
+gndStn.thrAttch1.posVec.Unit = 'm'
+gndStn.thrAttch1.posVec.NoScale = false
+gndStn.thrAttch3.posVec.Value = [-0.0254;5;0]
+gndStn.thrAttch3.posVec.Unit = 'm'
+gndStn.thrAttch3.posVec.NoScale = false

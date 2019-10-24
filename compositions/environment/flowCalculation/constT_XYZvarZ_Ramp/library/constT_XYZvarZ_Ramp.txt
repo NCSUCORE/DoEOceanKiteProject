@@ -1,0 +1,8 @@
+env.gravAccel.Value = 9.8100e+00
+env.gravAccel.Unit = 'm/s^2'
+env.gravAccel.NoScale = true
+env.water.nominal100mFlowVec.Unit = 'm/s'
+env.water.nominal100mFlowVec.NoScale = false
+env.water.density.Value = 1.0000e+03
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false

@@ -13,18 +13,22 @@ function saveClassTxt(obj,fulltxtFilePath,name)
 end
 
 function cycleProps(FID,name,obj)
-    props = properties(obj);
-    if isempty(props)
-        saveline(FID,name,obj);
-    else
-        for i=1:length(props)
-            newobj = getfield(obj,props{i});
-            if isempty(properties(newobj))
-                saveline(FID,[name '.' char(props{i})],newobj);
-            else
-                cycleProps(FID,[name '.' char(props{i})],newobj)
+    try
+        props = properties(obj);
+        if isempty(props)
+            saveline(FID,name,obj);
+        else
+            for i=1:length(props)
+                newobj = getfield(obj,props{i});
+                if isempty(properties(newobj))
+                    saveline(FID,[name '.' char(props{i})],newobj);
+                else
+                    cycleProps(FID,[name '.' char(props{i})],newobj)
+                end
             end
         end
+    catch
+        saveline(FID,[name '.' char(props{i})],newobj);
     end
 end
 
@@ -51,7 +55,7 @@ function saveline(FID,name,obj)
                 fprintf(FID,'%s is non-string and non-numeric and takes up %.4e bytes\n',name,getSize(obj));
             end
         elseif endsWith(name,'Unit')
-            fprintf(FID,'%s is unitless or has no unit specified\n',name)
+            fprintf(FID,'%s is unitless or has no unit specified\n',name);
         end
     catch
         fprintf(FID,'%s could not display and takes up %.4e bytes\n',name,getSize(obj));

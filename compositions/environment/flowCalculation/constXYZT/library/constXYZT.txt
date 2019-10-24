@@ -1,0 +1,12 @@
+env.gravAccel.Value = 9.8100e+00
+env.gravAccel.Unit = 'm/s^2'
+env.gravAccel.NoScale = true
+env.water.flowVec.Unit = 'm/s'
+env.water.flowVec.NoScale = false
+env.water.density.Value = 1.0000e+03
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false
+env.water.speed.Value = 0.0000e+00
+env.water.speed.Unit = 'm/s'
+env.water.speed.NoScale = false
+env.water.elevation is non-string and non-numeric and takes up 1.5000e+01 bytes
