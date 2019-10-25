@@ -1,0 +1,70 @@
+env.gravAccel.Value = 9.8100e+00
+env.gravAccel.Unit = 'm/s^2'
+env.gravAccel.NoScale = true
+env.water.density.Value = 1.0000e+03
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false
+env.water.gravAccel.Unit = 'm/s^2'
+env.water.gravAccel.NoScale = false
+env.water.startADCPTime.Value = 0.0000e+00
+env.water.startADCPTime.Unit = 's'
+env.water.startADCPTime.NoScale = false
+env.water.endADCPTime.Value = Inf
+env.water.endADCPTime.Unit = 's'
+env.water.endADCPTime.NoScale = false
+env.water.componentEnable.Value = true
+env.water.componentEnable.Unit is unitless or has no unit specified
+env.water.componentEnable.NoScale = false
+env.water.depthArray.Value = [6.3100004196167 10.3100004196167 14.3100004196167 18.3100004196167 22.3100004196167 26.3100004196167 30.3100004196167 34.3100004196167 38.3100004196167 42.3100004196167 46.3100004196167 50.3100004196167 54.3100004196167 58.3100004196167 62.3100004196167 66.3100004196167 70.3100004196167 74.3100004196167 78.3100004196167 82.3100004196167 86.3100004196167 90.3100004196167 94.3100004196167 98.3100004196167 102.310000419617 106.310000419617 110.310000419617 114.310000419617 118.310000419617 122.310000419617 126.310000419617 130.310000419617 134.310000419617 138.310000419617 142.310000419617 146.310000419617 150.310000419617 154.310000419617 158.310000419617 162.310000419617 166.310000419617 170.310000419617 174.310000419617 178.310000419617 182.310000419617 186.310000419617 190.310000419617 194.310000419617 198.310000419617 202.310000419617 206.310000419617 210.310000419617 214.310000419617 218.310000419617 222.310000419617 226.310000419617 230.310000419617 234.310000419617 238.310000419617 242.310000419617 246.310000419617 250.310000419617]
+env.water.depthArray.Unit = 'm'
+env.water.depthArray.NoScale = false
+env.water.flowVecTSeries.Value.Name = 'unnamed'
+env.water.flowVecTSeries.Value.UserData is non-string and non-numeric and takes up 3.9800e+02 bytes
+env.water.flowVecTSeries.Value.Data is too big to display and takes up 6.4506e+07 bytes
+env.water.flowVecTSeries.Value.DataInfo.Units = 'm/s'
+env.water.flowVecTSeries.Value.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
+env.water.flowVecTSeries.Value.DataInfo.Interpolation.Name = 'linear'
+env.water.flowVecTSeries.Value.DataInfo.InterpretSingleRowDataAs3D = false
+env.water.flowVecTSeries.Value.Time is too big to display and takes up 3.4681e+05 bytes
+env.water.flowVecTSeries.Value.TimeInfo.Units = 'seconds'
+env.water.flowVecTSeries.Value.TimeInfo.StartDate.Format = 'dd-MMM-uuuu HH:mm:ss'
+env.water.flowVecTSeries.Value.TimeInfo.StartDate.Year = 2.0130e+03
+env.water.flowVecTSeries.Value.TimeInfo.StartDate.Month = 8.0000e+00
+env.water.flowVecTSeries.Value.TimeInfo.StartDate.Day = 1.0000e+00
+env.water.flowVecTSeries.Value.TimeInfo.StartDate.Hour = 0.0000e+00
+env.water.flowVecTSeries.Value.TimeInfo.StartDate.Minute = 0.0000e+00
+env.water.flowVecTSeries.Value.TimeInfo.StartDate.Second = 0.0000e+00
+env.water.flowVecTSeries.Value.TimeInfo.Length = 4.3351e+04
+env.water.flowVecTSeries.Value.TimeInfo.End = 2.6010e+07
+env.water.flowVecTSeries.Value.TimeInfo.Increment = 6.0000e+02
+env.water.flowVecTSeries.Value.TimeInfo.Start = 0.0000e+00
+env.water.flowVecTSeries.Value.IsTimeFirst = false
+env.water.flowVecTSeries.Value.TreatNaNasMissing = true
+env.water.flowVecTSeries.Value.Length = 4.3351e+04
+env.water.flowVecTSeries.Unit = 'm/s'
+env.water.flowVecTSeries.NoScale = false
+env.water.flowDirTSeries.Value.Name = 'unnamed'
+env.water.flowDirTSeries.Value.UserData is non-string and non-numeric and takes up 2.5600e+02 bytes
+env.water.flowDirTSeries.Value.Data is too big to display and takes up 2.1502e+07 bytes
+env.water.flowDirTSeries.Value.DataInfo.Units = 'deg'
+env.water.flowDirTSeries.Value.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
+env.water.flowDirTSeries.Value.DataInfo.Interpolation.Name = 'linear'
+env.water.flowDirTSeries.Value.DataInfo.InterpretSingleRowDataAs3D = false
+env.water.flowDirTSeries.Value.Time is too big to display and takes up 3.4681e+05 bytes
+env.water.flowDirTSeries.Value.TimeInfo.Units = 'seconds'
+env.water.flowDirTSeries.Value.TimeInfo.StartDate.Format = 'dd-MMM-uuuu HH:mm:ss'
+env.water.flowDirTSeries.Value.TimeInfo.StartDate.Year = 2.0130e+03
+env.water.flowDirTSeries.Value.TimeInfo.StartDate.Month = 8.0000e+00
+env.water.flowDirTSeries.Value.TimeInfo.StartDate.Day = 1.0000e+00
+env.water.flowDirTSeries.Value.TimeInfo.StartDate.Hour = 0.0000e+00
+env.water.flowDirTSeries.Value.TimeInfo.StartDate.Minute = 0.0000e+00
+env.water.flowDirTSeries.Value.TimeInfo.StartDate.Second = 0.0000e+00
+env.water.flowDirTSeries.Value.TimeInfo.Length = 4.3351e+04
+env.water.flowDirTSeries.Value.TimeInfo.End = 2.6010e+07
+env.water.flowDirTSeries.Value.TimeInfo.Increment = 6.0000e+02
+env.water.flowDirTSeries.Value.TimeInfo.Start = 0.0000e+00
+env.water.flowDirTSeries.Value.IsTimeFirst = false
+env.water.flowDirTSeries.Value.TreatNaNasMissing = true
+env.water.flowDirTSeries.Value.Length = 4.3351e+04
+env.water.flowDirTSeries.Unit = 'deg'
+env.water.flowDirTSeries.NoScale = false

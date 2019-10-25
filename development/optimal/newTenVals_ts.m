@@ -14,8 +14,10 @@ SPOOLINGCONTROLLER = 'TimeSpoolingController';
 controlAllocationBit = 0;
 %% Opt stuff (move to mask)
 Tens=cell(17,1);
-for runSpoolSpeed = .05
+tic
+for runSpoolSpeed = 0:.1:.8
     %% PLOT BITS
+    fprintf("spool Speed = %4.3f\n",runSpoolSpeed);
     DAMPlot = false; % desired and achieved moments
     CSDPlot = false; % control surface deflections
     YMCTPlot = false; % yaw moment controller things
@@ -52,13 +54,13 @@ for runSpoolSpeed = .05
     % hiLvlCtrl.basisParams.setValue([60 10 0 30 150],'') % Lemniscate of Gerono
     % hiLvlCtrl.basisParams.setValue([1.1,.5,.4,0,200],'');% ellipse
     % hiLvlCtrl.basisParams.setValue([.7,1,.36,.77,125,0.25,0.125],'')
-    hiLvlCtrl.basisParams.setValue([.73,1,.36,0,140],'');% Lemniscate of Booth
+    hiLvlCtrl.basisParams.setValue([.5,1,.36,0,215],'');% Lemniscate of Booth
     %hiLvlCtrl.basisParams.setValue([pi/8,-3*pi/8,0,125],''); % Circle
     %% Environment IC's and dependant properties
     % Set Values
 %     flowspeed = 1;
 
-    env.water.flowVec.setValue([.5,0,0],'m/s')
+    env.water.flowVec.setValue([2,0,0],'m/s')
     flowspeed = norm(env.water.flowVec.Value);
     %% Set vehicle initial conditions
     vhcl.setICsOnPath(...
@@ -88,7 +90,7 @@ for runSpoolSpeed = .05
 
     %Level 1, Velocity Angle Selection
     fltCtrl.setSearchSize(.5,'');
-    fltCtrl.perpErrorVal.setValue(3*pi/180,'rad')
+    fltCtrl.perpErrorVal.setValue(5*pi/180,'rad')
 
     %Level 2, Tangent Roll Selection
     fltCtrl.maxBank.upperLimit.setValue(45*pi/180,'');
@@ -180,10 +182,11 @@ for runSpoolSpeed = .05
     for i=0:999
         m(i+1)=mean(TenMags(and(speeds<0,floor(1000*pathVars)==i)));
     end
-    Tens{round(9-(runSpoolSpeed/.05))}=m;
+    Tens{round(9-(runSpoolSpeed/.1))}=m;
     m=zeros(size(0:99));
     for i=0:999
         m(i+1)=mean(TenMags(and(speeds>=0,floor(1000*pathVars)==i)));
     end
-    Tens{round(9+(runSpoolSpeed/.05))}=m;
+    Tens{round(9+(runSpoolSpeed/.1))}=m;
 end
+toc

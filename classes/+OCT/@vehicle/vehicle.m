@@ -1194,6 +1194,48 @@ classdef vehicle < dynamicprops
         
         val = animateSim(obj,tsc,timeStep,varargin)
         val = animateBody(obj,tsc,timeStep,varargin)
-    end
+    
+        function writeFile(hobj,fn)
+            % writes the vehicle to file
+            % fn = filename
+            
+            % try to open file
+            fid = fopen(fn,'w');
+            if fid < 0
+                error('Unable to open file');
+            end
+            p = properties(hobj);
+            for blamo = 1:1:length(p)
+                currentprop = p{blamo};
+                if isa(hobj.(currentprop),'SIM.parameter')
+                    % wite to file
+                    fstr = '%f,';
+                    fstr = repmat(fstr,1,numel(hobj.(currentprop).Value));
+                    if isempty(hobj.(currentprop).Unit)
+                        unit = '''''';
+                    else
+                        unit = hobj.(currentprop).Unit;
+                    end
+                    fprintf(fid,['%s,' fstr '%s,%s\n'],currentprop,hobj.(currentprop).Value,unit,hobj.(currentprop).Description);
+                elseif isa(hobj.(currentprop),'OCT.fuselage')
+                    pfuse = properties(hobj.(currentprop));
+                        for slamo = 1:1:length(pfuse)
+                            fuseprop = pfuse{slamo};
+                            % wite to file
+                            fstr = '%f,';
+                            fstr = repmat(fstr,1,numel(hobj.(currentprop).(fuseprop).Value));
+                            if isempty(hobj.(currentprop).(fuseprop).Unit)
+                                unit = '''''';
+                            else
+                                unit = hobj.(currentprop).(fuseprop).Unit;
+                            end
+                            fprintf(fid,['fuselage%s,' fstr '%s,%s\n'],fuseprop,hobj.(currentprop).(fuseprop).Value,unit,hobj.(currentprop).(fuseprop).Description);
+                        end
+                end % if is parameter
+            end % for props    
+            fclose(fid);
+        end % writeFile
+    
+    end % methods
  
 end
