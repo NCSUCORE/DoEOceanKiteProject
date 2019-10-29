@@ -34,11 +34,11 @@ function [posGround,varargout] = racetrack(pathVariable,geomParams)
         if pathVariable(ii) <= .25
             %% bottom straightaway (left to right from the outside)
             long=@(x) longCurve-(.5*centToCent)+(centToCent*x*(1/.25));
-            lat=@(x) latCurve-radius;
+            lat =@(x) latCurve-radius;
             path = @(x)sphereRadius * [cos(long(x)).*cos(lat(x));...
                                        sin(long(x)).*cos(lat(x));...
                                        sin(lat(x));];
-            posGround(:,ii)=path(pathVariable(ii));
+            posGround(:,ii)=path(pathVariable(ii)) + cntrPtPosVec(:);
             if nargout==2
                 dLongdS = @(x) centToCent*(1/.25);
                 dLatdS = @(x) 0;
@@ -62,7 +62,7 @@ function [posGround,varargout] = racetrack(pathVariable,geomParams)
             path = @(x)sphereRadius * [cos(long(x)).*cos(lat(x));...
                                        sin(long(x)).*cos(lat(x));...
                                        sin(lat(x));];
-            posGround(:,ii)=path(pathVariable(ii));
+            posGround(:,ii)=path(pathVariable(ii))) + cntrPtPosVec(:);
             if nargout==2
                 dLongdS = @(x) radius*cos((x-.25)*(pi/.25))*(pi/.25);
                 dLatdS = @(x) radius*sin((x-.25)*(pi/.25))*(pi/.25);
@@ -111,7 +111,7 @@ function [posGround,varargout] = racetrack(pathVariable,geomParams)
             path = @(x)sphereRadius * [cos(long(x)).*cos(lat(x));...
                                        sin(long(x)).*cos(lat(x));...
                                        sin(lat(x));];
-            posGround(:,ii)=path(pathVariable(ii));
+            posGround(:,ii)=path(pathVariable(ii))) + cntrPtPosVec(:);
             if nargout==2
                 dLongdS = @(x) -radius*cos((x-.25)*(pi/.25))*(pi/.25);
                 dLatdS = @(x) -radius*sin((x-.25)*(pi/.25))*(pi/.25);

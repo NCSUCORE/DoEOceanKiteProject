@@ -1,4 +1,4 @@
-function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
+function [posGround,varargout] = lemOfBooth(pathVariable,geomParams,cntrPtPosVec)
 %pathVariable is parameterized along the path from 0 to 1
 %geomParams is a vector in order of the following variables:
 %   aBooth is the general size
@@ -11,43 +11,52 @@ function [posGround,varargout] = lemOfBooth(pathVariable,geomParams)
 %   posGround is the position in the ground frame at the given pathVar
 %   The second output, if requested is a ground frame unit vector in the
 %       direction tangent to the curve (the direction to go)
-    aBooth    = geomParams(1);
-    bBooth    = geomParams(2);
-    latCurve  = geomParams(3);
-    longCurve = geomParams(4);
-    if latCurve < 0
-        pathVariable = 2*pi * pathVariable;
+a       = geomParams(1);
+b       = geomParams(2);
+meanLat = geomParams(3); % Mean course latitude
+meanLon = geomParams(4); % Mean course longitude
+% Correct path variable so that increasing path variable traverses the path
+% in the same direction
+if meanLat < 0
+    pathVariable = 2*pi * pathVariable;
+else
+    pathVariable = 2*pi - (pathVariable * 2*pi);
+end
+% If we're given at least 5 geometric parametrs, the fifth one is radius
+if length(geomParams)>=5
+    radius = geomParams(5);
+else
+    radius = 1;
+end
+
+pathVariable = pathVariable(:)'; %Make the path variable a row vector
+
+% Create anonymous function handle to calculate path shape
+long = @(x) meanLon+(a.*sin(x)./(1+(a./b).^2.*cos(x).^2));
+lat  = @(x) meanLat+((a./b).^2.*sin(x).*cos(x)./(1 + (a./b).^2.*cos(x).^2));
+path = @(x)radius * [cos(long(x)).*cos(lat(x));...
+                     sin(long(x)).*cos(lat(x));...
+                     sin(lat(x))]                   + cntrPtPosVec(:);
+
+% Evaluate function handles at the specified path variables
+posGround = path(pathVariable);
+
+% If asked for the tangent vector, calculate it
+if nargout==2
+    dLongdS    = @(x) (a.*cos(x))./((a.^2.*cos(x).^2)./b.^2 + 1) + (2.*a.^3.*cos(x).*sin(x).^2)./(b.^2.*((a.^2.*cos(x).^2)./b.^2 + 1).^2);
+    dLatdS     = @(x) (a.^2.*cos(x).^2)./(b.^2.*((a.^2.*cos(x).^2)./b.^2 + 1)) - (a.^2.*sin(x).^2)./(b.^2.*((a.^2.*cos(x).^2)./b.^2 + 1)) + (2.*a.^4.*cos(x).^2.*sin(x).^2)./(b.^4.*((a.^2.*cos(x).^2)./b.^2 + 1).^2);
+    dPathdLong  =  @(x) [-cos(lat(x)).*sin(long(x));
+                          cos(lat(x)).*cos(long(x));
+                          zeros(size(pathVariable))];
+    dPathdLat   = @(x) [-cos(long(x)).*sin(lat(x));
+                        -sin(lat(x)).*sin(long(x));
+                         cos(lat(x))];
+    dPathdS     = @(x) (dPathdLat(x).*dLatdS(x)) + (dPathdLong(x).*dLongdS(x));
+    if meanLat < 0
+        tangentVec =  dPathdS(pathVariable);
     else
-        pathVariable = 2*pi - (pathVariable * 2*pi);
+        tangentVec = -dPathdS(pathVariable);
     end
-    if length(geomParams)>=5
-        radius = geomParams(5);
-    else
-        radius = 1;
-    end
-    pathVariable = pathVariable(:)'; %Make it a row vector
-    
-    long=@(x) longCurve+(aBooth.*sin(x)./(1+(aBooth./bBooth).^2.*cos(x).^2));
-    lat=@(x) latCurve+((aBooth./bBooth).^2.*sin(x).*cos(x)./(1 + (aBooth./bBooth).^2.*cos(x).^2));
-    path = @(x)radius * [cos(long(x)).*cos(lat(x));...
-                         sin(long(x)).*cos(lat(x));...
-                         sin(lat(x));];
-    posGround=path(pathVariable);
-    if nargout==2
-        dLongdS = @(x) (aBooth.*cos(x))./((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1) + (2.*aBooth.^3.*cos(x).*sin(x).^2)./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1).^2);
-        dLatdS = @(x) (aBooth.^2.*cos(x).^2)./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)) - (aBooth.^2.*sin(x).^2)./(bBooth.^2.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1)) + (2.*aBooth.^4.*cos(x).^2.*sin(x).^2)./(bBooth.^4.*((aBooth.^2.*cos(x).^2)./bBooth.^2 + 1).^2);
-        dPathdLong =  @(x) [-cos(lat(x)).*sin(long(x));
-                            cos(lat(x)).*cos(long(x));
-                            zeros(size(pathVariable))];
-        dPathdLat = @(x) [-cos(long(x)).*sin(lat(x));
-                          -sin(lat(x)).*sin(long(x));
-                          cos(lat(x))];
-        dPathdS = @(x) (dPathdLat(x).*dLatdS(x)) + (dPathdLong(x).*dLongdS(x));
-        if latCurve < 0
-            tangentVec = dPathdS(pathVariable);
-        else 
-            tangentVec = -dPathdS(pathVariable);
-        end
-        varargout{1}=tangentVec./sqrt(sum(tangentVec.^2,1));
-    end
+    varargout{1} = tangentVec./sqrt(sum(tangentVec.^2,1));
+end
 end

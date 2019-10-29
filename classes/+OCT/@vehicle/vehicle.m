@@ -378,13 +378,13 @@ classdef vehicle < dynamicprops
             obj.initAngVelVec.setValue(val(:),units);
         end
         
-        function setICsOnPath(obj,initPathPos,pathFunc,geomParams,speed)
+        function setICsOnPath(obj,initPathVar,pathFunc,geomParams,pathCntrPt,speed)
             % Sets initial conditions of the vehicle to be on the path
-            [initPos,initVel] = eval(sprintf('%s(initPathPos,geomParams)',pathFunc));
+            [initPos,initVel] = eval(sprintf('%s(initPathVar,geomParams,pathCntrPt)',pathFunc));
             obj.setInitPosVecGnd(initPos,'m');
             obj.setInitVelVecBdy([-speed 0 0],'m/s');
             % Initial body z points radially out
-            bdyZ = initPos./sqrt(sum(initPos.^2));
+            bdyZ = (initPos(:)-pathCntrPt(:))./sqrt(sum((initPos(:)-pathCntrPt(:)).^2));
             % Initial body x points backwards (opposite velocity(
             bdyX = -initVel;
             % Initial body y is calculated from the cross product of z & x

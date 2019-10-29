@@ -1,4 +1,4 @@
-function [posGround,varargout] = ellipse(pathVariable,geomParams)
+function [posGround,varargout] = ellipse(pathVariable,geomParams,cntrPtPosVec)
 %pathVariable is parameterized along the path from 0 to 1
 %geomParams is a vector in order of the following variables:
 %   width is the total horizontal sweep angle of the curve (usually the major axis) in radians
@@ -36,8 +36,8 @@ function [posGround,varargout] = ellipse(pathVariable,geomParams)
     lat=@(x) latCurve+(b*sin(x));
     path = @(x)sphereRadius * [cos(long(x)).*cos(lat(x));...
                          sin(long(x)).*cos(lat(x));...
-                         sin(lat(x));];
-    posGround=path(pathVariable);
+                         sin(lat(x))] + cntrPtPosVec(:);
+    posGround = path(pathVariable);
     if nargout==2
         dLongdS = @(x) -a.*sin(x);
         dLatdS = @(x) b.*cos(x);

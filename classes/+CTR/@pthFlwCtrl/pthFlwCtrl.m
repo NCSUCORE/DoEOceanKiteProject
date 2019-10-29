@@ -88,9 +88,9 @@ classdef pthFlwCtrl < handle
             obj.fcnName.setValue(val,unit);
         end
         
-        function setInitPathVar(obj,initPosVecGnd,geomParams)
+        function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec)
             pathVars = linspace(0,1,1000);
-            posVecs = eval(sprintf('%s(pathVars,geomParams)',obj.fcnName.Value));
+            posVecs = eval(sprintf('%s(pathVars,geomParams,pathCntPosVec)',obj.fcnName.Value));
             initPosVecGnd = repmat(initPosVecGnd(:),[1 numel(pathVars)]);
             dist = sqrt(sum((initPosVecGnd- posVecs).^2,1));
             [~,idx] = min(dist);
