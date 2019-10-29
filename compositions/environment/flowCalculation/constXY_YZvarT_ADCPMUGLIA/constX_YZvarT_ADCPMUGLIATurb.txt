@@ -1,0 +1,107 @@
+env.gravAccel.Value = 9.8100e+00
+env.gravAccel.Unit = 'm/s^2'
+env.gravAccel.NoScale = true
+env.water.density.Value = 1.0000e+03
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false
+env.water.depthArray.Value = [-216 -212 -208 -204 -200 -196 -192 -188 -184 -180 -176 -172 -168 -164 -160 -156 -152 -148 -144 -140 -136 -132 -128 -124 -120 -116 -112 -108 -104 -100 -96 -92 -88 -84 -80 -76 -72 -68 -64 -60 -56 -52 -48 -44 -40 -36 -32 -28]
+env.water.depthArray.Unit = 'm'
+env.water.depthArray.NoScale = false
+env.water.gravAccel.Unit = 'm/s^2'
+env.water.gravAccel.NoScale = false
+env.water.startADCPTime.Value = 1.6524e+06
+env.water.startADCPTime.Unit = 's'
+env.water.startADCPTime.NoScale = true
+env.water.endADCPTime.Value = 1.6596e+06
+env.water.endADCPTime.Unit = 's'
+env.water.endADCPTime.NoScale = true
+env.water.yBreakPoints.Value is too big to display and takes up 1.1280e+03 bytes
+env.water.yBreakPoints.Unit = 'm'
+env.water.yBreakPoints.NoScale = true
+env.water.flowVecTSeries.Value.Name = 'unnamed'
+env.water.flowVecTSeries.Value.UserData is non-string and non-numeric and takes up 3.9800e+02 bytes
+env.water.flowVecTSeries.Value.Data is too big to display and takes up 2.3040e+03 bytes
+env.water.flowVecTSeries.Value.DataInfo.Units = 'm/s'
+env.water.flowVecTSeries.Value.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
+env.water.flowVecTSeries.Value.DataInfo.Interpolation.Name = 'linear'
+env.water.flowVecTSeries.Value.DataInfo.InterpretSingleRowDataAs3D = false
+env.water.flowVecTSeries.Value.Time = [0;3599.99999664724]
+env.water.flowVecTSeries.Value.TimeInfo.Units = 'seconds'
+env.water.flowVecTSeries.Value.TimeInfo.Length = 2.0000e+00
+env.water.flowVecTSeries.Value.TimeInfo.End = 3.6000e+03
+env.water.flowVecTSeries.Value.TimeInfo.Increment = 3.6000e+03
+env.water.flowVecTSeries.Value.TimeInfo.Start = 0.0000e+00
+env.water.flowVecTSeries.Value.IsTimeFirst = false
+env.water.flowVecTSeries.Value.TreatNaNasMissing = true
+env.water.flowVecTSeries.Value.Length = 2.0000e+00
+env.water.flowVecTSeries.Unit = 'm/s'
+env.water.flowVecTSeries.NoScale = false
+env.water.TI.Value = 1.0000e-01
+env.water.TI.Unit is unitless or has no unit specified
+env.water.TI.NoScale = false
+env.water.f_min.Value = 1.0000e-02
+env.water.f_min.Unit = 'Hz'
+env.water.f_min.NoScale = false
+env.water.f_max.Value = 1.0000e+00
+env.water.f_max.Unit = 'Hz'
+env.water.f_max.NoScale = false
+env.water.P.Value = 1.0000e-01
+env.water.P.Unit is unitless or has no unit specified
+env.water.P.NoScale = false
+env.water.Q.Value = 1.0000e-01
+env.water.Q.Unit = 'Hz'
+env.water.Q.NoScale = false
+env.water.C.Value = 6.0000e+00
+env.water.C.Unit is unitless or has no unit specified
+env.water.C.NoScale = false
+env.water.N_mid_freq.Value = 5.0000e+00
+env.water.N_mid_freq.Unit is unitless or has no unit specified
+env.water.N_mid_freq.NoScale = false
+env.water.flowTSX.Name = 'unnamed'
+env.water.flowTSX.Data is too big to display and takes up 1.9492e+08 bytes
+env.water.flowTSX.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
+env.water.flowTSX.DataInfo.Interpolation.Name = 'linear'
+env.water.flowTSX.DataInfo.InterpretSingleRowDataAs3D = false
+env.water.flowTSX.Time is too big to display and takes up 2.8800e+04 bytes
+env.water.flowTSX.TimeInfo.Units = 'seconds'
+env.water.flowTSX.TimeInfo.Length = 3.6000e+03
+env.water.flowTSX.TimeInfo.End = 3.5990e+03
+env.water.flowTSX.TimeInfo.Increment = 1.0000e+00
+env.water.flowTSX.TimeInfo.Start = 0.0000e+00
+env.water.flowTSX.IsTimeFirst = false
+env.water.flowTSX.TreatNaNasMissing = true
+env.water.flowTSX.Length = 3.6000e+03
+env.water.flowTSY.Name = 'unnamed'
+env.water.flowTSY.Data is too big to display and takes up 1.9492e+08 bytes
+env.water.flowTSY.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
+env.water.flowTSY.DataInfo.Interpolation.Name = 'linear'
+env.water.flowTSY.DataInfo.InterpretSingleRowDataAs3D = false
+env.water.flowTSY.Time is too big to display and takes up 2.8800e+04 bytes
+env.water.flowTSY.TimeInfo.Units = 'seconds'
+env.water.flowTSY.TimeInfo.Length = 3.6000e+03
+env.water.flowTSY.TimeInfo.End = 3.5990e+03
+env.water.flowTSY.TimeInfo.Increment = 1.0000e+00
+env.water.flowTSY.TimeInfo.Start = 0.0000e+00
+env.water.flowTSY.IsTimeFirst = false
+env.water.flowTSY.TreatNaNasMissing = true
+env.water.flowTSY.Length = 3.6000e+03
+env.water.flowTSZ.Name = 'unnamed'
+env.water.flowTSZ.Data is too big to display and takes up 1.9492e+08 bytes
+env.water.flowTSZ.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
+env.water.flowTSZ.DataInfo.Interpolation.Name = 'linear'
+env.water.flowTSZ.DataInfo.InterpretSingleRowDataAs3D = false
+env.water.flowTSZ.Time is too big to display and takes up 2.8800e+04 bytes
+env.water.flowTSZ.TimeInfo.Units = 'seconds'
+env.water.flowTSZ.TimeInfo.Length = 3.6000e+03
+env.water.flowTSZ.TimeInfo.End = 3.5990e+03
+env.water.flowTSZ.TimeInfo.Increment = 1.0000e+00
+env.water.flowTSZ.TimeInfo.Start = 0.0000e+00
+env.water.flowTSZ.IsTimeFirst = false
+env.water.flowTSZ.TreatNaNasMissing = true
+env.water.flowTSZ.Length = 3.6000e+03
+env.water.depthMin.Value = 1.3000e+01
+env.water.depthMin.Unit is unitless or has no unit specified
+env.water.depthMin.NoScale = true
+env.water.depthMax.Value = 6.0000e+01
+env.water.depthMax.Unit is unitless or has no unit specified
+env.water.depthMax.NoScale = true
