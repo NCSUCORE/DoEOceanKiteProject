@@ -50,18 +50,18 @@ hiLvlCtrl.basisParams.setValue([.5,1,.36,0,200,.25,.1533],'');% Lemniscate of Bo
 
 env.water.flowVec.setValue([.5,0,0],'m/s')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 flowspeed = norm(env.water.flowVec.Value);
+%% Ground Station IC's and dependant properties
+gndStn.initAngPos.setValue(0,'rad');
+gndStn.initAngVel.setValue(0,'rad/s');
+%gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
     .4,... % Initial path position
     fltCtrl.fcnName.Value,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
+    gndStn.posVec.Value,... %Path Center Point
     (11.5/2)*flowspeed) % Initial speed
 vhcl.setAddedMISwitch(false,''); %true to have added mass on
-
-%% Ground Station IC's and dependant properties
-gndStn.initAngPos.setValue(0,'rad');
-gndStn.initAngVel.setValue(0,'rad/s');
-%gndStn.thrAttch1.velVec.setValue([0 0 0]','m/s');
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
@@ -70,10 +70,10 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.density.setValue(1000,'kg/m^3');
 %% winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr,[.3,0,0]);
+wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 %% ALL Controller Properties
 %General
-fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value)
+fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value)
 fltCtrl.setStartControl(0,'s')
 
 %Level 1, Velocity Angle Selection
@@ -159,11 +159,11 @@ fltCtrl.scale(sim.lengthScaleFactor.Value,sim.densityScaleFactor.Value);
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
-inds=find(abs(tsc.closestPathVariable.Data(2:end)-tsc.closestPathVariable.Data(1:end-1))>.95);
-if ~isempty(inds)
-    disp(tsc.tetherLengths.Data(inds(2:end))-tsc.tetherLengths.Data(inds(1:end-1)))
-    disp(tsc.tetherLengths.Data(inds(end)))
-end
+% inds=find(abs(tsc.closestPathVariable.Data(2:end)-tsc.closestPathVariable.Data(1:end-1))>.95);
+% if ~isempty(inds)
+%     disp(tsc.tetherLengths.Data(inds(2:end))-tsc.tetherLengths.Data(inds(1:end-1)))
+%     disp(tsc.tetherLengths.Data(inds(end)))
+% end
 % plotTetherLengths
 % kiteAxesPlot
 %stopCallback
