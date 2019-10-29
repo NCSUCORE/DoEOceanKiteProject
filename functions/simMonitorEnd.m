@@ -3,7 +3,9 @@ function [] = simMonitorEnd(model)
     %model, closes it, and deletes it.
     %Should run without error if given a model without a running timer.
     sim_timer=timerfind("Name",strcat(model,"_timer"));
-    stop(sim_timer);
-    delete(sim_timer);
-    fprintf(2,'\n')
+    if ~isempty(sim_timer)
+        stop(sim_timer);
+        delete(sim_timer);
+        fprintf(2,'\n')
+    end
 end
