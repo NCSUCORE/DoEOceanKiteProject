@@ -190,9 +190,9 @@ if p.Results.NavigationVecs
         'MaxHeadSize',0,'Color','r','LineStyle','--','LineWidth',1.5);
     h.perpVec = quiver3(...
         posData(1,1),posData(1,2),posData(1,3),...
-        len*tsc.perpVec.Data(1,1,1),...
-        len*tsc.perpVec.Data(2,1,1),...
-        len*tsc.perpVec.Data(3,1,1),...
+        len*tsc.perpVec.Data(1,:,ii),...
+        len*tsc.perpVec.Data(2,:,ii),...
+        len*tsc.perpVec.Data(3,:,ii),...
         'MaxHeadSize',0,'Color',0.75*[0 1 0],'LineStyle','--','LineWidth',1.5);
     h.desVec = quiver3(...
         posData(1,1),posData(1,2),posData(1,3),...
@@ -427,16 +427,16 @@ for ii = 1:length(tsc.eulerAngles.Time)
         h.perpVec.XData = tsc.positionVec.Data(1,:,ii);
         h.perpVec.YData = tsc.positionVec.Data(2,:,ii);
         h.perpVec.ZData = tsc.positionVec.Data(3,:,ii);
-        h.perpVec.UData = len*tsc.perpVec.Data(ii,1);
-        h.perpVec.VData = len*tsc.perpVec.Data(ii,2);
-        h.perpVec.WData = len*tsc.perpVec.Data(ii,3);
+        h.perpVec.UData = len*tsc.perpVec.Data(1,:,ii);
+        h.perpVec.VData = len*tsc.perpVec.Data(2,:,ii);
+        h.perpVec.WData = len*tsc.perpVec.Data(3,:,ii);
         
         h.desVec.XData = tsc.positionVec.Data(1,:,ii);
         h.desVec.YData = tsc.positionVec.Data(2,:,ii);
         h.desVec.ZData = tsc.positionVec.Data(3,:,ii);
-        h.desVec.UData = len*tsc.velVectorDes.Data(ii,1);
-        h.desVec.VData = len*tsc.velVectorDes.Data(ii,2);
-        h.desVec.WData = len*tsc.velVectorDes.Data(ii,3);
+        h.desVec.UData = len*tsc.velVectorDes.Data(1,:,ii);
+        h.desVec.VData = len*tsc.velVectorDes.Data(1,:,ii);
+        h.desVec.WData = len*tsc.velVectorDes.Data(1,:,ii);
     end
     
     % Update local aerodynamic force vectors
