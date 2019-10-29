@@ -10,7 +10,6 @@ classdef constX_YZvarT_CNAPSTurb
         endCNAPSTime
         yBreakPoints
         flowVecTSeries
-        %         flowDirTSeries
         TI
         f_min
         f_max
@@ -59,17 +58,13 @@ classdef constX_YZvarT_CNAPSTurb
         function setYBreakPoints(obj,val,unit)
             obj.yBreakPoints.setValue(val,unit);
         end
-        
-        
         function obj = setStartCNAPSTime(obj,val,unit)
             obj.startCNAPSTime.setValue(val,unit);
-            
             if obj.startCNAPSTime.Value<=obj.endCNAPSTime.Value
                 vecTSeries = obj.cnaps.crop(obj.startCNAPSTime.Value,obj.endCNAPSTime.Value);
                 obj.flowVecTSeries = SIM.parameter(...
                     'Value',vecTSeries,...
                     'Unit' ,vecTSeries.DataInfo.Units);
-                
             else
                 error('Start time must be <= end time')
             end
@@ -81,7 +76,6 @@ classdef constX_YZvarT_CNAPSTurb
                 obj.flowVecTSeries = SIM.parameter(...
                     'Value',vecTSeries,...
                     'Unit' ,vecTSeries.DataInfo.Units);
-                
             else
                 error('Start time must be <= end time')
             end
@@ -108,8 +102,6 @@ classdef constX_YZvarT_CNAPSTurb
             obj.N_mid_freq.setValue(val,unit);
         end
         
-        
-        
         % getters
         function val = get.depthArray(obj)
             val = obj.cnaps.depths;
@@ -121,7 +113,6 @@ classdef constX_YZvarT_CNAPSTurb
         
         % function to build timeseries from turbGrid.mat
         obj =  buildTimeseries(obj)
-        
         
         % turbulence generator
         val = turbulence_generator2(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10);

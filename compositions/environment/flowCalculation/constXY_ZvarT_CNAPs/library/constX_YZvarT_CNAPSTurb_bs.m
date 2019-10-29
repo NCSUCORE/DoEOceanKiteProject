@@ -1,16 +1,14 @@
-
-
 %% Set up environment
 loadComponent('pathFollowingTether');
-env = ENV.env;
-env.gravAccel.setValue(9.81,'m/s^2')
+env = ENV.env; % Create generalized high-level environment object
+env.gravAccel.setValue(9.81,'m/s^2') % Set gravity
+% Add a flow profile to the environment
 env.addFlow({'water'},{'constX_YZvarT_CNAPSTurb'},'FlowDensities',1000)
 
+% Select start and end times from that flow profile
 env.water = env.water.setStartCNAPSTime(0,'s');
 env.water = env.water.setEndCNAPSTime(3600,'s');
-
 env.water.yBreakPoints.setValue(0:1:4,'m');
-
 env.water.setTI(0.1,'');
 env.water.setF_min(0.01,'Hz');
 env.water.setF_max(1,'Hz');
