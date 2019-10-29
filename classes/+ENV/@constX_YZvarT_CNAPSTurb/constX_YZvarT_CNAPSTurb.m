@@ -293,54 +293,54 @@ classdef constX_YZvarT_CNAPSTurb
                 end
             end
           end
-        function makeTurbVid(obj,vidLength)
-          colormap(jet);
-timeStep = 1;
-frame_rate = 10*1/timeStep;
-video = VideoWriter('vid_Test3', 'Motion JPEG AVI');
-video.FrameRate = frame_rate; 
-num_frames = length(obj.flowTSX.time);
-
-mov(1:length(obj.flowTSX.time))=struct('cdata',[],'colormap',[]);  
-set(gca,'nextplot','replacechildren')
-
-for i = 1:vidLength%length(env.water.flowTSY.time)
-    
-    figure(1)
-    colormap(jet);
-    contourf(obj.yBreakPoints.Value,obj.depthArray.Value,obj.flowTSX.data(:,:,i))
-    
-
-    h1 = colorbar
-    h1.Label.String= '[m/s]'
-%     ('Ticks',1:0.2:1.8)
-    
-    xlabel('Y (m)')
-    ylabel('Depth (m)')
-    title(['U Component of Turbulent Flow at Y Z plane. Time = ',sprintf('%0.2f', obj.flowTSX.time(i)),' s'])
-%     h1 = axis; 
-%     set(h1, 'Ydir', 'reverse')
- ax6 = gca;
- ax6.FontSize = 16;
-%  h6.LineWidth = 1.5
-%  h6.Color = [0, 0 ,0]
-    set(gca, 'YDir','reverse')
-    x0=100;
-    y0=100;
-   width=700;
- height= 500;
-set(gcf,'position',[x0,y0,width,height])
-    F(i) = getframe(gcf);
-    
-end
-
-
-    open(video)
-    for i = 1:length(F)
-        writeVideo(video, F(i));
-    end
-    close(video)
-
-        end
+          function makeTurbVid(obj,vidLength)
+              colormap(jet);
+              timeStep = 1;
+              frame_rate = 10*1/timeStep;
+              video = VideoWriter('vid_Test3', 'Motion JPEG AVI');
+              video.FrameRate = frame_rate;
+              num_frames = length(obj.flowTSX.time);
+              
+              mov(1:length(obj.flowTSX.time))=struct('cdata',[],'colormap',[]);
+              set(gca,'nextplot','replacechildren')
+              
+              for i = 1:vidLength%length(env.water.flowTSY.time)
+                  
+                  figure(1)
+                  colormap(jet);
+                  contourf(obj.yBreakPoints.Value,obj.depthArray.Value,obj.flowTSX.data(:,:,i))
+                  
+                  
+                  h1 = colorbar
+                  h1.Label.String= '[m/s]'
+                  %     ('Ticks',1:0.2:1.8)
+                  
+                  xlabel('Y (m)')
+                  ylabel('Depth (m)')
+                  title(['U Component of Turbulent Flow at Y Z plane. Time = ',sprintf('%0.2f', obj.flowTSX.time(i)),' s'])
+                  %     h1 = axis;
+                  %     set(h1, 'Ydir', 'reverse')
+                  ax6 = gca;
+                  ax6.FontSize = 16;
+                  %  h6.LineWidth = 1.5
+                  %  h6.Color = [0, 0 ,0]
+                  set(gca, 'YDir','reverse')
+                  x0=100;
+                  y0=100;
+                  width=700;
+                  height= 500;
+                  set(gcf,'position',[x0,y0,width,height])
+                  F(i) = getframe(gcf);
+                  
+              end
+              
+              
+              open(video)
+              for i = 1:length(F)
+                  writeVideo(video, F(i));
+              end
+              close(video)
+              
+          end
     end
 end
