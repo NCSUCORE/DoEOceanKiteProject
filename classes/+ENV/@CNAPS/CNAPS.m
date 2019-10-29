@@ -40,7 +40,7 @@ classdef CNAPS%PLEASE DONT EDIT OR DELETE UNTIL AFTER PRESENTATION TUESDAY OCTOB
             % Get time vector first 100 hours, time is given in days,
             % starting at 735600 for some reason unknown to me 
             
-           timeVec =(time(1:1000)-735600)*3600*24;
+           timeVec = floor((time(1:1000)-735600)*3600*24);
             
             % --Build timeseries for the flow vector--
             % Convert loaded data to m/s and concatenate along 3rd dimension
