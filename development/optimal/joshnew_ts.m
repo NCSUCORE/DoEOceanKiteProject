@@ -1,31 +1,23 @@
 clear
 
-if ~slreportgen.utils.isModelLoaded('OCTModel')
-    OCTModel
-end
 
-lengthScaleFactor = 1/1;
-densityScaleFactor = 1/1;
-duration_s  = 2000*sqrt(lengthScaleFactor);
+
+sim = SIM.sim;
+sim.setDuration(2000,'s');
 
 dynamicCalc = '';
-SPOOLINGCONTROLLER = 'intraSpoolingController';%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+SPOOLINGCONTROLLER = 'PMPSpoolingController';%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
 controlAllocationBit = 0;
 %% Opt stuff (move to mask)
-load('200m1mps.mat')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+load('200m05mps.mat')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 guess=mean(mean(Ten));
 ki_iter=guess/60;
 kp_iter=guess/60;
 kd_iter=0;
 TenWidth=1000;
-speedRange=[-.4,.4];%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+speedRange=[-.2,.2];%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% PLOT BITS
-DAMPlot = false; % desired and achieved moments
-CSDPlot = false; % control surface deflections
-YMCTPlot = false; % yaw moment controller things
-TRTPlot = false; % tangent roll things
 %% Load components
 % Flight Controller
 loadComponent('firstBuildPathFollowing');
@@ -45,22 +37,18 @@ loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-%loadComponent('constXYZ_varT_SineWave');
 loadComponent('constXYZT');
-%loadComponent('constXY_ZvarT_ADCP');
-%loadComponent('constX_YZvarT_ADCPTurb');
-% loadComponent('constX_YZvarT_CNAPSTurb');
 %% Choose Path Shape and Set basis parameters for high level controller
 %fltCtrl.setFcnName('ellipse','');
 % fltCtrl.setFcnName('circleOnSphere','');
 fltCtrl.setFcnName('lemOfBooth','');
 
-hiLvlCtrl.basisParams.setValue([.5,1,.36,0,200,.25,.145],'');% Lemniscate of Booth%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+hiLvlCtrl.basisParams.setValue([.5,1,.36,0,200,.25,.1533],'');% Lemniscate of Booth%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Environment IC's and dependant properties
 % Set Values
 
-env.water.flowVec.setValue([1,0,0],'m/s')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+env.water.flowVec.setValue([.5,0,0],'m/s')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 flowspeed = norm(env.water.flowVec.Value);
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
@@ -156,23 +144,26 @@ fltCtrl.outRanges.setValue( [0         0.1250;%%%%%%%%%%%%%%lemOfBoot
 %                                   0.6    .85;],'');
 %% Scale
 % scale environment
-%env.scale(lengthScaleFactor,densityScaleFactor);
+%env.scale(sim.lengthScaleFactor.Value,sim.densityScaleFactor.Value);
 % scale vehicle
-vhcl.scale(lengthScaleFactor,densityScaleFactor);
+vhcl.scale(sim.lengthScaleFactor.Value,sim.densityScaleFactor.Value);
 vhcl.calcFluidDynamicCoefffs;
 % scale ground station
-gndStn.scale(lengthScaleFactor,densityScaleFactor);
+gndStn.scale(sim.lengthScaleFactor.Value,sim.densityScaleFactor.Value);
 % scale tethers
-thr.scale(lengthScaleFactor,densityScaleFactor);
+thr.scale(sim.lengthScaleFactor.Value,sim.densityScaleFactor.Value);
 % scale winches
-wnch.scale(lengthScaleFactor,densityScaleFactor);
+wnch.scale(sim.lengthScaleFactor.Value,sim.densityScaleFactor.Value);
 % scale controller
-fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
+fltCtrl.scale(sim.lengthScaleFactor.Value,sim.densityScaleFactor.Value);
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
-inds=find(tsc.closestPathVariable.Data(2:end)<tsc.closestPathVariable.Data(1:end-1));
-disp(mean(tsc.tetherLengths.Data(inds(2:end))-tsc.tetherLengths.Data(inds(1:end-1))))
+inds=find(abs(tsc.closestPathVariable.Data(2:end)-tsc.closestPathVariable.Data(1:end-1))>.95);
+if ~isempty(inds)
+    disp(tsc.tetherLengths.Data(inds(2:end))-tsc.tetherLengths.Data(inds(1:end-1)))
+    disp(tsc.tetherLengths.Data(inds(end)))
+end
 % plotTetherLengths
 % kiteAxesPlot
 %stopCallback
