@@ -6,11 +6,11 @@ ylabel('Power (Watts)')
 timevec=tsc.winchPower.Time;
 xlim([0,timevec(end)])
 
- [~,i1]=min(abs(timevec - 600));
- [~,i2]=min(abs(timevec -1000)); %(timevec(end)/2)));
+ [~,i1]=min(abs(timevec - 200));
+ [~,i2]=min(abs(timevec -400)); %(timevec(end)/2)));
  [~,poweri1]=min(tsc.winchPower.Data(i1:i2));
  poweri1 = poweri1 + i1;
-[~,i3]=min(abs(timevec - 1200));
+[~,i3]=min(abs(timevec - 600));
 [~,i4]=min(abs(timevec - timevec(end)));
 i4=i4-1;
 [~,poweri2]=min(tsc.winchPower.Data(i3:i4));

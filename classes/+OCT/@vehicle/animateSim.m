@@ -279,7 +279,7 @@ view(p.Results.View)
 % Set plot limits
 setLimsToQuartSphere(gca,squeeze(tsc.positionVec.Data)',...
     'PlotAxes',true);
-
+zlim([ -60 0 ] ) 
 % Set data aspect ratio to realistic (not skewed)
 daspect([1 1 1])
 

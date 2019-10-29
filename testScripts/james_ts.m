@@ -1,7 +1,7 @@
 %% Script to run ILC path optimization
 tetherLengths = [ 50 125 200];
 flowSpeeds = [ 2 1.5 1 .5 .1 ];
-for ppp = 3:3
+for ppp = 1:1
     for qqq = 3:3
         clc;close all
         clearvars -except ppp qqq flowSpeeds tetherLengths
@@ -9,7 +9,7 @@ for ppp = 3:3
             OCTModel
         end
         sim = SIM.sim;
-        sim.setDuration(600,'s')
+        sim.setDuration(1000,'s')
         dynamicCalc = '';
         
         %% Load components
@@ -35,7 +35,7 @@ for ppp = 3:3
         %         loadComponent('constXYZT');
         
         %% Set basis parameters for high level controller
-                hiLvlCtrl.basisParams.setValue([.8,1.6,.3,0,tetherLengths(ppp)],'') % Lemniscate of Booth for trying to get 200m working
+%                 hiLvlCtrl.basisParams.setValue([.8,1.6,-.3,0,tetherLengths(ppp)],'') % Lemniscate of Booth for trying to get 200m working
         
         
         % [3*pi/8,pi/8,pi/8,0,125]% ellipse
@@ -45,9 +45,9 @@ for ppp = 3:3
         
         %% ellipse
         
-        %   SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
-%         PATHGEOMETRY = 'ellipse';
-%         hiLvlCtrl.basisParams.setValue([1.6,.3,.3,.0,tetherLengths(ppp)],''); % ellipse
+%           SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
+        PATHGEOMETRY = 'ellipse';
+        hiLvlCtrl.basisParams.setValue([1.6,.3,-.3,.0,tetherLengths(ppp)],''); % ellipse
         %% Ground Station IC's and dependant properties
         gndStn.initAngPos.setValue(0,'rad');
         gndStn.initAngVel.setValue(0,'rad/s');
@@ -108,67 +108,10 @@ for ppp = 3:3
         
         rCAvg = sum(avgCAMag)/(tsc.vhclFlowVecs.time(end))
         
-%         plotCentralAngle
-%         plotMeanPower
+
         
-%         plotPower
-        %%  Flow Speed PLOT mag plot
-        
-        figure;
-        
-        h6 = plot(tsc.vhclFlowVecs.time, sqrt(sum(squeeze(tsc.vhclFlowVecs.data(:,5,:)).^2)));
-        % title('Flow Speed Mag. at Kite CoM vs. Time ' )
-        xlabel('Time (s) ' )
-        ylabel('Flow Speed (m/s)')
-        %         ylim([1.15,1.7])
-        %          xlim([500 750])
-        grid on
-        box off
-        ax6 = gca;
-        ax6.FontSize = 16;
-        h6.LineWidth = 1.5;
-        h6.Color = [0, 0 ,0]
-        % x0=10;
-        % y0=10;
-        % width=550;
-        % height= 200;
-        % set(gcf,'position',[x0,y0,width,height])
-        
-        % legend(' U Velocity', 'V Velocity', 'W velocity')
-        
-        %% Central Angle
-        % plotCentralAngle
-        
-        %%
-        % plot(squeeze(tsc.vhclFlowVecs.data(1,5,:)))
-        
-        %
-        %
-        % fprintf('\nRunning stopcallback.m \nParsing logsout\n')
-        % parseLogsout
-        
-        % Create folder name to dump all results
-%         folderName = strcat('Ellipse_',num2str(tetherLengths(ppp)),'CNAPSTurb');  %datestr(now,'ddmmmyy_HHMMSS');
-%         folderName = fullfile(fileparts(which('OCTModel')),'output',folderName);
-%         % If the folder doesn't exist, create it
-%         if ~(7==exist(fullfile(folderName),'dir'))
-%             fprintf('Creating directory  %s\n',folderName)
-%             mkdir(fullfile(folderName))
-%         end
-%         
-%         % Save data
-%         fprintf('Saving all data to workspace.mat \n')
-%         save(fullfile(folderName,'workspace.mat'),'-v7.3')
-%         
-%         % Plot Everything
-%         % fprintf('Running all plot script in ./scripts/plotScripts \n')
-%         % plotEverything
-%         
-%         % Get handles to all the figures
-%         fprintf('Saving all resulting plots. \n')
-%         saveAllPlots('Folder',folderName)
-%         fprintf('Done. \n')
-%         
+      
+ 
         
     end
 end
