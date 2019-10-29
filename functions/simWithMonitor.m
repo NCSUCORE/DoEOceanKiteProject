@@ -67,7 +67,6 @@ function [] = simMonitorStart(model,timeStep,minRate)
 %         num2str(get_param(model,'SimulationTime')) 'seconds. Run time is '...
 %         num2str(timeStep*(myTimerObj.TasksExecuted-1)) ' seconds.']);
     
-    sim_timer.StopFcn = @(myTimerObj, thisEvent)disp(...
-        strcat("Timer for ", model, " stopped"));
+    sim_timer.StopFcn = @(myTimerObj, thisEvent)fprintf('Timer for %s stopped.\n',model);
     start(sim_timer)
 end

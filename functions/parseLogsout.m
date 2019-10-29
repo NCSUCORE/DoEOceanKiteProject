@@ -44,4 +44,26 @@ else
     % Return tsc as the output argument
     varargout{1} = tsc;
 end
+
+if isfield(tsc,'winchPower')
+    diffTime = diff(tsc.winchPower.Time); 
+    timesteps = .5*([diffTime; diffTime(end)] + [diffTime(1); diffTime]); %averages left and right timestep lengths for each data point.
+    energy=tsc.winchPower.Data.*timesteps;
+    if isfield(tsc,'closestPathVariable')
+        lapInds=find(abs(tsc.closestPathVariable.Data(2:end)-tsc.closestPathVariable.Data(1:end-1))>.95);
+        if ~isempty(lapInds) && length(lapInds)>=2
+            bounds=[lapInds(end-1) lapInds(end)];
+            powAvg=sum(energy(bounds(1):bounds(2)))/(tsc.winchPower.Time(bounds(2))-tsc.winchPower.Time(bounds(1)));
+            fprintf('Average power for the last lap = %.5g kW.\n',powAvg/1000);
+        else
+            bounds=[1 length(tsc.winchPower.Time)];
+            powAvg=sum(energy(bounds(1):bounds(2)))/(tsc.winchPower.Time(bounds(2))-tsc.winchPower.Time(bounds(1)));
+            fprintf('Average power for the simulation = %.5g kW.\n',powAvg/1000);
+        end
+    else
+        bounds=[floor(length(tsc.winchPower.Time)/2) length(tsc.winchPower.Time)];
+        powAvg=sum(energy(bounds(1):bounds(2)))/(tsc.winchPower.Time(bounds(2))-tsc.winchPower.Time(bounds(1)));
+        fprintf('Average power for the last half of the simulation = %.5g kW.\n',powAvg/1000);
+    end
+end
 end
