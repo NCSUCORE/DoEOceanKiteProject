@@ -10,13 +10,13 @@ SPOOLINGCONTROLLER = 'PMPSpoolingController';%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
 controlAllocationBit = 0;
 %% Opt stuff (move to mask)
-load('200m05mps.mat')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+load('200m1mps.mat')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 guess=mean(mean(Ten));
 ki_iter=guess/60;
 kp_iter=guess/60;
 kd_iter=0;
 TenWidth=1000;
-speedRange=[-.2,.2];%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+speedRange=[-.4,.4];%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Load components
 % Flight Controller
@@ -48,7 +48,7 @@ hiLvlCtrl.basisParams.setValue([.5,1,.36,0,200,.25,.1533],'');% Lemniscate of Bo
 %% Environment IC's and dependant properties
 % Set Values
 
-env.water.flowVec.setValue([.5,0,0],'m/s')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+env.water.flowVec.setValue([1,0,0],'m/s')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 flowspeed = norm(env.water.flowVec.Value);
 %% Ground Station IC's and dependant properties
 gndStn.initAngPos.setValue(0,'rad');

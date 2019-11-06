@@ -32,8 +32,10 @@ end
 for ii = 1:numel(fieldNames)
     switch class(tscOld.(fieldNames{ii}))
         case 'timeseries'
-            tscOld.(fieldNames{ii}) = resample(...
-                tscOld.(fieldNames{ii}),timeVec);
+            if length(tscOld.(fieldNames{ii}).Time)>1
+                tscOld.(fieldNames{ii}) = resample(...
+                    tscOld.(fieldNames{ii}),timeVec);
+            end
         case 'struct'
             subFieldNames = fieldnames(tscOld.(fieldNames{ii}));
             for jj = 1:numel(subFieldNames)

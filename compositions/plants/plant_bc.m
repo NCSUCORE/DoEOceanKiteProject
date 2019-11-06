@@ -114,6 +114,14 @@ elems(13).DataType = 'Bus: anchThrPollPosBus';
 elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';
 
+elems(14) = Simulink.BusElement;
+elems(14).Name = 'tetherReleaseSpeeds';
+elems(14).DimensionsMode = 'Fixed';
+elems(14).DataType = 'double';
+elems(14).SampleTime = -1;
+elems(14).Complexity = 'real';
+elems(14).Unit = 'm/s';
+
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the all actuator controller';

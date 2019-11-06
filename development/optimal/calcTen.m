@@ -1,4 +1,4 @@
-spoolSpeeds=-.8:.1:.8;
+spoolSpeeds=-.4:.1:.4;
 n=1000;
 mid=ceil(length(spoolSpeeds)/2);
 clear Ten
@@ -16,10 +16,17 @@ for ii = 1:n
     %that were simulated
     Ten(ii,:)=interp1(spoolSpeeds,tempTen(ii,:),xopts);
 end
-
+%%
+spoolSpeeds=-.4:.1:.4;
 figure;
-h=surf(linspace(spoolSpeeds(1),spoolSpeeds(end),1000),0:.001:.999,Ten);
+hold on
+h=surf(linspace(spoolSpeeds(1),spoolSpeeds(end),1000),0:.001:.999,Ten/1000);
 set(h,'LineStyle','none')
+view(24.6,31.2)
+[x,z]=meshgrid(-.4:.1:.4,zlim);
+y=.140*ones(size(x));
+g=surf(x,y,z,'FaceColor',[0 0 1],'FaceAlpha',.3);
+set(g,'LineStyle','none')
 %%
 % plb=min(min(Ten));
 % pub=max(max(Ten));
