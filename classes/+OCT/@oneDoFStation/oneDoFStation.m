@@ -10,6 +10,7 @@ classdef oneDoFStation < dynamicprops
         initAngVel
         freeSpnEnbl
         posVec
+        anchThrs
     end
     
     methods
@@ -22,6 +23,8 @@ classdef oneDoFStation < dynamicprops
             obj.initAngVel  = SIM.parameter('Unit','rad/s');
             obj.freeSpnEnbl = SIM.parameter('NoScale',true);
             obj.posVec      = SIM.parameter('Unit','m');
+            
+            obj.anchThrs = OCT.tethers;
         end
         function setNumTethers(obj,val,unit)
             obj.numTethers.setValue(val,unit);
@@ -89,6 +92,7 @@ classdef oneDoFStation < dynamicprops
                 end
             end
         end
+        
         
         % Function to get properties according to their class
         % May be able to vectorize this somehow

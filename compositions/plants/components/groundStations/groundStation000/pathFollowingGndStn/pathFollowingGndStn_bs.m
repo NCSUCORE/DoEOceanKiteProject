@@ -21,6 +21,11 @@ gndStn.dampCoeff.setValue(1,'(N*m)/(rad/s)');
 gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
 gndStn.freeSpnEnbl.setValue(false,'');
 
+
+%dummy , allows the env. to work for this ground station and the other
+%ground station (1DoF and 6DoF). I couldn't think of another way yet. -James
+gndStn.anchThrs.numNodes.setValue(2,'')
+gndStn.anchThrs.numTethers.setValue(1,'')
 %% save file in its respective directory
 saveBuildFile('gndStn',mfilename,'variant','GROUNDSTATION');
 
