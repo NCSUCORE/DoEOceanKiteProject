@@ -100,13 +100,19 @@ elems(11).Unit = 'm';
 
 elems(12) = Simulink.BusElement;
 elems(12).Name = 'avgTetherLength';
-elems(12).Dimensions = 1; %Note this assumes 4 fluid dynamic surfaces + fuselage
+elems(12).Dimensions = 1; 
 elems(12).DimensionsMode = 'Fixed';
 elems(12).DataType = 'double';
 elems(12).SampleTime = -1;
 elems(12).Complexity = 'real';
 elems(12).Unit = 'm';
 
+elems(13) = Simulink.BusElement;
+elems(13).Name = 'anchThrPollPos';
+elems(13).DimensionsMode = 'Fixed';
+elems(13).DataType = 'Bus: anchThrPollPosBus';
+elems(13).SampleTime = -1;
+elems(13).Complexity = 'real';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
