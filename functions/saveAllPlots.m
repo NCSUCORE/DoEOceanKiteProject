@@ -1,6 +1,6 @@
 function saveAllPlots(varargin)
 p = inputParser;
-addParameter(p,'Folder',[],@(x) exist(x, 'dir'))
+addParameter(p,'Folder',[],@ischar)
 parse(p,varargin{:})
 
 % If the user didnt provide a folder name, use a default name

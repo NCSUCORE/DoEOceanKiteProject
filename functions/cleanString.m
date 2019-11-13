@@ -3,6 +3,7 @@ function cleanStr = cleanString(str)
 %name.  Could possibly be done with genvarname but I don't really like how
 %that handles special characters
 cleanStr = strrep(str,' ','');
+cleanStr = strrep(cleanStr,':','');
 cleanStr = strrep(cleanStr,'<','');
 cleanStr = strrep(cleanStr,'>','');
 cleanStr = strrep(cleanStr,'''','');

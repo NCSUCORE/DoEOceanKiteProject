@@ -1,4 +1,4 @@
-classdef constX_YZvarT_CNAPSTurb 
+classdef constX_YZvarT_CNAPSTurb
     %Flow profile that's constant WRT x, but varies with Y and Z according
     %to the ADCP data with superimposed turbulence
     
@@ -8,7 +8,9 @@ classdef constX_YZvarT_CNAPSTurb
         gravAccel
         startCNAPSTime
         endCNAPSTime
+        xBreakPoints
         yBreakPoints
+        zBreakPoints
         flowVecTSeries
         TI
         f_min
@@ -32,9 +34,11 @@ classdef constX_YZvarT_CNAPSTurb
         function obj = constX_YZvarT_CNAPSTurb
             obj.gravAccel                   = SIM.parameter('Unit','m/s^2');
             obj.density                     = SIM.parameter('Unit','kg/m^3','NoScale',false);
-            obj.startCNAPSTime               = SIM.parameter('Value',0,'Unit','s','NoScale',true);
-            obj.endCNAPSTime                 = SIM.parameter('Value',inf,'Unit','s','NoScale',true);
-            obj.yBreakPoints                = SIM.parameter('Unit','m','NoScale',true);
+            obj.startCNAPSTime              = SIM.parameter('Value',0,'Unit','s','NoScale',true);
+            obj.endCNAPSTime                = SIM.parameter('Value',inf,'Unit','s','NoScale',true);
+            obj.xBreakPoints 				= SIM.parameter('Value',0,'Unit','m');
+            obj.yBreakPoints 				= SIM.parameter('Unit','m');
+            obj.zBreakPoints 				= SIM.parameter('Unit','m');
             obj.TI                          = SIM.parameter('Unit','');
             obj.f_min                       = SIM.parameter('Unit','Hz');
             obj.f_max                       = SIM.parameter('Unit','Hz');
@@ -44,6 +48,8 @@ classdef constX_YZvarT_CNAPSTurb
             obj.N_mid_freq                  = SIM.parameter('Unit','');
             
             obj.cnaps = ENV.CNAPS;
+            
+            obj.setYBreakPoints(max(obj.cnaps.depths.Value)-obj.cnaps.depths.Value,'m');
         end
         
         %% Setters
@@ -55,8 +61,14 @@ classdef constX_YZvarT_CNAPSTurb
             obj.density.setValue(val,unit);
         end
         
+        function setXBreakPoints(obj,val,unit)
+            obj.xBreakPoints.setValue(val,unit);
+        end
         function setYBreakPoints(obj,val,unit)
             obj.yBreakPoints.setValue(val,unit);
+        end
+        function setZBreakPoints(obj,val,unit)
+            obj.zBreakPoints.setValue(val,unit);
         end
         function obj = setStartCNAPSTime(obj,val,unit)
             obj.startCNAPSTime.setValue(val,unit);
@@ -125,7 +137,7 @@ classdef constX_YZvarT_CNAPSTurb
             end
         end
         
-          function animate3D(obj,varargin)
+        function animate3D(obj,varargin)
             %% Input parsing
             p = inputParser;
             
@@ -161,7 +173,7 @@ classdef constX_YZvarT_CNAPSTurb
                 mkdir(p.Results.GifPath)
             end
             
-%             [flowTimeseries,dirTimeseries] = crop(obj.cnaps,p.Results.StartTime,p.Results.EndTime);
+            %             [flowTimeseries,dirTimeseries] = crop(obj.cnaps,p.Results.StartTime,p.Results.EndTime);
             
             h.fig = figure;
             hold(gca,'on')
@@ -177,7 +189,7 @@ classdef constX_YZvarT_CNAPSTurb
                 'DisplayName','Flw Vec. 1 (m/s)',...
                 'Color',[0    0.4470    0.7410]);
             hold on
-             h.allVecs1 = quiver3(...
+            h.allVecs1 = quiver3(...
                 zeros(1,numel(obj.depthArray.Value)),...
                 ones(1,numel(obj.depthArray.Value)),...
                 obj.depthArray.Value,...
@@ -187,7 +199,7 @@ classdef constX_YZvarT_CNAPSTurb
                 0,...
                 'DisplayName','Flw Vec. 2 (m/s)',...
                 'Color',[.5    0.6    0.7]);
-             h.allVecs2 = quiver3(...
+            h.allVecs2 = quiver3(...
                 zeros(1,numel(obj.depthArray.Value)),...
                 2*ones(1,numel(obj.depthArray.Value)),...
                 obj.depthArray.Value,...
@@ -217,18 +229,18 @@ classdef constX_YZvarT_CNAPSTurb
                 0,...
                 'DisplayName','Flw Vec. 5 (m/s)',...
                 'Color',[.4    0.8    0.1]);
-%             h.instantMean = quiver3(0,0,0,...
-%                 mean(squeeze(obj.flowTSX.Data(:,1,1)')),...
-%                 mean(squeeze(obj.flowTSY.Data(:,1,1)')),...
-%                 mean(squeeze(obj.flowTSZ.Data(:,1,1)')),...,...
-%                 'DisplayName','Instantaneous Mean',...
-%                 'Color','r');
-%             h.totalMean = quiver3(0,0,0,...
-%                 mean(mean(obj.flowTSX.Data(:,1,:))),...
-%                 mean(mean(obj.flowTSY.Data(:,1,:))),...
-%                 mean(mean(obj.flowTSZ.Data(:,1,:))),...
-%                 'DisplayName','All Time Mean',...
-%                 'Color',[0 0.75 0]);
+            %             h.instantMean = quiver3(0,0,0,...
+            %                 mean(squeeze(obj.flowTSX.Data(:,1,1)')),...
+            %                 mean(squeeze(obj.flowTSY.Data(:,1,1)')),...
+            %                 mean(squeeze(obj.flowTSZ.Data(:,1,1)')),...,...
+            %                 'DisplayName','Instantaneous Mean',...
+            %                 'Color','r');
+            %             h.totalMean = quiver3(0,0,0,...
+            %                 mean(mean(obj.flowTSX.Data(:,1,:))),...
+            %                 mean(mean(obj.flowTSY.Data(:,1,:))),...
+            %                 mean(mean(obj.flowTSZ.Data(:,1,:))),...
+            %                 'DisplayName','All Time Mean',...
+            %                 'Color',[0 0.75 0]);
             
             axis equal
             xlabel('X')
@@ -253,7 +265,7 @@ classdef constX_YZvarT_CNAPSTurb
             end
             
             for ii = 2:250 %numel(obj.flowTSX.Time)
-
+                
                 h.allVecs.UData = obj.flowTSX.Data(:,1,ii)';
                 h.allVecs.VData = obj.flowTSY.Data(:,1,ii)';
                 h.allVecs.WData = obj.flowTSZ.Data(:,1,ii)';
@@ -269,10 +281,10 @@ classdef constX_YZvarT_CNAPSTurb
                 h.allVecs4.UData = obj.flowTSX.Data(:,5,ii)';
                 h.allVecs4.VData = obj.flowTSY.Data(:,5,ii)';
                 h.allVecs4.WData = obj.flowTSZ.Data(:,5,ii)';
-%                 
-%                 h.instantMean.UData = mean(squeeze(obj.flowTSX.Data(:,1,ii)'));
-%                 h.instantMean.VData = mean(squeeze(obj.flowTSY.Data(:,1,ii)'));
-%                 h.instantMean.WData = mean(squeeze(obj.flowTSZ.Data(:,1,ii)'));
+                %
+                %                 h.instantMean.UData = mean(squeeze(obj.flowTSX.Data(:,1,ii)'));
+                %                 h.instantMean.VData = mean(squeeze(obj.flowTSY.Data(:,1,ii)'));
+                %                 h.instantMean.WData = mean(squeeze(obj.flowTSZ.Data(:,1,ii)'));
                 drawnow
                 % Save gif of results
                 if p.Results.SaveGif
@@ -283,55 +295,55 @@ classdef constX_YZvarT_CNAPSTurb
                     
                 end
             end
-          end
-          function makeTurbVid(obj,vidLength)
-              colormap(jet);
-              timeStep = 1;
-              frame_rate = 10*1/timeStep;
-              video = VideoWriter('vid_Test3', 'Motion JPEG AVI');
-              video.FrameRate = frame_rate;
-              num_frames = length(obj.flowTSX.time);
-              
-              mov(1:length(obj.flowTSX.time))=struct('cdata',[],'colormap',[]);
-              set(gca,'nextplot','replacechildren')
-              
-              for i = 1:vidLength%length(env.water.flowTSY.time)
-                  
-                  figure(1)
-                  colormap(jet);
-                  contourf(obj.yBreakPoints.Value,obj.depthArray.Value,obj.flowTSX.data(:,:,i))
-                  
-                  
-                  h1 = colorbar
-                  h1.Label.String= '[m/s]'
-                  %     ('Ticks',1:0.2:1.8)
-                  
-                  xlabel('Y (m)')
-                  ylabel('Depth (m)')
-                  title(['U Component of Turbulent Flow at Y Z plane. Time = ',sprintf('%0.2f', obj.flowTSX.time(i)),' s'])
-                  %     h1 = axis;
-                  %     set(h1, 'Ydir', 'reverse')
-                  ax6 = gca;
-                  ax6.FontSize = 16;
-                  %  h6.LineWidth = 1.5
-                  %  h6.Color = [0, 0 ,0]
-                  set(gca, 'YDir','reverse')
-                  x0=100;
-                  y0=100;
-                  width=700;
-                  height= 500;
-                  set(gcf,'position',[x0,y0,width,height])
-                  F(i) = getframe(gcf);
-                  
-              end
-              
-              
-              open(video)
-              for i = 1:length(F)
-                  writeVideo(video, F(i));
-              end
-              close(video)
-              
-          end
+        end
+        function makeTurbVid(obj,vidLength)
+            colormap(jet);
+            timeStep = 1;
+            frame_rate = 10*1/timeStep;
+            video = VideoWriter('vid_Test3', 'Motion JPEG AVI');
+            video.FrameRate = frame_rate;
+            num_frames = length(obj.flowTSX.time);
+            
+            mov(1:length(obj.flowTSX.time))=struct('cdata',[],'colormap',[]);
+            set(gca,'nextplot','replacechildren')
+            
+            for i = 1:vidLength%length(env.water.flowTSY.time)
+                
+                figure(1)
+                colormap(jet);
+                contourf(obj.yBreakPoints.Value,obj.depthArray.Value,obj.flowTSX.data(:,:,i))
+                
+                
+                h1 = colorbar
+                h1.Label.String= '[m/s]'
+                %     ('Ticks',1:0.2:1.8)
+                
+                xlabel('Y (m)')
+                ylabel('Depth (m)')
+                title(['U Component of Turbulent Flow at Y Z plane. Time = ',sprintf('%0.2f', obj.flowTSX.time(i)),' s'])
+                %     h1 = axis;
+                %     set(h1, 'Ydir', 'reverse')
+                ax6 = gca;
+                ax6.FontSize = 16;
+                %  h6.LineWidth = 1.5
+                %  h6.Color = [0, 0 ,0]
+                set(gca, 'YDir','reverse')
+                x0=100;
+                y0=100;
+                width=700;
+                height= 500;
+                set(gcf,'position',[x0,y0,width,height])
+                F(i) = getframe(gcf);
+                
+            end
+            
+            
+            open(video)
+            for i = 1:length(F)
+                writeVideo(video, F(i));
+            end
+            close(video)
+            
+        end
     end
 end

@@ -135,7 +135,7 @@ for k = 1:N_mid_freq
             end
         end
     end
-    
+%     k
 end
 
 % store in cell
