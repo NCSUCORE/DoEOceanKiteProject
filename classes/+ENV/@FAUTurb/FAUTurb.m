@@ -10,7 +10,7 @@ classdef FAUTurb < handle
         lateralStDevRatio  % P in the paper
         verticalStDevRatio % Q in the paper
         spatialCorrFactor  % C in the paper, coherence decay constant
-        velWieghtingMatrix % H or Hm in the paper
+        frequencyDomainEqParams % componentts of mStar_jk in the paper
     end
     
     methods
@@ -19,14 +19,14 @@ classdef FAUTurb < handle
             addParameter(p,'File','',@ischar)
             parse(p,varargin{:})
             
-            obj.intensity           = SIM.parameter('Unit','');
-            obj.minFreqHz           = SIM.parameter('Unit','Hz');
-            obj.maxFreqHz           = SIM.parameter('Unit','Hz');
-            obj.numMidFreqs         = SIM.parameter('Unit','');
-            obj.lateralStDevRatio   = SIM.parameter('Unit','');
-            obj.verticalStDevRatio  = SIM.parameter('Unit','');
-            obj.spatialCorrFactor   = SIM.parameter('Unit','');
-            obj.velWieghtingMatrix  = SIM.parameter('Unit','');
+            obj.intensity                = SIM.parameter('Unit','');
+            obj.minFreqHz                = SIM.parameter('Unit','Hz');
+            obj.maxFreqHz                = SIM.parameter('Unit','Hz');
+            obj.numMidFreqs              = SIM.parameter('Unit','');
+            obj.lateralStDevRatio        = SIM.parameter('Unit','');
+            obj.verticalStDevRatio       = SIM.parameter('Unit','');
+            obj.spatialCorrFactor        = SIM.parameter('Unit','');
+            obj.frequencyDomainEqParams  = SIM.parameter('Unit','');
         end
         
         function setIntensity(obj,val,unit)
@@ -50,8 +50,8 @@ classdef FAUTurb < handle
         function setSpatialCorrFactor(obj,val,unit)
             obj.spatialCorrFactor.setValue(val,unit);
         end
-        function setVelWieghtingMatrix(obj,val,unit)
-            obj.velWieghtingMatrix.setValue(val,unit);
+        function setFreqDomainParams(obj,val,unit)
+            obj.frequencyDomainEqParams.setValue(val,unit);
         end
         
         process(obj,lowFreqFlowObj,varargin)

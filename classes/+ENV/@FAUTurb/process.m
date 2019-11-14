@@ -67,7 +67,7 @@ n_elem = size(posData,1);
 % 
 % delta_rij = delta_rij + delta_rij';
 delta_rij = sqrt(sum((permute(posData,[1 3 2])-permute(posData,[3 1 2])).^2,3));
-Hm = nan([size(posData,1),size(posData,1),N_mid_freq,3,numel(timeVec)]);
+% Hm = nan([size(posData,1),size(posData,1),N_mid_freq,3,numel(timeVec)]);
 for iTime = 1:numel(timeVec)
     %% velocity in frequency domain calculations
     % Get flow velocity data in the correct order to match the position
@@ -205,22 +205,80 @@ for iTime = 1:numel(timeVec)
     end
     
     % store in cell
-    Hm(:,:,:,1,iTime) = Hu;
-    Hm(:,:,:,2,iTime) = Hv;
-    Hm(:,:,:,3,iTime) = Hw;
+    
+    % store in cell
+    Hm = cell(3,1);
+    Hm{1} = Hu; Hm{2} = Hv; Hm{3} = Hw;
+    
+    %% amplitude of the fluctuating velocity component
+    % random phase angle between 0 to 2*pi
+    u_th_k = 2*pi*rand(n_elem,N_mid_freq);
+    v_th_k = 2*pi*rand(n_elem,N_mid_freq);
+    w_th_k = 2*pi*rand(n_elem,N_mid_freq);
+    
+    % amplitude of the fluctuating velocity component
+    i = sqrt(-1);
+    u_star_kj = NaN(n_elem,N_mid_freq);
+    v_star_kj = NaN(n_elem,N_mid_freq);
+    w_star_kj = NaN(n_elem,N_mid_freq);
+    
+    for k = 1:N_mid_freq
+        
+        for j = 1:n_elem
+            % possible mistake in reference paper in this section
+            % paper says use H(1:j,j,k) instead of what is used
+            u_star_kj(j,k) = sum(Hu(j,1:j,k)*exp(i*u_th_k(1:j,k)));
+            v_star_kj(j,k) = sum(Hv(j,1:j,k)*exp(i*v_th_k(1:j,k)));
+            w_star_kj(j,k) = sum(Hw(j,1:j,k)*exp(i*w_th_k(1:j,k)));
+            
+        end
+        
+    end
+    
+    % resultant phase angle for each frequency component
+    u_th_kR = NaN(size(u_star_kj));
+    v_th_kR = NaN(size(v_star_kj));
+    w_th_kR = NaN(size(w_star_kj));
+    
+    for k = 1:N_mid_freq
+        for j = 1:n_elem
+            u_th_kR(j,k) = wrapTo2Pi(angle(u_star_kj(j,k)));
+            v_th_kR(j,k) = wrapTo2Pi(angle(v_star_kj(j,k)));
+            w_th_kR(j,k) = wrapTo2Pi(angle(v_star_kj(j,k)));
+            %         u_th_kR(j,k) = atan2(imag(u_star_kj(j,k)),real(u_star_kj(j,k)));
+            %         v_th_kR(j,k) = atan2(imag(v_star_kj(j,k)),real(u_star_kj(j,k)));
+            %         w_th_kR(j,k) = atan2(imag(v_star_kj(j,k)),real(u_star_kj(j,k)));
+            
+        end
+    end
+    
+    
+    %% store values
+    % storing all of the values that define u,v,w as function of
+    % frequency
+
+    freqDomainParams(:,:,1,iTime) = u_star_kj;
+    freqDomainParams(:,:,2,iTime)  = u_th_kR;
+    freqDomainParams(:,:,3,iTime)  = v_star_kj;
+    freqDomainParams(:,:,4,iTime)  = v_th_kR;
+    freqDomainParams(:,:,5,iTime)  = w_star_kj;
+    freqDomainParams(:,:,6,iTime)  = w_th_kR;
+    
+    
+    
     
     if p.Results.Verbose
        fprintf('Time step %d of %d\n',iTime,numel(timeVec)) 
     end
    
 end
-% Indices in Hm are (position,position,frequency,flowcomponent,time)
-HmTimeseries = timeseries(Hm,lowFreqFlowObj.flowVecTimeseries.Value.Time);
-obj.setVelWieghtingMatrix(HmTimeseries,'');
+% Indices in Hm are (number of 3d grid elements,number of freq discritizations,the six components definining m as a funct of frequency,time)
+freqDPTimeseries = timeseries(freqDomainParams,lowFreqFlowObj.flowVecTimeseries.Value.Time);
+obj.setFreqDomainParams(freqDPTimeseries,'');
 highFreqFlowObj = obj;
 % Save the results to processResults.m
 
-save(fullfile(basePath,'processResults.mat'),'highFreqFlowObj','lowFreqFlowObj')
+save(fullfile(basePath,'processResults.mat'),'highFreqFlowObj','lowFreqFlowObj','-v7.3')
 if p.Results.Verbose
     fprintf('Complete\n')
 end

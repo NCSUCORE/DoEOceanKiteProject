@@ -3,8 +3,8 @@ clear
 clc
 x = ENV.CNAPS('StartTime',8.6857e+05,'EndTime',8.6857e+05+3600*3+1);
 % x.cropGUI
-x.setXGridPoints(0:50:150,'m');
-x.setYGridPoints(-140:2:140,'m');
+x.setXGridPoints(0:2,'m');
+x.setYGridPoints(0:1:5,'m');
 
 y = ENV.FAUTurb;
 y.setIntensity(0.1,'');
