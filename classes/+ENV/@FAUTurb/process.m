@@ -2,7 +2,14 @@
 % 'Numerical modeling of turbulence and its effect on ocean current
 % turbines' by parakram pyakurel
 
-function process(obj,lowFreqFlowObj)
+function process(obj,lowFreqFlowObj,varargin)
+p = inputParser;
+addParameter(p,'Verbose',false,@islogical)
+parse(p,varargin{:});
+ if p.Results.Verbose
+     fprintf('\nBeginning processing\n')
+ end
+
 basePath = which('OCTProject.prj');
 basePath = fileparts(basePath);
 basePath = fullfile(basePath,'classes','+ENV','@FAUTurb');
@@ -201,6 +208,10 @@ for iTime = 1:numel(timeVec)
     Hm(:,:,:,1,iTime) = Hu;
     Hm(:,:,:,2,iTime) = Hv;
     Hm(:,:,:,3,iTime) = Hw;
+    
+    if p.Results.Verbose
+       fprintf('Time step %d of %d\n',iTime,numel(timeVec)) 
+    end
    
 end
 % Indices in Hm are (position,position,frequency,flowcomponent,time)
@@ -210,7 +221,9 @@ highFreqFlowObj = obj;
 % Save the results to processResults.m
 
 save(fullfile(basePath,'processResults.mat'),'highFreqFlowObj','lowFreqFlowObj')
-
+if p.Results.Verbose
+    fprintf('Complete\n')
+end
 % 
 %
 % %% amplitude of the fluctuating velocity component

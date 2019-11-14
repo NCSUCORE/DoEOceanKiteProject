@@ -54,7 +54,7 @@ classdef FAUTurb < handle
             obj.velWieghtingMatrix.setValue(val,unit);
         end
         
-        process(obj,lowFreqFlowObj)
+        process(obj,lowFreqFlowObj,varargin)
 
     end
 end
