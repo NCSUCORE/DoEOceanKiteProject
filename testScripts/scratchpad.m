@@ -16,8 +16,3 @@ y.setVerticalStDevRatio(0.01,'');
 y.setSpatialCorrFactor(5,'');
 y.process(x,'Verbose',true);
 
-lowFreqFlowObj = x;
-
-highFreqFlowObj = y;
-
-save(fullfile(pwd,'processResults.mat'),'highFreqFlowObj','lowFreqFlowObj')
