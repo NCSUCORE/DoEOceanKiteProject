@@ -1,8 +1,7 @@
 %% Script to run ILC path optimization
-clc;clear;close all
-lengthScaleFactor = 1/1;
-densityScaleFactor = 1/1;
-duration_s  = 2000*sqrt(lengthScaleFactor);
+clear;clc;close all
+sim = SIM.sim;
+sim.setDuration(2*3600,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -23,13 +22,15 @@ loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('constXYZT');
 
-%% Set basis parameters for high level controller
-hiLvlCtrl.initBasisParams.setValue([0.4,1.1,20*pi/180,0,125],'[]') % Lemniscate of Booth
 
 %% Environment IC's and dependant properties
-env.water.flowVec.setValue([2 0 0]','m/s')
+env.water.setflowVec([1 0 0],'m/s')
+
+%% Set basis parameters for high level controller
+hiLvlCtrl.initBasisParams.setValue([0.3,1,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
 
 %% Ground Station IC's and dependant properties
+gndStn.setPosVec([0 0 200],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
@@ -38,167 +39,167 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
-    (11.5/2)*norm(env.water.flowVec.Value)) % Initial speed
+    gndStn.posVec.Value,... % Center point of path sphere
+    (11/2)*norm(env.water.flowVec.Value)) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
-thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:),'m');
-thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
+    +gndStn.posVec.Value(:),'m');
+thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,env,thr,[norm(env.water.flowVec.Value) 0 0]);
+wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+wnch.winch1.setMaxSpeed(inf,'m/s');
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
-fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value)
+fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
+    hiLvlCtrl.initBasisParams.Value,...
+    gndStn.posVec.Value);
 
 
 %% Run the simulation
 simWithMonitor('OCTModel')
 parseLogsout;
 
-%% Plot basis parameters vs time and iteration number
-iterBasisParams = resample(tsc.basisParams,tsc.estGradient.Time);
-figure('Name','Basis Parameters',...
-    'Position',[-0.5625   -0.1824    0.5625    1.6694])
-subplot(2,1,1)
-plot(tsc.basisParams.Time,...
+
+%% Things to plot
+
+
+
+iterTimes = tsc.ilcTrigger.Time(tsc.ilcTrigger.Data);
+
+% 0 Basis parameters
+figure('Name','cnstFlwBasisParams')
+stairs(tsc.basisParams.Time./60,...
     squeeze(tsc.basisParams.Data(1,:,:)),...
-    'DisplayName','$b_1$',...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
+    'LineWidth',1.5,'Color','k','LineStyle','-','DisplayName','$b_1$');
 hold on
-grid on
-plot(tsc.basisParams.Time,...
+stairs(tsc.basisParams.Time./60,...
     squeeze(tsc.basisParams.Data(2,:,:)),...
-    'DisplayName','$b_2$',...
-    'Color','k',...
-    'LineStyle','--',...
-    'LineWidth',2)
-xlabel('Time, [s]')
-ylabel({'Basis','Parameters'})
-legend
-
-subplot(2,1,2)
-stairs(squeeze(iterBasisParams.Data(1,:,:)),...
-    'DisplayName','$b_1$',...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-hold on
+    'LineWidth',1.5,'Color','k','LineStyle','--','DisplayName','$b_2$');
+xlabel('Time [min]')
+ylabel({'Basis','Parameters [kW]'})
+title('Basis Parameters, Constant Flow Speed')
+set(gca,'FontSize',36)
+box off
 grid on
-stairs(squeeze(iterBasisParams.Data(2,:,:)),...
-    'DisplayName','$b_2$',...
-    'Color','k',...
-    'LineStyle','--',...
-    'LineWidth',2)
-xlabel('Iteration Number')
-ylabel({'Basis','Parameters'})
-legend 
+legend
+    
 
-set(findall(gcf,'Type','axes'),'FontSize',24)
 
-%% Plot Performance Index
-% Resample to plot against iteration index
-figure('Name','Performance Index',...
-    'Position',[0.0005    0.0380    0.4990    0.8833])
-iterPerf = resample(tsc.perfIndx,tsc.estGradient.Time);
-subplot(2,1,1)
-iterPerf.plot('Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-xlabel('Time, [s]')
-ylabel({'Performance','Index'})
+% 1 Performance index vs time (denote total number of iterations)
+figure('Name','cnstFlwPerfIndx')
+stairs(iterTimes./60,tsc.perfIndx.Data(tsc.ilcTrigger.Data)./1000,...
+    'LineWidth',1.5,'Color','k');
+xlabel('Time [min]')
+ylabel({'Performance','Index [kW]'})
+title('Performance Index, Constant Flow Speed')
+set(gca,'FontSize',36)
+box off
+grid on
 
-subplot(2,1,2)
-stairs(iterPerf.Data,...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-xlabel('Iteration Number')
-ylabel({'Performance','Index'})
-set(findall(gcf,'Type','axes'),'FontSize',24)
+% 2 Mean power vs time (denote total number of iterations)
+figure('Name','cnstFlwMeanPwr')
+stairs(iterTimes./60,tsc.meanPower.Data(tsc.ilcTrigger.Data)./1000,...
+    'LineWidth',1.5,'Color','k');
+xlabel('Time [min]')
+ylabel({'Mean','Power [kW]'})
+title('Mean Power, Constant Flow Speed')
+set(gca,'FontSize',36)
+box off
+grid on
 
-%% Plot Mean Power
-figure('Name','Mean Power',...
-    'Position',[1.0005    0.0380    0.4990    0.8833])
-iterPower = resample(tsc.meanPower,tsc.estGradient.Time);
-subplot(2,1,1)
-iterPower.plot('Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-xlabel('Time, [s]')
-ylabel({'Mean','Power'})
+% 3 Penalty term vs time (denote total number of iterations)
+figure('Name','cnstFlwPenTerm')
+stairs(iterTimes./60,tsc.penaltyTerm.Data(tsc.ilcTrigger.Data),...
+    'LineWidth',1.5,'Color','k');
+xlabel('Time [min]')
+ylabel({'Penalty','Term [rad]'})
+title('Penalty Term, Constant Flow Speed')
+set(gca,'FontSize',36)
+box off
+grid on
 
-subplot(2,1,2)
-stairs(iterPower.Data,...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-xlabel('Iteration Number')
-ylabel({'Mean','Power'})
-set(findall(gcf,'Type','axes'),'FontSize',24)
+% 4 Mean flow speed at CoM
+figure('Name','cnstFlwMeanFlwSpeed')
+stairs(iterTimes./60,tsc.meanFlow.Data(tsc.ilcTrigger.Data),...
+    'LineWidth',1.5,'Color','k');
+xlabel('Time [min]')
+ylabel({'Mean Flow','Speed [m/s]'})
+title('Mean Flow Speed, Constant Flow Speed')
+set(gca,'FontSize',36)
+box off
+grid on
 
-%% Plot Penalty Term in Performance Index
-figure('Name','Penalty Term',...
-    'Position',[1.5005    0.0380    0.4990    0.8833])
-iterPenaltyTerm = resample(tsc.penaltyTerm,tsc.estGradient.Time);
-subplot(2,1,1)
-iterPenaltyTerm.plot('Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-xlabel('Time, [s]')
-ylabel({'Penalty','Term'})
 
-subplot(2,1,2)
-stairs(iterPenaltyTerm.Data,...
-    'Color','k',...
-    'LineStyle','-',...
-    'LineWidth',2)
-xlabel('Iteration Number')
-ylabel({'Penalty','Term'})
-set(findall(gcf,'Type','axes'),'FontSize',24)
+% 5 Mean flight speed
+figure('Name','cnstFlwMeanSpeed')
+stairs(iterTimes./60,tsc.meanSpeed.Data(tsc.ilcTrigger.Data),...
+    'LineWidth',1.5,'Color','k');
+xlabel('Time [min]')
+ylabel({'Mean','Speed [m/s]'})
+title('Mean Speed, Constant Flow Speed')
+set(gca,'FontSize',36)
+box off
+grid on
 
-%% Plot the estimated gradient
-figure('Name','Estimated Gradient',...
-    'Position',[0.5005    0.0380    0.4990    0.8833])
-numBP = numel(tsc.estGradient.Data(end,:));
-for ii = 1:numBP
-    subplot(numBP,1,ii)
-    stairs(tsc.estGradient.Data(:,ii),...
-        'LineWidth',1.5,...
-        'Color','k')
-    xlabel('Iteration Num')
-    ylabel(sprintf('$\\frac{dJ}{db_%d}$',ii))
-    grid on
-end
-set(findall(gcf,'Type','axes'),'FontSize',18)
-linkaxes(findall(gcf,'Type','axes'),'xy')
 
-% Plot tether length vs time
-figure('Name','Tether Length Tracking')
-tsc.LThr.plot('DisplayName','Tether Length')
+% 6 Mean tension over lap
+figure('Name','cnstFlwMeanTen')
+stairs(iterTimes./60,tsc.meanTen.Data(tsc.ilcTrigger.Data)./1000,...
+    'LineWidth',1.5,'Color','k');
+xlabel('Time [min]')
+ylabel({'Mean','Tension [kN]'})
+title('Mean Tether Tension, Constant Flow Speed')
+set(gca,'FontSize',36)
+box off
+grid on
+
+% 8 Initial and final path
+initShape = eval(sprintf('%s(linspace(0,1,1000),hiLvlCtrl.initBasisParams.Value,gndStn.posVec.Value)',PATHGEOMETRY));
+finalShape = eval(sprintf('%s(linspace(0,1,1000),tsc.basisParams.Data(:,:,end),gndStn.posVec.Value)',PATHGEOMETRY));
+plot3(initShape(1,:),initShape(2,:),initShape(3,:),...
+    'LineWidth',1.5,'Color','k','LineStyle','-','DisplayName','Initial Shape');
 grid on
 hold on
-tsc.LThrSP.plot('DisplayName','Tether Length Setpoint')
+box off
+plot3(finalShape(1,:),finalShape(2,:),finalShape(3,:),...
+    'LineWidth',1.5,'Color','k','LineStyle','--','DisplayName','Final Shape');
+h.scat3 = scatter3(gndStn.posVec.Value(1),gndStn.posVec.Value(2),gndStn.posVec.Value(3),...
+    'Marker','o','CData',[1 0 0],'MarkerFaceColor',[1 0 0],'DisplayName','Ground Stn. Pos');
 legend
-xlabel('Time, [s]')
-ylabel('Length [m]')
-title('Tether Length Tracking')
-set(gca,'FontSize',18)
-
-
+title({'Initial and Final Path Shape','Constant Flow'})
+daspect([1 1 1])
+xlabel('x [m')
+ylabel('y [m')
+zlabel('z [m')
+set(gca,'FontSize',36)
 
 %%
-% stopCallback
-vhcl.animateSim(tsc,1,...
-    'PathFunc',fltCtrl.fcnName.Value,...
-    'PathPosition',true,...
-    'NavigationVecs',true,...
-    'Pause',false,...
-    'PlotTracer',true)
+saveAllPlots('Folder',['output',filesep,'cnstFlwResults'])
+
+%%
+% vhcl.animateSim(tsc,1,...
+%     'PathFunc',fltCtrl.fcnName.Value,...
+%     'PathPosition',false,...
+%     'ZoomIn',false,...
+%     'NavigationVecs',true,...
+%     'TangentCoordSys',false,...
+%     'VelocityVec',true,...
+%     'Pause',false,...
+%     'PlotTracer',true,...
+%     'LocalAero',false,...
+%     'SaveMPEG',false)
+
+
+
+

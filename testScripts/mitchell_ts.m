@@ -1,8 +1,7 @@
 %% Script to run ILC path optimization
-clear
-clc;close all
+clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(300,'s');
+sim.setDuration(7200,'s');
 dynamicCalc = '';
 
 %% Load components

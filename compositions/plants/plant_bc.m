@@ -122,6 +122,12 @@ elems(14).SampleTime = -1;
 elems(14).Complexity = 'real';
 elems(14).Unit = 'm/s';
 
+elems(15) = Simulink.BusElement;
+elems(15).Name = 'gndTenVecBusArry';
+elems(15).DataType = 'Bus: thrTenVecBus';
+elems(15).SampleTime = -1;
+elems(15).Complexity = 'real';
+
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the all actuator controller';
