@@ -21,13 +21,13 @@ tf1 = checkedAgainstSavedVersion(...
 tf2 = checkedAgainstSavedVersion(...
     fullfile(basePath,'processResults.mat'),...
     obj,'highFreqFlowObj',...
-    'Exceptions',{'velWieghtingMatrix'});
+    'Exceptions',{'frequencyDomainEqParams'});
 
 % If both of these things matched the saved versions, then just load in the
 % saved version and set the properties of the current version
 if tf1 && tf2
    load(fullfile(basePath,'processResults.mat'),'highFreqFlowObj');
-   obj.setVelWieghtingMatrix(highFreqFlowObj.velWieghtingMatrix.Value,'');
+   obj.setFreqDomainParams(highFreqFlowObj.frequencyDomainEqParams,'');
    return;
 end
 
