@@ -93,7 +93,7 @@ classdef winches < dynamicprops
 %             zlabel('z')
 %             legend
             
-            VRelGnd = flowVelocity(:) - RBdy2Gnd*vhcl.initVelVecBdy.Value(:);
+            VRelGnd = padarray(flowVelocity(:),numel(vhcl.initVelVecBdy.Value)-numel(flowVelocity),0,'post') - RBdy2Gnd*vhcl.initVelVecBdy.Value(:);
             URelGnd = VRelGnd./norm(VRelGnd);
             VRelBdy = RGnd2Bdy*VRelGnd;
             URelBdy = VRelBdy./norm(VRelBdy);

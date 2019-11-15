@@ -1,6 +1,7 @@
 classdef CNAPS < handle
     % CNAPS class to hold CNAPS data
     properties (SetAccess = private)
+        density
         startTime
         endTime
         flowVecTimeseries
@@ -53,23 +54,33 @@ classdef CNAPS < handle
             data(3,:,:) = zeros(sz);                    % Append zeros for the z direction velocity component
             data = permute(data,[4 5 2 1 3]);           % Change and add dimensions to get (xCoord,yCoord,zCoord,XYZVelocityComponent,TimeStep)
 
+            % Z grid points must be monotonically increasing, but the data
+            % is given in decreasing order, so flip along third (z)
+            % dimension
+            
+            data = flip(data,3);
             depths = [0 25 50 75 100 125 150 175 200];
             
+            obj.density                 = SIM.parameter('Unit','kg/m^3');
             obj.allFlowVecTimeseries    = SIM.parameter('Value',timeseries(data,timeVec),'Unit','m/s');
             obj.startTime               = SIM.parameter('Value',p.Results.StartTime,'Unit','s');
             obj.endTime                 = SIM.parameter('Value',p.Results.EndTime,'Unit','s');
             obj.flowVecTimeseries       = SIM.parameter('Unit','m/s');
             obj.xGridPoints            = SIM.parameter('Value',0,'Unit','m');
             obj.yGridPoints            = SIM.parameter('Value',0,'Unit','m');
-            obj.zGridPoints            = SIM.parameter('Value',sort(depths,'descend'),'Unit','m');
+            obj.zGridPoints            = SIM.parameter('Value',depths,'Unit','m');
             obj.crop(obj.startTime.Value,obj.endTime.Value); % Sets the 
         end
-        
+        function setDensity(obj,val,unit)
+            obj.density.setValue(val,unit);
+        end
         function setStartTime(obj,val,unit)
             obj.startTime.setValue(val,unit);
+            obj.crop(obj.startTime.Value,obj.endTime.Value);
         end
         function setEndTime(obj,val,unit)
             obj.endTime.setValue(val,unit);
+            obj.crop(obj.startTime.Value,obj.endTime.Value);
         end
         function setFlowVecTimeseries(obj,val,unit)
             obj.flowVecTimeseries.setValue(val,unit);
