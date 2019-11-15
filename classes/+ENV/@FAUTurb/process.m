@@ -27,7 +27,7 @@ tf2 = checkedAgainstSavedVersion(...
 % saved version and set the properties of the current version
 if tf1 && tf2
    load(fullfile(basePath,'processResults.mat'),'highFreqFlowObj');
-   obj.setFreqDomainParams(highFreqFlowObj.frequencyDomainEqParams,'');
+   obj.setFreqDomainParams(highFreqFlowObj.frequencyDomainEqParams.Value,'');
    return;
 end
 
