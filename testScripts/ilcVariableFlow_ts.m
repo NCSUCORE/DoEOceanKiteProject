@@ -20,12 +20,12 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-loadComponent('constXYZT');
+loadComponent('CNAPsMitchell');
 
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([1 0 0],'m/s')
-
+% env.water.setflowVec([1 0 0],'m/s')
+% 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
 
@@ -40,7 +40,7 @@ vhcl.setICsOnPath(...
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
-    (11/2)*norm(env.water.flowVec.Value)) % Initial speed
+    (11/2)*norm(squeeze(env.water.flowVecTimeseries.Value.Data(1,1,4,:,1)))) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
@@ -55,7 +55,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,squeeze(env.water.flowVecTimeseries.Value.Data(1,1,4,:,1)));
 wnch.winch1.setMaxSpeed(inf,'m/s');
 
 %% Controller User Def. Parameters and dependant properties
