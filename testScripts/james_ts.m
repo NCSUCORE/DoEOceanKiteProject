@@ -29,10 +29,10 @@ for ppp = 1:1
         loadComponent('pathFollowingVhcl');
         % Environment
         % loadComponent('constXYZ_varT_SineWave');
-        loadComponent('constX_YZvarT_CNAPSTurb');
+       % loadComponent('constX_YZvarT_CNAPSTurb');
         %          loadComponent('constX_YZvarT_ADCPTurb');
         %             loadComponent('constXY_ZvarT_CNAPS');
-        %         loadComponent('constXYZT');
+%                 loadComponent('constXYZT');
         
         %% Set basis parameters for high level controller
 %                 hiLvlCtrl.basisParams.setValue([.8,1.6,-.3,0,tetherLengths(ppp)],'') % Lemniscate of Booth for trying to get 200m working
