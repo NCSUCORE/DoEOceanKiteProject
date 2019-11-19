@@ -10,7 +10,7 @@ env.waterTurb.minFreqHz.NoScale = false
 env.waterTurb.maxFreqHz.Value = 1.0000e+00
 env.waterTurb.maxFreqHz.Unit = 'Hz'
 env.waterTurb.maxFreqHz.NoScale = false
-env.waterTurb.numMidFreqs.Value = 5.0000e+00
+env.waterTurb.numMidFreqs.Value = 2.0000e+00
 env.waterTurb.numMidFreqs.Unit is unitless or has no unit specified
 env.waterTurb.numMidFreqs.NoScale = false
 env.waterTurb.lateralStDevRatio.Value = 1.0000e-01
@@ -23,7 +23,7 @@ env.waterTurb.spatialCorrFactor.Value = 5.0000e+00
 env.waterTurb.spatialCorrFactor.Unit is unitless or has no unit specified
 env.waterTurb.spatialCorrFactor.NoScale = false
 env.waterTurb.frequencyDomainEqParams.Value.Name = 'unnamed'
-env.waterTurb.frequencyDomainEqParams.Value.Data is too big to display and takes up 7.7760e+04 bytes
+env.waterTurb.frequencyDomainEqParams.Value.Data is too big to display and takes up 1.3478e+05 bytes
 env.waterTurb.frequencyDomainEqParams.Value.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
 env.waterTurb.frequencyDomainEqParams.Value.DataInfo.Interpolation.Name = 'linear'
 env.waterTurb.frequencyDomainEqParams.Value.DataInfo.InterpretSingleRowDataAs3D = false
@@ -48,7 +48,7 @@ env.water.endTime.Value = 8.7937e+05
 env.water.endTime.Unit = 's'
 env.water.endTime.NoScale = false
 env.water.flowVecTimeseries.Value.Name = 'unnamed'
-env.water.flowVecTimeseries.Value.Data is too big to display and takes up 3.8880e+03 bytes
+env.water.flowVecTimeseries.Value.Data is too big to display and takes up 1.6848e+04 bytes
 env.water.flowVecTimeseries.Value.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.6800e+02 bytes
 env.water.flowVecTimeseries.Value.DataInfo.Interpolation.Name = 'linear'
 env.water.flowVecTimeseries.Value.DataInfo.InterpretSingleRowDataAs3D = false
@@ -63,10 +63,10 @@ env.water.flowVecTimeseries.Value.TreatNaNasMissing = true
 env.water.flowVecTimeseries.Value.Length = 3.0000e+00
 env.water.flowVecTimeseries.Unit = 'm/s'
 env.water.flowVecTimeseries.NoScale = false
-env.water.xGridPoints.Value = [0;1]
+env.water.xGridPoints.Value = [1;76]
 env.water.xGridPoints.Unit = 'm'
 env.water.xGridPoints.NoScale = false
-env.water.yGridPoints.Value = [-1;0;1]
+env.water.yGridPoints.Value = [-150;-125;-100;-75;-50;-25;0;25;50;75;100;125;150]
 env.water.yGridPoints.Unit = 'm'
 env.water.yGridPoints.NoScale = false
 env.water.zGridPoints.Value = [0 25 50 75 100 125 150 175 200]
