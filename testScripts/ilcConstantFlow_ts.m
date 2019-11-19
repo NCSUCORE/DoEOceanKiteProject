@@ -68,124 +68,159 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 %% Run the simulation
 simWithMonitor('OCTModel')
-parseLogsout;
+tscILC = parseLogsout;
 
+%%
+hiLvlCtrl.learningGain.setValue(0,'[]');
+simWithMonitor('OCTModel')
+tscBaseline = parseLogsout;
 
 %% Things to plot
+close all
+fontSize = 48;
+lineWidth = 3;
+ilcLegendName = sprintf('ILC (%d Iterations)',tscILC.iterationNumber.Data(end));
+baselineLegendName = sprintf('Baseline (%d Iterations)',tscBaseline.iterationNumber.Data(end));
+ilcIterTimes        = tscILC.ilcTrigger.Time(tscILC.ilcTrigger.Data);
+baselineIterTimes   = tscBaseline.ilcTrigger.Time(tscBaseline.ilcTrigger.Data);
 
-
-
-iterTimes = tsc.ilcTrigger.Time(tsc.ilcTrigger.Data);
-
-% 0 Basis parameters
-figure('Name','cnstFlwBasisParams')
-stairs(tsc.basisParams.Time./60,...
-    squeeze(tsc.basisParams.Data(1,:,:)),...
-    'LineWidth',1.5,'Color','k','LineStyle','-','DisplayName','$b_1$');
+% 1 Basis parameters
+figure('Name',sprintf('cnstFlwBasisParams%dmPs',env.water.flowVec.Value(1)))
+% Plot the results from ILC
+stairs(tscILC.basisParams.Time./60,...
+    squeeze(tscILC.basisParams.Data(1,:,:)),...
+    'LineWidth',lineWidth,'Color','k','LineStyle','-','DisplayName','$b_1$, ILC');
 hold on
-stairs(tsc.basisParams.Time./60,...
-    squeeze(tsc.basisParams.Data(2,:,:)),...
-    'LineWidth',1.5,'Color','k','LineStyle','--','DisplayName','$b_2$');
+stairs(tscILC.basisParams.Time./60,...
+    squeeze(tscILC.basisParams.Data(2,:,:)),...
+    'LineWidth',lineWidth,'Color','k','LineStyle','--','DisplayName','$b_2$, ILC');
+% Plot the results from the baseline
+stairs(tscBaseline.basisParams.Time./60,...
+    squeeze(tscBaseline.basisParams.Data(1,:,:)),...
+    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','-','DisplayName','$b_1$, Baseline');
+stairs(tscBaseline.basisParams.Time./60,...
+    squeeze(tscBaseline.basisParams.Data(2,:,:)),...
+    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','--','DisplayName','$b_2$, Baseline');
+
+% Add figure annotations and set formatting
 xlabel('Time [min]')
-ylabel({'Basis','Parameters [kW]'})
-title('Basis Parameters, Constant Flow Speed')
-set(gca,'FontSize',36)
+ylabel({'Basis Parameters'})
+title(['Basis Parameters, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
+set(gca,'FontSize',fontSize)
 box off
 grid on
-legend
+legend('Location','Best')
     
 
-
-% 1 Performance index vs time (denote total number of iterations)
-figure('Name','cnstFlwPerfIndx')
-stairs(iterTimes./60,tsc.perfIndx.Data(tsc.ilcTrigger.Data)./1000,...
-    'LineWidth',1.5,'Color','k');
+% 2 Performance index vs time (denote total number of iterations)
+figure('Name',sprintf('cnstFlwPerfIndx%dmPs',env.water.flowVec.Value(1)))
+% Plot the ILC results
+stairs(ilcIterTimes./60,tscILC.perfIndx.Data(tscILC.ilcTrigger.Data)./1000,...
+    'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
+hold on
+% Plot the baseline results
+stairs(baselineIterTimes./60,tscBaseline.perfIndx.Data(tscBaseline.ilcTrigger.Data)./1000,...
+    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+legend('Location','Best')
 xlabel('Time [min]')
-ylabel({'Performance','Index [kW]'})
-title('Performance Index, Constant Flow Speed')
-set(gca,'FontSize',36)
+ylabel({'Performance Index [kW]'})
+title(['Performance Index, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
+set(gca,'FontSize',fontSize)
 box off
 grid on
 
-% 2 Mean power vs time (denote total number of iterations)
-figure('Name','cnstFlwMeanPwr')
-stairs(iterTimes./60,tsc.meanPower.Data(tsc.ilcTrigger.Data)./1000,...
-    'LineWidth',1.5,'Color','k');
+% 3 Mean power vs time
+figure('Name',sprintf('cnstFlwMeanPwr%dmPs',env.water.flowVec.Value(1)))
+stairs(ilcIterTimes./60,tscILC.meanPower.Data(tscILC.ilcTrigger.Data)./1000,...
+    'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
+hold on
+stairs(baselineIterTimes./60,tscBaseline.meanPower.Data(tscBaseline.ilcTrigger.Data)./1000,...
+    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+legend('Location','Best')
 xlabel('Time [min]')
-ylabel({'Mean','Power [kW]'})
-title('Mean Power, Constant Flow Speed')
-set(gca,'FontSize',36)
+ylabel({'Mean Power [kW]'})
+title(['Mean Power, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
+set(gca,'FontSize',fontSize)
 box off
 grid on
 
-% 3 Penalty term vs time (denote total number of iterations)
-figure('Name','cnstFlwPenTerm')
-stairs(iterTimes./60,tsc.penaltyTerm.Data(tsc.ilcTrigger.Data),...
-    'LineWidth',1.5,'Color','k');
+% 4 Penalty term vs time (denote total number of iterations)
+figure('Name',sprintf('cnstFlwPenTerm%dmPs',env.water.flowVec.Value(1)))
+stairs(ilcIterTimes./60,tscILC.penaltyTerm.Data(tscILC.ilcTrigger.Data),...
+    'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
+hold on
+stairs(baselineIterTimes./60,tscBaseline.penaltyTerm.Data(tscBaseline.ilcTrigger.Data),...
+    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
 xlabel('Time [min]')
-ylabel({'Penalty','Term [rad]'})
-title('Penalty Term, Constant Flow Speed')
-set(gca,'FontSize',36)
+ylabel({'Penalty Term [rad]'})
+title(['Penalty Term, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
+set(gca,'FontSize',fontSize)
+legend('Location','Best')
 box off
 grid on
-
-% 4 Mean flow speed at CoM
-figure('Name','cnstFlwMeanFlwSpeed')
-stairs(iterTimes./60,tsc.meanFlow.Data(tsc.ilcTrigger.Data),...
-    'LineWidth',1.5,'Color','k');
-xlabel('Time [min]')
-ylabel({'Mean Flow','Speed [m/s]'})
-title('Mean Flow Speed, Constant Flow Speed')
-set(gca,'FontSize',36)
-box off
-grid on
-
 
 % 5 Mean flight speed
-figure('Name','cnstFlwMeanSpeed')
-stairs(iterTimes./60,tsc.meanSpeed.Data(tsc.ilcTrigger.Data),...
-    'LineWidth',1.5,'Color','k');
+figure('Name',sprintf('cnstFlwMeanSpeed%dmPs',env.water.flowVec.Value(1)))
+stairs(ilcIterTimes./60,tscILC.meanSpeed.Data(tscILC.ilcTrigger.Data),...
+    'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
+hold on
+stairs(baselineIterTimes./60,tscBaseline.meanSpeed.Data(tscBaseline.ilcTrigger.Data),...
+    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
 xlabel('Time [min]')
-ylabel({'Mean','Speed [m/s]'})
-title('Mean Speed, Constant Flow Speed')
-set(gca,'FontSize',36)
+ylabel({'Mean Speed [m/s]'})
+title(['Mean Speed, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
+legend('Location','Best')
+set(gca,'FontSize',fontSize)
 box off
 grid on
 
 
 % 6 Mean tension over lap
-figure('Name','cnstFlwMeanTen')
-stairs(iterTimes./60,tsc.meanTen.Data(tsc.ilcTrigger.Data)./1000,...
-    'LineWidth',1.5,'Color','k');
+figure('Name',sprintf('cnstFlwMeanTen%dmPs',env.water.flowVec.Value(1)))
+stairs(ilcIterTimes./60,tscILC.meanTen.Data(tscILC.ilcTrigger.Data)./1000,...
+    'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
+hold on
+stairs(baselineIterTimes./60,tscBaseline.meanTen.Data(tscBaseline.ilcTrigger.Data)./1000,...
+    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
 xlabel('Time [min]')
-ylabel({'Mean','Tension [kN]'})
-title('Mean Tether Tension, Constant Flow Speed')
-set(gca,'FontSize',36)
+ylabel({'Mean Tension [kN]'})
+title(['Mean Tether Tension, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
+set(gca,'FontSize',fontSize)
+legend('Location','Best')
 box off
 grid on
 
-% 8 Initial and final path
-initShape = eval(sprintf('%s(linspace(0,1,1000),hiLvlCtrl.initBasisParams.Value,gndStn.posVec.Value)',PATHGEOMETRY));
-finalShape = eval(sprintf('%s(linspace(0,1,1000),tsc.basisParams.Data(:,:,end),gndStn.posVec.Value)',PATHGEOMETRY));
+% 7 Initial and final path
+figure('Name',sprintf('cnstFlwPathShape%dmPs',env.water.flowVec.Value(1)))
+initShape  = eval(sprintf('%s(linspace(0,1,1000),hiLvlCtrl.initBasisParams.Value,gndStn.posVec.Value)',PATHGEOMETRY));
+finalShape = eval(sprintf('%s(linspace(0,1,1000),tscILC.basisParams.Data(:,:,end),gndStn.posVec.Value)',PATHGEOMETRY));
 plot3(initShape(1,:),initShape(2,:),initShape(3,:),...
-    'LineWidth',1.5,'Color','k','LineStyle','-','DisplayName','Initial Shape');
+    'LineWidth',lineWidth,'Color','k','LineStyle','-','DisplayName','Initial Shape');
 grid on
 hold on
 box off
 plot3(finalShape(1,:),finalShape(2,:),finalShape(3,:),...
-    'LineWidth',1.5,'Color','k','LineStyle','--','DisplayName','Final Shape');
+    'LineWidth',lineWidth,'Color','k','LineStyle','--','DisplayName','Final Shape');
 h.scat3 = scatter3(gndStn.posVec.Value(1),gndStn.posVec.Value(2),gndStn.posVec.Value(3),...
-    'Marker','o','CData',[1 0 0],'MarkerFaceColor',[1 0 0],'DisplayName','Ground Stn. Pos');
+    'Marker','o','CData',[1 0 0],'MarkerFaceColor',[1 0 0],'DisplayName','Platform Position');
 legend
-title({'Initial and Final Path Shape','Constant Flow'})
+title({'Initial and Final Path Shape',sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))})
 daspect([1 1 1])
-xlabel('x [m')
-ylabel('y [m')
-zlabel('z [m')
-set(gca,'FontSize',36)
+xlabel('x [m]')
+ylabel('y [m]')
+zlabel('z [m]')
+set(gca,'FontSize',fontSize)
+view([54 5])
+h.leg = findobj(gcf,'Type','Legend');
+h.leg.Position = [0.5598    0.5763    0.1941    0.1667];
 
 %%
-% saveAllPlots('Folder',['output',filesep,'cnstFlwResults'])
+filePath = ['output',filesep,sprintf('cnstFlwResults%dmPs',env.water.flowVec.Value(1))];
+saveAllPlots('Folder',filePath)
+cropImages(filePath)
+
+%%
+save('results','tscILC','tscBaseline','-v7.3');
 
 %%
 % vhcl.animateSim(tsc,1,...

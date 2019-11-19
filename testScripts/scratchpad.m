@@ -1,8 +1,9 @@
-clear;clc;close all
-data = rand(3,3,2)+i.*rand(3,3,2);
-time = [0 1];
-ts = timeseries(data,time);
+path = lemOfBooth(linspace(0,1,1000),[0.8 1.4 0 0 100],[0 0 0]);
 
-sim('untitled')
-
-ts.Data == simout.Data
+plot(path(2,:),path(3,:),...\
+    'LineWidth',1.5,'Color','k')
+box off
+grid off
+axes off
+daspect([1 1 1])
+set(gca,'Visible','off')
