@@ -1,7 +1,7 @@
 %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(7200,'s');
+sim.setDuration(2000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -16,21 +16,21 @@ loadComponent('pathFollowingGndStn');
 % Winches
 loadComponent('oneDOFWnch');
 % Tether
-loadComponent('fiveNodeSingleTether');
+loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-%  loadComponent('constXYZT');
- loadComponent('CNAPsTurbJames');
+% loadComponent('constXYZT');
+  loadComponent('CNAPsTurbJames');
 %  loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
 %  env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([0.5,1,.36,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
-gndStn.setPosVec([0 0 200],'m')
+gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
@@ -64,7 +64,7 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[ 0 0 1]);
+wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[ 1 0 0]);
 wnch.winch1.setMaxSpeed(inf,'m/s');
 
 %% Controller User Def. Parameters and dependant properties

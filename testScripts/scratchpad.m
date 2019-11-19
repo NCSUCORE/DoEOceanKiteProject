@@ -1,8 +1,9 @@
-clear;clc;close all
-data = rand(3,3,2)+i.*rand(3,3,2);
-time = [0 1];
-ts = timeseries(data,time);
+t = 1;
+uSt = ones(2,2,2,5);
+uTh = ones(2,2,2,5);
 
-sim('untitled')
 
-ts.Data == simout.Data
+
+ff = linspace(env.waterTurb.minFreqHz.Value,env.waterTurb.maxFreqHz.Value,env.waterTurb.numMidFreqs.Value);
+rf = repmat(ff',1,2,2,1)
+u = sum((abs(uSt).*sin(rf*2*pi*t + uTh)),4);
