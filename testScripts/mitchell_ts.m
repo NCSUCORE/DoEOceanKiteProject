@@ -20,9 +20,9 @@ loadComponent('fiveNodeSingleTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
- loadComponent('constXYZT');
-% loadComponent('CNAPsTurbJames');
- loadComponent('CNAPsMitchell');
+%  loadComponent('constXYZT');
+ loadComponent('CNAPsTurbJames');
+%  loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
 %  env.water.setflowVec([1 0 0],'m/s')
 
