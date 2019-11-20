@@ -9,6 +9,7 @@ classdef sixDoFStation < dynamicprops
         % Buoyancy properties
         volume
         centOfBuoy % Vector from CoM to CoB
+        height
         
 %         % Tether attachment point to the vehicle
 %         airThrAttchPt
@@ -39,6 +40,7 @@ classdef sixDoFStation < dynamicprops
         function obj = sixDoFStation
             % Inertial properties
             obj.mass            = SIM.parameter('Unit','kg','Description','Total mass of system');
+            obj.height          = SIM.parameter('Unit','m','Description','Vertical Height of the Ground Station');
             obj.inertiaMatrix   = SIM.parameter('Unit','kg*m^2','Description','3x3 inertia matrix');
             
             % Buoyancy properties

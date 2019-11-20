@@ -42,25 +42,29 @@ classdef ADCP < handle
                     error('Error: Found more than one potential data file in %s',dataFile(1).folder)
                 end
             end
-            % Create vector of datetimes, t = datetime(Y,M,D,H,MI,S), see
-            % https://www.mathworks.com/help/matlab/ref/datetime.html#d117e274976
-            dateTimes = datetime(SerYear+2000,SerMon,SerDay,SerHour,SerMin,SerSec,SerHund*0.1);
-            % Get time vector
-            timeVec   = seconds(dateTimes-dateTimes(1));
             
+            
+            
+            
+            
+            
+            
+              %time in seconds
+            timeVec = (mtime- 736205)*60*60*24;
             
             % --Build timeseries for the flow vector--
             % Convert loaded data to m/s and concatenate along 3rd dimension
-            data = cat(3,SerEmmpersec./1000,SerNmmpersec./1000,SerVmmpersec./1000);
+            data = cat(3,east_vel,north_vel,vert_vel);
+      
             % Permure data to correct dimension for timeseries
-            data = permute(data,[3 2 1]);               % Reorder to (velocityComponentXorY, depths, timestep)
+            data = permute(data,[3 1 2]);               % Reorder to (velocityComponentXorY, depths, timestep)
             data = sqrt(sum(data.^2,1));                % Put all flow into x direction (James said Mike Muglia said this was ok)
             sz = size(data);                            % Get the size of the data
             data(2,:,:) = zeros(sz);                    % Append zeros for the y direction velocity component
             data(3,:,:) = zeros(sz);                    % Append zeros for the z direction velocity component
             data = permute(data,[4 5 2 1 3]);           % Change and add dimensions to get (xCoord,yCoord,zCoord,XYZVelocityComponent,TimeStep)
-            
-            depths =  RDIBin1Mid-RDIBinSize/2:RDIBinSize:RDIBin1Mid+RDIBinSize*(SerBins(end)-1)-RDIBinSize/2;
+            data = data(:,:,13:60,:,:);
+            depths = 48:4:236;
             
             obj.allFlowVecTimeseries    = SIM.parameter('Value',timeseries(data,timeVec),'Unit','m/s');
             obj.startTime               = SIM.parameter('Value',p.Results.StartTime,'Unit','s');
