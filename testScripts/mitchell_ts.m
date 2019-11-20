@@ -21,7 +21,7 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 % loadComponent('constXYZT');
-   loadComponent('CNAPsTurbJames');
+loadComponent('CNAPsTurbJames');
 %  loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
 %  env.water.setflowVec([1 0 0],'m/s')
@@ -65,7 +65,6 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 %% Winches IC's and dependant properties
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[ 1 0 0]);
-wnch.winch1.setMaxSpeed(inf,'m/s');
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
