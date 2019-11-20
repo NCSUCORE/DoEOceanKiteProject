@@ -10,7 +10,14 @@ classdef FAUTurb < handle
         lateralStDevRatio  % P in the paper
         verticalStDevRatio % Q in the paper
         spatialCorrFactor  % C in the paper, coherence decay constant
-        frequencyDomainEqParams % componentts of mStar_jk in the paper
+        % frequencyDomainEqParams % componentts of mStar_jk in the paper
+        midFreqs
+        uStarLUT
+        uThLUT
+        vStarLUT
+        vThLUT
+        wStarLUT
+        wThLUT
     end
     
     methods
@@ -19,14 +26,21 @@ classdef FAUTurb < handle
             addParameter(p,'File','',@ischar)
             parse(p,varargin{:})
             
-            obj.intensity                = SIM.parameter('Unit','');
-            obj.minFreqHz                = SIM.parameter('Unit','Hz');
-            obj.maxFreqHz                = SIM.parameter('Unit','Hz');
-            obj.numMidFreqs              = SIM.parameter('Unit','');
-            obj.lateralStDevRatio        = SIM.parameter('Unit','');
+            obj.intensity= SIM.parameter('Unit','');
+            obj.minFreqHz= SIM.parameter('Unit','Hz');
+            obj.maxFreqHz= SIM.parameter('Unit','Hz');
+            obj.numMidFreqs      = SIM.parameter('Unit','');
+            obj.lateralStDevRatio= SIM.parameter('Unit','');
             obj.verticalStDevRatio       = SIM.parameter('Unit','');
-            obj.spatialCorrFactor        = SIM.parameter('Unit','');
-            obj.frequencyDomainEqParams  = SIM.parameter('Unit','');
+            obj.spatialCorrFactor= SIM.parameter('Unit','');
+            obj.midFreqs = SIM.parameter('Unit','Hz');
+            obj.uStarLUT = SIM.parameter('Unit','m/s');
+            obj.uThLUT   = SIM.parameter('Unit','rad');
+            obj.vStarLUT = SIM.parameter('Unit','m/s');
+            obj.vThLUT   = SIM.parameter('Unit','rad');
+            obj.wStarLUT = SIM.parameter('Unit','m/s');
+            obj.wThLUT   = SIM.parameter('Unit','rad');
+            %     obj.frequencyDomainEqParams  = SIM.parameter('Unit','');
         end
         
         function setIntensity(obj,val,unit)
@@ -50,12 +64,46 @@ classdef FAUTurb < handle
         function setSpatialCorrFactor(obj,val,unit)
             obj.spatialCorrFactor.setValue(val,unit);
         end
-        function setFreqDomainParams(obj,val,unit)
-            obj.frequencyDomainEqParams.setValue(val,unit);
+        function setFreqDomainParams(obj,val)
+            obj.setMidFreqs(val.midFreqs.Value,'Hz');
+            
+            obj.setUStarLUT(val.uStarLUT.Value,'m/s');
+            
+            obj.setUThLUT(val.uThLUT.Value,'rad');
+            
+            obj.setVStarLUT(val.vStarLUT.Value,'m/s');
+            
+            obj.setVThLUT(val.vThLUT.Value,'rad');
+            
+            obj.setWStarLUT(val.wStarLUT.Value,'m/s');
+            
+            obj.setWThLUT(val.wThLUT.Value,'rad');
+            
+        end
+        function setMidFreqs(obj,val,unit)
+            obj.midFreqs.setValue(val,unit);
+        end
+        function setUStarLUT(obj,val,unit)
+            obj.uStarLUT.setValue(val,unit);
+        end
+        function setUThLUT(obj,val,unit)
+            obj.uThLUT.setValue(val,unit);
+        end
+        function setVStarLUT(obj,val,unit)
+            obj.vStarLUT.setValue(val,unit);
+        end
+        function setVThLUT(obj,val,unit)
+            obj.vThLUT.setValue(val,unit);
+        end
+        function setWStarLUT(obj,val,unit)
+            obj.wStarLUT.setValue(val,unit);
+        end
+        function setWThLUT(obj,val,unit)
+            obj.wThLUT.setValue(val,unit);
         end
         
         process(obj,lowFreqFlowObj,varargin)
-
+        
     end
 end
 

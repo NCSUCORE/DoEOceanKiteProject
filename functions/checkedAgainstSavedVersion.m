@@ -38,9 +38,14 @@ for ii = 1:numel(oldProps)
                 end
                 
             otherwise
+                try
                 if oldObj.(oldProps{ii}).Value ~= newObj.(newProps{ii}).Value
                     tf = false;
                     return
+                end
+                catch 
+                   tf = false;
+                   return;
                 end
         end
     end

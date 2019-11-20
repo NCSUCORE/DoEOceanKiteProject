@@ -1,7 +1,7 @@
 % %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(1,'s');
+sim.setDuration(100,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -76,24 +76,15 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
-%% Run the simulation
-% simWithMonitor('OCTModel')
-% parseLogsout;
-% 
-% 
-% %%
-% vhcl.animateSim(tsc,1,...
-%     'PathFunc',fltCtrl.fcnName.Value,...
-%     'PathPosition',false,...
-%     'ZoomIn',false,...
-%     'NavigationVecs',true,...
-%     'TangentCoordSys',false,...
-%     'VelocityVec',true,...
-%     'Pause',false,...
-%     'PlotTracer',true,...
-%     'LocalAero',false,...
-%     'SaveMPEG',false)
-% 
-% 
-% 
-% 
+simWithMonitor('OCTModel')
+
+% LUT = Simulink.LookupTable;
+% timeVec = linspace(0,1);
+% LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);
+% LUT.Breakpoints(1).Value = env.water.xGridPoints.Value;
+% LUT.Breakpoints(2).Value = env.water.yGridPoints.Value;
+% LUT.Breakpoints(3).Value = env.water.zGridPoints.Value;
+% LUT.Breakpoints(4).Value = 1:size(LUT.Table.Value,4);
+% LUT.Breakpoints(5).Value = 1:size(LUT.Table.Value,5);
+% LUT.Breakpoints(6).Value = env.waterTurb.frequencyDomainEqParams.Value.Time;
+% LUT.StructTypeInfo.Name = 'LUT';
