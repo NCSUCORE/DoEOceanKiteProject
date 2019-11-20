@@ -256,13 +256,21 @@ for iTime = 1:numel(timeVec)
     %% store values
     % storing all of the values that define u,v,w as function of
     % frequency
-
-    freqDomainParams(:,:,1,iTime) = u_star_kj;
-    freqDomainParams(:,:,2,iTime)  = u_th_kR;
-    freqDomainParams(:,:,3,iTime)  = v_star_kj;
-    freqDomainParams(:,:,4,iTime)  = v_th_kR;
-    freqDomainParams(:,:,5,iTime)  = w_star_kj;
-    freqDomainParams(:,:,6,iTime)  = w_th_kR;
+    
+   u_star_kj   = reshape(u_star_kj,[numel(lowFreqFlowObj.xGridPoints.Value),numel(lowFreqFlowObj.yGridPoints.Value),numel(lowFreqFlowObj.zGridPoints.Value),N_mid_freq]);
+   u_th_kR     = reshape(u_th_kR,[numel(lowFreqFlowObj.xGridPoints.Value),numel(lowFreqFlowObj.yGridPoints.Value),numel(lowFreqFlowObj.zGridPoints.Value),N_mid_freq]);
+   v_star_kj   = reshape(v_star_kj,[numel(lowFreqFlowObj.xGridPoints.Value),numel(lowFreqFlowObj.yGridPoints.Value),numel(lowFreqFlowObj.zGridPoints.Value),N_mid_freq]);
+   v_th_kR     = reshape(v_th_kR,[numel(lowFreqFlowObj.xGridPoints.Value),numel(lowFreqFlowObj.yGridPoints.Value),numel(lowFreqFlowObj.zGridPoints.Value),N_mid_freq]);
+   w_star_kj   = reshape(w_star_kj,[numel(lowFreqFlowObj.xGridPoints.Value),numel(lowFreqFlowObj.yGridPoints.Value),numel(lowFreqFlowObj.zGridPoints.Value),N_mid_freq]);
+   w_th_kR     = reshape(w_th_kR,[numel(lowFreqFlowObj.xGridPoints.Value),numel(lowFreqFlowObj.yGridPoints.Value),numel(lowFreqFlowObj.zGridPoints.Value),N_mid_freq]);
+   
+   
+    freqDomainParams(:,:,:,:,1,iTime) = u_star_kj;
+    freqDomainParams(:,:,:,:,2,iTime)  = u_th_kR;
+    freqDomainParams(:,:,:,:,3,iTime)  = v_star_kj;
+    freqDomainParams(:,:,:,:,4,iTime)  = v_th_kR;
+    freqDomainParams(:,:,:,:,5,iTime)  = w_star_kj;
+    freqDomainParams(:,:,:,:,6,iTime)  = w_th_kR;
     
     
     

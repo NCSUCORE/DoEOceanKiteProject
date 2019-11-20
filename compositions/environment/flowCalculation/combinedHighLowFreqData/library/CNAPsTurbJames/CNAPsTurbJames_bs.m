@@ -22,7 +22,7 @@ env.addFlow({'waterTurb'},{'FAUTurb'})
 env.waterTurb.setIntensity(0.1,'');
 env.waterTurb.setMinFreqHz(0.1,'Hz');
 env.waterTurb.setMaxFreqHz(1,'Hz');
-env.waterTurb.setNumMidFreqs(5,'');
+env.waterTurb.setNumMidFreqs(4,'');
 env.waterTurb.setLateralStDevRatio(0.1,'');
 env.waterTurb.setVerticalStDevRatio(0.1,'');
 env.waterTurb.setSpatialCorrFactor(5,'');

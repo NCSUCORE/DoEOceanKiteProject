@@ -1,7 +1,7 @@
 %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(2000,'s');
+sim.setDuration(100,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -21,7 +21,7 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 % loadComponent('constXYZT');
-  loadComponent('CNAPsTurbJames');
+   loadComponent('CNAPsTurbJames');
 %  loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
 %  env.water.setflowVec([1 0 0],'m/s')
