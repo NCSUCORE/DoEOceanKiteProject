@@ -4,13 +4,15 @@ sim = SIM.sim;
 sim.setDuration(2*3600,'s');
 dynamicCalc = '';
 
+runBaseline = true;
+
 %% Load components
 % Flight Controller
 loadComponent('pathFollowingForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('fig8ILC')
+loadComponent('fig8ILC1mPs')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -24,7 +26,7 @@ loadComponent('constXYZT');
 
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([2 0 0],'m/s')
+env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([0.3,1,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
@@ -71,19 +73,25 @@ simWithMonitor('OCTModel')
 tscILC = parseLogsout;
 
 %%
+if runBaseline
 hiLvlCtrl.learningGain.setValue(0,'[]');
 simWithMonitor('OCTModel')
 tscBaseline = parseLogsout;
+end
+    
+% load(sprintf('cnstFlwResults%dmPs.mat',env.water.flowVec.Value(1)),'tscBaseline');
+
 
 %% Things to plot
 close all
 fontSize = 48;
 lineWidth = 3;
 ilcLegendName = sprintf('ILC (%d Iterations)',tscILC.iterationNumber.Data(end));
-baselineLegendName = sprintf('Baseline (%d Iterations)',tscBaseline.iterationNumber.Data(end));
 ilcIterTimes        = tscILC.ilcTrigger.Time(tscILC.ilcTrigger.Data);
-baselineIterTimes   = tscBaseline.ilcTrigger.Time(tscBaseline.ilcTrigger.Data);
-
+if runBaseline
+    baselineLegendName = sprintf('Baseline (%d Iterations)',tscBaseline.iterationNumber.Data(end));
+    baselineIterTimes   = tscBaseline.ilcTrigger.Time(tscBaseline.ilcTrigger.Data);
+end
 % 1 Basis parameters
 figure('Name',sprintf('cnstFlwBasisParams%dmPs',env.water.flowVec.Value(1)))
 % Plot the results from ILC
@@ -95,13 +103,14 @@ stairs(tscILC.basisParams.Time./60,...
     squeeze(tscILC.basisParams.Data(2,:,:)),...
     'LineWidth',lineWidth,'Color','k','LineStyle','--','DisplayName','$b_2$, ILC');
 % Plot the results from the baseline
-stairs(tscBaseline.basisParams.Time./60,...
-    squeeze(tscBaseline.basisParams.Data(1,:,:)),...
-    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','-','DisplayName','$b_1$, Baseline');
-stairs(tscBaseline.basisParams.Time./60,...
-    squeeze(tscBaseline.basisParams.Data(2,:,:)),...
-    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','--','DisplayName','$b_2$, Baseline');
-
+if runBaseline
+    stairs(tscBaseline.basisParams.Time./60,...
+        squeeze(tscBaseline.basisParams.Data(1,:,:)),...
+        'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','-','DisplayName','$b_1$, Baseline');
+    stairs(tscBaseline.basisParams.Time./60,...
+        squeeze(tscBaseline.basisParams.Data(2,:,:)),...
+        'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','--','DisplayName','$b_2$, Baseline');
+end
 % Add figure annotations and set formatting
 xlabel('Time [min]')
 ylabel({'Basis Parameters'})
@@ -119,8 +128,10 @@ stairs(ilcIterTimes./60,tscILC.perfIndx.Data(tscILC.ilcTrigger.Data)./1000,...
     'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
 hold on
 % Plot the baseline results
-stairs(baselineIterTimes./60,tscBaseline.perfIndx.Data(tscBaseline.ilcTrigger.Data)./1000,...
-    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+if runBaseline
+    stairs(baselineIterTimes./60,tscBaseline.perfIndx.Data(tscBaseline.ilcTrigger.Data)./1000,...
+        'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+end
 legend('Location','Best')
 xlabel('Time [min]')
 ylabel({'Performance Index [kW]'})
@@ -134,8 +145,10 @@ figure('Name',sprintf('cnstFlwMeanPwr%dmPs',env.water.flowVec.Value(1)))
 stairs(ilcIterTimes./60,tscILC.meanPower.Data(tscILC.ilcTrigger.Data)./1000,...
     'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
 hold on
-stairs(baselineIterTimes./60,tscBaseline.meanPower.Data(tscBaseline.ilcTrigger.Data)./1000,...
-    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+if runBaseline
+    stairs(baselineIterTimes./60,tscBaseline.meanPower.Data(tscBaseline.ilcTrigger.Data)./1000,...
+        'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+end
 legend('Location','Best')
 xlabel('Time [min]')
 ylabel({'Mean Power [kW]'})
@@ -149,8 +162,10 @@ figure('Name',sprintf('cnstFlwPenTerm%dmPs',env.water.flowVec.Value(1)))
 stairs(ilcIterTimes./60,tscILC.penaltyTerm.Data(tscILC.ilcTrigger.Data),...
     'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
 hold on
-stairs(baselineIterTimes./60,tscBaseline.penaltyTerm.Data(tscBaseline.ilcTrigger.Data),...
-    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+if runBaseline
+    stairs(baselineIterTimes./60,tscBaseline.penaltyTerm.Data(tscBaseline.ilcTrigger.Data),...
+        'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+end
 xlabel('Time [min]')
 ylabel({'Penalty Term [rad]'})
 title(['Penalty Term, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
@@ -164,8 +179,10 @@ figure('Name',sprintf('cnstFlwMeanSpeed%dmPs',env.water.flowVec.Value(1)))
 stairs(ilcIterTimes./60,tscILC.meanSpeed.Data(tscILC.ilcTrigger.Data),...
     'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
 hold on
-stairs(baselineIterTimes./60,tscBaseline.meanSpeed.Data(tscBaseline.ilcTrigger.Data),...
-    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+if runBaseline
+    stairs(baselineIterTimes./60,tscBaseline.meanSpeed.Data(tscBaseline.ilcTrigger.Data),...
+        'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+end
 xlabel('Time [min]')
 ylabel({'Mean Speed [m/s]'})
 title(['Mean Speed, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
@@ -180,8 +197,10 @@ figure('Name',sprintf('cnstFlwMeanTen%dmPs',env.water.flowVec.Value(1)))
 stairs(ilcIterTimes./60,tscILC.meanTen.Data(tscILC.ilcTrigger.Data)./1000,...
     'LineWidth',lineWidth,'Color','k','DisplayName',ilcLegendName);
 hold on
-stairs(baselineIterTimes./60,tscBaseline.meanTen.Data(tscBaseline.ilcTrigger.Data)./1000,...
-    'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+if runBaseline
+    stairs(baselineIterTimes./60,tscBaseline.meanTen.Data(tscBaseline.ilcTrigger.Data)./1000,...
+        'LineWidth',lineWidth,'Color',0.5*[1 1 1],'DisplayName',baselineLegendName);
+end
 xlabel('Time [min]')
 ylabel({'Mean Tension [kN]'})
 title(['Mean Tether Tension, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
@@ -220,7 +239,7 @@ saveAllPlots('Folder',filePath)
 cropImages(filePath)
 
 %%
-save('results','tscILC','tscBaseline','-v7.3');
+save(sprintf('cnstFlwResults%dmPs',env.water.flowVec.Value(1)),'tscILC','tscBaseline','-v7.3');
 
 %%
 % vhcl.animateSim(tsc,1,...
