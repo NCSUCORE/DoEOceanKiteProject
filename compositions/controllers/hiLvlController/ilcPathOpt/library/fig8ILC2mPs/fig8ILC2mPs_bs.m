@@ -47,10 +47,10 @@ hiLvlCtrl.penaltyWeight.setValue(2000/0.0175,'');% Use this one for variable flo
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
 hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient';
-hiLvlCtrl.learningGain.setValue(0.2/1.9e4,'[]');
+hiLvlCtrl.learningGain.setValue(2*0.2/1.9e4,'[]');
 % Forgetting factor of RLS estimator
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update';
-hiLvlCtrl.forgettingFactor.setValue(0.90,'');
+hiLvlCtrl.forgettingFactor.setValue(0.95,'');
 % Trust region of ILC update 
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.';
 hiLvlCtrl.trustRegion.setValue([0.03 0.03 inf inf inf],'[]');

@@ -74,13 +74,10 @@ tscILC = parseLogsout;
 
 %%
 if runBaseline
-hiLvlCtrl.learningGain.setValue(0,'[]');
-simWithMonitor('OCTModel')
-tscBaseline = parseLogsout;
+    hiLvlCtrl.learningGain.setValue(0,'[]');
+    simWithMonitor('OCTModel')
+    tscBaseline = parseLogsout;
 end
-    
-% load(sprintf('cnstFlwResults%dmPs.mat',env.water.flowVec.Value(1)),'tscBaseline');
-
 
 %% Things to plot
 close all
