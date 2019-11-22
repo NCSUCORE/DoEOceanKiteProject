@@ -10,7 +10,7 @@ loadComponent('pathFollowingForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('fig8ILC')
+loadComponent('fig8ILC2mPs')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
