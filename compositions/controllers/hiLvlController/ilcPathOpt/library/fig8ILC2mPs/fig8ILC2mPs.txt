@@ -13,7 +13,7 @@ hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC,
 hiLvlCtrl.initBasisParams.Unit = '[]'
 hiLvlCtrl.initBasisParams.NoScale = false
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.'
-hiLvlCtrl.trustRegion.Value = [0.015 0.015 Inf Inf Inf]
+hiLvlCtrl.trustRegion.Value = [0.03 0.03 Inf Inf Inf]
 hiLvlCtrl.trustRegion.Unit = '[]'
 hiLvlCtrl.trustRegion.NoScale = false
 hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.'
@@ -31,7 +31,7 @@ hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (unifo
 hiLvlCtrl.penaltyWeight.Value = 1.1429e+05
 hiLvlCtrl.penaltyWeight.Unit is unitless or has no unit specified
 hiLvlCtrl.penaltyWeight.NoScale = false
-hiLvlCtrl.forgettingFactor.Value = 9.5000e-01
+hiLvlCtrl.forgettingFactor.Value = 9.0000e-01
 hiLvlCtrl.forgettingFactor.Unit is unitless or has no unit specified
 hiLvlCtrl.forgettingFactor.NoScale = false
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update'

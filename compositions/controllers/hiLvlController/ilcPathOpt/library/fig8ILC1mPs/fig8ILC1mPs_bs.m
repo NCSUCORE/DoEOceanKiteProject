@@ -47,7 +47,6 @@ hiLvlCtrl.penaltyWeight.setValue(750/0.0175,'');% Use this one for variable flow
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
 hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient';
-% hiLvlCtrl.learningGain.setValue(0.001/1e8,'[]');
 hiLvlCtrl.learningGain.setValue(2*0.2/1.9e4,'[]');
 % Forgetting factor of RLS estimator
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update';
