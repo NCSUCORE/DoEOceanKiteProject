@@ -42,12 +42,12 @@ hiLvlCtrl.pathVarUpperLim.setValue(0.95,'');
 hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC, in order to let transients die out.';
 hiLvlCtrl.numInitLaps.setValue(5,'');
 % Weighting on path tracking in the performance index:
-hiLvlCtrl.penaltyWeight.setValue((750*2^3*0.8)/0.0175,'');% Use this one for variable flow -MC 10/11
+hiLvlCtrl.penaltyWeight.setValue((750*1.5^3*0.8)/0.0175,'');% Use this one for variable flow -MC 10/11
 % Initial basis parameters
 hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.';
 % Learning gain in the ILC update law
 hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient';
-hiLvlCtrl.learningGain.setValue((2*0.2/1.9e4)*(1/(2^3*0.8)),'[]');
+hiLvlCtrl.learningGain.setValue((2*0.2)/(1.9e4*1.5^3*0.8),'[]');
 % Forgetting factor of RLS estimator
 hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update';
 hiLvlCtrl.forgettingFactor.setValue(0.95,'');

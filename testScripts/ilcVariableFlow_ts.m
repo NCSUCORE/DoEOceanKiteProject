@@ -10,7 +10,7 @@ loadComponent('pathFollowingForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('fig8ILC2mPs')
+loadComponent('fig8ILC15mPs')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -104,7 +104,7 @@ stairs(tscBaseline.basisParams.Time./60,...
 
 % Add figure annotations and set formatting
 xlabel('Time [min]')
-ylabel({'Basis Parameters'})
+ylabel({'Basis Parameters [rad]'})
 title(['Basis Parameters, ', 'Variable Flow'])
 set(gca,'FontSize',fontSize)
 box off
@@ -229,6 +229,19 @@ view([54 5])
 h.leg = findobj(gcf,'Type','Legend');
 h.leg.Position = [0.5598    0.5763    0.1941    0.1667];
 
+% 9 Plot instantaneous flow speed at CoM
+figure('Name','varFlowInstFlwSpdCoM')
+speed = squeeze(sqrt(sum(tscILC.vhclFlowVecs.Data(:,end,:).^2,1)));
+plot(tscILC.vhclFlowVecs.Time,speed,...
+    'LineWidth',lineWidth,'Color','k');
+xlabel('Time [min]')
+ylabel('Flow Speed [m/s]')
+title('Instantaneous Flow Speed at CoM')
+set(gca,'FontSize',fontSize)
+box off
+grid on
+
+
 %%
 filePath = ['output',filesep,'varFlwResults'];
 saveAllPlots('Folder',filePath)
@@ -249,6 +262,7 @@ save('varFlwResults','tscILC','tscBaseline','-v7.3');
 %     'PlotTracer',true,...
 %     'LocalAero',false,...
 %     'SaveMPEG',false)
+
 
 
 

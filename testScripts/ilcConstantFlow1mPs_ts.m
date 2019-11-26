@@ -110,12 +110,12 @@ if runBaseline
 end
 % Add figure annotations and set formatting
 xlabel('Time [min]')
-ylabel({'Basis Parameters'})
+ylabel({'Basis Parameters [rad]'})
 title(['Basis Parameters, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Value(1))])
 set(gca,'FontSize',fontSize)
 box off
 grid on
-legend('Location','Best')
+legend('Location','Best','Orientation','Horizontal')
     
 
 % 2 Performance index vs time (denote total number of iterations)

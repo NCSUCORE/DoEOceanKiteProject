@@ -28,10 +28,10 @@ hiLvlCtrl.filtTimeConst.Value = 5.0000e-02
 hiLvlCtrl.filtTimeConst.Unit = 's'
 hiLvlCtrl.filtTimeConst.NoScale = false
 hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.'
-hiLvlCtrl.penaltyWeight.Value = 2.7429e+05
+hiLvlCtrl.penaltyWeight.Value = 1.1571e+05
 hiLvlCtrl.penaltyWeight.Unit is unitless or has no unit specified
 hiLvlCtrl.penaltyWeight.NoScale = false
-hiLvlCtrl.learningGain.Value = 3.2895e-06
+hiLvlCtrl.learningGain.Value = 7.7973e-06
 hiLvlCtrl.learningGain.Unit = '[]'
 hiLvlCtrl.learningGain.NoScale = false
 hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient'
