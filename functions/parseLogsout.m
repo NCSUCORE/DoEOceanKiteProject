@@ -48,7 +48,7 @@ end
 if isfield(tsc,'winchPower')
     diffTime = diff(tsc.winchPower.Time); 
     timesteps = .5*([diffTime; diffTime(end)] + [diffTime(1); diffTime]); %averages left and right timestep lengths for each data point.
-    energy=tsc.winchPower.Data.*timesteps;
+    energy=squeeze(tsc.winchPower.Data).*squeeze(timesteps);
     if isfield(tsc,'closestPathVariable')
         lapInds=find(abs(tsc.closestPathVariable.Data(2:end)-tsc.closestPathVariable.Data(1:end-1))>.95);
         if ~isempty(lapInds) && length(lapInds)>=2

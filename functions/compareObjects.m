@@ -19,7 +19,7 @@ function compareObjects(obj1,obj2,varargin)
     props2 = properties(obj2);
     for j = 1:length(props) %This really ugly code appends unique entries to the end of the property list
         ii=1;
-        while ii < length(props2)
+        while ii <= length(props2)
             if isequal(props2{ii},props{j})
                 props2(ii)=[];  
                 ii=length(props2)+2;              

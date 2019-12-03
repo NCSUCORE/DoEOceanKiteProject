@@ -1,16 +1,18 @@
-clear
-
-
+if ~slreportgen.utils.isModelLoaded('OCTModel')
+    OCTModel
+end
+lengthScaleFactor = 1/1;
+densityScaleFactor = 1/1;
 
 sim = SIM.sim;
 sim.setDuration(2000,'s');
 
 dynamicCalc = '';
-SPOOLINGCONTROLLER = 'PMPSpoolingController';%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+SPOOLINGCONTROLLER = 'netZeroSpoolingController';%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZERO FOR MITCHELLS CONTROL ALLOCATION, ONE OLD CONTROL ALLOCATION MATRIX
 controlAllocationBit = 0;
 %% Opt stuff (move to mask)
-load('200m1mps.mat')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+load('1251James.mat')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 guess=mean(mean(Ten));
 ki_iter=guess/60;
 kp_iter=guess/60;
@@ -43,7 +45,7 @@ loadComponent('constXYZT');
 % fltCtrl.setFcnName('circleOnSphere','');
 fltCtrl.setFcnName('lemOfBooth','');
 
-hiLvlCtrl.basisParams.setValue([.5,1,.36,0,200,.25,.1533],'');% Lemniscate of Booth%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,125],'');% Lemniscate of Booth%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Environment IC's and dependant properties
 % Set Values
