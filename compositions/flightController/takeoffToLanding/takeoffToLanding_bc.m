@@ -1,4 +1,4 @@
-function pathFollowingController_bc()
+function takeoffToLanding_bc()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
@@ -42,5 +42,4 @@ CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the combined moment motor controller';
 
 assignin('base','fltCtrlBus',CONTROL)
-
 end
