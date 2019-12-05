@@ -30,20 +30,22 @@ fltCtrl.add('SetpointNames',{'altiSP','pitchSP','yawSP'},...
     'SetpointUnits',{'m','deg','deg'});
 
 % tether controllers
-fltCtrl.tetherAlti.kp.setValue(0,'(m/s)/(m)');
+fltCtrl.tetherAlti.kp.setValue(0.0,'(m/s)/(m)');
 fltCtrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
 fltCtrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
-fltCtrl.tetherAlti.tau.setValue(5,'s');
+fltCtrl.tetherAlti.tau.setValue(2,'s');
 
-fltCtrl.tetherPitch.kp.setValue(0*0.1,'(m/s)/(rad)');
+pKp = 1;
+rKp = 2;
+fltCtrl.tetherPitch.kp.setValue(pKp,'(m/s)/(rad)');
 fltCtrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
-fltCtrl.tetherPitch.kd.setValue(0*0.1,'(m/s)/(rad/s)');
-fltCtrl.tetherPitch.tau.setValue(0.1,'s');
+fltCtrl.tetherPitch.kd.setValue(2*pKp,'(m/s)/(rad/s)');
+fltCtrl.tetherPitch.tau.setValue(0.5,'s');
 
-fltCtrl.tetherRoll.kp.setValue(4*1,'(m/s)/(rad)');
+fltCtrl.tetherRoll.kp.setValue(rKp,'(m/s)/(rad)');
 fltCtrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
-fltCtrl.tetherRoll.kd.setValue(12*1,'(m/s)/(rad/s)');
-fltCtrl.tetherRoll.tau.setValue(0.01,'s');
+fltCtrl.tetherRoll.kd.setValue(2*rKp,'(m/s)/(rad/s)');
+fltCtrl.tetherRoll.tau.setValue(0.5,'s');
 
 fltCtrl.thrAllocationMat.setValue([1 .5 -.5; 1 -.5 0; 1 .5 .5],'');
 

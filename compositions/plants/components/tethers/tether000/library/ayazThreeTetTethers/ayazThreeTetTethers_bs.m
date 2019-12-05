@@ -8,8 +8,10 @@ format compact
 % the script saves the variable 'thr' to a 'ayazThreeTetTethers.mat'
 
 %% Tethers
-
 TETHERS               = 'tether000';
+
+% scaling factor for lab scale testing
+Lscale = 0.015;
 
 % Create
 thr = OCT.tethers;
@@ -18,33 +20,37 @@ thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thrDia = 0.0075;
+thrDia = 0.03;
+thrYoungs = 5e9;
+thrDamping = 0.1;
+thrDensity = 1300;
+thrDragCoeff = 0.5;
 
-thr.tether1.youngsMod.setValue(4e9,'Pa');
-thr.tether1.dampingRatio.setValue(0.05,'');
-thr.tether1.dragCoeff.setValue(0.5,'');
-thr.tether1.density.setValue(1300,'kg/m^3');
+thr.tether1.youngsMod.setValue(thrYoungs,'Pa');
+thr.tether1.dampingRatio.setValue(thrDamping,'');
+thr.tether1.dragCoeff.setValue(thrDragCoeff,'');
+thr.tether1.density.setValue(thrDensity,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
-thr.tether1.setNetBuoyEnable(false,'');
+thr.tether1.setNetBuoyEnable(true,'');
 thr.tether1.setDiameter(thrDia,'m');
 
-thr.tether2.youngsMod.setValue(4e9,'Pa');
-thr.tether2.dampingRatio.setValue(0.05,'');
-thr.tether2.dragCoeff.setValue(0.5,'');
-thr.tether2.density.setValue(1300,'kg/m^3');
+thr.tether2.youngsMod.setValue(thrYoungs,'Pa');
+thr.tether2.dampingRatio.setValue(thrDamping,'');
+thr.tether2.dragCoeff.setValue(thrDragCoeff,'');
+thr.tether2.density.setValue(thrDensity,'kg/m^3');
 thr.tether2.setDragEnable(true,'');
 thr.tether2.setSpringDamperEnable(true,'');
-thr.tether2.setNetBuoyEnable(false,'');
-thr.tether2.setDiameter(thrDia*sqrt(2),'m');
+thr.tether2.setNetBuoyEnable(true,'');
+thr.tether2.setDiameter(thrDia,'m');
 
-thr.tether3.youngsMod.setValue(4e9,'Pa');
-thr.tether3.dampingRatio.setValue(0.05,'');
-thr.tether3.dragCoeff.setValue(0.5,'');
-thr.tether3.density.setValue(1300,'kg/m^3');
+thr.tether3.youngsMod.setValue(thrYoungs,'Pa');
+thr.tether3.dampingRatio.setValue(thrDamping,'');
+thr.tether3.dragCoeff.setValue(thrDragCoeff,'');
+thr.tether3.density.setValue(thrDensity,'kg/m^3');
 thr.tether3.setDragEnable(true,'');
 thr.tether3.setSpringDamperEnable(true,'');
-thr.tether3.setNetBuoyEnable(false,'');
+thr.tether3.setNetBuoyEnable(true,'');
 thr.tether3.setDiameter(thrDia,'m');
 
 % check if all the initial conditions are empty
@@ -56,6 +62,9 @@ testEmpty(3,ii) = isempty(thr.(strcat('tether',num2str(ii))).initGndNodePos.Valu
 testEmpty(4,ii) = isempty(thr.(strcat('tether',num2str(ii))).initGndNodeVel.Value);
 
 end
+
+% scale it down before saving
+thr.scale(Lscale,1);
 
 %% save file in its respective directory
 saveBuildFile('thr',mfilename,'variant','TETHERS');

@@ -17,64 +17,73 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.0,'');
+vhcl.setBuoyFactor(1.2,'');
+
+% entering parameters for scaled model
+Lscale = 0.015;
+xCM_LE = 7.1721e-3;
+xCB_LE = 7.194e-3;
 
 % % % volume and inertias
-vhcl.setVolume(945352023.474*1e-9,'m^3');
-vhcl.setIxx(6.303080401918E+09*1e-6,'kg*m^2');
-vhcl.setIyy(2080666338.077*1e-6,'kg*m^2');
-vhcl.setIzz(8.320369733598E+09*1e-6,'kg*m^2');
+% vhcl.setVolume(7457.953*1e-9*(1/Lscale^3),'m^3');
+vhcl.setIxx(6.635*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIyy(8.166*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIzz(14.518*1e-6*(1/Lscale^5),'kg*m^2');
 vhcl.setIxy(0,'kg*m^2');
-vhcl.setIxz(81875397.942*1e-6,'kg*m^2');
+vhcl.setIxz(0.414*1e-6*(1/Lscale^5),'kg*m^2');
 vhcl.setIyz(0,'kg*m^2');
-vhcl.setCentOfBuoy([0;0;0],'m');
+vhcl.setCentOfBuoy([(xCB_LE-xCM_LE);0;0]*(1/Lscale),'m');
 vhcl.setRbridle_cm([0;0;0],'m');
+vhcl.setAddedMISwitch(true,'');
 
 % % % wing
-vhcl.setRwingLE_cm([-1;0;0],'m');
-vhcl.setWingChord(1,'m');
+vhcl.setRwingLE_cm([-xCM_LE;0;0]*(1/Lscale),'m');
+vhcl.setWingChord(15e-3*(1/Lscale),'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
-vhcl.setWingSweep(2,'deg');
-vhcl.setWingDihedral(0,'deg');
+vhcl.setWingSweep(2.3,'deg');
+vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
-vhcl.setWingNACA('4412','');
-vhcl.setWingClMax(1.75,'');
-vhcl.setWingClMin(-1.75,'');
+vhcl.setWingNACA('2412','');
+vhcl.setWingClMax(1.4,'');
+vhcl.setWingClMin(-1.4,'');
 
 % % % H-stab
-vhcl.setRhsLE_wingLE([6;0;0],'m');
-vhcl.setHsChord(0.6,'m');
+vhcl.setRhsLE_wingLE([67.5e-3;0;0]*(1/Lscale),'m');
+vhcl.setHsChord(7.5e-3*(1/Lscale),'m');
 vhcl.setHsAR(8,'');
 vhcl.setHsTR(0.8,'');
-vhcl.setHsSweep(5,'deg');
+vhcl.setHsSweep(2.8624,'deg');
 vhcl.setHsDihedral(0,'deg');
 vhcl.setHsIncidence(0,'deg');
-vhcl.setHsNACA('0012','');
-vhcl.setHsClMaxl(1.75,'');
-vhcl.setHsClMin(-1.75,'');
+vhcl.setHsNACA('0015','');
+vhcl.setHsClMaxl(1.4,'');
+vhcl.setHsClMin(-1.4,'');
 
 % % % V-stab
-vhcl.setRvs_wingLE([6;0;0],'m');
-vhcl.setVsChord(0.6,'m');
-vhcl.setVsSpan(2.5,'m');
+vhcl.setRvs_wingLE([65.25e-3;0;0]*(1/Lscale),'m');
+vhcl.setVsChord(9.75e-3*(1/Lscale),'m');
+vhcl.setVsSpan(36.5625e-3*(1/Lscale),'m');
 vhcl.setVsTR(0.8,'');
-vhcl.setVsSweep(10,'deg');
-vhcl.setVsNACA('0012','');
-vhcl.setVsClMax(1.75,'');
-vhcl.setVsClMin(-1.75,'');
+vhcl.setVsSweep(3.44,'deg');
+vhcl.setVsNACA('0015','');
+vhcl.setVsClMax(1.4,'');
+vhcl.setVsClMin(-1.4,'');
 
 % % % Fuselage (could use more realistic numbers)
-vhcl.setFuseDiameter(1,'m')
-vhcl.setFuseEndDragCoeff(0,'')
-vhcl.setFuseSideDragCoeff(0,'')
-vhcl.setFuseRCmToNose([-2;0;0],'m')
+vhcl.setFuseDiameter(2*4.9e-3*(1/Lscale),'m')
+vhcl.setFuseEndDragCoeff(0.8,'')
+vhcl.setFuseSideDragCoeff(0.6,'')
+vhcl.setFuseRCmToNose([-58.55e-3;0;0]*(1/Lscale),'m')
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('someFile7','');
+vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS3','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
+
+% % % scale it back down to lab scale before saving
+vhcl.scale(Lscale,1);
 
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant','VEHICLE');

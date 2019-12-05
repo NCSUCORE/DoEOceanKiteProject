@@ -166,7 +166,7 @@ classdef winches < dynamicprops
                    
                     obj.winch1.initLength.setValue(L+delta_L/2,'m')
                 case 3
-                    error('Init tether length calculation has been changed and this portion of the code is not updated')
+%                     error('Init tether length calculation has been changed and this portion of the code is not updated')
                     L1 = norm(thr.tether1.initAirNodePos.Value - ...
                         thr.tether1.initGndNodePos.Value);
                     delta_L1 = (sum_F/4)/(L1*thr.tether1.youngsMod.Value*...

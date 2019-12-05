@@ -1,13 +1,16 @@
 clear
 clc
 format compact
-% close all
+close all
 
 cd(fileparts(mfilename('fullpath')));
 
-lengthScaleFactor = 1/1;
+lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
-duration_s  = 600*sqrt(lengthScaleFactor);
+
+simTime = 70;
+sim = SIM.sim;
+sim.setDuration(70*sqrt(lengthScaleFactor),'s');
 
 %% Set up simulation
 GNDSTNCONTROLLER      = 'oneDoF';
@@ -17,25 +20,28 @@ numTethers = 3;
 thrNumNodes = 2;
 numTurbines = 2;
 
-load('ayazThreeTetEnv.mat')
+load('constXYZT.mat')
 % Set Values
-env.water.velVec.setValue([1 0 0]','m/s');
+vfdValue = 20;
+flowSpeed = vfdInputToFlowSpeed(vfdValue);
+env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 
 %% lifiting body
 load('ayazThreeTetVhcl.mat')
 
+altiSP = 34.5e-2;
 % % % initial conditions
-vhcl.setInitPosVecGnd([0;0;50],'m');
+vhcl.setInitPosVecGnd([0;0;altiSP],'m');
 vhcl.setInitVelVecBdy([0;0;0],'m/s');
-vhcl.setInitEulAng([0;1;0]*pi/180,'rad');
+vhcl.setInitEulAng([0;11;0]*pi/180,'rad');
 vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
 % % % plot
 % vhcl.plot
 % vhcl.plotCoeffPolars
 
-% High Level Con
-loadComponent('constBoothLem');
+% High Level controller
+loadComponent('constBoothLem.mat')
 
 
 %% Ground Station
@@ -63,41 +69,47 @@ end
 %% winches
 load('ayazThreeTetWnch.mat');
 % set initial conditions
-wnch.setTetherInitLength(vhcl,env,thr);
+% wnch.setTetherInitLength(vhcl,env,thr);
+wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 
-dynamicCalc = 'Quaternions';
+dynamicCalc = '';
 
 %% Set up controller
 load('ayazThreeTetCtrl.mat');
 
+rollAmp = 12;
+rollPeriod = 9;
+initialDelay = 16.7;
+
 % switching values
-fltCtrl.ySwitch.setValue(5,'m');
-fltCtrl.rollAmp.setValue(20,'deg');
+fltCtrl.ySwitch.setValue(3,'m');
+fltCtrl.rollAmp.setValue(12,'deg');
 
 % set setpoints
-timeVec = 0:0.1*sqrt(lengthScaleFactor):duration_s;
-fltCtrl.altiSP.setValue(50*ones(size(timeVec)),'m',timeVec);
-fltCtrl.pitchSP.setValue(10*ones(size(timeVec)),'deg',timeVec);
+timeVec = 0:0.001*sqrt(lengthScaleFactor):simTime;
+fltCtrl.altiSP.setValue(altiSP*ones(size(timeVec)),'m',timeVec);
+fltCtrl.pitchSP.setValue(11*ones(size(timeVec)),'deg',timeVec);
 fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 
 %% scale 
 % scale environment
-env.scale(lengthScaleFactor,densityScaleFactor);
+% env.scale(lengthScaleFactor,densityScaleFactor);
 % scale vehicle
-vhcl.scale(lengthScaleFactor,densityScaleFactor);
+% vhcl.scale(lengthScaleFactor,densityScaleFactor);
 % scale ground station
-gndStn.scale(lengthScaleFactor,densityScaleFactor);
+% gndStn.scale(lengthScaleFactor,densityScaleFactor);
 % scale tethers
-thr.scale(lengthScaleFactor,densityScaleFactor);
+% thr.scale(lengthScaleFactor,densityScaleFactor);
 % scale winches
-wnch.scale(lengthScaleFactor,densityScaleFactor);
+% wnch.scale(lengthScaleFactor,densityScaleFactor);
 % scale controller
-fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
+% fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
 %% Run the simulation
 % load_system('OCTModel')
 % set_param('OCTModel','Profile','off')
-simWithMonitor('OCTModel',2)
+simWithMonitor('OCTModel')
+parseLogsout
 
 plotAyaz
 

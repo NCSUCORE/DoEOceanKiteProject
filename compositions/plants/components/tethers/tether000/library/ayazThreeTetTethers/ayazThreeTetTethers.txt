@@ -11,100 +11,18 @@ thr.maxPercentageElongation.NoScale = false
 thr.maxAppFlowMultiplier.Value = 2.0000e+00
 thr.maxAppFlowMultiplier.Unit is unitless or has no unit specified
 thr.maxAppFlowMultiplier.NoScale = false
-thr.tether2.numNodes.Value = 2.0000e+00
-thr.tether2.numNodes.Unit is unitless or has no unit specified
-thr.tether2.numNodes.NoScale = true
-thr.tether2.diameter.Value = 1.0607e-02
-thr.tether2.diameter.Unit = 'm'
-thr.tether2.diameter.NoScale = false
-thr.tether2.youngsMod.Value = 4.0000e+09
-thr.tether2.youngsMod.Unit = 'Pa'
-thr.tether2.youngsMod.NoScale = false
-thr.tether2.vehicleMass.Unit = 'kg'
-thr.tether2.vehicleMass.NoScale = false
-thr.tether2.dampingRatio.Value = 5.0000e-02
-thr.tether2.dampingRatio.Unit is unitless or has no unit specified
-thr.tether2.dampingRatio.NoScale = false
-thr.tether2.dragCoeff.Value = 5.0000e-01
-thr.tether2.dragCoeff.Unit is unitless or has no unit specified
-thr.tether2.dragCoeff.NoScale = false
-thr.tether2.density.Value = 1.3000e+03
-thr.tether2.density.Unit = 'kg/m^3'
-thr.tether2.density.NoScale = false
-thr.tether2.initGndNodePos.Unit = 'm'
-thr.tether2.initGndNodePos.NoScale = false
-thr.tether2.initAirNodePos.Unit = 'm'
-thr.tether2.initAirNodePos.NoScale = false
-thr.tether2.initGndNodeVel.Unit = 'm/s'
-thr.tether2.initGndNodeVel.NoScale = false
-thr.tether2.initAirNodeVel.Unit = 'm/s'
-thr.tether2.initAirNodeVel.NoScale = false
-thr.tether2.initNodePos.Unit = 'm'
-thr.tether2.initNodePos.NoScale = false
-thr.tether2.initNodeVel.Unit = 'm/s'
-thr.tether2.initNodeVel.NoScale = false
-thr.tether2.dragEnable.Value = true
-thr.tether2.dragEnable.Unit is unitless or has no unit specified
-thr.tether2.dragEnable.NoScale = true
-thr.tether2.springDamperEnable.Value = true
-thr.tether2.springDamperEnable.Unit is unitless or has no unit specified
-thr.tether2.springDamperEnable.NoScale = true
-thr.tether2.netBuoyEnable.Value = false
-thr.tether2.netBuoyEnable.Unit is unitless or has no unit specified
-thr.tether2.netBuoyEnable.NoScale = true
-thr.tether3.numNodes.Value = 2.0000e+00
-thr.tether3.numNodes.Unit is unitless or has no unit specified
-thr.tether3.numNodes.NoScale = true
-thr.tether3.diameter.Value = 7.5000e-03
-thr.tether3.diameter.Unit = 'm'
-thr.tether3.diameter.NoScale = false
-thr.tether3.youngsMod.Value = 4.0000e+09
-thr.tether3.youngsMod.Unit = 'Pa'
-thr.tether3.youngsMod.NoScale = false
-thr.tether3.vehicleMass.Unit = 'kg'
-thr.tether3.vehicleMass.NoScale = false
-thr.tether3.dampingRatio.Value = 5.0000e-02
-thr.tether3.dampingRatio.Unit is unitless or has no unit specified
-thr.tether3.dampingRatio.NoScale = false
-thr.tether3.dragCoeff.Value = 5.0000e-01
-thr.tether3.dragCoeff.Unit is unitless or has no unit specified
-thr.tether3.dragCoeff.NoScale = false
-thr.tether3.density.Value = 1.3000e+03
-thr.tether3.density.Unit = 'kg/m^3'
-thr.tether3.density.NoScale = false
-thr.tether3.initGndNodePos.Unit = 'm'
-thr.tether3.initGndNodePos.NoScale = false
-thr.tether3.initAirNodePos.Unit = 'm'
-thr.tether3.initAirNodePos.NoScale = false
-thr.tether3.initGndNodeVel.Unit = 'm/s'
-thr.tether3.initGndNodeVel.NoScale = false
-thr.tether3.initAirNodeVel.Unit = 'm/s'
-thr.tether3.initAirNodeVel.NoScale = false
-thr.tether3.initNodePos.Unit = 'm'
-thr.tether3.initNodePos.NoScale = false
-thr.tether3.initNodeVel.Unit = 'm/s'
-thr.tether3.initNodeVel.NoScale = false
-thr.tether3.dragEnable.Value = true
-thr.tether3.dragEnable.Unit is unitless or has no unit specified
-thr.tether3.dragEnable.NoScale = true
-thr.tether3.springDamperEnable.Value = true
-thr.tether3.springDamperEnable.Unit is unitless or has no unit specified
-thr.tether3.springDamperEnable.NoScale = true
-thr.tether3.netBuoyEnable.Value = false
-thr.tether3.netBuoyEnable.Unit is unitless or has no unit specified
-thr.tether3.netBuoyEnable.NoScale = true
 thr.tether1.numNodes.Value = 2.0000e+00
 thr.tether1.numNodes.Unit is unitless or has no unit specified
 thr.tether1.numNodes.NoScale = true
-thr.tether1.diameter.Value = 7.5000e-03
+thr.tether1.diameter.Value = 4.5000e-04
 thr.tether1.diameter.Unit = 'm'
 thr.tether1.diameter.NoScale = false
-thr.tether1.youngsMod.Value = 4.0000e+09
+thr.tether1.youngsMod.Value = 7.5000e+07
 thr.tether1.youngsMod.Unit = 'Pa'
 thr.tether1.youngsMod.NoScale = false
 thr.tether1.vehicleMass.Unit = 'kg'
 thr.tether1.vehicleMass.NoScale = false
-thr.tether1.dampingRatio.Value = 5.0000e-02
+thr.tether1.dampingRatio.Value = 1.0000e-01
 thr.tether1.dampingRatio.Unit is unitless or has no unit specified
 thr.tether1.dampingRatio.NoScale = false
 thr.tether1.dragCoeff.Value = 5.0000e-01
@@ -131,6 +49,88 @@ thr.tether1.dragEnable.NoScale = true
 thr.tether1.springDamperEnable.Value = true
 thr.tether1.springDamperEnable.Unit is unitless or has no unit specified
 thr.tether1.springDamperEnable.NoScale = true
-thr.tether1.netBuoyEnable.Value = false
+thr.tether1.netBuoyEnable.Value = true
 thr.tether1.netBuoyEnable.Unit is unitless or has no unit specified
 thr.tether1.netBuoyEnable.NoScale = true
+thr.tether3.numNodes.Value = 2.0000e+00
+thr.tether3.numNodes.Unit is unitless or has no unit specified
+thr.tether3.numNodes.NoScale = true
+thr.tether3.diameter.Value = 4.5000e-04
+thr.tether3.diameter.Unit = 'm'
+thr.tether3.diameter.NoScale = false
+thr.tether3.youngsMod.Value = 7.5000e+07
+thr.tether3.youngsMod.Unit = 'Pa'
+thr.tether3.youngsMod.NoScale = false
+thr.tether3.vehicleMass.Unit = 'kg'
+thr.tether3.vehicleMass.NoScale = false
+thr.tether3.dampingRatio.Value = 1.0000e-01
+thr.tether3.dampingRatio.Unit is unitless or has no unit specified
+thr.tether3.dampingRatio.NoScale = false
+thr.tether3.dragCoeff.Value = 5.0000e-01
+thr.tether3.dragCoeff.Unit is unitless or has no unit specified
+thr.tether3.dragCoeff.NoScale = false
+thr.tether3.density.Value = 1.3000e+03
+thr.tether3.density.Unit = 'kg/m^3'
+thr.tether3.density.NoScale = false
+thr.tether3.initGndNodePos.Unit = 'm'
+thr.tether3.initGndNodePos.NoScale = false
+thr.tether3.initAirNodePos.Unit = 'm'
+thr.tether3.initAirNodePos.NoScale = false
+thr.tether3.initGndNodeVel.Unit = 'm/s'
+thr.tether3.initGndNodeVel.NoScale = false
+thr.tether3.initAirNodeVel.Unit = 'm/s'
+thr.tether3.initAirNodeVel.NoScale = false
+thr.tether3.initNodePos.Unit = 'm'
+thr.tether3.initNodePos.NoScale = false
+thr.tether3.initNodeVel.Unit = 'm/s'
+thr.tether3.initNodeVel.NoScale = false
+thr.tether3.dragEnable.Value = true
+thr.tether3.dragEnable.Unit is unitless or has no unit specified
+thr.tether3.dragEnable.NoScale = true
+thr.tether3.springDamperEnable.Value = true
+thr.tether3.springDamperEnable.Unit is unitless or has no unit specified
+thr.tether3.springDamperEnable.NoScale = true
+thr.tether3.netBuoyEnable.Value = true
+thr.tether3.netBuoyEnable.Unit is unitless or has no unit specified
+thr.tether3.netBuoyEnable.NoScale = true
+thr.tether2.numNodes.Value = 2.0000e+00
+thr.tether2.numNodes.Unit is unitless or has no unit specified
+thr.tether2.numNodes.NoScale = true
+thr.tether2.diameter.Value = 4.5000e-04
+thr.tether2.diameter.Unit = 'm'
+thr.tether2.diameter.NoScale = false
+thr.tether2.youngsMod.Value = 7.5000e+07
+thr.tether2.youngsMod.Unit = 'Pa'
+thr.tether2.youngsMod.NoScale = false
+thr.tether2.vehicleMass.Unit = 'kg'
+thr.tether2.vehicleMass.NoScale = false
+thr.tether2.dampingRatio.Value = 1.0000e-01
+thr.tether2.dampingRatio.Unit is unitless or has no unit specified
+thr.tether2.dampingRatio.NoScale = false
+thr.tether2.dragCoeff.Value = 5.0000e-01
+thr.tether2.dragCoeff.Unit is unitless or has no unit specified
+thr.tether2.dragCoeff.NoScale = false
+thr.tether2.density.Value = 1.3000e+03
+thr.tether2.density.Unit = 'kg/m^3'
+thr.tether2.density.NoScale = false
+thr.tether2.initGndNodePos.Unit = 'm'
+thr.tether2.initGndNodePos.NoScale = false
+thr.tether2.initAirNodePos.Unit = 'm'
+thr.tether2.initAirNodePos.NoScale = false
+thr.tether2.initGndNodeVel.Unit = 'm/s'
+thr.tether2.initGndNodeVel.NoScale = false
+thr.tether2.initAirNodeVel.Unit = 'm/s'
+thr.tether2.initAirNodeVel.NoScale = false
+thr.tether2.initNodePos.Unit = 'm'
+thr.tether2.initNodePos.NoScale = false
+thr.tether2.initNodeVel.Unit = 'm/s'
+thr.tether2.initNodeVel.NoScale = false
+thr.tether2.dragEnable.Value = true
+thr.tether2.dragEnable.Unit is unitless or has no unit specified
+thr.tether2.dragEnable.NoScale = true
+thr.tether2.springDamperEnable.Value = true
+thr.tether2.springDamperEnable.Unit is unitless or has no unit specified
+thr.tether2.springDamperEnable.NoScale = true
+thr.tether2.netBuoyEnable.Value = true
+thr.tether2.netBuoyEnable.Unit is unitless or has no unit specified
+thr.tether2.netBuoyEnable.NoScale = true

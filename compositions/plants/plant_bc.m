@@ -1,6 +1,9 @@
 function plant_bc
 % Creates output bus used by allActuatorCtrl_cl
 
+numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
+
+
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'positionVec';
 elems(1).Dimensions = [3 1];
@@ -117,6 +120,7 @@ elems(13).Complexity = 'real';
 elems(14) = Simulink.BusElement;
 elems(14).Name = 'tetherReleaseSpeeds';
 elems(14).DimensionsMode = 'Fixed';
+elems(14).Dimensions = [numTethers 1];
 elems(14).DataType = 'double';
 elems(14).SampleTime = -1;
 elems(14).Complexity = 'real';
