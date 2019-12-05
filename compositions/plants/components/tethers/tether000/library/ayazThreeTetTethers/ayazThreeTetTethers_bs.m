@@ -20,8 +20,8 @@ thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thrDia = 0.03;
-thrYoungs = 40e9;
+thrDia = 0.035;
+thrYoungs = 50e9;
 thrDamping = 0.05;
 thrDensity = 1300;
 thrDragCoeff = 1*0.8;

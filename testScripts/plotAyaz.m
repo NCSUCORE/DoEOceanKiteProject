@@ -138,6 +138,23 @@ set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
     {'Port wing','Stbd wing','H-stab','V-stab'},...
     'Angle (deg)','Angle of attack');
+
+% % % kite angle of attack
+AoA = NaN*time;
+Vrel_Bdy = squeeze(tsc.VflowBdy.Data - tsc.VcmBdy.Data);
+for ii = 1:numel(time)
+    AoA(ii) = (180/pi)*atan2(Vrel_Bdy(3,ii),Vrel_Bdy(1,ii));
+end
+
+fn = fn + 1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+
+vectorPlotter(time,AoA,plotProps,...
+    {'$\alpha$'},'Angle (deg)','Angle of attack');
+
+
+
 % 
 % fn = fn+1;
 % figure(fn)
@@ -190,6 +207,20 @@ set(gcf,'Position',locs(fn,:))
 vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
 
+
+% % % % ratio of wing drag to fuselage drag
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:));
+wingDrag = squeeze(sum(tsc.FDragBdyPart.Data(:,1:2,:),2));
+wingToFuseDragRatio = sqrt(sum(wingDrag.^2,1))./...
+    sqrt(sum(squeeze(tsc.FFuseBdy.Data).^2,1));
+
+vectorPlotter(time,wingToFuseDragRatio(1,:),plotProps,...
+    {'R'},'Ratio','Wing over Fuselage drag');
+
+%%%%%%
 set(findobj('Type','axes'),'XLim',[0 time(end)]);
+
 
 

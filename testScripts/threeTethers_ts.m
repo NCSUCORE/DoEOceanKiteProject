@@ -8,7 +8,7 @@ cd(fileparts(mfilename('fullpath')));
 lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
-simTime = 500;
+simTime = 490;
 sim = SIM.sim;
 sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
@@ -30,9 +30,10 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
+iniX = 0;
 pitchSP = 6;
 % % % initial conditions
-vhcl.setInitPosVecGnd([0;0;altiSP],'m');
+vhcl.setInitPosVecGnd([iniX;0;altiSP],'m');
 vhcl.setInitVelVecBdy([0;0;0],'m/s');
 vhcl.setInitEulAng([0;pitchSP;0]*pi/180,'rad');
 vhcl.setInitAngVelVec([0;0;0],'rad/s');

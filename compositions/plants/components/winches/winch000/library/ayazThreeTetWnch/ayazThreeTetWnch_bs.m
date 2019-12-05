@@ -15,7 +15,7 @@ Lscale = 0.015;
 maxMotorSpeedRPM = 1.0*35;
 pulleyDia = 30.3e-3;
 maxReleaseSpeed = (maxMotorSpeedRPM/60)*pulleyDia;
-timeConstant = 0.01;
+timeConstant = 0.0001;
 motorEfficiency = 1;
 generatorEfficiency = 1;
 
