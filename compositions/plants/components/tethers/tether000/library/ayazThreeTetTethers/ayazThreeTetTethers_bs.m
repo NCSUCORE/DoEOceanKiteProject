@@ -21,36 +21,38 @@ thr.build;
 
 % Set parameter values
 thrDia = 0.03;
-thrYoungs = 5e9;
-thrDamping = 0.1;
+thrYoungs = 40e9;
+thrDamping = 0.05;
 thrDensity = 1300;
-thrDragCoeff = 0.5;
+thrDragCoeff = 1*0.8;
+dragSwitch = true;
+buoySwitch = false;
 
 thr.tether1.youngsMod.setValue(thrYoungs,'Pa');
 thr.tether1.dampingRatio.setValue(thrDamping,'');
 thr.tether1.dragCoeff.setValue(thrDragCoeff,'');
 thr.tether1.density.setValue(thrDensity,'kg/m^3');
-thr.tether1.setDragEnable(true,'');
+thr.tether1.setDragEnable(dragSwitch,'');
 thr.tether1.setSpringDamperEnable(true,'');
-thr.tether1.setNetBuoyEnable(true,'');
+thr.tether1.setNetBuoyEnable(buoySwitch,'');
 thr.tether1.setDiameter(thrDia,'m');
 
 thr.tether2.youngsMod.setValue(thrYoungs,'Pa');
 thr.tether2.dampingRatio.setValue(thrDamping,'');
 thr.tether2.dragCoeff.setValue(thrDragCoeff,'');
 thr.tether2.density.setValue(thrDensity,'kg/m^3');
-thr.tether2.setDragEnable(true,'');
+thr.tether2.setDragEnable(dragSwitch,'');
 thr.tether2.setSpringDamperEnable(true,'');
-thr.tether2.setNetBuoyEnable(true,'');
+thr.tether2.setNetBuoyEnable(buoySwitch,'');
 thr.tether2.setDiameter(thrDia,'m');
 
 thr.tether3.youngsMod.setValue(thrYoungs,'Pa');
 thr.tether3.dampingRatio.setValue(thrDamping,'');
 thr.tether3.dragCoeff.setValue(thrDragCoeff,'');
 thr.tether3.density.setValue(thrDensity,'kg/m^3');
-thr.tether3.setDragEnable(true,'');
+thr.tether3.setDragEnable(dragSwitch,'');
 thr.tether3.setSpringDamperEnable(true,'');
-thr.tether3.setNetBuoyEnable(true,'');
+thr.tether3.setNetBuoyEnable(buoySwitch,'');
 thr.tether3.setDiameter(thrDia,'m');
 
 % check if all the initial conditions are empty

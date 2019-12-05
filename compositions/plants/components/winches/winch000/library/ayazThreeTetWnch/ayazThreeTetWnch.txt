@@ -1,6 +1,29 @@
 wnch.numWinches.Value = 3.0000e+00
 wnch.numWinches.Unit is unitless or has no unit specified
 wnch.numWinches.NoScale = true
+wnch.winch1.initLength.Unit = 'm'
+wnch.winch1.initLength.NoScale = false
+wnch.winch1.maxSpeed.Value = 1.7675e-02
+wnch.winch1.maxSpeed.Unit = 'm/s'
+wnch.winch1.maxSpeed.NoScale = false
+wnch.winch1.timeConst.Value = 1.0000e-02
+wnch.winch1.timeConst.Unit = 's'
+wnch.winch1.timeConst.NoScale = false
+wnch.winch1.maxAccel.Value = Inf
+wnch.winch1.maxAccel.Unit = 'm/s^2'
+wnch.winch1.maxAccel.NoScale = false
+wnch.winch1.motorEfficiency.Value = 1.0000e+00
+wnch.winch1.motorEfficiency.Unit is unitless or has no unit specified
+wnch.winch1.motorEfficiency.NoScale = false
+wnch.winch1.motorEfficiency.Min = 0.0000e+00
+wnch.winch1.motorEfficiency.Max = 1.0000e+00
+wnch.winch1.motorEfficiency.Description = 'Electromechanical efficiency of winches during spool in, default = 0.95'
+wnch.winch1.generatorEfficiency.Value = 1.0000e+00
+wnch.winch1.generatorEfficiency.Unit is unitless or has no unit specified
+wnch.winch1.generatorEfficiency.NoScale = false
+wnch.winch1.generatorEfficiency.Min = 0.0000e+00
+wnch.winch1.generatorEfficiency.Max = 1.0000e+00
+wnch.winch1.generatorEfficiency.Description = 'Electromechanical regenerative efficiency of winches during spool out, default = 0.90'
 wnch.winch3.initLength.Unit = 'm'
 wnch.winch3.initLength.NoScale = false
 wnch.winch3.maxSpeed.Value = 1.7675e-02
@@ -47,26 +70,3 @@ wnch.winch2.generatorEfficiency.NoScale = false
 wnch.winch2.generatorEfficiency.Min = 0.0000e+00
 wnch.winch2.generatorEfficiency.Max = 1.0000e+00
 wnch.winch2.generatorEfficiency.Description = 'Electromechanical regenerative efficiency of winches during spool out, default = 0.90'
-wnch.winch1.initLength.Unit = 'm'
-wnch.winch1.initLength.NoScale = false
-wnch.winch1.maxSpeed.Value = 1.7675e-02
-wnch.winch1.maxSpeed.Unit = 'm/s'
-wnch.winch1.maxSpeed.NoScale = false
-wnch.winch1.timeConst.Value = 1.0000e-02
-wnch.winch1.timeConst.Unit = 's'
-wnch.winch1.timeConst.NoScale = false
-wnch.winch1.maxAccel.Value = Inf
-wnch.winch1.maxAccel.Unit = 'm/s^2'
-wnch.winch1.maxAccel.NoScale = false
-wnch.winch1.motorEfficiency.Value = 1.0000e+00
-wnch.winch1.motorEfficiency.Unit is unitless or has no unit specified
-wnch.winch1.motorEfficiency.NoScale = false
-wnch.winch1.motorEfficiency.Min = 0.0000e+00
-wnch.winch1.motorEfficiency.Max = 1.0000e+00
-wnch.winch1.motorEfficiency.Description = 'Electromechanical efficiency of winches during spool in, default = 0.95'
-wnch.winch1.generatorEfficiency.Value = 1.0000e+00
-wnch.winch1.generatorEfficiency.Unit is unitless or has no unit specified
-wnch.winch1.generatorEfficiency.NoScale = false
-wnch.winch1.generatorEfficiency.Min = 0.0000e+00
-wnch.winch1.generatorEfficiency.Max = 1.0000e+00
-wnch.winch1.generatorEfficiency.Description = 'Electromechanical regenerative efficiency of winches during spool out, default = 0.90'

@@ -9,6 +9,7 @@ format compact
 
 %% Set up controller
 FLIGHTCONTROLLER      = 'threeTetherThreeSurfaceCtrl';
+load('ayazThreeTetWnch.mat');
 
 % Create
 fltCtrl = CTR.controller;
@@ -19,8 +20,9 @@ fltCtrl.add('FPIDNames',{'tetherAlti','tetherPitch','tetherRoll','elevators','ai
     'FPIDOutputUnits',{'m/s','m/s','m/s','deg','deg','deg'});
 
 % add control allocation matrix (implemented as a simple gain)
-fltCtrl.add('GainNames',{'fltCtrlSurfAllocationMat','thrAllocationMat','ySwitch','rollAmp'},...
-    'GainUnits',{'','','m','deg'});
+fltCtrl.add('GainNames',{'fltCtrlSurfAllocationMat','thrAllocationMat','ySwitch',...
+    'rollAmp','rollPeriod'},...
+    'GainUnits',{'','','m','deg','s'});
 
 % add output saturation
 fltCtrl.add('SaturationNames',{'outputSat'});
@@ -29,14 +31,19 @@ fltCtrl.add('SaturationNames',{'outputSat'});
 fltCtrl.add('SetpointNames',{'altiSP','pitchSP','yawSP'},...
     'SetpointUnits',{'m','deg','deg'});
 
+% winch max speed
+maxReleaseSpeed = wnch.winch1.maxSpeed.Value;
+
 % tether controllers
-fltCtrl.tetherAlti.kp.setValue(0.0,'(m/s)/(m)');
+aKp = 1.5*maxReleaseSpeed;
+pKp = 1*maxReleaseSpeed;
+rKp = 2*maxReleaseSpeed;
+
+fltCtrl.tetherAlti.kp.setValue(aKp,'(m/s)/(m)');
 fltCtrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
 fltCtrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
 fltCtrl.tetherAlti.tau.setValue(2,'s');
 
-pKp = 1;
-rKp = 2;
 fltCtrl.tetherPitch.kp.setValue(pKp,'(m/s)/(rad)');
 fltCtrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
 fltCtrl.tetherPitch.kd.setValue(2*pKp,'(m/s)/(rad/s)');

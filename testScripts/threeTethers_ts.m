@@ -8,9 +8,9 @@ cd(fileparts(mfilename('fullpath')));
 lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
-simTime = 70;
+simTime = 500;
 sim = SIM.sim;
-sim.setDuration(70*sqrt(lengthScaleFactor),'s');
+sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
 %% Set up simulation
 GNDSTNCONTROLLER      = 'oneDoF';
@@ -30,10 +30,11 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
+pitchSP = 6;
 % % % initial conditions
 vhcl.setInitPosVecGnd([0;0;altiSP],'m');
 vhcl.setInitVelVecBdy([0;0;0],'m/s');
-vhcl.setInitEulAng([0;11;0]*pi/180,'rad');
+vhcl.setInitEulAng([0;pitchSP;0]*pi/180,'rad');
 vhcl.setInitAngVelVec([0;0;0],'rad/s');
 
 % % % plot
@@ -56,7 +57,8 @@ load('ayazThreeTetTethers.mat')
 % set initial conditions
 for ii = 1:3
     thr.(strcat('tether',num2str(ii))).initGndNodePos.setValue...
-        (gndStn.(strcat('thrAttch',num2str(ii))).posVec.Value(:),'m');
+        (gndStn.posVec.Value + ...
+        gndStn.(strcat('thrAttch',num2str(ii))).posVec.Value(:),'m');
     thr.(strcat('tether',num2str(ii))).initAirNodePos.setValue...
         (vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts(ii).posVec.Value,'m');
     thr.(strcat('tether',num2str(ii))).initGndNodeVel.setValue([0 0 0]','m/s');
@@ -77,18 +79,19 @@ dynamicCalc = '';
 %% Set up controller
 load('ayazThreeTetCtrl.mat');
 
-rollAmp = 12;
-rollPeriod = 9;
-initialDelay = 16.7;
+altitudeCtrlShutOffDelay = 400;
+expDelay = 20;
+initialDelay = altitudeCtrlShutOffDelay + expDelay;
 
 % switching values
-fltCtrl.ySwitch.setValue(3,'m');
+fltCtrl.ySwitch.setValue(0,'m'); % set to 0 to execute simple square wave tracking
 fltCtrl.rollAmp.setValue(12,'deg');
+fltCtrl.rollPeriod.setValue(5,'s');
 
 % set setpoints
-timeVec = 0:0.001*sqrt(lengthScaleFactor):simTime;
+timeVec = 0:0.005*sqrt(lengthScaleFactor):simTime;
 fltCtrl.altiSP.setValue(altiSP*ones(size(timeVec)),'m',timeVec);
-fltCtrl.pitchSP.setValue(11*ones(size(timeVec)),'deg',timeVec);
+fltCtrl.pitchSP.setValue(pitchSP*ones(size(timeVec)),'deg',timeVec);
 fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 
 %% scale 

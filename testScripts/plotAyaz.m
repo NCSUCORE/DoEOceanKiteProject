@@ -17,7 +17,7 @@ Lscale = lengthScaleFactor;
 Dscale = densityScaleFactor;
 
 % % % extract the important variables into dummy variables
-time = tsc.positionVec.Time.*(1/Lscale^0.5);
+time = tsc.positionVec.Time.*(1/Lscale^0.5)-altitudeCtrlShutOffDelay;
 sol_Rcm_o = squeeze(tsc.positionVec.Data).*(1/Lscale);
 sol_Vcmo = squeeze(tsc.velocityVec.Data).*(1/Lscale^0.5);
 sol_euler = squeeze(tsc.eulerAngles.Data);
@@ -85,18 +85,18 @@ subplot(3,1,3)
 plot(time,squeeze(tsc.yawSetpoint.Data),'k--',...
     'DisplayName','$\theta_{sp}$');
 end
-% %% other angles
-% % elevation angle
-% elevAngle = (180/pi)*atan2(sol_Rcm_o(3,:),sqrt(sum(sol_Rcm_o(1:2,:).^2,1)));
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% 
-% % azimuth angle
-% azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
-% 
-% vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
-%     {'Elevation','Azimuth'},'Angle (deg)','Other angles');
+%% other angles
+% elevation angle
+elevAngle = (180/pi)*atan2(sol_Rcm_o(3,:),sqrt(sum(sol_Rcm_o(1:2,:).^2,1)));
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+
+% azimuth angle
+azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
+
+vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
+    {'Elevation','Azimuth'},'Angle (deg)','Other angles');
 % % 
 % % % % % angular velocities
 % % fn = fn+1;
@@ -131,13 +131,13 @@ end
 
 
 %% local forces
-% % % angle of attack
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
-%     {'Port wing','Stbd wing','H-stab','V-stab'},...
-%     'Angle (deg)','Angle of attack');
+% % angle of attack
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
+    {'Port wing','Stbd wing','H-stab','V-stab'},...
+    'Angle (deg)','Angle of attack');
 % 
 % fn = fn+1;
 % figure(fn)
@@ -184,12 +184,12 @@ end
 %     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
 % 
 % % % % total forces
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
-%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
+    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
 
-
+set(findobj('Type','axes'),'XLim',[0 time(end)]);
 
 

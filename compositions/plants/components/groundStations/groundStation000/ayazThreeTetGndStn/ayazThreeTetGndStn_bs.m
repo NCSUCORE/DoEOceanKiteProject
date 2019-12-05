@@ -17,7 +17,7 @@ gndStn.build;
 
 % Set values
 gndStn.inertia.setValue(1,'kg*m^2');
-gndStn.posVec.setValue([0 0 0],'m');
+gndStn.posVec.setValue(1e-2*[0 0 0],'m');
 gndStn.dampCoeff.setValue(100,'(N*m)/(rad/s)');
 gndStn.thrAttch1.setPosVec([0 0 0]','m');
 gndStn.thrAttch2.setPosVec([0 0 0]','m');

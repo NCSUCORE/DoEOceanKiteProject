@@ -169,24 +169,24 @@ classdef winches < dynamicprops
 %                     error('Init tether length calculation has been changed and this portion of the code is not updated')
                     L1 = norm(thr.tether1.initAirNodePos.Value - ...
                         thr.tether1.initGndNodePos.Value);
-                    delta_L1 = (sum_F/4)/(L1*thr.tether1.youngsMod.Value*...
+                    delta_L1 = -(sum_F/4)/(L1*thr.tether1.youngsMod.Value*...
                         (pi/4)*thr.tether1.diameter.Value^2);
                     
-                    obj.winch1.initLength.setValue(L1 + delta_L1,obj.winch1.initLength.Unit);
+                    obj.winch1.initLength.setValue(L1 + 1*delta_L1,obj.winch1.initLength.Unit);
                     % winch 2
                     L2 = norm(thr.tether2.initAirNodePos.Value - ...
                         thr.tether2.initGndNodePos.Value);
-                    delta_L2 = (sum_F/2)/(L2*thr.tether2.youngsMod.Value*...
+                    delta_L2 = -(sum_F/2)/(L2*thr.tether2.youngsMod.Value*...
                         (pi/4)*thr.tether2.diameter.Value^2);
                     
-                    obj.winch2.initLength.setValue(L2 + delta_L2,obj.winch2.initLength.Unit);
+                    obj.winch2.initLength.setValue(L2 + 1*delta_L2,obj.winch2.initLength.Unit);
                     % winch 3
                     L3 = norm(thr.tether3.initAirNodePos.Value - ...
                         thr.tether3.initGndNodePos.Value);
-                    delta_L3 = (sum_F/4)/(L3*thr.tether3.youngsMod.Value*...
+                    delta_L3 = -(sum_F/4)/(L3*thr.tether3.youngsMod.Value*...
                         (pi/4)*thr.tether3.diameter.Value^2);
                     
-                    obj.winch3.initLength.setValue(L3 + delta_L3,obj.winch3.initLength.Unit);
+                    obj.winch3.initLength.setValue(L3 + 1*delta_L3,obj.winch3.initLength.Unit);
                     
                 otherwise
                     error(['Method not progerammed for %d winches.',thr.numWinches.Value])

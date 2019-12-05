@@ -37,6 +37,8 @@ vhcl.setRbridle_cm([0;0;0],'m');
 vhcl.setAddedMISwitch(true,'');
 
 % % % wing
+Clmax = 1.7;
+
 vhcl.setRwingLE_cm([-xCM_LE;0;0]*(1/Lscale),'m');
 vhcl.setWingChord(15e-3*(1/Lscale),'m');
 vhcl.setWingAR(10,'');
@@ -45,8 +47,8 @@ vhcl.setWingSweep(2.3,'deg');
 vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
 vhcl.setWingNACA('2412','');
-vhcl.setWingClMax(1.4,'');
-vhcl.setWingClMin(-1.4,'');
+vhcl.setWingClMax(Clmax,'');
+vhcl.setWingClMin(-Clmax,'');
 
 % % % H-stab
 vhcl.setRhsLE_wingLE([67.5e-3;0;0]*(1/Lscale),'m');
@@ -57,8 +59,8 @@ vhcl.setHsSweep(2.8624,'deg');
 vhcl.setHsDihedral(0,'deg');
 vhcl.setHsIncidence(0,'deg');
 vhcl.setHsNACA('0015','');
-vhcl.setHsClMaxl(1.4,'');
-vhcl.setHsClMin(-1.4,'');
+vhcl.setHsClMaxl(Clmax,'');
+vhcl.setHsClMin(-Clmax,'');
 
 % % % V-stab
 vhcl.setRvs_wingLE([65.25e-3;0;0]*(1/Lscale),'m');
@@ -67,17 +69,17 @@ vhcl.setVsSpan(36.5625e-3*(1/Lscale),'m');
 vhcl.setVsTR(0.8,'');
 vhcl.setVsSweep(3.44,'deg');
 vhcl.setVsNACA('0015','');
-vhcl.setVsClMax(1.4,'');
-vhcl.setVsClMin(-1.4,'');
+vhcl.setVsClMax(Clmax,'');
+vhcl.setVsClMin(-Clmax,'');
 
 % % % Fuselage (could use more realistic numbers)
 vhcl.setFuseDiameter(2*4.9e-3*(1/Lscale),'m')
-vhcl.setFuseEndDragCoeff(0.8,'')
-vhcl.setFuseSideDragCoeff(0.6,'')
+vhcl.setFuseEndDragCoeff(0.2,'')
+vhcl.setFuseSideDragCoeff(0.4,'')
 vhcl.setFuseRCmToNose([-58.55e-3;0;0]*(1/Lscale),'m')
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS3','');
+vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
