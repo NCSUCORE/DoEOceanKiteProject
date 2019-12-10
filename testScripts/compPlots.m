@@ -56,7 +56,7 @@ figure(fn)
 set(gcf,'Position',locs(fn,:));
 Rconfluence_o = [-10;0;0];
 
-cmDat = gndStn.posVec.Value(:) + squeeze(tscExp.CoMPosVec_cm.data)./100;
+cmDat = 0.6*gndStn.posVec.Value(:) + squeeze(tscExp.CoMPosVec_cm.data)./100;
 
 vectorPlotter(timeExp(tPlot),cmDat(:,tPlot),plotPropsExp,...
     {'$x_{cm,exp}$','$y_{cm,exp}$','$z_{cm,exp}$'},'Position (m)','');
@@ -72,7 +72,10 @@ vectorPlotter(timeSim,tscSim.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotPropsSim
     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
 
 mtrCmd = squeeze(tscExp.mtrCmds.Data);
-mtrCmd = mtrCmd([1 3 2],:);
+mtrCmd = mtrCmd([2 3 1],:);
+mtrCmd(mtrCmd>1) = 1;
+mtrCmd(mtrCmd<-1) = -1;
+mtrCmd = wnch.winch1.maxSpeed.Value.*mtrCmd;
 
 vectorPlotter(timeExp(tPlot),mtrCmd(:,tPlot),plotPropsExp,...
     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');

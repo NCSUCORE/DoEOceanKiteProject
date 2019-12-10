@@ -637,7 +637,7 @@ classdef vehicle < dynamicprops
                     
                 case 3
                     port_thr = obj.surfaceOutlines.port_wing.Value(:,2)-...
-                        [obj.wingChord.Value;0;0];
+                        1.2*[obj.wingChord.Value;0;0];
                     %                        + [obj.wingChord.Value*obj.wingTR.Value/2;0;0];
                     
                     aft_thr = obj.RwingLE_cm.Value + ...

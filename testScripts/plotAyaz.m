@@ -51,7 +51,7 @@ for jj = 1:max_vert
         kk = kk+1;
     end
 end
-locs = repmat(locs,5,1);
+locs = repmat(locs,20,1);
 
 % % % cm position and set points
 fn = 1;

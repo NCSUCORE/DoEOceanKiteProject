@@ -17,7 +17,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.18,'');
+vhcl.setBuoyFactor(1.19,'');
 
 % entering parameters for scaled model
 Lscale = 0.015;
