@@ -18,7 +18,8 @@ Dscale = densityScaleFactor;
 
 % % % extract the important variables into dummy variables
 time = tsc.positionVec.Time.*(1/Lscale^0.5)-altitudeCtrlShutOffDelay;
-sol_Rcm_o = squeeze(tsc.positionVec.Data).*(1/Lscale);
+sol_Rcm_o = repmat(gndStn.posVec.Value(:),1,numel(time))...
+    + squeeze(tsc.positionVec.Data).*(1/Lscale);
 sol_Vcmo = squeeze(tsc.velocityVec.Data).*(1/Lscale^0.5);
 sol_euler = squeeze(tsc.eulerAngles.Data);
 sol_OwB = squeeze(tsc.angularVel.Data).*(Lscale^0.5);
@@ -88,15 +89,14 @@ end
 %% other angles
 % elevation angle
 elevAngle = (180/pi)*atan2(sol_Rcm_o(3,:),sqrt(sum(sol_Rcm_o(1:2,:).^2,1)));
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-
 % azimuth angle
 azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
 
-vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
-    {'Elevation','Azimuth'},'Angle (deg)','Other angles');
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
+%     {'Elevation','Azimuth'},'Angle (deg)','Other angles');
 % % 
 % % % % % angular velocities
 % % fn = fn+1;
@@ -107,18 +107,18 @@ vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
 % 
 % 
 % %% plot control signals
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,tsc.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
-%     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
-% 
-% 
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
-%     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,tsc.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
+    {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
+
+
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
+    {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
 % % 
 % 
 % fn = fn+1;
@@ -131,30 +131,27 @@ vectorPlotter(time,[elevAngle;azimuthAngle],plotProps,...
 
 
 %% local forces
-% % angle of attack
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
-    {'Port wing','Stbd wing','H-stab','V-stab'},...
-    'Angle (deg)','Angle of attack');
-
-% % % kite angle of attack
-AoA = NaN*time;
-Vrel_Bdy = squeeze(tsc.VflowBdy.Data - tsc.VcmBdy.Data);
-for ii = 1:numel(time)
-    AoA(ii) = (180/pi)*atan2(Vrel_Bdy(3,ii),Vrel_Bdy(1,ii));
-end
-
-fn = fn + 1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-
-vectorPlotter(time,AoA,plotProps,...
-    {'$\alpha$'},'Angle (deg)','Angle of attack');
-
-
-
+% % % angle of attack
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(time,squeeze(tsc.alphaLocal.Data),plotProps,...
+%     {'Port wing','Stbd wing','H-stab','V-stab'},...
+%     'Angle (deg)','Angle of attack');
+% 
+% % % % kite angle of attack
+% AoA = NaN*time;
+% Vrel_Bdy = squeeze(tsc.VflowBdy.Data - tsc.VcmBdy.Data);
+% for ii = 1:numel(time)
+%     AoA(ii) = (180/pi)*atan2(Vrel_Bdy(3,ii),Vrel_Bdy(1,ii));
+% end
+% 
+% fn = fn + 1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% 
+% vectorPlotter(time,AoA,plotProps,...
+%     {'$\alpha$'},'Angle (deg)','Angle of attack');
 % 
 % fn = fn+1;
 % figure(fn)
@@ -194,11 +191,11 @@ vectorPlotter(time,AoA,plotProps,...
 %     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Buoyancy forces');
 % 
 % % % % tether forces
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(time,squeeze(tsc.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
-%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(time,squeeze(tsc.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
+    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
 % 
 % % % % total forces
 fn = fn+1;
@@ -209,15 +206,15 @@ vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
 
 
 % % % % ratio of wing drag to fuselage drag
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:));
-wingDrag = squeeze(sum(tsc.FDragBdyPart.Data(:,1:2,:),2));
-wingToFuseDragRatio = sqrt(sum(wingDrag.^2,1))./...
-    sqrt(sum(squeeze(tsc.FFuseBdy.Data).^2,1));
-
-vectorPlotter(time,wingToFuseDragRatio(1,:),plotProps,...
-    {'R'},'Ratio','Wing over Fuselage drag');
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:));
+% wingDrag = squeeze(sum(tsc.FDragBdyPart.Data(:,1:2,:),2));
+% wingToFuseDragRatio = sqrt(sum(wingDrag.^2,1))./...
+%     sqrt(sum(squeeze(tsc.FFuseBdy.Data).^2,1));
+% 
+% vectorPlotter(time,wingToFuseDragRatio(1,:),plotProps,...
+%     {'R'},'Ratio','Wing over Fuselage drag');
 
 %%%%%%
 set(findobj('Type','axes'),'XLim',[0 time(end)]);

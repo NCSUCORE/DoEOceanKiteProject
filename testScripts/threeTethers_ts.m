@@ -22,7 +22,7 @@ numTurbines = 2;
 
 load('constXYZT.mat')
 % Set Values
-vfdValue = 16;
+vfdValue = 18;
 flowSpeed = vfdInputToFlowSpeed(vfdValue);
 env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 
@@ -31,7 +31,8 @@ load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
 iniX = 0;
-pitchSP = 6;
+pitchSP = 11;
+
 % % % initial conditions
 vhcl.setInitPosVecGnd([iniX;0;altiSP],'m');
 vhcl.setInitVelVecBdy([0;0;0],'m/s');

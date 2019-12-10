@@ -17,7 +17,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.2,'');
+vhcl.setBuoyFactor(1.25,'');
 
 % entering parameters for scaled model
 Lscale = 0.015;
@@ -37,7 +37,7 @@ vhcl.setRbridle_cm([0;0;0],'m');
 vhcl.setAddedMISwitch(true,'');
 
 % % % wing
-Clmax = 1.7;
+Clmax = 2.5;
 
 vhcl.setRwingLE_cm([-xCM_LE;0;0]*(1/Lscale),'m');
 vhcl.setWingChord(15e-3*(1/Lscale),'m');
@@ -79,10 +79,24 @@ vhcl.setFuseSideDragCoeff(0.4,'')
 vhcl.setFuseRCmToNose([-58.55e-3;0;0]*(1/Lscale),'m')
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
+vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS12','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
+
+% % % artificially reduce lift
+reductionFactor = 0.8;
+incrementFactor = 1.5;
+
+vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
+vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
+vhcl.hStab.CL.setValue(reductionFactor*vhcl.hStab.CL.Value,'')
+vhcl.vStab.CL.setValue(reductionFactor*vhcl.vStab.CL.Value,'')
+
+vhcl.portWing.CD.setValue(incrementFactor*vhcl.portWing.CD.Value,'')
+vhcl.stbdWing.CD.setValue(incrementFactor*vhcl.stbdWing.CD.Value,'')
+vhcl.hStab.CD.setValue(incrementFactor*vhcl.hStab.CD.Value,'')
+vhcl.vStab.CD.setValue(incrementFactor*vhcl.vStab.CD.Value,'')
 
 % % % scale it back down to lab scale before saving
 vhcl.scale(Lscale,1);

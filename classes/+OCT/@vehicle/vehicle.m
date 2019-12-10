@@ -530,7 +530,7 @@ classdef vehicle < dynamicprops
             
             % store
             if obj.addedMISwitch.Value
-                val = SIM.parameter('Value',[m_added_x 0 0;0 m_added_y 0; 0 0 m_added_z],...
+                val = SIM.parameter('Value',1.0*[m_added_x 0 0;0 m_added_y 0; 0 0 m_added_z],...
                     'Unit','kg','Description','Added mass of the system in the body frame');
             else
                 val = SIM.parameter('Value',zeros(3),...
@@ -636,12 +636,14 @@ classdef vehicle < dynamicprops
                     
                     
                 case 3
-                    port_thr = obj.surfaceOutlines.port_wing.Value(:,2);
+                    port_thr = obj.surfaceOutlines.port_wing.Value(:,2)-...
+                        [obj.wingChord.Value;0;0];
                     %                        + [obj.wingChord.Value*obj.wingTR.Value/2;0;0];
                     
                     aft_thr = obj.RwingLE_cm.Value + ...
-                        [max(obj.RhsLE_wingLE.Value(1),obj.Rvs_wingLE.Value(1));0;0]...
-                        + [max(obj.hsChord.Value,obj.vsChord.Value);0;0];
+                        [min(obj.RhsLE_wingLE.Value(1),obj.Rvs_wingLE.Value(1));0;0];...
+%                         + [max(obj.hsChord.Value,obj.vsChord.Value);0;0] ...
+%                         -[obj.hsChord];
                     
                     stbd_thr = port_thr.*[1;-1;1];
                     

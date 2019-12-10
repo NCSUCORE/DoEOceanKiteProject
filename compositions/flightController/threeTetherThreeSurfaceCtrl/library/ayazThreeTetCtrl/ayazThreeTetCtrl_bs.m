@@ -52,7 +52,7 @@ fltCtrl.tetherPitch.tau.setValue(0.5,'s');
 fltCtrl.tetherRoll.kp.setValue(rKp,'(m/s)/(rad)');
 fltCtrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
 fltCtrl.tetherRoll.kd.setValue(2*rKp,'(m/s)/(rad/s)');
-fltCtrl.tetherRoll.tau.setValue(0.5,'s');
+fltCtrl.tetherRoll.tau.setValue(0.1,'s');
 
 fltCtrl.thrAllocationMat.setValue([1 .5 -.5; 1 -.5 0; 1 .5 .5],'');
 

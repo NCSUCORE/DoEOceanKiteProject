@@ -26,7 +26,7 @@ thrDamping = 0.05;
 thrDensity = 1300;
 thrDragCoeff = 1*0.8;
 dragSwitch = true;
-buoySwitch = false;
+buoySwitch = true;
 
 thr.tether1.youngsMod.setValue(thrYoungs,'Pa');
 thr.tether1.dampingRatio.setValue(thrDamping,'');
