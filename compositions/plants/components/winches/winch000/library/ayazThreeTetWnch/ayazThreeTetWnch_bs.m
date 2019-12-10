@@ -12,10 +12,10 @@ format compact
 WINCH                 = 'winch000';
 
 Lscale = 0.015;
-maxMotorSpeedRPM = 1.0*35;
+maxMotorSpeedRPM = 1.2*35;
 pulleyDia = 30.3e-3;
 maxReleaseSpeed = (maxMotorSpeedRPM/60)*pulleyDia;
-timeConstant = 0.0001;
+timeConstant = 0.00001;
 motorEfficiency = 1;
 generatorEfficiency = 1;
 

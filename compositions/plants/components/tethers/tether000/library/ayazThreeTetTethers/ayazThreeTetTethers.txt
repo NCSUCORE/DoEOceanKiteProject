@@ -14,7 +14,7 @@ thr.maxAppFlowMultiplier.NoScale = false
 thr.tether1.numNodes.Value = 2.0000e+00
 thr.tether1.numNodes.Unit is unitless or has no unit specified
 thr.tether1.numNodes.NoScale = true
-thr.tether1.diameter.Value = 5.2500e-04
+thr.tether1.diameter.Value = 4.9500e-04
 thr.tether1.diameter.Unit = 'm'
 thr.tether1.diameter.NoScale = false
 thr.tether1.youngsMod.Value = 7.5000e+08
@@ -25,7 +25,7 @@ thr.tether1.vehicleMass.NoScale = false
 thr.tether1.dampingRatio.Value = 5.0000e-02
 thr.tether1.dampingRatio.Unit is unitless or has no unit specified
 thr.tether1.dampingRatio.NoScale = false
-thr.tether1.dragCoeff.Value = 8.0000e-01
+thr.tether1.dragCoeff.Value = 1.0000e+00
 thr.tether1.dragCoeff.Unit is unitless or has no unit specified
 thr.tether1.dragCoeff.NoScale = false
 thr.tether1.density.Value = 1.3000e+03
@@ -55,7 +55,7 @@ thr.tether1.netBuoyEnable.NoScale = true
 thr.tether3.numNodes.Value = 2.0000e+00
 thr.tether3.numNodes.Unit is unitless or has no unit specified
 thr.tether3.numNodes.NoScale = true
-thr.tether3.diameter.Value = 5.2500e-04
+thr.tether3.diameter.Value = 4.9500e-04
 thr.tether3.diameter.Unit = 'm'
 thr.tether3.diameter.NoScale = false
 thr.tether3.youngsMod.Value = 7.5000e+08
@@ -66,7 +66,7 @@ thr.tether3.vehicleMass.NoScale = false
 thr.tether3.dampingRatio.Value = 5.0000e-02
 thr.tether3.dampingRatio.Unit is unitless or has no unit specified
 thr.tether3.dampingRatio.NoScale = false
-thr.tether3.dragCoeff.Value = 8.0000e-01
+thr.tether3.dragCoeff.Value = 1.0000e+00
 thr.tether3.dragCoeff.Unit is unitless or has no unit specified
 thr.tether3.dragCoeff.NoScale = false
 thr.tether3.density.Value = 1.3000e+03
@@ -96,7 +96,7 @@ thr.tether3.netBuoyEnable.NoScale = true
 thr.tether2.numNodes.Value = 2.0000e+00
 thr.tether2.numNodes.Unit is unitless or has no unit specified
 thr.tether2.numNodes.NoScale = true
-thr.tether2.diameter.Value = 5.2500e-04
+thr.tether2.diameter.Value = 4.9500e-04
 thr.tether2.diameter.Unit = 'm'
 thr.tether2.diameter.NoScale = false
 thr.tether2.youngsMod.Value = 7.5000e+08
@@ -107,7 +107,7 @@ thr.tether2.vehicleMass.NoScale = false
 thr.tether2.dampingRatio.Value = 5.0000e-02
 thr.tether2.dampingRatio.Unit is unitless or has no unit specified
 thr.tether2.dampingRatio.NoScale = false
-thr.tether2.dragCoeff.Value = 8.0000e-01
+thr.tether2.dragCoeff.Value = 1.0000e+00
 thr.tether2.dragCoeff.Unit is unitless or has no unit specified
 thr.tether2.dragCoeff.NoScale = false
 thr.tether2.density.Value = 1.3000e+03

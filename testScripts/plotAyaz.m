@@ -11,18 +11,19 @@ line_wd = 1;
 
 % % % parse the logged data signals
 parseLogsout
+tscSim = tsc;
 
 %% Scale factors
 Lscale = lengthScaleFactor;
 Dscale = densityScaleFactor;
 
 % % % extract the important variables into dummy variables
-time = tsc.positionVec.Time.*(1/Lscale^0.5)-altitudeCtrlShutOffDelay;
-sol_Rcm_o = repmat(gndStn.posVec.Value(:),1,numel(time))...
-    + squeeze(tsc.positionVec.Data).*(1/Lscale);
-sol_Vcmo = squeeze(tsc.velocityVec.Data).*(1/Lscale^0.5);
-sol_euler = squeeze(tsc.eulerAngles.Data);
-sol_OwB = squeeze(tsc.angularVel.Data).*(Lscale^0.5);
+timeSim = tscSim.positionVec.Time.*(1/Lscale^0.5)-altitudeCtrlShutOffDelay;
+sol_Rcm_o = repmat(gndStn.posVec.Value(:),1,numel(timeSim))...
+    + squeeze(tscSim.positionVec.Data).*(1/Lscale);
+sol_Vcmo = squeeze(tscSim.velocityVec.Data).*(1/Lscale^0.5);
+sol_euler = squeeze(tscSim.eulerAngles.Data);
+sol_OwB = squeeze(tscSim.angularVel.Data).*(Lscale^0.5);
 
 %% plot states
 plotProps{1} = 'rgb';
@@ -56,7 +57,7 @@ locs = repmat(locs,5,1);
 fn = 1;
 figure(fn);
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,sol_Rcm_o,plotProps,...
+vectorPlotter(timeSim,sol_Rcm_o,plotProps,...
     {'$x_{cm}$','$y_{cm}$','$z_{cm}$'},'Position (m)','CM position');
 % subplot(3,1,3)
 
@@ -65,25 +66,25 @@ vectorPlotter(time,sol_Rcm_o,plotProps,...
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,sol_Vcmo,plotProps,...
+vectorPlotter(timeSim,sol_Vcmo,plotProps,...
     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
 
 % % % euler angles
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,sol_euler*180/pi,plotProps,...
+vectorPlotter(timeSim,sol_euler*180/pi,plotProps,...
     {'$\phi$','$\theta$','$\psi$'},'Angle (deg)','Euler Angles');
 % % % setpoints
 if Lscale == 1 && Dscale == 1
 subplot(3,1,1)
-plot(time,squeeze(tsc.rollSetpoint.Data),'k--',...
+plot(timeSim,squeeze(tscSim.rollSetpoint.Data),'k--',...
     'DisplayName','$\phi_{sp}$');
 subplot(3,1,2)
-plot(time,squeeze(tsc.pitchSetpoint.Data),'k--',...
+plot(timeSim,squeeze(tscSim.pitchSetpoint.Data),'k--',...
     'DisplayName','$\theta_{sp}$');
 subplot(3,1,3)
-plot(time,squeeze(tsc.yawSetpoint.Data),'k--',...
+plot(timeSim,squeeze(tscSim.yawSetpoint.Data),'k--',...
     'DisplayName','$\theta_{sp}$');
 end
 %% other angles
@@ -110,14 +111,14 @@ azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,tsc.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
+vectorPlotter(timeSim,tscSim.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
 
 
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
+vectorPlotter(timeSim,squeeze(tscSim.tetherLengths.Data).*(1/Lscale),plotProps,...
     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
 % % 
 % 
@@ -194,14 +195,14 @@ vectorPlotter(time,squeeze(tsc.tetherLengths.Data).*(1/Lscale),plotProps,...
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
+vectorPlotter(timeSim,squeeze(tscSim.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
 % 
 % % % % total forces
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
+vectorPlotter(timeSim,squeeze(tscSim.FNetBdy.Data).*(1/Lscale^3),plotProps,...
     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
 
 
@@ -217,7 +218,7 @@ vectorPlotter(time,squeeze(tsc.FNetBdy.Data).*(1/Lscale^3),plotProps,...
 %     {'R'},'Ratio','Wing over Fuselage drag');
 
 %%%%%%
-set(findobj('Type','axes'),'XLim',[0 time(end)]);
+set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);
 
 
 

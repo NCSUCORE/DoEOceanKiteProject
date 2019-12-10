@@ -22,7 +22,7 @@ numTurbines = 2;
 
 load('constXYZT.mat')
 % Set Values
-vfdValue = 18;
+vfdValue = 20;
 flowSpeed = vfdInputToFlowSpeed(vfdValue);
 env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 
@@ -117,6 +117,7 @@ simWithMonitor('OCTModel')
 parseLogsout
 
 plotAyaz
+compPlots
 
 % fullKitePlot
 
