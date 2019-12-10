@@ -22,7 +22,7 @@ numTurbines = 2;
 
 load('constXYZT.mat')
 % Set Values
-vfdValue = 20;
+vfdValue = 16;
 flowSpeed = vfdInputToFlowSpeed(vfdValue);
 env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 
