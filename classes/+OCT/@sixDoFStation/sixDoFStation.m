@@ -12,6 +12,9 @@ classdef sixDoFStation < dynamicprops
         height
         lumpedMassPositionMatrixBdy
         lumpedMassSphereRadius
+        lumpedMassNetBouyancyForce
+        
+        
 %         % Tether attachment point to the vehicle
 %         airThrAttchPt
 %         % Tether attachment point of anchor tether with body
@@ -63,7 +66,7 @@ classdef sixDoFStation < dynamicprops
             obj.dragCoeff                   = SIM.parameter('Unit','','Description','Drag coefficient of submerged bit of platform');
             obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m','Description','lumped mass position matrix');
             obj.lumpedMassSphereRadius      = SIM.parameter('Unit','m','Description','lumped mass sphere radius');
-            
+            obj.lumpedMassNetBouyancyForce  = SIM.parameter('Unit','N','Description','lumped mass net bouyancy force');
             % Initial conditions
             obj.initPos         = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
             obj.initVel         = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
@@ -112,6 +115,18 @@ classdef sixDoFStation < dynamicprops
             obj.lumpedMassPositionMatrixBdy.setValue(val,unit);
         end
         
+        
+        function setLumpedMassNetBouyancyForce(obj,val,unit)
+             obj.lumpedMassNetBouyancyForce.setValue(val,unit)
+        end
+        
+        function bouyancy(obj)
+            numLM     =  numel(obj.lumpedMassPositionMatrixBdy.Value)/3;
+            gravForce = (obj.mass.Value/numLM)*9.81;
+            bouyForce = (obj.volume.Value/numLM)*1000*9.81;
+            netBouyancyPerLM = -gravForce + bouyForce;
+             obj.setLumpedMassNetBouyancyForce(netBouyancyPerLM,'N')
+        end
         % Initial conditions
         function setInitPos(obj,val,unit)
             obj.initPos.setValue(val,unit);
@@ -153,9 +168,7 @@ classdef sixDoFStation < dynamicprops
                 end
             end
         end
-        function 
-            
-        end
+        
         function plotLumps(obj)
             
             scatter3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))

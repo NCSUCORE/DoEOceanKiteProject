@@ -7,7 +7,7 @@ gndStn.setCentOfBuoy([0 0 gndStn.volume.Value^(1/3)/2],'m');
 gndStn.setDragCoefficient(0.8,'');
 bodyPosMatlumpy = [ 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 ;
                     1 0 -1 1 0 -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1;
-                    0 0  0 0 0  0  0  0  0 1 1  1 1 1  1  1  1  1 -1 -1  -1 -1 -1 -1  -1 -1  -1 ;]
+                    0 0  0 0 0  0  0  0  0 1 1  1 1 1  1  1  1  1 -1 -1  -1 -1 -1 -1  -1 -1  -1 ;];
 gndStn.setLumpedMassPositionMatrixBdy(bodyPosMatlumpy,'m')
                                            
                                         
