@@ -10,7 +10,8 @@ classdef sixDoFStation < dynamicprops
         volume
         centOfBuoy % Vector from CoM to CoB
         height
-        
+        lumpedMassPositionMatrixBdy
+        lumpedMassSphereRadius
 %         % Tether attachment point to the vehicle
 %         airThrAttchPt
 %         % Tether attachment point of anchor tether with body
@@ -59,7 +60,9 @@ classdef sixDoFStation < dynamicprops
 %             obj.gndThrAttchPt3 	= OCT.thrAttch;
                        
             % Drag coefficient
-            obj.dragCoeff       = SIM.parameter('Unit','','Description','Drag coefficient of submerged bit of platform');
+            obj.dragCoeff                   = SIM.parameter('Unit','','Description','Drag coefficient of submerged bit of platform');
+            obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m','Description','lumped mass position matrix');
+            obj.lumpedMassSphereRadius      = SIM.parameter('Unit','m','Description','lumped mass sphere radius');
             
             % Initial conditions
             obj.initPos         = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
@@ -105,6 +108,10 @@ classdef sixDoFStation < dynamicprops
             obj.dragCoeff.setValue(val,unit);
         end
         
+        function setLumpedMassPositionMatrixBdy(obj,val,unit)
+            obj.lumpedMassPositionMatrixBdy.setValue(val,unit);
+        end
+        
         % Initial conditions
         function setInitPos(obj,val,unit)
             obj.initPos.setValue(val,unit);
@@ -146,7 +153,15 @@ classdef sixDoFStation < dynamicprops
                 end
             end
         end
-        
+        function 
+            
+        end
+        function plotLumps(obj)
+            
+            scatter3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
+            hold on 
+            plot3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
+        end
        
     end
 end

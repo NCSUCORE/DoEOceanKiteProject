@@ -5,6 +5,13 @@ gndStn.setMass(gndStn.volume.Value*(1000/1.5),'kg');
 gndStn.setInertiaMatrix(((1/6)*gndStn.mass.Value*gndStn.volume.Value^(2/3)).*eye(3),'kg*m^2');
 gndStn.setCentOfBuoy([0 0 gndStn.volume.Value^(1/3)/2],'m');
 gndStn.setDragCoefficient(0.8,'');
+bodyPosMatlumpy = [ 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 ;
+                    1 0 -1 1 0 -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1;
+                    0 0  0 0 0  0  0  0  0 1 1  1 1 1  1  1  1  1 -1 -1  -1 -1 -1 -1  -1 -1  -1 ;]
+gndStn.setLumpedMassPositionMatrixBdy(bodyPosMatlumpy,'m')
+                                           
+                                        
+                                       
 
 gndStn.addThrAttch('airThrAttchPt1',[0 0 ((gndStn.volume.Value)^(1/3))/2]);
 gndStn.addThrAttch('airThrAttchPt2',[0 0 ((gndStn.volume.Value)^(1/3))/2]);
@@ -49,4 +56,4 @@ gndStn.anchThrs.tether3.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of 
 
 % Save the variable
 save(fullfile(fileparts(which(mfilename)),strrep(mfilename,'_bs','')),'gndStn')
-clearvars gndStn ans
+%clearvars gndStn ans
