@@ -1,6 +1,6 @@
 % superimpose plots from simulation and experiment
 
-load 'data_19_Nov_2019_19_08_19.mat' 
+load 'data_19_Nov_2019_18_36_08.mat' 
 
 plotPropsSim = plotProps;
 plotPropsExp = plotProps;
@@ -44,6 +44,11 @@ vectorPlotter(timeExp(tPlot),(180/pi)*[tscExp.roll_rad.Data(tPlot)';...
     tscExp.yaw_rad.Data(tPlot)'],plotPropsExp,...
     {'$\phi_{exp}$','$\theta_{exp}$','$\psi_{exp}$'},'Angle (deg)','');
 
+subplot(3,1,1)
+plot(timeExp(tPlot),(180/pi)*tsc.RollSetpoint.Data(tPlot),'k--','linewidth',0.75)
+legend('$\phi$','SP')
+title('Euler angles')
+
 
 % % % % CM positions 
 fn = fn+1;
@@ -80,6 +85,34 @@ mtrCmd = wnch.winch1.maxSpeed.Value.*mtrCmd;
 vectorPlotter(timeExp(tPlot),mtrCmd(:,tPlot),plotPropsExp,...
     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
 
+
+% Velocity tracking  
+Vx = diff(cmDat(1,:))./0.01; 
+Vy = diff(cmDat(2,:))./0.01; 
+Vz = diff(cmDat(3,:))./0.01; 
+
+
+windowSize_vel = 200; 
+b = (1/windowSize_vel)*ones(1,windowSize_vel);
+a = 1;
+Vz_f = filter(b,a,Vz);
+Vx_f = filter(b,a,Vx);
+Vy_f = filter(b,a,Vy);
+
+Vcm = [Vx_f;Vy_f;Vz_f];
+
+% % % cm velocity
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,sol_Vcmo,plotProps,...
+%     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
+% 
+% vectorPlotter(timeExp(tPlot(1:end-2)),Vcm(:,tPlot(1:end-2)),plotPropsExp,...
+%     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (cm/s)','');
+% 
+% subplot(3,1,1)
+% title('CM velocity')
 
 %%%%%%
 set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);

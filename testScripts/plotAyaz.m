@@ -70,23 +70,23 @@ vectorPlotter(timeSim,sol_Vcmo,plotProps,...
     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
 
 % % % euler angles
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,sol_euler*180/pi,plotProps,...
-    {'$\phi$','$\theta$','$\psi$'},'Angle (deg)','Euler Angles');
-% % % setpoints
-if Lscale == 1 && Dscale == 1
-subplot(3,1,1)
-plot(timeSim,squeeze(tscSim.rollSetpoint.Data),'k--',...
-    'DisplayName','$\phi_{sp}$');
-subplot(3,1,2)
-plot(timeSim,squeeze(tscSim.pitchSetpoint.Data),'k--',...
-    'DisplayName','$\theta_{sp}$');
-subplot(3,1,3)
-plot(timeSim,squeeze(tscSim.yawSetpoint.Data),'k--',...
-    'DisplayName','$\theta_{sp}$');
-end
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,sol_euler*180/pi,plotProps,...
+%     {'$\phi$','$\theta$','$\psi$'},'Angle (deg)','Euler Angles');
+% % % % setpoints
+% if Lscale == 1 && Dscale == 1
+% subplot(3,1,1)
+% plot(timeSim,squeeze(tscSim.rollSetpoint.Data),'k--',...
+%     'DisplayName','$\phi_{sp}$');
+% subplot(3,1,2)
+% plot(timeSim,squeeze(tscSim.pitchSetpoint.Data),'k--',...
+%     'DisplayName','$\theta_{sp}$');
+% subplot(3,1,3)
+% plot(timeSim,squeeze(tscSim.yawSetpoint.Data),'k--',...
+%     'DisplayName','$\theta_{sp}$');
+% end
 %% other angles
 % elevation angle
 elevAngle = (180/pi)*atan2(sol_Rcm_o(3,:),sqrt(sum(sol_Rcm_o(1:2,:).^2,1)));
@@ -108,18 +108,18 @@ azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
 % 
 % 
 % %% plot control signals
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,tscSim.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
-    {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
-
-
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,squeeze(tscSim.tetherLengths.Data).*(1/Lscale),plotProps,...
-    {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,tscSim.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotProps,...
+%     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
+% 
+% 
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,squeeze(tscSim.tetherLengths.Data).*(1/Lscale),plotProps,...
+%     {'$L_{port}$','$L_{aft}$','$L_{stbd}$'},'Length (m)','Tether lengths');
 % % 
 % 
 % fn = fn+1;
@@ -192,18 +192,18 @@ vectorPlotter(timeSim,squeeze(tscSim.tetherLengths.Data).*(1/Lscale),plotProps,.
 %     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Buoyancy forces');
 % 
 % % % % tether forces
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,squeeze(tscSim.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
-    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
-% 
-% % % % total forces
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,squeeze(tscSim.FNetBdy.Data).*(1/Lscale^3),plotProps,...
-    {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,squeeze(tscSim.FThrNetBdy.Data).*(1/Lscale^3),plotProps,...
+%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Tether forces');
+% % 
+% % % % % total forces
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,squeeze(tscSim.FNetBdy.Data).*(1/Lscale^3),plotProps,...
+%     {'$F_{x}$','$F_{y}$','$F_{z}$'},'Force (N)','Total forces');
 
 
 % % % % ratio of wing drag to fuselage drag

@@ -36,8 +36,8 @@ maxReleaseSpeed = wnch.winch1.maxSpeed.Value;
 
 % tether controllers
 aKp = 1.5*maxReleaseSpeed;
-pKp = 1*maxReleaseSpeed;
-rKp = 2*maxReleaseSpeed;
+pKp = 2*maxReleaseSpeed;
+rKp = 1.5*maxReleaseSpeed;
 
 fltCtrl.tetherAlti.kp.setValue(aKp,'(m/s)/(m)');
 fltCtrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
@@ -46,7 +46,7 @@ fltCtrl.tetherAlti.tau.setValue(2,'s');
 
 fltCtrl.tetherPitch.kp.setValue(pKp,'(m/s)/(rad)');
 fltCtrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
-fltCtrl.tetherPitch.kd.setValue(2*pKp,'(m/s)/(rad/s)');
+fltCtrl.tetherPitch.kd.setValue(0.25*pKp,'(m/s)/(rad/s)');
 fltCtrl.tetherPitch.tau.setValue(0.2,'s');
 
 fltCtrl.tetherRoll.kp.setValue(rKp,'(m/s)/(rad)');
