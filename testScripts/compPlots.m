@@ -1,6 +1,6 @@
 % superimpose plots from simulation and experiment
 
-load 'data_19_Nov_2019_18_36_08.mat' 
+load 'data_19_Nov_2019_19_08_19.mat' 
 
 plotPropsSim = plotProps;
 plotPropsExp = plotProps;

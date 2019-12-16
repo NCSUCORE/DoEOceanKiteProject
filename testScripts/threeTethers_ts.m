@@ -82,7 +82,8 @@ dynamicCalc = '';
 load('ayazThreeTetCtrl.mat');
 
 altitudeCtrlShutOffDelay = 400;
-expOffset = 7.7+2.5;
+% expOffset = 7.7+2.5;
+expOffset = 0;
 expDelay = 16.7;
 initialDelay = altitudeCtrlShutOffDelay + expDelay;
 expOffset = altitudeCtrlShutOffDelay + expOffset;
@@ -90,7 +91,7 @@ expOffset = altitudeCtrlShutOffDelay + expOffset;
 % switching values
 fltCtrl.ySwitch.setValue(0,'m'); % set to 0 to execute simple square wave tracking
 fltCtrl.rollAmp.setValue(12,'deg');
-fltCtrl.rollPeriod.setValue(9,'s');
+fltCtrl.rollPeriod.setValue(5,'s');
 
 % set setpoints
 timeVec = 0:0.005*sqrt(lengthScaleFactor):simTime;

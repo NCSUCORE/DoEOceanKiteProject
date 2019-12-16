@@ -207,15 +207,15 @@ azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
 
 
 % % % % ratio of wing drag to fuselage drag
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:));
-% wingDrag = squeeze(sum(tsc.FDragBdyPart.Data(:,1:2,:),2));
-% wingToFuseDragRatio = sqrt(sum(wingDrag.^2,1))./...
-%     sqrt(sum(squeeze(tsc.FFuseBdy.Data).^2,1));
-% 
-% vectorPlotter(time,wingToFuseDragRatio(1,:),plotProps,...
-%     {'R'},'Ratio','Wing over Fuselage drag');
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:));
+wingDrag = squeeze(sum(tsc.FDragBdyPart.Data(:,1:2,:),2));
+wingToFuseDragRatio = sqrt(sum(wingDrag.^2,1))./...
+    sqrt(sum(squeeze(tsc.FFuseBdy.Data).^2,1));
+
+vectorPlotter(timeSim,wingToFuseDragRatio(1,:),plotProps,...
+    {'R'},'Ratio','Wing over Fuselage drag');
 
 %%%%%%
 set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);
