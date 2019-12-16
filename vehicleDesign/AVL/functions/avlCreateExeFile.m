@@ -8,6 +8,15 @@ fprintf(fileID_exe,'load %s\n',inputFileName);
 % load run file
 fprintf(fileID_exe,'case %s\n',runFileName);
 
+% load mass file
+fprintf(fileID_exe,'mass dsgnMassFile.mass\n');
+
+% type mset for whatever reason
+fprintf(fileID_exe,'mset\n');
+
+% type 0 to apply mass file to all run cases
+fprintf(fileID_exe,'0\n');
+
 % enter oper menu
 fprintf(fileID_exe,'oper\n');
 

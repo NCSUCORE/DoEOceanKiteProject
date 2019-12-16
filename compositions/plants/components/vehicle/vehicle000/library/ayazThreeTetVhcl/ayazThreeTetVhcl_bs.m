@@ -74,19 +74,19 @@ vhcl.setVsClMin(-Clmax,'');
 
 % % % Fuselage (could use more realistic numbers)
 vhcl.setFuseDiameter(2*4.9e-3*(1/Lscale),'m')
-vhcl.setFuseEndDragCoeff(0.2,'')
-vhcl.setFuseSideDragCoeff(0.4,'')
+vhcl.setFuseEndDragCoeff(0.3,'')
+vhcl.setFuseSideDragCoeff(0.6,'')
 vhcl.setFuseRCmToNose([-58.55e-3;0;0]*(1/Lscale),'m')
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS12','');
+vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS3','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 
 % % % artificially reduce lift
-reductionFactor = 0.6;
-incrementFactor = 1.6;
+reductionFactor = 1;
+incrementFactor = 1;
 
 vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
 vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
@@ -99,7 +99,7 @@ vhcl.hStab.CD.setValue(incrementFactor*vhcl.hStab.CD.Value,'')
 vhcl.vStab.CD.setValue(incrementFactor*vhcl.vStab.CD.Value,'')
 
 % % % scale it back down to lab scale before saving
-vhcl.scale(Lscale,1);
+% vhcl.scale(Lscale,1);
 
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant','VEHICLE');

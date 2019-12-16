@@ -997,6 +997,7 @@ classdef vehicle < dynamicprops
                     delete('wing');
                     delete('H_stab');
                     delete('V_stab');
+                    delete('dsgnMassFile.mass')
                     
                     %
                     filepath = fileparts(which('avl.exe'));
