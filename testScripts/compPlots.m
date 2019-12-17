@@ -87,12 +87,12 @@ vectorPlotter(timeExp(tPlot),mtrCmd(:,tPlot),plotPropsExp,...
 
 
 % Velocity tracking  
+% % % % Velocity tracking  
 Vx = diff(cmDat(1,:))./0.01; 
 Vy = diff(cmDat(2,:))./0.01; 
 Vz = diff(cmDat(3,:))./0.01; 
 
-
-windowSize_vel = 200; 
+windowSize_vel = 20; 
 b = (1/windowSize_vel)*ones(1,windowSize_vel);
 a = 1;
 Vz_f = filter(b,a,Vz);
@@ -101,18 +101,18 @@ Vy_f = filter(b,a,Vy);
 
 Vcm = [Vx_f;Vy_f;Vz_f];
 
-% % % cm velocity
-% fn = fn+1;
-% figure(fn)
-% set(gcf,'Position',locs(fn,:))
-% vectorPlotter(timeSim,sol_Vcmo,plotProps,...
-%     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
-% 
-% vectorPlotter(timeExp(tPlot(1:end-2)),Vcm(:,tPlot(1:end-2)),plotPropsExp,...
-%     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (cm/s)','');
-% 
-% subplot(3,1,1)
-% title('CM velocity')
+% % cm velocity
+fn = fn+1;
+figure(fn)
+set(gcf,'Position',locs(fn,:))
+vectorPlotter(timeSim,sol_Vcmo,plotProps,...
+    {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
+
+vectorPlotter(timeExp(tPlot(1:end-2)),Vcm(:,tPlot(1:end-2)),plotPropsExp,...
+    {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
+
+subplot(3,1,1)
+title('CM velocity')
 
 %%%%%%
 set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);

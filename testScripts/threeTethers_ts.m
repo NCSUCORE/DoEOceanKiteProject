@@ -84,7 +84,7 @@ load('ayazThreeTetCtrl.mat');
 altitudeCtrlShutOffDelay = 400;
 % expOffset = 7.7+2.5;
 expOffset = 0;
-expDelay = 16.7;
+expDelay = 20;
 initialDelay = altitudeCtrlShutOffDelay + expDelay;
 expOffset = altitudeCtrlShutOffDelay + expOffset;
 

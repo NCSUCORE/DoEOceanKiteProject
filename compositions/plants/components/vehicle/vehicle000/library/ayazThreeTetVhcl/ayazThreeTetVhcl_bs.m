@@ -73,9 +73,9 @@ vhcl.setVsClMax(Clmax,'');
 vhcl.setVsClMin(-Clmax,'');
 
 % % % Fuselage (could use more realistic numbers)
-vhcl.setFuseDiameter(2*4.9e-3*(1/Lscale),'m')
-vhcl.setFuseEndDragCoeff(0.2,'')
-vhcl.setFuseSideDragCoeff(0.4,'')
+vhcl.setFuseDiameter(2.5*4.9e-3*(1/Lscale),'m')
+vhcl.setFuseEndDragCoeff(0.4,'')
+vhcl.setFuseSideDragCoeff(0.8,'')
 vhcl.setFuseRCmToNose([-58.55e-3;0;0]*(1/Lscale),'m')
 
 % % % data file name
@@ -85,8 +85,8 @@ vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS3','');
 vhcl.calcFluidDynamicCoefffs
 
 % % % artificially reduce lift
-reductionFactor = 0.6;
-incrementFactor = 1.2;
+reductionFactor = 0.4;
+incrementFactor = 1.6;
 
 vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
 vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')

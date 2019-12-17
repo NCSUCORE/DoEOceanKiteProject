@@ -1,11 +1,15 @@
 % temporary script to test controllers in isolation
 
-load('exp20Errors.mat')
+% load('exp20Errors.mat')
+load('SimErrors.mat')
+timeExp = timeSim;
 load('ayazThreeTetCtrl.mat');
 
 ctrl = fltCtrl;
 
-ignoreVals = 100;
+ignoreVals = 1;
+
+
 
 pitchErrorWs = timeseries(pitchError(ignoreVals:end),timeExp(ignoreVals:end));
 rollErrorWs = timeseries(rollError(ignoreVals:end),timeExp(ignoreVals:end));
@@ -15,7 +19,11 @@ simWithMonitor('tempCtrlTest');
 
 parseLogsout;
 
-fn = fn+1;
+if exist('fn','var')
+    fn = fn+1;
+else
+    fn = 1;
+end
 figure(fn);
 tetReleaseSpeeds = tsc.winchSpeeds.Data';
 timeTest = tsc.winchSpeeds.Time;

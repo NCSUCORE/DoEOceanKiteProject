@@ -25,6 +25,13 @@ sol_Vcmo = squeeze(tscSim.velocityVec.Data).*(1/Lscale^0.5);
 sol_euler = squeeze(tscSim.eulerAngles.Data);
 sol_OwB = squeeze(tscSim.angularVel.Data).*(Lscale^0.5);
 
+% % % % store error values to postprocess later
+rollError = tscSim.rollSetpoint.Data - sol_euler(1,:)';
+pitchError = squeeze(tscSim.pitchSetpoint.Data)*pi/180 - sol_euler(2,:)';
+altiError = squeeze(tscSim.altitudeSetpoint.Data)*pi/180 - sol_Rcm_o(3,:)';
+
+save('simErrors','rollError','pitchError','altiError','timeSim');
+
 %% plot states
 plotProps{1} = 'rgb';
 if Lscale == 1 && Dscale == 1
@@ -219,6 +226,8 @@ vectorPlotter(timeSim,wingToFuseDragRatio(1,:),plotProps,...
 
 %%%%%%
 set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);
+
+
 
 
 
