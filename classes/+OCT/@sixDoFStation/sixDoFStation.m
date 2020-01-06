@@ -6,34 +6,24 @@ classdef sixDoFStation < dynamicprops
         % Inertial properties
         mass
         inertiaMatrix
+        
         % Buoyancy properties
         volume
-        centOfBuoy % Vector from CoM to CoB
-        height
         lumpedMassPositionMatrixBdy
         lumpedMassSphereRadius
         lumpedMassNetBouyancyForce
+        addedMassMatrix
         
-        
-%         % Tether attachment point to the vehicle
-%         airThrAttchPt
-%         % Tether attachment point of anchor tether with body
-%         bdyThrAttchPt1
-%         bdyThrAttchPt2
-%         bdyThrAttchPt3
-%         % Tether attachment point of anchor tether with ground
-%         gndThrAttchPt1
-%         gndThrAttchPt2
-%         gndThrAttchPt3
-        
-        % Drag coefficient
-        dragCoeff
-                
         % Initial conditions
-        initPos
+        posVec
         initVel
-        initEulAng
+        initAngPos
         initAngVel
+        initAnchTetherLength
+        
+        
+        %kite tether
+        numTethers 
         
         % Anchor tethers
         anchThrs
@@ -43,39 +33,45 @@ classdef sixDoFStation < dynamicprops
     methods
         function obj = sixDoFStation
             % Inertial properties
-            obj.mass            = SIM.parameter('Unit','kg','Description','Total mass of system');
-            obj.height          = SIM.parameter('Unit','m','Description','Vertical Height of the Ground Station');
-            obj.inertiaMatrix   = SIM.parameter('Unit','kg*m^2','Description','3x3 inertia matrix');
+            obj.mass                        = SIM.parameter('Unit','kg','Description','Total mass of system');
+            obj.inertiaMatrix               = SIM.parameter('Unit','kg*m^2','Description','3x3 inertia matrix');
             
             % Buoyancy properties
-            obj.volume          = SIM.parameter('Unit','m^3','Description','Total volume used in buoyancy calculation');
-            obj.centOfBuoy      = SIM.parameter('Unit','m','Description','Vector from CoM to CoB, in body frame.');
-            
-%             % Tether attachment point to the vehicle
-%             obj.airThrAttchPt   = OCT.thrAttch;
-%             % Tether attachment point of anchor tether with body
-%             obj.bdyThrAttchPt1  = OCT.thrAttch;
-%             obj.bdyThrAttchPt2  = OCT.thrAttch;
-%             obj.bdyThrAttchPt3  = OCT.thrAttch;
-%             % Tether attachment point of anchor tether with ground
-%             obj.gndThrAttchPt1 	= OCT.thrAttch;
-%             obj.gndThrAttchPt2 	= OCT.thrAttch;
-%             obj.gndThrAttchPt3 	= OCT.thrAttch;
-                       
-            % Drag coefficient
-            obj.dragCoeff                   = SIM.parameter('Unit','','Description','Drag coefficient of submerged bit of platform');
+            obj.volume                      = SIM.parameter('Unit','m^3','Description','Total volume used in buoyancy calculation');
             obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m','Description','lumped mass position matrix');
             obj.lumpedMassSphereRadius      = SIM.parameter('Unit','m','Description','lumped mass sphere radius');
             obj.lumpedMassNetBouyancyForce  = SIM.parameter('Unit','N','Description','lumped mass net bouyancy force');
             % Initial conditions
-            obj.initPos         = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
-            obj.initVel         = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
-            obj.initEulAng      = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
-            obj.initAngVel      = SIM.parameter('Unit','rad/s','Description','Initial angular velocity of the station in the ground frame, radians per sec');
+            obj.posVec                      = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
+            obj.initVel                     = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
+            obj.initAngPos                  = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
+            obj.initAngVel                  = SIM.parameter('Unit','rad/s','Description','Initial angular velocity of the station in the ground frame, radians per sec');
+            obj.initAnchTetherLength        = SIM.parameter('Unit','m','Description','Unstretched Tether Length');
+            obj.numTethers                  = SIM.parameter('Unit','','Description','number of kite tethers');
             
             % Anchor tethers
             obj.anchThrs = OCT.tethers;
         end
+        
+        %function to add tether attach points for the kites tether
+        function obj = build(obj,varargin)
+            % Populate cell array of default names
+            defThrName = {};
+            for ii = 1:obj.numTethers.Value
+                defThrName{ii} = sprintf('thrAttch%d',ii);
+            end
+            p = inputParser;
+            addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
+            parse(p,varargin{:})
+            
+            % Create tethers
+            for ii = 1:obj.numTethers.Value
+                obj.addprop(p.Results.TetherNames{ii});
+                obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
+            end
+        end
+        
+   
         % Method to add tether attachment points
         function obj = addThrAttch(obj,Name,posVec)
             addprop(obj,Name);
@@ -103,21 +99,25 @@ classdef sixDoFStation < dynamicprops
         function setVolume(obj,val,unit)
             obj.volume.setValue(val,unit);
         end
-        function setCentOfBuoy(obj,val,unit)
-            obj.centOfBuoy.setValue(val,unit);
-        end
-        % Drag coefficient
-        function setDragCoefficient(obj,val,unit)
-            obj.dragCoeff.setValue(val,unit);
+        
+        function setLumpedMassSphereRadius(obj,val,unit)
+            obj.lumpedMassSphereRadius.setValue(val,unit);
         end
         
         function setLumpedMassPositionMatrixBdy(obj,val,unit)
             obj.lumpedMassPositionMatrixBdy.setValue(val,unit);
         end
         
-        
         function setLumpedMassNetBouyancyForce(obj,val,unit)
-             obj.lumpedMassNetBouyancyForce.setValue(val,unit)
+            obj.lumpedMassNetBouyancyForce.setValue(val,unit)
+        end
+        
+        function setInitAnchTetherLength(obj,val,unit)
+            obj.initAnchTetherLength.setValue(val,unit)
+        end
+        
+        function setNumTethers(obj,val,unit)
+            obj.numTethers.setValue(val,unit)
         end
         
         function bouyancy(obj)
@@ -125,22 +125,22 @@ classdef sixDoFStation < dynamicprops
             gravForce = (obj.mass.Value/numLM)*9.81;
             bouyForce = (obj.volume.Value/numLM)*1000*9.81;
             netBouyancyPerLM = -gravForce + bouyForce;
-             obj.setLumpedMassNetBouyancyForce(netBouyancyPerLM,'N')
+            obj.setLumpedMassNetBouyancyForce(netBouyancyPerLM,'N')
         end
         % Initial conditions
-        function setInitPos(obj,val,unit)
-            obj.initPos.setValue(val,unit);
+        function setPosVec(obj,val,unit)
+            obj.posVec.setValue(val,unit);
         end
         function setInitVel(obj,val,unit)
             obj.initVel.setValue(val,unit);
         end
-        function setInitEulAng(obj,val,unit)
-            obj.initEulAng.setValue(val,unit);
+        function setInitAngPos(obj,val,unit)
+            obj.initAngPos.setValue(val,unit);
         end
         function setInitAngVel(obj,val,unit)
             obj.initAngVel.setValue(val,unit);
         end
-       
+        
         % Function to get properties according to their class
         % May be able to vectorize this somehow
         function val = getPropsByClass(obj,className)
@@ -172,10 +172,10 @@ classdef sixDoFStation < dynamicprops
         function plotLumps(obj)
             
             scatter3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
-            hold on 
+            hold on
             plot3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
         end
-       
+        
     end
 end
 

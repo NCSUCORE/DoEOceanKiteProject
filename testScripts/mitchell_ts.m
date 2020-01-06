@@ -12,7 +12,9 @@ loadComponent('oneDoFGSCtrlBasic');
 % High level controller
 loadComponent('constBoothLem')
 % Ground station
-loadComponent('pathFollowingGndStn');
+ loadComponent('pathFollowingGndStn');
+
+% loadComponent('oneThrThreeAnchGndStn001');
 % Winches
 loadComponent('oneDOFWnch');
 % Tether
@@ -30,7 +32,7 @@ loadComponent('constXYZT');
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
 hiLvlCtrl.basisParams.setValue([0.5,1,.36,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
-gndStn.setPosVec([0 0 0],'m')
+gndStn.setPosVec([0 0 200],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
