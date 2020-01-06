@@ -1,9 +1,13 @@
 % clear;clc;close all
+elevConsts=[-30:5:15 20:1:30];
+clear pitchDeg elevationDeg
+for i=1:length(elevConsts)
 sim = SIM.sim;
-sim.setDuration(1200,'s');
+sim.setDuration(1000,'s');
 dynamicCalc = '';
 %% Variables to be put into a takeoff controller object
 choice=2-1;
+elevConst=elevConsts(i);%elevConsts(i);%elevConsts(i);
 pitchSP=0*pi/180; %degrees
 kpPitch=100; %N*M per degree
 kpYaw=5.7296e+02;
@@ -91,6 +95,9 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
 parseLogsout
+pitchDeg(i)=tsc.eulerAngles.Data(2,1,end)*180/pi;
+elevationDeg(i)=tsc.elevdeg.Data(end);
+end
 % LUT = Simulink.LookupTable;
 % timeVec = linspace(0,1);
 % LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);
