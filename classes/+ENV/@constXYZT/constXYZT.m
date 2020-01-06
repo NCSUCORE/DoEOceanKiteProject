@@ -4,12 +4,14 @@ classdef constXYZT < handle
     properties (SetAccess = public)
         flowVec
         density
+        zGridPoints
     end
     
     properties (Dependent)
         speed
         elevation
         heading
+        
     end
     
     methods
@@ -17,6 +19,7 @@ classdef constXYZT < handle
         function obj = constXYZT
             obj.flowVec      = SIM.parameter('Unit','m/s');
             obj.density      = SIM.parameter('Unit','kg/m^3','NoScale',false);
+            obj.zGridPoints  = SIM.parameter('Value',0:10:200,'Unit','m','NoScale',false);
         end
         function setflowVec(obj,val,unit)
             obj.flowVec.setValue(val,unit);
