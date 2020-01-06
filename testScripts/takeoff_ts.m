@@ -1,12 +1,19 @@
-% %% Script to run ILC path optimization
-clear;clc;close all
+% clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(100,'s');
+sim.setDuration(1200,'s');
 dynamicCalc = '';
 %% Variables to be put into a takeoff controller object
-pitchSP=-1*pi/180; %degrees
-kpPitch=1e5/2; %N*M per degree
-kpYaw=5.7296e+03;
+choice=2-1;
+pitchSP=0*pi/180; %degrees
+kpPitch=100; %N*M per degree
+kpYaw=5.7296e+02;
+elevSP=timeseries(40*pi/180);
+% elevSP=timeseries(linspace(20*pi/180,80*pi/180,100),linspace(0,2000,100));
+kpElev=.2; %rad/rad
+kdElev=0*kpElev;
+kiElev=1*kpElev;
+TLSP=125;
+load('elev.mat')
 %% Load components
 % Flight Controller
 loadComponent('firstBuildTakeoff');
@@ -28,7 +35,7 @@ loadComponent('constXYZT');
 % loadComponent('CNAPsTurbJames');
 %  loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
- env.water.setflowVec([1 0 0],'m/s')
+ env.water.setflowVec([2 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
@@ -39,17 +46,17 @@ gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
-% vhcl.setICsOnPath(...
-%     0,... % Initial path position
-%     PATHGEOMETRY,... % Name of path function
-%     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
-%     gndStn.posVec.Value,... % Center point of path sphere
-%     (11/2)*norm(env.water.flowVec.Value)) % Initial speed
+vhcl.setICsOnPath(...
+    .5,... % Initial path position
+    PATHGEOMETRY,... % Name of path function
+    hiLvlCtrl.basisParams.Value,... % Geometry parameters
+    gndStn.posVec.Value,... % Center point of path sphere
+    5)%(11/2)*norm(env.water.flowVec.Value)) % Initial speed
 % vhcl.setAddedMISwitch(false,'');
-vhcl.setInitAngVelVec([.1 .1 .1],'rad/s')
-vhcl.setInitEulAng([10*pi/180 80*pi/180 0],'rad')
-vhcl.setInitPosVecGnd([125/sqrt(2),0,125/sqrt(2)],'m')
-vhcl.setInitVelVecBdy([-.5 0 0],'m/s')
+% vhcl.setInitAngVelVec([0 0 0],'rad/s')
+% vhcl.setInitEulAng([10*pi/180 30*pi/180 0],'rad')
+% vhcl.setInitPosVecGnd([125/sqrt(2),30,125/sqrt(2)],'m')
+% vhcl.setInitVelVecBdy([-6 0 0],'m/s')
 % vhcl.setICsOnPath(...
 %     .25,... % Initial path position
 %     PATHGEOMETRY,... % Name of path function
