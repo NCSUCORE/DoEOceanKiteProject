@@ -30,6 +30,9 @@ gndStn.anchThrs.maxPercentageElongation.NoScale = false
 gndStn.anchThrs.maxAppFlowMultiplier.Value = 2.0000e+00
 gndStn.anchThrs.maxAppFlowMultiplier.Unit is unitless or has no unit specified
 gndStn.anchThrs.maxAppFlowMultiplier.NoScale = false
+gndStn.lumpedMassPositionMatrixBdy.Value = [0;0;0]
+gndStn.lumpedMassPositionMatrixBdy.Unit = 'm'
+gndStn.lumpedMassPositionMatrixBdy.NoScale = false
 gndStn.thrAttch1.posVec.Value = [0;0;0]
 gndStn.thrAttch1.posVec.Unit = 'm'
 gndStn.thrAttch1.posVec.NoScale = false

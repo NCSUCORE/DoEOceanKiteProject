@@ -11,18 +11,20 @@ classdef oneDoFStation < dynamicprops
         freeSpnEnbl
         posVec
         anchThrs
+        lumpedMassPositionMatrixBdy
     end
     
     methods
         function obj = oneDoFStation
             %VEHICLE Construct an instance of this class
-            obj.numTethers  = SIM.parameter('NoScale',true);
-            obj.inertia     = SIM.parameter('Unit','kg*m^2');
-            obj.dampCoeff   = SIM.parameter('Unit','(N*m)/(rad/s)');
-            obj.initAngPos  = SIM.parameter('Unit','rad');
-            obj.initAngVel  = SIM.parameter('Unit','rad/s');
-            obj.freeSpnEnbl = SIM.parameter('NoScale',true);
-            obj.posVec      = SIM.parameter('Unit','m');
+            obj.numTethers                  = SIM.parameter('NoScale',true);
+            obj.inertia                     = SIM.parameter('Unit','kg*m^2');
+            obj.dampCoeff                   = SIM.parameter('Unit','(N*m)/(rad/s)');
+            obj.initAngPos                  = SIM.parameter('Unit','rad');
+            obj.initAngVel                  = SIM.parameter('Unit','rad/s');
+            obj.freeSpnEnbl                 = SIM.parameter('NoScale',true);
+            obj.posVec                      = SIM.parameter('Unit','m');
+            obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m');
             
             obj.anchThrs = OCT.tethers;
         end
@@ -46,6 +48,9 @@ classdef oneDoFStation < dynamicprops
         end
         function setPosVec(obj,val,unit)
             obj.posVec.setValue(val,unit);
+        end
+        function setLumpedMassPositionMatrixBdy(obj,val,unit)
+            obj.lumpedMassPositionMatrixBdy.setValue(val,unit);
         end
         
         

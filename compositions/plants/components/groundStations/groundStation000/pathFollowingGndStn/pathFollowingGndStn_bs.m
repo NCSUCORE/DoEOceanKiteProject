@@ -1,6 +1,6 @@
-clear
-clc
-format compact
+% clear
+% clc
+% format compact
 
 
 GROUNDSTATION         = 'groundStation000';
@@ -20,7 +20,7 @@ gndStn.posVec.setValue([0 0 0],'m');
 gndStn.dampCoeff.setValue(100,'(N*m)/(rad/s)');
 gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
 gndStn.freeSpnEnbl.setValue(false,'');
-
+gndStn.lumpedMassPositionMatrixBdy.setValue([0,0,0]','m');
 
 %dummy , allows the env. to work for this ground station and the other
 %ground station (1DoF and 6DoF). I couldn't think of another way yet. -James

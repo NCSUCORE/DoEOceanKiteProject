@@ -1,6 +1,6 @@
-clear
-clc
-format compact
+% clear
+% clc
+% format compact
 
 % this is the build script for creating a ground station using class definition
 % 'tethers' for a three tethered system that is being used by ayaz

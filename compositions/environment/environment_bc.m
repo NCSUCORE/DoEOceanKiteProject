@@ -6,6 +6,9 @@ numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
 
 numNodesAnchor    = evalin('base','gndStn.anchThrs.numNodes.Value');   % Get the number of nodes
 numTethersAnchor  = evalin('base','gndStn.anchThrs.numTethers.Value'); % Get the number of tethers
+numGndStnLumpedMasses = evalin('base','gndStn.lumpedMassPositionMatrixBdy.Value');
+
+
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'linkFlowVecs';
@@ -68,6 +71,21 @@ elems(3).DataType = 'Bus: linkFlowVecsAnchorBus';
 elems(3).SampleTime = -1;
 elems(3).Complexity = 'real';
 elems(3).Description = 'Flow velocity vector in the ground coordinate system at each of the aerodynamic centers of the fluid dynamic surfaces.';
+
+
+% Create environment bus
+elems(4) = Simulink.BusElement;
+elems(4).Name = 'gndStnFlowVecs';
+elems(4).Dimensions = size(numGndStnLumpedMasses); % Assumes 5 fluid dynamic surfaces (4 + fuselage)
+elems(4).DimensionsMode = 'Fixed';
+elems(4).DataType = 'double';
+elems(4).SampleTime = -1;
+elems(4).Complexity = 'real';
+elems(4).Unit = 'm/s';
+elems(4).Description = 'Flow velocity vector in the ground coordinate system at each of the aerodynamic centers of the fluid dynamic surfaces.';
+
+
+
 
 
 envBus = Simulink.Bus;

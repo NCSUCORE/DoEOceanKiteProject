@@ -2,7 +2,7 @@ function plant_bc
 % Creates output bus used by allActuatorCtrl_cl
 
 numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
-
+numGndStnLumpedMasses = evalin('base','gndStn.lumpedMassPositionMatrixBdy.Value');
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'positionVec';
@@ -131,6 +131,17 @@ elems(15).Name = 'gndTenVecBusArry';
 elems(15).DataType = 'Bus: thrTenVecBus';
 elems(15).SampleTime = -1;
 elems(15).Complexity = 'real';
+
+
+elems(16) = Simulink.BusElement;
+elems(16).Name = 'gndStnFlowPollPos';
+elems(16).Dimensions = size(numGndStnLumpedMasses); %This gets the number of lumped masses used to describe the gndstn. Set in the gndstation build file. size: 3 by number of lumped masses
+elems(16).DimensionsMode = 'Fixed';
+elems(16).DataType = 'double';
+elems(16).SampleTime = -1;
+elems(16).Complexity = 'real';
+elems(16).Unit = 'm';
+
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
