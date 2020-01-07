@@ -125,7 +125,7 @@ classdef sixDoFStation < dynamicprops
             gravForce = (obj.mass.Value/numLM)*9.81;
             bouyForce = (obj.volume.Value/numLM)*1000*9.81;
             netBouyancyPerLM = -gravForce + bouyForce;
-            obj.setLumpedMassNetBouyancyForce(netBouyancyPerLM,'N')
+            obj.setLumpedMassNetBouyancyForce([0,0,netBouyancyPerLM],'N')
         end
         % Initial conditions
         function setPosVec(obj,val,unit)

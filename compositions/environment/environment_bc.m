@@ -27,7 +27,7 @@ linkFlowVecsBus.Description = 'Bus containing flow vector at all links of a sing
 assignin('base','linkFlowVecsBus',linkFlowVecsBus)
 %%
 elems(1) = Simulink.BusElement;
-elems(1).Name = 'linkFlowVecsAnchor';
+elems(1).Name = 'linkFlowVecs';
 elems(1).DimensionsMode = 'Fixed';
 elems(1).Dimensions = [3 numNodesAnchor-1];
 elems(1).DataType = 'double';

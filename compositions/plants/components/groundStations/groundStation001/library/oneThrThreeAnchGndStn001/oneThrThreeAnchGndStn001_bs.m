@@ -12,7 +12,7 @@ gndStn.setLumpedMassPositionMatrixBdy(bodyPosMatlumps,'m')
 gndStn.initAngVel.setValue(0,'rad/s')                                           
 gndStn.initVel.setValue(0,'m/s')                                          
 gndStn.initAngPos.setValue([0,0,0]','rad')                                        
-gndStn.initAnchTetherLength.setValue(210,'m')
+gndStn.initAnchTetherLength.setValue([210,210,210],'m')
 gndStn.numTethers.setValue(1,'');
 gndStn.build;
 gndStn.thrAttch1.posVec.setValue([0 0 0]','m');

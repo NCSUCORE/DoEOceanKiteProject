@@ -12,9 +12,9 @@ loadComponent('oneDoFGSCtrlBasic');
 % High level controller
 loadComponent('constBoothLem')
 % Ground station
- loadComponent('pathFollowingGndStn');
+% loadComponent('pathFollowingGndStn');
 
-% loadComponent('oneThrThreeAnchGndStn001');
+ loadComponent('oneThrThreeAnchGndStn001');
 % Winches
 loadComponent('oneDOFWnch');
 % Tether
@@ -26,7 +26,7 @@ loadComponent('constXYZT');
 %loadComponent('CNAPsTurbJames');
 %  loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
- env.water.setflowVec([1 0 0],'m/s')
+env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
