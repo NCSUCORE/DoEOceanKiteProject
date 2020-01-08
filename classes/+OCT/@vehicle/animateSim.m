@@ -10,6 +10,10 @@ p = inputParser;
 addRequired(p,'tsc',@isstruct);
 % Time step used in plotting
 addRequired(p,'timeStep',@isnumeric);
+% Time to start viewing
+addParameter(p,'startTime',0,@isnumeric);
+% Time to start viewing
+addParameter(p,'endTime',tsc.positionVec.time(end),@isnumeric);
 
 
 % ---Parameters for saving a gif---
@@ -357,7 +361,21 @@ h.title = title({sprintf('Time = %.1f s',0),...
     sprintf('Flow Speed = %.1f m/s',norm(tsc.vhclFlowVecs.Data(:,end,1)))});
 
 % Update the graphics handles with new data at each time step
-for ii = 1:length(tsc.eulerAngles.Time)
+if p.Results.startTime == 0
+    firstInd=1;
+else
+    [~,firstInd]=min(abs(tsc.eulerAngles.Time-p.Results.startTime));
+end
+if p.Results.endTime == tsc.positionVec.time(end)
+    lastInd=length(tsc.positionVec.Time);
+elseif p.Results.endTime < tsc.positionVec.time(end)
+    [~,lastInd]=min(abs(tsc.positionVec.Time-p.Results.endTime));
+else
+    lastInd=length(tsc.positionVec.Time);
+end
+
+    
+for ii = firstInd:lastInd
     for jj = 1:numel(hStatic)
         % Rotate and translate all aero surfaces
         pts = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*[...
@@ -553,7 +571,7 @@ for ii = 1:length(tsc.eulerAngles.Time)
         frame       = getframe(h.fig);
         im          = frame2im(frame);
         [imind,cm]  = rgb2ind(im,256);
-        if ii == 1
+        if ii == firstInd
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif', 'Loopcount',inf);
         else
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif','WriteMode','append','DelayTime',p.Results.GifTimeStep)

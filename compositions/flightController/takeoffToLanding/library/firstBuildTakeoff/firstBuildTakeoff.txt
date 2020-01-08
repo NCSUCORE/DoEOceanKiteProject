@@ -103,3 +103,7 @@ fltCtrl.fcnName.Description = 'Name of the path shape function you want to use.'
 fltCtrl.initPathVar.Unit is unitless or has no unit specified
 fltCtrl.initPathVar.NoScale = false
 fltCtrl.initPathVar.Description = 'Initial path variable'
+fltCtrl.firstSpoolLap.Value = 2.0000e+00
+fltCtrl.firstSpoolLap.Unit is unitless or has no unit specified
+fltCtrl.firstSpoolLap.NoScale = false
+fltCtrl.firstSpoolLap.Description = 'First Lap to begin spooling'

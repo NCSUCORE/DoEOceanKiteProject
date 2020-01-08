@@ -1,23 +1,24 @@
 % clear;clc;close all
-elevConsts=[-30:5:15 20:1:30];
-clear pitchDeg elevationDeg
-for i=1:length(elevConsts)
+% elevConsts=[-30:5:15 20:1:30];
+% clear pitchDeg elevationDeg
+% for i=1:length(elevConsts)
 sim = SIM.sim;
-sim.setDuration(1000,'s');
+sim.setDuration(1200,'s');
 dynamicCalc = '';
 %% Variables to be put into a takeoff controller object
 choice=2-1;
-elevConst=elevConsts(i);%elevConsts(i);%elevConsts(i);
+% elevConst=elevConsts(i);%elevConsts(i);%elevConsts(i);
 pitchSP=0*pi/180; %degrees
 kpPitch=100; %N*M per degree
 kpYaw=5.7296e+02;
-elevSP=timeseries(40*pi/180);
+elevSPDeg=timeseries(30);
 % elevSP=timeseries(linspace(20*pi/180,80*pi/180,100),linspace(0,2000,100));
-kpElev=.2; %rad/rad
-kdElev=0*kpElev;
-kiElev=1*kpElev;
+kpElev=-1; %deg/deg
+kdElev=12*kpElev;
+kiElev=.005*kpElev;
 TLSP=125;
 load('elev.mat')
+subts=timeseries([0 0 1 1 2 2 3 3 0 0]',[0 499 500 510 511 799 800 819 820 1200]');
 %% Load components
 % Flight Controller
 loadComponent('firstBuildTakeoff');
@@ -43,7 +44,8 @@ loadComponent('constXYZT');
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,.36,0,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.8,1.6,.36,0,125],'') % Lemniscate of Booth
+% hiLvlCtrl.basisParams.setValue([1,1.4,20*pi/180,-.5,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -51,11 +53,11 @@ gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    .5,... % Initial path position
+    .75,... % Initial path position
     PATHGEOMETRY,... % Name of path function
-    hiLvlCtrl.basisParams.Value,... % Geometry parameters
+    [1,1.4,20*pi/180,-.5,125],... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
-    5)%(11/2)*norm(env.water.flowVec.Value)) % Initial speed
+    1)%(11/2)*norm(env.water.flowVec.Value)) % Initial speed
 % vhcl.setAddedMISwitch(false,'');
 % vhcl.setInitAngVelVec([0 0 0],'rad/s')
 % vhcl.setInitEulAng([10*pi/180 30*pi/180 0],'rad')
@@ -95,9 +97,9 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
 parseLogsout
-pitchDeg(i)=tsc.eulerAngles.Data(2,1,end)*180/pi;
-elevationDeg(i)=tsc.elevdeg.Data(end);
-end
+% pitchDeg(i)=tsc.eulerAngles.Data(2,1,end)*180/pi;
+% elevationDeg(i)=tsc.elevdeg.Data(end);
+% end
 % LUT = Simulink.LookupTable;
 % timeVec = linspace(0,1);
 % LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);

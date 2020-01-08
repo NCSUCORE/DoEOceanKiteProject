@@ -30,7 +30,7 @@ fltCtrl.yawMoment.tau.Value = 1.0000e+00
 fltCtrl.yawMoment.tau.Unit = 's'
 fltCtrl.yawMoment.tau.NoScale = false
 fltCtrl.yawMoment.tau.Description = 'Time Constant'
-fltCtrl.rollMoment.kp.Value = 6.3025e+05
+fltCtrl.rollMoment.kp.Value = 5.2087e+05
 fltCtrl.rollMoment.kp.Unit = '(N*m)/(rad)'
 fltCtrl.rollMoment.kp.NoScale = false
 fltCtrl.rollMoment.kp.Description = 'Proportional gain'
@@ -38,7 +38,7 @@ fltCtrl.rollMoment.ki.Value = 0.0000e+00
 fltCtrl.rollMoment.ki.Unit = '(N*m)/(rad*s)'
 fltCtrl.rollMoment.ki.NoScale = false
 fltCtrl.rollMoment.ki.Description = 'Integral gain'
-fltCtrl.rollMoment.kd.Value = 6.3025e+05
+fltCtrl.rollMoment.kd.Value = 5.2087e+05
 fltCtrl.rollMoment.kd.Unit = '(N*m)/(rad/s)'
 fltCtrl.rollMoment.kd.NoScale = false
 fltCtrl.rollMoment.kd.Description = 'Derivative gain'
@@ -103,3 +103,7 @@ fltCtrl.fcnName.Description = 'Name of the path shape function you want to use.'
 fltCtrl.initPathVar.Unit is unitless or has no unit specified
 fltCtrl.initPathVar.NoScale = false
 fltCtrl.initPathVar.Description = 'Initial path variable'
+fltCtrl.firstSpoolLap.Value = 1.0000e+00
+fltCtrl.firstSpoolLap.Unit is unitless or has no unit specified
+fltCtrl.firstSpoolLap.NoScale = false
+fltCtrl.firstSpoolLap.Description = 'First Lap to begin spooling'
