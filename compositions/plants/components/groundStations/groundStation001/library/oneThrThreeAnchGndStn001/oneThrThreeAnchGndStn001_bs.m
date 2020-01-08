@@ -2,7 +2,7 @@
 
 GROUNDSTATION         = 'groundStation001';
 gndStn = OCT.sixDoFStation;
-gndStn.setVolume(3.5,'m^3');
+gndStn.setVolume(8,'m^3');
 gndStn.setMass(gndStn.volume.Value*(1000/1.5),'kg');
 gndStn.setInertiaMatrix(((1/6)*gndStn.mass.Value*gndStn.volume.Value^(2/3)).*eye(3),'kg*m^2');
 bodyPosMatlumps = [ 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 ;
@@ -12,7 +12,7 @@ gndStn.setLumpedMassPositionMatrixBdy(bodyPosMatlumps,'m')
 gndStn.initAngVel.setValue(0,'rad/s')                                           
 gndStn.initVel.setValue(0,'m/s')                                          
 gndStn.initAngPos.setValue([0,0,0]','rad')                                        
-gndStn.initAnchTetherLength.setValue([210,210,210],'m')
+gndStn.initAnchTetherLength.setValue([200,200,200],'m')
 gndStn.numTethers.setValue(1,'');
 gndStn.build;
 gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
@@ -20,8 +20,7 @@ gndStn.bouyancy
 
 
 gndStn.addThrAttch('airThrAttchPt1',[0 0 ((gndStn.volume.Value)^(1/3))/2]);
-gndStn.addThrAttch('airThrAttchPt2',[0 0 ((gndStn.volume.Value)^(1/3))/2]);
-gndStn.addThrAttch('airThrAttchPt3',[0 0 ((gndStn.volume.Value)^(1/3))/2]);
+
 
 gndStn.addThrAttch('bdyThrAttchPt1',[0 1 0]');
 gndStn.addThrAttch('bdyThrAttchPt2',rotation_sequence([0 0  120])*gndStn.bdyThrAttchPt1.posVec.Value(:));
@@ -32,7 +31,7 @@ gndStn.addThrAttch('gndThrAttchPt2',rotation_sequence([0 0  120])*gndStn.gndThrA
 gndStn.addThrAttch('gndThrAttchPt3',rotation_sequence([0 0 -120])*gndStn.gndThrAttchPt1.posVec.Value(:));
 
 % Anchor Tethers
-% gndStn.anchThrs.setNumNodes(2,'');
+gndStn.anchThrs.setNumNodes(2,'');
 gndStn.anchThrs.setNumTethers(3,'');
 gndStn.anchThrs.build;
 
