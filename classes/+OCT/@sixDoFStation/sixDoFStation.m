@@ -13,6 +13,14 @@ classdef sixDoFStation < dynamicprops
         lumpedMassSphereRadius
         lumpedMassNetBouyancyForce
         addedMassMatrix
+        gravForcePerLM
+        cdX 
+        cdY 
+        cdZ 
+        aMX 
+        aMY 
+        aMZ
+        
         
         % Initial conditions
         posVec
@@ -20,7 +28,7 @@ classdef sixDoFStation < dynamicprops
         initAngPos
         initAngVel
         initAnchTetherLength
-        
+        areaPerLumpedMass
         
         %kite tether
         numTethers 
@@ -40,14 +48,27 @@ classdef sixDoFStation < dynamicprops
             obj.volume                      = SIM.parameter('Unit','m^3','Description','Total volume used in buoyancy calculation');
             obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m','Description','lumped mass position matrix');
             obj.lumpedMassSphereRadius      = SIM.parameter('Unit','m','Description','lumped mass sphere radius');
-            obj.lumpedMassNetBouyancyForce  = SIM.parameter('Unit','N','Description','lumped mass net bouyancy force');
+            obj.lumpedMassNetBouyancyForce  = SIM.parameter('Unit','N','Description','lumped mass bouyancy force');
+            obj.areaPerLumpedMass           = SIM.parameter('Unit','m^2','Description','area per lumped mass');
+            obj.gravForcePerLM              = SIM.parameter('Unit','N','Description','lumped mass gravity force');
             % Initial conditions
             obj.posVec                      = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
             obj.initVel                     = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
             obj.initAngPos                  = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
             obj.initAngVel                  = SIM.parameter('Unit','rad/s','Description','Initial angular velocity of the station in the ground frame, radians per sec');
             obj.initAnchTetherLength        = SIM.parameter('Unit','m','Description','Unstretched Tether Length');
-            obj.numTethers                  = SIM.parameter('Unit','','Description','number of kite tethers');
+            
+            
+            % added mass and drag coefficants
+            obj.cdX                         = SIM.parameter('Unit','','Description','lumped mass drag coefficiant x direction');
+            obj.cdY                         = SIM.parameter('Unit','','Description','lumped mass drag coefficiant y direction');
+            obj.cdZ                         = SIM.parameter('Unit','','Description','lumped mass drag coefficiant z direction');
+            obj.aMX                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant x direction');
+            obj.aMY                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant y direction');
+            obj.aMZ                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant z direction');
+            
+            %number of tethers from GS to KITE
+            obj.numTethers                  = SIM.parameter('Unit','','Description','number of tethers from GS to KITE');
             
             % Anchor tethers
             obj.anchThrs = OCT.tethers;
@@ -120,12 +141,45 @@ classdef sixDoFStation < dynamicprops
             obj.numTethers.setValue(val,unit)
         end
         
+        function setCdX (obj,val,unit)
+            obj.cdX.setValue(val,unit)
+        end
+        
+        function setCdY (obj,val,unit)
+            obj.cdY.setValue(val,unit)
+        end
+        
+        function setCdZ (obj,val,unit)
+            obj.cdZ.setValue(val,unit)
+        end
+        
+        function setAMX(obj,val,unit)
+            obj.aMX.setValue(val,unit)
+        end
+        
+        function setAMY(obj,val,unit)
+            obj.aMY.setValue(val,unit)
+        end
+        
+        function setAMZ(obj,val,unit)
+            obj.aMZ.setValue(val,unit)
+        end
+        
+        function setAreaPerLumpedMass(obj,val,unit)
+            obj.areaPerLumpedMass.setValue(val,unit)
+        end
+        
+         function setGravForcePerLM(obj,val,unit)
+            obj.gravForcePerLM.setValue(val,unit)
+        end
+        
+        
         function bouyancy(obj)
             numLM     =  numel(obj.lumpedMassPositionMatrixBdy.Value)/3;
             gravForce = (obj.mass.Value/numLM)*9.81;
             bouyForce = (obj.volume.Value/numLM)*1000*9.81;
-            netBouyancyPerLM = -gravForce + bouyForce;
-            obj.setLumpedMassNetBouyancyForce([0,0,netBouyancyPerLM],'N')
+            obj.setLumpedMassNetBouyancyForce([0,0,bouyForce],'N')
+            obj.setGravForcePerLM([0,0,-gravForce],'N')
         end
         % Initial conditions
         function setPosVec(obj,val,unit)
