@@ -113,7 +113,8 @@ elems(12).Unit = 'm';
 elems(13) = Simulink.BusElement;
 elems(13).Name = 'anchThrPollPos';
 elems(13).DimensionsMode = 'Fixed';
-elems(13).DataType = 'Bus: anchThrPollPosBus';
+% elems(13).DataType = 'Bus: anchThrPollPosBus';
+elems(13).DataType = 'Bus: thrPollPosBus';
 elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';
 

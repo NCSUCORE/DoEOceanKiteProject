@@ -11,5 +11,6 @@ fltCtrl.setMinR(100,'m')
 fltCtrl.setMaxR(200,'m')
 fltCtrl.setElevatorReelInDef(20,'deg')
 fltCtrl.setStartControl(1,'s')
+fltCtrl.firstSpoolLap.setValue(1,'');
 %% Save
 saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

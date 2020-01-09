@@ -24,6 +24,7 @@ classdef pthFlwCtrl < handle
         maxR
         fcnName
         initPathVar
+        firstSpoolLap
     end
     
     methods
@@ -49,6 +50,7 @@ classdef pthFlwCtrl < handle
             obj.maxR                = SIM.parameter('Unit','m','Description','Maximum radius for spooling switching');
             obj.fcnName             = SIM.parameter('Unit','','Description','Name of the path shape function you want to use.','NoScale',true);
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable');
+            obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
         end
         
         function setWinchSpeedIn(obj,val,unit)
