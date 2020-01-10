@@ -1,7 +1,7 @@
 % %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(100,'s');
+sim.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -12,9 +12,9 @@ loadComponent('oneDoFGSCtrlBasic');
 % High level controller
 loadComponent('constBoothLem')
 % Ground station
-%  loadComponent('pathFollowingGndStn');
+  loadComponent('pathFollowingGndStn');
 
-   loadComponent('oneThrThreeAnchGndStn001');
+%    loadComponent('oneThrThreeAnchGndStn001');
 % Winches
 loadComponent('oneDOFWnch');
 % Tether

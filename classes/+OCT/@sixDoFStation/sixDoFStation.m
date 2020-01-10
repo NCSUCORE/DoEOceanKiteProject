@@ -9,8 +9,6 @@ classdef sixDoFStation < dynamicprops
         
         % Buoyancy properties
         volume
-        lumpedMassPositionMatrixBdy
-        lumpedMassSphereRadius
         lumpedMassNetBouyancyForce
         addedMassMatrix
         gravForcePerLM
@@ -21,6 +19,24 @@ classdef sixDoFStation < dynamicprops
         aMY 
         aMZ
         
+        %lumped mass and shaped properties
+        lumpedMassPositionMatrixBdy
+        lumpedMassSphereRadius
+        
+        angMatExt
+        zMatExt
+        rMatExt
+        
+        angMatTB
+        zMatTB
+        rMatTB
+        
+        angMatInt
+        zMatInt
+        rMatInt
+        cylRad
+        cylTotH
+        angSpac
         
         % Initial conditions
         posVec
@@ -51,6 +67,7 @@ classdef sixDoFStation < dynamicprops
             obj.lumpedMassNetBouyancyForce  = SIM.parameter('Unit','N','Description','lumped mass bouyancy force');
             obj.areaPerLumpedMass           = SIM.parameter('Unit','m^2','Description','area per lumped mass');
             obj.gravForcePerLM              = SIM.parameter('Unit','N','Description','lumped mass gravity force');
+            
             % Initial conditions
             obj.posVec                      = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
             obj.initVel                     = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
@@ -66,6 +83,23 @@ classdef sixDoFStation < dynamicprops
             obj.aMX                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant x direction');
             obj.aMY                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant y direction');
             obj.aMZ                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant z direction');
+            
+            %geometry of ground station coordinates 
+            obj.angMatExt                   = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the exterior lumped masses lie');
+            obj.zMatExt                     = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the exterior lumped masses lie');
+            obj.rMatExt                     = SIM.parameter('Unit','m','Description','the radius on a cylinder that the exterior lumped masses lie');
+            
+            obj.angMatTB                    = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the top and bottom lumped masses lie');
+            obj.zMatTB                      = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the top and bottom lumped masses lie');
+            obj.rMatTB                      = SIM.parameter('Unit','m','Description','the radius on a cylinder that the top and bottom lumped masses lie');
+            
+            obj.angMatInt                   = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the interior lumped masses lie');
+            obj.zMatInt                     = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the interior lumped masses lie');
+            obj.rMatInt                     = SIM.parameter('Unit','m','Description','the radius on a cylinder that the interior lumped masses lie');
+            
+            
+            
+            
             
             %number of tethers from GS to KITE
             obj.numTethers                  = SIM.parameter('Unit','','Description','number of tethers from GS to KITE');

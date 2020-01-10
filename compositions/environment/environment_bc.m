@@ -4,7 +4,7 @@ function  environment_bc
 numNodes    = evalin('base','thr.numNodes.Value');   % Get the number of nodes
 numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
 
-numNodesAnchor    = evalin('base','gndStn.anchThrs.numNodes.Value');   % Get the number of nodes
+numNodesAnchor    = evalin('base','thr.numNodes.Value');   % Get the number of nodes
 numTethersAnchor  = evalin('base','gndStn.anchThrs.numTethers.Value'); % Get the number of tethers
 numGndStnLumpedMasses = evalin('base','gndStn.lumpedMassPositionMatrixBdy.Value');
 
