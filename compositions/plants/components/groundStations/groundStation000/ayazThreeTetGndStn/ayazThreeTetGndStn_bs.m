@@ -23,6 +23,8 @@ gndStn.thrAttch1.setPosVec([0 0 0]','m');
 gndStn.thrAttch2.setPosVec([0 0 0]','m');
 gndStn.thrAttch3.setPosVec([0 0 0]','m');
 gndStn.setFreeSpnEnbl(false,'');
+gndStn.lumpedMassPositionMatrixBdy.setValue([0,0,0]','m');
+
 
 %dummy , allows the env. to work for this ground station and the other
 %ground station (1DoF and 6DoF). I couldn't think of another way yet. -James

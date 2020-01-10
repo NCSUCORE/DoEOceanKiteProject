@@ -16,7 +16,7 @@ Lscale = 0.015;
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(3,'');
-thr.setNumNodes(2,'');
+thr.setNumNodes(3,'');
 thr.build;
 
 % Set parameter values

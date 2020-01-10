@@ -8,7 +8,7 @@ cd(fileparts(mfilename('fullpath')));
 lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
-simTime = 490;
+simTime = 350;
 sim = SIM.sim;
 sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 

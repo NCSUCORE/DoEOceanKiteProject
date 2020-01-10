@@ -55,7 +55,7 @@ elems(1).Description = 'Flow velocity vector in the ground coordinate system at 
 
 elems(2) = Simulink.BusElement;
 elems(2).Name = 'linkFlowVecsBusArry';
-elems(2).Dimensions = numTethers;
+elems(2).Dimensions = [numTethers,1] ;
 elems(2).DimensionsMode = 'Fixed';
 elems(2).DataType = 'Bus: linkFlowVecsBus';
 elems(2).SampleTime = -1;
@@ -65,7 +65,7 @@ elems(2).Description = 'Flow velocity vector in the ground coordinate system at 
 %%
 elems(3) = Simulink.BusElement;
 elems(3).Name = 'linkFlowVecsBusArryAnchor';
-elems(3).Dimensions = numTethersAnchor;
+elems(3).Dimensions = [numTethersAnchor,1];
 elems(3).DimensionsMode = 'Fixed';
 elems(3).DataType = 'Bus: linkFlowVecsAnchorBus';
 elems(3).SampleTime = -1;
