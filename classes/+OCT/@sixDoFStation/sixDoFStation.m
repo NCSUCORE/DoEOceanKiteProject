@@ -12,16 +12,17 @@ classdef sixDoFStation < dynamicprops
         lumpedMassNetBouyancyForce
         addedMassMatrix
         gravForcePerLM
-        cdX 
-        cdY 
-        cdZ 
-        aMX 
-        aMY 
+        cdX
+        cdY
+        cdZ
+        aMX
+        aMY
         aMZ
         
         %lumped mass and shaped properties
         lumpedMassPositionMatrixBdy
         lumpedMassSphereRadius
+        lumpedMassBodyFrameAreaNormalVector
         
         angMatExt
         zMatExt
@@ -34,9 +35,12 @@ classdef sixDoFStation < dynamicprops
         angMatInt
         zMatInt
         rMatInt
+        
         cylRad
         cylTotH
         angSpac
+        heightSpac
+        lumpedMassNormalVecMat
         
         % Initial conditions
         posVec
@@ -47,7 +51,7 @@ classdef sixDoFStation < dynamicprops
         areaPerLumpedMass
         
         %kite tether
-        numTethers 
+        numTethers
         
         % Anchor tethers
         anchThrs
@@ -84,7 +88,7 @@ classdef sixDoFStation < dynamicprops
             obj.aMY                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant y direction');
             obj.aMZ                         = SIM.parameter('Unit','','Description','lumped mass added mass coefficiant z direction');
             
-            %geometry of ground station coordinates 
+            %geometry of ground station coordinates
             obj.angMatExt                   = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the exterior lumped masses lie');
             obj.zMatExt                     = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the exterior lumped masses lie');
             obj.rMatExt                     = SIM.parameter('Unit','m','Description','the radius on a cylinder that the exterior lumped masses lie');
@@ -97,9 +101,12 @@ classdef sixDoFStation < dynamicprops
             obj.zMatInt                     = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the interior lumped masses lie');
             obj.rMatInt                     = SIM.parameter('Unit','m','Description','the radius on a cylinder that the interior lumped masses lie');
             
-            
-            
-            
+            obj.cylRad                      = SIM.parameter('Unit','m','Description','the radius of the cylinder');
+            obj.cylTotH                     = SIM.parameter('Unit','m','Description','the cylinder total height');
+            obj.angSpac                     = SIM.parameter('Unit','m','Description','the lumped Mass Angle Spacing');
+            obj.heightSpac                  = SIM.parameter('Unit','m','Description','the gnd station height spacing');
+            obj.lumpedMassNormalVecMat      = SIM.parameter('Unit','','Description','normal vectors of the area of each lumped mass');
+           
             
             %number of tethers from GS to KITE
             obj.numTethers                  = SIM.parameter('Unit','','Description','number of tethers from GS to KITE');
@@ -126,7 +133,7 @@ classdef sixDoFStation < dynamicprops
             end
         end
         
-   
+        
         % Method to add tether attachment points
         function obj = addThrAttch(obj,Name,posVec)
             addprop(obj,Name);
@@ -203,8 +210,64 @@ classdef sixDoFStation < dynamicprops
             obj.areaPerLumpedMass.setValue(val,unit)
         end
         
-         function setGravForcePerLM(obj,val,unit)
+        function setGravForcePerLM(obj,val,unit)
             obj.gravForcePerLM.setValue(val,unit)
+        end
+        
+        function setAngMatExt(obj,val,unit)
+            obj.angMatExt.setValue(val,unit)
+        end
+        
+        function setAngMatTB(obj,val,unit)
+            obj.angMatTB.setValue(val,unit)
+        end
+        
+        function setAngMatInt(obj,val,unit)
+            obj.angMatInt.setValue(val,unit)
+        end
+        
+        function setZMatExt(obj,val,unit)
+            obj.zMatExt.setValue(val,unit)
+        end
+        
+        function setZMatTB(obj,val,unit)
+            obj.zMatTB.setValue(val,unit)
+        end
+        
+        function setZMatInt(obj,val,unit)
+            obj.zMatInt.setValue(val,unit)
+        end
+        
+        function setRMatExt(obj,val,unit)
+            obj.rMatExt.setValue(val,unit)
+        end
+        
+        function setRMatTB(obj,val,unit)
+            obj.rMatTB.setValue(val,unit)
+        end
+        
+        function setRMatInt(obj,val,unit)
+            obj.rMatInt.setValue(val,unit)
+        end
+        
+        function setCylRad(obj,val,unit)
+            obj.cylRad.setValue(val,unit)
+        end
+        
+        function setCylTotH(obj,val,unit)
+            obj.cylTotH.setValue(val,unit)
+        end
+        
+        function setAngSpac (obj,val,unit)
+            obj.angSpac.setValue(val,unit)
+        end
+        
+        function setHeightSpac(obj,val,unit)
+            obj.heightSpac.setValue(val,unit)
+        end
+        
+        function setLumpedMassNormalVecMat(obj,val,unit)
+            obj.lumpedMassNormalVecMat.setValue(val,unit)
         end
         
         
