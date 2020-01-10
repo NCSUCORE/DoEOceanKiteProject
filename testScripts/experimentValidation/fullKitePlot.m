@@ -67,7 +67,7 @@ bx = zeros(nTethers,2);
 by = zeros(nTethers,2);
 bz = zeros(nTethers,2);
 
-plotMargin = 5*LS;
+plotMargin = 0.5*LS;
 
 for ii = 1:nTethers
     [xmin,xmax] = bounds(squeeze(s_R{ii}(1,:,:)),'all');
@@ -128,9 +128,9 @@ for ii = 1:n_steps
     
     if ii == 1
         xlabel('X (m)'); ylabel('Y (m)'); zlabel('Z (m)')
-        xlim([-max(abs(bx(:)))-(10*LS) max(abs(bx(:)))+(10*LS)]);
+        xlim([-0*max(abs(bx(:)))-(1*LS) max(abs(bx(:)))+(0.1*LS)]);
         ylim([-max(abs(by(:))) max(abs(by(:)))]);
-        zlim([0 max(bz(:)) + (5*LS)]);
+        zlim([0 max(bz(:)) + 0*(0.5*LS)]);
 %         axis equal
         hold on
         grid on

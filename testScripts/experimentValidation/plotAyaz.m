@@ -18,7 +18,7 @@ Lscale = lengthScaleFactor;
 Dscale = densityScaleFactor;
 
 % % % extract the important variables into dummy variables
-timeSim = tscSim.positionVec.Time.*(1/Lscale^0.5)-altitudeCtrlShutOffDelay;
+timeSim = tscSim.positionVec.Time.*(1/Lscale^0.5)-0*altitudeCtrlShutOffDelay;
 sol_Rcm_o = repmat(gndStn.posVec.Value(:),1,numel(timeSim))...
     + squeeze(tscSim.positionVec.Data).*(1/Lscale);
 sol_Vcmo = squeeze(tscSim.velocityVec.Data).*(1/Lscale^0.5);
