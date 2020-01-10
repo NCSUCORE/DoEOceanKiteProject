@@ -34,7 +34,6 @@ for ii = 1:length(names)
        warning('Duplicate signal names %s, skipping', names{ii})
     %   break
     end
-    
 end
 
 if nargout == 0

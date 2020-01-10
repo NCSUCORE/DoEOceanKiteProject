@@ -10,7 +10,13 @@ p = inputParser;
 addRequired(p,'tsc',@isstruct);
 % Time step used in plotting
 addRequired(p,'timeStep',@isnumeric);
+% Time to start viewing
+addParameter(p,'startTime',0,@isnumeric);
+% Time to start viewing
+addParameter(p,'endTime',tsc.positionVec.time(end),@isnumeric);
 
+% Vector of time stamps used to crop data
+addParameter(p,'CropTimes',[],@isnumeric)
 
 % ---Parameters for saving a gif---
 % Switch to enable saving 0 = don't save
@@ -28,6 +34,12 @@ addParameter(p,'MPEGPath',fullfile(fileparts(which('OCTProject.prj')),'output'))
 addParameter(p,'MPEGFile','animation');
 
 % ---Plot Features---
+% X limits on the plot
+addParameter(p,'XLim',[],@isnumeric)
+% Y limits on the plot
+addParameter(p,'YLim',[],@isnumeric)
+% Z limits on the plot
+addParameter(p,'ZLim',[],@isnumeric)
 % Name of the path geometry used 
 addParameter(p,'PathFunc',[],@ischar);
 % Plot ground coordinate system axes
@@ -89,7 +101,6 @@ end
 
 % Resample the timeseries to the specified framerate
 tsc = resampleTSC(tsc,p.Results.timeStep);
-
 
 %% Plot things
 % Plot the aerodynamic surfaces
@@ -218,6 +229,8 @@ if p.Results.ZoomIn
     zlim(tsc.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
 end
 
+
+
 % Plot local aerodynamic force vectors
 if p.Results.LocalAero
     % Get the surface names
@@ -296,7 +309,7 @@ end
 % Add the color bar
 if p.Results.PowerBar
     h.colorBar = colorbar;
-    h.colorBar.Label.String = 'Iteration Mean Power';
+    h.colorBar.Label.String = 'Iteration Mean Power [W]';
     h.colorBar.Label.Interpreter = 'Latex';
     h.colorBar.Limits = [min(iterMeanPower.Data) max(iterMeanPower.Data)];
     caxis([min(iterMeanPower.Data) max(iterMeanPower.Data)])
@@ -348,16 +361,41 @@ view(p.Results.View)
 setLimsToQuartSphere(gca,squeeze(tsc.positionVec.Data)',...
     'PlotAxes',true);
 
+% Set the custom x, y and z limits
+if ~isempty(p.Results.XLim)
+    xlim(p.Results.XLim)
+end
+if ~isempty(p.Results.YLim)
+    ylim(p.Results.YLim)
+end
+if ~isempty(p.Results.ZLim)
+    zlim(p.Results.ZLim)
+end
+
 % Set data aspect ratio to realistic (not skewed)
 daspect([1 1 1])
 
 % Create a title
-h.title = title({sprintf('Time = %.1f s',0),...
-    sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,1))),...
+h.title = title({strcat(sprintf('Time = %.1f s',0),',',...
+    sprintf(' Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,1)))),...
     sprintf('Flow Speed = %.1f m/s',norm(tsc.vhclFlowVecs.Data(:,end,1)))});
 
 % Update the graphics handles with new data at each time step
-for ii = 1:length(tsc.eulerAngles.Time)
+if p.Results.startTime == 0
+    firstInd=1;
+else
+    [~,firstInd]=min(abs(tsc.eulerAngles.Time-p.Results.startTime));
+end
+if p.Results.endTime == tsc.positionVec.time(end)
+    lastInd=length(tsc.positionVec.Time);
+elseif p.Results.endTime < tsc.positionVec.time(end)
+    [~,lastInd]=min(abs(tsc.positionVec.Time-p.Results.endTime));
+else
+    lastInd=length(tsc.positionVec.Time);
+end
+
+    
+for ii = firstInd:lastInd
     for jj = 1:numel(hStatic)
         % Rotate and translate all aero surfaces
         pts = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*[...
@@ -496,9 +534,9 @@ for ii = 1:length(tsc.eulerAngles.Time)
         h.thr{jj}.ZData = squeeze(tsc.thrNodeBus.nodePositions.Data(3,:,ii));
     end
     % Update the title
-    h.title.String = {...
-        sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),...
-        sprintf('Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii))),...
+    h.title.String = {strcat(...
+        sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),',',...
+        sprintf(' Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii)))),...
         sprintf('Flow Speed = %.1f m/s',norm(tsc.vhclFlowVecs.Data(:,end,ii)))};
     
     
@@ -553,7 +591,7 @@ for ii = 1:length(tsc.eulerAngles.Time)
         frame       = getframe(h.fig);
         im          = frame2im(frame);
         [imind,cm]  = rgb2ind(im,256);
-        if ii == 1
+        if ii == firstInd
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif', 'Loopcount',inf);
         else
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif','WriteMode','append','DelayTime',p.Results.GifTimeStep)
