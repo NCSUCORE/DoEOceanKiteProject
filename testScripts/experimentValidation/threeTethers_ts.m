@@ -122,8 +122,8 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 simWithMonitor('OCTModel')
 parseLogsout
 
-plotAyaz
-compPlots
+% plotAyaz
+% compPlots
 
 % fullKitePlot
 
