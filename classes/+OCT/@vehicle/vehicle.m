@@ -69,13 +69,14 @@ classdef vehicle < dynamicprops
         initVelVecBdy
         initEulAng
         initAngVelVec
+        addedMass
     end
     
     properties (Dependent)
         volume
         mass
         inertia
-        addedMass
+%         addedMass
         addedInertia
         surfaceOutlines
         thrAttchPts
@@ -102,6 +103,8 @@ classdef vehicle < dynamicprops
             obj.Ixz            = SIM.parameter('Unit','kg*m^2','Description','Ixz');
             obj.Iyz            = SIM.parameter('Unit','kg*m^2','Description','Iyz');
             obj.addedMISwitch  = SIM.parameter('Value',1,'Unit','','Description','False turns off added mass and inertia');
+            obj.addedMass            = SIM.parameter('Value',zeros(3),'Unit','kg','Description','addedMass');
+
             % some vectors
             obj.Rbridle_cm    = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
             obj.centOfBuoy        = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
@@ -510,7 +513,7 @@ classdef vehicle < dynamicprops
         end
         
         % added mass
-        function val = get.addedMass(obj)
+        function calcAddedMass(obj)
             % dummy variables
             density = obj.fluidDensity.Value;
             chord = obj.wingChord.Value;
@@ -530,11 +533,9 @@ classdef vehicle < dynamicprops
             
             % store
             if obj.addedMISwitch.Value
-                val = SIM.parameter('Value',[1;0.7;1].*[m_added_x 0 0;0 m_added_y 0; 0 0 m_added_z],...
-                    'Unit','kg','Description','Added mass of the system in the body frame');
+                 obj.addedMass.setValue([m_added_x 0 0;0 m_added_y 0; 0 0 m_added_z],'kg');
             else
-                val = SIM.parameter('Value',zeros(3),...
-                    'Unit','kg','Description','Added mass of the system in the body frame');
+                 obj.addedMass.setValue(zeros(3),'kg');
             end
         end
         

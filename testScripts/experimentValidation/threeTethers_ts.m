@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
-iniX = 0.1611;
+iniX = 0.1904;
 pitchSP = 11;
 
 % % % initial conditions
@@ -74,9 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.3796,'m');
-wnch.winch2.initLength.setValue(0.3996,'m');
-wnch.winch3.initLength.setValue(0.3796,'m');
+wnch.winch1.initLength.setValue(0.3900,'m');
+wnch.winch2.initLength.setValue(0.4155,'m');
+wnch.winch3.initLength.setValue(0.3900,'m');
 
 
 dynamicCalc = '';
@@ -87,7 +87,7 @@ load('ayazThreeTetCtrl.mat');
 altitudeCtrlShutOffDelay = 0;
 % expOffset = 7.7+2.5;
 expOffset = 0;
-expDelay = 20.6;
+expDelay = 20.61;
 initialDelay = altitudeCtrlShutOffDelay + expDelay;
 expOffset = altitudeCtrlShutOffDelay + expOffset;
 
@@ -122,8 +122,8 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 simWithMonitor('OCTModel')
 parseLogsout
 
-% plotAyaz
-% compPlots
+plotAyaz
+compPlots
 
 % fullKitePlot
 

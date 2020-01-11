@@ -17,12 +17,12 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.19,'');
+vhcl.setBuoyFactor(1.5,'');
 
 % entering parameters for scaled model
 Lscale = 0.015;
 xCM_LE = 7.1721e-3;
-xCB_LE = 7.194e-3;
+xCB_LE = 0.98*7.194e-3;
 
 % % % volume and inertias
 % vhcl.setVolume(7457.953*1e-9*(1/Lscale^3),'m^3');
@@ -83,10 +83,11 @@ vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS3','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
+vhcl.calcAddedMass
 
 % % % artificially reduce lift
-reductionFactor = 0.6;
-incrementFactor = 1.6;
+reductionFactor = 0.9;
+incrementFactor = 1.1;
 
 vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
 vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
