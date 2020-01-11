@@ -59,22 +59,23 @@ for jj = 1:max_vert
     end
 end
 locs = repmat(locs,20,1);
+fn = 1;
+
 
 % % % cm position and set points
-fn = 1;
-figure(fn);
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,sol_Rcm_o,plotProps,...
-    {'$x_{cm}$','$y_{cm}$','$z_{cm}$'},'Position (m)','CM position');
+% figure(fn);
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,sol_Rcm_o,plotProps,...
+%     {'$x_{cm}$','$y_{cm}$','$z_{cm}$'},'Position (m)','CM position');
 % subplot(3,1,3)
 
 
 % % % cm velocity
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,sol_Vcmo,plotProps,...
-    {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:))
+% vectorPlotter(timeSim,sol_Vcmo,plotProps,...
+%     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
 
 % % % euler angles
 % fn = fn+1;
@@ -214,18 +215,18 @@ azimuthAngle = (180/pi)*atan2(sol_Rcm_o(2,:),sol_Rcm_o(1,:));
 
 
 % % % % ratio of wing drag to fuselage drag
-fn = fn+1;
-figure(fn)
-set(gcf,'Position',locs(fn,:));
-wingDrag = squeeze(sum(tsc.FDragBdyPart.Data(:,1:2,:),2));
-wingToFuseDragRatio = sqrt(sum(wingDrag.^2,1))./...
-    sqrt(sum(squeeze(tsc.FFuseBdy.Data).^2,1));
-
-vectorPlotter(timeSim,wingToFuseDragRatio(1,:),plotProps,...
-    {'R'},'Ratio','Wing over Fuselage drag');
-
-%%%%%%
-set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);
+% fn = fn+1;
+% figure(fn)
+% set(gcf,'Position',locs(fn,:));
+% wingDrag = squeeze(sum(tsc.FDragBdyPart.Data(:,1:2,:),2));
+% wingToFuseDragRatio = sqrt(sum(wingDrag.^2,1))./...
+%     sqrt(sum(squeeze(tsc.FFuseBdy.Data).^2,1));
+% 
+% vectorPlotter(timeSim,wingToFuseDragRatio(1,:),plotProps,...
+%     {'R'},'Ratio','Wing over Fuselage drag');
+% 
+% %%%%%%
+% set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);
 
 
 

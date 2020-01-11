@@ -8,7 +8,7 @@ cd(fileparts(mfilename('fullpath')));
 lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
-simTime = 350;
+simTime = 60;
 sim = SIM.sim;
 sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
@@ -16,8 +16,6 @@ sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 GNDSTNCONTROLLER      = 'oneDoF';
 
 %% common parameters
-numTethers = 3;
-thrNumNodes = 2;
 numTurbines = 2;
 
 load('constXYZT.mat')
@@ -30,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
-iniX = 0;
+iniX = 0.1611;
 pitchSP = 11;
 
 % % % initial conditions
@@ -58,6 +56,7 @@ load('ayazThreeTetTethers.mat')
 
 % set initial conditions
 for ii = 1:3
+    
     thr.(strcat('tether',num2str(ii))).initGndNodePos.setValue...
         (gndStn.posVec.Value + ...
         gndStn.(strcat('thrAttch',num2str(ii))).posVec.Value(:),'m');
@@ -74,17 +73,21 @@ end
 load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
-wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+% wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+wnch.winch1.initLength.setValue(0.3796,'m');
+wnch.winch2.initLength.setValue(0.3996,'m');
+wnch.winch3.initLength.setValue(0.3796,'m');
+
 
 dynamicCalc = '';
 
 %% Set up controller
 load('ayazThreeTetCtrl.mat');
 
-altitudeCtrlShutOffDelay = 400;
+altitudeCtrlShutOffDelay = 0;
 % expOffset = 7.7+2.5;
 expOffset = 0;
-expDelay = 20;
+expDelay = 20.6;
 initialDelay = altitudeCtrlShutOffDelay + expDelay;
 expOffset = altitudeCtrlShutOffDelay + expOffset;
 

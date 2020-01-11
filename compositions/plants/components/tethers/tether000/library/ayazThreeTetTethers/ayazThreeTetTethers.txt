@@ -11,42 +11,13 @@ thr.maxPercentageElongation.NoScale = false
 thr.maxAppFlowMultiplier.Value = 2.0000e+00
 thr.maxAppFlowMultiplier.Unit is unitless or has no unit specified
 thr.maxAppFlowMultiplier.NoScale = false
-thr.tether1.numNodes.Value = 3.0000e+00
-thr.tether1.numNodes.Unit is unitless or has no unit specified
-thr.tether1.numNodes.NoScale = true
-thr.tether1.diameter.Value = 4.9500e-04
-thr.tether1.diameter.Unit = 'm'
-thr.tether1.diameter.NoScale = false
-thr.tether1.youngsMod.Value = 7.5000e+08
-thr.tether1.youngsMod.Unit = 'Pa'
-thr.tether1.youngsMod.NoScale = false
-thr.tether1.vehicleMass.Unit = 'kg'
-thr.tether1.vehicleMass.NoScale = false
-thr.tether1.dampingRatio.Value = 5.0000e-02
-thr.tether1.dampingRatio.Unit is unitless or has no unit specified
-thr.tether1.dampingRatio.NoScale = false
-thr.tether1.dragCoeff.Value = 1.0000e+00
-thr.tether1.dragCoeff.Unit is unitless or has no unit specified
-thr.tether1.dragCoeff.NoScale = false
-thr.tether1.density.Value = 1.3000e+03
-thr.tether1.density.Unit = 'kg/m^3'
-thr.tether1.density.NoScale = false
-thr.tether1.initGndNodePos.Unit = 'm'
-thr.tether1.initGndNodePos.NoScale = false
-thr.tether1.initAirNodePos.Unit = 'm'
-thr.tether1.initAirNodePos.NoScale = false
-thr.tether1.initGndNodeVel.Unit = 'm/s'
-thr.tether1.initGndNodeVel.NoScale = false
-thr.tether1.initAirNodeVel.Unit = 'm/s'
-thr.tether1.initAirNodeVel.NoScale = false
-thr.tether1.initNodePos is non-string and non-numeric and takes up 7.0000e+00 bytes
 thr.tether3.numNodes.Value = 3.0000e+00
 thr.tether3.numNodes.Unit is unitless or has no unit specified
 thr.tether3.numNodes.NoScale = true
-thr.tether3.diameter.Value = 4.9500e-04
+thr.tether3.diameter.Value = 3.0000e-04
 thr.tether3.diameter.Unit = 'm'
 thr.tether3.diameter.NoScale = false
-thr.tether3.youngsMod.Value = 7.5000e+08
+thr.tether3.youngsMod.Value = 5.0000e+10
 thr.tether3.youngsMod.Unit = 'Pa'
 thr.tether3.youngsMod.NoScale = false
 thr.tether3.vehicleMass.Unit = 'kg'
@@ -72,10 +43,10 @@ thr.tether3.initNodePos is non-string and non-numeric and takes up 7.0000e+00 by
 thr.tether2.numNodes.Value = 3.0000e+00
 thr.tether2.numNodes.Unit is unitless or has no unit specified
 thr.tether2.numNodes.NoScale = true
-thr.tether2.diameter.Value = 4.9500e-04
+thr.tether2.diameter.Value = 3.0000e-04
 thr.tether2.diameter.Unit = 'm'
 thr.tether2.diameter.NoScale = false
-thr.tether2.youngsMod.Value = 7.5000e+08
+thr.tether2.youngsMod.Value = 5.0000e+10
 thr.tether2.youngsMod.Unit = 'Pa'
 thr.tether2.youngsMod.NoScale = false
 thr.tether2.vehicleMass.Unit = 'kg'
@@ -98,3 +69,32 @@ thr.tether2.initGndNodeVel.NoScale = false
 thr.tether2.initAirNodeVel.Unit = 'm/s'
 thr.tether2.initAirNodeVel.NoScale = false
 thr.tether2.initNodePos is non-string and non-numeric and takes up 7.0000e+00 bytes
+thr.tether1.numNodes.Value = 3.0000e+00
+thr.tether1.numNodes.Unit is unitless or has no unit specified
+thr.tether1.numNodes.NoScale = true
+thr.tether1.diameter.Value = 3.0000e-04
+thr.tether1.diameter.Unit = 'm'
+thr.tether1.diameter.NoScale = false
+thr.tether1.youngsMod.Value = 5.0000e+10
+thr.tether1.youngsMod.Unit = 'Pa'
+thr.tether1.youngsMod.NoScale = false
+thr.tether1.vehicleMass.Unit = 'kg'
+thr.tether1.vehicleMass.NoScale = false
+thr.tether1.dampingRatio.Value = 5.0000e-02
+thr.tether1.dampingRatio.Unit is unitless or has no unit specified
+thr.tether1.dampingRatio.NoScale = false
+thr.tether1.dragCoeff.Value = 1.0000e+00
+thr.tether1.dragCoeff.Unit is unitless or has no unit specified
+thr.tether1.dragCoeff.NoScale = false
+thr.tether1.density.Value = 1.3000e+03
+thr.tether1.density.Unit = 'kg/m^3'
+thr.tether1.density.NoScale = false
+thr.tether1.initGndNodePos.Unit = 'm'
+thr.tether1.initGndNodePos.NoScale = false
+thr.tether1.initAirNodePos.Unit = 'm'
+thr.tether1.initAirNodePos.NoScale = false
+thr.tether1.initGndNodeVel.Unit = 'm/s'
+thr.tether1.initGndNodeVel.NoScale = false
+thr.tether1.initAirNodeVel.Unit = 'm/s'
+thr.tether1.initAirNodeVel.NoScale = false
+thr.tether1.initNodePos is non-string and non-numeric and takes up 7.0000e+00 bytes

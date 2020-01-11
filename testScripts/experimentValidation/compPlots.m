@@ -15,29 +15,57 @@ tEnd = numel(timeExp);
 tPlot = tStart:tEnd;
 % tend => end;  -- change if needed  
 
+% resample simulation results
+resampleDataRate = 0.01;
+signals = fieldnames(tscSim);
+timeAnim = 0:resampleDataRate:tscSim.(signals{1}).Time(end);
+timeSim2 = timeAnim;
 
-% % % euler angles
+tscSim2.positionVec = resample(tscSim.positionVec,timeAnim);
+tscSim2.velocityVec = resample(tscSim.velocityVec,timeAnim);
+tscSim2.eulerAngles = resample(tscSim.eulerAngles,timeAnim);
+tscSim2.angularVel = resample(tscSim.angularVel,timeAnim);
+tscSim2.rollSetpoint = resample(tscSim.rollSetpoint,timeAnim);
+tscSim2.pitchSetpoint = resample(tscSim.pitchSetpoint,timeAnim);
+tscSim2.thrReleaseSpeeds = resample(tscSim.thrReleaseSpeeds,timeAnim);
+
+sol_Rcm_o = repmat(gndStn.posVec.Value(:),1,numel(timeSim2))...
+    + squeeze(tscSim2.positionVec.Data).*(1/Lscale);
+sol_Vcmo = squeeze(tscSim2.velocityVec.Data).*(1/Lscale^0.5);
+sol_euler = squeeze(tscSim2.eulerAngles.Data);
+sol_OwB = squeeze(tscSim2.angularVel.Data).*(Lscale^0.5);
+
+
+% filter bad data
+badData = find(tscExp.yaw_rad.Data>100);
+tscExp.yaw_rad.Data(badData) = 0.5*(tscExp.yaw_rad.Data(badData-1) + tscExp.yaw_rad.Data(badData+1));
+windowSize = 20; 
+b = (1/windowSize)*ones(1,windowSize);
+
+% moving aveage filtering
+tscExp.yaw_rad.Data = filter(b,1,tscExp.yaw_rad.Data);
+tscExp.roll_rad.Data = filter(b,1,tscExp.roll_rad.Data);
+tscExp.pitch_rad.Data = filter(b,1,tscExp.pitch_rad.Data);
+
+tscExp.CoMPosVec_cm.Data = tscExp.CoMPosVec_cm.Data./100;
+
+cmDat = squeeze(tscExp.CoMPosVec_cm.data);
+
+% % % euler angles %%%%%%%%%%%%%%%%%%%%%%%%%
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,sol_euler*180/pi,plotPropsSim,...
+vectorPlotter(timeSim2,sol_euler*180/pi,plotPropsSim,...
     {'$\phi_{sim}$','$\theta_{sim}$','$\psi_{sim}$'},'Angle (deg)','Euler Angles');
 % % % setpoints
 if Lscale == 1 && Dscale == 1
 subplot(3,1,1)
-plot(timeSim,squeeze(tscSim.rollSetpoint.Data),'k--',...
+plot(timeSim2,squeeze(tscSim2.rollSetpoint.Data),'k--',...
     'DisplayName','$\phi_{sp}$');
 subplot(3,1,2)
-plot(timeSim,squeeze(tscSim.pitchSetpoint.Data),'k--',...
-    'DisplayName','$\theta_{sp}$');
-subplot(3,1,3)
-plot(timeSim,squeeze(tscSim.yawSetpoint.Data),'k--',...
+plot(timeSim2,squeeze(tscSim2.pitchSetpoint.Data),'k--',...
     'DisplayName','$\theta_{sp}$');
 end
-
-%filter bad data
-badData = find(tscExp.yaw_rad.Data>100);
-tscExp.yaw_rad.Data(badData) = 0.5*(tscExp.yaw_rad.Data(badData-1) + tscExp.yaw_rad.Data(badData+1));
 
 vectorPlotter(timeExp(tPlot),(180/pi)*[tscExp.roll_rad.Data(tPlot)';...
     tscExp.pitch_rad.Data(tPlot)';...
@@ -50,18 +78,12 @@ legend('$\phi$','SP')
 title('Euler angles')
 
 
-% % % % CM positions 
+% % % % CM positions  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fn = fn+1;
 figure(fn);
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,sol_Rcm_o,plotPropsSim,...
+vectorPlotter(timeSim2,sol_Rcm_o,plotPropsSim,...
     {'$x_{cm,sim}$','$y_{cm,sim}$','$z_{cm,sim}$'},'Position (m)','CM position');
-
-figure(fn)
-set(gcf,'Position',locs(fn,:));
-Rconfluence_o = [-10;0;0];
-
-cmDat = 0.6*gndStn.posVec.Value(:) + squeeze(tscExp.CoMPosVec_cm.data)./100;
 
 vectorPlotter(timeExp(tPlot),cmDat(:,tPlot),plotPropsExp,...
     {'$x_{cm,exp}$','$y_{cm,exp}$','$z_{cm,exp}$'},'Position (m)','');
@@ -73,7 +95,7 @@ title('CM position');
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,tscSim.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotPropsSim,...
+vectorPlotter(timeSim2,tscSim2.thrReleaseSpeeds.Data'.*(1/Lscale^0.5),plotPropsSim,...
     {'$u_{port}$','$u_{aft}$','$u_{stbd}$'},'Speed (m/s)','Tether release speeds');
 
 mtrCmd = squeeze(tscExp.mtrCmds.Data);
@@ -101,11 +123,12 @@ Vy_f = filter(b,a,Vy);
 
 Vcm = [Vx_f;Vy_f;Vz_f];
 
+
 % % cm velocity
 fn = fn+1;
 figure(fn)
 set(gcf,'Position',locs(fn,:))
-vectorPlotter(timeSim,sol_Vcmo,plotProps,...
+vectorPlotter(timeSim2,sol_Vcmo,plotProps,...
     {'$V_{x}$','$V_{y}$','$V_{z}$'},'Velocity (m/s)','CM velocity');
 
 vectorPlotter(timeExp(tPlot(1:end-2)),Vcm(:,tPlot(1:end-2)),plotPropsExp,...
@@ -115,4 +138,4 @@ subplot(3,1,1)
 title('CM velocity')
 
 %%%%%%
-set(findobj('Type','axes'),'XLim',[0 timeSim(end)]);
+set(findobj('Type','axes'),'XLim',[0 timeSim2(end)]);

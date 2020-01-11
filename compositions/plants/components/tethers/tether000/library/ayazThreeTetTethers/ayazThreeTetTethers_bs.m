@@ -1,4 +1,4 @@
-clear
+% clear
 clc
 format compact
 
@@ -20,7 +20,7 @@ thr.setNumNodes(3,'');
 thr.build;
 
 % Set parameter values
-thrDia = 0.033;
+thrDia = 0.3e-3;
 thrYoungs = 50e9;
 thrDamping = 0.05;
 thrDensity = 1300;
@@ -66,7 +66,7 @@ testEmpty(4,ii) = isempty(thr.(strcat('tether',num2str(ii))).initGndNodeVel.Valu
 end
 
 % scale it down before saving
-thr.scale(Lscale,1);
+% thr.scale(Lscale,1);
 
 %% save file in its respective directory
 saveBuildFile('thr',mfilename,'variant','TETHERS');
