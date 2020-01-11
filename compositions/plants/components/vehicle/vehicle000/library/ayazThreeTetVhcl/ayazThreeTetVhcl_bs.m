@@ -85,7 +85,7 @@ vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS3','');
 vhcl.calcFluidDynamicCoefffs
 
 % % % artificially reduce lift
-reductionFactor = 0.4;
+reductionFactor = 0.6;
 incrementFactor = 1.6;
 
 vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
