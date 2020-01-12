@@ -22,7 +22,7 @@ thr.build;
 % Set parameter values
 thrDia = 0.033;
 thrYoungs = 50e9;
-thrDamping = 0.05;
+thrDamping = 0.5;
 thrDensity = 1300;
 thrDragCoeff = 1*1;
 dragSwitch = true;
