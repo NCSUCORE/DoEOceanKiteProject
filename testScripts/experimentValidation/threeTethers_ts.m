@@ -116,9 +116,21 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 % scale controller
 % fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
+%% adjust parameters
+iniCLWing = vhcl.portWing.CL.Value;
+iniCDWing = vhcl.portWing.CD.Value;
+
+iniCLHs = vhcl.hStab.CL.Value;
+iniCDHs = vhcl.hStab.CD.Value;
+
+iniCLVs = vhcl.vStab.CL.Value;
+iniCDVs = vhcl.vStab.CD.Value;
+
+iniAddedMass = vhcl.addedMass.Value;
+
+
+
 %% Run the simulation
-% load_system('OCTModel')
-% set_param('OCTModel','Profile','off')
 simWithMonitor('OCTModel')
 parseLogsout
 

@@ -17,27 +17,28 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.1,'');
+vhcl.setBuoyFactor(1.75,'');
 
 % entering parameters for scaled model
 Lscale = 0.015;
 xCM_LE = 7.1721e-3;
-xCB_LE = 1*7.194e-3;
+xCB_LE = 1.0*7.194e-3;
 
 % % % volume and inertias
 % vhcl.setVolume(7457.953*1e-9*(1/Lscale^3),'m^3');
-vhcl.setIxx(6.635*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIyy(8.166*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIzz(14.518*1e-6*(1/Lscale^5),'kg*m^2');
+MiCoeff = 1;
+vhcl.setIxx(MiCoeff*6.635*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIyy(MiCoeff*8.166*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIzz(MiCoeff*14.518*1e-6*(1/Lscale^5),'kg*m^2');
 vhcl.setIxy(0,'kg*m^2');
-vhcl.setIxz(0.414*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIxz(MiCoeff*0.414*1e-6*(1/Lscale^5),'kg*m^2');
 vhcl.setIyz(0,'kg*m^2');
 vhcl.setCentOfBuoy([(xCB_LE-xCM_LE);0;0]*(1/Lscale),'m');
 vhcl.setRbridle_cm([0;0;0],'m');
 vhcl.setAddedMISwitch(true,'');
 
 % % % wing
-Clmax = 1.2;
+Clmax = 2;
 
 vhcl.setRwingLE_cm([-xCM_LE;0;0]*(1/Lscale),'m');
 vhcl.setWingChord(15e-3*(1/Lscale),'m');
@@ -74,20 +75,27 @@ vhcl.setVsClMin(-Clmax,'');
 
 % % % Fuselage (could use more realistic numbers)
 vhcl.setFuseDiameter(2.5*4.9e-3*(1/Lscale),'m')
-vhcl.setFuseEndDragCoeff(0.4,'')
+vhcl.setFuseEndDragCoeff(0.5,'')
 vhcl.setFuseSideDragCoeff(0.8,'')
 vhcl.setFuseRCmToNose([-58.55e-3;0;0]*(1/Lscale),'m')
 
 % % % data file name
-vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS1','');
+vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
 
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 vhcl.calcAddedMass
 
+% calc added mass
+addedMassCoeff = 1;
+ratioYbyX = vhcl.addedMass.Value(2,2)/vhcl.addedMass.Value(1,1);
+ratioZbyX = vhcl.addedMass.Value(3,3)/vhcl.addedMass.Value(1,1);
+
+vhcl.addedMass.setValue(addedMassCoeff.*vhcl.addedMass.Value,'kg')
+
 % % % artificially reduce lift
-reductionFactor = 1;
-incrementFactor = 1.0;
+reductionFactor = 0.8;
+incrementFactor = 1.2;
 
 vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
 vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
