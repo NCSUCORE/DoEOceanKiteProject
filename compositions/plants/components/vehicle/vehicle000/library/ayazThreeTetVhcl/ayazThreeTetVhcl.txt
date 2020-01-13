@@ -360,21 +360,21 @@ vhcl.surfaceOutlines is too big to display and takes up 1.1040e+03 bytes
 vhcl.thrAttchPts.posVec.Value = [-0.0221597888274606;-0.075;-0.00524451089576328]
 vhcl.thrAttchPts.posVec.Unit = 'm'
 vhcl.thrAttchPts.posVec.NoScale = false
-vhcl.turbines.diameter.Value = 0.0000e+00
+vhcl.turbines.diameter.Value = 5.0000e-03
 vhcl.turbines.diameter.Unit = 'm'
 vhcl.turbines.diameter.NoScale = false
 vhcl.turbines.axisUnitVec.Value = [1;0;0]
 vhcl.turbines.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turbines.axisUnitVec.NoScale = false
 vhcl.turbines.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turbines.attachPtVec.Value = [-0.00415978882746061;-0.075;-0.00524451089576328]
+vhcl.turbines.attachPtVec.Value = [0.0580779;-0.0125;0.0036]
 vhcl.turbines.attachPtVec.Unit = 'm'
 vhcl.turbines.attachPtVec.NoScale = false
 vhcl.turbines.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
 vhcl.turbines.powerCoeff.Value = 5.0000e-01
 vhcl.turbines.powerCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.powerCoeff.NoScale = false
-vhcl.turbines.dragCoeff.Value = 5.0000e-01
+vhcl.turbines.dragCoeff.Value = 1.2000e+00
 vhcl.turbines.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.dragCoeff.NoScale = false
 vhcl.fuse.diameter.Value = 1.2250e-02

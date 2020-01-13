@@ -76,6 +76,15 @@ tscSim.angularVel = squeeze(resample(tscSim.angularVel,timeSim));
 %% calculate optimization objective function
 val = calObjF(tscSim,tscExp,dataRange)
 
+fileID = fopen('solutionsRecord.txt','a');
+fprintf(fileID,'Design variables=\n');
+fprintf(fileID,repmat('%0.4f ',1,numel(coeffs)),coeffs);
+fprintf(fileID,'\nObjF = %0.4f\n',val);
+fprintf(fileID,'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n');
+fclose(fileID);
+
+
+
 
 end
 
