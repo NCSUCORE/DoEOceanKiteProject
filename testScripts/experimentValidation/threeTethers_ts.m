@@ -145,6 +145,9 @@ initVals.CDhStab = vhcl.hStab.CD.Value;
 initVals.CLvStab = vhcl.vStab.CL.Value;
 initVals.CDvStab = vhcl.vStab.CD.Value;
 
+initVals.fuseEndDrag = vhcl.fuseEndDragCoeff.Value;
+initVals.fuseSideDrag = vhcl.fuseSideDragCoeff.Value;
+
 initVals.addedMass = vhcl.addedMass.Value;
 initVals.buoyFactor = vhcl.buoyFactor.Value;
 
@@ -158,14 +161,14 @@ initVals.thrDragCoeff = thr.tether1.dragCoeff.Value;
 % initCoeffs = [0.8836    1.1571    0.6642    1.4724    0.2740    1.4610    0.9725...
 %     0.5495    0.9937 1 1 1]';
 
-initCoeffs = ones(6,1);
+initCoeffs = ones(9,1);
 
 % lowLims = [repmat([0.25;1],3,1); 0.9; 0.5; 0.7; 0.9; 0.9; 0.9];
 % hiLims = [repmat([1;1.75],3,1); 1.1; 1.5; 1.3; 1.1; 1.1; 1.1];
 
-lowLims = repmat([0.1;1],3,1);
-hiLims = repmat([1;2],3,1); 
-
+lowLims = [repmat([0.01;1],3,1); 0.1; 0.1; 0.5];
+hiLims = [repmat([1;5],3,1); 5; 5; 1.1];
+    
 dataRange = [30 60];
 
 options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000);
@@ -177,7 +180,7 @@ options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000
 [optDsgn,minF] = particleSwarmMinimization(...
     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-    'swarmSize',10,'maxIter',10);
+    'swarmSize',20,'maxIter',15);
 
 
 %%
