@@ -17,6 +17,11 @@ vhcl.setNumTethers(1,'');
 vhcl.setNumTurbines(2,'');
 vhcl.setBuoyFactor(1.0,'');
 
+%Control Surfaces (Defaults are saved)
+% vhcl.setMaxCtrlDef(30,'deg');
+% vhcl.setMinCtrlDef(-30,'deg');
+% vhcl.setMaxCtrlDefSpeed(60,'deg/s');
+
 % % % volume and inertias
 % vhcl.setVolume(945352023.474*1e-9,'m^3');
 vhcl.setIxx(6.303080401918E+09*1e-6,'kg*m^2');
@@ -74,6 +79,7 @@ vhcl.setFluidCoeffsFileName('someFile2','');
 
 % % % load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
+vhcl.calcAddedMass
 
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
