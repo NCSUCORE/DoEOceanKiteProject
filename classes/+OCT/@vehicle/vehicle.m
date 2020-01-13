@@ -673,10 +673,10 @@ classdef vehicle < dynamicprops
             
             for ii = 1:obj.numTurbines.Value
                 val(ii,1) = OCT.turb;
-                val(ii,1).diameter.setValue(0,'m');
+                val(ii,1).diameter.setValue(0.33,'m');
                 val(ii,1).axisUnitVec.setValue([1;0;0],'');
                 val(ii,1).powerCoeff.setValue(0.5,'');
-                val(ii,1).dragCoeff.setValue(0.5,'');
+                val(ii,1).dragCoeff.setValue(1.2,'');
             end
             
             switch obj.numTurbines.Value
