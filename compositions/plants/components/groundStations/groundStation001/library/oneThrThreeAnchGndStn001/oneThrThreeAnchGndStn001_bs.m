@@ -5,10 +5,32 @@ gndStn = OCT.sixDoFStation;
 gndStn.setVolume(8,'m^3');
 gndStn.setMass(gndStn.volume.Value*(1000/1.5),'kg');
 gndStn.setInertiaMatrix((1/6)*gndStn.mass.Value*(8^2).*eye(3),'kg*m^2');
-bodyPosMatlumps = 4*[ 1 1  1 0   0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 ;
-                    1 0 -1 1  -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1;
-                    0 0  0 0   0  0  0  0 1 1  1 1 1  1  1  1  1 -1 -1  -1 -1 -1 -1  -1 -1  -1 ;];
-gndStn.setLumpedMassPositionMatrixBdy(bodyPosMatlumps,'m')
+% bodyPosMatlumps = 4*[ 1 1  1 0   0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 1 1  1 0 0  0 -1 -1 -1 ;
+%                     1 0 -1 1  -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1 1 0 -1 1 0 -1  1  0 -1;
+%                     0 0  0 0   0  0  0  0 1 1  1 1 1  1  1  1  1 -1 -1  -1 -1 -1 -1  -1 -1  -1 ;];
+% gndStn.setLumpedMassPositionMatrixBdy(bodyPosMatlumps,'m')
+gndStn.cylRad.setValue(4,'m')
+gndStn.angSpac.setValue(pi/4,'rad')
+gndStn.heightSpac.setValue(1/2,'m')
+
+gndStn.angMatExt.setValue([linspace(0,1.75*pi,8),linspace(0,1.75*pi,8)],'rad');
+gndStn.zMatExt.setValue([zeros(1,8),ones(1,8)],'m');
+gndStn.rMatExt.setValue(repmat(gndStn.cylRad.Value,[1,16]),'m');
+
+gndStn.angMatT.setValue([linspace(0,1.75*pi,8),0],'rad')
+gndStn.angMatB.setValue([linspace(0,1.75*pi,8),0],'rad')
+gndStn.zMatB.setValue(zeros(1,9),'m')
+gndStn.zMatT.setValue(ones(1,9),'m')
+gndStn.rMatT.setValue([repmat(.5*gndStn.cylRad.Value,[1,8]),0],'m')
+gndStn.rMatB.setValue([repmat(.5*gndStn.cylRad.Value,[1,8]),0],'m')
+
+gndStn.angMatInt.setValue([linspace(0,1.75*pi,8),linspace(0,1.75*pi,8)],'rad')
+gndStn.zMatInt.setValue([.25*ones(1,8),.75*ones(1,8)],'m');
+gndStn.rMatInt.setValue(repmat(.5*gndStn.cylRad.Value,[1,16]),'m')
+
+
+
+
 gndStn.initAngVel.setValue(0,'rad/s')                                           
 gndStn.initVel.setValue(0,'m/s')                                          
 gndStn.initAngPos.setValue([0,0,0]','rad')                                        
@@ -16,7 +38,9 @@ gndStn.initAnchTetherLength.setValue([200,200,200],'m')
 
 %number of tethers that go from the GS to the KITE
 gndStn.numTethers.setValue(1,'');
+
 gndStn.build;
+gndStn.buildCylStation
 gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
 gndStn.bouyancy
 
@@ -28,7 +52,7 @@ gndStn.aMX.setValue(1,'')
 gndStn.aMY.setValue(1,'')
 gndStn.aMZ.setValue(1,'')
 
-gndStn.areaPerLumpedMass.setValue(384/27,'m^2')
+
 gndStn.lumpedMassSphereRadius.setValue(1,'m')
 
 

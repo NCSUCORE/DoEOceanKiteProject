@@ -87,6 +87,7 @@ elems(9).Unit = 'rad/s';
 
 elems(10) = Simulink.BusElement;
 elems(10).Name = 'thrFlowPollPos';
+elems(10).Dimensions = [ 1  numTethers];
 elems(10).DimensionsMode = 'Fixed';
 elems(10).DataType = 'Bus: thrPollPosBus';
 elems(10).SampleTime = -1;

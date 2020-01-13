@@ -22,15 +22,21 @@ classdef sixDoFStation < dynamicprops
         %lumped mass and shaped properties
         lumpedMassPositionMatrixBdy
         lumpedMassSphereRadius
-        lumpedMassBodyFrameAreaNormalVector
+        
         
         angMatExt
         zMatExt
         rMatExt
         
-        angMatTB
-        zMatTB
-        rMatTB
+        angMatT
+        zMatT
+        rMatT
+        
+        
+        angMatB
+        zMatB
+        rMatB
+        
         
         angMatInt
         zMatInt
@@ -41,6 +47,7 @@ classdef sixDoFStation < dynamicprops
         angSpac
         heightSpac
         lumpedMassNormalVecMat
+        lumpedMassAreaMat
         
         % Initial conditions
         posVec
@@ -48,7 +55,7 @@ classdef sixDoFStation < dynamicprops
         initAngPos
         initAngVel
         initAnchTetherLength
-        areaPerLumpedMass
+        
         
         %kite tether
         numTethers
@@ -69,7 +76,6 @@ classdef sixDoFStation < dynamicprops
             obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m','Description','lumped mass position matrix');
             obj.lumpedMassSphereRadius      = SIM.parameter('Unit','m','Description','lumped mass sphere radius');
             obj.lumpedMassNetBouyancyForce  = SIM.parameter('Unit','N','Description','lumped mass bouyancy force');
-            obj.areaPerLumpedMass           = SIM.parameter('Unit','m^2','Description','area per lumped mass');
             obj.gravForcePerLM              = SIM.parameter('Unit','N','Description','lumped mass gravity force');
             
             % Initial conditions
@@ -93,9 +99,13 @@ classdef sixDoFStation < dynamicprops
             obj.zMatExt                     = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the exterior lumped masses lie');
             obj.rMatExt                     = SIM.parameter('Unit','m','Description','the radius on a cylinder that the exterior lumped masses lie');
             
-            obj.angMatTB                    = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the top and bottom lumped masses lie');
-            obj.zMatTB                      = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the top and bottom lumped masses lie');
-            obj.rMatTB                      = SIM.parameter('Unit','m','Description','the radius on a cylinder that the top and bottom lumped masses lie');
+            obj.angMatT                    = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the top  lumped masses lie');
+            obj.zMatT                      = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the top lumped masses lie');
+            obj.rMatT                      = SIM.parameter('Unit','m','Description','the radius on a cylinder that the top lumped masses lie');
+            
+            obj.angMatB                    = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the bottom lumped masses lie');
+            obj.zMatB                      = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the bottom lumped masses lie');
+            obj.rMatB                      = SIM.parameter('Unit','m','Description','the radius on a cylinder that the top bottom masses lie');
             
             obj.angMatInt                   = SIM.parameter('Unit','rad','Description','the angle on a cylinder that the interior lumped masses lie');
             obj.zMatInt                     = SIM.parameter('Unit','m','Description','the z coordinate on a cylinder that the interior lumped masses lie');
@@ -103,10 +113,10 @@ classdef sixDoFStation < dynamicprops
             
             obj.cylRad                      = SIM.parameter('Unit','m','Description','the radius of the cylinder');
             obj.cylTotH                     = SIM.parameter('Unit','m','Description','the cylinder total height');
-            obj.angSpac                     = SIM.parameter('Unit','m','Description','the lumped Mass Angle Spacing');
+            obj.angSpac                     = SIM.parameter('Unit','rad','Description','the lumped Mass Angle Spacing');
             obj.heightSpac                  = SIM.parameter('Unit','m','Description','the gnd station height spacing');
             obj.lumpedMassNormalVecMat      = SIM.parameter('Unit','','Description','normal vectors of the area of each lumped mass');
-           
+            obj.lumpedMassAreaMat           = SIM.parameter('Unit','m^2','Description','area of each lumped mass');
             
             %number of tethers from GS to KITE
             obj.numTethers                  = SIM.parameter('Unit','','Description','number of tethers from GS to KITE');
@@ -132,6 +142,9 @@ classdef sixDoFStation < dynamicprops
                 obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
             end
         end
+        
+        
+        
         
         
         % Method to add tether attachment points
@@ -206,10 +219,6 @@ classdef sixDoFStation < dynamicprops
             obj.aMZ.setValue(val,unit)
         end
         
-        function setAreaPerLumpedMass(obj,val,unit)
-            obj.areaPerLumpedMass.setValue(val,unit)
-        end
-        
         function setGravForcePerLM(obj,val,unit)
             obj.gravForcePerLM.setValue(val,unit)
         end
@@ -218,8 +227,12 @@ classdef sixDoFStation < dynamicprops
             obj.angMatExt.setValue(val,unit)
         end
         
-        function setAngMatTB(obj,val,unit)
-            obj.angMatTB.setValue(val,unit)
+        function setangMatT(obj,val,unit)
+            obj.angMatT.setValue(val,unit)
+        end
+        
+        function setangMatB(obj,val,unit)
+            obj.angMatB.setValue(val,unit)
         end
         
         function setAngMatInt(obj,val,unit)
@@ -230,8 +243,12 @@ classdef sixDoFStation < dynamicprops
             obj.zMatExt.setValue(val,unit)
         end
         
-        function setZMatTB(obj,val,unit)
-            obj.zMatTB.setValue(val,unit)
+        function setzMatT(obj,val,unit)
+            obj.zMatT.setValue(val,unit)
+        end
+        
+        function setZMatB(obj,val,unit)
+            obj.zMatB.setValue(val,unit)
         end
         
         function setZMatInt(obj,val,unit)
@@ -242,8 +259,12 @@ classdef sixDoFStation < dynamicprops
             obj.rMatExt.setValue(val,unit)
         end
         
-        function setRMatTB(obj,val,unit)
-            obj.rMatTB.setValue(val,unit)
+        function setRMatT(obj,val,unit)
+            obj.rMatT.setValue(val,unit)
+        end
+        
+         function setRMatB(obj,val,unit)
+            obj.rMatB.setValue(val,unit)
         end
         
         function setRMatInt(obj,val,unit)
@@ -270,6 +291,11 @@ classdef sixDoFStation < dynamicprops
             obj.lumpedMassNormalVecMat.setValue(val,unit)
         end
         
+        function setLumpedMassAreaMat(obj,val,unit)
+            obj.lumpedMassAreaMat.setValue(val,unit)
+        end
+        
+        
         
         function bouyancy(obj)
             numLM     =  numel(obj.lumpedMassPositionMatrixBdy.Value)/3;
@@ -277,6 +303,65 @@ classdef sixDoFStation < dynamicprops
             bouyForce = (obj.volume.Value/numLM)*1000*9.81;
             obj.setLumpedMassNetBouyancyForce([0,0,bouyForce],'N')
             obj.setGravForcePerLM([0,0,-gravForce],'N')
+        end
+        
+        function obj = buildCylStation(obj)
+            %%
+            % Concatination to make lumped mass matrix
+            allThetas = [obj.angMatExt.Value,obj.angMatT.Value,obj.angMatB.Value, obj.angMatInt.Value];
+            allZMat = [obj.zMatExt.Value,obj.zMatT.Value,obj.zMatT.Value,obj.zMatInt.Value];
+            allRMat = [obj.rMatExt.Value,obj.rMatT.Value,obj.rMatT.Value,obj.rMatInt.Value];
+            
+            
+            [X,Y,Z] = pol2cart(allThetas,allRMat,allZMat);
+            lumpedMassPointsMatrix = [X;Y;Z];
+            obj.setLumpedMassPositionMatrixBdy(lumpedMassPointsMatrix,'m');
+            
+            %%
+            % normal vector calculation per lumped mass ext
+            
+             [xNEX,yNEX,zNEX]= pol2cart(obj.angMatExt.Value,ones(1,numel(obj.angMatExt.Value)),zeros(1,numel(obj.angMatExt.Value)));
+             normalVecExt = [xNEX;yNEX;zNEX];
+             
+             
+             % normal vector calculation per lumped mass top 
+             normalVecT = [zeros(1,numel(obj.angMatT.Value));zeros(1,numel(obj.angMatT.Value));ones(1,numel(obj.angMatT.Value))];
+            
+             
+             % normal vector calculation per lumped mass bottom
+             normalVecB = [zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value));-1*ones(1,numel(obj.angMatB.Value))];
+             
+             % normal vector for interior doesnt matter so it is zero for
+             % all
+             
+             normalVecInt = zeros(3,numel(obj.rMatInt.Value));
+             
+             %setting the normal vector mat 
+             obj.setLumpedMassNormalVecMat([normalVecExt,normalVecT,normalVecB,normalVecInt],''); 
+             
+             %% Areas
+            % Front and Side Area
+            d = 2*(obj.cylRad.Value).*sin(obj.angSpac.Value);
+            q = sqrt((obj.cylRad.Value^2) - (d/2)^2);
+            frontArea = obj.heightSpac.Value*d;
+            sideArea  = (obj.cylRad.Value - q)*(obj.heightSpac.Value);
+            
+            areaExt = [frontArea*ones(1,numel(obj.angMatExt.Value));sideArea*ones(1,numel(obj.angMatExt.Value));zeros(1,numel(obj.angMatExt.Value))];
+            areaInt =  zeros(3,numel(obj.rMatInt.Value));
+            areaT   = ((pi*(obj.cylRad.Value)^2)/(numel(obj.angMatB.Value)))*[zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value));-1*ones(1,numel(obj.angMatB.Value))];
+            areaB   = ((pi*(obj.cylRad.Value)^2)/(numel(obj.angMatB.Value)))*[zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value));-1*ones(1,numel(obj.angMatB.Value))];
+            obj.setLumpedMassAreaMat([areaExt,areaInt,areaT,areaB],'m^2')
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
         end
         % Initial conditions
         function setPosVec(obj,val,unit)

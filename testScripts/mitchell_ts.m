@@ -14,7 +14,7 @@ loadComponent('constBoothLem')
 % Ground station
   loadComponent('pathFollowingGndStn');
 
-%    loadComponent('oneThrThreeAnchGndStn001');
+   loadComponent('oneThrThreeAnchGndStn001');
 % Winches
 loadComponent('oneDOFWnch');
 % Tether
