@@ -116,23 +116,61 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 % scale controller
 % fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
+%% process experimental data
+% load file
+load 'data_19_Nov_2019_19_08_19.mat' 
+
+% extract values
+tscExp = tsc;
+timeExp = tscExp.roll_rad.Time;
+
+% filter bad data
+badData = find(tscExp.yaw_rad.Data>100);
+tscExp.yaw_rad.Data(badData) = 0.5*(tscExp.yaw_rad.Data(badData-1) + tscExp.yaw_rad.Data(badData+1));
+windowSize = 20; 
+b = (1/windowSize)*ones(1,windowSize);
+tscExp.roll_rad.Data = filter(b,1,tscExp.roll_rad.Data);
+tscExp.pitch_rad.Data = filter(b,1,tscExp.pitch_rad.Data);
+tscExp.yaw_rad.Data = filter(b,1,tscExp.yaw_rad.Data);
+
+tscExp.CoMPosVec_cm.Data = tscExp.CoMPosVec_cm.Data./100;
+
 %% adjust parameters
-iniCLWing = vhcl.portWing.CL.Value;
-iniCDWing = vhcl.portWing.CD.Value;
+initVals.CLWing = vhcl.portWing.CL.Value;
+initVals.CDWing = vhcl.portWing.CD.Value;
 
-iniCLHs = vhcl.hStab.CL.Value;
-iniCDHs = vhcl.hStab.CD.Value;
+initVals.CLhStab = vhcl.hStab.CL.Value;
+initVals.CDhStab = vhcl.hStab.CD.Value;
 
-iniCLVs = vhcl.vStab.CL.Value;
-iniCDVs = vhcl.vStab.CD.Value;
+initVals.CLvStab = vhcl.vStab.CL.Value;
+initVals.CDvStab = vhcl.vStab.CD.Value;
 
-iniAddedMass = vhcl.addedMass.Value;
+initVals.addedMass = vhcl.addedMass.Value;
+initVals.buoyFactor = vhcl.buoyFactor.Value;
 
+
+%% run optimization
+initCoeffs = [1;1];
+
+lowLims = [0.25; 1].*initCoeffs;
+hiLims = [1; 1.75].*initCoeffs;
+
+dataRange = [30 60];
+
+options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000);
+
+[optDsgn,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,...
+    initVals,coeffs,tscExp,dataRange),...
+    initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
+
+
+objF = simOptFunction(vhcl,thr,...
+    initVals,optDsgn,tscExp,dataRange);
 
 
 %% Run the simulation
-simWithMonitor('OCTModel')
-parseLogsout
+% simWithMonitor('OCTModel')
+% parseLogsout
 
 plotAyaz
 compPlots
