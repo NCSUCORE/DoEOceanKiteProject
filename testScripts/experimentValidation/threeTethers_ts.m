@@ -148,20 +148,27 @@ initVals.CDvStab = vhcl.vStab.CD.Value;
 initVals.addedMass = vhcl.addedMass.Value;
 initVals.buoyFactor = vhcl.buoyFactor.Value;
 
+initVals.wnchMaxReleaseSpeed = wnch.winch1.maxSpeed.Value;
+
 
 %% run optimization
-initCoeffs = [1;1];
+initCoeffs = ones(7,1);
 
-lowLims = [0.25; 1].*initCoeffs;
-hiLims = [1; 1.75].*initCoeffs;
+lowLims = [repmat([0.25;1],3,1) ; 0.5];
+hiLims = [repmat([1;1.75],3,1) ; 1.5];
 
 dataRange = [30 60];
 
 options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000);
 
-[optDsgn,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,...
-    initVals,coeffs,tscExp,dataRange),...
-    initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
+% [optDsgn,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,coeffs,tscExp,dataRange),...
+%     initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
+
+[optDsgn,minF] = particleSwarmMinimization(...
+    @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+    initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
+    'swarmSize',10,'maxIter',5);
 
 
 objF = simOptFunction(vhcl,thr,...
