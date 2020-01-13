@@ -10,6 +10,10 @@ vhcl.numTurbines.Value = 2.0000e+00
 vhcl.numTurbines.Unit is unitless or has no unit specified
 vhcl.numTurbines.NoScale = true
 vhcl.numTurbines.Description = 'Number of turbines'
+vhcl.turbDiam.Value = 0.0000e+00
+vhcl.turbDiam.Unit = 'm'
+vhcl.turbDiam.NoScale = false
+vhcl.turbDiam.Description = 'Turbine Diameter'
 vhcl.buoyFactor.Value = 1.0000e+00
 vhcl.buoyFactor.Unit is unitless or has no unit specified
 vhcl.buoyFactor.NoScale = true
@@ -391,14 +395,14 @@ vhcl.turbines.axisUnitVec.Value = [1;0;0]
 vhcl.turbines.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turbines.axisUnitVec.NoScale = false
 vhcl.turbines.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turbines.attachPtVec.Value = [0.43744331762962;-5;0.174603847458739]
+vhcl.turbines.attachPtVec.Value = [6;-0.0125;0.0036]
 vhcl.turbines.attachPtVec.Unit = 'm'
 vhcl.turbines.attachPtVec.NoScale = false
 vhcl.turbines.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
 vhcl.turbines.powerCoeff.Value = 5.0000e-01
 vhcl.turbines.powerCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.powerCoeff.NoScale = false
-vhcl.turbines.dragCoeff.Value = 5.0000e-01
+vhcl.turbines.dragCoeff.Value = 1.2000e+00
 vhcl.turbines.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.dragCoeff.NoScale = false
 vhcl.fuse.diameter.Value = 1.5000e-01

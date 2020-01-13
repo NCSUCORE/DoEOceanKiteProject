@@ -7,6 +7,7 @@ classdef vehicle < dynamicprops
         fluidDensity
         numTethers
         numTurbines
+        turbDiam
         buoyFactor
         
         Ixx
@@ -96,6 +97,7 @@ classdef vehicle < dynamicprops
             obj.fluidDensity = SIM.parameter('Unit','kg/m^3','Description','Fluid density');
             obj.numTethers  = SIM.parameter('Description','Number of tethers','NoScale',true);
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
+            obj.turbDiam = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
             obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor','NoScale',true);
             % mass, volume and inertia
 %             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
@@ -186,6 +188,10 @@ classdef vehicle < dynamicprops
         
         function setNumTurbines(obj,val,units)
             obj.numTurbines.setValue(val,units);
+        end
+        
+        function setTurbDiam(obj,val,units)
+            obj.turbDiam.setValue(val,units);
         end
         
         function setBuoyFactor(obj,val,units)
@@ -690,7 +696,7 @@ classdef vehicle < dynamicprops
             
             for ii = 1:obj.numTurbines.Value
                 val(ii,1) = OCT.turb;
-                val(ii,1).diameter.setValue(5e-3,'m');
+                val(ii,1).diameter.setValue(obj.turbDiam.Value,'m');
                 val(ii,1).axisUnitVec.setValue([1;0;0],'');
                 val(ii,1).powerCoeff.setValue(0.5,'');
                 val(ii,1).dragCoeff.setValue(1.2,'');
