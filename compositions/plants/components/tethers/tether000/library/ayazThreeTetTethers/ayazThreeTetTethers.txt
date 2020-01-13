@@ -14,7 +14,7 @@ thr.maxAppFlowMultiplier.NoScale = false
 thr.tether2.numNodes.Value = 2.0000e+00
 thr.tether2.numNodes.Unit is unitless or has no unit specified
 thr.tether2.numNodes.NoScale = true
-thr.tether2.diameter.Value = 3.0000e-04
+thr.tether2.diameter.Value = 2.7000e-04
 thr.tether2.diameter.Unit = 'm'
 thr.tether2.diameter.NoScale = false
 thr.tether2.youngsMod.Value = 2.0000e+09
@@ -55,7 +55,7 @@ thr.tether2.netBuoyEnable.NoScale = true
 thr.tether3.numNodes.Value = 2.0000e+00
 thr.tether3.numNodes.Unit is unitless or has no unit specified
 thr.tether3.numNodes.NoScale = true
-thr.tether3.diameter.Value = 3.0000e-04
+thr.tether3.diameter.Value = 2.7000e-04
 thr.tether3.diameter.Unit = 'm'
 thr.tether3.diameter.NoScale = false
 thr.tether3.youngsMod.Value = 2.0000e+09
@@ -96,7 +96,7 @@ thr.tether3.netBuoyEnable.NoScale = true
 thr.tether1.numNodes.Value = 2.0000e+00
 thr.tether1.numNodes.Unit is unitless or has no unit specified
 thr.tether1.numNodes.NoScale = true
-thr.tether1.diameter.Value = 3.0000e-04
+thr.tether1.diameter.Value = 2.7000e-04
 thr.tether1.diameter.Unit = 'm'
 thr.tether1.diameter.NoScale = false
 thr.tether1.youngsMod.Value = 2.0000e+09

@@ -3,7 +3,7 @@ wnch.numWinches.Unit is unitless or has no unit specified
 wnch.numWinches.NoScale = true
 wnch.winch1.initLength.Unit = 'm'
 wnch.winch1.initLength.NoScale = false
-wnch.winch1.maxSpeed.Value = 1.2372e-02
+wnch.winch1.maxSpeed.Value = 1.7675e-02
 wnch.winch1.maxSpeed.Unit = 'm/s'
 wnch.winch1.maxSpeed.NoScale = false
 wnch.winch1.timeConst.Value = 1.0000e-05
@@ -26,7 +26,7 @@ wnch.winch1.generatorEfficiency.Max = 1.0000e+00
 wnch.winch1.generatorEfficiency.Description = 'Electromechanical regenerative efficiency of winches during spool out, default = 0.90'
 wnch.winch2.initLength.Unit = 'm'
 wnch.winch2.initLength.NoScale = false
-wnch.winch2.maxSpeed.Value = 1.2372e-02
+wnch.winch2.maxSpeed.Value = 1.7675e-02
 wnch.winch2.maxSpeed.Unit = 'm/s'
 wnch.winch2.maxSpeed.NoScale = false
 wnch.winch2.timeConst.Value = 1.0000e-05
@@ -49,7 +49,7 @@ wnch.winch2.generatorEfficiency.Max = 1.0000e+00
 wnch.winch2.generatorEfficiency.Description = 'Electromechanical regenerative efficiency of winches during spool out, default = 0.90'
 wnch.winch3.initLength.Unit = 'm'
 wnch.winch3.initLength.NoScale = false
-wnch.winch3.maxSpeed.Value = 1.2372e-02
+wnch.winch3.maxSpeed.Value = 1.7675e-02
 wnch.winch3.maxSpeed.Unit = 'm/s'
 wnch.winch3.maxSpeed.NoScale = false
 wnch.winch3.timeConst.Value = 1.0000e-05

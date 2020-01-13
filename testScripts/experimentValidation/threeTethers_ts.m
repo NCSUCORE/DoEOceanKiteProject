@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
-iniX = 0.1904;
+iniX = 0.0477;
 pitchSP = 11;
 
 % % % initial conditions
@@ -74,9 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.3900,'m');
-wnch.winch2.initLength.setValue(0.4155,'m');
-wnch.winch3.initLength.setValue(0.3900,'m');
+wnch.winch1.initLength.setValue(0.3530,'m');
+wnch.winch2.initLength.setValue(0.3499,'m');
+wnch.winch3.initLength.setValue(0.3530,'m');
 
 
 dynamicCalc = '';
@@ -84,7 +84,7 @@ dynamicCalc = '';
 %% Set up controller
 load('ayazThreeTetCtrl.mat');
 
-altitudeCtrlShutOffDelay = 0;
+altitudeCtrlShutOffDelay = 0*800;
 % expOffset = 7.7+2.5;
 expOffset = 0;
 expDelay = 20.61;
@@ -150,12 +150,17 @@ initVals.buoyFactor = vhcl.buoyFactor.Value;
 
 initVals.wnchMaxReleaseSpeed = wnch.winch1.maxSpeed.Value;
 
+initVals.thrDragCoeff = thr.tether1.dragCoeff.Value;
+
 
 %% run optimization
-initCoeffs = ones(7,1);
+% initCoeffs = ones(9,1);
+initCoeffs = [0.8836    1.1571    0.6642    1.4724    0.2740    1.4610    0.9725...
+    0.5495    0.9937 1 1 1]';
 
-lowLims = [repmat([0.25;1],3,1) ; 0.5];
-hiLims = [repmat([1;1.75],3,1) ; 1.5];
+
+lowLims = [repmat([0.25;1],3,1); 0.9; 0.5; 0.7; 0.9; 0.9; 0.9];
+hiLims = [repmat([1;1.75],3,1); 1.1; 1.5; 1.3; 1.1; 1.1; 1.1];
 
 dataRange = [30 60];
 
@@ -171,7 +176,9 @@ options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000
     'swarmSize',10,'maxIter',5);
 
 
-objF = simOptFunction(vhcl,thr,...
+%%
+% optDsgn = [0.8836    1.1571    0.6642    1.4724    0.2740    1.4610    0.9725    0.5495    0.9937]';
+objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,optDsgn,tscExp,dataRange);
 
 
@@ -183,4 +190,9 @@ plotAyaz
 compPlots
 
 % fullKitePlot
+
+
+% % % % % % % tscSim.tetherLengths.Data(:,end)
+% % % % % % % sol_Rcm_o(:,end)
+% % % % % % % sol_euler(:,end)*180/pi
 

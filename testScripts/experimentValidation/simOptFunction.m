@@ -15,12 +15,12 @@ vhcl.hStab.CD.setValue(coeffs(4).*initVals.CDhStab,'')
 vhcl.vStab.CL.setValue(coeffs(5).*initVals.CLvStab,'')
 vhcl.vStab.CD.setValue(coeffs(6).*initVals.CDvStab,'')
 
-% vhcl.addedMass.setValue(coeffs(3:5).*initVals.addedMass)
-% 
-% vhcl.buoyFactor.setValue(coeffs(6)*initVals.buoyFactor)
+vhcl.addedMass.setValue(coeffs(10:12).*initVals.addedMass,'kg')
+
+vhcl.buoyFactor.setValue(coeffs(7)*initVals.buoyFactor,'')
 
 % winches
-maxReleaseSpeed = coeffs(7)*initVals.wnchMaxReleaseSpeed;
+maxReleaseSpeed = coeffs(8)*initVals.wnchMaxReleaseSpeed;
 wnch.winch1.maxSpeed.setValue(maxReleaseSpeed,'m/s')
 wnch.winch2.maxSpeed.setValue(maxReleaseSpeed,'m/s')
 wnch.winch3.maxSpeed.setValue(maxReleaseSpeed,'m/s')
@@ -45,6 +45,18 @@ fltCtrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
 fltCtrl.tetherRoll.kd.setValue(2*rKp,'(m/s)/(rad/s)');
 fltCtrl.tetherRoll.tau.setValue(0.5,'s');
 
+% tethers
+thrDrag = initVals.thrDragCoeff;
+
+thr.tether1.dragCoeff.setValue(coeffs(9)*thrDrag,'')
+thr.tether2.dragCoeff.setValue(coeffs(9)*thrDrag,'')
+thr.tether3.dragCoeff.setValue(coeffs(9)*thrDrag,'')
+
+% thrZeta = iniVals.thrDampingCoeff;
+% thr.tether1.dampingRatio.setValue(coeffs(10)*thrZeta,'')
+% thr.tether2.dampingRatio.setValue(coeffs(10)*thrZeta,'')
+% thr.tether3.dampingRatio.setValue(coeffs(10)*thrZeta,'')
+
 
 %% run sim Model
 simWithMonitor('OCTModel')
@@ -63,6 +75,7 @@ tscSim.angularVel = squeeze(resample(tscSim.angularVel,timeSim));
 
 %% calculate optimization objective function
 val = calObjF(tscSim,tscExp,dataRange)
+
 
 end
 
