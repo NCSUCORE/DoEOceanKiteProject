@@ -84,7 +84,5 @@ end
 minF = minimum;
 optDsgn = GbesLoc;
 
-sprintf('Optimization complete')
-
 end
 
