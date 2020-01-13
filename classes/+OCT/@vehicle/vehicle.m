@@ -673,7 +673,7 @@ classdef vehicle < dynamicprops
             
             for ii = 1:obj.numTurbines.Value
                 val(ii,1) = OCT.turb;
-                val(ii,1).diameter.setValue(0.33,'m');
+                val(ii,1).diameter.setValue(5e-3,'m');
                 val(ii,1).axisUnitVec.setValue([1;0;0],'');
                 val(ii,1).powerCoeff.setValue(0.5,'');
                 val(ii,1).dragCoeff.setValue(1.2,'');
@@ -681,15 +681,15 @@ classdef vehicle < dynamicprops
             
             switch obj.numTurbines.Value
                 case 2
-                    port_wing = obj.surfaceOutlines.port_wing.Value(:,2);
-                    stbd_wing = port_wing.*[1;-1;1];
+                    port_turb = obj.surfaceOutlines.top_vs.Value(:,1) + [0;-12.5e-3;3.6e-3];
+                    stbd_turb = obj.surfaceOutlines.top_vs.Value(:,1) + [0;12.5e-3;3.6e-3];
                 otherwise
                     fprintf('get method not programmed for %d turbines',obj.numTurbines.Value)
                     
             end
             
-            val(1).attachPtVec.setValue(port_wing,'m');
-            val(2).attachPtVec.setValue(stbd_wing,'m');
+            val(1).attachPtVec.setValue(port_turb,'m');
+            val(2).attachPtVec.setValue(stbd_turb,'m');
             
         end
         
