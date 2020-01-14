@@ -17,6 +17,7 @@ classdef aeroSurf < handle
     properties (SetAccess = public)
         MaxCtrlDeflDn
         MaxCtrlDeflUp
+        MaxCtrlDeflSpeed
     end
     
     methods
@@ -32,6 +33,7 @@ classdef aeroSurf < handle
             obj.GainCD          = SIM.parameter('Unit','1/deg');
             obj.MaxCtrlDeflDn   = SIM.parameter('Unit','deg');
             obj.MaxCtrlDeflUp   = SIM.parameter('Unit','deg');
+            obj.MaxCtrlDeflSpeed    = SIM.parameter('Unit','deg/s');
             obj.RBdy2Surf       = SIM.parameter('NoScale',true);
         end
         

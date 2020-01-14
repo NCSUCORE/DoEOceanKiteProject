@@ -7,6 +7,7 @@ classdef vehicle < dynamicprops
         fluidDensity
         numTethers
         numTurbines
+        turbDiam
         buoyFactor
         
         Ixx
@@ -16,6 +17,9 @@ classdef vehicle < dynamicprops
         Ixz
         Iyz
         addedMISwitch
+        maxCtrlDef
+        minCtrlDef
+        maxCtrlDefSpeed
         % center of buoyancy
         centOfBuoy
         % bridle location
@@ -93,6 +97,7 @@ classdef vehicle < dynamicprops
             obj.fluidDensity = SIM.parameter('Unit','kg/m^3','Description','Fluid density');
             obj.numTethers  = SIM.parameter('Description','Number of tethers','NoScale',true);
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
+            obj.turbDiam = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
             obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor','NoScale',true);
             % mass, volume and inertia
 %             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
@@ -103,44 +108,46 @@ classdef vehicle < dynamicprops
             obj.Ixz            = SIM.parameter('Unit','kg*m^2','Description','Ixz');
             obj.Iyz            = SIM.parameter('Unit','kg*m^2','Description','Iyz');
             obj.addedMISwitch  = SIM.parameter('Value',1,'Unit','','Description','False turns off added mass and inertia');
-            obj.addedMass            = SIM.parameter('Value',zeros(3),'Unit','kg','Description','addedMass');
-
+            obj.addedMass      = SIM.parameter('Value',zeros(3),'Unit','kg','Description','addedMass');
+            obj.maxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
+            obj.minCtrlDef     = SIM.parameter('Value',-30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the negative direction');
+            obj.maxCtrlDefSpeed= SIM.parameter('Value',60,'Unit','deg/s','Description','Fastest rate of control surface deflection for all surfaces in either direction');
             % some vectors
-            obj.Rbridle_cm    = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
-            obj.centOfBuoy        = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
+            obj.Rbridle_cm     = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
+            obj.centOfBuoy     = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
             % fluid coeffs file name
             obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data','NoScale',true);
             % defining aerodynamic surfaces
-            obj.RwingLE_cm    = SIM.parameter('Unit','m','Description','Vector going from CM to wing leading edge');
-            obj.wingChord     = SIM.parameter('Unit','m','Description','Wing root chord');
-            obj.wingAR        = SIM.parameter('Description','Wing Aspect ratio','NoScale',true);
-            obj.wingTR        = SIM.parameter('Description','Wing Taper ratio','NoScale',true);
-            obj.wingSweep     = SIM.parameter('Unit','deg','Description','Wing sweep angle');
-            obj.wingDihedral  = SIM.parameter('Unit','deg','Description','Wing dihedral angle');
-            obj.wingIncidence = SIM.parameter('Unit','deg','Description','Wing flow incidence angle');
-            obj.wingNACA      = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
-            obj.wingClMax     = SIM.parameter('Description','Wing airfoil maximum lift coefficient','NoScale',true);
-            obj.wingClMin     = SIM.parameter('Description','Wing airfoil minimum lift coefficient','NoScale',true);
+            obj.RwingLE_cm     = SIM.parameter('Unit','m','Description','Vector going from CM to wing leading edge');
+            obj.wingChord      = SIM.parameter('Unit','m','Description','Wing root chord');
+            obj.wingAR         = SIM.parameter('Description','Wing Aspect ratio','NoScale',true);
+            obj.wingTR         = SIM.parameter('Description','Wing Taper ratio','NoScale',true);
+            obj.wingSweep      = SIM.parameter('Unit','deg','Description','Wing sweep angle');
+            obj.wingDihedral   = SIM.parameter('Unit','deg','Description','Wing dihedral angle');
+            obj.wingIncidence  = SIM.parameter('Unit','deg','Description','Wing flow incidence angle');
+            obj.wingNACA       = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
+            obj.wingClMax      = SIM.parameter('Description','Wing airfoil maximum lift coefficient','NoScale',true);
+            obj.wingClMin      = SIM.parameter('Description','Wing airfoil minimum lift coefficient','NoScale',true);
             % H-stab
-            obj.RhsLE_wingLE  = SIM.parameter('Unit','m','Description','Vector going from wing leading edge to H-stab leading edge');
-            obj.hsChord     = SIM.parameter('Unit','m','Description','H-stab root chord');
-            obj.hsAR        = SIM.parameter('Description','H-stab Aspect ratio','NoScale',true);
-            obj.hsTR        = SIM.parameter('Description','H-stab Taper ratio','NoScale',true);
-            obj.hsSweep     = SIM.parameter('Unit','deg','Description','H-stab sweep angle');
-            obj.hsDihedral  = SIM.parameter('Unit','deg','Description','H-stab dihedral angle');
-            obj.hsIncidence = SIM.parameter('Unit','deg','Description','H-stab flow incidence angle');
-            obj.hsNACA      = SIM.parameter('Description','H-stab NACA airfoil','NoScale',true);
-            obj.hsClMax     = SIM.parameter('Description','H-stab airfoil maximum lift coefficient','NoScale',true);
-            obj.hsClMin     = SIM.parameter('Description','H-stab airfoil minimum lift coefficient','NoScale',true);
+            obj.RhsLE_wingLE   = SIM.parameter('Unit','m','Description','Vector going from wing leading edge to H-stab leading edge');
+            obj.hsChord        = SIM.parameter('Unit','m','Description','H-stab root chord');
+            obj.hsAR           = SIM.parameter('Description','H-stab Aspect ratio','NoScale',true);
+            obj.hsTR           = SIM.parameter('Description','H-stab Taper ratio','NoScale',true);
+            obj.hsSweep        = SIM.parameter('Unit','deg','Description','H-stab sweep angle');
+            obj.hsDihedral     = SIM.parameter('Unit','deg','Description','H-stab dihedral angle');
+            obj.hsIncidence    = SIM.parameter('Unit','deg','Description','H-stab flow incidence angle');
+            obj.hsNACA         = SIM.parameter('Description','H-stab NACA airfoil','NoScale',true);
+            obj.hsClMax        = SIM.parameter('Description','H-stab airfoil maximum lift coefficient','NoScale',true);
+            obj.hsClMin        = SIM.parameter('Description','H-stab airfoil minimum lift coefficient','NoScale',true);
             % V-stab
-            obj.Rvs_wingLE    = SIM.parameter('Unit','m','Description','Vector going from wing leading edge to V-stab leading edge');
-            obj.vsChord     = SIM.parameter('Unit','m','Description','V-stab root chord');
-            obj.vsSpan      = SIM.parameter('Unit','m','Description','V-stab span');
-            obj.vsTR        = SIM.parameter('Description','V-stab Taper ratio','NoScale',true);
-            obj.vsSweep     = SIM.parameter('Unit','deg','Description','V-stab sweep angle');
-            obj.vsNACA      = SIM.parameter('Description','V-stab NACA airfoil','NoScale',true);
-            obj.vsClMax     = SIM.parameter('Description','V-stab airfoil maximum lift coefficient','NoScale',true);
-            obj.vsClMin     = SIM.parameter('Description','V-stab airfoil minimum lift coefficient','NoScale',true);
+            obj.Rvs_wingLE     = SIM.parameter('Unit','m','Description','Vector going from wing leading edge to V-stab leading edge');
+            obj.vsChord        = SIM.parameter('Unit','m','Description','V-stab root chord');
+            obj.vsSpan         = SIM.parameter('Unit','m','Description','V-stab span');
+            obj.vsTR           = SIM.parameter('Description','V-stab Taper ratio','NoScale',true);
+            obj.vsSweep        = SIM.parameter('Unit','deg','Description','V-stab sweep angle');
+            obj.vsNACA         = SIM.parameter('Description','V-stab NACA airfoil','NoScale',true);
+            obj.vsClMax        = SIM.parameter('Description','V-stab airfoil maximum lift coefficient','NoScale',true);
+            obj.vsClMin        = SIM.parameter('Description','V-stab airfoil minimum lift coefficient','NoScale',true);
             % aerodynamic surfaces
             obj.portWing = OCT.aeroSurf;
             obj.portWing.spanUnitVec.setValue([0;1;0],'','NoScale',true);
@@ -181,6 +188,10 @@ classdef vehicle < dynamicprops
         
         function setNumTurbines(obj,val,units)
             obj.numTurbines.setValue(val,units);
+        end
+        
+        function setTurbDiam(obj,val,units)
+            obj.turbDiam.setValue(val,units);
         end
         
         function setBuoyFactor(obj,val,units)
@@ -232,6 +243,18 @@ classdef vehicle < dynamicprops
                 val = [val '.mat'] ;
             end
             obj.fluidCoeffsFileName.setValue(val,units);
+        end
+        
+        function setMaxCtrlDef(obj,val,units)
+            obj.maxCtrlDef.setValue(val,units);
+        end
+        
+        function setMinCtrlDef(obj,val,units)
+            obj.minCtrlDef.setValue(val,units);
+        end
+        
+        function setMaxCtrlDefSpeed(obj,val,units)
+            obj.maxCtrlDefSpeed.setValue(val,units);
         end
         
         % wing
@@ -673,7 +696,7 @@ classdef vehicle < dynamicprops
             
             for ii = 1:obj.numTurbines.Value
                 val(ii,1) = OCT.turb;
-                val(ii,1).diameter.setValue(5e-3,'m');
+                val(ii,1).diameter.setValue(obj.turbDiam.Value,'m');
                 val(ii,1).axisUnitVec.setValue([1;0;0],'');
                 val(ii,1).powerCoeff.setValue(0.5,'');
                 val(ii,1).dragCoeff.setValue(1.2,'');
@@ -750,8 +773,9 @@ classdef vehicle < dynamicprops
             
             presFolder = pwd;
             
-            minDef = -30;
-            maxDef = 30;
+            minDef = obj.minCtrlDef.Value;
+            maxDef = obj.maxCtrlDef.Value;
+            maxDefSpeed = obj.maxCtrlDefSpeed.Value;
             
             sNames = {'portWing','stbdWing','hStab','vStab'};
             
@@ -781,6 +805,7 @@ classdef vehicle < dynamicprops
                 obj.portWing.GainCD.setValue(aeroStruct(1).GainCD,'1/deg');
                 obj.portWing.MaxCtrlDeflDn.setValue(minDef,'deg');
                 obj.portWing.MaxCtrlDeflUp.setValue(maxDef,'deg');
+                obj.portWing.MaxCtrlDeflSpeed.setValue(maxDefSpeed,'deg/s');
                 
                 obj.stbdWing.aeroCentPosVec.setValue(obj.fluidMomentArms.Value(:,2),'m');
                 obj.stbdWing.refArea.setValue(obj.fluidRefArea.Value,'m^2');
@@ -791,6 +816,7 @@ classdef vehicle < dynamicprops
                 obj.stbdWing.GainCD.setValue(aeroStruct(2).GainCD,'1/deg');
                 obj.stbdWing.MaxCtrlDeflDn.setValue(minDef,'deg');
                 obj.stbdWing.MaxCtrlDeflUp.setValue(maxDef,'deg');
+                obj.stbdWing.MaxCtrlDeflSpeed.setValue(maxDefSpeed,'deg/s');
                 
                 obj.hStab.aeroCentPosVec.setValue(obj.fluidMomentArms.Value(:,3),'m');
                 obj.hStab.refArea.setValue(obj.fluidRefArea.Value,'m^2');
@@ -801,7 +827,7 @@ classdef vehicle < dynamicprops
                 obj.hStab.GainCD.setValue(aeroStruct(3).GainCD,'1/deg');
                 obj.hStab.MaxCtrlDeflDn.setValue(minDef,'deg');
                 obj.hStab.MaxCtrlDeflUp.setValue(maxDef,'deg');
-                
+                obj.hStab.MaxCtrlDeflSpeed.setValue(maxDefSpeed,'deg/s');
                 
                 obj.vStab.aeroCentPosVec.setValue(obj.fluidMomentArms.Value(:,4),'m');
                 obj.vStab.refArea.setValue(obj.fluidRefArea.Value,'m^2');
@@ -812,6 +838,7 @@ classdef vehicle < dynamicprops
                 obj.vStab.GainCD.setValue(aeroStruct(4).GainCD,'1/deg');
                 obj.vStab.MaxCtrlDeflDn.setValue(minDef,'deg');
                 obj.vStab.MaxCtrlDeflUp.setValue(maxDef,'deg');
+                obj.vStab.MaxCtrlDeflSpeed.setValue(maxDefSpeed,'deg/s');
                 
             elseif any(testEmpty,'all')~=1
                 
