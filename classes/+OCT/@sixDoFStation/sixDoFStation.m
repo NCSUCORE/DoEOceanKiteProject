@@ -124,7 +124,8 @@ classdef sixDoFStation < dynamicprops
             obj.anchThrs = OCT.tethers;
         end
         
-        %function to add tether attach points for the kites tether
+     % Function to build the ground station (add tether attachment
+        % properties)
         function obj = build(obj,varargin)
             % Populate cell array of default names
             defThrName = {};
@@ -141,8 +142,6 @@ classdef sixDoFStation < dynamicprops
                 obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
             end
         end
-        
-        
         
         
         
