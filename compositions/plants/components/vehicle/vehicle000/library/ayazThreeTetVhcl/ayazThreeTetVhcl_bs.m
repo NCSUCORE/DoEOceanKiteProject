@@ -19,6 +19,8 @@ vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
 vhcl.setBuoyFactor(1.75,'');
 
+vhcl.setTurbDiam(0.45,'m')
+
 % entering parameters for scaled model
 Lscale = 0.015;
 xCM_LE = 7.1721e-3;
