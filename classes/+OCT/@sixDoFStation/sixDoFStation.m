@@ -10,7 +10,6 @@ classdef sixDoFStation < dynamicprops
         % Buoyancy properties
         volume
         lumpedMassNetBouyancyForce
-        addedMassMatrix
         gravForcePerLM
         cdX
         cdY
@@ -263,7 +262,7 @@ classdef sixDoFStation < dynamicprops
             obj.rMatT.setValue(val,unit)
         end
         
-         function setRMatB(obj,val,unit)
+        function setRMatB(obj,val,unit)
             obj.rMatB.setValue(val,unit)
         end
         
@@ -309,8 +308,8 @@ classdef sixDoFStation < dynamicprops
             %%
             % Concatination to make lumped mass matrix
             allThetas = [obj.angMatExt.Value,obj.angMatT.Value,obj.angMatB.Value, obj.angMatInt.Value];
-            allZMat = [obj.zMatExt.Value,obj.zMatT.Value,obj.zMatT.Value,obj.zMatInt.Value];
-            allRMat = [obj.rMatExt.Value,obj.rMatT.Value,obj.rMatT.Value,obj.rMatInt.Value];
+            allZMat = [obj.zMatExt.Value,obj.zMatT.Value,obj.zMatB.Value,obj.zMatInt.Value];
+            allRMat = [obj.rMatExt.Value,obj.rMatT.Value,obj.rMatB.Value,obj.rMatInt.Value];
             
             
             [X,Y,Z] = pol2cart(allThetas,allRMat,allZMat);
@@ -320,26 +319,26 @@ classdef sixDoFStation < dynamicprops
             %%
             % normal vector calculation per lumped mass ext
             
-             [xNEX,yNEX,zNEX]= pol2cart(obj.angMatExt.Value,ones(1,numel(obj.angMatExt.Value)),zeros(1,numel(obj.angMatExt.Value)));
-             normalVecExt = [xNEX;yNEX;zNEX];
-             
-             
-             % normal vector calculation per lumped mass top 
-             normalVecT = [zeros(1,numel(obj.angMatT.Value));zeros(1,numel(obj.angMatT.Value));ones(1,numel(obj.angMatT.Value))];
+            [xNEX,yNEX,zNEX]= pol2cart(obj.angMatExt.Value,ones(1,numel(obj.angMatExt.Value)),zeros(1,numel(obj.angMatExt.Value)));
+            normalVecExt = [xNEX;yNEX;zNEX];
             
-             
-             % normal vector calculation per lumped mass bottom
-             normalVecB = [zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value));-1*ones(1,numel(obj.angMatB.Value))];
-             
-             % normal vector for interior doesnt matter so it is zero for
-             % all
-             
-             normalVecInt = zeros(3,numel(obj.rMatInt.Value));
-             
-             %setting the normal vector mat 
-             obj.setLumpedMassNormalVecMat([normalVecExt,normalVecT,normalVecB,normalVecInt],''); 
-             
-             %% Areas
+            
+            % normal vector calculation per lumped mass top
+            normalVecT = [zeros(1,numel(obj.angMatT.Value));zeros(1,numel(obj.angMatT.Value));ones(1,numel(obj.angMatT.Value))];
+            
+            
+            % normal vector calculation per lumped mass bottom
+            normalVecB = [zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value));-1*ones(1,numel(obj.angMatB.Value))];
+            
+            % normal vector for interior doesnt matter so it is zero for
+            % all
+            
+            normalVecInt = zeros(3,numel(obj.rMatInt.Value));
+            
+            %setting the normal vector mat
+            obj.setLumpedMassNormalVecMat([normalVecExt,normalVecT,normalVecB,normalVecInt],'');
+            
+            %% Areas
             % Front and Side Area
             d = 2*(obj.cylRad.Value).*sin(obj.angSpac.Value);
             q = sqrt((obj.cylRad.Value^2) - (d/2)^2);
@@ -410,6 +409,55 @@ classdef sixDoFStation < dynamicprops
             scatter3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
             hold on
             plot3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
+        end
+        
+        function plotGndStnLoc(obj)
+            
+            
+            p1 =  obj.gndThrAttchPt1.posVec.Value;
+            
+            p2 =  obj.gndThrAttchPt2.posVec.Value;
+            
+            p3 =  obj.gndThrAttchPt3.posVec.Value;
+            
+            
+            p1b =  obj.bdyThrAttchPt1.posVec.Value + obj.posVec.Value(:);
+            
+            p2b =  obj.bdyThrAttchPt2.posVec.Value + obj.posVec.Value(:);
+            
+            p3b =  obj.bdyThrAttchPt3.posVec.Value + obj.posVec.Value(:);
+            
+            x = [ p1(1),p2(1),p3(1),p1b(1),p2b(1),p3b(1)];
+            y = [ p1(2),p2(2),p3(2),p1b(2),p2b(2),p3b(2)];
+            z = [ p1(3),p2(3),p3(3),p1b(3),p2b(3),p3b(3)];
+            scatter3(x,y,z)
+        end
+        
+        function tdists = calcInitTetherLen(obj)
+            
+            %ground points
+            p1g =  obj.gndThrAttchPt1.posVec.Value;
+            
+            p2g =  obj.gndThrAttchPt2.posVec.Value;
+            
+            p3g =  obj.gndThrAttchPt3.posVec.Value;
+            
+            %body initially lined up with gnd frame. body points
+            p1b =  obj.bdyThrAttchPt1.posVec.Value + obj.posVec.Value(:);
+            
+            p2b =  obj.bdyThrAttchPt2.posVec.Value + obj.posVec.Value(:);
+            
+            p3b =  obj.bdyThrAttchPt3.posVec.Value + obj.posVec.Value(:);
+            
+            
+            t1Dist =  sqrt(sum(((p1b - p1g)).^2));
+            t2Dist =  sqrt(sum(((p2b - p2g)).^2));
+            t3Dist =  sqrt(sum(((p3b - p3g)).^2));
+            
+%             disp(t1Dist)
+%             disp(t2Dist)
+%             disp(t3Dist)
+            tdists = [ t1Dist ,t2Dist,t3Dist];
         end
         
     end
