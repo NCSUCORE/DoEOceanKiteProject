@@ -30,11 +30,14 @@ else
 end
 
 for ii = 1:numel(fieldNames)
+    try
     switch class(tscOld.(fieldNames{ii}))
         case 'timeseries'
             if length(tscOld.(fieldNames{ii}).Time)>1
                 tscOld.(fieldNames{ii}) = resample(...
                     tscOld.(fieldNames{ii}),timeVec);
+            else
+                disp(fieldNames{ii})
             end
         case 'struct'
             subFieldNames = fieldnames(tscOld.(fieldNames{ii}));
@@ -45,6 +48,9 @@ for ii = 1:numel(fieldNames)
             end
         otherwise
             error('Unknown class for resampling')
+    end
+    catch e
+        disp(1)
     end
 end
 tscNew = tscOld;

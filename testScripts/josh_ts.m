@@ -8,11 +8,11 @@ dynamicCalc = '';
 
 %% Load components
 % Flight Controller
-loadComponent('pathFollowingForILC');
+loadComponent('firstBuildPathFollowing');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('fig8ILC')
+loadComponent('constBoothLem')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -29,7 +29,7 @@ loadComponent('constXYZT');
 env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
-hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
 
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 200],'m')
@@ -40,7 +40,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
-    hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
+    hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
     (11/2)*norm(env.water.flowVec.Value)) % Initial speed
 vhcl.setAddedMISwitch(false,'');
@@ -64,7 +64,7 @@ wnch.winch1.setTimeConst(.2,'s');
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
-    hiLvlCtrl.initBasisParams.Value,...
+    hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 
 
