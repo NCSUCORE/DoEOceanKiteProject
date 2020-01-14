@@ -51,6 +51,8 @@ swarm = NaN([size(iniSwarm),maxIter]);
 V = NaN(size(swarm));
 PbestLoc = NaN(size(iniSwarm));
 
+kk = 1;
+
 for jj = 1:maxIter
     if jj == 1
         V(:,:,:,jj) = zeros(size(iniSwarm));
@@ -69,6 +71,10 @@ for jj = 1:maxIter
     end
     
     for ii = 1:ss
+        
+        fprintf('Iteration number: %d\n',kk);
+        kk = kk+1;
+        
         fVal(ii,jj) = p.Results.objF(swarm(:,:,ii,jj));
         
         [~,PbestIdx] = min(fVal(ii,:));
