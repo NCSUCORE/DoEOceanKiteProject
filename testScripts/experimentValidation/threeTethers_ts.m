@@ -166,7 +166,7 @@ initCoeffs = ones(9,1);
 % lowLims = [repmat([0.25;1],3,1); 0.9; 0.5; 0.7; 0.9; 0.9; 0.9];
 % hiLims = [repmat([1;1.75],3,1); 1.1; 1.5; 1.3; 1.1; 1.1; 1.1];
 
-lowLims = [repmat([0.01;1],3,1); 0.1; 0.1; 0.5];
+lowLims = [repmat([0.1;1],3,1); 0.1; 0.1; 0.5];
 hiLims = [repmat([1;5],3,1); 5; 5; 1.1];
     
 dataRange = [30 60];
@@ -180,11 +180,11 @@ options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000
 [optDsgn,minF] = particleSwarmMinimization(...
     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-    'swarmSize',20,'maxIter',15);
+    'swarmSize',25,'maxIter',20);
 
 
 %%
-% optDsgn = [1.0000 1.0000 1.0000 1.3868 0.2500 1.7500 0.9000 0.5000 1.3000 0.9877 1.0210 1.1000 ]';
+optDsgn = [0.7563 3.0561 1.0000 1.8911 0.1423 1.4524 0.4115 2.1833 0.7814 ]';
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,optDsgn,tscExp,dataRange);
 
