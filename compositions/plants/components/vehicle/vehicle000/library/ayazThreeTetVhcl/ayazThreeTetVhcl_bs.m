@@ -17,7 +17,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.75,'');
+vhcl.setBuoyFactor(1.7,'');
 
 vhcl.setTurbDiam(0.45,'m')
 
@@ -96,18 +96,48 @@ ratioZbyX = vhcl.addedMass.Value(3,3)/vhcl.addedMass.Value(1,1);
 vhcl.addedMass.setValue(addedMassCoeff.*vhcl.addedMass.Value,'kg')
 
 % % % artificially reduce lift
-reductionFactor = 1.0;
-incrementFactor = 1.0;
+% reductionFactor = 1.0;
+% incrementFactor = 1.0;
+% 
+% vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
+% vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
+% vhcl.hStab.CL.setValue(reductionFactor*vhcl.hStab.CL.Value,'')
+% vhcl.vStab.CL.setValue(reductionFactor*vhcl.vStab.CL.Value,'')
+% 
+% vhcl.portWing.CD.setValue(incrementFactor*vhcl.portWing.CD.Value,'')
+% vhcl.stbdWing.CD.setValue(incrementFactor*vhcl.stbdWing.CD.Value,'')
+% vhcl.hStab.CD.setValue(incrementFactor*vhcl.hStab.CD.Value,'')
+% vhcl.vStab.CD.setValue(incrementFactor*vhcl.vStab.CD.Value,'')
 
-vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
-vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
-vhcl.hStab.CL.setValue(reductionFactor*vhcl.hStab.CL.Value,'')
-vhcl.vStab.CL.setValue(reductionFactor*vhcl.vStab.CL.Value,'')
+%% use xfoil data
+load('xfoilData.mat')
+CLWing = CL2412.*(0.5*vhcl.wingAR.Value*(vhcl.wingChord.Value^2)...
+    /vhcl.portWing.refArea.Value);
+CDWing = CD2412.*(0.5*vhcl.wingAR.Value*(vhcl.wingChord.Value^2)...
+    /vhcl.portWing.refArea.Value);
+CLhStab = CL0015.*(vhcl.hsAR.Value*(vhcl.hsChord.Value^2)...
+    /vhcl.portWing.refArea.Value);
+CDhStab = CD0015.*(vhcl.hsAR.Value*(vhcl.hsChord.Value^2)...
+    /vhcl.portWing.refArea.Value);
+CLvStab = CL0015.*(vhcl.vsChord.Value*vhcl.vsSpan.Value...
+    /vhcl.portWing.refArea.Value);
+CDvStab = CD0015.*(vhcl.vsChord.Value*vhcl.vsSpan.Value...
+    /vhcl.portWing.refArea.Value);
 
-vhcl.portWing.CD.setValue(incrementFactor*vhcl.portWing.CD.Value,'')
-vhcl.stbdWing.CD.setValue(incrementFactor*vhcl.stbdWing.CD.Value,'')
-vhcl.hStab.CD.setValue(incrementFactor*vhcl.hStab.CD.Value,'')
-vhcl.vStab.CD.setValue(incrementFactor*vhcl.vStab.CD.Value,'')
+vhcl.portWing.CL.setValue(CLWing,'')
+vhcl.stbdWing.CL.setValue(CLWing,'')
+vhcl.hStab.CL.setValue(CLhStab,'')
+vhcl.vStab.CL.setValue(CLvStab,'')
+
+vhcl.portWing.CD.setValue(CDWing,'')
+vhcl.stbdWing.CD.setValue(CDWing,'')
+vhcl.hStab.CD.setValue(CDhStab,'')
+vhcl.vStab.CD.setValue(CDvStab,'')
+
+vhcl.portWing.alpha.setValue(AoA2412,'deg')
+vhcl.stbdWing.alpha.setValue(AoA2412,'deg')
+vhcl.hStab.alpha.setValue(AoA0015,'deg')
+vhcl.vStab.alpha.setValue(AoA0015,'deg')
 
 % % % scale it back down to lab scale before saving
 vhcl.scale(Lscale,1);
