@@ -52,17 +52,17 @@ gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
-vhcl.setICsOnPath(...
-    .75,... % Initial path position
-    PATHGEOMETRY,... % Name of path function
-    [1,1.4,20*pi/180,-.5,125],... % Geometry parameters
-    gndStn.posVec.Value,... % Center point of path sphere
-    1)%(11/2)*norm(env.water.flowVec.Value)) % Initial speed
+% vhcl.setICsOnPath(...
+%     .75,... % Initial path position
+%     PATHGEOMETRY,... % Name of path function
+%     [1,1.4,20*pi/180,-.5,125],... % Geometry parameters
+%     gndStn.posVec.Value,... % Center point of path sphere
+%     1)%(11/2)*norm(env.water.flowVec.Value)) % Initial speed
 % vhcl.setAddedMISwitch(false,'');
-% vhcl.setInitAngVelVec([0 0 0],'rad/s')
-% vhcl.setInitEulAng([10*pi/180 30*pi/180 0],'rad')
-% vhcl.setInitPosVecGnd([125/sqrt(2),30,125/sqrt(2)],'m')
-% vhcl.setInitVelVecBdy([-6 0 0],'m/s')
+vhcl.setInitAngVelVec([0 0 0],'rad/s')
+vhcl.setInitEulAng([10*pi/180 30*pi/180 0],'rad')
+vhcl.setInitPosVecGnd([125/sqrt(2),0,125/sqrt(2)],'m')
+vhcl.setInitVelVecBdy([-1 0 0],'m/s')
 % vhcl.setICsOnPath(...
 %     .25,... % Initial path position
 %     PATHGEOMETRY,... % Name of path function
@@ -96,7 +96,7 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
-parseLogsout
+tsc = signalcontainer(logsout);
 % pitchDeg(i)=tsc.eulerAngles.Data(2,1,end)*180/pi;
 % elevationDeg(i)=tsc.elevdeg.Data(end);
 % end
