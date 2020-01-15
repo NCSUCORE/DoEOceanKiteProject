@@ -8,7 +8,7 @@ gndStn.angSpac.setValue(pi/4,'rad')
 gndStn.heightSpac.setValue(1/2,'m')
 
 gndStn.setVolume(pi*gndStn.cylRad.Value^2*1,'m^3');
-gndStn.setMass(gndStn.volume.Value*(1000/1.5),'kg');
+gndStn.setMass(gndStn.volume.Value*(1000/2),'kg');
 gndStn.setInertiaMatrix([.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0,0;...
    0,.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0;
    0,0,.5*gndStn.mass.Value*gndStn.cylRad.Value^2],'kg*m^2');
@@ -70,7 +70,7 @@ gndStn.addThrAttch('pltThrAttchPt1',[0 1 0]');
 gndStn.addThrAttch('pltThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('pltThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 
-gndStn.addThrAttch('inrThrAttchPt1',[0  20 0]');
+gndStn.addThrAttch('inrThrAttchPt1',[0  100 0]');
 gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 
@@ -78,7 +78,7 @@ gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrT
 gndStn.setPosVec([0 0 199.7],'m')
 
 % gndStn.initAnchTetherLength.setValue(gndStn.calcInitTetherLen,'m')
-gndStn.initAnchTetherLength.setValue([200.85 200.85 200.85 ],'m')
+gndStn.initAnchTetherLength.setValue([223 223 223 ],'m')
 % Anchor Tethers
 gndStn.anchThrs.setNumNodes(2,'');
 gndStn.anchThrs.setNumTethers(3,'');

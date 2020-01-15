@@ -435,7 +435,7 @@ for ii = firstInd:lastInd
     
     % Update the path
     if ~isempty(p.Results.PathFunc)
-        currentBasisParams = tsc.basisParams.Data(:,:,ii);
+        currentBasisParams = tsc.basisParams.Data(ii,:);
         currentBasisParams(end) = norm(tsc.positionVec.Data(:,1,ii)-tsc.gndStnPositionVec.Data(:,:,ii)) ;
         path = eval(sprintf('%s(linspace(0,1,1000),currentBasisParams,tsc.gndStnPositionVec.Data(:,:,ii))',...
             p.Results.PathFunc));
