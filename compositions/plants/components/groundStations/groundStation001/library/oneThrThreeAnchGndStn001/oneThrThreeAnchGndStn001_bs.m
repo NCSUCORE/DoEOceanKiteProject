@@ -78,7 +78,7 @@ gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrT
 gndStn.setPosVec([0 0 199.7],'m')
 
 % gndStn.initAnchTetherLength.setValue(gndStn.calcInitTetherLen,'m')
-gndStn.initAnchTetherLength.setValue([201 201  201 ],'m')
+gndStn.initAnchTetherLength.setValue([200.85 200.85 200.85 ],'m')
 % Anchor Tethers
 gndStn.anchThrs.setNumNodes(2,'');
 gndStn.anchThrs.setNumTethers(3,'');

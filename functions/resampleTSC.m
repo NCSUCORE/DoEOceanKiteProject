@@ -6,6 +6,7 @@ function tscNew = resampleTSC(tscOld,t)
 fieldNames = fieldnames(tscOld);
 endTime = [];
 for ii = 1:numel(fieldNames)
+    try
     switch class(tscOld.(fieldNames{ii}))
         case 'timeseries'
             if ~isempty(tscOld.(fieldNames{ii}).Time)
@@ -19,6 +20,10 @@ for ii = 1:numel(fieldNames)
         otherwise
             error('Unknown class for resampling')
     end
+    catch 
+        
+        
+    end
 end
 if numel(t)>1
     if t(end)~=endTime
@@ -30,6 +35,7 @@ else
 end
 
 for ii = 1:numel(fieldNames)
+    try
     switch class(tscOld.(fieldNames{ii}))
         case 'timeseries'
             if length(tscOld.(fieldNames{ii}).Time)>1
@@ -45,6 +51,9 @@ for ii = 1:numel(fieldNames)
             end
         otherwise
             error('Unknown class for resampling')
+    end
+    catch
+        
     end
 end
 tscNew = tscOld;
