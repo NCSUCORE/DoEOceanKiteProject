@@ -18,10 +18,10 @@ kdElev=12*kpElev;
 kiElev=.005*kpElev;
 TLSP=125;
 load('elev.mat')
-subts=timeseries([0 0 1 1 2 2 3 3 0 0]',[0 499 500 505 506 799 800 819 820 1200]');
+subts=timeseries([0 0 1 1 2 2 3 3 0 0]',[0 499 500 510 511 799 800 819 820 1200]');
 %% Load components
 % Flight Controller
-loadComponent('firstBuildPathFollowing');
+loadComponent('firstBuildTakeoff');
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
@@ -70,7 +70,7 @@ vhcl.setICsOnPath(...
 %     gndStn.posVec.Value,... % Center point of path sphere
 %     .1*(11/2)*norm([ 1 0 0 ])) % Initial speed
 vhcl.setAddedMISwitch(false,'');
-
+vhcl.calcAddedMass;
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
     +gndStn.posVec.Value(:),'m');
