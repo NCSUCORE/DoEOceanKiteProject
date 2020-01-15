@@ -1,4 +1,4 @@
-classdef signalcontainer
+classdef signalcontainer < dynamicprops
     %SIGNALCONTAINER Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -7,34 +7,64 @@ classdef signalcontainer
     end
     
     methods
-        function obj = signalcontainer(logsout,varargin)
+        function obj = signalcontainer(objToParse,varargin)
             p = inputParser;
             addOptional(p,'logsout',[],@(x) isa(x,'Simulink.SimulationData.Dataset'))
             addParameter(p,'Verbose',false,@islogical);
             parse(p,varargin{:});
-            
-            % get names of signals
-            names = logsout.getElementNames;
-            % get rid of unnamed signals (empty strings)
-            names = names(cellfun(@(x) ~isempty(x),names));
-            % add each signal to the struct
-            for ii = 1:length(names)
-                ts = logsout.getElement(names{ii});
-                if isa(ts,'Simulink.SimulationData.Signal')
-                    tsc.(cleanString(names{ii})) = ts.Values;
-                else
-                    if p.Results.Verbose
-                        warning('Duplicate signal names %s, skipping', names{ii})
+            switch class(objToParse)
+                case 'Simulink.SimulationData.Dataset'
+                    % get names of signals
+                    names = objToParse.getElementNames;
+                    % get rid of unnamed signals (empty strings)
+                    names = names(cellfun(@(x) ~isempty(x),names));
+                    % add each signal to the struct
+                    for ii = 1:length(names)
+                        ts = objToParse.getElement(names{ii});
+                        switch class(ts.Values)
+                            case 'timeseries'
+                                % add signal object
+                                obj.addprop(ts.Name);
+                                obj.(ts.Name) = timesignal(ts.Values);
+                            case 'struct'
+                                % otherwise, add a signal container and
+                                % call the constructor on that sigcontainer
+                                obj.addprop(ts.Name);
+                                obj.(ts.Name) = signalcontainer(ts.Values);
+                            otherwise
+                                warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
+                                
+                        end
                     end
-                end
+                case 'struct'
+                    % get names of signals
+                    names = fieldnames(objToParse);
+                    % get rid of unnamed signals (empty strings)
+                    names = names(cellfun(@(x) ~isempty(x),names));
+                    % add each signal to the struct
+                    for ii = 1:length(names)
+                        ts = objToParse.(names{ii});
+                        switch class(ts)
+                            case 'timeseries'
+                                % add signal object
+                                obj.addprop(ts.Name);
+                            case 'struct'
+                                % otherwise, add a signal container and
+                                % call the constructor on that sigcontainer
+                   
+                                obj.addprop(names{ii});
+                                obj.(names{ii}) = signalcontainer(ts);
+                                
+                            otherwise
+                                warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
+                                
+                        end
+                    end
+                otherwise
+                    error('Unknown class in logsout')
             end
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
-        end
     end
 end
 
