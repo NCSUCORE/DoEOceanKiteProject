@@ -1,7 +1,7 @@
 % %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(200,'s');
+sim.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -30,7 +30,7 @@ env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([0.5,1,-.36,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1.6,.8,-.36,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 200],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -79,7 +79,7 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
-parseLogsout
+tsc = signalcontainer(logsout);
 % LUT = Simulink.LookupTable;
 % timeVec = linspace(0,1);
 % LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);
