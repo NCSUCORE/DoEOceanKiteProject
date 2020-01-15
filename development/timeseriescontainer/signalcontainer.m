@@ -48,10 +48,11 @@ classdef signalcontainer < dynamicprops
                             case 'timeseries'
                                 % add signal object
                                 obj.addprop(ts.Name);
+                                obj.(ts.Name) = timesignal(ts);
                             case 'struct'
                                 % otherwise, add a signal container and
                                 % call the constructor on that sigcontainer
-                   
+                                
                                 obj.addprop(names{ii});
                                 obj.(names{ii}) = signalcontainer(ts);
                                 
@@ -62,6 +63,35 @@ classdef signalcontainer < dynamicprops
                     end
                 otherwise
                     error('Unknown class in logsout')
+            end
+        end
+        
+        function obj = crop(obj,varargin)
+            switch numel(varargin)
+                case 1
+                    
+                    startTime = min(varargin{1}(:));
+                    endTime   = max(varargin{1}(:));
+                case 2
+                    startTime = varargin{1};
+                    endTime   = varargin{2};
+                otherwise
+                    error('Incorrect number of input arguments')
+            end
+            
+            
+            props = properties(obj);
+            
+            for ii = 1:numel(props)
+                try
+                    obj.(props{ii}) = obj.(props{ii}).crop(varargin{:});
+                catch
+                    
+                    x = 1;
+                end
+                %                    obj
+                
+                % Call crop functions recursively
             end
         end
         
