@@ -79,8 +79,8 @@ vhcl.setFluidCoeffsFileName('someFile2','');
 
 % % % load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
-vhcl.calcAddedMass
-
+% vhcl.calcAddedMass
+vhcl.addedMass.setValue(zeros(3,3),'kg')
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
 
