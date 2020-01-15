@@ -61,22 +61,34 @@ classdef timesignal < timeseries
                         error('Incorrect number of data dimensions, IDK how to plot that')
                 end
                 
+                % Actually do the plotting
                 timeDim = (1:ndims(obj.Data))*(size(obj.Data)==nt)';
+                % Preallocate cells of indices used to extract data
                 inds={[],[],[]};
                 inds{timeDim} = 1:nt;
-                cnt = 1;
+                % Create tseries with all the same properties as origional
                 tsPlot = obj;
+                % Create counter
+                cnt = 1;
+                % Loop over rows
                 for ii = 1:nr
+                    % Loop over columns
                     for jj = 1:nc
+                        % Create subplot
                         subplot(nr,nc,cnt)
+                        % Set which row and col we're looking at
                         inds{rDim} = ii;
                         inds{cDim} = jj;
+                        % Pull out the right data to plot
                         tsPlot.Data = squeeze(obj.Data(inds{:}));
+                        % Plot the data using the timeseries plot method
                         plot@timeseries(tsPlot,varargin{:})
+                        % increment counter
                         cnt = cnt+1;
                     end
                 end
             end
+            % If the user wants it, return the figure handle
             if nargout==1
                 varargout{1} = gcf;
             end
