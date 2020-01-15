@@ -7,7 +7,5 @@ sim('signalcontainer_th')
 tsc = signalcontainer(logsout);
 
 tsc.mat
-
-tsc.vec1.resample(linspace(0,10));
-
+tsc = tsc.guicrop('vec1');
 tsc.mat

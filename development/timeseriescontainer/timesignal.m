@@ -101,7 +101,6 @@ classdef timesignal < timeseries
             [x,~] = ginput(2);
             close(hFig);
             obj = obj.crop(min(x),max(x));
-            
         end
         
         % Function to crop things
@@ -141,6 +140,7 @@ classdef timesignal < timeseries
                 % crop t down to the range included in obj already
                 tVec = t(and(t>=obj.Time(1),t<=obj.Time(end)));
             end
+            % Call superclass resample method on this object.
             obj = resample@timeseries(obj,tVec,varargin{:});
         end
         

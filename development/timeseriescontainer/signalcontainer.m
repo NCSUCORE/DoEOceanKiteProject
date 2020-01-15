@@ -66,12 +66,21 @@ classdef signalcontainer < dynamicprops
             end
         end
         
+        % Function to crop all signals
         function obj = crop(obj,varargin)
             % Call the crop method of each property
             props = properties(obj);
             for ii = 1:numel(props)
                 obj.(props{ii}) = obj.(props{ii}).crop(varargin{:});
             end
+        end
+        
+        % Function to crop with GUI
+        function obj = guicrop(obj,sigName)
+            hFig = obj.(sigName).plot;
+            [x,~] = ginput(2);
+            close(hFig);
+            obj = obj.crop(min(x),max(x));
         end
         
         function obj = resample(obj,varargin)
