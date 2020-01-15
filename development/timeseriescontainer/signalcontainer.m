@@ -67,31 +67,18 @@ classdef signalcontainer < dynamicprops
         end
         
         function obj = crop(obj,varargin)
-            switch numel(varargin)
-                case 1
-                    
-                    startTime = min(varargin{1}(:));
-                    endTime   = max(varargin{1}(:));
-                case 2
-                    startTime = varargin{1};
-                    endTime   = varargin{2};
-                otherwise
-                    error('Incorrect number of input arguments')
-            end
-            
-            
+            % Call the crop method of each property
             props = properties(obj);
-            
             for ii = 1:numel(props)
-                try
-                    obj.(props{ii}) = obj.(props{ii}).crop(varargin{:});
-                catch
-                    
-                    x = 1;
-                end
-                %                    obj
-                
-                % Call crop functions recursively
+                obj.(props{ii}) = obj.(props{ii}).crop(varargin{:});
+            end
+        end
+        
+        function obj = resample(obj,varargin)
+            % Call the crop method of each property
+            props = properties(obj);
+            for ii = 1:numel(props)
+                obj.(props{ii}) = obj.(props{ii}).resample(varargin{:});
             end
         end
         

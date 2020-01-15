@@ -9,6 +9,7 @@ classdef timesignal < timeseries
     methods
         % Contstructor
         function obj = timesignal(tsIn)
+            % Call superclass constructor
             obj = obj@timeseries(tsIn);
         end
         
@@ -105,18 +106,42 @@ classdef timesignal < timeseries
         
         % Function to crop things
         function obj = crop(obj,varargin)
+            % User can provide either a two element vector or two inputs
             switch numel(varargin)
                 case 1
+                    % If it's a two element vector take the min and max values
                     if numel(varargin{1})==2
-                        obj = obj.getsampleusingtime(varargin{1}(1),varargin{1}(2));
-                    else
+                        obj = obj.getsampleusingtime(...
+                            min(varargin{1}(:)),...
+                            max(varargin{1}(:)));
+                    else % If they gave more than two elements, throw error
                         error('Incorrect number of times provided')
                     end
                 case 2
+                    % If two inputs, take the first as start and second as end
                     obj = obj.getsampleusingtime(varargin{1},varargin{2});
                 otherwise
+                    % If they gave more inputs, throw error
                     error('Incorrect number of times provided')
             end
+        end
+        
+        % Function to resample data to different rate
+        function obj = resample(obj,t,varargin)
+            % If t has too many dimensions or if more than 1 dimension has
+            % more than 1 element
+            if ndims(t)>2 || sum(size(t)>1)>1
+                error('Incorrect number of dimensions')
+            end
+            % Build the time vector
+            if numel(t)==1
+                % Time vector spanning time of obj
+                tVec = obj.Time(1):t:obj.Time(end);
+            else % If it's a vector
+                % crop t down to the range included in obj already
+                tVec = t(and(t>=obj.Time(1),t<=obj.Time(end)));
+            end
+            obj = resample@timeseries(obj,tVec,varargin{:});
         end
         
         
