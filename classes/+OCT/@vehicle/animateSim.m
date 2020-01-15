@@ -7,7 +7,7 @@ p = inputParser;
 
 % ---Fundamental Animation Requirements---
 % Timeseries collection structure with results from the simulation
-addRequired(p,'tsc',@(x) isa(x,'signalcontainer'));
+addRequired(p,'tsc',@(x) or(isa(x,'signalcontainer'),isa(x,'struct')));
 % Time step used in plotting
 addRequired(p,'timeStep',@isnumeric);
 % Time to start viewing
@@ -96,11 +96,12 @@ end
 
 % Resample mean power to iteration domain
 if p.Results.PowerBar
-    tsc.iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
+    iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
 end
 
 % Resample the timeseries to the specified framerate
-tsc = resampleTSC(tsc,p.Results.timeStep);
+% tsc = resampleTSC(tsc,p.Results.timeStep);
+tsc = tsc.resample(p.Results.timeStep);
 
 %% Plot things
 % Plot the aerodynamic surfaces

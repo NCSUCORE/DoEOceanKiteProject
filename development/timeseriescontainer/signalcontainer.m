@@ -92,7 +92,11 @@ classdef signalcontainer < dynamicprops
             % Call the crop method of each property
             props = properties(obj);
             for ii = 1:numel(props)
+                try
                 obj.(props{ii}) = obj.(props{ii}).resample(varargin{:});
+                catch
+                   x = 1; 
+                end
             end
         end
         

@@ -79,7 +79,7 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
-parseLogsout
+tsc = signalcontainer(logsout);
 % LUT = Simulink.LookupTable;
 % timeVec = linspace(0,1);
 % LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);
