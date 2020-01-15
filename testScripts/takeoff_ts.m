@@ -70,7 +70,7 @@ vhcl.setICsOnPath(...
 %     gndStn.posVec.Value,... % Center point of path sphere
 %     .1*(11/2)*norm([ 1 0 0 ])) % Initial speed
 vhcl.setAddedMISwitch(false,'');
-
+vhcl.calcAddedMass;
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
     +gndStn.posVec.Value(:),'m');
