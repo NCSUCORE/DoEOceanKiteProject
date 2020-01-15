@@ -1,6 +1,6 @@
 classdef signalcontainer < dynamicprops
-    %SIGNALCONTAINER Summary of this class goes here
-    %   Detailed explanation goes here
+    %SIGNALCONTAINER Custom class used to store and organize timesignal
+    %objects.
     
     properties
         
@@ -18,9 +18,15 @@ classdef signalcontainer < dynamicprops
                     names = objToParse.getElementNames;
                     % get rid of unnamed signals (empty strings)
                     names = names(cellfun(@(x) ~isempty(x),names));
+                    % get rid of duplicate signal names
+                    names = unique(names);
                     % add each signal to the struct
                     for ii = 1:length(names)
                         ts = objToParse.getElement(names{ii});
+                        if isa(ts,'Simulink.SimulationData.Dataset')
+                            warning('Duplicate signal names, taking first signal')
+                            ts = ts{1};
+                        end
                         switch class(ts.Values)
                             case 'timeseries'
                                 % add signal object
@@ -29,8 +35,9 @@ classdef signalcontainer < dynamicprops
                             case 'struct'
                                 % otherwise, add a signal container and
                                 % call the constructor on that sigcontainer
-                                obj.addprop(ts.Name);
-                                obj.(ts.Name) = signalcontainer(ts.Values);
+                                propName = genvarname(ts.Name);
+                                obj.addprop(propName);
+                                obj.(propName) = signalcontainer(ts.Values);
                             otherwise
                                 warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
                                 
@@ -52,13 +59,10 @@ classdef signalcontainer < dynamicprops
                             case 'struct'
                                 % otherwise, add a signal container and
                                 % call the constructor on that sigcontainer
-                                
                                 obj.addprop(names{ii});
                                 obj.(names{ii}) = signalcontainer(ts);
-                                
                             otherwise
                                 warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
-                                
                         end
                     end
                 otherwise
