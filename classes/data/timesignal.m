@@ -119,6 +119,10 @@ classdef timesignal < timeseries
                 case 2
                     % If two inputs, take the first as start and second as end
                     obj = obj.getsampleusingtime(varargin{1},varargin{2});
+                    if numel(obj.Time)>0
+                        obj.Time = obj.Time-obj.Time(1);
+                    end
+                    
                 otherwise
                     % If they gave more inputs, throw error
                     error('Incorrect number of times provided')
@@ -141,7 +145,11 @@ classdef timesignal < timeseries
                 tVec = t(and(t>=obj.Time(1),t<=obj.Time(end)));
             end
             % Call superclass resample method on this object.
+            try
             obj = resample@timeseries(obj,tVec,varargin{:});
+            catch
+                 x =1;
+            end
         end
         
         
