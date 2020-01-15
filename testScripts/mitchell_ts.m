@@ -1,7 +1,7 @@
 % %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(10,'s');
+sim.setDuration(200,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -74,7 +74,7 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 %     hiLvlCtrl.initBasisParams.Value,...
 %     gndStn.posVec.Value);
-
+vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);

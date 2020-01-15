@@ -57,28 +57,28 @@ gndStn.aMY.setValue(.1,'')
 gndStn.aMZ.setValue(.1,'')
 
 
-gndStn.lumpedMassSphereRadius.setValue(1,'m')
+gndStn.lumpedMassSphereRadius.setValue(.5,'m')
 
 
 % tether attach point for the tether that goes from the GS to the KITE
-gndStn.addThrAttch('airThrAttchPt1',[0 0 0]);
+gndStn.addThrAttch('kitThrAttchPt1',[0 0 0]);
 
 
 
 % tether attach points for the tether that goes from the GS to the GND
-gndStn.addThrAttch('bdyThrAttchPt1',[0 1 0]');
-gndStn.addThrAttch('bdyThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.bdyThrAttchPt1.posVec.Value(:));
-gndStn.addThrAttch('bdyThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.bdyThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('pltThrAttchPt1',[0 1 0]');
+gndStn.addThrAttch('pltThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('pltThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 
-gndStn.addThrAttch('gndThrAttchPt1',[0  0 0]');
-gndStn.addThrAttch('gndThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.gndThrAttchPt1.posVec.Value(:));
-gndStn.addThrAttch('gndThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.gndThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('inrThrAttchPt1',[0  20 0]');
+gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 
 
-gndStn.setPosVec([0 0 200],'m')
+gndStn.setPosVec([0 0 199.7],'m')
 
 % gndStn.initAnchTetherLength.setValue(gndStn.calcInitTetherLen,'m')
-gndStn.initAnchTetherLength.setValue([201 201 201],'m')
+gndStn.initAnchTetherLength.setValue([200.85 200.85 200.85 ],'m')
 % Anchor Tethers
 gndStn.anchThrs.setNumNodes(2,'');
 gndStn.anchThrs.setNumTethers(3,'');
@@ -91,8 +91,8 @@ gndStn.anchThrs.tether1.dampingRatio.setValue(.2,'');           % zeta, damping 
 gndStn.anchThrs.tether1.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether1.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether1.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-gndStn.anchThrs.tether1.dragEnable.setValue(0,'');
-gndStn.anchThrs.tether1.netBuoyEnable.setValue(0,'');
+gndStn.anchThrs.tether1.dragEnable.setValue(1,'');
+gndStn.anchThrs.tether1.netBuoyEnable.setValue(1,'');
 
 
 % Tether 2 properties
@@ -102,8 +102,8 @@ gndStn.anchThrs.tether2.dampingRatio.setValue(.2,'');           % zeta, damping 
 gndStn.anchThrs.tether2.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether2.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether2.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-gndStn.anchThrs.tether2.dragEnable.setValue(0,'');
-gndStn.anchThrs.tether2.netBuoyEnable.setValue(0,'');
+gndStn.anchThrs.tether2.dragEnable.setValue(1,'');
+gndStn.anchThrs.tether2.netBuoyEnable.setValue(1,'');
 
 
 
@@ -114,8 +114,8 @@ gndStn.anchThrs.tether3.dampingRatio.setValue(.2,'');           % zeta, damping 
 gndStn.anchThrs.tether3.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether3.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether3.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
-gndStn.anchThrs.tether3.dragEnable.setValue(0,'');
-gndStn.anchThrs.tether3.netBuoyEnable.setValue(0,'');
+gndStn.anchThrs.tether3.dragEnable.setValue(1,'');
+gndStn.anchThrs.tether3.netBuoyEnable.setValue(1,'');
 
 % Save the variable
 saveBuildFile('gndStn',mfilename,'variant','GROUNDSTATION');

@@ -124,7 +124,8 @@ classdef sixDoFStation < dynamicprops
             obj.anchThrs = OCT.tethers;
         end
         
-        %function to add tether attach points for the kites tether
+     % Function to build the ground station (add tether attachment
+        % properties)
         function obj = build(obj,varargin)
             % Populate cell array of default names
             defThrName = {};
@@ -141,8 +142,6 @@ classdef sixDoFStation < dynamicprops
                 obj.(p.Results.TetherNames{ii}) = OCT.thrAttch;
             end
         end
-        
-        
         
         
         
@@ -414,18 +413,18 @@ classdef sixDoFStation < dynamicprops
         function plotGndStnLoc(obj)
             
             
-            p1 =  obj.gndThrAttchPt1.posVec.Value;
+            p1 =  obj.inrThrAttchPt1.posVec.Value;
             
-            p2 =  obj.gndThrAttchPt2.posVec.Value;
+            p2 =  obj.inrThrAttchPt2.posVec.Value;
             
-            p3 =  obj.gndThrAttchPt3.posVec.Value;
+            p3 =  obj.inrThrAttchPt3.posVec.Value;
             
             
-            p1b =  obj.bdyThrAttchPt1.posVec.Value + obj.posVec.Value(:);
+            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.posVec.Value(:);
             
-            p2b =  obj.bdyThrAttchPt2.posVec.Value + obj.posVec.Value(:);
+            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.posVec.Value(:);
             
-            p3b =  obj.bdyThrAttchPt3.posVec.Value + obj.posVec.Value(:);
+            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.posVec.Value(:);
             
             x = [ p1(1),p2(1),p3(1),p1b(1),p2b(1),p3b(1)];
             y = [ p1(2),p2(2),p3(2),p1b(2),p2b(2),p3b(2)];
@@ -436,18 +435,18 @@ classdef sixDoFStation < dynamicprops
         function tdists = calcInitTetherLen(obj)
             
             %ground points
-            p1g =  obj.gndThrAttchPt1.posVec.Value;
+            p1g =  obj.inrThrAttchPt1.posVec.Value;
             
-            p2g =  obj.gndThrAttchPt2.posVec.Value;
+            p2g =  obj.inrThrAttchPt2.posVec.Value;
             
-            p3g =  obj.gndThrAttchPt3.posVec.Value;
+            p3g =  obj.inrThrAttchPt3.posVec.Value;
             
             %body initially lined up with gnd frame. body points
-            p1b =  obj.bdyThrAttchPt1.posVec.Value + obj.posVec.Value(:);
+            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.posVec.Value(:);
             
-            p2b =  obj.bdyThrAttchPt2.posVec.Value + obj.posVec.Value(:);
+            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.posVec.Value(:);
             
-            p3b =  obj.bdyThrAttchPt3.posVec.Value + obj.posVec.Value(:);
+            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.posVec.Value(:);
             
             
             t1Dist =  sqrt(sum(((p1b - p1g)).^2));
