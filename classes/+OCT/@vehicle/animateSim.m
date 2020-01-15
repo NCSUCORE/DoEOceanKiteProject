@@ -7,13 +7,13 @@ p = inputParser;
 
 % ---Fundamental Animation Requirements---
 % Timeseries collection structure with results from the simulation
-addRequired(p,'tsc',@isstruct);
+addRequired(p,'tsc',@(x) isa(x,'signalcontainer'));
 % Time step used in plotting
 addRequired(p,'timeStep',@isnumeric);
 % Time to start viewing
 addParameter(p,'startTime',0,@isnumeric);
 % Time to start viewing
-addParameter(p,'endTime',tsc.positionVec.time(end),@isnumeric);
+addParameter(p,'endTime',tsc.positionVec.Time(end),@isnumeric);
 
 % Vector of time stamps used to crop data
 addParameter(p,'CropTimes',[],@isnumeric)
@@ -96,7 +96,7 @@ end
 
 % Resample mean power to iteration domain
 if p.Results.PowerBar
-    iterMeanPower = resample(tsc.meanPower,tsc.estGradient.Time);
+    tsc.iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
 end
 
 % Resample the timeseries to the specified framerate
@@ -120,7 +120,7 @@ if ~isempty(p.Results.ScrollPlots)
         p.Results.ScrollPlots{cnt}.plot('LineStyle','-','Color','k')
         hold on
         grid on
-        h.timeLine(cnt) = line(p.Results.ScrollPlots{cnt}.Time(1)*[1 1],...
+        h.TimeLine(cnt) = line(p.Results.ScrollPlots{cnt}.Time(1)*[1 1],...
             get(gca,'YLim'),'Color','r','LineStyle','--');
         
         unitString = p.Results.ScrollPlots{cnt}.DataInfo.Units;
@@ -386,9 +386,9 @@ if p.Results.startTime == 0
 else
     [~,firstInd]=min(abs(tsc.eulerAngles.Time-p.Results.startTime));
 end
-if p.Results.endTime == tsc.positionVec.time(end)
+if p.Results.endTime == tsc.positionVec.Time(end)
     lastInd=length(tsc.positionVec.Time);
-elseif p.Results.endTime < tsc.positionVec.time(end)
+elseif p.Results.endTime < tsc.positionVec.Time(end)
     [~,lastInd]=min(abs(tsc.positionVec.Time-p.Results.endTime));
 else
     lastInd=length(tsc.positionVec.Time);
@@ -579,8 +579,8 @@ for ii = firstInd:lastInd
     
     % Update scrolling plots
     if ~isempty(p.Results.ScrollPlots)
-        for jj = 1:numel(h.timeLine)
-            h.timeLine(jj).XData = tsc.positionVec.Time(ii)*[1 1];
+        for jj = 1:numel(h.TimeLine)
+            h.TimeLine(jj).XData = tsc.positionVec.Time(ii)*[1 1];
         end
     end
     

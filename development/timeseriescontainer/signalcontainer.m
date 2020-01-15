@@ -24,14 +24,15 @@ classdef signalcontainer < dynamicprops
                     for ii = 1:length(names)
                         ts = objToParse.getElement(names{ii});
                         if isa(ts,'Simulink.SimulationData.Dataset')
-                            warning('Duplicate signal names, taking first signal')
+                            warning('Duplicate signal names: ''%s''.  Taking first found signal.',ts{1}.Name)
                             ts = ts{1};
                         end
                         switch class(ts.Values)
                             case 'timeseries'
                                 % add signal object
-                                obj.addprop(ts.Name);
-                                obj.(ts.Name) = timesignal(ts.Values);
+                                propName = genvarname(ts.Name);
+                                obj.addprop(propName);
+                                obj.(propName) = timesignal(ts.Values);
                             case 'struct'
                                 % otherwise, add a signal container and
                                 % call the constructor on that sigcontainer
