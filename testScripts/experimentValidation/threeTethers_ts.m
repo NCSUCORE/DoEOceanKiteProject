@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
-iniX = 0.0477;
+iniX = 0.0914;
 pitchSP = 11;
 
 % % % initial conditions
@@ -74,9 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.3530,'m');
-wnch.winch2.initLength.setValue(0.3499,'m');
-wnch.winch3.initLength.setValue(0.3530,'m');
+wnch.winch1.initLength.setValue(0.3586,'m');
+wnch.winch2.initLength.setValue(0.3653,'m');
+wnch.winch3.initLength.setValue(0.3586,'m');
 
 
 dynamicCalc = '';
@@ -183,7 +183,9 @@ dataRange = [30 60];
 
 
 %%
-optDsgn = [0.2342 1.5838 0.6279 1.9003 0.6609 1.8033 0.5488 1.9563 0.6919 0.9678]';
+% optDsgn = [0.2342 1.5838 0.6279 1.9003 0.6609 1.8033 0.5488 1.9563 0.6919 0.9678]';
+optDsgn = initCoeffs;
+
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,optDsgn,tscExp,dataRange);
 
