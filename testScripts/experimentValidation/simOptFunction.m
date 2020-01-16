@@ -19,9 +19,9 @@ vhcl.fuseEndDragCoeff.setValue(coeffs(7)*initVals.fuseEndDrag,'')
 vhcl.fuseSideDragCoeff.setValue(coeffs(8)*initVals.fuseSideDrag,'')
 
 % vhcl.addedMass.setValue(coeffs(10:12).*initVals.addedMass,'kg')
-% 
+%
 vhcl.buoyFactor.setValue(coeffs(9)*initVals.buoyFactor,'')
-% 
+%
 % winches
 maxReleaseSpeed = coeffs(10)*initVals.wnchMaxReleaseSpeed;
 wnch.winch1.maxSpeed.setValue(maxReleaseSpeed,'m/s')
@@ -47,10 +47,10 @@ fltCtrl.tetherRoll.kp.setValue(rKp,'(m/s)/(rad)');
 fltCtrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
 fltCtrl.tetherRoll.kd.setValue(2*rKp,'(m/s)/(rad/s)');
 fltCtrl.tetherRoll.tau.setValue(0.5,'s');
-% 
+%
 % % tethers
 % thrDrag = initVals.thrDragCoeff;
-% 
+%
 % thr.tether1.dragCoeff.setValue(coeffs(9)*thrDrag,'')
 % thr.tether2.dragCoeff.setValue(coeffs(9)*thrDrag,'')
 % thr.tether3.dragCoeff.setValue(coeffs(9)*thrDrag,'')
@@ -79,8 +79,11 @@ tscSim.velocityVec = squeeze(resample(tscSim.velocityVec,timeSim));
 tscSim.angularVel = squeeze(resample(tscSim.angularVel,timeSim));
 
 %% calculate optimization objective function
-val = calObjF(tscSim,tscExp,dataRange)
-
+try
+    val = calObjF(tscSim,tscExp,dataRange)
+catch
+    val = 100;
+end
 fileID = fopen('solutionsRecord.txt','a');
 fprintf(fileID,'Design variables=\n');
 fprintf(fileID,repmat('%0.4f ',1,numel(coeffs)),coeffs);
