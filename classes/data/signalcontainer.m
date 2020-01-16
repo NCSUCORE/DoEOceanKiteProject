@@ -38,7 +38,10 @@ classdef signalcontainer < dynamicprops
                                 % call the constructor on that sigcontainer
                                 propName = genvarname(ts.Name);
                                 obj.addprop(propName);
-                                obj.(propName) = signalcontainer(ts.Values);
+                                obj.(propName) = signalcontainer.empty(0);
+                                for jj = 1:numel(ts.Values)
+                                    obj.(propName)(jj) = signalcontainer(ts.Values(jj));
+                                end
                             otherwise
                                 warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
                                 

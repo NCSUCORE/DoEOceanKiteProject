@@ -100,8 +100,12 @@ tscTmp = tsc.crop(p.Results.startTime,p.Results.endTime);
 tscTmp = tscTmp.resample(p.Results.timeStep);
 
 % Resample mean power to iteration domain
-if p.Results.PowerBar
-    iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
+if p.Results.PowerBar  
+    if isprop(tsc,'meanPower')
+        iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
+    else
+        warning('No mean power signal logged')
+    end
 end
 
 %% Plot things
@@ -309,10 +313,10 @@ for ii = 1:numel(tscTmp.thrNodeBus)
 end
 
 % Plot the anchor tethers
-if isprop(tscTmp,'anchThrNodeBusArry') && isprop(tscTmp.anchThrNodeBusArry,'nodePositions')
+if isprop(tscTmp,'anchThrNodeBusArry') && all(isprop(tscTmp.anchThrNodeBusArry,'nodePositions'))
     for ii = 1:numel(tscTmp.anchThrNodeBusArry)
-        nodePosVecs = tscTmp.anchThrNodeBusArry.nodePositions.getsampleusingtime(tsc.positionVec.Time(1)).Data;
-        h.thr{ii} = plot3(...
+        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(tsc.positionVec.Time(1)).Data;
+        h.anchThr{ii} = plot3(...
             nodePosVecs(1,:),...
             nodePosVecs(2,:),...
             nodePosVecs(3,:),...
@@ -375,6 +379,30 @@ view(p.Results.View)
 % Set plot limits
 setLimsToQuartSphere(gca,squeeze(tscTmp.positionVec.Data)',...
     'PlotAxes',true);
+
+% Attempt to set plot axes limits automatically
+allPlots = allchild(gca);
+% Find min and maxes over position
+minX = min(tscTmp.positionVec.Data(1,:));
+maxX = max(tscTmp.positionVec.Data(1,:));
+minY = min(tscTmp.positionVec.Data(2,:));
+maxY = max(tscTmp.positionVec.Data(2,:));
+minZ = min(tscTmp.positionVec.Data(3,:));
+maxZ = max(tscTmp.positionVec.Data(3,:));
+% Find min and max over all plotted data
+for ii = 1:numel(allPlots)
+minX = min([minX allPlots(ii).XData]);
+maxX = max([maxX allPlots(ii).XData]);
+minY = min([minY allPlots(ii).YData]);
+maxY = max([maxY allPlots(ii).YData]);
+minZ = min([minZ allPlots(ii).ZData]);
+maxZ = max([maxZ allPlots(ii).ZData]);
+end
+% If one is not zero, make X and Y symmetric
+xlim([minX maxX])
+ylim([minY maxY])
+zlim([minZ maxZ])
+
 
 % Set the custom x, y and z limits
 if ~isempty(p.Results.XLim)
@@ -538,13 +566,25 @@ for ii = 1:numel(tsc.positionVec.Time)
         h.table.Data{fluidStartRow+3,2} = sprintf('%0.0f',MFluidBdy(3));
     end
     
-    % Update the tethers
+    % Update the tether(s)
     for jj = numel(tscTmp.thrNodeBus)
         thrNodePos = tscTmp.thrNodeBus.nodePositions.getsampleusingtime(timeStamp).Data;
         h.thr{jj}.XData = squeeze(thrNodePos(1,:));
         h.thr{jj}.YData = squeeze(thrNodePos(2,:));
         h.thr{jj}.ZData = squeeze(thrNodePos(3,:));
     end
+    
+    % update the anchor tether if there is one
+    if isfield(h,'anchThr')
+        for ii = 1:numel(h.anchThr)
+            nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(timeStamp).Data;
+            h.anchThr{ii}.XData = nodePosVecs(1,:);
+            h.anchThr{ii}.YData = nodePosVecs(2,:);
+            h.anchThr{ii}.ZData = nodePosVecs(3,:);
+        end
+        
+    end
+    
     % Update the title
     h.title.String = {strcat(...
         sprintf('Time = %.1f s',tscTmp.velocityVec.Time(ii)),',',...
@@ -552,6 +592,8 @@ for ii = 1:numel(tsc.positionVec.Time)
         sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsampleusingtime(timeStamp).Data))};
     
     
+    
+    % Update the colorbar/power bar
     if p.Results.PowerBar
         yPos = interp1(h.colorBar.Limits,...
             [h.colorBar.Position(2) h.colorBar.Position(2)+h.colorBar.Position(4)],...
