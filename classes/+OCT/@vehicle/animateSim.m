@@ -40,7 +40,7 @@ addParameter(p,'XLim',[],@isnumeric)
 addParameter(p,'YLim',[],@isnumeric)
 % Z limits on the plot
 addParameter(p,'ZLim',[],@isnumeric)
-% Name of the path geometry used 
+% Name of the path geometry used
 addParameter(p,'PathFunc',[],@ischar);
 % Plot ground coordinate system axes
 addParameter(p,'PlotAxes',true,@islogical);
@@ -90,18 +90,23 @@ if p.Results.SaveMPEG && ~exist(p.Results.MPEGPath, 'dir')
 end
 
 if p.Results.SaveMPEG
-   vidWriter = VideoWriter(fullfile(p.Results.MPEGPath,p.Results.MPEGFile), 'MPEG-4');
-   open(vidWriter);
+    vidWriter = VideoWriter(fullfile(p.Results.MPEGPath,p.Results.MPEGFile), 'MPEG-4');
+    open(vidWriter);
 end
+
+% Crop to the specified times
+tscTmp = tsc.crop(p.Results.startTime,p.Results.endTime);
+% Resample the timeseries to the specified framerate
+tscTmp = tscTmp.resample(p.Results.timeStep);
 
 % Resample mean power to iteration domain
-if p.Results.PowerBar
-    iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
+if p.Results.PowerBar  
+    if isprop(tsc,'meanPower')
+        iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
+    else
+        warning('No mean power signal logged')
+    end
 end
-
-% Resample the timeseries to the specified framerate
-% tsc = resampleTSC(tsc,p.Results.timeStep);
-tsc = tsc.resample(p.Results.timeStep);
 
 %% Plot things
 % Plot the aerodynamic surfaces
@@ -126,7 +131,7 @@ if ~isempty(p.Results.ScrollPlots)
         
         unitString = p.Results.ScrollPlots{cnt}.DataInfo.Units;
         if isempty(unitString)
-           unitString = '-';
+            unitString = '-';
         end
         ylabel(sprintf('%s [%s]',p.Results.ScrollPlots{cnt}.Name,unitString))
         title('')
@@ -144,7 +149,7 @@ hold on
 
 % Plot x, y and z ground fixed axes
 if p.Results.PlotAxes
-    posData = squeeze(tsc.positionVec.Data)';
+    posData = squeeze(tscTmp.positionVec.Data)';
     r = sqrt(sum(posData.^2,2));
     len = 0.1*max(r);
     plot3([0 len],[0 0],[0 0],...
@@ -158,14 +163,14 @@ end
 % Plot the tracer (empty/NAN's)
 if p.Results.PlotTracer
     for ii = 1:round(p.Results.TracerDuration/p.Results.timeStep)
-       h.tracer(ii) = line([nan nan],[nan nan],[nan nan],...
-           'Color','r','LineWidth',2);
+        h.tracer(ii) = line([nan nan],[nan nan],[nan nan],...
+            'Color','r','LineWidth',2);
     end
 end
 
 % Plot the path
 if ~isempty(p.Results.PathFunc)
-    path = eval(sprintf('%s(linspace(0,1,1000),tsc.basisParams.Data(:,:,1),tsc.gndStnPositionVec.Data(:,:,1))',...
+    path = eval(sprintf('%s(linspace(0,1,1000),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
     h.path = plot3(...
         path(1,:),...
@@ -178,39 +183,39 @@ end
 
 % Plot current path position
 if p.Results.PathPosition
-    %     pt = eval(sprintf('%s(tsc.currentPathVar.Data(1),tsc.basisParams.Data(:,:,1),tsc.gndStnPositionVec.Data(:,:,1))',...
+    %     pt = eval(sprintf('%s(tscTmp.currentPathVar.Data(1),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
     %         p.Results.PathFunc));
     h.pathPosition = plot3(...
-        tsc.pathPosGnd.Data(1,:,1),...
-        tsc.pathPosGnd.Data(2,:,1),...
-        tsc.pathPosGnd.Data(3,:,1),...
+        tscTmp.pathPosGnd.Data(1,:,1),...
+        tscTmp.pathPosGnd.Data(2,:,1),...
+        tscTmp.pathPosGnd.Data(3,:,1),...
         'ro');
 end
 
 % Plot navigation vectors
 if p.Results.NavigationVecs
-    posData = squeeze(tsc.positionVec.Data)';
-%     r = sqrt(sum(posData.^2,2));
+    posData = squeeze(tscTmp.positionVec.Data)';
+    %     r = sqrt(sum(posData.^2,2));
     len = obj.fuse.length.Value;
-    pathPt = eval(sprintf('%s(tsc.currentPathVar.Data(1),tsc.basisParams.Data(:,:,1),tsc.gndStnPositionVec.Data(:,:,1))',...
+    pathPt = eval(sprintf('%s(tscTmp.currentPathVar.Data(1),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
     h.tanVec = quiver3(...
         pathPt(1),pathPt(2),pathPt(3),...
-        len*tsc.tanVec.Data(1,1),...
-        len*tsc.tanVec.Data(1,2),...
-        len*tsc.tanVec.Data(1,3),...
+        len*tscTmp.tanVec.Data(1,1),...
+        len*tscTmp.tanVec.Data(1,2),...
+        len*tscTmp.tanVec.Data(1,3),...
         'MaxHeadSize',0,'Color','r','LineStyle','--','LineWidth',1.5);
     h.perpVec = quiver3(...
         posData(1,1),posData(1,2),posData(1,3),...
-        len*tsc.perpVec.Data(1,:,ii),...
-        len*tsc.perpVec.Data(2,:,ii),...
-        len*tsc.perpVec.Data(3,:,ii),...
+        len*tscTmp.perpVec.Data(1,:,ii),...
+        len*tscTmp.perpVec.Data(2,:,ii),...
+        len*tscTmp.perpVec.Data(3,:,ii),...
         'MaxHeadSize',0,'Color',0.75*[0 1 0],'LineStyle','--','LineWidth',1.5);
     h.desVec = quiver3(...
         posData(1,1),posData(1,2),posData(1,3),...
-        len*tsc.velVectorDes.Data(1,1),...
-        len*tsc.velVectorDes.Data(1,2),...
-        len*tsc.velVectorDes.Data(1,3),...
+        len*tscTmp.velVectorDes.Data(1,1),...
+        len*tscTmp.velVectorDes.Data(1,2),...
+        len*tscTmp.velVectorDes.Data(1,3),...
         'MaxHeadSize',0,'Color','b','LineStyle','--','LineWidth',1.5);
 end
 
@@ -225,9 +230,9 @@ end
 
 % Set the plot limits to zoom in on the body
 if p.Results.ZoomIn
-    xlim(tsc.positionVec.Data(1,:,1)+obj.fuse.length.Value*[-1.5 1.5])
-    ylim(tsc.positionVec.Data(2,:,1)+obj.fuse.length.Value*[-1.5 1.5])
-    zlim(tsc.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
+    xlim(tscTmp.positionVec.Data(1,:,1)+obj.fuse.length.Value*[-1.5 1.5])
+    ylim(tscTmp.positionVec.Data(2,:,1)+obj.fuse.length.Value*[-1.5 1.5])
+    zlim(tscTmp.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
 end
 
 
@@ -238,15 +243,15 @@ if p.Results.LocalAero
     [aeroStruct,surfNames] = obj.struct('OCT.aeroSurf');
     
     % Get the aerodynamic vectors in the ground frames
-    FLiftPart = rotation_sequence(tsc.eulerAngles.Data(:,:,1))*tsc.FLiftBdyPart.Data(:,:,1);
-    FDragPart = rotation_sequence(tsc.eulerAngles.Data(:,:,1))*tsc.FDragBdyPart.Data(:,:,1);
-    vAppPart  = rotation_sequence(tsc.eulerAngles.Data(:,:,1))*tsc.vAppLclBdy.Data(:,:,1);
+    FLiftPart = rotation_sequence(tscTmp.eulerAngles.Data(:,:,1))*tscTmp.FLiftBdyPart.Data(:,:,1);
+    FDragPart = rotation_sequence(tscTmp.eulerAngles.Data(:,:,1))*tscTmp.FDragBdyPart.Data(:,:,1);
+    vAppPart  = rotation_sequence(tscTmp.eulerAngles.Data(:,:,1))*tscTmp.vAppLclBdy.Data(:,:,1);
     
     % Normalize them for plotting purposes
     uLiftPart = FLiftPart./sqrt(sum(FLiftPart.^2,1));
     uDragPart = FDragPart./sqrt(sum(FDragPart.^2,1));
     uAppPart = vAppPart./sqrt(sum(vAppPart.^2,1));
-   
+    
     % Plot the vectors on each surface
     for ii = 1:numel(surfNames)
         % Update the table
@@ -257,8 +262,8 @@ if p.Results.LocalAero
             {'F Drag'},{sprintf('%0.0f',sqrt(sum(FDragPart(ii).^2,1)))}];
         
         % Calculate the position of the aerodynamic center
-        aeroCentVec = tsc.positionVec.Data(:,:,1)+...
-            rotation_sequence(tsc.eulerAngles.Data(:,:,1))*aeroStruct(ii).aeroCentPosVec(:);
+        aeroCentVec = tscTmp.positionVec.Data(:,:,1)+...
+            rotation_sequence(tscTmp.eulerAngles.Data(:,:,1))*aeroStruct(ii).aeroCentPosVec(:);
         
         % Plot the vectors
         h.liftVecs(ii) = quiver3(...
@@ -292,19 +297,32 @@ end
 if p.Results.FluidMoments
     fluidStartRow = size(h.table.Data,1);
     h.table.Data = [h.table.Data;
-        {'M Fluid Roll'} ,{sprintf('%0.0f',tsc.MFluidBdy.Data(1,1,1))};...
-        {'M Fluid Pitch'},{sprintf('%0.0f',tsc.MFluidBdy.Data(2,1,1))};...
-        {'M Fluid Yaw'}  ,{sprintf('%0.0f',tsc.MFluidBdy.Data(3,1,1))}];
+        {'M Fluid Roll'} ,{sprintf('%0.0f',tscTmp.MFluidBdy.Data(1,1,1))};...
+        {'M Fluid Pitch'},{sprintf('%0.0f',tscTmp.MFluidBdy.Data(2,1,1))};...
+        {'M Fluid Yaw'}  ,{sprintf('%0.0f',tscTmp.MFluidBdy.Data(3,1,1))}];
 end
 
 % Plot the tethers
-for ii = 1:numel(tsc.thrNodeBus)
+for ii = 1:numel(tscTmp.thrNodeBus)
     h.thr{ii} = plot3(...
-        squeeze(tsc.thrNodeBus.nodePositions.Data(1,:,1)),...
-        squeeze(tsc.thrNodeBus.nodePositions.Data(2,:,1)),...
-        squeeze(tsc.thrNodeBus.nodePositions.Data(3,:,1)),...
+        squeeze(tscTmp.thrNodeBus.nodePositions.Data(1,:,1)),...
+        squeeze(tscTmp.thrNodeBus.nodePositions.Data(2,:,1)),...
+        squeeze(tscTmp.thrNodeBus.nodePositions.Data(3,:,1)),...
         'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
         'MarkerSize',4,'MarkerFaceColor','k');
+end
+
+% Plot the anchor tethers
+if isprop(tscTmp,'anchThrNodeBusArry') && all(isprop(tscTmp.anchThrNodeBusArry,'nodePositions'))
+    for ii = 1:numel(tscTmp.anchThrNodeBusArry)
+        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(tsc.positionVec.Time(1)).Data;
+        h.anchThr{ii} = plot3(...
+            nodePosVecs(1,:),...
+            nodePosVecs(2,:),...
+            nodePosVecs(3,:),...
+            'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
+            'MarkerSize',4,'MarkerFaceColor','k');
+    end
 end
 
 % Add the color bar
@@ -319,7 +337,7 @@ if p.Results.PowerBar
         annotation('TextArrow',...
         [h.colorBar.Position(1)-.025 h.colorBar.Position(1)],...
         h.colorBar.Position(2)*[1 1],...
-        'String',sprintf('Iter. %d',max([tsc.iterationNumber.Data(1),1])),...
+        'String',sprintf('Iter. %d',max([tscTmp.iterationNumber.Data(1),1])),...
         'FontSize',p.Results.FontSize,...
         'HeadStyle','none',...
         'LineWidth',1.5);
@@ -327,28 +345,28 @@ end
 
 % Plot the tangent coordinate system
 if p.Results.TangentCoordSys
-   h.tanCoordX = plot3(...
-        [tsc.positionVec.Data(1,:,1) tsc.positionVec.Data(1,:,1)+tsc.tanXUnitVecGnd.Data(1,:,1)*obj.fuse.length.Value],...
-        [tsc.positionVec.Data(2,:,1) tsc.positionVec.Data(2,:,1)+tsc.tanXUnitVecGnd.Data(2,:,1)*obj.fuse.length.Value],...
-        [tsc.positionVec.Data(3,:,1) tsc.positionVec.Data(3,:,1)+tsc.tanXUnitVecGnd.Data(3,:,1)*obj.fuse.length.Value],...
+    h.tanCoordX = plot3(...
+        [tscTmp.positionVec.Data(1,:,1) tscTmp.positionVec.Data(1,:,1)+tscTmp.tanXUnitVecGnd.Data(1,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(2,:,1) tscTmp.positionVec.Data(2,:,1)+tscTmp.tanXUnitVecGnd.Data(2,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(3,:,1) tscTmp.positionVec.Data(3,:,1)+tscTmp.tanXUnitVecGnd.Data(3,:,1)*obj.fuse.length.Value],...
         'Color','r','LineWidth',1.5,'LineStyle','-');
     h.tanCoordY = plot3(...
-        [tsc.positionVec.Data(1,:,1) tsc.positionVec.Data(1,:,1)+tsc.tanYUnitVecGnd.Data(1,:,1)*obj.fuse.length.Value],...
-        [tsc.positionVec.Data(2,:,1) tsc.positionVec.Data(2,:,1)+tsc.tanYUnitVecGnd.Data(2,:,1)*obj.fuse.length.Value],...
-        [tsc.positionVec.Data(3,:,1) tsc.positionVec.Data(3,:,1)+tsc.tanYUnitVecGnd.Data(3,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(1,:,1) tscTmp.positionVec.Data(1,:,1)+tscTmp.tanYUnitVecGnd.Data(1,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(2,:,1) tscTmp.positionVec.Data(2,:,1)+tscTmp.tanYUnitVecGnd.Data(2,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(3,:,1) tscTmp.positionVec.Data(3,:,1)+tscTmp.tanYUnitVecGnd.Data(3,:,1)*obj.fuse.length.Value],...
         'Color','g','LineWidth',1.5,'LineStyle','-');
     h.tanCoordZ = plot3(...
-        [tsc.positionVec.Data(1,:,1) tsc.positionVec.Data(1,:,1)+tsc.tanZUnitVecGnd.Data(1,:,1)*obj.fuse.length.Value],...
-        [tsc.positionVec.Data(2,:,1) tsc.positionVec.Data(2,:,1)+tsc.tanZUnitVecGnd.Data(2,:,1)*obj.fuse.length.Value],...
-        [tsc.positionVec.Data(3,:,1) tsc.positionVec.Data(3,:,1)+tsc.tanZUnitVecGnd.Data(3,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(1,:,1) tscTmp.positionVec.Data(1,:,1)+tscTmp.tanZUnitVecGnd.Data(1,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(2,:,1) tscTmp.positionVec.Data(2,:,1)+tscTmp.tanZUnitVecGnd.Data(2,:,1)*obj.fuse.length.Value],...
+        [tscTmp.positionVec.Data(3,:,1) tscTmp.positionVec.Data(3,:,1)+tscTmp.tanZUnitVecGnd.Data(3,:,1)*obj.fuse.length.Value],...
         'Color','b','LineWidth',1.5,'LineStyle','-');
 end
 
 if p.Results.VelocityVec
-   h.velVec = plot3(...
-        [tsc.positionVec.Data(1,:,1) tsc.positionVec.Data(1,:,1)+tsc.velocityVec.Data(1,:,1)*obj.fuse.length.Value./norm(tsc.velocityVec.Data(:,:,1))],...
-        [tsc.positionVec.Data(2,:,1) tsc.positionVec.Data(2,:,1)+tsc.velocityVec.Data(2,:,1)*obj.fuse.length.Value./norm(tsc.velocityVec.Data(:,:,1))],...
-        [tsc.positionVec.Data(3,:,1) tsc.positionVec.Data(3,:,1)+tsc.velocityVec.Data(3,:,1)*obj.fuse.length.Value./norm(tsc.velocityVec.Data(:,:,1))],...
+    h.velVec = plot3(...
+        [tscTmp.positionVec.Data(1,:,1) tscTmp.positionVec.Data(1,:,1)+tscTmp.velocityVec.Data(1,:,1)*obj.fuse.length.Value./norm(tscTmp.velocityVec.Data(:,:,1))],...
+        [tscTmp.positionVec.Data(2,:,1) tscTmp.positionVec.Data(2,:,1)+tscTmp.velocityVec.Data(2,:,1)*obj.fuse.length.Value./norm(tscTmp.velocityVec.Data(:,:,1))],...
+        [tscTmp.positionVec.Data(3,:,1) tscTmp.positionVec.Data(3,:,1)+tscTmp.velocityVec.Data(3,:,1)*obj.fuse.length.Value./norm(tscTmp.velocityVec.Data(:,:,1))],...
         'Color','k','LineWidth',1.5,'LineStyle','--');
 end
 
@@ -359,8 +377,32 @@ set(gca,'FontSize',p.Results.FontSize);
 view(p.Results.View)
 
 % Set plot limits
-setLimsToQuartSphere(gca,squeeze(tsc.positionVec.Data)',...
+setLimsToQuartSphere(gca,squeeze(tscTmp.positionVec.Data)',...
     'PlotAxes',true);
+
+% Attempt to set plot axes limits automatically
+allPlots = allchild(gca);
+% Find min and maxes over position
+minX = min(tscTmp.positionVec.Data(1,:));
+maxX = max(tscTmp.positionVec.Data(1,:));
+minY = min(tscTmp.positionVec.Data(2,:));
+maxY = max(tscTmp.positionVec.Data(2,:));
+minZ = min(tscTmp.positionVec.Data(3,:));
+maxZ = max(tscTmp.positionVec.Data(3,:));
+% Find min and max over all plotted data
+for ii = 1:numel(allPlots)
+minX = min([minX allPlots(ii).XData]);
+maxX = max([maxX allPlots(ii).XData]);
+minY = min([minY allPlots(ii).YData]);
+maxY = max([maxY allPlots(ii).YData]);
+minZ = min([minZ allPlots(ii).ZData]);
+maxZ = max([maxZ allPlots(ii).ZData]);
+end
+% If one is not zero, make X and Y symmetric
+xlim([minX maxX])
+ylim([minY maxY])
+zlim([minZ maxZ])
+
 
 % Set the custom x, y and z limits
 if ~isempty(p.Results.XLim)
@@ -378,32 +420,23 @@ daspect([1 1 1])
 
 % Create a title
 h.title = title({strcat(sprintf('Time = %.1f s',0),',',...
-    sprintf(' Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,1)))),...
-    sprintf('Flow Speed = %.1f m/s',norm(tsc.vhclFlowVecs.Data(:,end,1)))});
+    sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.Data(:,:,1)))),...
+    sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.Data(:,end,1)))});
 
-% Update the graphics handles with new data at each time step
-if p.Results.startTime == 0
-    firstInd=1;
-else
-    [~,firstInd]=min(abs(tsc.eulerAngles.Time-p.Results.startTime));
-end
-if p.Results.endTime == tsc.positionVec.Time(end)
-    lastInd=length(tsc.positionVec.Time);
-elseif p.Results.endTime < tsc.positionVec.Time(end)
-    [~,lastInd]=min(abs(tsc.positionVec.Time-p.Results.endTime));
-else
-    lastInd=length(tsc.positionVec.Time);
-end
 
+for ii = 1:numel(tsc.positionVec.Time)
+    timeStamp = tsc.positionVec.Time(ii);
+    eulAngs   = tsc.eulerAngles.getsampleusingtime(timeStamp).Data;
+    posVec    = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
     
-for ii = firstInd:lastInd
     for jj = 1:numel(hStatic)
         % Rotate and translate all aero surfaces
-        pts = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*[...
+        pts = rotation_sequence(eulAngs)...
+            *[...
             hStatic{jj}.x(:)';...
             hStatic{jj}.y(:)';...
             hStatic{jj}.z(:)']+...
-            tsc.positionVec.Data(:,:,ii);
+            tscTmp.positionVec.Data(:,:,ii);
         % Update the OCT outline
         h.surf{jj}.XData = pts(1,:);
         h.surf{jj}.YData = pts(2,:);
@@ -412,23 +445,23 @@ for ii = firstInd:lastInd
     % Update the tracer
     if p.Results.PlotTracer
         delete(h.tracer(1));
-
+        
         newLine = line(...
-            [h.tracer(end).XData(end) tsc.positionVec.Data(1,:,ii)],...
-            [h.tracer(end).YData(end) tsc.positionVec.Data(2,:,ii)],...
-            [h.tracer(end).ZData(end) tsc.positionVec.Data(3,:,ii)],...
+            [h.tracer(end).XData(end) posVec(1)],...
+            [h.tracer(end).YData(end) posVec(2)],...
+            [h.tracer(end).ZData(end) posVec(3)],...
             'Color','r','LineWidth',2);
-    
+        
         h.tracer(end).XData(end+1) = newLine.XData(1);
         h.tracer(end).YData(end+1) = newLine.YData(1);
         h.tracer(end).ZData(end+1) = newLine.ZData(1);
-
+        
         if p.Results.ColorTracer
             newColor = [1 0 0];
-           if tsc.winchPower.Data(ii)>0
-               newColor = [0 0.75 0];
-           end
-           newLine.Color = newColor;
+            if tscTmp.winchPower.Data(ii)>0
+                newColor = [0 0.75 0];
+            end
+            newLine.Color = newColor;
         end
         h.tracer = [h.tracer(2:end) newLine];
         uistack(h.tracer(end),'top');
@@ -436,10 +469,11 @@ for ii = firstInd:lastInd
     
     % Update the path
     if ~isempty(p.Results.PathFunc)
-        currentBasisParams = tsc.basisParams.Data(ii,:);
-        currentBasisParams(end) = norm(tsc.positionVec.Data(:,1,ii)-tsc.gndStnPositionVec.Data(:,:,ii)) ;
-        path = eval(sprintf('%s(linspace(0,1,1000),currentBasisParams,tsc.gndStnPositionVec.Data(:,:,ii))',...
-            p.Results.PathFunc));
+        currentBasisParams = tscTmp.basisParams.getsampleusingtime(timeStamp).Data;
+        currentBasisParams(end) = norm(tscTmp.positionVec.Data(:,1,ii)-tscTmp.gndStnPositionVec.Data(:,:,ii)) ;
+        
+        path = feval(p.Results.PathFunc,linspace(0,1,1000),currentBasisParams,tscTmp.gndStnPositionVec.getsampleusingtime(timeStamp).Data);
+        
         h.path.XData = path(1,:);
         h.path.YData = path(2,:);
         h.path.ZData = path(3,:);
@@ -447,44 +481,47 @@ for ii = firstInd:lastInd
     
     % Update current path position
     if p.Results.PathPosition
-        h.pathPosition.XData = tsc.pathPosGnd.Data(ii,1);
-        h.pathPosition.YData = tsc.pathPosGnd.Data(ii,2);
-        h.pathPosition.ZData = tsc.pathPosGnd.Data(ii,3);
+        pathPt = tscTmp.pathPosGnd.getsampleusingtime(timeStamp).Data;
+        h.pathPosition.XData = pathPt(1);
+        h.pathPosition.YData = pathPt(2);
+        h.pathPosition.ZData = pathPt(3);
     end
     
     % Update navigation vectors
     if p.Results.NavigationVecs
-        pathPt = squeeze(tsc.pathPosGnd.Data(ii,:));
+        tanVec  = len*tscTmp.tanVec.getsampleusingtime(timeStamp).Data;
+        perpVec = len*tscTmp.perpVec.getsampleusingtime(timeStamp).Data;
+        desVec  = len*tscTmp.velVectorDes.getsampleusingtime(timeStamp).Data;
         
-        h.tanVec.XData = pathPt(1);
-        h.tanVec.YData = pathPt(2);
-        h.tanVec.ZData = pathPt(3);
-        h.tanVec.UData = len*tsc.tanVec.Data(ii,1);
-        h.tanVec.VData = len*tsc.tanVec.Data(ii,2);
-        h.tanVec.WData = len*tsc.tanVec.Data(ii,3);
+        h.tanVec.XData = posVec(1);
+        h.tanVec.YData = posVec(2);
+        h.tanVec.ZData = posVec(3);
+        h.tanVec.UData = tanVec(1);
+        h.tanVec.VData = tanVec(2);
+        h.tanVec.WData = tanVec(3);
         
-        h.perpVec.XData = tsc.positionVec.Data(1,:,ii);
-        h.perpVec.YData = tsc.positionVec.Data(2,:,ii);
-        h.perpVec.ZData = tsc.positionVec.Data(3,:,ii);
-        h.perpVec.UData = len*tsc.perpVec.Data(1,:,ii);
-        h.perpVec.VData = len*tsc.perpVec.Data(2,:,ii);
-        h.perpVec.WData = len*tsc.perpVec.Data(3,:,ii);
+        h.perpVec.XData = posVec(1);
+        h.perpVec.YData = posVec(2);
+        h.perpVec.ZData = posVec(3);
+        h.perpVec.UData = perpVec(1);
+        h.perpVec.VData = perpVec(2);
+        h.perpVec.WData = perpVec(3);
         
-        h.desVec.XData = tsc.positionVec.Data(1,:,ii);
-        h.desVec.YData = tsc.positionVec.Data(2,:,ii);
-        h.desVec.ZData = tsc.positionVec.Data(3,:,ii);
-        h.desVec.UData = len*tsc.velVectorDes.Data(1,:,ii);
-        h.desVec.VData = len*tsc.velVectorDes.Data(1,:,ii);
-        h.desVec.WData = len*tsc.velVectorDes.Data(1,:,ii);
+        h.desVec.XData = posVec(1);
+        h.desVec.YData = posVec(2);
+        h.desVec.ZData = posVec(3);
+        h.desVec.UData = desVec(1);
+        h.desVec.VData = desVec(2);
+        h.desVec.WData = desVec(3);
     end
     
     % Update local aerodynamic force vectors
     if p.Results.LocalAero
         aeroStruct = obj.struct('OCT.aeroSurf');
         
-        FLiftPart = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*tsc.FLiftBdyPart.Data(:,:,ii);
-        FDragPart = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*tsc.FDragBdyPart.Data(:,:,ii);
-        vAppPart  = rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*tsc.vAppLclBdy.Data(:,:,ii);
+        FLiftPart = rotation_sequence(eulAngs)*tscTmp.FLiftBdyPart.getsampleusingtime(timeStamp).Data;
+        FDragPart = rotation_sequence(eulAngs)*tscTmp.FDragBdyPart.getsampleusingtime(timeStamp).Data;
+        vAppPart  = rotation_sequence(eulAngs)*tscTmp.vAppLclBdy.getsampleusingtime(timeStamp).Data;
         
         uLiftPart = FLiftPart./sqrt(sum(FLiftPart.^2,1));
         uDragPart = FDragPart./sqrt(sum(FDragPart.^2,1));
@@ -495,9 +532,9 @@ for ii = firstInd:lastInd
             h.table.Data{4*jj-1,2} = sprintf('%0.0f',sqrt(sum(FLiftPart(jj).^2,1)));
             h.table.Data{4*jj+0,2} = sprintf('%0.0f',sqrt(sum(FDragPart(jj).^2,1)));
             
-            aeroCentVec = tsc.positionVec.Data(:,:,ii)+...
-                rotation_sequence(tsc.eulerAngles.Data(:,:,ii))*aeroStruct(jj).aeroCentPosVec(:);
-
+            aeroCentVec = posVec(:)+...
+                rotation_sequence(eulAngs)*aeroStruct(jj).aeroCentPosVec(:);
+            
             h.liftVecs(jj).XData = aeroCentVec(1);
             h.liftVecs(jj).YData = aeroCentVec(2);
             h.liftVecs(jj).ZData = aeroCentVec(3);
@@ -523,65 +560,91 @@ for ii = firstInd:lastInd
     
     % Update moments in the table
     if p.Results.FluidMoments
-        h.table.Data{fluidStartRow+1,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(1,1,ii));
-        h.table.Data{fluidStartRow+2,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(2,1,ii));
-        h.table.Data{fluidStartRow+3,2} = sprintf('%0.0f',tsc.MFluidBdy.Data(3,1,ii));
+        MFluidBdy = tscTmp.MFluidBdy.getsampleusingtime(timeStamp).Data;
+        h.table.Data{fluidStartRow+1,2} = sprintf('%0.0f',MFluidBdy(1));
+        h.table.Data{fluidStartRow+2,2} = sprintf('%0.0f',MFluidBdy(2));
+        h.table.Data{fluidStartRow+3,2} = sprintf('%0.0f',MFluidBdy(3));
     end
     
-    % Update the tethers
-    for jj = numel(tsc.thrNodeBus)
-        h.thr{jj}.XData = squeeze(tsc.thrNodeBus.nodePositions.Data(1,:,ii));
-        h.thr{jj}.YData = squeeze(tsc.thrNodeBus.nodePositions.Data(2,:,ii));
-        h.thr{jj}.ZData = squeeze(tsc.thrNodeBus.nodePositions.Data(3,:,ii));
+    % Update the tether(s)
+    for jj = numel(tscTmp.thrNodeBus)
+        thrNodePos = tscTmp.thrNodeBus.nodePositions.getsampleusingtime(timeStamp).Data;
+        h.thr{jj}.XData = squeeze(thrNodePos(1,:));
+        h.thr{jj}.YData = squeeze(thrNodePos(2,:));
+        h.thr{jj}.ZData = squeeze(thrNodePos(3,:));
     end
+    
+    % update the anchor tether if there is one
+    if isfield(h,'anchThr')
+        for ii = 1:numel(h.anchThr)
+            nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(timeStamp).Data;
+            h.anchThr{ii}.XData = nodePosVecs(1,:);
+            h.anchThr{ii}.YData = nodePosVecs(2,:);
+            h.anchThr{ii}.ZData = nodePosVecs(3,:);
+        end
+        
+    end
+    
     % Update the title
     h.title.String = {strcat(...
-        sprintf('Time = %.1f s',tsc.velocityVec.Time(ii)),',',...
-        sprintf(' Speed = %.1f m/s',norm(tsc.velocityVec.Data(:,:,ii)))),...
-        sprintf('Flow Speed = %.1f m/s',norm(tsc.vhclFlowVecs.Data(:,end,ii)))};
+        sprintf('Time = %.1f s',tscTmp.velocityVec.Time(ii)),',',...
+        sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.getsampleusingtime(timeStamp).Data))),...
+        sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsampleusingtime(timeStamp).Data))};
     
     
+    
+    % Update the colorbar/power bar
     if p.Results.PowerBar
         yPos = interp1(h.colorBar.Limits,...
             [h.colorBar.Position(2) h.colorBar.Position(2)+h.colorBar.Position(4)],...
-            iterMeanPower.Data(max([tsc.iterationNumber.Data(ii) 1])));
+            iterMeanPower.Data(max([tscTmp.iterationNumber.getsampleusingtime(timeStamp).Data 1])));
         h.powerIndicatorArrow.Y = yPos*[1 1];
-        h.powerIndicatorArrow.String = sprintf('Iter. %d',tsc.iterationNumber.Data(ii));
+        h.powerIndicatorArrow.String = sprintf('Iter. %d',tscTmp.iterationNumber.Data(ii));
     end
     
     if p.Results.TangentCoordSys
-       
-        h.tanCoordX.XData = [tsc.positionVec.Data(1,:,ii) tsc.positionVec.Data(1,:,ii)+tsc.tanXUnitVecGnd.Data(1,:,ii)*obj.fuse.length.Value];
-        h.tanCoordX.YData = [tsc.positionVec.Data(2,:,ii) tsc.positionVec.Data(2,:,ii)+tsc.tanXUnitVecGnd.Data(2,:,ii)*obj.fuse.length.Value];
-        h.tanCoordX.ZData = [tsc.positionVec.Data(3,:,ii) tsc.positionVec.Data(3,:,ii)+tsc.tanXUnitVecGnd.Data(3,:,ii)*obj.fuse.length.Value];
         
-        h.tanCoordY.XData = [tsc.positionVec.Data(1,:,ii) tsc.positionVec.Data(1,:,ii)+tsc.tanYUnitVecGnd.Data(1,:,ii)*obj.fuse.length.Value];
-        h.tanCoordY.YData = [tsc.positionVec.Data(2,:,ii) tsc.positionVec.Data(2,:,ii)+tsc.tanYUnitVecGnd.Data(2,:,ii)*obj.fuse.length.Value];
-        h.tanCoordY.ZData = [tsc.positionVec.Data(3,:,ii) tsc.positionVec.Data(3,:,ii)+tsc.tanYUnitVecGnd.Data(3,:,ii)*obj.fuse.length.Value];
+        originPt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
+        xVec = tscTmp.tanXUnitVecGnd.getsampleusingtime(timeStamp).Data;
+        yVec = tscTmp.tanYUnitVecGnd.getsampleusingtime(timeStamp).Data;
+        zVec = tscTmp.tanZUnitVecGnd.getsampleusingtime(timeStamp).Data;
         
-        h.tanCoordZ.XData = [tsc.positionVec.Data(1,:,ii) tsc.positionVec.Data(1,:,ii)+tsc.tanZUnitVecGnd.Data(1,:,ii)*obj.fuse.length.Value];
-        h.tanCoordZ.YData = [tsc.positionVec.Data(2,:,ii) tsc.positionVec.Data(2,:,ii)+tsc.tanZUnitVecGnd.Data(2,:,ii)*obj.fuse.length.Value];
-        h.tanCoordZ.ZData = [tsc.positionVec.Data(3,:,ii) tsc.positionVec.Data(3,:,ii)+tsc.tanZUnitVecGnd.Data(3,:,ii)*obj.fuse.length.Value];
+        h.tanCoordX.XData = [originPt(1) originPt(1)+xVec(1)*obj.fuse.length.Value];
+        h.tanCoordX.YData = [originPt(2) originPt(2)+xVec(2)*obj.fuse.length.Value];
+        h.tanCoordX.ZData = [originPt(3) originPt(3)+xVec(3)*obj.fuse.length.Value];
+        
+        h.tanCoordY.XData = [originPt(1) originPt(1)+yVec(1)*obj.fuse.length.Value];
+        h.tanCoordY.YData = [originPt(2) originPt(2)+yVec(2)*obj.fuse.length.Value];
+        h.tanCoordY.ZData = [originPt(3) originPt(3)+yVec(3)*obj.fuse.length.Value];
+        
+        h.tanCoordZ.XData = [originPt(1) originPt(1)+zVec(1)*obj.fuse.length.Value];
+        h.tanCoordZ.YData = [originPt(2) originPt(2)+zVec(2)*obj.fuse.length.Value];
+        h.tanCoordZ.ZData = [originPt(3) originPt(3)+zVec(3)*obj.fuse.length.Value];
     end
     
     if p.Results.VelocityVec
-        h.velVec.XData = [tsc.positionVec.Data(1,:,ii) tsc.positionVec.Data(1,:,ii)+tsc.velocityVec.Data(1,:,ii)*obj.fuse.length.Value./norm(tsc.velocityVec.Data(:,:,ii))];
-        h.velVec.YData = [tsc.positionVec.Data(2,:,ii) tsc.positionVec.Data(2,:,ii)+tsc.velocityVec.Data(2,:,ii)*obj.fuse.length.Value./norm(tsc.velocityVec.Data(:,:,ii))];
-        h.velVec.ZData = [tsc.positionVec.Data(3,:,ii) tsc.positionVec.Data(3,:,ii)+tsc.velocityVec.Data(3,:,ii)*obj.fuse.length.Value./norm(tsc.velocityVec.Data(:,:,ii))];
+        pt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
+        velVec = tscTmp.velocityVec.getsampleusingtime(timeStamp).Data;
+        speed = sqrt(sum(velVec.^2));
+        
+        h.velVec.XData = [pt(1) pt(1)+velVec(1)*obj.fuse.length.Value./speed];
+        h.velVec.YData = [pt(2) pt(2)+velVec(2)*obj.fuse.length.Value./speed];
+        h.velVec.ZData = [pt(3) pt(3)+velVec(3)*obj.fuse.length.Value./speed];
         
     end
     
     % Set the plot limits to zoom in on the body
     if p.Results.ZoomIn
-        xlim(tsc.positionVec.Data(1,:,ii)+obj.fuse.length.Value*[-1.5 1.5])
-        ylim(tsc.positionVec.Data(2,:,ii)+obj.fuse.length.Value*[-1.5 1.5])
-        zlim(tsc.positionVec.Data(3,:,ii)+obj.fuse.length.Value*[-1.5 1.5])
+        pt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
+        xlim(pt(1)+obj.fuse.length.Value*[-1.5 1.5])
+        ylim(pt(2)+obj.fuse.length.Value*[-1.5 1.5])
+        zlim(pt(3)+obj.fuse.length.Value*[-1.5 1.5])
     end
     
     % Update scrolling plots
     if ~isempty(p.Results.ScrollPlots)
         for jj = 1:numel(h.TimeLine)
-            h.TimeLine(jj).XData = tsc.positionVec.Time(ii)*[1 1];
+            h.TimeLine(jj).XData = tscTmp.positionVec.Time(ii)*[1 1];
         end
     end
     
@@ -601,8 +664,8 @@ for ii = firstInd:lastInd
     
     % Save gif of results
     if p.Results.SaveMPEG
-           frame = getframe(gcf);
-           writeVideo(vidWriter,frame)
+        frame = getframe(gcf);
+        writeVideo(vidWriter,frame)
     end
     if p.Results.Pause
         pause
@@ -610,7 +673,7 @@ for ii = firstInd:lastInd
 end
 
 if p.Results.SaveMPEG
-   close(vidWriter);
+    close(vidWriter);
 end
 
 end

@@ -1,7 +1,7 @@
 % %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(1000,'s');
+sim.setDuration(100,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -30,7 +30,7 @@ env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1.6,.8,-.36,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([0.3,1,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 200],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -90,3 +90,12 @@ tsc = signalcontainer(logsout);
 % LUT.Breakpoints(5).Value = 1:size(LUT.Table.Value,5);
 % LUT.Breakpoints(6).Value = env.waterTurb.frequencyDomainEqParams.Value.Time;
 % LUT.StructTypeInfo.Name = 'LUT';
+%%
+vhcl.animateSim(tsc,1,...
+    'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',true,...
+    'FontSize',24,...
+    'PowerBar',false,...
+    'PlotAxes',false,...
+    'TracerDuration',10,...
+    'SaveGif',false)

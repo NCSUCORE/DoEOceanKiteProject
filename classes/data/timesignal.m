@@ -119,6 +119,10 @@ classdef timesignal < timeseries
                 case 2
                     % If two inputs, take the first as start and second as end
                     obj = obj.getsampleusingtime(varargin{1},varargin{2});
+                    if numel(obj.Time)>0
+                        obj.Time = obj.Time-obj.Time(1);
+                    end
+                    
                 otherwise
                     % If they gave more inputs, throw error
                     error('Incorrect number of times provided')
@@ -133,18 +137,18 @@ classdef timesignal < timeseries
                 error('Incorrect number of dimensions')
             end
             % Build the time vector
-            if numel(t)==1
-                % Time vector spanning time of obj
-                tVec = obj.Time(1):t:obj.Time(end);
-            else % If it's a vector
-                % crop t down to the range included in obj already
-                tVec = t(and(t>=obj.Time(1),t<=obj.Time(end)));
+            if numel(obj.Time)>0 % Make sure it's not empty
+                if numel(t)==1
+                    % Time vector spanning time of obj
+                    tVec = obj.Time(1):t:obj.Time(end);
+                else % If it's a vector
+                    % crop t down to the range included in obj already
+                    tVec = t(and(t>=obj.Time(1),t<=obj.Time(end)));
+                end
+                % Call superclass resample method on this object.
+                obj = resample@timeseries(obj,tVec,varargin{:});
             end
-            % Call superclass resample method on this object.
-            obj = resample@timeseries(obj,tVec,varargin{:});
         end
-        
-        
     end
 end
 

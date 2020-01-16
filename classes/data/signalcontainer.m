@@ -38,7 +38,10 @@ classdef signalcontainer < dynamicprops
                                 % call the constructor on that sigcontainer
                                 propName = genvarname(ts.Name);
                                 obj.addprop(propName);
-                                obj.(propName) = signalcontainer(ts.Values);
+                                obj.(propName) = signalcontainer.empty(0);
+                                for jj = 1:numel(ts.Values)
+                                    obj.(propName)(jj) = signalcontainer(ts.Values(jj));
+                                end
                             otherwise
                                 warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
                                 
@@ -92,11 +95,7 @@ classdef signalcontainer < dynamicprops
             % Call the crop method of each property
             props = properties(obj);
             for ii = 1:numel(props)
-                try
                 obj.(props{ii}) = obj.(props{ii}).resample(varargin{:});
-                catch
-                   x = 1; 
-                end
             end
         end
         
