@@ -18,7 +18,7 @@ vhcl.vStab.CD.setValue(coeffs(6).*initVals.CDvStab,'')
 vhcl.fuseEndDragCoeff.setValue(coeffs(7)*initVals.fuseEndDrag,'')
 vhcl.fuseSideDragCoeff.setValue(coeffs(8)*initVals.fuseSideDrag,'')
 
-% vhcl.addedMass.setValue(coeffs(10:12).*initVals.addedMass,'kg')
+vhcl.addedMass.setValue(coeffs(11:13).*initVals.addedMass,'kg')
 %
 vhcl.buoyFactor.setValue(coeffs(9)*initVals.buoyFactor,'')
 %

@@ -1,7 +1,7 @@
 clear
 clc
 format compact
-close all
+% close all
 
 cd(fileparts(mfilename('fullpath')));
 
@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
-iniX = 0.0914;
+iniX = 0.2204;
 pitchSP = 11;
 
 % % % initial conditions
@@ -74,9 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.3586,'m');
-wnch.winch2.initLength.setValue(0.3653,'m');
-wnch.winch3.initLength.setValue(0.3586,'m');
+wnch.winch1.initLength.setValue(0.4026,'m');
+wnch.winch2.initLength.setValue(0.4323,'m');
+wnch.winch3.initLength.setValue(0.4026,'m');
 
 
 dynamicCalc = '';
@@ -157,17 +157,19 @@ initVals.thrDragCoeff = thr.tether1.dragCoeff.Value;
 
 
 %% run optimization
-% initCoeffs = ones(9,1);
+initCoeffs = ones(13,1);
 % initCoeffs = [0.8836    1.1571    0.6642    1.4724    0.2740    1.4610    0.9725...
 %     0.5495    0.9937 1 1 1]';
 
-initCoeffs = ones(10,1);
+initCoeffs(11) = 0.55;
+initCoeffs(12) = 0.55;
+initCoeffs(13) = 0.55;
 
 % lowLims = [repmat([0.25;1],3,1); 0.9; 0.5; 0.7; 0.9; 0.9; 0.9];
 % hiLims = [repmat([1;1.75],3,1); 1.1; 1.5; 1.3; 1.1; 1.1; 1.1];
 
-lowLims = [repmat([0.8;1],3,1); 0.8; 0.8; 0.8; 0.75];
-hiLims = [repmat([1;1.2],3,1); 1.2; 1.2; 1.1; 1];
+lowLims = [repmat([0.8;1],3,1); 0.8; 0.8; 0.8; 0.75;0.45;0.45;0.45];
+hiLims = [repmat([1;1.2],3,1); 1.2; 1.2; 1.1; 1;0.65;0.65;0.65];
     
 dataRange = [30 60];
 
@@ -176,15 +178,15 @@ dataRange = [30 60];
 %     initVals,coeffs,tscExp,dataRange),...
 %     initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
 
-% [optDsgn,minF] = particleSwarmMinimization(...
-%     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-%     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-%     'swarmSize',15,'maxIter',10,'cognitiveLR',0.4,'socialLR',0.2);
+[optDsgn,minF] = particleSwarmMinimization(...
+    @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+    initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
+    'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
 
 
 %%
 % optDsgn = [0.8000 1.0000 0.8000 1.1327 0.8000 1.2000 1.2000 1.2000 0.8000 0.7500 ]';
-optDsgn = initCoeffs;
+% optDsgn = initCoeffs;
 
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,optDsgn,tscExp,dataRange);

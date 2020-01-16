@@ -20,11 +20,11 @@ thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thrDia = 0.27e-3;
+thrDia = 0.3e-3;
 thrYoungs = 2e9;
-thrDamping = 0.1;
+thrDamping = 0.01;
 thrDensity = 1300;
-thrDragCoeff = 1*1;
+thrDragCoeff = 1.4;
 dragSwitch = true;
 buoySwitch = true;
 

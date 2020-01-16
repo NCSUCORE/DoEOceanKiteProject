@@ -14,7 +14,7 @@ vhcl.turbDiam.Value = 6.7500e-03
 vhcl.turbDiam.Unit = 'm'
 vhcl.turbDiam.NoScale = false
 vhcl.turbDiam.Description = 'Turbine Diameter'
-vhcl.buoyFactor.Value = 1.1500e+00
+vhcl.buoyFactor.Value = 1.1400e+00
 vhcl.buoyFactor.Unit is unitless or has no unit specified
 vhcl.buoyFactor.NoScale = true
 vhcl.buoyFactor.Description = 'Buoyancy Factor'
@@ -373,7 +373,7 @@ vhcl.addedMass.Value = [0.000717473992653628 0 0;0 0.0604624816866356 0;0 0 0.03
 vhcl.addedMass.Unit = 'kg'
 vhcl.addedMass.NoScale = false
 vhcl.addedMass.Description = 'addedMass'
-vhcl.mass.Value = 8.8886e-03
+vhcl.mass.Value = 8.9666e-03
 vhcl.mass.Unit = 'kg'
 vhcl.mass.NoScale = false
 vhcl.mass.Description = 'Vehicle mass'

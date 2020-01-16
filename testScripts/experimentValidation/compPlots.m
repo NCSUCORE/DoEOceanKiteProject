@@ -49,7 +49,7 @@ tscExp.pitch_rad.Data = filter(b,1,tscExp.pitch_rad.Data);
 
 tscExp.CoMPosVec_cm.Data = tscExp.CoMPosVec_cm.Data./100;
 
-cmDat = squeeze(tscExp.CoMPosVec_cm.data);
+cmDat = squeeze(tscExp.CoMPosVec_cm.data) + [20;0;0]./100;
 
 % % % euler angles %%%%%%%%%%%%%%%%%%%%%%%%%
 fn = fn+1;
@@ -139,3 +139,4 @@ title('CM velocity')
 
 %%%%%%
 set(findobj('Type','axes'),'XLim',[0 timeSim2(end)]);
+set(findobj('Type','legend'),'Visible','off');

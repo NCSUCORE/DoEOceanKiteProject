@@ -1143,7 +1143,7 @@ classdef vehicle < dynamicprops
             % left wing
             ax1 = subplot(2,4,1);
             plot(obj.portWing.alpha.Value,obj.portWing.CL.Value);
-            hCL_ax = gca;
+            hWingCL_ax = gca;
             
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
@@ -1157,7 +1157,7 @@ classdef vehicle < dynamicprops
             ylabel('$C_{D}$')
             grid on
             hold on
-            hCD_ax = gca;
+            hWingCD_ax = gca;
             
             linkaxes([ax1,ax5],'x');
             
@@ -1183,6 +1183,8 @@ classdef vehicle < dynamicprops
             % HS
             ax3 = subplot(2,4,3);
             plot(obj.hStab.alpha.Value,obj.hStab.CL.Value);
+            hhStabCL_ax = gca;
+            
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
             title('H-stab')
@@ -1191,6 +1193,7 @@ classdef vehicle < dynamicprops
             
             ax7 = subplot(2,4,7);
             plot(obj.hStab.alpha.Value,obj.hStab.CD.Value);
+            hhStabCD_ax = gca;
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{D}$')
             grid on
@@ -1201,6 +1204,7 @@ classdef vehicle < dynamicprops
             % VS
             ax4 = subplot(2,4,4);
             plot(obj.vStab.alpha.Value,obj.vStab.CL.Value);
+            hvStabCL_ax = gca;
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
             title('V-stab')
@@ -1209,6 +1213,7 @@ classdef vehicle < dynamicprops
             
             ax8 = subplot(2,4,8);
             plot(obj.vStab.alpha.Value,obj.vStab.CD.Value);
+            hvStabCD_ax = gca;
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{D}$')
             grid on
@@ -1216,8 +1221,12 @@ classdef vehicle < dynamicprops
             
             linkaxes([ax4,ax8],'x');
             
-            axis([ax1 ax2 ax3 ax4],[-inf inf hCL_ax.YLim(1) hCL_ax.YLim(2)]);
-            axis([ax5 ax6 ax7 ax8],[-inf inf hCD_ax.YLim(1) hCD_ax.YLim(2)]);
+            axis([ax1 ax2 ax3 ax4],[-inf inf ...
+                min([hWingCL_ax.YLim(1),hhStabCL_ax.YLim(1),hvStabCL_ax.YLim(1)])...
+                max([hWingCL_ax.YLim(2),hhStabCL_ax.YLim(2),hvStabCL_ax.YLim(2)])]);
+            axis([ax5 ax6 ax7 ax8],[-inf inf ...
+                min([hWingCD_ax.YLim(1),hhStabCD_ax.YLim(1),hvStabCD_ax.YLim(1)])...
+                max([hWingCD_ax.YLim(2),hhStabCD_ax.YLim(2),hvStabCD_ax.YLim(2)])]);
             
         end
         
