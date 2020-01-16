@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 34.5e-2;
-iniX = 0.2204;
+iniX = 0.2276;
 pitchSP = 11;
 
 % % % initial conditions
@@ -74,9 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.4026,'m');
-wnch.winch2.initLength.setValue(0.4323,'m');
-wnch.winch3.initLength.setValue(0.4026,'m');
+wnch.winch1.initLength.setValue(0.4061,'m');
+wnch.winch2.initLength.setValue(0.4369,'m');
+wnch.winch3.initLength.setValue(0.4061,'m');
 
 
 dynamicCalc = '';
@@ -178,14 +178,14 @@ dataRange = [30 60];
 %     initVals,coeffs,tscExp,dataRange),...
 %     initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
 
-[optDsgn,minF] = particleSwarmMinimization(...
-    @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-    'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
+% [optDsgn,minF] = particleSwarmMinimization(...
+%     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
+%     'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
 
 
 %%
-% optDsgn = [0.8000 1.0000 0.8000 1.1327 0.8000 1.2000 1.2000 1.2000 0.8000 0.7500 ]';
+optDsgn = [0.9253 1.0000 0.9995 1.0000 0.9120 1.0000 1.0858 0.9676 1.0208 0.9515 0.5707 0.5246 0.5971  ]';
 % optDsgn = initCoeffs;
 
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
