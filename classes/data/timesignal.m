@@ -110,18 +110,18 @@ classdef timesignal < timeseries
                 case 1
                     % If it's a two element vector take the min and max values
                     if numel(varargin{1})==2
-                        obj = obj.getsampleusingtime(...
+                        obj = timesignal(obj.getsampleusingtime(...
                             min(varargin{1}(:)),...
-                            max(varargin{1}(:)));
+                            max(varargin{1}(:))));
                     else % If they gave more than two elements, throw error
                         error('Incorrect number of times provided')
                     end
                 case 2
                     % If two inputs, take the first as start and second as end
-                    obj = obj.getsampleusingtime(varargin{1},varargin{2});
-                    if numel(obj.Time)>0
-                        obj.Time = obj.Time-obj.Time(1);
-                    end
+                    obj = timesignal(obj.getsampleusingtime(varargin{1},varargin{2}));
+%                     if numel(obj.Time)>0
+%                         obj.Time = obj.Time-obj.Time(1);
+%                     end
                     
                 otherwise
                     % If they gave more inputs, throw error

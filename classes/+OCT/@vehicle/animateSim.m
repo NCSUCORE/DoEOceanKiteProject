@@ -94,19 +94,23 @@ if p.Results.SaveMPEG
     open(vidWriter);
 end
 
+%make a deepcopy of tsc
+tscTmp = signalcontainer(tsc);
 % Crop to the specified times
-tscTmp = tsc.crop(p.Results.startTime,p.Results.endTime);
+tscTmp = tscTmp.crop(p.Results.startTime,p.Results.endTime);
 % Resample the timeseries to the specified framerate
 tscTmp = tscTmp.resample(p.Results.timeStep);
 
 % Resample mean power to iteration domain
 if p.Results.PowerBar  
-    if isprop(tsc,'meanPower')
-        iterMeanPower = tsc.meanPower.resample(tsc.estGradient.Time);
+    if isprop(tscTmp,'meanPower')
+        iterMeanPower = tscTmp.meanPower.resample(tscTmpestGradient.Time);
     else
         warning('No mean power signal logged')
     end
 end
+
+ 
 
 %% Plot things
 % Plot the aerodynamic surfaces
@@ -315,7 +319,7 @@ end
 % Plot the anchor tethers
 if isprop(tscTmp,'anchThrNodeBusArry') && all(isprop(tscTmp.anchThrNodeBusArry,'nodePositions'))
     for ii = 1:numel(tscTmp.anchThrNodeBusArry)
-        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(tsc.positionVec.Time(1)).Data;
+        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(tscTmppositionVec.Time(1)).Data;
         h.anchThr{ii} = plot3(...
             nodePosVecs(1,:),...
             nodePosVecs(2,:),...
@@ -424,9 +428,9 @@ h.title = title({strcat(sprintf('Time = %.1f s',0),',',...
     sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.Data(:,end,1)))});
 
 
-for ii = 1:numel(tsc.positionVec.Time)
-    timeStamp = tsc.positionVec.Time(ii);
-    eulAngs   = tsc.eulerAngles.getsampleusingtime(timeStamp).Data;
+for ii = 1:numel(tscTmp.positionVec.Time)
+    timeStamp = tscTmp.positionVec.Time(ii);
+    eulAngs   = tscTmp.eulerAngles.getsampleusingtime(timeStamp).Data;
     posVec    = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
     
     for jj = 1:numel(hStatic)

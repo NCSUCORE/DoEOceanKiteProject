@@ -58,15 +58,36 @@ classdef signalcontainer < dynamicprops
                         switch class(ts)
                             case 'timeseries'
                                 % add signal object
-                                obj.addprop(ts.Name);
-                                obj.(ts.Name) = timesignal(ts);
+                                propName = genvarname(ts.Name);
+                                obj.addprop(propName);
+                                obj.(propName) = timesignal(ts);
                             case 'struct'
                                 % otherwise, add a signal container and
                                 % call the constructor on that sigcontainer
-                                obj.addprop(names{ii});
-                                obj.(names{ii}) = signalcontainer(ts);
+                                propName = genvarname(names{ii});
+                                obj.addprop(propName);
+                                obj.(propName) = signalcontainer(ts);
                             otherwise
                                 warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
+                        end
+                    end
+                case 'signalcontainer'
+                    % get names of signals
+                    names = fieldnames(objToParse);
+                    % get rid of unnamed signals (empty strings)
+                    names = names(cellfun(@(x) ~isempty(x),names));
+                    % add each signal to the struct
+                    for ii = 1:length(names)
+                        ts = objToParse.(names{ii});
+                        switch class(ts)
+                            case 'timesignal'
+                                propName = genvarname(ts.Name);
+                                obj.addprop(propName);
+                                obj.(propName) = timesignal(ts);
+                            case 'signalcontainer'
+                                propName = genvarname(names{ii});
+                                obj.addprop(propName);
+                                obj.(propName) = signalcontainer(ts);
                         end
                     end
                 otherwise
@@ -75,11 +96,12 @@ classdef signalcontainer < dynamicprops
         end
         
         % Function to crop all signals
-        function obj = crop(obj,varargin)
+        function newobj = crop(obj,varargin)
             % Call the crop method of each property
+            newobj=obj;
             props = properties(obj);
             for ii = 1:numel(props)
-                obj.(props{ii}) = obj.(props{ii}).crop(varargin{:});
+                newobj.(props{ii}) = obj.(props{ii}).crop(varargin{:});
             end
         end
         
