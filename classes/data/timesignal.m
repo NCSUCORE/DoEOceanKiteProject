@@ -96,21 +96,23 @@ classdef timesignal < timeseries
         end
         
         % Function to crop with GUI
-        function obj = guicrop(obj)
-            hFig = obj.plot;
+        function newobj = guicrop(obj)
+            newobj = timesignal(obj);
+            hFig = newobj.plot;
             [x,~] = ginput(2);
             close(hFig);
-            obj = obj.crop(min(x),max(x));
+            newobj = newobj.crop(min(x),max(x));
         end
         
         % Function to crop things
-        function obj = crop(obj,varargin)
+        function newobj = crop(obj,varargin)
+            newobj = timesignal(obj);
             % User can provide either a two element vector or two inputs
             switch numel(varargin)
                 case 1
                     % If it's a two element vector take the min and max values
                     if numel(varargin{1})==2
-                        obj = timesignal(obj.getsampleusingtime(...
+                        newobj = timesignal(newobj.getsampleusingtime(...
                             min(varargin{1}(:)),...
                             max(varargin{1}(:))));
                     else % If they gave more than two elements, throw error
@@ -118,7 +120,7 @@ classdef timesignal < timeseries
                     end
                 case 2
                     % If two inputs, take the first as start and second as end
-                    obj = timesignal(obj.getsampleusingtime(varargin{1},varargin{2}));
+                    newobj = timesignal(newobj.getsampleusingtime(varargin{1},varargin{2}));
 %                     if numel(obj.Time)>0
 %                         obj.Time = obj.Time-obj.Time(1);
 %                     end
@@ -130,23 +132,24 @@ classdef timesignal < timeseries
         end
         
         % Function to resample data to different rate
-        function obj = resample(obj,t,varargin)
+        function newobj = resample(obj,t,varargin)
+            newobj = timesignal(obj);
             % If t has too many dimensions or if more than 1 dimension has
             % more than 1 element
             if ndims(t)>2 || sum(size(t)>1)>1
                 error('Incorrect number of dimensions')
             end
             % Build the time vector
-            if numel(obj.Time)>0 % Make sure it's not empty
+            if numel(newobj.Time)>0 % Make sure it's not empty
                 if numel(t)==1
                     % Time vector spanning time of obj
-                    tVec = obj.Time(1):t:obj.Time(end);
+                    tVec = newobj.Time(1):t:newobj.Time(end);
                 else % If it's a vector
                     % crop t down to the range included in obj already
-                    tVec = t(and(t>=obj.Time(1),t<=obj.Time(end)));
+                    tVec = t(and(t>=newobj.Time(1),t<=newobj.Time(end)));
                 end
                 % Call superclass resample method on this object.
-                obj = resample@timeseries(obj,tVec,varargin{:});
+                newobj = resample@timeseries(newobj,tVec,varargin{:});
             end
         end
     end

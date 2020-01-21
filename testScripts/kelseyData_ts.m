@@ -1,4 +1,42 @@
+TLs=[50 125 200 50 125 200 50 125 200 50 125 200 50 125 200 50 125 200];
+FlowSpeeds=[.5 .5 .5 1 1 1 2 2 2 .5 .5 .5 1 1 1 2 2 2];
+BABs = [1 1.4;
+        1 1.4;
+        1 1.4;
+        1 1.4;
+        1 1.4;
+        1 1.4;
+        1 1.4;
+        1 1.4;
+        1 1.4;
+        .8 1.6;
+        .8 1.6;
+        .8 1.6;
+        .8 1.6;
+        .8 1.6;
+        .8 1.6;
+        .8 1.6;
+        .8 1.6;
+        .8 1.6;];
+alphaLocal=cell(18,1);
+CL=cell(18,1);
+CD=cell(18,1);
+vAppLclBdy=cell(18,1);
+pos=cell(18,1);
+times=cell(18,1);
+tscs=cell(18,1);
+
+%Write up error check (end time ~= desired end time)
+%Test for 2 random
+%Run
+
+
+
+
+% %% Script to run ILC path optimization
 % clear;clc;close all
+for i = 0:17
+
 sim = SIM.sim;
 sim.setDuration(1000,'s');
 dynamicCalc = '';
@@ -22,11 +60,11 @@ loadComponent('pathFollowingVhcl');
 loadComponent('constXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec(1 0 0],'m/s')
+env.water.setflowVec([FlowSpeeds(i+1) 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,.36,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([BABs(i+1,:) .36,0*pi/180,TLs(i+1)],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -63,6 +101,27 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 
+if tsc.positionVec.Time(end)== sim.duration.Value
+    fprintf("%g out of 18\n",i+1);
+    alphaLocal{i+1}=tsc.alphaLocal.Data;
+    CL{i+1}=tsc.CL.Data;
+    CD{i+1}=tsc.CD.Data;
+    vAppLclBdy{i+1}=tsc.vAppLclBdy.Data;
+    posMat=zeros(3,5,length(tsc.positionVec.Time));
+
+    for ii=1:length(tsc.positionVec.Time)
+        cmpos=tsc.positionVec.Data(:,:,ii);
+        posMat(:,:,ii)= repmat(cmpos(:),1,5) +...
+                        rotation_sequence(tsc.eulerAngles.getsampleusingtime(tsc.positionVec.Time(ii)).Data(:))*...
+                        [vhcl.portWing.aeroCentPosVec.Value(:) vhcl.stbdWing.aeroCentPosVec.Value(:)...
+                        vhcl.hStab.aeroCentPosVec.Value(:) vhcl.vStab.aeroCentPosVec.Value(:) zeros(3,1)];
+
+    end
+    pos{i+1}=posMat;
+    times{i+1}=tsc.CL.Time;
+    tscs{i+1}=tsc;
+end
+end
 % %%
 % vhcl.animateSim(tsc,1,...
 %     'PathFunc',fltCtrl.fcnName.Value,...

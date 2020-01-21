@@ -58,7 +58,7 @@ classdef signalcontainer < dynamicprops
                         switch class(ts)
                             case 'timeseries'
                                 % add signal object
-                                propName = genvarname(ts.Name);
+                                propName = genvarname(names{ii});
                                 obj.addprop(propName);
                                 obj.(propName) = timesignal(ts);
                             case 'struct'
@@ -81,7 +81,7 @@ classdef signalcontainer < dynamicprops
                         ts = objToParse.(names{ii});
                         switch class(ts)
                             case 'timesignal'
-                                propName = genvarname(ts.Name);
+                                propName = genvarname(names{ii});
                                 obj.addprop(propName);
                                 obj.(propName) = timesignal(ts);
                             case 'signalcontainer'
@@ -98,26 +98,28 @@ classdef signalcontainer < dynamicprops
         % Function to crop all signals
         function newobj = crop(obj,varargin)
             % Call the crop method of each property
-            newobj=obj;
-            props = properties(obj);
+            newobj=signalcontainer(obj);
+            props = properties(newobj);
             for ii = 1:numel(props)
-                newobj.(props{ii}) = obj.(props{ii}).crop(varargin{:});
+                newobj.(props{ii}) = newobj.(props{ii}).crop(varargin{:});
             end
         end
         
         % Function to crop with GUI
-        function obj = guicrop(obj,sigName)
-            hFig = obj.(sigName).plot;
+        function newobj = guicrop(obj,sigName)
+            newobj = signalcontainer(obj);
+            hFig = newobj.(sigName).plot;
             [x,~] = ginput(2);
             close(hFig);
-            obj = obj.crop(min(x),max(x));
+            newobj = newobj.crop(min(x),max(x));
         end
         
-        function obj = resample(obj,varargin)
+        function newobj = resample(obj,varargin)
             % Call the crop method of each property
-            props = properties(obj);
+            newobj = signalcontainer(obj);
+            props = properties(newobj);
             for ii = 1:numel(props)
-                obj.(props{ii}) = obj.(props{ii}).resample(varargin{:});
+                newobj.(props{ii}) = newobj.(props{ii}).resample(varargin{:});
             end
         end
         

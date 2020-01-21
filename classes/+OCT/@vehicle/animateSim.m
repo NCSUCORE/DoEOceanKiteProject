@@ -94,10 +94,8 @@ if p.Results.SaveMPEG
     open(vidWriter);
 end
 
-%make a deepcopy of tsc
-tscTmp = signalcontainer(tsc);
 % Crop to the specified times
-tscTmp = tscTmp.crop(p.Results.startTime,p.Results.endTime);
+tscTmp = tsc.crop(p.Results.startTime,p.Results.endTime);
 % Resample the timeseries to the specified framerate
 tscTmp = tscTmp.resample(p.Results.timeStep);
 
