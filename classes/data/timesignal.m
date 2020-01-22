@@ -3,14 +3,20 @@ classdef timesignal < timeseries
     %overloaded methods like cropping and plotting.
     
     properties
-        
+        blockPath
     end
     
     methods
         % Contstructor
-        function obj = timesignal(tsIn)
+        function obj = timesignal(tsIn,varargin)
+            p = inputParser;
+            addOptional(p,'BlockPath',[],@(x) isa(x,'Simulink.SimulationData.BlockPath'))
+            parse(p,varargin{:})
             % Call superclass constructor
             obj = obj@timeseries(tsIn);
+            if ~isempty(p.Results.BlockPath)
+               obj.blockPath = p.Results.BlockPath; 
+            end
         end
         
         % Function to overload plot command
@@ -152,6 +158,7 @@ classdef timesignal < timeseries
                 newobj = resample@timeseries(newobj,tVec,varargin{:});
             end
         end
+        
         % Method to calculate 3 point numerical derivative
         function newTimesignal = diff(obj)
             
@@ -281,13 +288,13 @@ classdef timesignal < timeseries
             lastPt = obj.getsampleusingtime(obj.Time(end)).Data-obj.getsampleusingtime(obj.Time(end-1)).Data;
             lastPt = lastPt./(obj.Time(end)-obj.Time(end-1));
             
+            % concatenate the first and last point before and after the
+            % results from the 3 point method
             ddt = cat(timeDim,firstPt,ddt,lastPt);
             
             % Create the new timesignal object
-            newTimesignal = timesignal(timeseries(ddt,obj.Time));
+            newTimesignal = timesignal(timeseries(ddt,obj.Time),'Name',[obj.Name 'Deriv']);
 
-            % Add Deriv to the name
-            newTimesignal.Name = [obj.Name 'Deriv'];
             % Add per seconds to the units if they exist
             if ~isempty(obj.DataInfo.Units)
                 newTimesignal.DataInfo.Units = [obj.DataInfo.Units 's^-1'];

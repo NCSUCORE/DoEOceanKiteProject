@@ -32,7 +32,7 @@ classdef signalcontainer < dynamicprops
                                 % add signal object
                                 propName = genvarname(ts.Name);
                                 obj.addprop(propName);
-                                obj.(propName) = timesignal(ts.Values);
+                                obj.(propName) = timesignal(ts.Values,'BlockPath',ts.BlockPath);
                             case 'struct'
                                 % otherwise, add a signal container and
                                 % call the constructor on that sigcontainer
