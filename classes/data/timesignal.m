@@ -12,11 +12,14 @@ classdef timesignal < timeseries
             p = inputParser;
             addOptional(p,'BlockPath',[],@(x) isa(x,'Simulink.SimulationData.BlockPath'))
             parse(p,varargin{:})
+            
             % Call superclass constructor
             obj = obj@timeseries(tsIn);
-            if ~isempty(p.Results.BlockPath)
-               obj.blockPath = p.Results.BlockPath; 
-            end
+            
+            
+            % Set the block path property
+            obj.blockPath = p.Results.BlockPath;
+            
         end
         
         % Function to overload plot command
