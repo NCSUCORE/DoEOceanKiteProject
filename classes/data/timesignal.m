@@ -178,11 +178,11 @@ classdef timesignal < timeseries
                             lIdx{1} = 1:nt-2;
                             lIdx{2} = 1:nr;
                             lIdx{3} = 1;
-                            
+                            % indices of center points
                             cIdx{1} = 2:nt-1;
                             cIdx{2} = 1:nr;
                             cIdx{3} = 1;
-                            
+                            % indices of right points
                             rIdx{1} = 3:nt;
                             rIdx{2} = 1:nr;
                             rIdx{3} = 1;
