@@ -3,15 +3,19 @@ classdef signalcontainer < dynamicprops
     %objects.
     
     properties
-        
+        metaData
     end
     
     methods
         function obj = signalcontainer(objToParse,varargin)
+            % Add metadata to the signal container
+            obj.metaData = metaData;
+            % Parse inputs
             p = inputParser;
             addOptional(p,'logsout',[],@(x) isa(x,'Simulink.SimulationData.Dataset'))
             addParameter(p,'Verbose',false,@islogical);
             parse(p,varargin{:});
+            
             switch class(objToParse)
                 case 'Simulink.SimulationData.Dataset'
                     % get names of signals
@@ -24,7 +28,9 @@ classdef signalcontainer < dynamicprops
                     for ii = 1:length(names)
                         ts = objToParse.getElement(names{ii});
                         if isa(ts,'Simulink.SimulationData.Dataset')
-                            warning('Duplicate signal names: ''%s''.  Taking first found signal.',ts{1}.Name)
+                            if p.Results.Verbose
+                                warning('Duplicate signal names: ''%s''.  Taking first found signal.',ts{1}.Name)
+                            end
                             ts = ts{1};
                         end
                         switch class(ts.Values)
@@ -43,7 +49,9 @@ classdef signalcontainer < dynamicprops
                                     obj.(propName)(jj) = signalcontainer(ts.Values(jj));
                                 end
                             otherwise
-                                warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
+                                if p.Results.Verbose
+                                    warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
+                                end
                                 
                         end
                     end
@@ -68,7 +76,9 @@ classdef signalcontainer < dynamicprops
                                 obj.addprop(propName);
                                 obj.(propName) = signalcontainer(ts);
                             otherwise
-                                warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
+                                if p.Results.Verbose
+                                    warning('Unknown signal class in logsout, skipping signal: %s ',ts.Name)
+                                end
                         end
                     end
                 case 'signalcontainer'
