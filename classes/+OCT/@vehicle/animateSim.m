@@ -102,7 +102,7 @@ tscTmp = tscTmp.resample(p.Results.timeStep);
 % Resample mean power to iteration domain
 if p.Results.PowerBar  
     if isprop(tscTmp,'meanPower')
-        iterMeanPower = tscTmp.meanPower.resample(tscTmpestGradient.Time);
+        iterMeanPower = tscTmp.meanPower.resample(tscTmp.estGradient.Time);
     else
         warning('No mean power signal logged')
     end

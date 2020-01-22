@@ -121,9 +121,9 @@ classdef timesignal < timeseries
                 case 2
                     % If two inputs, take the first as start and second as end
                     newobj = timesignal(newobj.getsampleusingtime(varargin{1},varargin{2}));
-%                     if numel(obj.Time)>0
-%                         obj.Time = obj.Time-obj.Time(1);
-%                     end
+                    %                     if numel(obj.Time)>0
+                    %                         obj.Time = obj.Time-obj.Time(1);
+                    %                     end
                     
                 otherwise
                     % If they gave more inputs, throw error
@@ -150,6 +150,137 @@ classdef timesignal < timeseries
                 end
                 % Call superclass resample method on this object.
                 newobj = resample@timeseries(newobj,tVec,varargin{:});
+            end
+        end
+        % Method to calculate 3 point numerical derivative
+        function newTimesignal = diff(obj)
+            
+            % find out which dimension in the data is time
+            timeDim = find(size(obj.Data) == numel(obj.Time));
+            
+            % number of time steps
+            nt  = numel(obj.Time);
+            
+            % dimensions of the data
+            sz = size(obj.Data);
+            
+            % Note to self, I think you can reduce these switching
+            % statements, this works, but I think it can be more concise
+            switch ndims(obj.Data)
+                % If the data is 2D
+                case 2
+                    nc = 1;
+                    switch timeDim
+                        % If time corresponds to the first dimension
+                        case 1
+                            nr = sz(2);
+                            % index of left points
+                            lIdx{1} = 1:nt-2;
+                            lIdx{2} = 1:nr;
+                            lIdx{3} = 1;
+                            
+                            cIdx{1} = 2:nt-1;
+                            cIdx{2} = 1:nr;
+                            cIdx{3} = 1;
+                            
+                            rIdx{1} = 3:nt;
+                            rIdx{2} = 1:nr;
+                            rIdx{3} = 1;
+                            % If time corresponds to the second dimension
+                        case 2
+                            nr = sz(1);
+                            lIdx{2} = 1:nt-2;
+                            lIdx{1} = 1:nr;
+                            lIdx{3} = 1;
+                            cIdx{2} = 2:nt-1;
+                            cIdx{1} = 1:nr;
+                            cIdx{3} = 1;
+                            rIdx{2} = 3:nt;
+                            rIdx{1} = 1:nr;
+                            rIdx{3} = 1;
+                    end
+                case 3
+                    switch timeDim
+                        % If time corresponds to first dimension
+                        case 1
+                            nr = sz(1);
+                            nc = sz(2);
+                            lIdx{1} = 1:nt-2;
+                            lIdx{2} = 1:nr;
+                            lIdx{3} = 1:nc;
+                            cIdx{1} = 2:nt-1;
+                            cIdx{2} = 1:nr;
+                            cIdx{3} = 1:nc;
+                            rIdx{1} = 3:nt;
+                            rIdx{2} = 1:nr;
+                            rIdx{3} = 1:nc;
+                            % If time corresponds to second dimension
+                        case 2
+                            nr = sz(1);
+                            nc = sz(3);
+                            lIdx{2} = 1:nt-2;
+                            lIdx{1} = 1:nr;
+                            lIdx{3} = 1:nc;
+                            cIdx{2} = 2:nt-1;
+                            cIdx{1} = 1:nr;
+                            cIdx{3} = 1:nc;
+                            rIdx{2} = 3:nt;
+                            rIdx{1} = 1:nr;
+                            rIdx{3} = 1:nc;
+                            % If time corresponds to third dimension
+                        case 3
+                            nr = sz(1);
+                            nc = sz(2);
+                            lIdx{3} = 1:nt-2;
+                            lIdx{1} = 1:nr;
+                            lIdx{2} = 1:nc;
+                            cIdx{3} = 2:nt-1;
+                            cIdx{1} = 1:nr;
+                            cIdx{2} = 1:nc;
+                            rIdx{3} = 3:nt;
+                            rIdx{1} = 1:nr;
+                            rIdx{2} = 1:nc;
+                    end
+                otherwise
+                    error('Unknown data dimension')
+            end
+            
+            % Options for permute command to get dimensions right on
+            % repmat(time) later
+            switch timeDim
+                case 1
+                    pmt{1} = 1;
+                    pmt{2} = 2;
+                    pmt{3} = 3;
+                case 2
+                    pmt{1} = 3;
+                    pmt{2} = 2;
+                    pmt{3} = 1;
+                case 3
+                    pmt{1} = 3;
+                    pmt{2} = 2;
+                    pmt{3} = 1;
+            end
+            
+            % center pt minus left pt
+            tsLeft   = obj.Time(2:end-1)-obj.Time(1:end-2);
+            tsLeft   = tsLeft(:);  
+            tsLeft   = repmat(permute(tsLeft,[pmt{:}]),[nr nc 1]);
+            ddtLeft  = (obj.Data(cIdx{:})-obj.Data(lIdx{:}))./tsLeft;
+            % right pt minus center pt
+            tsRight  = obj.Time(3:end)-obj.Time(2:end-1);
+            tsRight  = tsRight(:);
+            tsRight  = repmat(permute(tsRight,[pmt{:}]),[nr nc 1]);
+            ddtRight = (obj.Data(rIdx{:})-obj.Data(cIdx{:}))./tsRight;
+            
+            % Create the new timesignal object
+            newTimesignal = timesignal(timeseries(0.5*(ddtLeft+ddtRight),obj.Time(2:end-1)));
+
+            % Add Deriv to the name
+            newTimesignal.Name = [obj.Name 'Deriv'];
+            % Add per seconds to the units if they exist
+            if ~isempty(obj.DataInfo.Units)
+                newTimesignal.DataInfo.Units = [obj.DataInfo.Units 's^-1'];
             end
         end
     end
