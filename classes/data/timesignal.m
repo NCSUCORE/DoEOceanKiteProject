@@ -164,8 +164,7 @@ classdef timesignal < timeseries
             % dimensions of the data
             sz = size(obj.Data);
             
-            % Note to self, I think you can reduce these switching
-            % statements, this works, but I think it can be more concise
+            % Code to populate lists of indices for each of 3 dimensions
             switch ndims(obj.Data)
                 % If the data is 2D
                 case 2
@@ -262,6 +261,7 @@ classdef timesignal < timeseries
                     pmt{3} = 1;
             end
             
+            % 3 point derivative approximation
             % center pt minus left pt
             tsLeft   = obj.Time(2:end-1)-obj.Time(1:end-2);
             tsLeft   = tsLeft(:);  
@@ -272,9 +272,19 @@ classdef timesignal < timeseries
             tsRight  = tsRight(:);
             tsRight  = repmat(permute(tsRight,[pmt{:}]),[nr nc 1]);
             ddtRight = (obj.Data(rIdx{:})-obj.Data(cIdx{:}))./tsRight;
+            ddt = 0.5*(ddtLeft+ddtRight);
+            
+            % Use two point approximation for first and last point
+            firstPt = obj.getsampleusingtime(obj.Time(2)).Data-obj.getsampleusingtime(obj.Time(1)).Data;
+            firstPt = firstPt./(obj.Time(2)-obj.Time(1));
+            
+            lastPt = obj.getsampleusingtime(obj.Time(end)).Data-obj.getsampleusingtime(obj.Time(end-1)).Data;
+            lastPt = lastPt./(obj.Time(end)-obj.Time(end-1));
+            
+            ddt = cat(timeDim,firstPt,ddt,lastPt);
             
             % Create the new timesignal object
-            newTimesignal = timesignal(timeseries(0.5*(ddtLeft+ddtRight),obj.Time(2:end-1)));
+            newTimesignal = timesignal(timeseries(ddt,obj.Time));
 
             % Add Deriv to the name
             newTimesignal.Name = [obj.Name 'Deriv'];
