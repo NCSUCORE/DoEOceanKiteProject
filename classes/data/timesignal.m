@@ -198,8 +198,8 @@ classdef timesignal < timeseries
             dxdt = dxts./dtts; % Using timeseries in the last two lines makes this work smoothly
             derivSignal.Data  = cat(    ...
                 timeDimInd,dxdt.getdatasamples(1),... % First 2 point derivitive
-                0.5*(dxdt.getdatasamples(1:numel(dxdt.Time)-1) + dxdt.getdatasamples(2:numel(dxdt.Time))),... % Average of ajacent derivitives
-                dxdt.getdatasamples(numel(dxdt.Time))); % Last 2 point derivitive
+                0.5*(dxdt.getdatasamples(1:dxdt.Length-1) + dxdt.getdatasamples(2:dxdt.Length)),... % Average of ajacent derivitives
+                dxdt.getdatasamples(dxdt.Length)); % Last 2 point derivitive
             %Add per seconds to the units if they exist
             if ~isempty(obj.DataInfo.Units)
                 derivSignal.DataInfo.Units = [obj.DataInfo.Units 's^-1'];
