@@ -111,7 +111,9 @@ classdef signalcontainer < dynamicprops
             newobj=signalcontainer(obj);
             props = properties(newobj);
             for ii = 1:numel(props)
-                newobj.(props{ii}) = newobj.(props{ii}).crop(varargin{:});
+                if ismethod(newobj.(props{ii}),'crop')
+                    newobj.(props{ii}) = newobj.(props{ii}).crop(varargin{:});
+                end
             end
         end
         
@@ -129,7 +131,9 @@ classdef signalcontainer < dynamicprops
             newobj = signalcontainer(obj);
             props = properties(newobj);
             for ii = 1:numel(props)
+                if ismethod(newobj.(props{ii}),'resample')
                 newobj.(props{ii}) = newobj.(props{ii}).resample(varargin{:});
+                end
             end
         end
         
