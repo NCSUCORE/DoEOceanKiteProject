@@ -206,6 +206,14 @@ classdef timesignal < timeseries
             end
             derivSignal.Name = obj.Name + "Deriv";
         end
+        
+        function intSig = cumtrapz(obj,initVal)
+           intSig = timesignal(obj);
+           timeDimInd = find(size(obj.Data) == numel(obj.Time));
+           intSig.Data = cumtrapz(intSig.Time,intSig.Data,timeDimInd)+initVal;
+        end
+        
+        % Write function for two norm here
     end
 end
 
