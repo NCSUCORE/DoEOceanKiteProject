@@ -14,7 +14,7 @@ for ppp = 1:1
         
         %% Load components
         % Flight Controller
-        loadComponent('pathFollowingForILC');
+        loadComponent('pathFollowingCtrlForILC');
         % Ground station controller
         loadComponent('oneDoFGSCtrlBasic');
         % High level controller

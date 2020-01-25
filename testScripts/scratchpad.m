@@ -1,8 +1,17 @@
-clear
-LUT = Simulink.LookupTable;
-timeVec = linspace(0,1);
-LUT.Table.Value = rand(2,2,numel(timeVec));
-LUT.Breakpoints(1).Value = 0:1;
-LUT.Breakpoints(2).Value = 0:1;
-LUT.Breakpoints(3).Value = timeVec;
-LUT.StructTypeInfo.Name = 'LUT';
+% plot(tsc.tetherLengths.diffMC-tsc.tetherLengths.diff)
+% figure
+% plot(tsc.eulerAngles.diffMC-tsc.eulerAngles.diff)
+
+mcts = (tsc.eulerAngles - tsc.eulerAngles.diffMC.cumtrapz(tsc.eulerAngles.getdatasamples(1)));
+
+jdts = (tsc.eulerAngles - tsc.eulerAngles.diff.cumtrapz(tsc.eulerAngles.getdatasamples(1)));
+
+
+mcts.plot
+figure
+jdts.plot
+
+mcts.twoNorm
+jdts.twoNorm
+
+

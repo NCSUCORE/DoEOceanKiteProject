@@ -3,14 +3,23 @@ classdef timesignal < timeseries
     %overloaded methods like cropping and plotting.
     
     properties
-        
+        blockPath
     end
     
     methods
         % Contstructor
-        function obj = timesignal(tsIn)
+        function obj = timesignal(tsIn,varargin)
+            p = inputParser;
+            addOptional(p,'BlockPath',[],@(x) isa(x,'Simulink.SimulationData.BlockPath'))
+            parse(p,varargin{:})
+            
             % Call superclass constructor
             obj = obj@timeseries(tsIn);
+            
+            
+            % Set the block path property
+            obj.blockPath = p.Results.BlockPath;
+            
         end
         
         % Function to overload plot command
@@ -96,32 +105,34 @@ classdef timesignal < timeseries
         end
         
         % Function to crop with GUI
-        function obj = guicrop(obj)
-            hFig = obj.plot;
+        function newobj = guicrop(obj)
+            newobj = timesignal(obj);
+            hFig = newobj.plot;
             [x,~] = ginput(2);
             close(hFig);
-            obj = obj.crop(min(x),max(x));
+            newobj = newobj.crop(min(x),max(x));
         end
         
         % Function to crop things
-        function obj = crop(obj,varargin)
+        function newobj = crop(obj,varargin)
+            newobj = timesignal(obj);
             % User can provide either a two element vector or two inputs
             switch numel(varargin)
                 case 1
                     % If it's a two element vector take the min and max values
                     if numel(varargin{1})==2
-                        obj = obj.getsampleusingtime(...
+                        newobj = timesignal(newobj.getsampleusingtime(...
                             min(varargin{1}(:)),...
-                            max(varargin{1}(:)));
+                            max(varargin{1}(:))));
                     else % If they gave more than two elements, throw error
                         error('Incorrect number of times provided')
                     end
                 case 2
                     % If two inputs, take the first as start and second as end
-                    obj = obj.getsampleusingtime(varargin{1},varargin{2});
-                    if numel(obj.Time)>0
-                        obj.Time = obj.Time-obj.Time(1);
-                    end
+                    newobj = timesignal(newobj.getsampleusingtime(varargin{1},varargin{2}));
+                    %                     if numel(obj.Time)>0
+                    %                         obj.Time = obj.Time-obj.Time(1);
+                    %                     end
                     
                 otherwise
                     % If they gave more inputs, throw error
@@ -130,24 +141,82 @@ classdef timesignal < timeseries
         end
         
         % Function to resample data to different rate
-        function obj = resample(obj,t,varargin)
+        function newobj = resample(obj,t,varargin)
+            newobj = timesignal(obj);
             % If t has too many dimensions or if more than 1 dimension has
             % more than 1 element
             if ndims(t)>2 || sum(size(t)>1)>1
                 error('Incorrect number of dimensions')
             end
             % Build the time vector
-            if numel(obj.Time)>0 % Make sure it's not empty
+            if numel(newobj.Time)>0 % Make sure it's not empty
                 if numel(t)==1
                     % Time vector spanning time of obj
-                    tVec = obj.Time(1):t:obj.Time(end);
+                    tVec = newobj.Time(1):t:newobj.Time(end);
                 else % If it's a vector
                     % crop t down to the range included in obj already
-                    tVec = t(and(t>=obj.Time(1),t<=obj.Time(end)));
+                    tVec = t(and(t>=newobj.Time(1),t<=newobj.Time(end)));
                 end
                 % Call superclass resample method on this object.
-                obj = resample@timeseries(obj,tVec,varargin{:});
+                newobj = resample@timeseries(newobj,tVec,varargin{:});
             end
+        end
+        
+        %Method to calculate 3 point numerical derivative
+        function derivSignal = diff(obj)
+            derivSignal=timesignal(obj);
+            tdiffvec = diff(obj.Time(:));
+            %tdiffs(1) = tdiffvec(1)/2
+            %tdiffs(end) = tdiffvec(end)/2
+            %tdiffs(n) = (tdiffvec(n-1)+tdiffvec(n))/2
+            tdiffs = .5*([0; tdiffvec]+[tdiffvec; 0]);
+            timeDimInd = find(size(obj.Data) == numel(obj.Time));
+            otherDims = size(obj.Data);
+            otherDims = otherDims(1:ndims(obj.Data) ~= timeDimInd);
+            ddiffvec = diff(obj.Data,1,timeDimInd);
+            %ddiffs(1) = ddiffvec(1)/2
+            %ddiffs(end) = ddiffvec(end)/2
+            %ddiffs(n) = (ddiffvec(n-1)+ddiffvec(n))/2
+            ddiffs = .5*(cat(timeDimInd,zeros(otherDims),ddiffvec)+cat(timeDimInd,ddiffvec,zeros(otherDims)));
+            tdimsDes=ones(1,ndims(obj.Data));
+            tdimsDes(timeDimInd)=length(obj.Time);
+            derivSignal.Data = ddiffs./reshape(tdiffs',tdimsDes);
+            %Add per seconds to the units if they exist
+            if ~isempty(obj.DataInfo.Units)
+                derivSignal.DataInfo.Units = [obj.DataInfo.Units 's^-1'];
+            end
+            derivSignal.Name = obj.Name + "Deriv";
+        end
+        
+        function derivSignal = diffMC(obj)
+            derivSignal = timesignal(obj);
+            timeDimInd = find(size(obj.Data) == numel(obj.Time));
+            tDimsDes             = ones(1,ndims(obj.Data));
+            tDimsDes(timeDimInd) = length(obj.Time)-1;
+            dxts = timeseries(diff(obj.Data,1,timeDimInd),obj.Time(1:end-1));
+            dtts = timeseries(reshape(diff(obj.Time(:)),tDimsDes),obj.Time(1:end-1));
+            dxdt = dxts./dtts; % Using timeseries in the last two lines makes this work smoothly
+            derivSignal.Data  = cat(    ...
+                timeDimInd,dxdt.getdatasamples(1),... % First 2 point derivitive
+                0.5*(dxdt.getdatasamples(1:dxdt.Length-1) + dxdt.getdatasamples(2:dxdt.Length)),... % Average of ajacent derivitives
+                dxdt.getdatasamples(dxdt.Length)); % Last 2 point derivitive
+            %Add per seconds to the units if they exist
+            if ~isempty(obj.DataInfo.Units)
+                derivSignal.DataInfo.Units = [obj.DataInfo.Units 's^-1'];
+            end
+            derivSignal.Name = obj.Name + "Deriv";
+        end
+        
+        function intSig = cumtrapz(obj,initVal)
+           intSig = timesignal(obj);
+           timeDimInd = find(size(obj.Data) == numel(obj.Time));
+           intSig.Data = cumtrapz(intSig.Time,intSig.Data,timeDimInd)+initVal;
+        end
+        
+        % Write function for two norm here
+        function nrm = twoNorm(obj)
+            timeDimInd = find(size(obj.Data) == numel(obj.Time));
+            nrm = trapz(obj.Time,obj.Data.^2,timeDimInd).^(1/2);
         end
     end
 end

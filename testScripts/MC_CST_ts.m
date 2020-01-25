@@ -19,7 +19,7 @@ dynamicCalc = ''; % We need to get rid of this and move to quaternoins
 
 %% Load components
 % Flight Controller
-loadComponent('pathFollowingForILC');
+loadComponent('pathFollowingCtrlForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller

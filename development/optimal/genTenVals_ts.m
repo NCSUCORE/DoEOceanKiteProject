@@ -24,7 +24,7 @@ for runSpoolSpeed = 0:maxspeed/8:maxspeed
     fprintf("spool Speed = %4.3f\n",runSpoolSpeed);
     %% Load components
     % Flight Controller
-    loadComponent('pathFollowingForILC');
+    loadComponent('pathFollowingCtrlForILC');
     SPOOLINGCONTROLLER = 'TimeSpoolingController';
     % Ground station controller
     loadComponent('oneDoFGSCtrlBasic');

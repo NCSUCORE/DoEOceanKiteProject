@@ -8,7 +8,7 @@ runBaseline = true;
 
 %% Load components
 % Flight Controller
-loadComponent('pathFollowingForILC');
+loadComponent('pathFollowingCtrlForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
