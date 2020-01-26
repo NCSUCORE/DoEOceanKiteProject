@@ -11,14 +11,17 @@ choice=2-1;
 pitchSP=0*pi/180; %degrees
 kpPitch=100; %N*M per degree
 kpYaw=5.7296e+02;
-elevSPDeg=timeseries(80);
+elevSPDeg=timeseries(40);
 % elevSP=timeseries(linspace(20*pi/180,80*pi/180,100),linspace(0,2000,100));
 kpElev=-1; %deg/deg
 kdElev=12*kpElev;
 kiElev=.005*kpElev;
 TLSP=125;
 load('elev.mat')
-subts=timeseries([0 0 1 1 2 2 3 3 0 0]',[0 499 500 510 511 799 800 819 820 1200]');
+% subts=timeseries([0 1 2 3 0]',[0 500 510 800 820]');
+vstruct=vhcl.struct('OCT.aeroSurf');
+maxDeflUps=[vstruct.MaxCtrlDeflUp];
+maxDeflDns=[vstruct.MaxCtrlDeflDn];
 %% Load components
 % Flight Controller
 loadComponent('firstBuildTakeoff');
@@ -61,7 +64,9 @@ gndStn.initAngVel.setValue(0,'rad/s');
 % vhcl.setAddedMISwitch(false,'');
 vhcl.setInitAngVelVec([0 0 0],'rad/s')
 vhcl.setInitEulAng([10*pi/180 30*pi/180 0],'rad')
-vhcl.setInitPosVecGnd([125/sqrt(2),0,125/sqrt(2)],'m')
+initelev = 45;
+initTL = 10;
+vhcl.setInitPosVecGnd([initTL*cosd(initelev),0,initTL*sind(initelev)],'m')
 vhcl.setInitVelVecBdy([-1 0 0],'m/s')
 % vhcl.setICsOnPath(...
 %     .25,... % Initial path position
