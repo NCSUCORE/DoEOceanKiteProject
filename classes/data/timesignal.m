@@ -165,32 +165,58 @@ classdef timesignal < timeseries
         %Method to calculate 3 point numerical derivative
         function derivSignal = diff(obj)
             derivSignal=timesignal(obj);
-
             tdiffvec = diff(obj.Time(:));
             %tdiffs(1) = tdiffvec(1)/2
             %tdiffs(end) = tdiffvec(end)/2
             %tdiffs(n) = (tdiffvec(n-1)+tdiffvec(n))/2
             tdiffs = .5*([0; tdiffvec]+[tdiffvec; 0]);
-
             timeDimInd = find(size(obj.Data) == numel(obj.Time));
             otherDims = size(obj.Data);
             otherDims = otherDims(1:ndims(obj.Data) ~= timeDimInd);
-
             ddiffvec = diff(obj.Data,1,timeDimInd);
             %ddiffs(1) = ddiffvec(1)/2
             %ddiffs(end) = ddiffvec(end)/2
             %ddiffs(n) = (ddiffvec(n-1)+ddiffvec(n))/2
             ddiffs = .5*(cat(timeDimInd,zeros(otherDims),ddiffvec)+cat(timeDimInd,ddiffvec,zeros(otherDims)));
-
             tdimsDes=ones(1,ndims(obj.Data));
             tdimsDes(timeDimInd)=length(obj.Time);
             derivSignal.Data = ddiffs./reshape(tdiffs',tdimsDes);
-
             %Add per seconds to the units if they exist
             if ~isempty(obj.DataInfo.Units)
                 derivSignal.DataInfo.Units = [obj.DataInfo.Units 's^-1'];
             end
             derivSignal.Name = obj.Name + "Deriv";
+        end
+        
+        function derivSignal = diffMC(obj)
+            derivSignal = timesignal(obj);
+            timeDimInd = find(size(obj.Data) == numel(obj.Time));
+            tDimsDes             = ones(1,ndims(obj.Data));
+            tDimsDes(timeDimInd) = length(obj.Time)-1;
+            dxts = timeseries(diff(obj.Data,1,timeDimInd),obj.Time(1:end-1));
+            dtts = timeseries(reshape(diff(obj.Time(:)),tDimsDes),obj.Time(1:end-1));
+            dxdt = dxts./dtts; % Using timeseries in the last two lines makes this work smoothly
+            derivSignal.Data  = cat(    ...
+                timeDimInd,dxdt.getdatasamples(1),... % First 2 point derivitive
+                0.5*(dxdt.getdatasamples(1:dxdt.Length-1) + dxdt.getdatasamples(2:dxdt.Length)),... % Average of ajacent derivitives
+                dxdt.getdatasamples(dxdt.Length)); % Last 2 point derivitive
+            %Add per seconds to the units if they exist
+            if ~isempty(obj.DataInfo.Units)
+                derivSignal.DataInfo.Units = [obj.DataInfo.Units 's^-1'];
+            end
+            derivSignal.Name = obj.Name + "Deriv";
+        end
+        
+        function intSig = cumtrapz(obj,initVal)
+           intSig = timesignal(obj);
+           timeDimInd = find(size(obj.Data) == numel(obj.Time));
+           intSig.Data = cumtrapz(intSig.Time,intSig.Data,timeDimInd)+initVal;
+        end
+        
+        % Write function for two norm here
+        function nrm = twoNorm(obj)
+            timeDimInd = find(size(obj.Data) == numel(obj.Time));
+            nrm = trapz(obj.Time,obj.Data.^2,timeDimInd).^(1/2);
         end
     end
 end

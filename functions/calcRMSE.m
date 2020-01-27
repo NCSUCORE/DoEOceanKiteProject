@@ -1,6 +1,8 @@
 function RMSE = calcRMSE(x1,x2)
 
 % square and take mean
-RMSE = sqrt(mean((x1(:) - x2(:)).^2));
+err = x1(:) - x2(:);
+
+RMSE = sqrt(mean((err./max(abs(err))).^2));
 
 end

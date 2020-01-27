@@ -161,9 +161,9 @@ initCoeffs = ones(13,1);
 % initCoeffs = [0.8836    1.1571    0.6642    1.4724    0.2740    1.4610    0.9725...
 %     0.5495    0.9937 1 1 1]';
 
-% initCoeffs(11) = 0.55;
-% initCoeffs(12) = 0.55;
-% initCoeffs(13) = 0.55;
+initCoeffs(11) = 0.55;
+initCoeffs(12) = 0.55;
+initCoeffs(13) = 0.55;
 
 % lowLims = [repmat([0.25;1],3,1); 0.9; 0.5; 0.7; 0.9; 0.9; 0.9];
 % hiLims = [repmat([1;1.75],3,1); 1.1; 1.5; 1.3; 1.1; 1.1; 1.1];
