@@ -19,9 +19,7 @@ kiElev=.005*kpElev;
 TLSP=125;
 load('elev.mat')
 % subts=timeseries([0 1 2 3 0]',[0 500 510 800 820]');
-vstruct=vhcl.struct('OCT.aeroSurf');
-maxDeflUps=[vstruct.MaxCtrlDeflUp];
-maxDeflDns=[vstruct.MaxCtrlDeflDn];
+
 %% Load components
 % Flight Controller
 loadComponent('firstBuildTakeoff');
@@ -38,6 +36,9 @@ loadComponent('oneDOFWnch');
 loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
+vstruct=vhcl.struct('OCT.aeroSurf');
+maxDeflUps=[vstruct.MaxCtrlDeflUp];
+maxDeflDns=[vstruct.MaxCtrlDeflDn];
 % Environment
 loadComponent('constXYZT');
 % loadComponent('CNAPsTurbJames');

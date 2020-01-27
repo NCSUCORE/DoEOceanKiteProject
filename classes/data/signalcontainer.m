@@ -8,13 +8,14 @@ classdef signalcontainer < dynamicprops
     
     methods
         function obj = signalcontainer(objToParse,varargin)
-            % Add metadata to the signal container
-            obj.metaData = metaData;
             % Parse inputs
             p = inputParser;
             addOptional(p,'logsout',[],@(x) isa(x,'Simulink.SimulationData.Dataset'))
             addParameter(p,'Verbose',false,@islogical);
             parse(p,varargin{:});
+            
+            % Add metadata to the signal container
+            obj.metaData = metaData(p.Results.Verbose);
             
             switch class(objToParse)
                 case 'Simulink.SimulationData.Dataset'

@@ -9,7 +9,10 @@ classdef metaData
     end
     
     methods
-        function obj = metaData
+        function obj = metaData(varargin)
+            if ~isempty(varargin)
+                verbose=varargin{1};
+            end
             % Name of computer user calling this
             obj.author = getenv('username');
             % Name of computer they are using
@@ -28,7 +31,9 @@ classdef metaData
                         obj.activeVariants = {obj.activeVariants;baseVars{ii}};
                     end
                     catch
-                        warning('Unable to evaluate %s.Condition',baseVars{ii})
+                        if verbose
+                            warning('Unable to evaluate %s.Condition',baseVars{ii})
+                        end
                     end
                 end
             end
