@@ -16,7 +16,7 @@ tEnd = numel(timeExp);
 tPlot = tStart:tEnd;
 
 % plotting data range
-plotDataRange = [100 200];
+plotDataRange = [0 300];
 
 locs = getFigLocations(560,420);
 
