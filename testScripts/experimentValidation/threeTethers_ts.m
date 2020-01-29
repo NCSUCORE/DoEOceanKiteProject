@@ -117,23 +117,14 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 % fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
 %% process experimental data
-% load file
-load 'data_19_Nov_2019_19_08_19.mat' 
+datFileName = 'data_24_Jan_2020_16_23_38.mat';
+fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
-% extract values
-tscExp = tsc;
-timeExp = tscExp.roll_rad.Time;
+tscExp = processExpData(fullFileName,...
+    'Ro_c_in_meters',[22;0;-3.9]./100,...
+    'yawOffset',1*2.5,...
+    'ycmOffset',-0.0075);
 
-% filter bad data
-badData = find(tscExp.yaw_rad.Data>100);
-tscExp.yaw_rad.Data(badData) = 0.5*(tscExp.yaw_rad.Data(badData-1) + tscExp.yaw_rad.Data(badData+1));
-windowSize = 20; 
-b = (1/windowSize)*ones(1,windowSize);
-tscExp.roll_rad.Data = filter(b,1,tscExp.roll_rad.Data);
-tscExp.pitch_rad.Data = filter(b,1,tscExp.pitch_rad.Data);
-tscExp.yaw_rad.Data = filter(b,1,tscExp.yaw_rad.Data);
-
-tscExp.CoMPosVec_cm.Data = tscExp.CoMPosVec_cm.Data./100;
 
 %% adjust parameters
 initVals.CLWing = vhcl.portWing.CL.Value;
@@ -171,17 +162,17 @@ initCoeffs(13) = 0.55;
 lowLims = [repmat([0.8;1],3,1); 0.8; 0.8; 0.8; 0.75;0.45;0.45;0.45];
 hiLims = [repmat([1;1.2],3,1); 1.2; 1.2; 1.1; 1;0.65;0.65;0.65];
     
-dataRange = [30 60];
+dataRange = [100 200];
 
 % options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000);
 % [optDsgn,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
 %     initVals,coeffs,tscExp,dataRange),...
 %     initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
 
-% [optDsgn,minF] = particleSwarmMinimization(...
-%     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-%     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-%     'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
+[optDsgn,minF] = particleSwarmMinimization(...
+    @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+    initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
+    'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
 
 
 %%
