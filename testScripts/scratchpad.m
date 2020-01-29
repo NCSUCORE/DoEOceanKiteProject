@@ -1,17 +1,6 @@
-% plot(tsc.tetherLengths.diffMC-tsc.tetherLengths.diff)
-% figure
-% plot(tsc.eulerAngles.diffMC-tsc.eulerAngles.diff)
+tsc = signalcontainer(logsout);
 
-mcts = (tsc.eulerAngles - tsc.eulerAngles.diffMC.cumtrapz(tsc.eulerAngles.getdatasamples(1)));
-
-jdts = (tsc.eulerAngles - tsc.eulerAngles.diff.cumtrapz(tsc.eulerAngles.getdatasamples(1)));
-
-
-mcts.plot
-figure
-jdts.plot
-
-mcts.twoNorm
-jdts.twoNorm
-
+tsc.anchThrNodeBusArry(1).nodePositions
+tscCrp = tsc.crop(0,1);
+tscCrp.anchThrNodeBusArry(1).nodePositions
 
