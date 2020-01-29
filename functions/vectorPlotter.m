@@ -1,49 +1,79 @@
-function vectorPlotter(time,data,plotProperties,...
-    legends,yAxisLabel,figTitle)
+function vectorPlotter(time,data,varargin)
 
-pp = plotProperties;
+% rearrange the array to be a nPlots x nSamples matrix
+sz = size(squeeze(data));
+nS = numel(time);
+nPlots = sz(sz~=nS);
+data = reshape(squeeze(data),nPlots,sz(sz==nS));
 
-if strcmp(pp{1},'blk')
-    colors = 1/255*zeros(8,3);
+% parse input
+p = inputParser;
+addRequired(p,'time', @(x) isnumeric(x));
+addRequired(p,'data', @(x) isnumeric(x));
+addParameter(p,'lineSpec','-', @(x) ischar(x));
+addParameter(p,'lineWidth',1, @(x) isnumeric(x));
+addParameter(p,'lineColorScheme','rgb', @(x) ischar(x));
+addParameter(p,'legends',repmat({''},nPlots,1), @(x) iscell(x));
+addParameter(p,'xlabel','Time', @(x) ischar(x));
+addParameter(p,'xUnits','(s)', @(x) ischar(x));
+addParameter(p,'ylabels',repmat({''},nPlots,1), @(x) iscell(x));
+addParameter(p,'yUnits','', @(x) ischar(x));
+addParameter(p,'figureTitle','', @(x) ischar(x));
+
+parse(p,time,data,varargin{:});
+
+% set line color scheme
+switch p.Results.lineColorScheme
+    case 'blk'
+        colors = 1/255*zeros(8,3);
+    case 'rgb'
+        colors = 1/255*[228,26,28
+            55,126,184
+            77,175,74
+            152,78,163
+            255,127,0
+            255,255,51];
+    otherwise
+        warning('Undefined line color scheme, using RGB');
+        colors = 1/255*[228,26,28
+            55,126,184
+            77,175,74
+            152,78,163
+            255,127,0
+            255,255,51];
+end
+
+% make the plots
+for ii = 1:nPlots
     
-else
-    colors = 1/255*[228,26,28
-        55,126,184
-        77,175,74
-        152,78,163
-        255,127,0
-        255,255,51];
-end
-
-lwd = 1;
-
-sdata = squeeze(data);
-sz = size(sdata);
-
-if any(sz==1)
-    sz(1) = 1;
-    sdata = reshape(sdata,1,[]);
-end
-
-for ii = 1:sz(1)
-    subplot(sz(1),1,ii)
-    plot(time,sdata(ii,:),pp{2},'linewidth',lwd,'color',colors(ii,:),...
-        'DisplayName',legends{ii})
+    subplot(nPlots,1,ii)
+    
+    if ~any(ismember(p.UsingDefaults,'legends'))
+        plot(time,data(ii,:),p.Results.lineSpec,...
+            'linewidth',p.Results.lineWidth,...
+            'color',colors(ii,:),...
+            'DisplayName',p.Results.legends{ii});
+    else
+        plot(time,data(ii,:),p.Results.lineSpec,...
+            'linewidth',p.Results.lineWidth,...
+            'color',colors(ii,:));
+    end
+    
     if ii == 1
-        subplot(sz(1),1,1)
-        title(figTitle);
+        subplot(nPlots,1,1)
+        title(p.Results.figureTitle);
     end
     hold on
     grid on
-    xlabel('Time (s)');
-    ylabel(yAxisLabel);
+    xlabel([p.Results.xlabel,' ',p.Results.xUnits]);
+    ylabel([p.Results.ylabels{ii},' ',p.Results.yUnits]);
     legend('off')
     legend('show')
     
 end
 
+% link x axes
 linkaxes(findall(gcf,'Type','axes'),'x')
-
 
 end
 

@@ -1,8 +1,8 @@
-function RMSE = calcRMSE(x1,x2)
+function RMSE = calcRMSE(simRes,expRes)
 
 % square and take mean
-err = x1(:) - x2(:);
+err = simRes(:) - expRes(:);
 
-RMSE = sqrt(mean((err./max(abs(err))).^2));
+RMSE = sqrt(mean((err./max(abs(expRes))).^2));
 
 end
