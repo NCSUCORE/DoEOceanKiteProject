@@ -33,13 +33,6 @@ gndStn.zMatInt.setValue([-.25*ones(1,8),.25*ones(1,8)],'m');
 gndStn.rMatInt.setValue(repmat(.5*gndStn.cylRad.Value,[1,16]),'m')
 
 
-
-
-gndStn.initAngVel.setValue(0,'rad/s')                                           
-gndStn.initVel.setValue(0,'m/s')                                          
-gndStn.initAngPos.setValue([0,0,0]','rad')                                        
-
-
 %number of tethers that go from the GS to the KITE
 gndStn.numTethers.setValue(1,'');
 
@@ -74,8 +67,6 @@ gndStn.addThrAttch('inrThrAttchPt1',[150 0 0]');
 gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 
-
-gndStn.setPosVec([0 0 199.7],'m')
 
 % gndStn.initAnchTetherLength.setValue(gndStn.calcInitTetherLen,'m')
 gndStn.initAnchTetherLength.setValue([248.65 248.65 248.65 ],'m')
