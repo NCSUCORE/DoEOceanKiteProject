@@ -50,6 +50,8 @@ addParameter(p,'View',[71,22],@isnumeric)
 addParameter(p,'FontSize',get(0,'defaultAxesFontSize'),@isnumeric)
 % Tracer (streaming red line behind the model)
 addParameter(p,'PlotTracer',true,@islogical)
+% Plot the ground station
+addParameter(p,'GroundStation',[],@(x) isa(x,'OCT.sixDoFStation'))
 % Color tracer according to power production/consumption
 addParameter(p,'ColorTracer',false,@islogical)
 % How long (in seconds) to keep the tracer on for
@@ -170,6 +172,21 @@ if p.Results.PlotTracer
     end
 end
 
+if ~isempty(p.Results.GroundStation)
+    [xCyl,yCyl,zCyl] = cylinder([0 p.Results.GroundStation.cylRad.Value*ones(1,98) 0]);
+    if isempty(p.Results.GroundStation.cylTotH.Value)
+        warning('Warning total height property empty, using zMatExt values')
+        height = max(p.Results.GroundStation.zMatExt.Value)-min(p.Results.GroundStation.zMatExt.Value);
+    else
+        height = p.Results.GroundStation.cylTotH.Value;
+    end
+    zCyl = zCyl*height;
+    xCyl = xCyl([1 2 99 100],:);
+    yCyl = yCyl([1 2 99 100],:);
+    zCyl = zCyl([1 2 99 100],:);
+    h.gndStn = surf(xCyl,yCyl,zCyl,'FaceColor',0.5*[1 1 1]);
+end
+
 % Plot the path
 if ~isempty(p.Results.PathFunc)
     path = eval(sprintf('%s(linspace(0,1,1000),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
@@ -236,8 +253,6 @@ if p.Results.ZoomIn
     ylim(tscTmp.positionVec.Data(2,:,1)+obj.fuse.length.Value*[-1.5 1.5])
     zlim(tscTmp.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
 end
-
-
 
 % Plot local aerodynamic force vectors
 if p.Results.LocalAero
@@ -315,7 +330,7 @@ for ii = 1:numel(tscTmp.thrNodeBus)
 end
 
 % Plot the anchor tethers
-if isprop(tscTmp,'anchThrNodeBusArry') && all(isprop(tscTmp.anchThrNodeBusArry,'nodePositions'))
+if isprop(tscTmp,'anchThrNodeBusArry') && isfield(tscTmp.anchThrNodeBusArry,'nodePositions')
     for ii = 1:numel(tscTmp.anchThrNodeBusArry)
         nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsamples(1).Data;
         h.anchThr{ii} = plot3(...
@@ -393,12 +408,12 @@ minZ = min(tscTmp.positionVec.Data(3,:));
 maxZ = max(tscTmp.positionVec.Data(3,:));
 % Find min and max over all plotted data
 for ii = 1:numel(allPlots)
-minX = min([minX allPlots(ii).XData]);
-maxX = max([maxX allPlots(ii).XData]);
-minY = min([minY allPlots(ii).YData]);
-maxY = max([maxY allPlots(ii).YData]);
-minZ = min([minZ allPlots(ii).ZData]);
-maxZ = max([maxZ allPlots(ii).ZData]);
+minX = min([minX allPlots(ii).XData(:)']);
+maxX = max([maxX allPlots(ii).XData(:)']);
+minY = min([minY allPlots(ii).YData(:)']);
+maxY = max([maxY allPlots(ii).YData(:)']);
+minZ = min([minZ allPlots(ii).ZData(:)']);
+maxZ = max([maxZ allPlots(ii).ZData(:)']);
 end
 % If one is not zero, make X and Y symmetric
 xlim([minX maxX])
@@ -467,6 +482,16 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         end
         h.tracer = [h.tracer(2:end) newLine];
         uistack(h.tracer(end),'top');
+    end
+    
+    if isfield(h,'gndStn')
+        R = rotation_sequence(tscTmp.gndStnEulerAngles.getsamples(ii).Data);
+        posVec = tsc.gndStnPositionVec.getsamples(ii).Data(:);
+        pts = R*[xCyl(:)' ; yCyl(:)' ; zCyl(:)'];
+        h.gndStn.XData = reshape(pts(1,:),size(xCyl)) + posVec(1);
+        h.gndStn.YData = reshape(pts(2,:),size(yCyl)) + posVec(2);
+        h.gndStn.ZData = reshape(pts(3,:),size(zCyl)) + posVec(3);
+        
     end
     
     % Update the path
@@ -582,15 +607,14 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.thr{jj}.ZData = squeeze(thrNodePos(3,:));
     end
     
-    % update the anchor tether if there is one
+    % update the anchor tether(s) if exists
     if isfield(h,'anchThr')
-        for ii = 1:numel(h.anchThr)
-            nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsamples(ii).Data;
-            h.anchThr{ii}.XData = nodePosVecs(1,:);
-            h.anchThr{ii}.YData = nodePosVecs(2,:);
-            h.anchThr{ii}.ZData = nodePosVecs(3,:);
+        for jj = 1:numel(h.anchThr)
+            nodePosVecs = tscTmp.anchThrNodeBusArry(jj).nodePositions.getsamples(ii).Data;
+            h.anchThr{jj}.XData = nodePosVecs(1,:);
+            h.anchThr{jj}.YData = nodePosVecs(2,:);
+            h.anchThr{jj}.ZData = nodePosVecs(3,:);
         end
-        
     end
     
     % Update the title
