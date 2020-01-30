@@ -21,17 +21,17 @@ loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-% loadComponent('constXYZT');
- loadComponent('CNAPsTurbJames');
+loadComponent('constXYZT');
+%  loadComponent('CNAPsTurbJames');
 %   loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
-% env.water.setflowVec([1 0 0],'m/s')
+env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
 hiLvlCtrl.basisParams.setValue([.8,1.6,.3,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
-gndStn.setPosVec([0 0 0],'m')
+gndStn.setPosVec([0 0 200],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
