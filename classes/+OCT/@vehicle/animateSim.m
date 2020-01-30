@@ -50,6 +50,8 @@ addParameter(p,'View',[71,22],@isnumeric)
 addParameter(p,'FontSize',get(0,'defaultAxesFontSize'),@isnumeric)
 % Tracer (streaming red line behind the model)
 addParameter(p,'PlotTracer',true,@islogical)
+% Plot the ground station
+addParameter(p,'GroundStation',[],@(x) isa(x,'OCT.sixDoFStation'))
 % Color tracer according to power production/consumption
 addParameter(p,'ColorTracer',false,@islogical)
 % How long (in seconds) to keep the tracer on for
@@ -170,6 +172,21 @@ if p.Results.PlotTracer
     end
 end
 
+if ~isempty(p.Results.GroundStation)
+    [xCyl,yCyl,zCyl] = cylinder([0 p.Results.GroundStation.cylRad.Value*ones(1,98) 0]);
+    if isempty(p.Results.GroundStation.cylTotH.Value)
+        warning('Warning total height property empty, using zMatExt values')
+        height = max(p.Results.GroundStation.zMatExt.Value)-min(p.Results.GroundStation.zMatExt.Value);
+    else
+        height = p.Results.GroundStation.cylTotH.Value;
+    end
+    zCyl = zCyl*height;
+    xCyl = xCyl([1 2 99 100],:);
+    yCyl = yCyl([1 2 99 100],:);
+    zCyl = zCyl([1 2 99 100],:);
+    h.gndStn = surf(xCyl,yCyl,zCyl,'FaceColor',0.5*[1 1 1]);
+end
+
 % Plot the path
 if ~isempty(p.Results.PathFunc)
     path = eval(sprintf('%s(linspace(0,1,1000),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
@@ -236,8 +253,6 @@ if p.Results.ZoomIn
     ylim(tscTmp.positionVec.Data(2,:,1)+obj.fuse.length.Value*[-1.5 1.5])
     zlim(tscTmp.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
 end
-
-
 
 % Plot local aerodynamic force vectors
 if p.Results.LocalAero
@@ -315,9 +330,9 @@ for ii = 1:numel(tscTmp.thrNodeBus)
 end
 
 % Plot the anchor tethers
-if isprop(tscTmp,'anchThrNodeBusArry') && all(isprop(tscTmp.anchThrNodeBusArry,'nodePositions'))
+if isprop(tscTmp,'anchThrNodeBusArry') && isfield(tscTmp.anchThrNodeBusArry,'nodePositions')
     for ii = 1:numel(tscTmp.anchThrNodeBusArry)
-        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(tscTmppositionVec.Time(1)).Data;
+        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsamples(1).Data;
         h.anchThr{ii} = plot3(...
             nodePosVecs(1,:),...
             nodePosVecs(2,:),...
@@ -393,12 +408,12 @@ minZ = min(tscTmp.positionVec.Data(3,:));
 maxZ = max(tscTmp.positionVec.Data(3,:));
 % Find min and max over all plotted data
 for ii = 1:numel(allPlots)
-minX = min([minX allPlots(ii).XData]);
-maxX = max([maxX allPlots(ii).XData]);
-minY = min([minY allPlots(ii).YData]);
-maxY = max([maxY allPlots(ii).YData]);
-minZ = min([minZ allPlots(ii).ZData]);
-maxZ = max([maxZ allPlots(ii).ZData]);
+minX = min([minX allPlots(ii).XData(:)']);
+maxX = max([maxX allPlots(ii).XData(:)']);
+minY = min([minY allPlots(ii).YData(:)']);
+maxY = max([maxY allPlots(ii).YData(:)']);
+minZ = min([minZ allPlots(ii).ZData(:)']);
+maxZ = max([maxZ allPlots(ii).ZData(:)']);
 end
 % If one is not zero, make X and Y symmetric
 xlim([minX maxX])
@@ -427,9 +442,9 @@ h.title = title({strcat(sprintf('Time = %.1f s',0),',',...
 
 
 for ii = 1:numel(tscTmp.positionVec.Time)
-    timeStamp = tscTmp.positionVec.Time(ii);
-    eulAngs   = tscTmp.eulerAngles.getsampleusingtime(timeStamp).Data;
-    posVec    = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
+%     timeStamp = tscTmp.positionVec.Time(ii);
+    eulAngs   = tscTmp.eulerAngles.getsamples(ii).Data;
+    posVec    = tscTmp.positionVec.getsamples(ii).Data;
     
     for jj = 1:numel(hStatic)
         % Rotate and translate all aero surfaces
@@ -469,12 +484,28 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         uistack(h.tracer(end),'top');
     end
     
+    if isfield(h,'gndStn')
+        R = rotation_sequence(tscTmp.gndStnEulerAngles.getsamples(ii).Data);
+        posVec = tsc.gndStnPositionVec.getsamples(ii).Data(:);
+        pts = R*[xCyl(:)' ; yCyl(:)' ; zCyl(:)'];
+        h.gndStn.XData = reshape(pts(1,:),size(xCyl)) + posVec(1);
+        h.gndStn.YData = reshape(pts(2,:),size(yCyl)) + posVec(2);
+        h.gndStn.ZData = reshape(pts(3,:),size(zCyl)) + posVec(3);
+        
+    end
+    
     % Update the path
     if ~isempty(p.Results.PathFunc)
-        currentBasisParams = tscTmp.basisParams.getsampleusingtime(timeStamp).Data;
-        currentBasisParams(end) = norm(tscTmp.positionVec.Data(:,1,ii)-tscTmp.gndStnPositionVec.Data(:,:,ii)) ;
-        
-        path = feval(p.Results.PathFunc,linspace(0,1,1000),currentBasisParams,tscTmp.gndStnPositionVec.getsampleusingtime(timeStamp).Data);
+        % Get basis parameters
+        currentBasisParams = tscTmp.basisParams.getsamples(ii).Data;
+        % Overwrite the last one with radius
+        currentBasisParams(end) = norm(...
+            tscTmp.positionVec.getsamples(ii).Data...
+            -tscTmp.gndStnPositionVec.getsamples(ii).Data);
+        % Evaluate the path function
+        path = feval(p.Results.PathFunc,...
+            linspace(0,1,1000),currentBasisParams,...
+            tscTmp.gndStnPositionVec.getsamples(ii).Data);
         
         h.path.XData = path(1,:);
         h.path.YData = path(2,:);
@@ -483,7 +514,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Update current path position
     if p.Results.PathPosition
-        pathPt = tscTmp.pathPosGnd.getsampleusingtime(timeStamp).Data;
+        pathPt = tscTmp.pathPosGnd.getsamples(ii).Data;
         h.pathPosition.XData = pathPt(1);
         h.pathPosition.YData = pathPt(2);
         h.pathPosition.ZData = pathPt(3);
@@ -491,9 +522,9 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Update navigation vectors
     if p.Results.NavigationVecs
-        tanVec  = len*tscTmp.tanVec.getsampleusingtime(timeStamp).Data;
-        perpVec = len*tscTmp.perpVec.getsampleusingtime(timeStamp).Data;
-        desVec  = len*tscTmp.velVectorDes.getsampleusingtime(timeStamp).Data;
+        tanVec  = len*tscTmp.tanVec.getsamples(ii).Data;
+        perpVec = len*tscTmp.perpVec.getsamples(ii).Data;
+        desVec  = len*tscTmp.velVectorDes.getsamples(ii).Data;
         
         h.tanVec.XData = posVec(1);
         h.tanVec.YData = posVec(2);
@@ -521,9 +552,9 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     if p.Results.LocalAero
         aeroStruct = obj.struct('OCT.aeroSurf');
         
-        FLiftPart = rotation_sequence(eulAngs)*tscTmp.FLiftBdyPart.getsampleusingtime(timeStamp).Data;
-        FDragPart = rotation_sequence(eulAngs)*tscTmp.FDragBdyPart.getsampleusingtime(timeStamp).Data;
-        vAppPart  = rotation_sequence(eulAngs)*tscTmp.vAppLclBdy.getsampleusingtime(timeStamp).Data;
+        FLiftPart = rotation_sequence(eulAngs)*tscTmp.FLiftBdyPart.getsamples(ii).Data;
+        FDragPart = rotation_sequence(eulAngs)*tscTmp.FDragBdyPart.getsamples(ii).Data;
+        vAppPart  = rotation_sequence(eulAngs)*tscTmp.vAppLclBdy.getsamples(ii).Data;
         
         uLiftPart = FLiftPart./sqrt(sum(FLiftPart.^2,1));
         uDragPart = FDragPart./sqrt(sum(FDragPart.^2,1));
@@ -562,7 +593,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Update moments in the table
     if p.Results.FluidMoments
-        MFluidBdy = tscTmp.MFluidBdy.getsampleusingtime(timeStamp).Data;
+        MFluidBdy = tscTmp.MFluidBdy.getsamples(ii).Data;
         h.table.Data{fluidStartRow+1,2} = sprintf('%0.0f',MFluidBdy(1));
         h.table.Data{fluidStartRow+2,2} = sprintf('%0.0f',MFluidBdy(2));
         h.table.Data{fluidStartRow+3,2} = sprintf('%0.0f',MFluidBdy(3));
@@ -570,28 +601,27 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Update the tether(s)
     for jj = numel(tscTmp.thrNodeBus)
-        thrNodePos = tscTmp.thrNodeBus.nodePositions.getsampleusingtime(timeStamp).Data;
+        thrNodePos = tscTmp.thrNodeBus(jj).nodePositions.getsamples(ii).Data;
         h.thr{jj}.XData = squeeze(thrNodePos(1,:));
         h.thr{jj}.YData = squeeze(thrNodePos(2,:));
         h.thr{jj}.ZData = squeeze(thrNodePos(3,:));
     end
     
-    % update the anchor tether if there is one
+    % update the anchor tether(s) if exists
     if isfield(h,'anchThr')
-        for ii = 1:numel(h.anchThr)
-            nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(timeStamp).Data;
-            h.anchThr{ii}.XData = nodePosVecs(1,:);
-            h.anchThr{ii}.YData = nodePosVecs(2,:);
-            h.anchThr{ii}.ZData = nodePosVecs(3,:);
+        for jj = 1:numel(h.anchThr)
+            nodePosVecs = tscTmp.anchThrNodeBusArry(jj).nodePositions.getsamples(ii).Data;
+            h.anchThr{jj}.XData = nodePosVecs(1,:);
+            h.anchThr{jj}.YData = nodePosVecs(2,:);
+            h.anchThr{jj}.ZData = nodePosVecs(3,:);
         end
-        
     end
     
     % Update the title
     h.title.String = {strcat(...
         sprintf('Time = %.1f s',tscTmp.velocityVec.Time(ii)),',',...
-        sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.getsampleusingtime(timeStamp).Data))),...
-        sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsampleusingtime(timeStamp).Data))};
+        sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.getsamples(ii).Data))),...
+        sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsamples(ii).Data))};
     
     
     
@@ -599,17 +629,17 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     if p.Results.PowerBar
         yPos = interp1(h.colorBar.Limits,...
             [h.colorBar.Position(2) h.colorBar.Position(2)+h.colorBar.Position(4)],...
-            iterMeanPower.Data(max([tscTmp.iterationNumber.getsampleusingtime(timeStamp).Data 1])));
+            iterMeanPower.Data(max([tscTmp.iterationNumber.getsamples(ii).Data 1])));
         h.powerIndicatorArrow.Y = yPos*[1 1];
         h.powerIndicatorArrow.String = sprintf('Iter. %d',tscTmp.iterationNumber.Data(ii));
     end
     
     if p.Results.TangentCoordSys
         
-        originPt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
-        xVec = tscTmp.tanXUnitVecGnd.getsampleusingtime(timeStamp).Data;
-        yVec = tscTmp.tanYUnitVecGnd.getsampleusingtime(timeStamp).Data;
-        zVec = tscTmp.tanZUnitVecGnd.getsampleusingtime(timeStamp).Data;
+        originPt = tscTmp.positionVec.getsamples(ii).Data;
+        xVec = tscTmp.tanXUnitVecGnd.getsamples(ii).Data;
+        yVec = tscTmp.tanYUnitVecGnd.getsamples(ii).Data;
+        zVec = tscTmp.tanZUnitVecGnd.getsamples(ii).Data;
         
         h.tanCoordX.XData = [originPt(1) originPt(1)+xVec(1)*obj.fuse.length.Value];
         h.tanCoordX.YData = [originPt(2) originPt(2)+xVec(2)*obj.fuse.length.Value];
@@ -625,8 +655,8 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     end
     
     if p.Results.VelocityVec
-        pt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
-        velVec = tscTmp.velocityVec.getsampleusingtime(timeStamp).Data;
+        pt = tscTmp.positionVec.getsamples(ii).Data;
+        velVec = tscTmp.velocityVec.getsamples(ii).Data;
         speed = sqrt(sum(velVec.^2));
         
         h.velVec.XData = [pt(1) pt(1)+velVec(1)*obj.fuse.length.Value./speed];
@@ -637,7 +667,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Set the plot limits to zoom in on the body
     if p.Results.ZoomIn
-        pt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
+        pt = tscTmp.positionVec.getsamples(ii).Data;
         xlim(pt(1)+obj.fuse.length.Value*[-1.5 1.5])
         ylim(pt(2)+obj.fuse.length.Value*[-1.5 1.5])
         zlim(pt(3)+obj.fuse.length.Value*[-1.5 1.5])

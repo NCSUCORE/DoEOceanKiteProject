@@ -16,7 +16,6 @@ classdef timesignal < timeseries
             % Call superclass constructor
             obj = obj@timeseries(tsIn);
             
-            
             % Set the block path property
             obj.blockPath = p.Results.BlockPath;
             
@@ -114,14 +113,14 @@ classdef timesignal < timeseries
         end
         
         % Function to crop things
-        function newobj = crop(obj,varargin)
-            newobj = timesignal(obj);
+        function newObj = crop(obj,varargin)
+            newObj = obj;
             % User can provide either a two element vector or two inputs
             switch numel(varargin)
                 case 1
                     % If it's a two element vector take the min and max values
                     if numel(varargin{1})==2
-                        newobj = timesignal(newobj.getsampleusingtime(...
+                        newObj = timesignal(newObj.getsampleusingtime(...
                             min(varargin{1}(:)),...
                             max(varargin{1}(:))));
                     else % If they gave more than two elements, throw error
@@ -129,11 +128,8 @@ classdef timesignal < timeseries
                     end
                 case 2
                     % If two inputs, take the first as start and second as end
-                    newobj = timesignal(newobj.getsampleusingtime(varargin{1},varargin{2}));
-                    %                     if numel(obj.Time)>0
-                    %                         obj.Time = obj.Time-obj.Time(1);
-                    %                     end
-                    
+%                     getsampleusingtime@timeseries(newObj,varargin{1},varargin{2})
+                    newObj = timesignal(newObj.getsampleusingtime(varargin{1},varargin{2}));
                 otherwise
                     % If they gave more inputs, throw error
                     error('Incorrect number of times provided')
@@ -208,9 +204,9 @@ classdef timesignal < timeseries
         end
         
         function intSig = cumtrapz(obj,initVal)
-           intSig = timesignal(obj);
-           timeDimInd = find(size(obj.Data) == numel(obj.Time));
-           intSig.Data = cumtrapz(intSig.Time,intSig.Data,timeDimInd)+initVal;
+            intSig = timesignal(obj);
+            timeDimInd = find(size(obj.Data) == numel(obj.Time));
+            intSig.Data = cumtrapz(intSig.Time,intSig.Data,timeDimInd)+initVal;
         end
         
         % Write function for two norm here

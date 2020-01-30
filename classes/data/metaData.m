@@ -9,6 +9,10 @@ classdef metaData
     end
     
     methods
+        function newObj = crop(obj)
+            newObj = obj;
+        end
+        
         function obj = metaData(varargin)
             if ~isempty(varargin)
                 verbose=varargin{1};
