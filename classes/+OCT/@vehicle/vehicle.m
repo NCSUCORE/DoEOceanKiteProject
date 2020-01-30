@@ -547,12 +547,15 @@ classdef vehicle < dynamicprops
             VS_span = obj.vsSpan.Value;
             
             % calculate
-            m_added_x = pi*density*(span*(0.15*chord/2)^2 + ...
-                HS_span*(0.15*HS_chord/2)^2 + VS_span*(0.15*VS_chord/2)^2);
-            m_added_y = pi*density*(1.98*span*(chord/2)^2 + ...
-                1.98*HS_span*(HS_chord/2)^2 + VS_span*(VS_chord/2)^2);
+            wingTh = (eval(obj.wingNACA.Value(end-1:end))/100)*chord;
+            hsTh = (eval(obj.hsNACA.Value(end-1:end))/100)*HS_chord;
+            vsTh = (eval(obj.vsNACA.Value(end-1:end))/100)*VS_chord;
+            m_added_x = pi*density*(span*(wingTh/2)^2 + ...
+                HS_span*(hsTh/2)^2 + VS_span*(vsTh/2)^2);
+            m_added_y = pi*density*(2.23*wingTh*(chord/2)^2 + ...
+                2.23*hsTh*(HS_chord/2)^2 + VS_span*(VS_chord/2)^2);
             m_added_z = pi*density*(span*(chord/2)^2 + ...
-                HS_span*(HS_chord/2)^2 + 1.98*VS_span*(VS_chord/2)^2);
+                HS_span*(HS_chord/2)^2 + 1.98*vsTh*(VS_chord/2)^2);
             
             % store
             if obj.addedMISwitch.Value
