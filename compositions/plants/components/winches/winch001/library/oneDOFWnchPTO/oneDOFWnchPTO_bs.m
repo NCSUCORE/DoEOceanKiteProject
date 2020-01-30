@@ -1,12 +1,5 @@
-clear
-clc
-format compact
-
-% this is the build script for creating winches using class definition
-% 'winches' for a three tethered system that is being used by ayaz
-
-% the script saves the variable 'wnch' to a 'pathFollowingWinch.mat'
-
+% Script to build a single winch based on the model from Uo Maryland
+clear;clc;format compact
 WINCH                 = 'winch001';
 
 %% Winches
@@ -29,6 +22,12 @@ wnch.winch1.statorResistanceMot.setValue(0.036,'');
 wnch.winch1.rotorMagneticFluxMot.setValue(0.3,'');
 wnch.winch1.frictionCoefficiantMot.setValue(15/15000,'');
 wnch.winch1.numPolePairsMot.setValue(40,'');
+
+wnch.winch1.setDrumRadius(0.5,'m');
+wnch.winch1.setDrumInertia(100,'kg*m^2');
+wnch.winch1.setInitReleaseRate(0,'m/s');
+wnch.winch1.setGearRatio(1/2.5,'');
+wnch.winch1.setNumOfGearPairs(4,'');
 
 
 %% save file in its respective directory

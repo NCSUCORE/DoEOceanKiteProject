@@ -42,3 +42,18 @@ wnch.winch1.frictionCoefficiantMot.NoScale = false
 wnch.winch1.numPolePairsMot.Value = 4.0000e+01
 wnch.winch1.numPolePairsMot.Unit is unitless or has no unit specified
 wnch.winch1.numPolePairsMot.NoScale = false
+wnch.winch1.drumRadius.Value = 5.0000e-01
+wnch.winch1.drumRadius.Unit = 'm'
+wnch.winch1.drumRadius.NoScale = false
+wnch.winch1.drumInertia.Value = 1.0000e+02
+wnch.winch1.drumInertia.Unit = 'kg*m^2'
+wnch.winch1.drumInertia.NoScale = false
+wnch.winch1.initReleaseRate.Value = 0.0000e+00
+wnch.winch1.initReleaseRate.Unit = 'm/s'
+wnch.winch1.initReleaseRate.NoScale = false
+wnch.winch1.gearRatio.Value = 4.0000e-01
+wnch.winch1.gearRatio.Unit is unitless or has no unit specified
+wnch.winch1.gearRatio.NoScale = false
+wnch.winch1.numOfGearPairs.Value = 4.0000e+00
+wnch.winch1.numOfGearPairs.Unit is unitless or has no unit specified
+wnch.winch1.numOfGearPairs.NoScale = false

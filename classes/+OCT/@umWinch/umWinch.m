@@ -20,7 +20,14 @@ classdef umWinch < handle
         frictionCoefficiantMot
         numPolePairsMot
         
+        drumRadius
+        drumInertia
         
+        
+        initReleaseRate
+        
+        gearRatio
+        numOfGearPairs
         
     end
     
@@ -40,7 +47,13 @@ classdef umWinch < handle
             obj.rotorMagneticFluxMot        = SIM.parameter('Unit','');
             obj.frictionCoefficiantMot      = SIM.parameter('Unit','');
             obj.numPolePairsMot             = SIM.parameter('Unit','');
-          
+            
+            obj.drumRadius                  = SIM.parameter('Unit','m');
+            obj.drumInertia                 = SIM.parameter('Unit','kg*m^2');
+            obj.initReleaseRate             = SIM.parameter('Unit','m/s');
+            
+            obj.gearRatio                   = SIM.parameter('Unit','');
+            obj.numOfGearPairs              = SIM.parameter('Unit','');
         end
         
         function obj = setInitLength(obj,val,units)
@@ -96,6 +109,24 @@ classdef umWinch < handle
             obj.numPolePairsMot.setValue(val,units)
         end
         
+        function obj = setDrumRadius(obj,val,units)
+            obj.drumRadius.setValue(val,units);
+        end
+        
+        function obj = setDrumInertia(obj,val,units)
+            obj.drumInertia.setValue(val,units);
+        end
+        
+        function obj = setInitReleaseRate(obj,val,units)
+            obj.initReleaseRate.setValue(val,units);
+        end
+            
+        function obj = setGearRatio(obj,val,units)
+            obj.gearRatio.setValue(val,units);
+        end
+        function obj = setNumOfGearPairs(obj,val,units)
+            obj.numOfGearPairs.setValue(val,units);
+        end
         
         
         % Function to scale the object
