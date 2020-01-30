@@ -32,7 +32,7 @@ yawExp = tscExp.yaw_rad.Data(startIdxExp:endIdxExp);
 rollRMSE = 1.0*calcRMSE(rollSim,rollExp);
 yawRMSE = 1.0*calcRMSE(yawSim,yawExp);
 ycmRMSE = 1.0*calcRMSE(yPosSim,yPosExp);
-zcmRMSE = 0.0*calcRMSE(zPosSim,zPosExp);
+zcmRMSE = 1.0*calcRMSE(zPosSim,zPosExp);
 val =  rollRMSE + yawRMSE + ycmRMSE + zcmRMSE;
 
 % varargout outputs

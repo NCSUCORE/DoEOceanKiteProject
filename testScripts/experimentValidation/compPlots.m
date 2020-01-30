@@ -1,11 +1,11 @@
 
 % superimpose plots from simulation and experiment
-datFileName = 'data_24_Jan_2020_15_50_38.mat';
-fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
+% datFileName = 'data_24_Jan_2020_15_50_38.mat';
+% fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
-tscExp = processExpData(fullFileName,...
-    'Ro_c_in_meters',[22;0;-3.9]./100,...
-    'yawOffset',1*2.5);
+% tscExp = processExpData(fullFileName,...
+%     'Ro_c_in_meters',[22;0;-3.9]./100,...
+%     'yawOffset',1*2.5);
 
 % define time to observe
 timeExp = tscExp.roll_rad.Time;

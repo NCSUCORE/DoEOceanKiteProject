@@ -15,52 +15,8 @@ vhcl.hStab.CD.setValue(coeffs(4).*initVals.CDhStab,'')
 vhcl.vStab.CL.setValue(coeffs(5).*initVals.CLvStab,'')
 vhcl.vStab.CD.setValue(coeffs(6).*initVals.CDvStab,'')
 
-% vhcl.fuseEndDragCoeff.setValue(coeffs(7)*initVals.fuseEndDrag,'')
-% vhcl.fuseSideDragCoeff.setValue(coeffs(8)*initVals.fuseSideDrag,'')
-
 vhcl.addedMass.setValue(coeffs(7:9).*initVals.addedMass,'kg')
-%
-vhcl.buoyFactor.setValue(coeffs(10)*initVals.buoyFactor,'')
-%
-% winches
-maxReleaseSpeed = coeffs(11)*initVals.wnchMaxReleaseSpeed;
-wnch.winch1.maxSpeed.setValue(maxReleaseSpeed,'m/s')
-wnch.winch2.maxSpeed.setValue(maxReleaseSpeed,'m/s')
-wnch.winch3.maxSpeed.setValue(maxReleaseSpeed,'m/s')
-
-% tether controllers
-aKp = 1.5*maxReleaseSpeed;
-pKp = 1*maxReleaseSpeed;
-rKp = 2.5*maxReleaseSpeed;
-rKd = 5*maxReleaseSpeed;
-rTau = 0.5;
-
-fltCtrl.tetherAlti.kp.setValue(aKp,'(m/s)/(m)');
-fltCtrl.tetherAlti.ki.setValue(0,'(m/s)/(m*s)');
-fltCtrl.tetherAlti.kd.setValue(0,'(m/s)/(m/s)');
-fltCtrl.tetherAlti.tau.setValue(2,'s');
-
-fltCtrl.tetherPitch.kp.setValue(pKp,'(m/s)/(rad)');
-fltCtrl.tetherPitch.ki.setValue(0,'(m/s)/(rad*s)');
-fltCtrl.tetherPitch.kd.setValue(2*pKp,'(m/s)/(rad/s)');
-fltCtrl.tetherPitch.tau.setValue(0.3,'s');
-
-fltCtrl.tetherRoll.kp.setValue(rKp,'(m/s)/(rad)');
-fltCtrl.tetherRoll.ki.setValue(0,'(m/s)/(rad*s)');
-fltCtrl.tetherRoll.kd.setValue(rKd,'(m/s)/(rad/s)');
-fltCtrl.tetherRoll.tau.setValue(rTau,'s');
-%
-% % tethers
-% thrDrag = initVals.thrDragCoeff;
-%
-% thr.tether1.dragCoeff.setValue(coeffs(9)*thrDrag,'')
-% thr.tether2.dragCoeff.setValue(coeffs(9)*thrDrag,'')
-% thr.tether3.dragCoeff.setValue(coeffs(9)*thrDrag,'')
-
-% thrZeta = iniVals.thrDampingCoeff;
-% thr.tether1.dampingRatio.setValue(coeffs(10)*thrZeta,'')
-% thr.tether2.dampingRatio.setValue(coeffs(10)*thrZeta,'')
-% thr.tether3.dampingRatio.setValue(coeffs(10)*thrZeta,'')
+vhcl.addedInertia.setValue(coeffs(10:12).*initVals.addedMass,'kg*m^2')
 
 fprintf(repmat('%0.4f ',1,numel(coeffs)),coeffs);
 fprintf('\n ');
@@ -84,11 +40,11 @@ tscSim.angularVel = squeeze(resample(tscSim.angularVel,timeSim));
 try
     val = calObjF(tscSim,tscExp,dataRange)
 catch
-    val = 100;
+    val = 100
 end
 fileID = fopen('solutionsRecord.txt','a');
 fprintf(fileID,'Design variables=\n');
-fprintf(fileID,repmat('%0.4f ',1,numel(coeffs)),coeffs);
+fprintf(fileID,repmat('%0.3f ',1,numel(coeffs)),coeffs);
 fprintf(fileID,'\nObjF = %0.4f\n',val);
 fprintf(fileID,'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n');
 fclose(fileID);

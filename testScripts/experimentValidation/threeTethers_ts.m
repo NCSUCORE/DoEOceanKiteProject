@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 35e-2;
-iniX = 0.3026;
+iniX = 0.2022;
 pitchSP = 14;
 
 % % % initial conditions
@@ -74,22 +74,22 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.4513,'m');
-wnch.winch2.initLength.setValue(0.4878,'m');
-wnch.winch3.initLength.setValue(0.4513,'m');
+wnch.winch1.initLength.setValue(0.3981,'m');
+wnch.winch2.initLength.setValue(0.4206,'m');
+wnch.winch3.initLength.setValue(0.3981,'m');
 
 dynamicCalc = '';
 
 %% Set up controller
 load('ayazThreeTetCtrl.mat');
 
-% altitudeCtrlShutOffDelay = 1*800;
+altitudeCtrlShutOffDelay = 0*800;
 % expOffset = 7.7+2.5;
 expOffset = 0;
 expDelay = 54.19;
-altitudeCtrlShutOffDelay = 0.75*expDelay;
-initialDelay = 0*altitudeCtrlShutOffDelay + expDelay;
-expOffset = 0*altitudeCtrlShutOffDelay + expOffset;
+% altitudeCtrlShutOffDelay = 0.75*expDelay;
+initialDelay = 1*altitudeCtrlShutOffDelay + expDelay;
+expOffset = 1*altitudeCtrlShutOffDelay + expOffset;
 
 % switching values
 fltCtrl.ySwitch.setValue(0,'m'); % set to 0 to execute simple square wave tracking
@@ -117,11 +117,11 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 % fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
 %% process experimental data
-datFileName = 'data_24_Jan_2020_16_23_38.mat';
+datFileName = 'data_24_Jan_2020_15_50_38.mat';
 fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
 tscExp = processExpData(fullFileName,...
-    'Ro_c_in_meters',[22;-2;-3.9]./100,...
+    'Ro_c_in_meters',[22;-1;-3.9]./100,...
     'yawOffset',1*2.5);
 
 
@@ -139,6 +139,7 @@ initVals.fuseEndDrag = vhcl.fuseEndDragCoeff.Value;
 initVals.fuseSideDrag = vhcl.fuseSideDragCoeff.Value;
 
 initVals.addedMass = vhcl.addedMass.Value;
+initVals.addedInertia = vhcl.addedInertia.Value;
 initVals.buoyFactor = vhcl.buoyFactor.Value;
 
 initVals.wnchMaxReleaseSpeed = wnch.winch1.maxSpeed.Value;
@@ -147,34 +148,37 @@ initVals.thrDragCoeff = thr.tether1.dragCoeff.Value;
 
 
 %% run optimization
-initCoeffs = ones(11,1);
+initCoeffs = ones(12,1);
 
-initCoeffs(7) = 0.55;
-initCoeffs(8) = 0.55;
-initCoeffs(9) = 0.55;
-
-lowLims = [repmat([0.6;1],3,1); 0.4;0.4;0.4 ; 0.9; 0.8];
-hiLims =  [repmat([1;1.4],3,1); 0.7;0.7;0.7 ; 1.15; 1.2];
+lowLims = [repmat([0.8;1],3,1); 0.1*ones(3,1); 0.1*ones(3,1)];
+hiLims =  [repmat([1;1.2],3,1); 1.9*ones(3,1); 1.9*ones(3,1)];
     
 dataRange = [80 140];
-
-% options = optimoptions(@fmincon,'Algorithm','interior-point'...
-% 'MaxIterations',40,...
-% 'MaxFunctionEvaluations',200,...
-% 'Display','iter');
-% [optDsgn,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-%     initVals,coeffs,tscExp,dataRange),...
-%     initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
 
 [optDsgn,minF] = particleSwarmMinimization(...
     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-    'swarmSize',15,'maxIter',6,'cognitiveLR',0.4,'socialLR',0.2);
+    'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
+% % 
+% % % % % gradient based opt
+% options = optimoptions(@fmincon,'Algorithm','interior-point',...
+% 'MaxIterations',40,...
+% 'Display','iter');
+% % 'MaxFunctionEvaluations',200,...
+% 
+% 
+% [optDsgn2,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,coeffs,tscExp,dataRange),...
+%     optDsgn,[],[],[],[],lowLims,hiLims,[],options);
+
+
 % 
 % 
 %%
-% optDsgn = [0.6117 1.4000 0.9705 1.3759 0.8752 1.0807 0.5179 0.4786 0.4500]';
+% optDsgn = [0.8000 1.2000 0.8000 1.2000 1.0000 1.0000 1.5000 0.5000...
+% 0.9500 1.4573 0.7500 0.5000 1.5000 1.5000]';
 % optDsgn = initCoeffs;
+% optDsgn2 = initCoeffs;
 
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,optDsgn,tscExp,dataRange);

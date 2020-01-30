@@ -14,7 +14,7 @@ vhcl.turbDiam.Value = 6.7500e-03
 vhcl.turbDiam.Unit = 'm'
 vhcl.turbDiam.NoScale = false
 vhcl.turbDiam.Description = 'Turbine Diameter'
-vhcl.buoyFactor.Value = 1.0600e+00
+vhcl.buoyFactor.Value = 1.0800e+00
 vhcl.buoyFactor.Unit is unitless or has no unit specified
 vhcl.buoyFactor.NoScale = true
 vhcl.buoyFactor.Description = 'Buoyancy Factor'
@@ -369,11 +369,15 @@ vhcl.initEulAng.Description = 'Initial Euler angles'
 vhcl.initAngVelVec.Unit = 'rad/s'
 vhcl.initAngVelVec.NoScale = false
 vhcl.initAngVelVec.Description = 'Initial angular velocity vector'
-vhcl.addedMass.Value = [0.000717473992653628 0 0;0 0.0604624816866356 0;0 0 0.0345629626737116]
+vhcl.addedMass.Value = [0.00050276576973485 0 0;0 0.00354999172185637 0;0 0 0.0293741090504335]
 vhcl.addedMass.Unit = 'kg'
 vhcl.addedMass.NoScale = false
 vhcl.addedMass.Description = 'addedMass'
-vhcl.mass.Value = 9.6587e-03
+vhcl.addedInertia.Value = [0.000186378665728105 0 0;0 1.81049607635261e-07 0;0 0 2.63017573075502e-05]
+vhcl.addedInertia.Unit = 'kg*m^2'
+vhcl.addedInertia.NoScale = false
+vhcl.addedInertia.Description = 'addedInertia'
+vhcl.mass.Value = 9.4798e-03
 vhcl.mass.Unit = 'kg'
 vhcl.mass.NoScale = false
 vhcl.mass.Description = 'Vehicle mass'
@@ -381,10 +385,6 @@ vhcl.inertia.Value = [8.308e-06 0 -4.02e-07;0 9.474e-06 0;-4.02e-07 0 1.8738e-05
 vhcl.inertia.Unit = 'kg*m^2'
 vhcl.inertia.NoScale = false
 vhcl.inertia.Description = 'Moment of inertia matrix'
-vhcl.addedInertia.Value = [0 0 0;0 0 0;0 0 0]
-vhcl.addedInertia.Unit = 'kg*m^2'
-vhcl.addedInertia.NoScale = false
-vhcl.addedInertia.Description = 'Added inertia of the system in the body frame'
 vhcl.surfaceOutlines is too big to display and takes up 1.1040e+03 bytes
 vhcl.thrAttchPts.posVec.Value = [-0.0270196888274606;-0.075;-0.00668351089576328]
 vhcl.thrAttchPts.posVec.Unit = 'm'
@@ -396,14 +396,14 @@ vhcl.turbines.axisUnitVec.Value = [1;0;0]
 vhcl.turbines.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turbines.axisUnitVec.NoScale = false
 vhcl.turbines.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turbines.attachPtVec.Value = [0.053218;-0.0125;0.002161]
+vhcl.turbines.attachPtVec.Value = [0.053218;-0.015;0.007701]
 vhcl.turbines.attachPtVec.Unit = 'm'
 vhcl.turbines.attachPtVec.NoScale = false
 vhcl.turbines.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
 vhcl.turbines.powerCoeff.Value = 5.0000e-01
 vhcl.turbines.powerCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.powerCoeff.NoScale = false
-vhcl.turbines.dragCoeff.Value = 1.9800e+00
+vhcl.turbines.dragCoeff.Value = 1.2800e+00
 vhcl.turbines.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.dragCoeff.NoScale = false
 vhcl.fuse.diameter.Value = 2.4750e-03

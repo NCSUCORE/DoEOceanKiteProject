@@ -74,6 +74,7 @@ classdef vehicle < dynamicprops
         initEulAng
         initAngVelVec
         addedMass
+        addedInertia
     end
     
     properties (Dependent)
@@ -81,7 +82,7 @@ classdef vehicle < dynamicprops
         mass
         inertia
 %         addedMass
-        addedInertia
+%         addedInertia
         surfaceOutlines
         thrAttchPts
         turbines
@@ -109,6 +110,7 @@ classdef vehicle < dynamicprops
             obj.Iyz            = SIM.parameter('Unit','kg*m^2','Description','Iyz');
             obj.addedMISwitch  = SIM.parameter('Value',1,'Unit','','Description','False turns off added mass and inertia');
             obj.addedMass      = SIM.parameter('Value',zeros(3),'Unit','kg','Description','addedMass');
+            obj.addedInertia   = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','addedInertia');
             obj.maxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
             obj.minCtrlDef     = SIM.parameter('Value',-30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the negative direction');
             obj.maxCtrlDefSpeed= SIM.parameter('Value',60,'Unit','deg/s','Description','Fastest rate of control surface deflection for all surfaces in either direction');
@@ -557,26 +559,33 @@ classdef vehicle < dynamicprops
             m_added_z = pi*density*(span*(chord/2)^2 + ...
                 HS_span*(HS_chord/2)^2 + 1.98*vsTh*(VS_chord/2)^2);
             
+            % added inertia
+            IxxAdded = 0.125*pi*density*chord*(span/2)^4;
+            IyyAdded = 0.125*pi*density*span*((chord/2)^2 - (wingTh/2)^2)^2;
+            IzzAdded = 0.147*pi*density*wingTh*(span/2)^4;
+            
             % store
             if obj.addedMISwitch.Value
-                 obj.addedMass.setValue([m_added_x 0 0;0 m_added_y 0; 0 0 m_added_z],'kg');
+                 obj.addedMass.setValue([m_added_x;m_added_y;m_added_z].*eye(3),'kg');
+                 obj.addedInertia.setValue([IxxAdded;IyyAdded;IzzAdded].*eye(3),'kg*m^2');
             else
                  obj.addedMass.setValue(zeros(3),'kg');
+                 obj.addedInertia.setValue(zeros(3),'kg*m^2');
             end
         end
         
-        % added inertia
-        function val = get.addedInertia(obj)
-            if obj.addedMISwitch.Value
-                %This is where to put added inertia when its added to the
-                %model
-                val = SIM.parameter('Value',zeros(3,3),...
-                    'Unit','kg*m^2','Description','Added inertia of the system in the body frame');
-            else
-                val = SIM.parameter('Value',zeros(3,3),...
-                    'Unit','kg*m^2','Description','Added inertia of the system in the body frame');
-            end
-        end
+% % %         % added inertia
+%         function val = get.addedInertia(obj)
+%             if obj.addedMISwitch.Value
+%                 %This is where to put added inertia when its added to the
+%                 %model
+%                 val = SIM.parameter('Value',zeros(3,3),...
+%                     'Unit','kg*m^2','Description','Added inertia of the system in the body frame');
+%             else
+%                 val = SIM.parameter('Value',zeros(3,3),...
+%                     'Unit','kg*m^2','Description','Added inertia of the system in the body frame');
+%             end
+%         end
         
         % surface outlines
         function val = get.surfaceOutlines(obj)
@@ -702,14 +711,14 @@ classdef vehicle < dynamicprops
                 val(ii,1).diameter.setValue(obj.turbDiam.Value,'m');
                 val(ii,1).axisUnitVec.setValue([1;0;0],'');
                 val(ii,1).powerCoeff.setValue(0.5,'');
-                val(ii,1).dragCoeff.setValue(1.98,'');
+                val(ii,1).dragCoeff.setValue(1.28,'');
 % http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/introvisc/node11.html
             end
             
             switch obj.numTurbines.Value
                 case 2
-                    port_turb = obj.surfaceOutlines.top_vs.Value(:,1) + [0;-12.5e-3;3.6e-3];
-                    stbd_turb = obj.surfaceOutlines.top_vs.Value(:,1) + [0;12.5e-3;3.6e-3];
+                    port_turb = obj.surfaceOutlines.top_vs.Value(:,1) + [0;-15e-3;9.14e-3];
+                    stbd_turb = obj.surfaceOutlines.top_vs.Value(:,1) + [0;15e-3;9.14e-3];
                 otherwise
                     fprintf('get method not programmed for %d turbines',obj.numTurbines.Value)
                     
