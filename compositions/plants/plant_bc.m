@@ -2,6 +2,14 @@ function plant_bc
 % Creates output bus used by allActuatorCtrl_cl
 
 numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
+
+switch evalin('base','class(gndStn)')
+    case 'OCT.sixDoFStation'
+        numAnchThrs = evalin('base','gndStn.anchThrs.numTethers.Value');
+    case 'OCT.oneDoFStation'
+        numAnchThrs = 1;
+end
+
 numGndStnLumpedMasses = evalin('base','gndStn.lumpedMassPositionMatrixBdy.Value');
 
 elems(1) = Simulink.BusElement;
@@ -113,8 +121,8 @@ elems(12).Unit = 'm';
 
 elems(13) = Simulink.BusElement;
 elems(13).Name = 'anchThrPollPos';
+elems(10).Dimensions = [ 1  numAnchThrs];
 elems(13).DimensionsMode = 'Fixed';
-% elems(13).DataType = 'Bus: anchThrPollPosBus';
 elems(13).DataType = 'Bus: thrPollPosBus';
 elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';

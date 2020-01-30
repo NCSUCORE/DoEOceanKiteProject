@@ -180,7 +180,7 @@ if ~isempty(p.Results.GroundStation)
     else
         height = p.Results.GroundStation.cylTotH.Value;
     end
-    zCyl = zCyl*height;
+    zCyl = zCyl*height-height/2;
     xCyl = xCyl([1 2 99 100],:);
     yCyl = yCyl([1 2 99 100],:);
     zCyl = zCyl([1 2 99 100],:);
