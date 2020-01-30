@@ -1,7 +1,7 @@
 % %% Script to run ILC path optimization
 clear;clc;close all
 sim = SIM.sim;
-sim.setDuration(500,'s');
+sim.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -22,17 +22,17 @@ loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
 % Environment
-loadComponent('constXYZT');
-%loadComponent('CNAPsTurbJames');
-%  loadComponent('CNAPsMitchell');
+% loadComponent('constXYZT');
+ loadComponent('CNAPsTurbJames');
+%   loadComponent('CNAPsMitchell');
 %% Environment IC's and dependant properties
-env.water.setflowVec([1 0 0],'m/s')
+% env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.8,1.6,.3,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
-gndStn.setPosVec([0 0 200],'m')
+gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
@@ -79,7 +79,11 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
-tsc = signalcontainer(logsout);
+% tsc = signalcontainer(logsout);
+tsc = parseLogsout; 
+avgFlowMag =[ mean( diff(tsc.vhclFlowVecs.time)); diff(tsc.vhclFlowVecs.time)]' .* sqrt(sum(squeeze(tsc.vhclFlowVecs.data(:,5,:)).^2));
+
+rAvg = sum(avgFlowMag)/tsc.vhclFlowVecs.time(end);
 % LUT = Simulink.LookupTable;
 % timeVec = linspace(0,1);
 % LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);
