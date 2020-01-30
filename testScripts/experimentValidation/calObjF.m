@@ -1,4 +1,4 @@
-function val = calObjF(tscSim,tscExp,dataRange)
+function [val,varargout] = calObjF(tscSim,tscExp,dataRange)
 
 % load data
 timeExp = tscExp.roll_rad.Time;
@@ -28,10 +28,27 @@ yawExp = tscExp.yaw_rad.Data(startIdxExp:endIdxExp);
 
 % val = calcRMSE(yPosSim,yPosExp)/max(abs(yPosExp));
 
-val = 1.0*calcRMSE(yawSim,yawExp) + ...
-    1.0*calcRMSE(yPosSim,yPosExp) + ...
-    1.0*calcRMSE(zPosSim,zPosExp) + ...
-    1.0*calcRMSE(rollSim,rollExp);
+% RMSEs
+rollRMSE = 1.0*calcRMSE(rollSim,rollExp);
+yawRMSE = 1.0*calcRMSE(yawSim,yawExp);
+ycmRMSE = 1.0*calcRMSE(yPosSim,yPosExp);
+zcmRMSE = 0.0*calcRMSE(zPosSim,zPosExp);
+val =  rollRMSE + yawRMSE + ycmRMSE + zcmRMSE;
+
+% varargout outputs
+allRMSE.rollRMSE = rollRMSE;
+allRMSE.yawRMSE = yawRMSE;
+allRMSE.ycmRMSE = ycmRMSE;
+allRMSE.zcmRMSE = zcmRMSE;
+varargout{1} = allRMSE;
+
+% validation functions
+validatePerc.roll = mean(rollSim-rollExp);
+validatePerc.yaw = mean(yawSim-yawExp);
+validatePerc.yPos = mean(yPosSim-yPosExp);
+validatePerc.zPos = mean(zPosSim-zPosExp);
+
+varargout{2} = validatePerc;
 
 end
 

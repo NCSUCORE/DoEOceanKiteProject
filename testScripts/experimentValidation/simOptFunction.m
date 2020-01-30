@@ -20,10 +20,10 @@ vhcl.vStab.CD.setValue(coeffs(6).*initVals.CDvStab,'')
 
 vhcl.addedMass.setValue(coeffs(7:9).*initVals.addedMass,'kg')
 %
-% vhcl.buoyFactor.setValue(coeffs(9)*initVals.buoyFactor,'')
+vhcl.buoyFactor.setValue(coeffs(10)*initVals.buoyFactor,'')
 %
 % winches
-maxReleaseSpeed = 1*initVals.wnchMaxReleaseSpeed;
+maxReleaseSpeed = coeffs(11)*initVals.wnchMaxReleaseSpeed;
 wnch.winch1.maxSpeed.setValue(maxReleaseSpeed,'m/s')
 wnch.winch2.maxSpeed.setValue(maxReleaseSpeed,'m/s')
 wnch.winch3.maxSpeed.setValue(maxReleaseSpeed,'m/s')

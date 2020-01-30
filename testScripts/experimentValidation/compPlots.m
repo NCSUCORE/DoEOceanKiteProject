@@ -34,6 +34,7 @@ sol_Vcmo = squeeze(tscSim2.velocityVec.Data).*(1/Lscale^0.5);
 sol_euler = squeeze(tscSim2.eulerAngles.Data);
 sol_OwB = squeeze(tscSim2.angularVel.Data).*(Lscale^0.5);
 
+[objF2,rmseVals,othrVals] = calObjF(tscSim2,tscExp,dataRange);
 
 % % % euler angles %%%%%%%%%%%%%%%%%%%%%%%%%
 fn = fn+1;

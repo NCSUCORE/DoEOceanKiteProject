@@ -699,7 +699,8 @@ classdef vehicle < dynamicprops
                 val(ii,1).diameter.setValue(obj.turbDiam.Value,'m');
                 val(ii,1).axisUnitVec.setValue([1;0;0],'');
                 val(ii,1).powerCoeff.setValue(0.5,'');
-                val(ii,1).dragCoeff.setValue(1.28,'');
+                val(ii,1).dragCoeff.setValue(1.98,'');
+% http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/introvisc/node11.html
             end
             
             switch obj.numTurbines.Value
