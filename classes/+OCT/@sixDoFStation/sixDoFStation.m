@@ -293,6 +293,13 @@ classdef sixDoFStation < dynamicprops
             obj.lumpedMassAreaMat.setValue(val,unit)
         end
         
+        % getters
+        function val = get.cylTotH(obj)
+            val = obj.cylTotH;
+            height = max(obj.zMatExt.Value)-min(obj.zMatExt.Value);
+            val.setValue(height,obj.zMatExt.Unit)
+        end
+        
         
         
         function bouyancy(obj)
