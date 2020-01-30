@@ -12,8 +12,7 @@ loadComponent('oneDoFGSCtrlBasic');
 % High level controller
 loadComponent('constBoothLem')
 % Ground station
-   loadComponent('pathFollowingGndStn');
-
+loadComponent('pathFollowingGndStn');
 %     loadComponent('oneThrThreeAnchGndStn001');
 % Winches
 loadComponent('oneDOFWnchPTO');
