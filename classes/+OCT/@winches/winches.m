@@ -23,11 +23,13 @@ classdef winches < dynamicprops
             end
             p = inputParser;
             addParameter(p,'WinchNames',defNames,@(x) all(cellfun(@(x) isa(x,'char'),x)))
+            addParameter(p,'WinchClass','winch',@(x) any(strcmp(x,{'winch','umWinch'})))
             parse(p,varargin{:})
             % Create winches
             for ii = 1:obj.numWinches.Value
                 obj.addprop(p.Results.WinchNames{ii});
-                obj.(p.Results.WinchNames{ii}) = OCT.winch;
+                obj.(p.Results.WinchNames{ii}) = OCT.(p.Results.WinchClass);
+                
             end
         end
         
