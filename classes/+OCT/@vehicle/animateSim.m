@@ -331,13 +331,13 @@ for ii = 1:sz.numTethers
 end
 
 % Plot the anchor tethers
-if isprop(tscTmp,'anchThrNodeBusArry') && isfield(tscTmp.anchThrNodeBusArry,'nodePositions')
-    for ii = 1:numel(tscTmp.anchThrNodeBusArry)
-        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsamples(1).Data;
+if ~isempty(p.Results.GroundStation) && isprop(tscTmp,'anchThrNodePosVecs')
+    nodePosVecs = tscTmp.anchThrNodePosVecs.getsamples(1).Data;
+    for ii = 1:sz.numTethersAnchor
         h.anchThr{ii} = plot3(...
-            nodePosVecs(1,:),...
-            nodePosVecs(2,:),...
-            nodePosVecs(3,:),...
+            nodePosVecs(1,:,ii),...
+            nodePosVecs(2,:,ii),...
+            nodePosVecs(3,:,ii),...
             'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
             'MarkerSize',4,'MarkerFaceColor','k');
     end
@@ -610,11 +610,11 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % update the anchor tether(s) if exists
     if isfield(h,'anchThr')
-        for jj = 1:numel(h.anchThr)
-            nodePosVecs = tscTmp.anchThrNodeBusArry(jj).nodePositions.getsamples(ii).Data;
-            h.anchThr{jj}.XData = nodePosVecs(1,:);
-            h.anchThr{jj}.YData = nodePosVecs(2,:);
-            h.anchThr{jj}.ZData = nodePosVecs(3,:);
+        nodePosVecs = tscTmp.anchThrNodePosVecs.getsamples(ii).Data;
+        for jj = 1:sz.numTethersAnchor
+            h.anchThr{jj}.XData = nodePosVecs(1,:,jj);
+            h.anchThr{jj}.YData = nodePosVecs(2,:,jj);
+            h.anchThr{jj}.ZData = nodePosVecs(3,:,jj);
         end
     end
     
@@ -622,7 +622,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     h.title.String = {strcat(...
         sprintf('Time = %.1f s',tscTmp.velocityVec.Time(ii)),',',...
         sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.getsamples(ii).Data))),...
-        sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsamples(ii).Data))};
+        sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsamples(ii).Data(:,end)))};
     
     
     
