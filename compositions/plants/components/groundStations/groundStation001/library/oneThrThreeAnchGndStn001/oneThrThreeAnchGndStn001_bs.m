@@ -54,7 +54,8 @@ gndStn.lumpedMassSphereRadius.setValue(.5,'m');
 
 
 % tether attach point for the tether that goes from the GS to the KITE
-gndStn.addThrAttch('kitThrAttchPt1',[gndStn.cylRad.Value 0 -0.5*gndStn.cylTotH.Value]);
+% gndStn.addThrAttch('kitThrAttchPt1',[gndStn.cylRad.Value 0 -0.5*gndStn.cylTotH.Value]);
+gndStn.addThrAttch('kitThrAttchPt1',[0 0 0]);
 
 
 % tether attach points for the tether that goes from the GS to the GND
