@@ -8,7 +8,7 @@ cd(fileparts(mfilename('fullpath')));
 lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
-simTime = 140;
+simTime = 1*140;
 sim = SIM.sim;
 sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 35e-2;
-iniX = 0.2022;
+iniX = 0.2943;
 pitchSP = 14;
 
 % % % initial conditions
@@ -74,9 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.3981,'m');
-wnch.winch2.initLength.setValue(0.4206,'m');
-wnch.winch3.initLength.setValue(0.3981,'m');
+wnch.winch1.initLength.setValue(0.4458,'m');
+wnch.winch2.initLength.setValue(0.4814,'m');
+wnch.winch3.initLength.setValue(0.4458,'m');
 
 dynamicCalc = '';
 
@@ -121,8 +121,9 @@ datFileName = 'data_24_Jan_2020_15_50_38.mat';
 fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
 tscExp = processExpData(fullFileName,...
-    'Ro_c_in_meters',[22;-1;-3.9]./100,...
-    'yawOffset',1*2.5);
+    'Ro_c_in_meters',[23;-0.74;-4.1]./100,...
+    'yawOffset',1*2.67,...
+    'rollOffset',1*0.2505);
 
 
 %% adjust parameters
@@ -150,38 +151,42 @@ initVals.thrDragCoeff = thr.tether1.dragCoeff.Value;
 %% run optimization
 initCoeffs = ones(12,1);
 
-lowLims = [repmat([0.8;1],3,1); 0.1*ones(3,1); 0.1*ones(3,1)];
-hiLims =  [repmat([1;1.2],3,1); 1.9*ones(3,1); 1.9*ones(3,1)];
+initCoeffs(10:12) = [1;1;1];
+
+initCoeffs = [0.800 1.200 0.921 1.200 0.873 1.000 1.122 0.200 1.800 0.200 1.800 1.800]';
+
+lowLims = [repmat([0.8;1],3,1); 0.2*ones(3,1); 0.2*ones(3,1)];
+hiLims =  [repmat([1;1.2],3,1); 1.8*ones(3,1); 1.8*ones(3,1)];
     
 dataRange = [80 140];
-
-[optDsgn,minF] = particleSwarmMinimization(...
-    @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-    'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
-% % 
-% % % % % gradient based opt
-% options = optimoptions(@fmincon,'Algorithm','interior-point',...
-% 'MaxIterations',40,...
-% 'Display','iter');
+% 
+% % % % % optimize using PSO
+% [optDsgn,minFCoarse] = particleSwarmMinimization(...
+%     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
+%     'swarmSize',20,'maxIter',10,'cognitiveLR',0.4,'socialLR',0.2);
+% 
+% % % % gradient based opt
+% options = optimoptions(@fmincon,'Algorithm','sqp',...
+% 'MaxIterations',15,...
+% 'Display','final',...
+% 'OptimalityTolerance',1e-4);
 % % 'MaxFunctionEvaluations',200,...
 % 
-% 
-% [optDsgn2,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+% [optDsgn2,minFfine] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
 %     initVals,coeffs,tscExp,dataRange),...
-%     optDsgn,[],[],[],[],lowLims,hiLims,[],options);
+%     optDsgn,[],[],[],[],0.75.*optDsgn,1.25.*optDsgn,[],options);
 
 
 % 
 % 
 %%
-% optDsgn = [0.8000 1.2000 0.8000 1.2000 1.0000 1.0000 1.5000 0.5000...
-% 0.9500 1.4573 0.7500 0.5000 1.5000 1.5000]';
+% optDsgn = [0.900 1.100 0.952 1.100 0.900 1.000 0.500 0.500 1.500 0.500 0.500 0.500 ]';
 % optDsgn = initCoeffs;
-% optDsgn2 = initCoeffs;
+optDsgn2 = initCoeffs;
 
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,optDsgn,tscExp,dataRange);
+    initVals,optDsgn2,tscExp,dataRange);
 
 
 %% Run the simulation

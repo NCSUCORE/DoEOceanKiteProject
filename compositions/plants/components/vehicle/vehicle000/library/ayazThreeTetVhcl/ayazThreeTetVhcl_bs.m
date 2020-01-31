@@ -17,7 +17,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.08,'');
+vhcl.setBuoyFactor(1.05,'');
 
 vhcl.setTurbDiam(0.45,'m')
 
@@ -79,10 +79,13 @@ vhcl.setVsClMin(-Clmax,'');
 % % % Fuselage (could use more realistic numbers)
 fuseChord = 11*Lscale;
 fuseAirfoil = 0.06;
-vhcl.setFuseDiameter(0.25*fuseChord*fuseAirfoil*(1/Lscale),'m')
+thFunc = @(x,t) 5*t*(0.2969*x.^0.5 - 0.126*x - 0.3516*x.^2 + 0.2843*x.^3 ...
+    - 0.1036*x.^4);
+
+vhcl.setFuseDiameter(2*mean(thFunc(0:0.01:1,fuseAirfoil)*fuseChord)*(1/Lscale),'m')
 vhcl.setFuseEndDragCoeff(0.4,'')
 vhcl.setFuseSideDragCoeff(0.8,'')
-vhcl.setFuseRCmToNose(-([60;0;0]*1e-3 + rCM_LE)*(1/Lscale),'m')
+vhcl.setFuseRCmToNose(-([45;0;0]*1e-3 + rCM_LE)*(1/Lscale),'m')
 
 % % % data file name
 vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
@@ -101,12 +104,12 @@ vhcl.addedMass.setValue(addedMassCoeff.*vhcl.addedMass.Value,'kg')
 % % % artificially reduce lift
 % reductionFactor = 1.0;
 % incrementFactor = 1.0;
-% 
+%
 % vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
 % vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
 % vhcl.hStab.CL.setValue(reductionFactor*vhcl.hStab.CL.Value,'')
 % vhcl.vStab.CL.setValue(reductionFactor*vhcl.vStab.CL.Value,'')
-% 
+%
 % vhcl.portWing.CD.setValue(incrementFactor*vhcl.portWing.CD.Value,'')
 % vhcl.stbdWing.CD.setValue(incrementFactor*vhcl.stbdWing.CD.Value,'')
 % vhcl.hStab.CD.setValue(incrementFactor*vhcl.hStab.CD.Value,'')

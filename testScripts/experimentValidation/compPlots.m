@@ -36,6 +36,10 @@ sol_OwB = squeeze(tscSim2.angularVel.Data).*(Lscale^0.5);
 
 [objF2,rmseVals,othrVals] = calObjF(tscSim2,tscExp,dataRange);
 
+% % % % shift the time axis
+timeSim2 = timeSim2 - 50;
+timeExp = timeExp - 50;
+
 % % % euler angles %%%%%%%%%%%%%%%%%%%%%%%%%
 fn = fn+1;
 figure(fn)
@@ -129,3 +133,4 @@ title('CM velocity')
 %%%%%%
 set(findobj('Type','axes'),'XLim',[0 timeSim2(end)]);
 set(findobj('Type','legend'),'Visible','off');
+% set(findall(gcf,'-property','FontSize'),'FontSize',13)

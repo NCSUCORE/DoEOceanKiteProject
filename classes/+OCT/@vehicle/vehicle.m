@@ -541,17 +541,23 @@ classdef vehicle < dynamicprops
         function calcAddedMass(obj)
             % dummy variables
             density = obj.fluidDensity.Value;
-            chord = obj.wingChord.Value;
-            span = chord*obj.wingAR.Value;
-            HS_chord = obj.hsChord.Value;
-            HS_span = HS_chord*obj.hsAR.Value;
-            VS_chord = obj.vsChord.Value;
+            chord = obj.wingChord.Value*0.5*(1+obj.wingTR.Value);
+            span = obj.wingChord.Value*obj.wingAR.Value;
+            HS_chord = obj.hsChord.Value*0.5*(1+obj.hsTR.Value);
+            HS_span = obj.hsChord.Value*obj.hsAR.Value;
+            VS_chord = obj.vsChord.Value*0.5*(1 + obj.vsTR.Value);
             VS_span = obj.vsSpan.Value;
             
-            % calculate
-            wingTh = (eval(obj.wingNACA.Value(end-1:end))/100)*chord;
-            hsTh = (eval(obj.hsNACA.Value(end-1:end))/100)*HS_chord;
-            vsTh = (eval(obj.vsNACA.Value(end-1:end))/100)*VS_chord;
+            % 
+            thFunc = @(x,t) 5*t*(0.2969*x.^0.5 - 0.126*x - 0.3516*x.^2 + 0.2843*x.^3 ...
+            - 0.1036*x.^4);
+            
+            % calculate average thickness
+            wingTh = 2*mean(thFunc(0:0.01:1,(eval(obj.wingNACA.Value(end-1:end))/100))*chord);
+            hsTh = 2*mean(thFunc(0:0.01:1,(eval(obj.hsNACA.Value(end-1:end))/100))*HS_chord);
+            vsTh = 2*mean(thFunc(0:0.01:1,(eval(obj.vsNACA.Value(end-1:end))/100))*VS_chord);
+      
+            % calculate added mass
             m_added_x = pi*density*(span*(wingTh/2)^2 + ...
                 HS_span*(hsTh/2)^2 + VS_span*(vsTh/2)^2);
             m_added_y = pi*density*(2.23*wingTh*(chord/2)^2 + ...
@@ -1180,7 +1186,7 @@ classdef vehicle < dynamicprops
             
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
-            title('Stbd Wing')
+            title('Starboard Wing')
             grid on
             hold on
             
@@ -1200,7 +1206,7 @@ classdef vehicle < dynamicprops
             
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
-            title('H-stab')
+            title('Horizontal stabilizer')
             grid on
             hold on
             
@@ -1220,7 +1226,7 @@ classdef vehicle < dynamicprops
             hvStabCL_ax = gca;
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
-            title('V-stab')
+            title('Vertical stabilizer')
             grid on
             hold on
             

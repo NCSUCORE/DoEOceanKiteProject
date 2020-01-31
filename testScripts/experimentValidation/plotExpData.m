@@ -1,6 +1,6 @@
 
 % superimpose plots from simulation and experiment
-datFileName = 'data_24_Jan_2020_15_50_38.mat';
+datFileName = 'data_24_Jan_2020_16_48_25.mat';
 fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
 tscExp = processExpData(fullFileName,...

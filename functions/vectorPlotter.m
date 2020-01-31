@@ -12,7 +12,7 @@ addRequired(p,'time', @(x) isnumeric(x));
 addRequired(p,'data', @(x) isnumeric(x));
 addParameter(p,'lineSpec','-', @(x) ischar(x));
 addParameter(p,'lineWidth',1, @(x) isnumeric(x));
-addParameter(p,'lineColorScheme','rgb', @(x) ischar(x));
+addParameter(p,'ColorScheme','rgb', @(x) ischar(x));
 addParameter(p,'legends',repmat({''},nPlots,1), @(x) iscell(x));
 addParameter(p,'xlabel','Time', @(x) ischar(x));
 addParameter(p,'xUnits','(s)', @(x) ischar(x));
@@ -23,7 +23,7 @@ addParameter(p,'figureTitle','', @(x) ischar(x));
 parse(p,time,data,varargin{:});
 
 % set line color scheme
-switch p.Results.lineColorScheme
+switch p.Results.ColorScheme
     case 'blk'
         colors = 1/255*zeros(8,3);
     case 'rgb'
@@ -33,6 +33,10 @@ switch p.Results.lineColorScheme
             152,78,163
             255,127,0
             255,255,51];
+    case 'red'
+        colors = repmat(1/255*[228,26,28],8,1);
+    case 'blue'
+        colors = repmat(1/255*[55,126,184],8,1);
     otherwise
         warning('Undefined line color scheme, using RGB');
         colors = 1/255*[228,26,28
