@@ -688,7 +688,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         frame       = getframe(h.fig);
         im          = frame2im(frame);
         [imind,cm]  = rgb2ind(im,256);
-        if ii == firstInd
+        if ii == 1
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif', 'Loopcount',inf);
         else
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif','WriteMode','append','DelayTime',p.Results.GifTimeStep)

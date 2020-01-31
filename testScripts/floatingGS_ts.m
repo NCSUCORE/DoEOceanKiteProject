@@ -55,31 +55,17 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-% wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.setTetherInitLength(vhcl,gndStn.initPosVec.Value,env,thr,[ 1 0 0]);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
-% Set initial conditions
-% fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
-%     hiLvlCtrl.initBasisParams.Value,...
-%     gndStn.posVec.Value);
 vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.initPosVec.Value);
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
-% LUT = Simulink.LookupTable;
-% timeVec = linspace(0,1);
-% LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);
-% LUT.Breakpoints(1).Value = env.water.xGridPoints.Value;
-% LUT.Breakpoints(2).Value = env.water.yGridPoints.Value;
-% LUT.Breakpoints(3).Value = env.water.zGridPoints.Value;
-% LUT.Breakpoints(4).Value = 1:size(LUT.Table.Value,4);
-% LUT.Breakpoints(5).Value = 1:size(LUT.Table.Value,5);
-% LUT.Breakpoints(6).Value = env.waterTurb.frequencyDomainEqParams.Value.Time;
-% LUT.StructTypeInfo.Name = 'LUT';
+
 %%
 vhcl.animateSim(tsc,1,...
     'PathFunc',fltCtrl.fcnName.Value,...
@@ -89,4 +75,5 @@ vhcl.animateSim(tsc,1,...
     'PlotAxes',false,...
     'TracerDuration',10,...
     'GroundStation',gndStn,...
-    'SaveGif',false)
+    'GifTimeStep',1/30,...
+    'SaveGif',true)

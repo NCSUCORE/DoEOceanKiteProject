@@ -37,14 +37,6 @@ gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
-% vhcl.setICsOnPath(...
-%     0,... % Initial path position
-%     PATHGEOMETRY,... % Name of path function
-%     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
-%     gndStn.posVec.Value,... % Center point of path sphere
-%     (11/2)*norm(env.water.flowVec.Value)) % Initial speed
-% vhcl.setAddedMISwitch(false,'');
-
 vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
@@ -80,17 +72,8 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
-% LUT = Simulink.LookupTable;
-% timeVec = linspace(0,1);
-% LUT.Table.Value = env.waterTurb.frequencyDomainEqParams.Value.Data(:,:,:,:,[],:);
-% LUT.Breakpoints(1).Value = env.water.xGridPoints.Value;
-% LUT.Breakpoints(2).Value = env.water.yGridPoints.Value;
-% LUT.Breakpoints(3).Value = env.water.zGridPoints.Value;
-% LUT.Breakpoints(4).Value = 1:size(LUT.Table.Value,4);
-% LUT.Breakpoints(5).Value = 1:size(LUT.Table.Value,5);
-% LUT.Breakpoints(6).Value = env.waterTurb.frequencyDomainEqParams.Value.Time;
-% LUT.StructTypeInfo.Name = 'LUT';
-%%
+
+%% Plot/Animate the Results
 vhcl.animateSim(tsc,1,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PlotTracer',true,...
