@@ -11,8 +11,10 @@ numNodes    = evalin('base','thr.numNodes.Value');   % Get the number of nodes
 numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
 if numTethers == 1
     thrLinkFlowVecsSize = [3 numNodes-1];
+    nodeTenVecSize      = [3 1];
 else
     thrLinkFlowVecsSize = [3 numNodes-1 numTethers];
+    nodeTenVecSize      = [3 1 numTethers];
 end
 
 
@@ -54,5 +56,6 @@ resultsStruct.anchThrLinkFlowVecsSize = anchThrLinkFlowVecsSize;
 resultsStruct.numNodes = numNodes;
 resultsStruct.numTethers = numTethers;
 resultsStruct.thrLinkFlowVecsSize = thrLinkFlowVecsSize;
+resultsStruct.nodeTenVecSize = nodeTenVecSize;
 
 end

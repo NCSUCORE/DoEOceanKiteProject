@@ -127,7 +127,7 @@ elems(14).Unit = 'm/s';
 
 elems(15) = Simulink.BusElement;
 elems(15).Name = 'gndTenVecs';
-elems(15).Dimensions = sz.anchThrLinkFlowVecsSize;
+elems(15).Dimensions = sz.nodeTenVecSize;
 elems(15).DimensionsMode = 'Fixed';
 elems(15).DataType = 'double';
 elems(15).SampleTime = -1;

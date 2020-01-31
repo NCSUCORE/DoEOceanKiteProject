@@ -110,7 +110,7 @@ if p.Results.PowerBar
     end
 end
 
- 
+sz = getBusDims;
 
 %% Plot things
 % Plot the aerodynamic surfaces
@@ -320,11 +320,12 @@ if p.Results.FluidMoments
 end
 
 % Plot the tethers
-for ii = 1:numel(tscTmp.thrNodeBus)
+posVecs = tscTmp.thrNodePosVecs.getsamples(1).Data;
+for ii = 1:sz.numTethers
     h.thr{ii} = plot3(...
-        squeeze(tscTmp.thrNodeBus.nodePositions.Data(1,:,1)),...
-        squeeze(tscTmp.thrNodeBus.nodePositions.Data(2,:,1)),...
-        squeeze(tscTmp.thrNodeBus.nodePositions.Data(3,:,1)),...
+        squeeze(posVecs(1,:,ii)),...
+        squeeze(posVecs(2,:,ii)),...
+        squeeze(posVecs(3,:,ii)),...
         'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
         'MarkerSize',4,'MarkerFaceColor','k');
 end
@@ -600,11 +601,11 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     end
     
     % Update the tether(s)
-    for jj = numel(tscTmp.thrNodeBus)
-        thrNodePos = tscTmp.thrNodeBus(jj).nodePositions.getsamples(ii).Data;
-        h.thr{jj}.XData = squeeze(thrNodePos(1,:));
-        h.thr{jj}.YData = squeeze(thrNodePos(2,:));
-        h.thr{jj}.ZData = squeeze(thrNodePos(3,:));
+    posVecs = tscTmp.thrNodePosVecs.getsamples(ii).Data;
+    for jj = 1:sz.numTethers
+        h.thr{jj}.XData = posVecs(1,:,jj);
+        h.thr{jj}.YData = posVecs(2,:,jj);
+        h.thr{jj}.ZData = posVecs(3,:,jj);
     end
     
     % update the anchor tether(s) if exists

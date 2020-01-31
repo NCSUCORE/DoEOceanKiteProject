@@ -6,7 +6,7 @@ try
     evalin('base',sprintf('%s_bc;',blkName));
 catch me
     dbstack
-%     error('Failed to initialize variant for \n %s',blkPth)
+    fprintf('\n Error attempting to run bus creator \n %s\n',sprintf('%s_bc;',blkName));
     rethrow(me)
 end
 end
