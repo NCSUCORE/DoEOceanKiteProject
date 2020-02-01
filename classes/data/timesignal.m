@@ -27,7 +27,6 @@ classdef timesignal < timeseries
             if ndims(obj.Data) == 2 && any(size(obj.Data) == 1)
                 plot@timeseries(obj,varargin{:})
             else % Plot vector/matrix
-                
                 % Number of time steps
                 nt = numel(obj.Time);
                 % size of the data
@@ -65,7 +64,17 @@ classdef timesignal < timeseries
                                 rDim = 1;
                                 cDim = 2;
                         end
-                        % If the signal is 4D or higher, no plot method
+                    case 4
+                        % If the data is 4D, slice along 3rd dimension,
+                        % call plotting on each of the slides
+                        for ii = 1:size(obj.Data,3)
+                           figure('Name',sprintf('Slice %d',ii));
+                           newObj = obj;
+                           newObj.Data = squeeze(obj.Data(:,:,ii,:));
+                           newObj.plot;
+                        end
+                        return
+                        % If the signal is 5D or higher, no plot method
                     otherwise
                         error('Incorrect number of data dimensions, IDK how to plot that')
                 end

@@ -4,12 +4,16 @@ function tether000_init
 % it's evaluating in.  I know it shouldn't be the base workspace, but I'm
 % paranoid.
 
-try
-    % Get the number of nodes
-    numNodes = evalin('base',get_param(gcb,'numNodes'));
-catch
-    fprintf('\nUnable to evaluate number of nodes in block \n %s\n',gcb)
-    dbstack
+dimInfo = getBusDims;
+blkPath = split(gcb,'/');
+
+switch blkPath{end}
+    case 'anchorTethers'
+        numNodes = dimInfo.numNodesAnchor;
+    case 'tether000'
+        numNodes = dimInfo.numNodes;
+    otherwise
+        error('Unknown tether000 block instance, IDK how to get the right number of nodes')
 end
 
 if numNodes < 2  || floor(numNodes)~=numNodes

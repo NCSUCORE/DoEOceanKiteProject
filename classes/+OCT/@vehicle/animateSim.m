@@ -60,6 +60,8 @@ addParameter(p,'TracerDuration',5,@isnumeric)
 addParameter(p,'PathPosition',false,@islogical)
 % Plot normal, tangent and desired vectors
 addParameter(p,'NavigationVecs',false,@islogical)
+% Plot tether nodal net force vecs
+addParameter(p,'TetherNodeForces',false,@islogical)
 % Plot velocity vector
 addParameter(p,'VelocityVec',false,@islogical)
 % Plot local aerodynamic force vectors on surfaces
@@ -255,6 +257,35 @@ if p.Results.NavigationVecs
         len*tscTmp.velVectorDes.Data(1,2),...
         len*tscTmp.velVectorDes.Data(1,3),...
         'MaxHeadSize',0,'Color','b','LineStyle','--','LineWidth',1.5);
+end
+
+if p.Results.TetherNodeForces
+    posVecs    = tscTmp.anchThrNodePosVecs.getsamples(1).Data;
+    force1Vecs = tscTmp.anchThrNode1FVec.getsamples(1).Data;
+    forceNVecs = tscTmp.anchThrNodeNFVec.getsamples(1).Data;
+    
+    lengthScl = 10;
+   
+    % For each tether
+    for ii = 1:size(posVecs,3)
+        fVec1 = force1Vecs(:,:,ii);
+        fVecN = forceNVecs(:,:,ii);
+        
+        fVec1 = lengthScl*fVec1./sqrt(sum(fVec1.^2));
+        fVecN = lengthScl*fVecN./sqrt(sum(fVecN.^2));
+        
+        h.anchThrFrcVec1(ii) = plot3(...
+            [posVecs(1,1,ii) posVecs(1,1,ii)+fVec1(1)],...
+            [posVecs(2,1,ii) posVecs(2,1,ii)+fVec1(2)],...
+            [posVecs(3,1,ii) posVecs(3,1,ii)+fVec1(3)],...
+            'Color','r','LineStyle','-');
+        
+        h.anchThrFrcVecN(ii) = plot3(...
+            [posVecs(1,end,ii) posVecs(1,end,ii)+fVecN(1)],...
+            [posVecs(2,end,ii) posVecs(2,end,ii)+fVecN(2)],...
+            [posVecs(3,end,ii) posVecs(3,end,ii)+fVecN(3)],...
+            'Color','r','LineStyle','-');
+    end
 end
 
 % Create a table
@@ -566,6 +597,31 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.desVec.UData = desVec(1);
         h.desVec.VData = desVec(2);
         h.desVec.WData = desVec(3);
+    end
+    
+    if p.Results.TetherNodeForces
+        posVecs    = tscTmp.anchThrNodePosVecs.getsamples(ii).Data;
+        force1Vecs = tscTmp.anchThrNode1FVec.getsamples(ii).Data;
+        forceNVecs = tscTmp.anchThrNodeNFVec.getsamples(ii).Data;
+        
+        lengthScl = 10;
+        
+        % For each tether
+        for jj = 1:size(posVecs,3)
+            fVec1 = force1Vecs(:,:,jj);
+            fVecN = forceNVecs(:,:,jj);
+            
+            fVec1 = lengthScl*fVec1./sqrt(sum(fVec1.^2));
+            fVecN = lengthScl*fVecN./sqrt(sum(fVecN.^2));
+
+            h.anchThrFrcVec1(jj).XData = [posVecs(1,1,jj) posVecs(1,1,jj)+fVec1(1)];
+            h.anchThrFrcVec1(jj).YData = [posVecs(2,1,jj) posVecs(2,1,jj)+fVec1(2)];
+            h.anchThrFrcVec1(jj).ZData = [posVecs(3,1,jj) posVecs(3,1,jj)+fVec1(3)];
+
+            h.anchThrFrcVecN(jj).XData = [posVecs(1,end,jj) posVecs(1,end,jj)+fVecN(1)];
+            h.anchThrFrcVecN(jj).YData = [posVecs(2,end,jj) posVecs(2,end,jj)+fVecN(2)];
+            h.anchThrFrcVecN(jj).ZData = [posVecs(3,end,jj) posVecs(3,end,jj)+fVecN(3)];
+        end
     end
     
     % Update local aerodynamic force vectors
