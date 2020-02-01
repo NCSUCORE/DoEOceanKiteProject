@@ -1,4 +1,4 @@
-classdef sim < handle
+classdef simParams < handle
     %SIM Class to hold numbers used to define simulation parameters eg
     %duration
     properties (SetAccess = private)
@@ -10,7 +10,7 @@ classdef sim < handle
     
     methods
         % Constructor
-        function obj = sim
+        function obj = simParams
             %SIM Construct an instance of this class
             %   Detailed explanation goes here
             obj.lengthScaleFactor  = SIM.parameter('Value',1,'Unit','');

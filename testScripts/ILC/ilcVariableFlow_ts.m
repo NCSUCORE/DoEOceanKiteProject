@@ -1,6 +1,6 @@
 %% Script to run ILC path optimization
 clear;clc;close all
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(2*3600,'s');
 dynamicCalc = '';
 
@@ -68,12 +68,12 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 %% Run the simulation
 simWithMonitor('OCTModel')
-tscILC = parseLogsout;
+tscILC = signalcontainer(logsout);
 
 %%
 hiLvlCtrl.learningGain.setValue(0,'[]');
 simWithMonitor('OCTModel')
-tscBaseline = parseLogsout;
+tscBaseline = signalcontainer(logsout);
 
 %% Things to plot
 close all

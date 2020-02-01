@@ -1,6 +1,6 @@
 %% Test script to test the floating ground station simulation and animation
 clear;clc;close all
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(100,'s');
 dynamicCalc = '';
 

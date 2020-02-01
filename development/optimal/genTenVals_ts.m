@@ -6,7 +6,7 @@ end
 
 lengthScaleFactor = 1/1;
 densityScaleFactor = 1/1;
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(3000*sqrt(lengthScaleFactor),'s');
 
 dynamicCalc = '';

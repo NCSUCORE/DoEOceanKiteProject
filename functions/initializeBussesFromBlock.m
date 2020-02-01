@@ -5,8 +5,8 @@ blkName = get_param(blkPth,'Name');
 try
     evalin('base',sprintf('%s_bc;',blkName));
 catch me
+    fprintf('\n Error attempting to run bus creator \n %s_bc\n',blkName);
     dbstack
-    fprintf('\n Error attempting to run bus creator \n %s\n',sprintf('%s_bc;',blkName));
     rethrow(me)
 end
 end

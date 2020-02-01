@@ -166,6 +166,25 @@ end
 
 % Plot the tracer (empty/NAN's)
 if p.Results.PlotTracer
+    %Build the colorData structure used to interpolate instantaneous power
+    %production
+    minPwr = min(tscTmp.winchPower.Data);
+    maxPwr = max(tscTmp.winchPower.Data);
+    
+    % If the system never spooled tether
+    if minPwr == maxPwr && minPwr ==0
+        minPwr = -1;
+        maxPwr = 1;
+    end
+    
+    colorData.input(1) = minPwr;
+    colorData.input(2) = 0;
+    colorData.input(3) = maxPwr;
+    
+    colorData.output(1,:) = [0.8 0 0];
+    colorData.output(2,:) = 0.8*[1 1 1];
+    colorData.output(3,:) = [0 0.8 0];
+    
     for ii = 1:round(p.Results.TracerDuration/p.Results.timeStep)
         h.tracer(ii) = line([nan nan],[nan nan],[nan nan],...
             'Color','r','LineWidth',2);
@@ -468,17 +487,17 @@ for ii = 1:numel(tscTmp.positionVec.Time)
             [h.tracer(end).XData(end) posVec(1)],...
             [h.tracer(end).YData(end) posVec(2)],...
             [h.tracer(end).ZData(end) posVec(3)],...
-            'Color','r','LineWidth',2);
+            'Color',0.5*[1 1 1],'LineWidth',2);
         
         h.tracer(end).XData(end+1) = newLine.XData(1);
         h.tracer(end).YData(end+1) = newLine.YData(1);
         h.tracer(end).ZData(end+1) = newLine.ZData(1);
         
         if p.Results.ColorTracer
-            newColor = [1 0 0];
-            if tscTmp.winchPower.Data(ii)>0
-                newColor = [0 0.75 0];
-            end
+            newColor = [...
+                interp1(colorData.input,colorData.output(:,1),tscTmp.winchPower.getsamples(ii).Data),...
+                interp1(colorData.input,colorData.output(:,2),tscTmp.winchPower.getsamples(ii).Data),...
+                interp1(colorData.input,colorData.output(:,3),tscTmp.winchPower.getsamples(ii).Data)];
             newLine.Color = newColor;
         end
         h.tracer = [h.tracer(2:end) newLine];

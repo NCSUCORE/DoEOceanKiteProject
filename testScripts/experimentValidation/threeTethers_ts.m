@@ -9,7 +9,7 @@ lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
 simTime = 60;
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
 %% Set up simulation

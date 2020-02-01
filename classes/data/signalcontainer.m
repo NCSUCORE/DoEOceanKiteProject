@@ -14,7 +14,7 @@ classdef signalcontainer < dynamicprops
             addParameter(p,'Verbose',true,@islogical);
             parse(p,varargin{:});
             switch class(objToParse)
-                case 'Simulink.SimulationData.Dataset'
+                case {'Simulink.SimulationData.Dataset','Simulink.sdi.DatasetRef'}
                     % Add metadata to the signal container at highest level
                     obj.addprop('metaData');
                     obj.metaData = metaData(p.Results.Verbose);
@@ -30,7 +30,11 @@ classdef signalcontainer < dynamicprops
                         ts = objToParse.getElement(names{ii});
                         % Get the name of the name and make it a valid
                         % property name
+                        if ~isempty(ts.Name)
                         propName = genvarname(ts.Name);
+                        else
+                            propName = genvarname(names{ii});
+                        end
                         % Deal with duplicate signal names
                         if isa(ts,'Simulink.SimulationData.Dataset')
                             if p.Results.Verbose
@@ -55,6 +59,8 @@ classdef signalcontainer < dynamicprops
                             end
                         end
                     end
+                otherwise
+                    error('Unknown data type to parse')
             end
             
             % Print out power summary for the user

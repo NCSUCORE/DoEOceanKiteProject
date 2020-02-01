@@ -1,6 +1,6 @@
 %% Script to run ILC path optimization
 clear;clc;close all
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(2*3600,'s');
 dynamicCalc = '';
 
@@ -70,13 +70,13 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 %% Run the simulation
 simWithMonitor('OCTModel')
-tscILC = parseLogsout;
+tscILC = signalcontainer(logsout);
 
 %%
 if runBaseline
 hiLvlCtrl.learningGain.setValue(0,'[]');
 simWithMonitor('OCTModel')
-tscBaseline = parseLogsout;
+tscBaseline = signalcontainer(logsout);
 end
     
 % load(sprintf('cnstFlwResults%dmPs.mat',env.water.flowVec.Value(1)),'tscBaseline');
@@ -96,19 +96,19 @@ end
 figure('Name',sprintf('cnstFlwBasisParams%dmPs',env.water.flowVec.Value(1)))
 % Plot the results from ILC
 stairs(tscILC.basisParams.Time./60,...
-    squeeze(tscILC.basisParams.Data(1,:,:)),...
+    squeeze(tscILC.basisParams.Data(1,1,:)),...
     'LineWidth',lineWidth,'Color','k','LineStyle','-','DisplayName','$b_1$, ILC');
 hold on
 stairs(tscILC.basisParams.Time./60,...
-    squeeze(tscILC.basisParams.Data(2,:,:)),...
+    squeeze(tscILC.basisParams.Data(1,2,:)),...
     'LineWidth',lineWidth,'Color','k','LineStyle','--','DisplayName','$b_2$, ILC');
 % Plot the results from the baseline
 if runBaseline
     stairs(tscBaseline.basisParams.Time./60,...
-        squeeze(tscBaseline.basisParams.Data(1,:,:)),...
+        squeeze(tscBaseline.basisParams.Data(1,1,:)),...
         'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','-','DisplayName','$b_1$, Baseline');
     stairs(tscBaseline.basisParams.Time./60,...
-        squeeze(tscBaseline.basisParams.Data(2,:,:)),...
+        squeeze(tscBaseline.basisParams.Data(1,2,:)),...
         'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','--','DisplayName','$b_2$, Baseline');
 end
 % Add figure annotations and set formatting

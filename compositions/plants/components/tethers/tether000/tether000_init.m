@@ -8,8 +8,8 @@ try
     % Get the number of nodes
     numNodes = evalin('base',get_param(gcb,'numNodes'));
 catch
+    fprintf('\nUnable to evaluate number of nodes in block \n %s\n',gcb)
     dbstack
-    error('Unable to evaluate number of nodes in block \n %s',gcb)
 end
 
 if numNodes < 2  || floor(numNodes)~=numNodes

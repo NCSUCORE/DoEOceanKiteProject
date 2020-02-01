@@ -13,7 +13,7 @@
 
 %% Preliminaries & simulation parameters
 clc;clear;close all
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(3600,'s')
 dynamicCalc = ''; % We need to get rid of this and move to quaternoins
 
