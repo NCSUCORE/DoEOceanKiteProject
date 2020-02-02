@@ -1,11 +1,12 @@
 
 % superimpose plots from simulation and experiment
-datFileName = 'data_24_Jan_2020_16_48_25.mat';
+datFileName = 'data_24_Jan_2020_15_50_38.mat';
 fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
 tscExp = processExpData(fullFileName,...
-    'Ro_c_in_meters',[22;-1;-3.9]./100,...
-    'yawOffset',1*2.5);
+    'Ro_c_in_meters',[24;-0.2;-4.1]./100,...
+    'yawOffset',1*3.4236,...
+    'rollOffset',1*0.0886);
 
 % define time to observe
 timeExp = tscExp.roll_rad.Time;
@@ -15,7 +16,7 @@ tEnd = numel(timeExp);
 tPlot = tStart:tEnd;
 
 % plotting data range
-plotDataRange = [80 140];
+plotDataRange = [0 140];
 
 locs = getFigLocations(560,420);
 

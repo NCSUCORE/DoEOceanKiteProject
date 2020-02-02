@@ -42,11 +42,23 @@ yawExp = tscExp.yaw_rad.Data(startIdxExp:endIdxExp);
 % val = calcRMSE(yPosSim,yPosExp)/max(abs(yPosExp));
 
 % RMSEs
-rollRMSE = 1.0*calcRMSE(rollSim,rollExp);
-yawRMSE = 1.0*calcRMSE(yawSim,yawExp);
-ycmRMSE = 1.0*calcRMSE(yPosSim,yPosExp);
-zcmRMSE = 1.0*calcRMSE(zPosSim,zPosExp);
-val =  rollRMSE + yawRMSE + ycmRMSE + zcmRMSE;
+rollRMSE = calcRMSE(rollSim,rollExp);
+yawRMSE = calcRMSE(yawSim,yawExp);
+ycmRMSE = calcRMSE(yPosSim,yPosExp);
+zcmRMSE = calcRMSE(zPosSim,zPosExp);
+
+% weights
+% w1 = 1/max(abs(rollExp));
+% w2 = 1/max(abs(yawExp));
+% w3 = 1/max(abs(yPosExp));
+% w4 = 1/max(abs(zPosExp));
+
+w1 = 1;
+w2 = 1;
+w3 = 5;
+w4 = 0;
+
+val =  w1*rollRMSE + w2*yawRMSE + w3*ycmRMSE + w4*zcmRMSE;
 
 % varargout outputs
 allRMSE.rollRMSE = rollRMSE;
@@ -68,6 +80,9 @@ meanDiff.yVel = mean(yVelSim(:)-yVelExp(:));
 meanDiff.zVel = mean(zVelSim(:)-zVelExp(:));
 
 varargout{2} = meanDiff;
+
+% new metric
+
 
 end
 

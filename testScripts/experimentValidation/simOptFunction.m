@@ -16,7 +16,9 @@ vhcl.vStab.CL.setValue(coeffs(5).*initVals.CLvStab,'')
 vhcl.vStab.CD.setValue(coeffs(6).*initVals.CDvStab,'')
 
 vhcl.addedMass.setValue(coeffs(7:9).*initVals.addedMass,'kg')
-vhcl.addedInertia.setValue(coeffs(10:12).*initVals.addedInertia,'kg*m^2')
+vhcl.setBuoyFactor(coeffs(10).*initVals.buoyFactor,'');
+
+% vhcl.addedInertia.setValue(coeffs(10:12).*initVals.addedInertia,'kg*m^2')
 
 fprintf(repmat('%0.4f ',1,numel(coeffs)),coeffs);
 fprintf('\n ');

@@ -38,7 +38,7 @@ maxReleaseSpeed = wnch.winch1.maxSpeed.Value;
 aKp = 1.5*maxReleaseSpeed;
 pKp = 1*maxReleaseSpeed;
 rKp = 2.5*maxReleaseSpeed;
-rKd = 5*maxReleaseSpeed;
+rKd = 5.0*maxReleaseSpeed;
 rTau = 0.5;
 
 fltCtrl.tetherAlti.kp.setValue(aKp,'(m/s)/(m)');

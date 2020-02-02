@@ -131,6 +131,6 @@ subplot(3,1,1)
 title('CM velocity')
 
 %%%%%%
-set(findobj('Type','axes'),'XLim',[0 timeSim2(end)]);
+set(findobj('Type','axes'),'XLim',[0 60]);
 set(findobj('Type','legend'),'Visible','off');
 % set(findall(gcf,'-property','FontSize'),'FontSize',13)

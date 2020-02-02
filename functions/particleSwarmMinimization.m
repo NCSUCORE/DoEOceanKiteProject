@@ -1,8 +1,8 @@
-function [optDsgn,minF] = particleSwarmMinimization(objF,X,lb,ub,varargin)
+function [optDsgn,minF,varargout] = particleSwarmMinimization(objF,X,lb,ub,varargin)
 %PARTICLESWARMOPT
 % Function to find the global minimum of an objective function using
 % Particle Swarm Optimization.
-% 
+%
 % Required inputs:
 % objF = objective function which should be a function of X
 % X =  initial design matrix, rows represent inputs and columns represent different
@@ -17,7 +17,7 @@ function [optDsgn,minF] = particleSwarmMinimization(objF,X,lb,ub,varargin)
 % 'socialLR' = social (group) learning rate. indicates the particle's
 % tendency to gravitate towards the best value the swarm found
 % 'maxIter' = maximum number of iterations
-% 
+%
 % Example use of code
 % [minF,optDsgn] = particleSwarmOpt(@(x)objF(x),X,lb,ub,...
 %     'swarmSize',25,'cognitiveLR',0.4,'socialLR',0.2,'maxIter',20);
@@ -62,18 +62,21 @@ for jj = 1:maxIter
             + p.Results.socialLR*rand*(GbesLoc-swarm(:,:,:,jj-1));
         swarm(:,:,:,jj) = V(:,:,:,jj) + swarm(:,:,:,jj-1);
         
-        for ii = 1:ss
-            [row,col] = find(swarm(:,:,ii,jj)<lb);
-            swarm(row,col,ii,jj) = lb(row,col);
-            [row,col] = find(swarm(:,:,ii,jj)>ub);
-            swarm(row,col,ii,jj) = ub(row,col);
-        end
     end
     
     for ii = 1:ss
         
-        fprintf('Iteration number: %d\n',kk);
+        fprintf('Fucntion evaluation number: %d\n',kk);
         kk = kk+1;
+        
+        if jj>1 && all(all(ismembertol(GbesLoc,swarm(:,:,ii,jj))))
+            swarm(:,:,ii,jj) = rand(dsgnSize).*swarm(:,:,ii,jj);
+        end
+        
+        [row,col] = find(swarm(:,:,ii,jj)<lb);
+        swarm(row,col,ii,jj) = lb(row,col);
+        [row,col] = find(swarm(:,:,ii,jj)>ub);
+        swarm(row,col,ii,jj) = ub(row,col);
         
         fVal(ii,jj) = p.Results.objF(swarm(:,:,ii,jj));
         
@@ -89,6 +92,18 @@ end
 
 minF = minimum;
 optDsgn = GbesLoc;
+
+% store all evaluate points in a struct
+swarm = reshape(swarm,dsgnSize(1),dsgnSize(2),[],1);
+fVal = reshape(fVal,[],1);
+
+[nfVal,idx] = sort(fVal);
+nSwarm = swarm(:,:,idx);
+
+allIterationData.swarm = nSwarm;
+allIterationData.fVal = nfVal;
+
+varargout{1} = allIterationData;
 
 end
 

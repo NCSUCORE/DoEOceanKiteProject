@@ -17,7 +17,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.05,'');
+vhcl.setBuoyFactor(1.1,'');
 
 vhcl.setTurbDiam(0.45,'m')
 
@@ -83,8 +83,8 @@ thFunc = @(x,t) 5*t*(0.2969*x.^0.5 - 0.126*x - 0.3516*x.^2 + 0.2843*x.^3 ...
     - 0.1036*x.^4);
 
 vhcl.setFuseDiameter(2*mean(thFunc(0:0.01:1,fuseAirfoil)*fuseChord)*(1/Lscale),'m')
-vhcl.setFuseEndDragCoeff(0.4,'')
-vhcl.setFuseSideDragCoeff(0.8,'')
+vhcl.setFuseEndDragCoeff(0.6,'')
+vhcl.setFuseSideDragCoeff(1,'')
 vhcl.setFuseRCmToNose(-([45;0;0]*1e-3 + rCM_LE)*(1/Lscale),'m')
 
 % % % data file name
@@ -93,6 +93,7 @@ vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 vhcl.calcAddedMass
+vhcl.addedInertia.setValue(0*[0.2;0.2;0.2].*vhcl.addedInertia.Value,'kg*m^2');
 
 % calc added mass
 addedMassCoeff = 1;
@@ -117,7 +118,7 @@ vhcl.addedMass.setValue(addedMassCoeff.*vhcl.addedMass.Value,'kg')
 
 %% use xfoil data
 load('xfoilData.mat')
-spanEffFactor = 0.8;
+spanEffFactor = 0.7;    % its 0.73 for a cessna 310. refer secondaryRef folder
 CLWing = spanEffFactor*CL2412.*(0.5*vhcl.wingAR.Value*(vhcl.wingChord.Value^2)...
     /vhcl.portWing.refArea.Value);
 CDWing = (CD2412 + (CLWing.^2)./(pi*vhcl.wingAR.Value*spanEffFactor))*...

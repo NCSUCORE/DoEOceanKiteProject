@@ -28,7 +28,7 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 load('ayazThreeTetVhcl.mat')
 
 altiSP = 35e-2;
-iniX = 0.2943;
+iniX = 0.2319;
 pitchSP = 14;
 
 % % % initial conditions
@@ -74,9 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.4458,'m');
-wnch.winch2.initLength.setValue(0.4814,'m');
-wnch.winch3.initLength.setValue(0.4458,'m');
+wnch.winch1.initLength.setValue(0.4120,'m');
+wnch.winch2.initLength.setValue(0.4391,'m');
+wnch.winch3.initLength.setValue(0.4120,'m');
 
 dynamicCalc = '';
 
@@ -86,7 +86,7 @@ load('ayazThreeTetCtrl.mat');
 altitudeCtrlShutOffDelay = 0*800;
 % expOffset = 7.7+2.5;
 expOffset = 0;
-expDelay = 54.19;
+expDelay = 54.22;
 % altitudeCtrlShutOffDelay = 0.75*expDelay;
 initialDelay = 1*altitudeCtrlShutOffDelay + expDelay;
 expOffset = 1*altitudeCtrlShutOffDelay + expOffset;
@@ -102,7 +102,7 @@ fltCtrl.altiSP.setValue(altiSP*ones(size(timeVec)),'m',timeVec);
 fltCtrl.pitchSP.setValue(pitchSP*ones(size(timeVec)),'deg',timeVec);
 fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 
-%% scale 
+%% scale
 % scale environment
 % env.scale(lengthScaleFactor,densityScaleFactor);
 % scale vehicle
@@ -121,10 +121,9 @@ datFileName = 'data_24_Jan_2020_15_50_38.mat';
 fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
 tscExp = processExpData(fullFileName,...
-    'Ro_c_in_meters',[23;-0.74;-4.1]./100,...
-    'yawOffset',1*2.67,...
+    'Ro_c_in_meters',[22;-0.76*1;-4.0]./100,...
+    'yawOffset',1*2.6707,...
     'rollOffset',1*0.2505);
-
 
 %% adjust parameters
 initVals.CLWing = vhcl.portWing.CL.Value;
@@ -149,44 +148,43 @@ initVals.thrDragCoeff = thr.tether1.dragCoeff.Value;
 
 
 %% run optimization
-initCoeffs = ones(12,1);
+initCoeffs = ones(10,1);
 
-initCoeffs(10:12) = [1;1;1];
+% initCoeffs = [1 1.001 1 1.473 0.7 1.000 0.402 0.575 0.408 1.068]';
 
-initCoeffs = [0.800 1.200 0.921 1.200 0.873 1.000 1.122 0.200 1.800 0.200 1.800 1.800]';
+initCoeffs(7:9) = 0.5;
 
-lowLims = [repmat([0.8;1],3,1); 0.2*ones(3,1); 0.2*ones(3,1)];
-hiLims =  [repmat([1;1.2],3,1); 1.8*ones(3,1); 1.8*ones(3,1)];
-    
+
+lowLims = [repmat([0.6;1],3,1); 0.4*ones(3,1); 1];
+hiLims =  [repmat([1;1.6],3,1); 0.6*ones(3,1); 1.1];
+
 dataRange = [80 140];
-% 
-% % % % % optimize using PSO
-% [optDsgn,minFCoarse] = particleSwarmMinimization(...
-%     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-%     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-%     'swarmSize',20,'maxIter',10,'cognitiveLR',0.4,'socialLR',0.2);
-% 
-% % % % gradient based opt
-% options = optimoptions(@fmincon,'Algorithm','sqp',...
-% 'MaxIterations',15,...
+
+% % optimize using PSO
+[optDsgn,minFCoarse,allIterationData] = particleSwarmMinimization(...
+    @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+    initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
+    'swarmSize',15,'maxIter',8,'cognitiveLR',0.4,'socialLR',0.2);
+% %
+% % % % % gradient based opt
+% options = optimoptions(@fmincon,'Algorithm','interior-point',...
+% 'MaxIterations',40,...
 % 'Display','final',...
-% 'OptimalityTolerance',1e-4);
+% 'OptimalityTolerance',1e-6);
 % % 'MaxFunctionEvaluations',200,...
-% 
+% %
 % [optDsgn2,minFfine] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
 %     initVals,coeffs,tscExp,dataRange),...
-%     optDsgn,[],[],[],[],0.75.*optDsgn,1.25.*optDsgn,[],options);
+%     optDsgn,[],[],[],[],lowLims,hiLims,[],options);
 
 
-% 
-% 
 %%
-% optDsgn = [0.900 1.100 0.952 1.100 0.900 1.000 0.500 0.500 1.500 0.500 0.500 0.500 ]';
+% optDsgn = [1.000 1.092 0.932 1.000 1.000 1.266 0.525 0.489 0.408 1.056]';
 % optDsgn = initCoeffs;
-optDsgn2 = initCoeffs;
+% optDsgn2 = initCoeffs;
 
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,optDsgn2,tscExp,dataRange);
+    initVals,optDsgn,tscExp,dataRange);
 
 
 %% Run the simulation
