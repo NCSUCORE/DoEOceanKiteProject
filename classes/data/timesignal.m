@@ -16,7 +16,6 @@ classdef timesignal < timeseries
             % Call superclass constructor
             obj = obj@timeseries(tsIn);
             
-            
             % Set the block path property
             obj.blockPath = p.Results.BlockPath;
             
@@ -28,7 +27,6 @@ classdef timesignal < timeseries
             if ndims(obj.Data) == 2 && any(size(obj.Data) == 1)
                 plot@timeseries(obj,varargin{:})
             else % Plot vector/matrix
-                
                 % Number of time steps
                 nt = numel(obj.Time);
                 % size of the data
@@ -66,7 +64,17 @@ classdef timesignal < timeseries
                                 rDim = 1;
                                 cDim = 2;
                         end
-                        % If the signal is 4D or higher, no plot method
+                    case 4
+                        % If the data is 4D, slice along 3rd dimension,
+                        % call plotting on each of the slides
+                        for ii = 1:size(obj.Data,3)
+                           figure('Name',sprintf('Slice %d',ii));
+                           newObj = obj;
+                           newObj.Data = squeeze(obj.Data(:,:,ii,:));
+                           newObj.plot;
+                        end
+                        return
+                        % If the signal is 5D or higher, no plot method
                     otherwise
                         error('Incorrect number of data dimensions, IDK how to plot that')
                 end
@@ -114,14 +122,14 @@ classdef timesignal < timeseries
         end
         
         % Function to crop things
-        function newobj = crop(obj,varargin)
-            newobj = timesignal(obj);
+        function newObj = crop(obj,varargin)
+            newObj = obj;
             % User can provide either a two element vector or two inputs
             switch numel(varargin)
                 case 1
                     % If it's a two element vector take the min and max values
                     if numel(varargin{1})==2
-                        newobj = timesignal(newobj.getsampleusingtime(...
+                        newObj = timesignal(newObj.getsampleusingtime(...
                             min(varargin{1}(:)),...
                             max(varargin{1}(:))));
                     else % If they gave more than two elements, throw error
@@ -129,11 +137,8 @@ classdef timesignal < timeseries
                     end
                 case 2
                     % If two inputs, take the first as start and second as end
-                    newobj = timesignal(newobj.getsampleusingtime(varargin{1},varargin{2}));
-                    %                     if numel(obj.Time)>0
-                    %                         obj.Time = obj.Time-obj.Time(1);
-                    %                     end
-                    
+%                     getsampleusingtime@timeseries(newObj,varargin{1},varargin{2})
+                    newObj = timesignal(newObj.getsampleusingtime(varargin{1},varargin{2}));
                 otherwise
                     % If they gave more inputs, throw error
                     error('Incorrect number of times provided')
@@ -208,9 +213,9 @@ classdef timesignal < timeseries
         end
         
         function intSig = cumtrapz(obj,initVal)
-           intSig = timesignal(obj);
-           timeDimInd = find(size(obj.Data) == numel(obj.Time));
-           intSig.Data = cumtrapz(intSig.Time,intSig.Data,timeDimInd)+initVal;
+            intSig = timesignal(obj);
+            timeDimInd = find(size(obj.Data) == numel(obj.Time));
+            intSig.Data = cumtrapz(intSig.Time,intSig.Data,timeDimInd)+initVal;
         end
         
         % Write function for two norm here

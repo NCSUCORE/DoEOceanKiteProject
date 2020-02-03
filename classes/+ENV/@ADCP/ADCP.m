@@ -10,6 +10,7 @@ classdef ADCP < handle
         xGridPoints
         yGridPoints
         zGridPoints
+        density
     end
     
     properties (Hidden = true)
@@ -64,7 +65,8 @@ classdef ADCP < handle
             data(3,:,:) = zeros(sz);                    % Append zeros for the z direction velocity component
             data = permute(data,[4 5 2 1 3]);           % Change and add dimensions to get (xCoord,yCoord,zCoord,XYZVelocityComponent,TimeStep)
             data = data(:,:,13:60,:,:);
-            depths = 48:4:236;
+%             data = flip(data,3);
+            depths = 236*ones(1,48) - [48:4:236];
             
             obj.allFlowVecTimeseries    = SIM.parameter('Value',timeseries(data,timeVec),'Unit','m/s');
             obj.startTime               = SIM.parameter('Value',p.Results.StartTime,'Unit','s');
@@ -72,22 +74,27 @@ classdef ADCP < handle
             obj.flowVecTimeseries       = SIM.parameter('Unit','m/s');
             obj.xGridPoints             = SIM.parameter('Value',0,'Unit','m');
             obj.yGridPoints             = SIM.parameter('Value',0,'Unit','m');
-            obj.zGridPoints             = SIM.parameter('Value',sort(depths,'descend'),'Unit','m');
+            obj.zGridPoints             = SIM.parameter('Value',sort(depths,'ascend'),'Unit','m');
+            obj.density                 = SIM.parameter('Unit','kg/m^3');
             obj.crop(obj.startTime.Value,obj.endTime.Value); % Sets the 
         end
             
             
             
         function setStartTime(obj,val,unit)
-            obj.startTime.setValue(val,unit); 
+            obj.startTime.setValue(val,unit);
+            obj.crop(obj.startTime.Value,obj.endTime.Value);
         end
         function setEndTime(obj,val,unit)
             obj.endTime.setValue(val,unit);
+            obj.crop(obj.startTime.Value,obj.endTime.Value);
         end
         function setFlowVecTimeseries(obj,val,unit)
             obj.flowVecTimeseries.setValue(val,unit);
         end
-        
+        function setDensity(obj,val,unit)
+            obj.density.setValue(val,unit);
+        end
          function setXGridPoints(obj,val,unit)
             val = val(:);
             obj.xGridPoints.setValue(val,unit);

@@ -1,5 +1,5 @@
 % clear;clc;close all
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(1000,'s');
 dynamicCalc = '';
 

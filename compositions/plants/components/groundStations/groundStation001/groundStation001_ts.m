@@ -18,7 +18,7 @@ load('pos.mat')
 % end
 
 % create buses required to run code
-anchorThetherCtrl_bc
+anchorTetherCtrl_bc
 createConstantUniformFlowEnvironmentBus
 thrAttachPtKinematics_bc
 createThrTenVecBus

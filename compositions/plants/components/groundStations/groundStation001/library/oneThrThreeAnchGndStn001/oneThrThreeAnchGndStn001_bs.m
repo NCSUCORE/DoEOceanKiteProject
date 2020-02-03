@@ -33,13 +33,6 @@ gndStn.zMatInt.setValue([-.25*ones(1,8),.25*ones(1,8)],'m');
 gndStn.rMatInt.setValue(repmat(.5*gndStn.cylRad.Value,[1,16]),'m')
 
 
-
-
-gndStn.initAngVel.setValue(0,'rad/s')                                           
-gndStn.initVel.setValue(0,'m/s')                                          
-gndStn.initAngPos.setValue([0,0,0]','rad')                                        
-
-
 %number of tethers that go from the GS to the KITE
 gndStn.numTethers.setValue(1,'');
 
@@ -57,25 +50,23 @@ gndStn.aMY.setValue(.1,'')
 gndStn.aMZ.setValue(.1,'')
 
 
-gndStn.lumpedMassSphereRadius.setValue(.5,'m')
+gndStn.lumpedMassSphereRadius.setValue(.5,'m');
 
 
 % tether attach point for the tether that goes from the GS to the KITE
+% gndStn.addThrAttch('kitThrAttchPt1',[gndStn.cylRad.Value 0 -0.5*gndStn.cylTotH.Value]);
 gndStn.addThrAttch('kitThrAttchPt1',[0 0 0]);
 
 
-
 % tether attach points for the tether that goes from the GS to the GND
-gndStn.addThrAttch('pltThrAttchPt1',[0 1 0]');
+gndStn.addThrAttch('pltThrAttchPt1',[gndStn.cylRad.Value 0 -0.5*gndStn.cylTotH.Value]');
 gndStn.addThrAttch('pltThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('pltThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 
-gndStn.addThrAttch('inrThrAttchPt1',[0  150 0]');
+gndStn.addThrAttch('inrThrAttchPt1',[150 0 0]');
 gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 
-
-gndStn.setPosVec([0 0 199.7],'m')
 
 % gndStn.initAnchTetherLength.setValue(gndStn.calcInitTetherLen,'m')
 gndStn.initAnchTetherLength.setValue([248.65 248.65 248.65 ],'m')

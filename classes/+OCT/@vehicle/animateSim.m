@@ -50,6 +50,8 @@ addParameter(p,'View',[71,22],@isnumeric)
 addParameter(p,'FontSize',get(0,'defaultAxesFontSize'),@isnumeric)
 % Tracer (streaming red line behind the model)
 addParameter(p,'PlotTracer',true,@islogical)
+% Plot the ground station
+addParameter(p,'GroundStation',[],@(x) isa(x,'OCT.sixDoFStation'))
 % Color tracer according to power production/consumption
 addParameter(p,'ColorTracer',false,@islogical)
 % How long (in seconds) to keep the tracer on for
@@ -58,6 +60,8 @@ addParameter(p,'TracerDuration',5,@isnumeric)
 addParameter(p,'PathPosition',false,@islogical)
 % Plot normal, tangent and desired vectors
 addParameter(p,'NavigationVecs',false,@islogical)
+% Plot tether nodal net force vecs
+addParameter(p,'TetherNodeForces',false,@islogical)
 % Plot velocity vector
 addParameter(p,'VelocityVec',false,@islogical)
 % Plot local aerodynamic force vectors on surfaces
@@ -108,7 +112,7 @@ if p.Results.PowerBar
     end
 end
 
- 
+sz = getBusDims;
 
 %% Plot things
 % Plot the aerodynamic surfaces
@@ -164,10 +168,44 @@ end
 
 % Plot the tracer (empty/NAN's)
 if p.Results.PlotTracer
+    %Build the colorData structure used to interpolate instantaneous power
+    %production
+    minPwr = min(tscTmp.winchPower.Data);
+    maxPwr = max(tscTmp.winchPower.Data);
+    
+    % If the system never spooled tether
+    if minPwr == maxPwr && minPwr ==0
+        minPwr = -1;
+        maxPwr = 1;
+    end
+    
+    colorData.input(1) = minPwr;
+    colorData.input(2) = 0;
+    colorData.input(3) = maxPwr;
+    
+    colorData.output(1,:) = [0.8 0 0];
+    colorData.output(2,:) = 0.8*[1 1 1];
+    colorData.output(3,:) = [0 0.8 0];
+    
     for ii = 1:round(p.Results.TracerDuration/p.Results.timeStep)
         h.tracer(ii) = line([nan nan],[nan nan],[nan nan],...
             'Color','r','LineWidth',2);
     end
+end
+
+if ~isempty(p.Results.GroundStation)
+    [xCyl,yCyl,zCyl] = cylinder([0 p.Results.GroundStation.cylRad.Value*ones(1,98) 0]);
+    if isempty(p.Results.GroundStation.cylTotH.Value)
+        warning('Warning total height property empty, using zMatExt values')
+        height = max(p.Results.GroundStation.zMatExt.Value)-min(p.Results.GroundStation.zMatExt.Value);
+    else
+        height = p.Results.GroundStation.cylTotH.Value;
+    end
+    zCyl = zCyl*height-height/2;
+    xCyl = xCyl([1 2 99 100],:);
+    yCyl = yCyl([1 2 99 100],:);
+    zCyl = zCyl([1 2 99 100],:);
+    h.gndStn = surf(xCyl,yCyl,zCyl,'FaceColor',0.5*[1 1 1]);
 end
 
 % Plot the path
@@ -221,6 +259,35 @@ if p.Results.NavigationVecs
         'MaxHeadSize',0,'Color','b','LineStyle','--','LineWidth',1.5);
 end
 
+if p.Results.TetherNodeForces
+    posVecs    = tscTmp.anchThrNodePosVecs.getsamples(1).Data;
+    force1Vecs = tscTmp.anchThrNode1FVec.getsamples(1).Data;
+    forceNVecs = tscTmp.anchThrNodeNFVec.getsamples(1).Data;
+    
+    lengthScl = 10;
+   
+    % For each tether
+    for ii = 1:size(posVecs,3)
+        fVec1 = force1Vecs(:,:,ii);
+        fVecN = forceNVecs(:,:,ii);
+        
+        fVec1 = lengthScl*fVec1./sqrt(sum(fVec1.^2));
+        fVecN = lengthScl*fVecN./sqrt(sum(fVecN.^2));
+        
+        h.anchThrFrcVec1(ii) = plot3(...
+            [posVecs(1,1,ii) posVecs(1,1,ii)+fVec1(1)],...
+            [posVecs(2,1,ii) posVecs(2,1,ii)+fVec1(2)],...
+            [posVecs(3,1,ii) posVecs(3,1,ii)+fVec1(3)],...
+            'Color','r','LineStyle','-');
+        
+        h.anchThrFrcVecN(ii) = plot3(...
+            [posVecs(1,end,ii) posVecs(1,end,ii)+fVecN(1)],...
+            [posVecs(2,end,ii) posVecs(2,end,ii)+fVecN(2)],...
+            [posVecs(3,end,ii) posVecs(3,end,ii)+fVecN(3)],...
+            'Color','r','LineStyle','-');
+    end
+end
+
 % Create a table
 if p.Results.LocalAero || p.Results.FluidMoments
     h.table = uitable(h.fig,'Units','Normalized','FontSize',16,...
@@ -236,8 +303,6 @@ if p.Results.ZoomIn
     ylim(tscTmp.positionVec.Data(2,:,1)+obj.fuse.length.Value*[-1.5 1.5])
     zlim(tscTmp.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
 end
-
-
 
 % Plot local aerodynamic force vectors
 if p.Results.LocalAero
@@ -305,23 +370,24 @@ if p.Results.FluidMoments
 end
 
 % Plot the tethers
-for ii = 1:numel(tscTmp.thrNodeBus)
+posVecs = tscTmp.thrNodePosVecs.getsamples(1).Data;
+for ii = 1:sz.numTethers
     h.thr{ii} = plot3(...
-        squeeze(tscTmp.thrNodeBus.nodePositions.Data(1,:,1)),...
-        squeeze(tscTmp.thrNodeBus.nodePositions.Data(2,:,1)),...
-        squeeze(tscTmp.thrNodeBus.nodePositions.Data(3,:,1)),...
+        squeeze(posVecs(1,:,ii)),...
+        squeeze(posVecs(2,:,ii)),...
+        squeeze(posVecs(3,:,ii)),...
         'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
         'MarkerSize',4,'MarkerFaceColor','k');
 end
 
 % Plot the anchor tethers
-if isprop(tscTmp,'anchThrNodeBusArry') && all(isprop(tscTmp.anchThrNodeBusArry,'nodePositions'))
-    for ii = 1:numel(tscTmp.anchThrNodeBusArry)
-        nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(tscTmppositionVec.Time(1)).Data;
+if ~isempty(p.Results.GroundStation) && isprop(tscTmp,'anchThrNodePosVecs')
+    nodePosVecs = tscTmp.anchThrNodePosVecs.getsamples(1).Data;
+    for ii = 1:sz.numTethersAnchor
         h.anchThr{ii} = plot3(...
-            nodePosVecs(1,:),...
-            nodePosVecs(2,:),...
-            nodePosVecs(3,:),...
+            nodePosVecs(1,:,ii),...
+            nodePosVecs(2,:,ii),...
+            nodePosVecs(3,:,ii),...
             'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
             'MarkerSize',4,'MarkerFaceColor','k');
     end
@@ -393,12 +459,12 @@ minZ = min(tscTmp.positionVec.Data(3,:));
 maxZ = max(tscTmp.positionVec.Data(3,:));
 % Find min and max over all plotted data
 for ii = 1:numel(allPlots)
-minX = min([minX allPlots(ii).XData]);
-maxX = max([maxX allPlots(ii).XData]);
-minY = min([minY allPlots(ii).YData]);
-maxY = max([maxY allPlots(ii).YData]);
-minZ = min([minZ allPlots(ii).ZData]);
-maxZ = max([maxZ allPlots(ii).ZData]);
+minX = min([minX allPlots(ii).XData(:)']);
+maxX = max([maxX allPlots(ii).XData(:)']);
+minY = min([minY allPlots(ii).YData(:)']);
+maxY = max([maxY allPlots(ii).YData(:)']);
+minZ = min([minZ allPlots(ii).ZData(:)']);
+maxZ = max([maxZ allPlots(ii).ZData(:)']);
 end
 % If one is not zero, make X and Y symmetric
 xlim([minX maxX])
@@ -427,9 +493,9 @@ h.title = title({strcat(sprintf('Time = %.1f s',0),',',...
 
 
 for ii = 1:numel(tscTmp.positionVec.Time)
-    timeStamp = tscTmp.positionVec.Time(ii);
-    eulAngs   = tscTmp.eulerAngles.getsampleusingtime(timeStamp).Data;
-    posVec    = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
+%     timeStamp = tscTmp.positionVec.Time(ii);
+    eulAngs   = tscTmp.eulerAngles.getsamples(ii).Data;
+    posVec    = tscTmp.positionVec.getsamples(ii).Data;
     
     for jj = 1:numel(hStatic)
         % Rotate and translate all aero surfaces
@@ -452,29 +518,45 @@ for ii = 1:numel(tscTmp.positionVec.Time)
             [h.tracer(end).XData(end) posVec(1)],...
             [h.tracer(end).YData(end) posVec(2)],...
             [h.tracer(end).ZData(end) posVec(3)],...
-            'Color','r','LineWidth',2);
+            'Color',0.5*[1 1 1],'LineWidth',2);
         
         h.tracer(end).XData(end+1) = newLine.XData(1);
         h.tracer(end).YData(end+1) = newLine.YData(1);
         h.tracer(end).ZData(end+1) = newLine.ZData(1);
         
         if p.Results.ColorTracer
-            newColor = [1 0 0];
-            if tscTmp.winchPower.Data(ii)>0
-                newColor = [0 0.75 0];
-            end
+            newColor = [...
+                interp1(colorData.input,colorData.output(:,1),tscTmp.winchPower.getsamples(ii).Data),...
+                interp1(colorData.input,colorData.output(:,2),tscTmp.winchPower.getsamples(ii).Data),...
+                interp1(colorData.input,colorData.output(:,3),tscTmp.winchPower.getsamples(ii).Data)];
             newLine.Color = newColor;
         end
         h.tracer = [h.tracer(2:end) newLine];
         uistack(h.tracer(end),'top');
     end
     
+    if isfield(h,'gndStn')
+        R = rotation_sequence(tscTmp.gndStnEulerAngles.getsamples(ii).Data);
+        posVec = tsc.gndStnPositionVec.getsamples(ii).Data(:);
+        pts = R*[xCyl(:)' ; yCyl(:)' ; zCyl(:)'];
+        h.gndStn.XData = reshape(pts(1,:),size(xCyl)) + posVec(1);
+        h.gndStn.YData = reshape(pts(2,:),size(yCyl)) + posVec(2);
+        h.gndStn.ZData = reshape(pts(3,:),size(zCyl)) + posVec(3);
+        
+    end
+    
     % Update the path
     if ~isempty(p.Results.PathFunc)
-        currentBasisParams = tscTmp.basisParams.getsampleusingtime(timeStamp).Data;
-        currentBasisParams(end) = norm(tscTmp.positionVec.Data(:,1,ii)-tscTmp.gndStnPositionVec.Data(:,:,ii)) ;
-        
-        path = feval(p.Results.PathFunc,linspace(0,1,1000),currentBasisParams,tscTmp.gndStnPositionVec.getsampleusingtime(timeStamp).Data);
+        % Get basis parameters
+        currentBasisParams = tscTmp.basisParams.getsamples(ii).Data;
+        % Overwrite the last one with radius
+        currentBasisParams(end) = norm(...
+            tscTmp.positionVec.getsamples(ii).Data...
+            -tscTmp.gndStnPositionVec.getsamples(ii).Data);
+        % Evaluate the path function
+        path = feval(p.Results.PathFunc,...
+            linspace(0,1,1000),currentBasisParams,...
+            tscTmp.gndStnPositionVec.getsamples(ii).Data);
         
         h.path.XData = path(1,:);
         h.path.YData = path(2,:);
@@ -483,7 +565,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Update current path position
     if p.Results.PathPosition
-        pathPt = tscTmp.pathPosGnd.getsampleusingtime(timeStamp).Data;
+        pathPt = tscTmp.pathPosGnd.getsamples(ii).Data;
         h.pathPosition.XData = pathPt(1);
         h.pathPosition.YData = pathPt(2);
         h.pathPosition.ZData = pathPt(3);
@@ -491,9 +573,9 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Update navigation vectors
     if p.Results.NavigationVecs
-        tanVec  = len*tscTmp.tanVec.getsampleusingtime(timeStamp).Data;
-        perpVec = len*tscTmp.perpVec.getsampleusingtime(timeStamp).Data;
-        desVec  = len*tscTmp.velVectorDes.getsampleusingtime(timeStamp).Data;
+        tanVec  = len*tscTmp.tanVec.getsamples(ii).Data;
+        perpVec = len*tscTmp.perpVec.getsamples(ii).Data;
+        desVec  = len*tscTmp.velVectorDes.getsamples(ii).Data;
         
         h.tanVec.XData = posVec(1);
         h.tanVec.YData = posVec(2);
@@ -517,13 +599,38 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.desVec.WData = desVec(3);
     end
     
+    if p.Results.TetherNodeForces
+        posVecs    = tscTmp.anchThrNodePosVecs.getsamples(ii).Data;
+        force1Vecs = tscTmp.anchThrNode1FVec.getsamples(ii).Data;
+        forceNVecs = tscTmp.anchThrNodeNFVec.getsamples(ii).Data;
+        
+        lengthScl = 10;
+        
+        % For each tether
+        for jj = 1:size(posVecs,3)
+            fVec1 = force1Vecs(:,:,jj);
+            fVecN = forceNVecs(:,:,jj);
+            
+            fVec1 = lengthScl*fVec1./sqrt(sum(fVec1.^2));
+            fVecN = lengthScl*fVecN./sqrt(sum(fVecN.^2));
+
+            h.anchThrFrcVec1(jj).XData = [posVecs(1,1,jj) posVecs(1,1,jj)+fVec1(1)];
+            h.anchThrFrcVec1(jj).YData = [posVecs(2,1,jj) posVecs(2,1,jj)+fVec1(2)];
+            h.anchThrFrcVec1(jj).ZData = [posVecs(3,1,jj) posVecs(3,1,jj)+fVec1(3)];
+
+            h.anchThrFrcVecN(jj).XData = [posVecs(1,end,jj) posVecs(1,end,jj)+fVecN(1)];
+            h.anchThrFrcVecN(jj).YData = [posVecs(2,end,jj) posVecs(2,end,jj)+fVecN(2)];
+            h.anchThrFrcVecN(jj).ZData = [posVecs(3,end,jj) posVecs(3,end,jj)+fVecN(3)];
+        end
+    end
+    
     % Update local aerodynamic force vectors
     if p.Results.LocalAero
         aeroStruct = obj.struct('OCT.aeroSurf');
         
-        FLiftPart = rotation_sequence(eulAngs)*tscTmp.FLiftBdyPart.getsampleusingtime(timeStamp).Data;
-        FDragPart = rotation_sequence(eulAngs)*tscTmp.FDragBdyPart.getsampleusingtime(timeStamp).Data;
-        vAppPart  = rotation_sequence(eulAngs)*tscTmp.vAppLclBdy.getsampleusingtime(timeStamp).Data;
+        FLiftPart = rotation_sequence(eulAngs)*tscTmp.FLiftBdyPart.getsamples(ii).Data;
+        FDragPart = rotation_sequence(eulAngs)*tscTmp.FDragBdyPart.getsamples(ii).Data;
+        vAppPart  = rotation_sequence(eulAngs)*tscTmp.vAppLclBdy.getsamples(ii).Data;
         
         uLiftPart = FLiftPart./sqrt(sum(FLiftPart.^2,1));
         uDragPart = FDragPart./sqrt(sum(FDragPart.^2,1));
@@ -562,36 +669,35 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Update moments in the table
     if p.Results.FluidMoments
-        MFluidBdy = tscTmp.MFluidBdy.getsampleusingtime(timeStamp).Data;
+        MFluidBdy = tscTmp.MFluidBdy.getsamples(ii).Data;
         h.table.Data{fluidStartRow+1,2} = sprintf('%0.0f',MFluidBdy(1));
         h.table.Data{fluidStartRow+2,2} = sprintf('%0.0f',MFluidBdy(2));
         h.table.Data{fluidStartRow+3,2} = sprintf('%0.0f',MFluidBdy(3));
     end
     
     % Update the tether(s)
-    for jj = numel(tscTmp.thrNodeBus)
-        thrNodePos = tscTmp.thrNodeBus.nodePositions.getsampleusingtime(timeStamp).Data;
-        h.thr{jj}.XData = squeeze(thrNodePos(1,:));
-        h.thr{jj}.YData = squeeze(thrNodePos(2,:));
-        h.thr{jj}.ZData = squeeze(thrNodePos(3,:));
+    posVecs = tscTmp.thrNodePosVecs.getsamples(ii).Data;
+    for jj = 1:sz.numTethers
+        h.thr{jj}.XData = posVecs(1,:,jj);
+        h.thr{jj}.YData = posVecs(2,:,jj);
+        h.thr{jj}.ZData = posVecs(3,:,jj);
     end
     
-    % update the anchor tether if there is one
+    % update the anchor tether(s) if exists
     if isfield(h,'anchThr')
-        for ii = 1:numel(h.anchThr)
-            nodePosVecs = tscTmp.anchThrNodeBusArry(ii).nodePositions.getsampleusingtime(timeStamp).Data;
-            h.anchThr{ii}.XData = nodePosVecs(1,:);
-            h.anchThr{ii}.YData = nodePosVecs(2,:);
-            h.anchThr{ii}.ZData = nodePosVecs(3,:);
+        nodePosVecs = tscTmp.anchThrNodePosVecs.getsamples(ii).Data;
+        for jj = 1:sz.numTethersAnchor
+            h.anchThr{jj}.XData = nodePosVecs(1,:,jj);
+            h.anchThr{jj}.YData = nodePosVecs(2,:,jj);
+            h.anchThr{jj}.ZData = nodePosVecs(3,:,jj);
         end
-        
     end
     
     % Update the title
     h.title.String = {strcat(...
         sprintf('Time = %.1f s',tscTmp.velocityVec.Time(ii)),',',...
-        sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.getsampleusingtime(timeStamp).Data))),...
-        sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsampleusingtime(timeStamp).Data))};
+        sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.getsamples(ii).Data))),...
+        sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.getsamples(ii).Data(:,end)))};
     
     
     
@@ -599,17 +705,17 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     if p.Results.PowerBar
         yPos = interp1(h.colorBar.Limits,...
             [h.colorBar.Position(2) h.colorBar.Position(2)+h.colorBar.Position(4)],...
-            iterMeanPower.Data(max([tscTmp.iterationNumber.getsampleusingtime(timeStamp).Data 1])));
+            iterMeanPower.Data(max([tscTmp.iterationNumber.getsamples(ii).Data 1])));
         h.powerIndicatorArrow.Y = yPos*[1 1];
         h.powerIndicatorArrow.String = sprintf('Iter. %d',tscTmp.iterationNumber.Data(ii));
     end
     
     if p.Results.TangentCoordSys
         
-        originPt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
-        xVec = tscTmp.tanXUnitVecGnd.getsampleusingtime(timeStamp).Data;
-        yVec = tscTmp.tanYUnitVecGnd.getsampleusingtime(timeStamp).Data;
-        zVec = tscTmp.tanZUnitVecGnd.getsampleusingtime(timeStamp).Data;
+        originPt = tscTmp.positionVec.getsamples(ii).Data;
+        xVec = tscTmp.tanXUnitVecGnd.getsamples(ii).Data;
+        yVec = tscTmp.tanYUnitVecGnd.getsamples(ii).Data;
+        zVec = tscTmp.tanZUnitVecGnd.getsamples(ii).Data;
         
         h.tanCoordX.XData = [originPt(1) originPt(1)+xVec(1)*obj.fuse.length.Value];
         h.tanCoordX.YData = [originPt(2) originPt(2)+xVec(2)*obj.fuse.length.Value];
@@ -625,8 +731,8 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     end
     
     if p.Results.VelocityVec
-        pt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
-        velVec = tscTmp.velocityVec.getsampleusingtime(timeStamp).Data;
+        pt = tscTmp.positionVec.getsamples(ii).Data;
+        velVec = tscTmp.velocityVec.getsamples(ii).Data;
         speed = sqrt(sum(velVec.^2));
         
         h.velVec.XData = [pt(1) pt(1)+velVec(1)*obj.fuse.length.Value./speed];
@@ -637,7 +743,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     % Set the plot limits to zoom in on the body
     if p.Results.ZoomIn
-        pt = tscTmp.positionVec.getsampleusingtime(timeStamp).Data;
+        pt = tscTmp.positionVec.getsamples(ii).Data;
         xlim(pt(1)+obj.fuse.length.Value*[-1.5 1.5])
         ylim(pt(2)+obj.fuse.length.Value*[-1.5 1.5])
         zlim(pt(3)+obj.fuse.length.Value*[-1.5 1.5])
@@ -657,7 +763,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         frame       = getframe(h.fig);
         im          = frame2im(frame);
         [imind,cm]  = rgb2ind(im,256);
-        if ii == firstInd
+        if ii == 1
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif', 'Loopcount',inf);
         else
             imwrite(imind,cm,fullfile(p.Results.GifPath,p.Results.GifFile),'gif','WriteMode','append','DelayTime',p.Results.GifTimeStep)

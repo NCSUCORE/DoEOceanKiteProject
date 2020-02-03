@@ -1,8 +1,5 @@
 function plant_bc
-% Creates output bus used by allActuatorCtrl_cl
-
-numTethers  = evalin('base','thr.numTethers.Value'); % Get the number of tethers
-numGndStnLumpedMasses = evalin('base','gndStn.lumpedMassPositionMatrixBdy.Value');
+sz = getBusDims;
 
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'positionVec';
@@ -87,15 +84,15 @@ elems(9).Unit = 'rad/s';
 
 elems(10) = Simulink.BusElement;
 elems(10).Name = 'thrFlowPollPos';
-elems(10).Dimensions = [ 1  numTethers];
+elems(10).Dimensions = sz.thrLinkFlowVecsSize;
 elems(10).DimensionsMode = 'Fixed';
-elems(10).DataType = 'Bus: thrPollPosBus';
+elems(10).DataType = 'double';
 elems(10).SampleTime = -1;
 elems(10).Complexity = 'real';
 
 elems(11) = Simulink.BusElement;
 elems(11).Name = 'vhclFlowPollPos';
-elems(11).Dimensions = [3 5]; %Note this assumes 4 fluid dynamic surfaces + fuselage
+elems(11).Dimensions = [3 5]; %Note this assumes 5 fluid dynamic surfaces + fuselage
 elems(11).DimensionsMode = 'Fixed';
 elems(11).DataType = 'double';
 elems(11).SampleTime = -1;
@@ -113,31 +110,34 @@ elems(12).Unit = 'm';
 
 elems(13) = Simulink.BusElement;
 elems(13).Name = 'anchThrPollPos';
+elems(13).Dimensions = sz.anchThrLinkFlowVecsSize;
 elems(13).DimensionsMode = 'Fixed';
-% elems(13).DataType = 'Bus: anchThrPollPosBus';
-elems(13).DataType = 'Bus: thrPollPosBus';
+elems(13).DataType = 'double';
 elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';
 
 elems(14) = Simulink.BusElement;
 elems(14).Name = 'tetherReleaseSpeeds';
 elems(14).DimensionsMode = 'Fixed';
-elems(14).Dimensions = [numTethers 1];
+elems(14).Dimensions = [sz.numTethers 1];
 elems(14).DataType = 'double';
 elems(14).SampleTime = -1;
 elems(14).Complexity = 'real';
 elems(14).Unit = 'm/s';
 
 elems(15) = Simulink.BusElement;
-elems(15).Name = 'gndTenVecBusArry';
-elems(15).DataType = 'Bus: thrTenVecBus';
+elems(15).Name = 'gndTenVecs';
+elems(15).Dimensions = sz.nodeTenVecSize;
+elems(15).DimensionsMode = 'Fixed';
+elems(15).DataType = 'double';
 elems(15).SampleTime = -1;
 elems(15).Complexity = 'real';
+elems(15).Unit = 'N';
 
 
 elems(16) = Simulink.BusElement;
 elems(16).Name = 'gndStnFlowPollPos';
-elems(16).Dimensions = size(numGndStnLumpedMasses); %This gets the number of lumped masses used to describe the gndstn. Set in the gndstation build file. size: 3 by number of lumped masses
+elems(16).Dimensions = sz.gndStnLmpMasPosSize;
 elems(16).DimensionsMode = 'Fixed';
 elems(16).DataType = 'double';
 elems(16).SampleTime = -1;

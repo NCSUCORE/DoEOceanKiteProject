@@ -1,7 +1,7 @@
 clear;clc;
 close all
 
-anchorThetherCtrl_bc
+anchorTetherCtrl_bc
 createWaveFlowEnvironmentBus
 thrAttachPtKinematics_bc
 createThrTenVecBus

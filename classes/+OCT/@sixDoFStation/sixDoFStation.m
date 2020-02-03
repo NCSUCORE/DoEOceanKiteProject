@@ -49,9 +49,9 @@ classdef sixDoFStation < dynamicprops
         lumpedMassAreaMat
         
         % Initial conditions
-        posVec
+        initPosVec
         initVel
-        initAngPos
+        initEulAngs
         initAngVel
         initAnchTetherLength
         
@@ -78,9 +78,9 @@ classdef sixDoFStation < dynamicprops
             obj.gravForcePerLM              = SIM.parameter('Unit','N','Description','lumped mass gravity force');
             
             % Initial conditions
-            obj.posVec                      = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
+            obj.initPosVec                      = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
             obj.initVel                     = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
-            obj.initAngPos                  = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
+            obj.initEulAngs                  = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
             obj.initAngVel                  = SIM.parameter('Unit','rad/s','Description','Initial angular velocity of the station in the ground frame, radians per sec');
             obj.initAnchTetherLength        = SIM.parameter('Unit','m','Description','Unstretched Tether Length');
             
@@ -146,10 +146,10 @@ classdef sixDoFStation < dynamicprops
         
         
         % Method to add tether attachment points
-        function obj = addThrAttch(obj,Name,posVec)
+        function obj = addThrAttch(obj,Name,initPosVec)
             addprop(obj,Name);
             obj.(Name) = OCT.thrAttch;
-            obj.(Name).setPosVec(posVec,'m');
+            obj.(Name).setPosVec(initPosVec,'m');
         end
         
         % Function to scale the object
@@ -293,6 +293,13 @@ classdef sixDoFStation < dynamicprops
             obj.lumpedMassAreaMat.setValue(val,unit)
         end
         
+        % getters
+        function val = get.cylTotH(obj)
+            val = obj.cylTotH;
+            height = max(obj.zMatExt.Value)-min(obj.zMatExt.Value);
+            val.setValue(height,obj.zMatExt.Unit)
+        end
+        
         
         
         function bouyancy(obj)
@@ -362,14 +369,14 @@ classdef sixDoFStation < dynamicprops
             
         end
         % Initial conditions
-        function setPosVec(obj,val,unit)
-            obj.posVec.setValue(val,unit);
+        function setInitPosVec(obj,val,unit)
+            obj.initPosVec.setValue(val,unit);
         end
         function setInitVel(obj,val,unit)
             obj.initVel.setValue(val,unit);
         end
-        function setInitAngPos(obj,val,unit)
-            obj.initAngPos.setValue(val,unit);
+        function setInitEulAngs(obj,val,unit)
+            obj.initEulAngs.setValue(val,unit);
         end
         function setInitAngVel(obj,val,unit)
             obj.initAngVel.setValue(val,unit);
@@ -407,24 +414,24 @@ classdef sixDoFStation < dynamicprops
             
             scatter3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
             hold on
-            plot3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
+%             plot3(obj.lumpedMassPositionMatrixBdy.Value(1,:),obj.lumpedMassPositionMatrixBdy.Value(2,:),obj.lumpedMassPositionMatrixBdy.Value(3,:))
         end
         
         function plotGndStnLoc(obj)
             
             
-            p1 =  obj.inrThrAttchPt1.posVec.Value;
+            p1 =  obj.inrThrAttchPt1.initPosVec.Value;
             
-            p2 =  obj.inrThrAttchPt2.posVec.Value;
+            p2 =  obj.inrThrAttchPt2.initPosVec.Value;
             
-            p3 =  obj.inrThrAttchPt3.posVec.Value;
+            p3 =  obj.inrThrAttchPt3.initPosVec.Value;
             
             
-            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.posVec.Value(:);
+            p1b =  obj.pltThrAttchPt1.initPosVec.Value + obj.initPosVec.Value(:);
             
-            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.posVec.Value(:);
+            p2b =  obj.pltThrAttchPt2.initPosVec.Value + obj.initPosVec.Value(:);
             
-            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.posVec.Value(:);
+            p3b =  obj.pltThrAttchPt3.initPosVec.Value + obj.initPosVec.Value(:);
             
             x = [ p1(1),p2(1),p3(1),p1b(1),p2b(1),p3b(1)];
             y = [ p1(2),p2(2),p3(2),p1b(2),p2b(2),p3b(2)];
@@ -435,18 +442,18 @@ classdef sixDoFStation < dynamicprops
         function tdists = calcInitTetherLen(obj)
             
             %ground points
-            p1g =  obj.inrThrAttchPt1.posVec.Value;
+            p1g =  obj.inrThrAttchPt1.initPosVec.Value;
             
-            p2g =  obj.inrThrAttchPt2.posVec.Value;
+            p2g =  obj.inrThrAttchPt2.initPosVec.Value;
             
-            p3g =  obj.inrThrAttchPt3.posVec.Value;
+            p3g =  obj.inrThrAttchPt3.initPosVec.Value;
             
             %body initially lined up with gnd frame. body points
-            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.posVec.Value(:);
+            p1b =  obj.pltThrAttchPt1.initPosVec.Value + obj.initPosVec.Value(:);
             
-            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.posVec.Value(:);
+            p2b =  obj.pltThrAttchPt2.initPosVec.Value + obj.initPosVec.Value(:);
             
-            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.posVec.Value(:);
+            p3b =  obj.pltThrAttchPt3.initPosVec.Value + obj.initPosVec.Value(:);
             
             
             t1Dist =  sqrt(sum(((p1b - p1g)).^2));

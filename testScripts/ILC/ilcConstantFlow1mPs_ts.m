@@ -1,6 +1,6 @@
 %% Script to run ILC path optimization
 clear;clc;close all
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(2*3600,'s');
 dynamicCalc = '';
 
@@ -12,7 +12,7 @@ loadComponent('pathFollowingCtrlForILC');
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('fig8ILC2mPs')
+loadComponent('fig8ILC1mPs')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -26,7 +26,7 @@ loadComponent('constXYZT');
 
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([2 0 0],'m/s')
+env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 hiLvlCtrl.initBasisParams.setValue([0.3,1,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
@@ -58,7 +58,6 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.setMaxSpeed(inf,'m/s');
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
@@ -70,17 +69,14 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 %% Run the simulation
 simWithMonitor('OCTModel')
-tscILC = parseLogsout;
+tscILC = signalcontainer(logsout);
 
 %%
 if runBaseline
-hiLvlCtrl.learningGain.setValue(0,'[]');
-simWithMonitor('OCTModel')
-tscBaseline = parseLogsout;
+    hiLvlCtrl.learningGain.setValue(0,'[]');
+    simWithMonitor('OCTModel')
+    tscBaseline = signalcontainer(logsout);
 end
-    
-% load(sprintf('cnstFlwResults%dmPs.mat',env.water.flowVec.Value(1)),'tscBaseline');
-
 
 %% Things to plot
 close all
@@ -92,23 +88,24 @@ if runBaseline
     baselineLegendName = sprintf('Baseline (%d Iterations)',tscBaseline.iterationNumber.Data(end));
     baselineIterTimes   = tscBaseline.ilcTrigger.Time(tscBaseline.ilcTrigger.Data);
 end
-% 1 Basis parameters
+
+%% 1 Basis parameters
 figure('Name',sprintf('cnstFlwBasisParams%dmPs',env.water.flowVec.Value(1)))
 % Plot the results from ILC
 stairs(tscILC.basisParams.Time./60,...
-    squeeze(tscILC.basisParams.Data(1,:,:)),...
+    squeeze(tscILC.basisParams.Data(1,1,:)),...
     'LineWidth',lineWidth,'Color','k','LineStyle','-','DisplayName','$b_1$, ILC');
 hold on
 stairs(tscILC.basisParams.Time./60,...
-    squeeze(tscILC.basisParams.Data(2,:,:)),...
+    squeeze(tscILC.basisParams.Data(1,2,:)),...
     'LineWidth',lineWidth,'Color','k','LineStyle','--','DisplayName','$b_2$, ILC');
 % Plot the results from the baseline
 if runBaseline
     stairs(tscBaseline.basisParams.Time./60,...
-        squeeze(tscBaseline.basisParams.Data(1,:,:)),...
+        squeeze(tscBaseline.basisParams.Data(1,1,:)),...
         'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','-','DisplayName','$b_1$, Baseline');
     stairs(tscBaseline.basisParams.Time./60,...
-        squeeze(tscBaseline.basisParams.Data(2,:,:)),...
+        squeeze(tscBaseline.basisParams.Data(1,2,:)),...
         'LineWidth',lineWidth,'Color',0.5*[1 1 1],'LineStyle','--','DisplayName','$b_2$, Baseline');
 end
 % Add figure annotations and set formatting
@@ -118,6 +115,8 @@ title(['Basis Parameters, ', sprintf('Constant %d m/s Flow',env.water.flowVec.Va
 set(gca,'FontSize',fontSize)
 box off
 grid on
+
+ylim([0.25 1.25])
 legend('Location','Best','Orientation','Horizontal')
     
 
@@ -233,26 +232,15 @@ view([54 5])
 h.leg = findobj(gcf,'Type','Legend');
 h.leg.Position = [0.5598    0.5763    0.1941    0.1667];
 
-%%
+%
 filePath = ['output',filesep,sprintf('cnstFlwResults%dmPs',env.water.flowVec.Value(1))];
 saveAllPlots('Folder',filePath)
 cropImages(filePath)
 
-%%
+%
 save(sprintf('cnstFlwResults%dmPs',env.water.flowVec.Value(1)),'tscILC','tscBaseline','-v7.3');
 
-%%
-% vhcl.animateSim(tsc,1,...
-%     'PathFunc',fltCtrl.fcnName.Value,...
-%     'PathPosition',false,...
-%     'ZoomIn',false,...
-%     'NavigationVecs',true,...
-%     'TangentCoordSys',false,...
-%     'VelocityVec',true,...
-%     'Pause',false,...
-%     'PlotTracer',true,...
-%     'LocalAero',false,...
-%     'SaveMPEG',false)
+
 
 
 

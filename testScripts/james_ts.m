@@ -8,7 +8,7 @@ for ppp = 1:1
         if ~slreportgen.utils.isModelLoaded('OCTModel')
             OCTModel
         end
-        sim = SIM.sim;
+        sim = SIM.simParams;
         sim.setDuration(1000,'s')
         dynamicCalc = '';
         

@@ -1,4 +1,4 @@
-function anchorThetherCtrl_bc()
+function anchorTetherCtrl_bc()
 % Creates output bus used by anchorTetherCtrl
 
 elems(1) = Simulink.BusElement;
