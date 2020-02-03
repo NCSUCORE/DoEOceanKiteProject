@@ -160,6 +160,14 @@ hiLims =  [repmat([1;1.6],3,1); 0.6*ones(3,1); 1.1];
 
 dataRange = [80 140];
 
+
+% run sim without refinement
+noRefineObjF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
+    initVals,initCoeffs,tscExp,dataRange);
+
+tscNoRefine = tsc;
+
+
 % % optimize using PSO
 [optDsgn,minFCoarse,allIterationData] = particleSwarmMinimization(...
     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
@@ -182,6 +190,7 @@ dataRange = [80 140];
 % optDsgn = [1.000 1.092 0.932 1.000 1.000 1.266 0.525 0.489 0.408 1.056]';
 % optDsgn = initCoeffs;
 % optDsgn2 = initCoeffs;
+
 
 objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
     initVals,optDsgn,tscExp,dataRange);
