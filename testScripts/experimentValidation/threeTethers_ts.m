@@ -9,8 +9,8 @@ lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
 simTime = 1*140;
-sim = SIM.simParams;
-sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
+simParams = SIM.simParams;
+simParams.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
 %% Set up simulation
 GNDSTNCONTROLLER      = 'oneDoF';
@@ -162,10 +162,10 @@ dataRange = [80 140];
 
 
 % run sim without refinement
-noRefineObjF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,initCoeffs,tscExp,dataRange);
+% noRefineObjF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,initCoeffs,tscExp,dataRange);
 
-tscNoRefine = tsc;
+% tscNoRefine = tsc;
 
 
 % % optimize using PSO
@@ -197,7 +197,7 @@ tscNoRefine = tsc;
 
 
 %% Run the simulation
-% simWithMonitor('OCTModel')
+simWithMonitor('OCTModel')
 % parseLogsout
 
 plotAyaz

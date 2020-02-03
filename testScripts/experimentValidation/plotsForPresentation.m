@@ -39,6 +39,8 @@ sol_OwB = squeeze(tscSim2.angularVel.Data);
 
 %%
 [objF2,rmseVals,othrVals] = calObjF(tscSim2,tscExp,dataRange);
+optDsgn'
+rmseVals
 
 % % % % shift the time axis
 timeSim2 = timeSim2 - 80;
