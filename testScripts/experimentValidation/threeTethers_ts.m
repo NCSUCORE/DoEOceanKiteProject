@@ -9,7 +9,7 @@ lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
 simTime = 1*140;
-sim = SIM.sim;
+sim = SIM.simParams;
 sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
 %% Set up simulation
@@ -169,10 +169,10 @@ tscNoRefine = tsc;
 
 
 % % optimize using PSO
-[optDsgn,minFCoarse,allIterationData] = particleSwarmMinimization(...
-    @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-    'swarmSize',15,'maxIter',8,'cognitiveLR',0.4,'socialLR',0.2);
+% [optDsgn,minFCoarse,allIterationData] = particleSwarmMinimization(...
+%     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
+%     'swarmSize',15,'maxIter',8,'cognitiveLR',0.4,'socialLR',0.2);
 % %
 % % % % % gradient based opt
 % options = optimoptions(@fmincon,'Algorithm','interior-point',...
@@ -190,10 +190,10 @@ tscNoRefine = tsc;
 % optDsgn = [1.000 1.092 0.932 1.000 1.000 1.266 0.525 0.489 0.408 1.056]';
 % optDsgn = initCoeffs;
 % optDsgn2 = initCoeffs;
-
-
-objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,optDsgn,tscExp,dataRange);
+% 
+% 
+% objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,optDsgn,tscExp,dataRange);
 
 
 %% Run the simulation
