@@ -9,7 +9,8 @@ format compact
 
 %% lifiting body
 %% variant
-VEHICLE               = 'vehicle000';
+VEHICLE               = "vehicle000";
+SIXDOFDYNAMICS        = "sixDoFDynamicsEuler";
 
 %% build
 vhcl = OCT.vehicle;
@@ -156,6 +157,7 @@ vhcl.vStab.alpha.setValue(AoA0015,'deg')
 vhcl.scale(Lscale,1);
 
 %% save file in its respective directory
-saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
+saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
+
 
 

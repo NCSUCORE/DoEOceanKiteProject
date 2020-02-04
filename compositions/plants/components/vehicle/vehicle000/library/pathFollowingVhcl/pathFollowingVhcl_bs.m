@@ -7,7 +7,8 @@ format compact
 
 % the script saves the variable 'vhcl' to a 'pathFollowingVhcl.mat'
 
-VEHICLE               = 'vehicle000';
+VEHICLE               = "vehicle000";
+SIXDOFDYNAMICS        = "sixDoFDynamicsEuler";
 
 %% lifiting body
 vhcl = OCT.vehicle;
@@ -82,7 +83,7 @@ vhcl.calcFluidDynamicCoefffs
 % vhcl.calcAddedMass
 vhcl.addedMass.setValue(zeros(3,3),'kg')
 %% save file in its respective directory
-saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
+saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
 
 
 
