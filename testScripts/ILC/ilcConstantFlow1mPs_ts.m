@@ -117,7 +117,7 @@ box off
 grid on
 
 ylim([0.25 1.25])
-legend('Location','Best','Orientation','Horizontal')
+legend('Location','Best')
     
 
 % 2 Performance index vs time (denote total number of iterations)
