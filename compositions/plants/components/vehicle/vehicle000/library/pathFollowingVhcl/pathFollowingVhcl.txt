@@ -62,6 +62,14 @@ vhcl.maxCtrlDefSpeed.Value = 6.0000e+01
 vhcl.maxCtrlDefSpeed.Unit = 'deg/s'
 vhcl.maxCtrlDefSpeed.NoScale = false
 vhcl.maxCtrlDefSpeed.Description = 'Fastest rate of control surface deflection for all surfaces in either direction'
+vhcl.Ma6x6.Value = [0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0]
+vhcl.Ma6x6.Unit is unitless or has no unit specified
+vhcl.Ma6x6.NoScale = false
+vhcl.Ma6x6.Description = '6x6 Added Mass Matrix'
+vhcl.D6x6.Value = [0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0]
+vhcl.D6x6.Unit is unitless or has no unit specified
+vhcl.D6x6.NoScale = false
+vhcl.D6x6.Description = '6x6 Added Mass Matrix'
 vhcl.centOfBuoy.Value = [0;0;0]
 vhcl.centOfBuoy.Unit = 'm'
 vhcl.centOfBuoy.NoScale = false
@@ -444,3 +452,7 @@ vhcl.fluidRefArea.Value = 1.0000e+01
 vhcl.fluidRefArea.Unit = 'm^2'
 vhcl.fluidRefArea.NoScale = false
 vhcl.fluidRefArea.Description = 'Reference area for aerodynamic calculations'
+vhcl.M6x6.Value = [945.352023474 0 0 0 0 0;0 945.352023474 0 0 0 0;0 0 945.352023474 0 0 0;0 0 0 6303.080401918 0 -81.875397942;0 0 0 0 2080.666338077 0;0 0 0 -81.875397942 0 8320.369733598]
+vhcl.M6x6.Unit is unitless or has no unit specified
+vhcl.M6x6.NoScale = false
+vhcl.M6x6.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'

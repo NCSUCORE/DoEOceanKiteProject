@@ -20,6 +20,8 @@ classdef vehicle < dynamicprops
         maxCtrlDef
         minCtrlDef
         maxCtrlDefSpeed
+        Ma6x6
+        D6x6
         % center of buoyancy
         centOfBuoy
         % bridle location
@@ -75,9 +77,6 @@ classdef vehicle < dynamicprops
         initAngVelVec
         addedMass
         addedInertia
-        mass6
-        crb6
-        ca6
     end
     
     properties (Dependent)
@@ -92,6 +91,9 @@ classdef vehicle < dynamicprops
         fuse
         fluidMomentArms
         fluidRefArea
+        %6x6 Matrices
+        M6x6
+        
     end
     
     methods
@@ -113,12 +115,14 @@ classdef vehicle < dynamicprops
             obj.Iyz            = SIM.parameter('Unit','kg*m^2','Description','Iyz');
             obj.addedMISwitch  = SIM.parameter('Value',1,'Unit','','Description','False turns off added mass and inertia');
             obj.addedMass      = SIM.parameter('Value',zeros(3),'Unit','kg','Description','addedMass');
+            obj.Ma6x6          = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Added Mass Matrix');
+            obj.D6x6           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Added Mass Matrix');
             obj.addedInertia   = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','addedInertia');
             obj.maxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
             obj.minCtrlDef     = SIM.parameter('Value',-30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the negative direction');
             obj.maxCtrlDefSpeed= SIM.parameter('Value',60,'Unit','deg/s','Description','Fastest rate of control surface deflection for all surfaces in either direction');
             % some vectors
-            obj.Rbridle_cm     = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
+            obj.Rbridle_cm = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to bridle point');
             obj.centOfBuoy     = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
             % fluid coeffs file name
             obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data','NoScale',true);
@@ -776,6 +780,19 @@ classdef vehicle < dynamicprops
             
             val = SIM.parameter('Value',Sref,'Unit','m^2',...
                 'Description','Reference area for aerodynamic calculations');
+        end
+        
+        function val = get.M6x6(obj)
+            S=@(v) [0 -v(3) v(2);v(3) 0 -v(1);-v(2) v(1) 0];
+            M=zeros(6,6);
+            M(1,1)=obj.mass.Value;
+            M(2,2)=obj.mass.Value;
+            M(3,3)=obj.mass.Value;
+            M(1:3,4:6)=-obj.mass.Value*S(-obj.RwingLE_cm.Value);
+            M(4:6,1:3)=obj.mass.Value*S(-obj.RwingLE_cm.Value);
+            M(4:6,4:6)=obj.inertia.Value;
+            val = SIM.parameter('Value',M,'Unit','','Description',...
+                '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span');
         end
         
         

@@ -24,6 +24,7 @@ vhcl.setBuoyFactor(1.0,'');
 % vhcl.setMaxCtrlDefSpeed(60,'deg/s');
 
 % % % volume and inertias
+% vhcl.setVolume(2.85698,'m^3')
 vhcl.setVolume(945352023.474*1e-9,'m^3');
 vhcl.setIxx(6.303080401918E+09*1e-6,'kg*m^2');
 vhcl.setIyy(2080666338.077*1e-6,'kg*m^2');
@@ -35,6 +36,7 @@ vhcl.setCentOfBuoy([0;0;0],'m');
 vhcl.setRbridle_cm([0;0;0],'m');
 
 % % % wing
+% vhcl.setRwingLE_cm([-.47064 0 0],'m');
 vhcl.setRwingLE_cm([0;0;0],'m');
 vhcl.setWingChord(1,'m');
 vhcl.setWingAR(10,'');
@@ -73,7 +75,6 @@ vhcl.setFuseDiameter(0.15,'m')
 vhcl.setFuseEndDragCoeff(0,'')
 vhcl.setFuseSideDragCoeff(0,'')
 vhcl.setFuseRCmToNose([-2;0;0],'m')
-
 
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile2','');

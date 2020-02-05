@@ -19,8 +19,8 @@ loadComponent('oneDOFWnch');
 loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
-vhcl.setRwingLE_cm([-.47064 0 0],'m');
-vhcl.setVolume(2.85698,'m^3')
+SIXDOFDYNAMICS='sixDoFDynamics6x6';
+
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
 loadComponent('constXYZT');
