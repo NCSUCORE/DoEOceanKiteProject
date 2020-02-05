@@ -75,6 +75,9 @@ classdef vehicle < dynamicprops
         initAngVelVec
         addedMass
         addedInertia
+        mass6
+        crb6
+        ca6
     end
     
     properties (Dependent)
@@ -1133,9 +1136,9 @@ classdef vehicle < dynamicprops
                     
                 end
                 % Center of mass
-                h.centOfMass = plot3(0+p.Results.Position(1),0+p.Results.Position(2),0+p.Results.Position(3),'r*');
+                h.centOfMass = plot3(0+p.Results.Position(1),0+p.Results.Position(2),0+p.Results.Position(3),'r*','DisplayName','Center of Mass');
                 % Coordinate origin
-                h.origin = plot3(0,0,0,'kx');
+                h.origin = plot3(0,0,0,'kx','DisplayName','Body Frame Origin');
                 legend([h.surf{1} h.thrAttchPts{1} h.turb{1} h.momArms{2} h.centOfMass h.origin])
             end
             grid on

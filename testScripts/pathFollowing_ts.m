@@ -1,11 +1,12 @@
 % clear;clc;close all
-sim = SIM.simParams;
-sim.setDuration(1000,'s');
+simParams = SIM.simParams;
+simParams.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
 % Flight Controller
 loadComponent('pathFollowingCtrlForILC');
+SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
@@ -18,15 +19,18 @@ loadComponent('oneDOFWnch');
 loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
+vhcl.setRwingLE_cm([-.47064 0 0],'m');
+vhcl.setVolume(2.85698,'m^3')
+% SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
 loadComponent('constXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec(1 0 0],'m/s')
+env.water.setflowVec([2 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,.36,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([.8,1.4,.36,0*pi/180,200],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
