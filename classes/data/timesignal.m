@@ -187,8 +187,20 @@ classdef timesignal < timeseries
                     % crop t down to the range included in obj already
                     tVec = t(and(t>=newobj.Time(1),t<=newobj.Time(end)));
                 end
-                % Call superclass resample method on this object.
-                newobj = resample@timeseries(newobj,tVec,varargin{:});
+                
+                if isenum(newobj.getsamples(1).Data) % If it's enumerated data
+                    % Get the name of the enumerated class
+                    enumName = class(obj.getsamples(1).Data);
+                    % Convert the data to double
+                    newobj.Data = double(newobj.Data);
+                    % Call superclass resample method on this object.
+                    newobj = resample@timeseries(newobj,tVec,varargin{:});
+                    % Round to integer and convert back to enumerated
+                    newobj.Data = feval(enumName,round(newobj.Data));
+                else
+                    % Call superclass resample method on this object.
+                    newobj = resample@timeseries(newobj,tVec,varargin{:});
+                end
             end
         end
         
