@@ -31,10 +31,12 @@ classdef timesignal < timeseries
                 nt = numel(obj.Time);
                 % size of the data
                 sz = size(obj.Data);
+                % Which dimension is time
+                timeDim = find(sz==nt);
                 % Number of rows and columns
                 switch ndims(obj.Data)
                     case 2
-                        if sz(1) == nt
+                        if timeDim == 1
                             nc = sz(2);
                             nr = 1;
                             cDim = 2;
@@ -46,30 +48,18 @@ classdef timesignal < timeseries
                             rDim = 1;
                         end
                     case 3
-                        % Which dimension is time
-                        switch (size(obj.Data)==nt)*(1:3)'
-                            case 1
-                                nc = sz(3);
-                                nr = sz(2);
-                                rDim = 2;
-                                cDim = 3;
-                            case 2
-                                nc = sz(3);
-                                nr = sz(1);
-                                rDim = 1;
-                                cDim = 3;
-                            case 3
-                                nc = sz(2);
-                                nr = sz(1);
-                                rDim = 1;
-                                cDim = 2;
-                        end
+                        nonTimeDims=1:3;
+                        nonTimeDims(timeDim)=[];
+                        nr=sz(nonTimeDims(1));
+                        nc=sz(nonTimeDims(2));
+                        rDim=nonTimeDims(1);
+                        cDim=nonTimeDims(2);
                     case 4
                         % If the data is 4D, slice along 3rd dimension,
                         % call plotting on each of the slides
                         for ii = 1:size(obj.Data,3)
                            figure('Name',sprintf('Slice %d',ii));
-                           newObj = obj;
+                           newObj = timesignal(obj);
                            newObj.Data = squeeze(obj.Data(:,:,ii,:));
                            newObj.plot;
                         end
@@ -80,7 +70,6 @@ classdef timesignal < timeseries
                 end
                 
                 % Actually do the plotting
-                timeDim = (1:ndims(obj.Data))*(size(obj.Data)==nt)';
                 % Preallocate cells of indices used to extract data
                 inds={[],[],[]};
                 inds{timeDim} = 1:nt;
@@ -109,6 +98,42 @@ classdef timesignal < timeseries
             % If the user wants it, return the figure handle
             if nargout==1
                 varargout{1} = gcf;
+            end
+        end
+        
+        %Plots the magnitude of a given signal. Assumes vectors have a
+        %length of 3 unless given a vector Dimention.
+        function varargout = plotMag(obj,varargin)
+            p=inputParser;
+            p.addOptional('vectorDim',[],@(x)isnumeric(x));
+            parse(p,varargin{:})
+            
+            sz = size(obj.Data);
+            timeDim = find(sz==length(obj.Time));
+            nonTimeDims = 1:length(sz);
+            nonTimeDims(timeDim)=[]; %#ok<FNDSB>
+            %Decide Vector Dimention
+            if ~isempty(p.Results.vectorDim)
+                vdim=p.Results.vectorDim;
+            else
+                switch length(nonTimeDims)
+                    case 1
+                        vdim=nonTimeDims;
+                    otherwise
+                        if length(nonTimeDims(sz(nonTimeDims)==3))==1
+                            vdim=nonTimeDims(sz(nonTimeDims)==3);
+                        else
+                            error("You need to specify dimentions with plotMag('vectorDim',#,...)")
+                        end
+                end     
+            end
+            newobj=timesignal(obj);
+            newobj.Data = sqrt(sum(obj.Data.^2,vdim));
+            newobj.Name = obj.Name + "Mag";
+            if nargout == 1
+                varargout{1}=newobj.plot;
+            else
+                newobj.plot;
             end
         end
         

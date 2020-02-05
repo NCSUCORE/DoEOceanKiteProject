@@ -9,7 +9,8 @@ format compact
 
 %% lifiting body
 %% variant
-VEHICLE               = 'vehicle000';
+VEHICLE               = "vehicle000";
+SIXDOFDYNAMICS        = "sixDoFDynamicsEuler";
 
 %% build
 vhcl = OCT.vehicle;
@@ -17,32 +18,33 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(3,'');
 vhcl.setNumTurbines(2,'');
-vhcl.setBuoyFactor(1.14,'');
+vhcl.setBuoyFactor(1.1,'');
 
 vhcl.setTurbDiam(0.45,'m')
 
 % entering parameters for scaled model
 Lscale = 0.015;
-xCM_LE = 10.925e-3;
-xCB_LE = 7.279e-3;
+xCM_LE = 12.032e-3;
+rCM_LE = [12.032;0;1.439]*1e-3;
+rCB_LE = [7.38;0;1.023]*1e-3;
 
 % % % volume and inertias
-vhcl.setVolume(10221.876*1e-9*(1/Lscale^3),'m^3');
+vhcl.setVolume(10238.171*1e-9*(1/Lscale^3),'m^3');
 MiCoeff = 1;
-vhcl.setIxx(MiCoeff*8.296*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIyy(MiCoeff*10.031*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIzz(MiCoeff*17.979*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIxx(MiCoeff*8.308*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIyy(MiCoeff*9.474*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIzz(MiCoeff*18.738*1e-6*(1/Lscale^5),'kg*m^2');
 vhcl.setIxy(0,'kg*m^2');
-vhcl.setIxz(MiCoeff*0.357*1e-6*(1/Lscale^5),'kg*m^2');
+vhcl.setIxz(MiCoeff*0.402*1e-6*(1/Lscale^5),'kg*m^2');
 vhcl.setIyz(0,'kg*m^2');
-vhcl.setCentOfBuoy([(xCB_LE-xCM_LE);0;0]*(1/Lscale),'m');
+vhcl.setCentOfBuoy((rCB_LE-rCM_LE)*(1/Lscale),'m');
 vhcl.setRbridle_cm([0;0;0],'m');
 vhcl.setAddedMISwitch(true,'');
 
 % % % wing
 Clmax = 2;
 
-vhcl.setRwingLE_cm([-xCM_LE;0;0]*(1/Lscale),'m');
+vhcl.setRwingLE_cm(-rCM_LE*(1/Lscale),'m');
 vhcl.setWingChord(15e-3*(1/Lscale),'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
@@ -76,10 +78,15 @@ vhcl.setVsClMax(Clmax,'');
 vhcl.setVsClMin(-Clmax,'');
 
 % % % Fuselage (could use more realistic numbers)
-vhcl.setFuseDiameter(2.5*4.9e-3*(1/Lscale),'m')
-vhcl.setFuseEndDragCoeff(0.4,'')
-vhcl.setFuseSideDragCoeff(0.8,'')
-vhcl.setFuseRCmToNose([(-60.141+xCM_LE)*1e-3;0;0]*(1/Lscale),'m')
+fuseChord = 11*Lscale;
+fuseAirfoil = 0.06;
+thFunc = @(x,t) 5*t*(0.2969*x.^0.5 - 0.126*x - 0.3516*x.^2 + 0.2843*x.^3 ...
+    - 0.1036*x.^4);
+
+vhcl.setFuseDiameter(2*mean(thFunc(0:0.01:1,fuseAirfoil)*fuseChord)*(1/Lscale),'m')
+vhcl.setFuseEndDragCoeff(0.6,'')
+vhcl.setFuseSideDragCoeff(1,'')
+vhcl.setFuseRCmToNose(-([45;0;0]*1e-3 + rCM_LE)*(1/Lscale),'m')
 
 % % % data file name
 vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
@@ -87,6 +94,7 @@ vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
 % % % load/generate fluid dynamic data
 vhcl.calcFluidDynamicCoefffs
 vhcl.calcAddedMass
+vhcl.addedInertia.setValue(0*[0.2;0.2;0.2].*vhcl.addedInertia.Value,'kg*m^2');
 
 % calc added mass
 addedMassCoeff = 1;
@@ -98,12 +106,12 @@ vhcl.addedMass.setValue(addedMassCoeff.*vhcl.addedMass.Value,'kg')
 % % % artificially reduce lift
 % reductionFactor = 1.0;
 % incrementFactor = 1.0;
-% 
+%
 % vhcl.portWing.CL.setValue(reductionFactor*vhcl.portWing.CL.Value,'')
 % vhcl.stbdWing.CL.setValue(reductionFactor*vhcl.stbdWing.CL.Value,'')
 % vhcl.hStab.CL.setValue(reductionFactor*vhcl.hStab.CL.Value,'')
 % vhcl.vStab.CL.setValue(reductionFactor*vhcl.vStab.CL.Value,'')
-% 
+%
 % vhcl.portWing.CD.setValue(incrementFactor*vhcl.portWing.CD.Value,'')
 % vhcl.stbdWing.CD.setValue(incrementFactor*vhcl.stbdWing.CD.Value,'')
 % vhcl.hStab.CD.setValue(incrementFactor*vhcl.hStab.CD.Value,'')
@@ -111,7 +119,7 @@ vhcl.addedMass.setValue(addedMassCoeff.*vhcl.addedMass.Value,'kg')
 
 %% use xfoil data
 load('xfoilData.mat')
-spanEffFactor = 0.8;
+spanEffFactor = 0.7;    % its 0.73 for a cessna 310. refer secondaryRef folder
 CLWing = spanEffFactor*CL2412.*(0.5*vhcl.wingAR.Value*(vhcl.wingChord.Value^2)...
     /vhcl.portWing.refArea.Value);
 CDWing = (CD2412 + (CLWing.^2)./(pi*vhcl.wingAR.Value*spanEffFactor))*...
@@ -149,6 +157,7 @@ vhcl.vStab.alpha.setValue(AoA0015,'deg')
 vhcl.scale(Lscale,1);
 
 %% save file in its respective directory
-saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
+saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
+
 
 

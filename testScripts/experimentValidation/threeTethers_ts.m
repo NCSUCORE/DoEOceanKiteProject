@@ -8,9 +8,9 @@ cd(fileparts(mfilename('fullpath')));
 lengthScaleFactor = 1;
 densityScaleFactor = 1/1;
 
-simTime = 60;
-sim = SIM.simParams;
-sim.setDuration(simTime*sqrt(lengthScaleFactor),'s');
+simTime = 1*140;
+simParams = SIM.simParams;
+simParams.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
 %% Set up simulation
 GNDSTNCONTROLLER      = 'oneDoF';
@@ -27,9 +27,9 @@ env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 %% lifiting body
 load('ayazThreeTetVhcl.mat')
 
-altiSP = 34.5e-2;
-iniX = 0.2276;
-pitchSP = 11;
+altiSP = 35e-2;
+iniX = 0.2319;
+pitchSP = 14;
 
 % % % initial conditions
 vhcl.setInitPosVecGnd([iniX;0;altiSP],'m');
@@ -74,10 +74,9 @@ load('ayazThreeTetWnch.mat');
 % set initial conditions
 % wnch.setTetherInitLength(vhcl,env,thr);
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.4061,'m');
-wnch.winch2.initLength.setValue(0.4369,'m');
-wnch.winch3.initLength.setValue(0.4061,'m');
-
+wnch.winch1.initLength.setValue(0.4120,'m');
+wnch.winch2.initLength.setValue(0.4391,'m');
+wnch.winch3.initLength.setValue(0.4120,'m');
 
 dynamicCalc = '';
 
@@ -87,13 +86,14 @@ load('ayazThreeTetCtrl.mat');
 altitudeCtrlShutOffDelay = 0*800;
 % expOffset = 7.7+2.5;
 expOffset = 0;
-expDelay = 20.61;
-initialDelay = altitudeCtrlShutOffDelay + expDelay;
-expOffset = altitudeCtrlShutOffDelay + expOffset;
+expDelay = 54.22;
+% altitudeCtrlShutOffDelay = 0.75*expDelay;
+initialDelay = 1*altitudeCtrlShutOffDelay + expDelay;
+expOffset = 1*altitudeCtrlShutOffDelay + expOffset;
 
 % switching values
 fltCtrl.ySwitch.setValue(0,'m'); % set to 0 to execute simple square wave tracking
-fltCtrl.rollAmp.setValue(12,'deg');
+fltCtrl.rollAmp.setValue(13,'deg');
 fltCtrl.rollPeriod.setValue(5,'s');
 
 % set setpoints
@@ -102,7 +102,7 @@ fltCtrl.altiSP.setValue(altiSP*ones(size(timeVec)),'m',timeVec);
 fltCtrl.pitchSP.setValue(pitchSP*ones(size(timeVec)),'deg',timeVec);
 fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 
-%% scale 
+%% scale
 % scale environment
 % env.scale(lengthScaleFactor,densityScaleFactor);
 % scale vehicle
@@ -117,23 +117,13 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 % fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 
 %% process experimental data
-% load file
-load 'data_19_Nov_2019_19_08_19.mat' 
+datFileName = 'data_24_Jan_2020_15_50_38.mat';
+fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
-% extract values
-tscExp = tsc;
-timeExp = tscExp.roll_rad.Time;
-
-% filter bad data
-badData = find(tscExp.yaw_rad.Data>100);
-tscExp.yaw_rad.Data(badData) = 0.5*(tscExp.yaw_rad.Data(badData-1) + tscExp.yaw_rad.Data(badData+1));
-windowSize = 20; 
-b = (1/windowSize)*ones(1,windowSize);
-tscExp.roll_rad.Data = filter(b,1,tscExp.roll_rad.Data);
-tscExp.pitch_rad.Data = filter(b,1,tscExp.pitch_rad.Data);
-tscExp.yaw_rad.Data = filter(b,1,tscExp.yaw_rad.Data);
-
-tscExp.CoMPosVec_cm.Data = tscExp.CoMPosVec_cm.Data./100;
+tscExp = processExpData(fullFileName,...
+    'Ro_c_in_meters',[22;-0.76*1;-4.0]./100,...
+    'yawOffset',1*2.6707,...
+    'rollOffset',1*0.2505);
 
 %% adjust parameters
 initVals.CLWing = vhcl.portWing.CL.Value;
@@ -149,6 +139,7 @@ initVals.fuseEndDrag = vhcl.fuseEndDragCoeff.Value;
 initVals.fuseSideDrag = vhcl.fuseSideDragCoeff.Value;
 
 initVals.addedMass = vhcl.addedMass.Value;
+initVals.addedInertia = vhcl.addedInertia.Value;
 initVals.buoyFactor = vhcl.buoyFactor.Value;
 
 initVals.wnchMaxReleaseSpeed = wnch.winch1.maxSpeed.Value;
@@ -157,43 +148,56 @@ initVals.thrDragCoeff = thr.tether1.dragCoeff.Value;
 
 
 %% run optimization
-initCoeffs = ones(13,1);
-% initCoeffs = [0.8836    1.1571    0.6642    1.4724    0.2740    1.4610    0.9725...
-%     0.5495    0.9937 1 1 1]';
+initCoeffs = ones(10,1);
 
-initCoeffs(11) = 0.55;
-initCoeffs(12) = 0.55;
-initCoeffs(13) = 0.55;
+% initCoeffs = [1 1.001 1 1.473 0.7 1.000 0.402 0.575 0.408 1.068]';
 
-% lowLims = [repmat([0.25;1],3,1); 0.9; 0.5; 0.7; 0.9; 0.9; 0.9];
-% hiLims = [repmat([1;1.75],3,1); 1.1; 1.5; 1.3; 1.1; 1.1; 1.1];
+initCoeffs(7:9) = 0.5;
 
-lowLims = [repmat([0.8;1],3,1); 0.8; 0.8; 0.8; 0.75;0.45;0.45;0.45];
-hiLims = [repmat([1;1.2],3,1); 1.2; 1.2; 1.1; 1;0.65;0.65;0.65];
-    
-dataRange = [30 60];
 
-% options = optimoptions(@fmincon,'MaxIterations',40,'MaxFunctionEvaluations',2000);
-% [optDsgn,maxF] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
-%     initVals,coeffs,tscExp,dataRange),...
-%     initCoeffs,[],[],[],[],lowLims,hiLims,[],options);
+lowLims = [repmat([0.6;1],3,1); 0.4*ones(3,1); 1];
+hiLims =  [repmat([1;1.6],3,1); 0.6*ones(3,1); 1.1];
 
-% [optDsgn,minF] = particleSwarmMinimization(...
+dataRange = [80 140];
+
+
+% run sim without refinement
+% noRefineObjF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,initCoeffs,tscExp,dataRange);
+
+% tscNoRefine = tsc;
+
+
+% % optimize using PSO
+% [optDsgn,minFCoarse,allIterationData] = particleSwarmMinimization(...
 %     @(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
 %     initVals,coeffs,tscExp,dataRange),initCoeffs,lowLims,hiLims,...
-%     'swarmSize',25,'maxIter',20,'cognitiveLR',0.4,'socialLR',0.2);
+%     'swarmSize',15,'maxIter',8,'cognitiveLR',0.4,'socialLR',0.2);
+% %
+% % % % % gradient based opt
+% options = optimoptions(@fmincon,'Algorithm','interior-point',...
+% 'MaxIterations',40,...
+% 'Display','final',...
+% 'OptimalityTolerance',1e-6);
+% % 'MaxFunctionEvaluations',200,...
+% %
+% [optDsgn2,minFfine] = fmincon(@(coeffs) simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,coeffs,tscExp,dataRange),...
+%     optDsgn,[],[],[],[],lowLims,hiLims,[],options);
 
 
 %%
-optDsgn = [0.9253 1.0000 0.9995 1.0000 0.9120 1.0000 1.0858 0.9676 1.0208 0.9515 0.5707 0.5246 0.5971  ]';
+% optDsgn = [1.000 1.092 0.932 1.000 1.000 1.266 0.525 0.489 0.408 1.056]';
 % optDsgn = initCoeffs;
-
-objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
-    initVals,optDsgn,tscExp,dataRange);
+% optDsgn2 = initCoeffs;
+% 
+% 
+% objF = simOptFunction(vhcl,thr,wnch,fltCtrl,...
+%     initVals,optDsgn,tscExp,dataRange);
 
 
 %% Run the simulation
-% simWithMonitor('OCTModel')
+simWithMonitor('OCTModel')
 % parseLogsout
 
 plotAyaz

@@ -22,9 +22,9 @@ thr.build;
 % Set parameter values
 thrDia = 0.3e-3;
 thrYoungs = 2e9;
-thrDamping = 0.01;
+thrDamping = 0.02;
 thrDensity = 1300;
-thrDragCoeff = 1.4;
+thrDragCoeff = 1.2;
 dragSwitch = true;
 buoySwitch = true;
 

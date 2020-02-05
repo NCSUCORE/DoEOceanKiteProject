@@ -13,7 +13,7 @@ function varargout = saveBuildFile(object,BSfileName,varargin)
 p = inputParser;
 addRequired(p,'object',@ischar);
 addRequired(p,'BSfileName',@ischar);
-addParameter(p,'variant','',@ischar);
+addParameter(p,'variant','',@(x) ischar(x) || isstring(x));
 
 parse(p,object,BSfileName,varargin{:});
 
@@ -49,13 +49,24 @@ if all(emptyCheck)
     saveFile = strcat(currentMfileLoc,saveFileName);
     txtFile = strcat(currentMfileLoc,txtFileName);
     if isempty(p.UsingDefaults)
-        % Check if the variant specifier exists in the caller workspace
-        if ~evalin( 'base', sprintf('exist(''%s'',''var'') == 1;',p.Results.variant ))
-           error('Variant specifier %s does not exist in workspace.\nPlease specify the relevant variant',p.Results.variant ); 
+        if length(p.Results.variant) == 1
+            % Check if the variant specifier exists in the caller workspace
+            if ~evalin( 'base', sprintf('exist(''%s'',''var'') == 1;',p.Results.variant ))
+                error('Variant specifier %s does not exist in workspace.\nPlease specify the relevant variant',p.Results.variant );
+            end
+            
+            eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
+            save(saveFile,p.Results.object,p.Results.variant);
+            saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
+        else
+            save(saveFile,p.Results.object);
+            for i = 1: length(p.Results.variant)
+                eval([char(p.Results.variant(i)) ' =  evalin(''caller'',p.Results.variant(i));']);
+                 save(saveFile,char(p.Results.variant(i)),'-append');
+            end
+                
+                saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
         end
-        eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
-        save(saveFile,p.Results.object,p.Results.variant);
-        saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
     else
         save(saveFile,p.Results.object);
         saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
@@ -64,7 +75,7 @@ else
     error('Please do not specify initial conditions in build script')
 end
 
-if nargout > 0 
+if nargout > 0
     varargout{1} = saveFile;
 end
 

@@ -1,6 +1,7 @@
 %% Create floating platform ground station
 
 GROUNDSTATION         = 'groundStation001';
+sixDOFDynamics         = 'sixDoFDynamicsEuler';
 gndStn = OCT.sixDoFStation;
 
 gndStn.cylRad.setValue(4,'m')

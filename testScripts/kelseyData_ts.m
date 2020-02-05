@@ -1,44 +1,20 @@
-TLs=[50 125 200 50 125 200 50 125 200 50 125 200 50 125 200 50 125 200];
-FlowSpeeds=[.5 .5 .5 1 1 1 2 2 2 .5 .5 .5 1 1 1 2 2 2];
-BABs = [1 1.4;
-        1 1.4;
-        1 1.4;
-        1 1.4;
-        1 1.4;
-        1 1.4;
-        1 1.4;
-        1 1.4;
-        1 1.4;
-        .8 1.6;
-        .8 1.6;
-        .8 1.6;
-        .8 1.6;
-        .8 1.6;
-        .8 1.6;
-        .8 1.6;
-        .8 1.6;
-        .8 1.6;];
-alphaLocal=cell(18,1);
-CL=cell(18,1);
-CD=cell(18,1);
-vAppLclBdy=cell(18,1);
-pos=cell(18,1);
-times=cell(18,1);
-tscs=cell(18,1);
-
-%Write up error check (end time ~= desired end time)
-%Test for 2 random
-%Run
-
-
-
+if ~exist('CL','var')
+    TLs=[50 40 30 100:-10:60 100:-10:60 100:-10:60];
+    FlowSpeeds=[ones(1,8)*.5 ones(1,5) ones(1,5)*2];
+    alphaLocal=cell(length(TLs),1);
+    CL=cell(length(TLs),1);
+    CD=cell(length(TLs),1);
+    vAppLclBdy=cell(length(TLs),1);
+    pos=cell(length(TLs),1);
+    times=cell(length(TLs),1);
+    tscs=cell(length(TLs),1);
+end
 
 % %% Script to run ILC path optimization
 % clear;clc;close all
-for i = 0:17
-
-sim = SIM.sim;
-sim.setDuration(1000,'s');
+for i = 1:8
+simParams = SIM.simParams;
+simParams.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -60,11 +36,11 @@ loadComponent('pathFollowingVhcl');
 loadComponent('constXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([FlowSpeeds(i+1) 0 0],'m/s')
+env.water.setflowVec([FlowSpeeds(i) 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([BABs(i+1,:) .36,0*pi/180,TLs(i+1)],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.4,0.36,0*pi/180,TLs(i)],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -100,13 +76,13 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
+plotTetherLengths
+title(i)
 
-if tsc.positionVec.Time(end)== sim.duration.Value
-    fprintf("%g out of 18\n",i+1);
-    alphaLocal{i+1}=tsc.alphaLocal.Data;
-    CL{i+1}=tsc.CL.Data;
-    CD{i+1}=tsc.CD.Data;
-    vAppLclBdy{i+1}=tsc.vAppLclBdy.Data;
+    alphaLocal{i}=tsc.alphaLocal.Data;
+    CL{i}=tsc.CL.Data;
+    CD{i}=tsc.CD.Data;
+    vAppLclBdy{i}=tsc.vAppLclBdy.Data;
     posMat=zeros(3,5,length(tsc.positionVec.Time));
 
     for ii=1:length(tsc.positionVec.Time)
@@ -117,11 +93,12 @@ if tsc.positionVec.Time(end)== sim.duration.Value
                         vhcl.hStab.aeroCentPosVec.Value(:) vhcl.vStab.aeroCentPosVec.Value(:) zeros(3,1)];
 
     end
-    pos{i+1}=posMat;
-    times{i+1}=tsc.CL.Time;
-    tscs{i+1}=tsc;
+    pos{i}=posMat;
+    times{i}=tsc.CL.Time;
+    save(sprintf("kelseyAllVar%g.mat",i))
+
 end
-end
+
 % %%
 % vhcl.animateSim(tsc,1,...
 %     'PathFunc',fltCtrl.fcnName.Value,...
