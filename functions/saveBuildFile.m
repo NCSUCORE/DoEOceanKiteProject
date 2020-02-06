@@ -49,7 +49,7 @@ if all(emptyCheck)
     saveFile = strcat(currentMfileLoc,saveFileName);
     txtFile = strcat(currentMfileLoc,txtFileName);
     if isempty(p.UsingDefaults)
-        if length(p.Results.variant) == 1
+        if ischar(p.Results.variant(1)) == 1
             % Check if the variant specifier exists in the caller workspace
             if ~evalin( 'base', sprintf('exist(''%s'',''var'') == 1;',p.Results.variant ))
                 error('Variant specifier %s does not exist in workspace.\nPlease specify the relevant variant',p.Results.variant );
