@@ -6,14 +6,19 @@ function compareObjects(obj1,obj2,varargin)
     if isempty(varargin)
         prefix = class(obj1);
     else
-        prefix = varargin{1};
+        prefix = genvarname(varargin{1});
     end
-    if isempty(inputname(1))
-        name1=varargin{2};
-        name2=varargin{3};
-    else
-        name1=inputname(1);
-        name2=inputname(2);
+    try
+        if isempty(inputname(1))
+            name1=genvarname(varargin{2});
+            name2=genvarname(varargin{3});
+        else
+            name1=genvarname(inputname(1));
+            name2=genvarname(inputname(2));
+        end
+    catch
+        name1="obj1";
+        name2="obj2";
     end
     props = properties(obj1);
     props2 = properties(obj2);
@@ -28,18 +33,20 @@ function compareObjects(obj1,obj2,varargin)
         end
     end
     props(end+1:end+length(props2)) = props2;
+    anyDiffs = false;
     for i = 1:length(props)
         try
             if isprop(obj1.(props{i}),'Value') && isprop(obj2.(props{i}),'Value')
                 val1 = obj1.(props{i}).Value;
                 val2 = obj2.(props{i}).Value;
                 if ~isequal(val1,val2)
+                    anyDiffs=true;
                     if max(size(val1))==1 || max(size(val2))==1
                         fprintf(['For the property %s.%s, %s had a value of'...
                                 ' %6.3f, and %s had a value of %6.3f.\n'],...
                                 prefix,props{i},name1,val1,name2,val2)
                     else
-                        if ~isempty(inputname(1)) %Only for 
+                        if ~isempty(inputname(1)) 
                             fprintf('for the property %s.%s, %s had a value of <a href="matlab:disp([newline '' %s.%s.Value='']);disp(%s.%s.Value)">value</a> and %s had a value of <a href="matlab:disp([newline '' %s.%s.Value='']);disp(%s.%s.Value)">value</a>\n',...%fprintf([strrep(%s.%s,class(eval(%s)),%s) ''='' eval(strrep(%s.%s,class(eval(%s)),%s))
                                     prefix,props{i},name1,name1,props{i},name1,props{i},name2,name2,props{i},name2,props{i});%prefix,props{i},name1,name1)
                         else
@@ -56,12 +63,16 @@ function compareObjects(obj1,obj2,varargin)
             if ex.identifier == "MATLAB:structRefFromNonStruct" ||...
                     ex.identifier == "MATLAB:nonLogicalConditional" ||...
                     ex.identifier == "MATLAB:noSuchMethodOrField"
-                fprintf('The property %s.%s was missing from one of the objects\n',...
+                fprintf('There was an error evaluating property %s.%s\n',...
                             prefix,props{i})
             else
                 fprintf('There was an error while evaluating property %s.%s\n',...
                             prefix,props{i})
             end
         end
+    end
+    %Checks if you are in the initial call to the function
+    if length(dbstack)==1 && ~anyDiffs
+        fprintf("The evaluated properties of the objects are identical.\n\n")
     end
 end

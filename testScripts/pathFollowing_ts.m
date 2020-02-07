@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(1000,'s');
+simParams.setDuration(50,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -65,7 +65,13 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
-tsc = signalcontainer(logsout);
+tsc6 = signalcontainer(logsout);
+vhcl6 = vhcl;
+
+SIXDOFDYNAMICS='sixDoFDynamicsEuler';
+simWithMonitor('OCTModel')
+tsce = signalcontainer(logsout);
+vhcle = vhcl;
 
 % %%
 % vhcl.animateSim(tsc,1,...
