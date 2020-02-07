@@ -2,10 +2,10 @@ gndStn.mass.Value = 2.5133e+04
 gndStn.mass.Unit = 'kg'
 gndStn.mass.NoScale = false
 gndStn.mass.Description = 'Total mass of system'
-gndStn.inertiaMatrix.Value = [100530.964914873 0 0;0 100530.964914873 0;0 0 201061.929829747]
-gndStn.inertiaMatrix.Unit = 'kg*m^2'
-gndStn.inertiaMatrix.NoScale = false
-gndStn.inertiaMatrix.Description = '3x3 inertia matrix'
+gndStn.inertia.Value = [100530.964914873 0 0;0 100530.964914873 0;0 0 201061.929829747]
+gndStn.inertia.Unit = 'kg*m^2'
+gndStn.inertia.NoScale = false
+gndStn.inertia.Description = '3x3 inertia matrix'
 gndStn.volume.Value = 5.0265e+01
 gndStn.volume.Unit = 'm^3'
 gndStn.volume.NoScale = false
@@ -122,18 +122,18 @@ gndStn.lumpedMassAreaMat.Value is too big to display and takes up 1.2000e+03 byt
 gndStn.lumpedMassAreaMat.Unit = 'm^2'
 gndStn.lumpedMassAreaMat.NoScale = false
 gndStn.lumpedMassAreaMat.Description = 'area of each lumped mass'
-gndStn.initPosVec.Unit = 'm'
-gndStn.initPosVec.NoScale = false
-gndStn.initPosVec.Description = 'Initial position of the station in the ground frame.'
-gndStn.initVel.Unit = 'm/s'
-gndStn.initVel.NoScale = false
-gndStn.initVel.Description = 'Initial velocity of the station in the ground frame.'
-gndStn.initEulAngs.Unit = 'rad'
-gndStn.initEulAngs.NoScale = false
-gndStn.initEulAngs.Description = 'Initial Euler angles of the station in the ground frame, radians.'
-gndStn.initAngVel.Unit = 'rad/s'
-gndStn.initAngVel.NoScale = false
-gndStn.initAngVel.Description = 'Initial angular velocity of the station in the ground frame, radians per sec'
+gndStn.initPosVecGnd.Unit = 'm'
+gndStn.initPosVecGnd.NoScale = false
+gndStn.initPosVecGnd.Description = 'Initial position of the station in the ground frame.'
+gndStn.initVelVecBdy.Unit = 'm/s'
+gndStn.initVelVecBdy.NoScale = false
+gndStn.initVelVecBdy.Description = 'Initial velocity of the station in the ground frame.'
+gndStn.initEulAng.Unit = 'rad'
+gndStn.initEulAng.NoScale = false
+gndStn.initEulAng.Description = 'Initial Euler angles of the station in the ground frame, radians.'
+gndStn.initAngVelVec.Unit = 'rad/s'
+gndStn.initAngVelVec.NoScale = false
+gndStn.initAngVelVec.Description = 'Initial angular velocity of the station in the ground frame, radians per sec'
 gndStn.initAnchTetherLength.Value = [248.65 248.65 248.65]
 gndStn.initAnchTetherLength.Unit = 'm'
 gndStn.initAnchTetherLength.NoScale = false
@@ -155,48 +155,6 @@ gndStn.anchThrs.maxPercentageElongation.NoScale = false
 gndStn.anchThrs.maxAppFlowMultiplier.Value = 2.0000e+00
 gndStn.anchThrs.maxAppFlowMultiplier.Unit is unitless or has no unit specified
 gndStn.anchThrs.maxAppFlowMultiplier.NoScale = false
-gndStn.anchThrs.tether3.numNodes.Value = 2.0000e+00
-gndStn.anchThrs.tether3.numNodes.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.numNodes.NoScale = true
-gndStn.anchThrs.tether3.diameter.Value = 5.0000e-02
-gndStn.anchThrs.tether3.diameter.Unit = 'm'
-gndStn.anchThrs.tether3.diameter.NoScale = false
-gndStn.anchThrs.tether3.youngsMod.Value = 5.0000e+09
-gndStn.anchThrs.tether3.youngsMod.Unit = 'Pa'
-gndStn.anchThrs.tether3.youngsMod.NoScale = false
-gndStn.anchThrs.tether3.vehicleMass.Value = 2.5133e+04
-gndStn.anchThrs.tether3.vehicleMass.Unit = 'kg'
-gndStn.anchThrs.tether3.vehicleMass.NoScale = false
-gndStn.anchThrs.tether3.dampingRatio.Value = 2.0000e-01
-gndStn.anchThrs.tether3.dampingRatio.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.dampingRatio.NoScale = false
-gndStn.anchThrs.tether3.dragCoeff.Value = 5.0000e-01
-gndStn.anchThrs.tether3.dragCoeff.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.dragCoeff.NoScale = false
-gndStn.anchThrs.tether3.density.Value = 1.3000e+03
-gndStn.anchThrs.tether3.density.Unit = 'kg/m^3'
-gndStn.anchThrs.tether3.density.NoScale = false
-gndStn.anchThrs.tether3.initGndNodePos.Unit = 'm'
-gndStn.anchThrs.tether3.initGndNodePos.NoScale = false
-gndStn.anchThrs.tether3.initAirNodePos.Unit = 'm'
-gndStn.anchThrs.tether3.initAirNodePos.NoScale = false
-gndStn.anchThrs.tether3.initGndNodeVel.Unit = 'm/s'
-gndStn.anchThrs.tether3.initGndNodeVel.NoScale = false
-gndStn.anchThrs.tether3.initAirNodeVel.Unit = 'm/s'
-gndStn.anchThrs.tether3.initAirNodeVel.NoScale = false
-gndStn.anchThrs.tether3.initNodePos.Unit = 'm'
-gndStn.anchThrs.tether3.initNodePos.NoScale = false
-gndStn.anchThrs.tether3.initNodeVel.Unit = 'm/s'
-gndStn.anchThrs.tether3.initNodeVel.NoScale = false
-gndStn.anchThrs.tether3.dragEnable.Value = 1.0000e+00
-gndStn.anchThrs.tether3.dragEnable.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.dragEnable.NoScale = true
-gndStn.anchThrs.tether3.springDamperEnable.Value = true
-gndStn.anchThrs.tether3.springDamperEnable.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.springDamperEnable.NoScale = true
-gndStn.anchThrs.tether3.netBuoyEnable.Value = 1.0000e+00
-gndStn.anchThrs.tether3.netBuoyEnable.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.netBuoyEnable.NoScale = true
 gndStn.anchThrs.tether2.numNodes.Value = 2.0000e+00
 gndStn.anchThrs.tether2.numNodes.Unit is unitless or has no unit specified
 gndStn.anchThrs.tether2.numNodes.NoScale = true
@@ -239,6 +197,48 @@ gndStn.anchThrs.tether2.springDamperEnable.NoScale = true
 gndStn.anchThrs.tether2.netBuoyEnable.Value = 1.0000e+00
 gndStn.anchThrs.tether2.netBuoyEnable.Unit is unitless or has no unit specified
 gndStn.anchThrs.tether2.netBuoyEnable.NoScale = true
+gndStn.anchThrs.tether3.numNodes.Value = 2.0000e+00
+gndStn.anchThrs.tether3.numNodes.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.numNodes.NoScale = true
+gndStn.anchThrs.tether3.diameter.Value = 5.0000e-02
+gndStn.anchThrs.tether3.diameter.Unit = 'm'
+gndStn.anchThrs.tether3.diameter.NoScale = false
+gndStn.anchThrs.tether3.youngsMod.Value = 5.0000e+09
+gndStn.anchThrs.tether3.youngsMod.Unit = 'Pa'
+gndStn.anchThrs.tether3.youngsMod.NoScale = false
+gndStn.anchThrs.tether3.vehicleMass.Value = 2.5133e+04
+gndStn.anchThrs.tether3.vehicleMass.Unit = 'kg'
+gndStn.anchThrs.tether3.vehicleMass.NoScale = false
+gndStn.anchThrs.tether3.dampingRatio.Value = 2.0000e-01
+gndStn.anchThrs.tether3.dampingRatio.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dampingRatio.NoScale = false
+gndStn.anchThrs.tether3.dragCoeff.Value = 5.0000e-01
+gndStn.anchThrs.tether3.dragCoeff.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dragCoeff.NoScale = false
+gndStn.anchThrs.tether3.density.Value = 1.3000e+03
+gndStn.anchThrs.tether3.density.Unit = 'kg/m^3'
+gndStn.anchThrs.tether3.density.NoScale = false
+gndStn.anchThrs.tether3.initGndNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initGndNodePos.NoScale = false
+gndStn.anchThrs.tether3.initAirNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initAirNodePos.NoScale = false
+gndStn.anchThrs.tether3.initGndNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initGndNodeVel.NoScale = false
+gndStn.anchThrs.tether3.initAirNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initAirNodeVel.NoScale = false
+gndStn.anchThrs.tether3.initNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initNodePos.NoScale = false
+gndStn.anchThrs.tether3.initNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initNodeVel.NoScale = false
+gndStn.anchThrs.tether3.dragEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether3.dragEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dragEnable.NoScale = true
+gndStn.anchThrs.tether3.springDamperEnable.Value = true
+gndStn.anchThrs.tether3.springDamperEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.springDamperEnable.NoScale = true
+gndStn.anchThrs.tether3.netBuoyEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether3.netBuoyEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.netBuoyEnable.NoScale = true
 gndStn.anchThrs.tether1.numNodes.Value = 2.0000e+00
 gndStn.anchThrs.tether1.numNodes.Unit is unitless or has no unit specified
 gndStn.anchThrs.tether1.numNodes.NoScale = true
@@ -281,27 +281,33 @@ gndStn.anchThrs.tether1.springDamperEnable.NoScale = true
 gndStn.anchThrs.tether1.netBuoyEnable.Value = 1.0000e+00
 gndStn.anchThrs.tether1.netBuoyEnable.Unit is unitless or has no unit specified
 gndStn.anchThrs.tether1.netBuoyEnable.NoScale = true
-gndStn.inrThrAttchPt3.posVec.Value = [-75;-129.903810567666;0]
-gndStn.inrThrAttchPt3.posVec.Unit = 'm'
-gndStn.inrThrAttchPt3.posVec.NoScale = false
-gndStn.kitThrAttchPt1.posVec.Value = [0 0 0]
-gndStn.kitThrAttchPt1.posVec.Unit = 'm'
-gndStn.kitThrAttchPt1.posVec.NoScale = false
-gndStn.inrThrAttchPt1.posVec.Value = [150;0;0]
-gndStn.inrThrAttchPt1.posVec.Unit = 'm'
-gndStn.inrThrAttchPt1.posVec.NoScale = false
-gndStn.thrAttch1.posVec.Value = [0;0;0]
-gndStn.thrAttch1.posVec.Unit = 'm'
-gndStn.thrAttch1.posVec.NoScale = false
-gndStn.pltThrAttchPt2.posVec.Value = [-2;3.46410161513775;-0.5]
-gndStn.pltThrAttchPt2.posVec.Unit = 'm'
-gndStn.pltThrAttchPt2.posVec.NoScale = false
+gndStn.addedMass.Value = [0 0 0;0 0 0;0 0 0]
+gndStn.addedMass.Unit is unitless or has no unit specified
+gndStn.addedMass.NoScale = false
+gndStn.addedInertia.Value = [0 0 0;0 0 0;0 0 0]
+gndStn.addedInertia.Unit is unitless or has no unit specified
+gndStn.addedInertia.NoScale = false
+gndStn.inrThrAttchPt2.posVec.Value = [-75;129.903810567666;0]
+gndStn.inrThrAttchPt2.posVec.Unit = 'm'
+gndStn.inrThrAttchPt2.posVec.NoScale = false
 gndStn.pltThrAttchPt3.posVec.Value = [-2;-3.46410161513775;-0.5]
 gndStn.pltThrAttchPt3.posVec.Unit = 'm'
 gndStn.pltThrAttchPt3.posVec.NoScale = false
 gndStn.pltThrAttchPt1.posVec.Value = [4;0;-0.5]
 gndStn.pltThrAttchPt1.posVec.Unit = 'm'
 gndStn.pltThrAttchPt1.posVec.NoScale = false
-gndStn.inrThrAttchPt2.posVec.Value = [-75;129.903810567666;0]
-gndStn.inrThrAttchPt2.posVec.Unit = 'm'
-gndStn.inrThrAttchPt2.posVec.NoScale = false
+gndStn.pltThrAttchPt2.posVec.Value = [-2;3.46410161513775;-0.5]
+gndStn.pltThrAttchPt2.posVec.Unit = 'm'
+gndStn.pltThrAttchPt2.posVec.NoScale = false
+gndStn.inrThrAttchPt3.posVec.Value = [-75;-129.903810567666;0]
+gndStn.inrThrAttchPt3.posVec.Unit = 'm'
+gndStn.inrThrAttchPt3.posVec.NoScale = false
+gndStn.thrAttch1.posVec.Value = [0;0;0]
+gndStn.thrAttch1.posVec.Unit = 'm'
+gndStn.thrAttch1.posVec.NoScale = false
+gndStn.inrThrAttchPt1.posVec.Value = [150;0;0]
+gndStn.inrThrAttchPt1.posVec.Unit = 'm'
+gndStn.inrThrAttchPt1.posVec.NoScale = false
+gndStn.kitThrAttchPt1.posVec.Value = [0 0 0]
+gndStn.kitThrAttchPt1.posVec.Unit = 'm'
+gndStn.kitThrAttchPt1.posVec.NoScale = false

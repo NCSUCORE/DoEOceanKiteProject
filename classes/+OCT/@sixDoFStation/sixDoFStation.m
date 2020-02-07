@@ -5,7 +5,7 @@ classdef sixDoFStation < dynamicprops
     properties (SetAccess = private)
         % Inertial properties
         mass
-        inertiaMatrix
+        inertia
         
         % Buoyancy properties
         volume
@@ -49,10 +49,10 @@ classdef sixDoFStation < dynamicprops
         lumpedMassAreaMat
         
         % Initial conditions
-        initPosVec
-        initVel
-        initEulAngs
-        initAngVel
+        initPosVecGnd
+        initVelVecBdy
+        initEulAng
+        initAngVelVec
         initAnchTetherLength
         
         
@@ -62,13 +62,21 @@ classdef sixDoFStation < dynamicprops
         % Anchor tethers
         anchThrs
         
+        
+        % BS Params forced by the fact that we use the same 6dof dynamics
+        % model
+        
+        addedMass
+        addedInertia
+        
+        
     end
     
     methods
         function obj = sixDoFStation
             % Inertial properties
             obj.mass                        = SIM.parameter('Unit','kg','Description','Total mass of system');
-            obj.inertiaMatrix               = SIM.parameter('Unit','kg*m^2','Description','3x3 inertia matrix');
+            obj.inertia               = SIM.parameter('Unit','kg*m^2','Description','3x3 inertia matrix');
             
             % Buoyancy properties
             obj.volume                      = SIM.parameter('Unit','m^3','Description','Total volume used in buoyancy calculation');
@@ -78,10 +86,10 @@ classdef sixDoFStation < dynamicprops
             obj.gravForcePerLM              = SIM.parameter('Unit','N','Description','lumped mass gravity force');
             
             % Initial conditions
-            obj.initPosVec                      = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
-            obj.initVel                     = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
-            obj.initEulAngs                  = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
-            obj.initAngVel                  = SIM.parameter('Unit','rad/s','Description','Initial angular velocity of the station in the ground frame, radians per sec');
+            obj.initPosVecGnd                     = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
+            obj.initVelVecBdy                     = SIM.parameter('Unit','m/s','Description','Initial velocity of the station in the ground frame.');
+            obj.initEulAng                  = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
+            obj.initAngVelVec                  = SIM.parameter('Unit','rad/s','Description','Initial angular velocity of the station in the ground frame, radians per sec');
             obj.initAnchTetherLength        = SIM.parameter('Unit','m','Description','Unstretched Tether Length');
             
             
@@ -120,6 +128,9 @@ classdef sixDoFStation < dynamicprops
             %number of tethers from GS to KITE
             obj.numTethers                  = SIM.parameter('Unit','','Description','number of tethers from GS to KITE');
             
+            obj.addedMass                     = SIM.parameter('Unit','');
+            obj.addedInertia                  = SIM.parameter('Unit','');
+            
             % Anchor tethers
             obj.anchThrs = OCT.tethers;
         end
@@ -146,10 +157,10 @@ classdef sixDoFStation < dynamicprops
         
         
         % Method to add tether attachment points
-        function obj = addThrAttch(obj,Name,initPosVec)
+        function obj = addThrAttch(obj,Name,initPosVecGnd)
             addprop(obj,Name);
             obj.(Name) = OCT.thrAttch;
-            obj.(Name).setPosVec(initPosVec,'m');
+            obj.(Name).setPosVec(initPosVecGnd,'m');
         end
         
         % Function to scale the object
@@ -165,8 +176,17 @@ classdef sixDoFStation < dynamicprops
         function setMass(obj,val,unit)
             obj.mass.setValue(val,unit);
         end
-        function setInertiaMatrix(obj,val,unit)
-            obj.inertiaMatrix.setValue(val,unit);
+        
+        function setAddedMass(obj,val,unit)
+            obj.addedMass.setValue(val,unit);
+        end
+        
+        function setAddedInertia(obj,val,unit)
+            obj.addedInertia.setValue(val,unit);
+        end
+        
+        function setInertia(obj,val,unit)
+            obj.inertia.setValue(val,unit);
         end
         % Buoyancy properties
         function setVolume(obj,val,unit)
@@ -369,17 +389,17 @@ classdef sixDoFStation < dynamicprops
             
         end
         % Initial conditions
-        function setInitPosVec(obj,val,unit)
-            obj.initPosVec.setValue(val,unit);
+        function setInitPosVecGnd(obj,val,unit)
+            obj.initPosVecGnd.setValue(val,unit);
         end
-        function setInitVel(obj,val,unit)
-            obj.initVel.setValue(val,unit);
+        function setInitVelVecBdy(obj,val,unit)
+            obj.initVelVecBdy.setValue(val,unit);
         end
-        function setInitEulAngs(obj,val,unit)
-            obj.initEulAngs.setValue(val,unit);
+        function setInitEulAng(obj,val,unit)
+            obj.initEulAng.setValue(val,unit);
         end
-        function setInitAngVel(obj,val,unit)
-            obj.initAngVel.setValue(val,unit);
+        function setInitAngVelVec(obj,val,unit)
+            obj.initAngVelVec.setValue(val,unit);
         end
         
         % Function to get properties according to their class
@@ -420,18 +440,18 @@ classdef sixDoFStation < dynamicprops
         function plotGndStnLoc(obj)
             
             
-            p1 =  obj.inrThrAttchPt1.initPosVec.Value;
+            p1 =  obj.inrThrAttchPt1.posVec.Value;
             
-            p2 =  obj.inrThrAttchPt2.initPosVec.Value;
+            p2 =  obj.inrThrAttchPt2.posVec.Value;
             
-            p3 =  obj.inrThrAttchPt3.initPosVec.Value;
+            p3 =  obj.inrThrAttchPt3.posVec.Value;
             
             
-            p1b =  obj.pltThrAttchPt1.initPosVec.Value + obj.initPosVec.Value(:);
+            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.initPosVec.Value(:);
             
-            p2b =  obj.pltThrAttchPt2.initPosVec.Value + obj.initPosVec.Value(:);
+            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.initPosVec.Value(:);
             
-            p3b =  obj.pltThrAttchPt3.initPosVec.Value + obj.initPosVec.Value(:);
+            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.initPosVec.Value(:);
             
             x = [ p1(1),p2(1),p3(1),p1b(1),p2b(1),p3b(1)];
             y = [ p1(2),p2(2),p3(2),p1b(2),p2b(2),p3b(2)];
@@ -442,18 +462,18 @@ classdef sixDoFStation < dynamicprops
         function tdists = calcInitTetherLen(obj)
             
             %ground points
-            p1g =  obj.inrThrAttchPt1.initPosVec.Value;
+            p1g =  obj.inrThrAttchPt1.posVec.Value;
             
-            p2g =  obj.inrThrAttchPt2.initPosVec.Value;
+            p2g =  obj.inrThrAttchPt2.posVec.Value;
             
-            p3g =  obj.inrThrAttchPt3.initPosVec.Value;
+            p3g =  obj.inrThrAttchPt3.posVec.Value;
             
             %body initially lined up with gnd frame. body points
-            p1b =  obj.pltThrAttchPt1.initPosVec.Value + obj.initPosVec.Value(:);
+            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.initPosVec.Value(:);
             
-            p2b =  obj.pltThrAttchPt2.initPosVec.Value + obj.initPosVec.Value(:);
+            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.initPosVec.Value(:);
             
-            p3b =  obj.pltThrAttchPt3.initPosVec.Value + obj.initPosVec.Value(:);
+            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.initPosVec.Value(:);
             
             
             t1Dist =  sqrt(sum(((p1b - p1g)).^2));

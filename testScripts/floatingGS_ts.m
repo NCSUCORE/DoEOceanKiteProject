@@ -30,10 +30,10 @@ env.water.setflowVec([1 0 0],'m/s')
 hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
 
 %% Ground Station IC's and dependant properties
-gndStn.setInitPosVec([0 0 200],'m')
-gndStn.setInitVel([0 0 0],'m/s')
-gndStn.setInitEulAngs([0 0 0],'rad');
-gndStn.initAngVel.setValue([0 0 0],'rad/s');
+gndStn.setInitPosVecGnd([0 0 200],'m')
+gndStn.setInitVelVecBdy([0 0 0],'m/s')
+gndStn.setInitEulAng([0 0 0],'rad');
+gndStn.initAngVelVec.setValue([0 0 0],'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
