@@ -40,13 +40,13 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    gndStn.initPosVec.Value,... % Center point of path sphere
+    gndStn.initPosVecGnd.Value,... % Center point of path sphere
     (11/2)*norm(env.water.flowVec.Value)) % Initial speed
 vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
-    +gndStn.initPosVec.Value(:),'m');
+    +gndStn.initPosVecGnd.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
 
@@ -56,14 +56,14 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,gndStn.initPosVec.Value,env,thr,[ 1 0 0]);
+wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,[ 1 0 0]);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
-    gndStn.initPosVec.Value);
+    gndStn.initPosVecGnd.Value);
 sim('OCTModel')
 tsc = signalcontainer(logsout);
 
