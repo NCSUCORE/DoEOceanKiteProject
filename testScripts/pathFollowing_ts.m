@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(50,'s');
+simParams.setDuration(200,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -19,7 +19,7 @@ loadComponent('oneDOFWnch');
 loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
-SIXDOFDYNAMICS='sixDoFDynamics6x6';
+SIXDOFDYNAMICS='sixDoFDynamics6x6'; %#ok<NASGU>
 
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
