@@ -65,13 +65,13 @@ gndStn.addThrAttch('pltThrAttchPt1',[gndStn.cylRad.Value 0 -0.5*gndStn.cylTotH.V
 gndStn.addThrAttch('pltThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('pltThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 
-gndStn.addThrAttch('inrThrAttchPt1',[150 0 0]');
+gndStn.addThrAttch('inrThrAttchPt1',[250 0 0]');
 gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 
 
 % gndStn.initAnchTetherLength.setValue(gndStn.calcInitTetherLen,'m')
-gndStn.initAnchTetherLength.setValue([248.65 248.65 248.65 ],'m')
+gndStn.initAnchTetherLength.setValue([316  316  316 ],'m')
 % Anchor Tethers
 gndStn.anchThrs.setNumNodes(2,'');
 gndStn.anchThrs.setNumTethers(3,'');
@@ -79,7 +79,7 @@ gndStn.anchThrs.build;
 
 % Tether 1 properties
 gndStn.anchThrs.tether1.diameter.setValue(.05,'m');              % tether diameter
-gndStn.anchThrs.tether1.youngsMod.setValue(5e9,'Pa');          % tether Young's Modulus
+gndStn.anchThrs.tether1.youngsMod.setValue(50e9,'Pa');          % tether Young's Modulus
 gndStn.anchThrs.tether1.dampingRatio.setValue(.2,'');           % zeta, damping ratio
 gndStn.anchThrs.tether1.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether1.density.setValue(1300,'kg/m^3');         % tether density
@@ -90,7 +90,7 @@ gndStn.anchThrs.tether1.netBuoyEnable.setValue(1,'');
 
 % Tether 2 properties
 gndStn.anchThrs.tether2.diameter.setValue(.05,'m');              % tether diameter
-gndStn.anchThrs.tether2.youngsMod.setValue(5e9,'Pa');          % tether Young's Modulus
+gndStn.anchThrs.tether2.youngsMod.setValue(50e9,'Pa');          % tether Young's Modulus
 gndStn.anchThrs.tether2.dampingRatio.setValue(.2,'');           % zeta, damping ratio
 gndStn.anchThrs.tether2.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether2.density.setValue(1300,'kg/m^3');         % tether density
@@ -102,7 +102,7 @@ gndStn.anchThrs.tether2.netBuoyEnable.setValue(1,'');
 
 % Tether 3 properties
 gndStn.anchThrs.tether3.diameter.setValue(.05,'m');              % tether diameter
-gndStn.anchThrs.tether3.youngsMod.setValue(5e9,'Pa');          % tether Young's Modulus
+gndStn.anchThrs.tether3.youngsMod.setValue(50e9,'Pa');          % tether Young's Modulus
 gndStn.anchThrs.tether3.dampingRatio.setValue(.2,'');           % zeta, damping ratio
 gndStn.anchThrs.tether3.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether3.density.setValue(1300,'kg/m^3');         % tether density

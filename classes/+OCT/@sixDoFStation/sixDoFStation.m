@@ -469,11 +469,11 @@ classdef sixDoFStation < dynamicprops
             p3g =  obj.inrThrAttchPt3.posVec.Value;
             
             %body initially lined up with gnd frame. body points
-            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.initPosVec.Value(:);
+            p1b =  obj.pltThrAttchPt1.posVec.Value + obj.initPosVecGnd.Value(:);
             
-            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.initPosVec.Value(:);
+            p2b =  obj.pltThrAttchPt2.posVec.Value + obj.initPosVecGnd.Value(:);
             
-            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.initPosVec.Value(:);
+            p3b =  obj.pltThrAttchPt3.posVec.Value + obj.initPosVecGnd.Value(:);
             
             
             t1Dist =  sqrt(sum(((p1b - p1g)).^2));

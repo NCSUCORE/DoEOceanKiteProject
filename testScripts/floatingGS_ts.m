@@ -1,7 +1,7 @@
 %% Test script to test the floating ground station simulation and animation
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(100,'s');
+simParams.setDuration(400,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -64,7 +64,7 @@ vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.initPosVecGnd.Value);
-sim('OCTModel')
+simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 
 %%
