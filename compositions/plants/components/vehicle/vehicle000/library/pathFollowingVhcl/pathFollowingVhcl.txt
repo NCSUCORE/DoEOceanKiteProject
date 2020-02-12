@@ -353,10 +353,10 @@ vhcl.vStab.MaxCtrlDeflSpeed.NoScale = false
 vhcl.fuseDiameter.Value = 1.5000e-01
 vhcl.fuseDiameter.Unit = 'm'
 vhcl.fuseDiameter.NoScale = false
-vhcl.fuseRCmToNose.Value = [-2;0;0]
-vhcl.fuseRCmToNose.Unit = 'm'
-vhcl.fuseRCmToNose.NoScale = false
-vhcl.fuseRCmToNose.Description = 'Vector from the kite CM to the front of the fuselage'
+vhcl.fuseRNose_LE.Value = [-2;0;0]
+vhcl.fuseRNose_LE.Unit = 'm'
+vhcl.fuseRNose_LE.NoScale = false
+vhcl.fuseRNose_LE.Description = 'Vector from the kite CM to the front of the fuselage'
 vhcl.fuseSideDragCoeff.Value = 0.0000e+00
 vhcl.fuseSideDragCoeff.Unit is unitless or has no unit specified
 vhcl.fuseSideDragCoeff.NoScale = true

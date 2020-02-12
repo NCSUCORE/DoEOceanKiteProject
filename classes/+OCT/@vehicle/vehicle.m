@@ -67,7 +67,7 @@ classdef vehicle < dynamicprops
         vStab
         % fuselage
         fuseDiameter
-        fuseRCmToNose
+        fuseRNose_LE
         fuseSideDragCoeff
         fuseEndDragCoeff
         % intial conditions
@@ -175,7 +175,7 @@ classdef vehicle < dynamicprops
             obj.vStab.chordUnitVec.setValue([1;0;0],'','NoScale',true);
             
             obj.fuseDiameter             = SIM.parameter('Unit','m');
-            obj.fuseRCmToNose            = SIM.parameter('Unit','m','Description','Vector from the kite CM to the front of the fuselage');
+            obj.fuseRNose_LE            = SIM.parameter('Unit','m','Description','Vector from the kite CM to the front of the fuselage');
             obj.fuseSideDragCoeff        = SIM.parameter('Description','Drag Coeff if at 90 degrees angle of attack','NoScale',true);
             obj.fuseEndDragCoeff         = SIM.parameter('Description','Drag Coeff if at 0 degrees angle of attack','NoScale',true);
             
@@ -384,8 +384,8 @@ classdef vehicle < dynamicprops
             obj.fuseDiameter.setValue(val,units);
         end
         
-        function setFuseRCmToNose(obj,val,units)
-            obj.fuseRCmToNose.setValue(val,units);
+        function setFuseRNose_LE(obj,val,units)
+            obj.fuseRNose_LE.setValue(val,units);
         end
         
         function setFuseSideDragCoeff(obj,val,units)
@@ -746,7 +746,7 @@ classdef vehicle < dynamicprops
         function val = get.fuse(obj)
             val = OCT.fuselage;
             val.setDiameter(obj.fuseDiameter.Value,'m');
-            val.setRCmToNose(obj.fuseRCmToNose.Value,'m');
+            val.setRCmToNose(obj.RwingLE_cm.Value + obj.fuseRNose_LE.Value,'m');
             val.setSideDragCoeff(obj.fuseSideDragCoeff.Value,'');
             val.setEndDragCoeff(obj.fuseEndDragCoeff.Value,'');
             %Calculated
