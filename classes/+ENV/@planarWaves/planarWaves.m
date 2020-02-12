@@ -3,12 +3,13 @@ classdef planarWaves < dynamicprops
     
     properties (SetAccess = private)
         numWaves
+        waveParamMat
     end
     
     methods
         function obj = planarWaves
-            obj.numWaves      = SIM.parameter('NoScale',true);
-            
+            obj.numWaves          = SIM.parameter('NoScale',true);
+            obj.waveParamMat      = SIM.parameter('NoScale',true);
         end
         
         
@@ -16,6 +17,9 @@ classdef planarWaves < dynamicprops
             obj.numWaves.setValue(val,units);
         end
         
+         function obj = setWaveParamMat(obj,val,units)
+            obj.waveParamMat.setValue(val,units);
+        end
         
         function obj = build(obj,varargin)
             defWaveName = {};
@@ -55,6 +59,28 @@ classdef planarWaves < dynamicprops
                     end
                 end
             end
+        end
+        
+        function val = structAssem(obj)
+            
+            %defining matrix to keep all the wave param data 
+            
+            %          WaveNumber | Frequency | Amplitude | phase
+            % wave 1 |
+            % wave 2 |
+            % ...    |
+            % wave n |
+            
+            
+            
+            for i = 1: obj.numWaves.Value
+            val(i,:) = [obj.(sprintf('wave%d',i)).waveNumber.Value,...
+                obj.(sprintf('wave%d',i)).frequency.Value,obj.(sprintf('wave%d',i)).amplitude.Value,obj.(sprintf('wave%d',i)).phase.Value];
+            
+            
+            end
+            
+            
         end
         % Function to get properties according to their class
         % May be able to vectorize this somehow
