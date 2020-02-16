@@ -31,7 +31,7 @@ classdef signalcontainer < dynamicprops
                         % Get the name of the name and make it a valid
                         % property name
                         if ~isempty(ts.Name)
-                        propName = genvarname(ts.Name);
+                            propName = genvarname(ts.Name);
                         else
                             propName = genvarname(names{ii});
                         end
@@ -57,6 +57,23 @@ classdef signalcontainer < dynamicprops
                                         obj.(propName)(jj).(subPropNames{kk}) = timesignal(ts.Values(jj).(subPropNames{kk}),'BlockPath',ts.BlockPath);
                                     end
                             end
+                        end
+                    end
+                case 'signalcontainer'
+                    obj.addprop('metaData');
+                    obj.metaData = objToParse.metaData;
+                    propNames = properties(objToParse);
+                    propNames = propNames(cellfun(@(x) ~strcmp(x,'metaData'),propNames));
+                    for ii = 1:numel(propNames)
+                        obj.addprop(propNames{ii});
+                        switch class(objToParse.(propNames{ii}))
+                            case {'timesignal','timeseries'}
+                                obj.(propNames{ii}) = timesignal(objToParse.(propNames{ii}));
+                            case 'struct'
+                                subPropNames = fieldnames(objToParse.(propNames{ii}));
+                                for kk = 1:numel(subPropNames)
+                                    obj.(propNames{ii}).(subPropNames{kk}) = timesignal(objToParse.(propNames{ii}).(subPropNames{kk}));
+                                end
                         end
                     end
                 otherwise
@@ -96,10 +113,40 @@ classdef signalcontainer < dynamicprops
             end
         end
         
+        % Function to get properties by class
+        function sigNames = getpropsbyclass(obj,clssNms)
+            if isa(clssNms,'char')
+                clssNms = {clssNms};
+            elseif ~isa(clssNms,'cell')
+                error('Input must be a cell array of strings or a string')
+            end
+            sigNames = properties(obj);
+            msk = zeros(numel(sigNames,1));
+            for ii = 1:numel(clssNms)
+                msk = or(msk ,cellfun(@(x)isa(obj.(x),clssNms{ii}),sigNames));
+            end
+            sigNames = sigNames(msk);
+        end
+        
+        % Function to get all signal names except those specified
+        function sigNames = getpropsexcept(obj,excptPrpNms)
+            if isa(excptPrpNms,'char')
+                excptPrpNms = {excptPrpNms};
+            elseif ~isa(excptPrpNms,'cell')
+                error('Input must be a cell array of strings or a string')
+            end
+            sigNames = properties(obj);
+            msk = zeros(numel(sigNames,1));
+            for ii = 1:numel(excptPrpNms)
+                msk = or(msk ,cellfun(@(x)strcmp(x,excptPrpNms{ii}),sigNames));
+            end
+            sigNames = sigNames(~msk);
+        end
+        
         % Function to crop all signals
         function newObj = crop(obj,varargin)
             % Call the crop method of each property
-            newObj = obj;
+            newObj = signalcontainer(obj);
             props  = properties(newObj);
             for ii = 1:numel(props)
                 switch class(newObj.(props{ii}))
@@ -122,7 +169,7 @@ classdef signalcontainer < dynamicprops
         end
         % Function to crop with GUI
         function newObj = guicrop(obj,sigName)
-            newObj = obj;
+            newObj = signalcontainer(obj);
             hFig = newObj.(sigName).plot;
             [x,~] = ginput(2);
             close(hFig);
@@ -138,7 +185,7 @@ classdef signalcontainer < dynamicprops
             %                     newObj.(props{ii}) = newObj.(props{ii}).resample(varargin{:});
             %                 end
             %             end
-            newObj = obj;
+            newObj = signalcontainer(obj);
             props  = properties(newObj);
             for ii = 1:numel(props)
                 switch class(newObj.(props{ii}))

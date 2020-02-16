@@ -14,6 +14,13 @@ env.water.setEndTime(env.water.startTime.Value+3600*3,'s');
 env.water.setDensity(1000,'kg/m^3');
 env.water.setXGridPoints(0:75:150,'m');
 env.water.setYGridPoints(-150:25:150,'m');
+% fvts=env.water.flowVecTimeseries.Value.Data;
+% for i=1:length(env.water.zGridPoints.Value)
+%     speed=interp1(linspace(env.water.zGridPoints.Value(1),env.water.zGridPoints.Value(end),100),linspace(.5,5,100),env.water.zGridPoints.Value(i));
+%     fvts(:,:,i,1,:)=speed;
+% end
+% env.water.setFlowVecTimeseries(timeseries(fvts,env.water.flowVecTimeseries.Value.Time),'m/s');
+
 
 % env.water.setDepthMin(13,''); %minimum index, not meters
 % env.water.setDepthMax(60,'');  %maximum index, not meters

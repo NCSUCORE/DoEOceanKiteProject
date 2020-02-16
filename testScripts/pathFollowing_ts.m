@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(50,'s');
+simParams.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -23,14 +23,15 @@ SIXDOFDYNAMICS='sixDoFDynamics6x6'; %#ok<NASGU>
 
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
-loadComponent('CNAPsNoTurbJosh');
+% loadComponent('CNAPsNoTurbJosh');
+loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-% env.water.setflowVec([2 0 0],'m/s')
+env.water.setflowVec([1.5 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([.6,1.4,40*pi/180,0*pi/180,200],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.4,.36,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
