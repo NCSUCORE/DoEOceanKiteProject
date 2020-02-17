@@ -10,7 +10,8 @@ classdef signalcontainer < dynamicprops
         function obj = signalcontainer(objToParse,varargin)
             % Parse inputs
             p = inputParser;
-            addOptional(p,'logsout',[],@(x) isa(x,'Simulink.SimulationData.Dataset'))
+%             addOptional(p,'logsout',[],@(x) isa(x,'Simulink.SimulationData.Dataset'))
+            addOptional(p,'structBlockPath',[],@(x) isa(x,'Simulink.SimulationData.BlockPath')||isempty(x))
             addParameter(p,'Verbose',true,@islogical);
             parse(p,varargin{:});
             switch class(objToParse)
@@ -24,7 +25,7 @@ classdef signalcontainer < dynamicprops
                     names = names(cellfun(@(x) ~isempty(x),names));
                     % get rid of duplicate signal names
                     names = unique(names);
-                    % add each signal to the struct
+                    % add each signal to the signalcontainer
                     for ii = 1:length(names)
                         % Get element from logsout
                         ts = objToParse.getElement(names{ii});
@@ -52,11 +53,52 @@ classdef signalcontainer < dynamicprops
                                 case 'timeseries'
                                     obj.(propName) = timesignal(ts.Values(jj),'BlockPath',ts.BlockPath);
                                 case 'struct'
-                                    subPropNames = fieldnames(ts.Values);
-                                    for kk = 1:numel(subPropNames)
-                                        obj.(propName)(jj).(subPropNames{kk}) = timesignal(ts.Values(jj).(subPropNames{kk}),'BlockPath',ts.BlockPath);
-                                    end
+                                    obj.(propName) = signalcontainer(ts.Values(jj),'structBlockPath',ts.BlockPath);
                             end
+                        end
+                    end
+                    % Print out power summary for the user
+                    if p.Results.Verbose
+                        obj.powerSummary
+                    end
+                case 'struct'
+                    % Add metadata to the signal container at highest level
+                    obj.addprop('metaData');
+                    obj.metaData = metaData(p.Results.Verbose);
+                    % get names of signals
+                    names = fieldnames(objToParse);
+                    % get rid of unnamed signals (empty strings)
+                    names = names(cellfun(@(x) ~isempty(x),names));
+                    % get rid of duplicate signal names
+                    names = unique(names);
+                    % add each signal to the signalcontainer
+                    for ii = 1:length(names)
+                        % Get element from logsout
+                        ts = objToParse.(names{ii});
+                        % Get the name of the name and make it a valid
+                        % property name
+                        if isa(ts,'struct')
+                            propName = genvarname(names{ii});
+                        elseif ~isempty(ts.Name)
+                            propName = genvarname(ts.Name);
+                        else
+                            propName = genvarname(names{ii});
+                        end
+                        % Deal with duplicate signal names
+                        if isa(ts,'Simulink.SimulationData.Dataset')
+                            if p.Results.Verbose
+                                warning('Duplicate signal names: ''%s''.  Taking first found signal.',ts{1}.Name)
+                            end
+                            ts = ts{1};
+                        end
+                        % Add a new field by this name
+                        obj.addprop(propName);
+                        % Loop through each signal stored in ts.Values
+                        switch class(ts)
+                                case {'timeseries','timesignal'}
+                                    obj.(propName) = timesignal(ts,'BlockPath',p.Results.structBlockPath);
+                                case 'struct'
+                                    obj.(propName) = signalcontainer(ts,'structBlockPath',p.Results.structBlockPath);
                         end
                     end
                 case 'signalcontainer'
@@ -69,21 +111,15 @@ classdef signalcontainer < dynamicprops
                         switch class(objToParse.(propNames{ii}))
                             case {'timesignal','timeseries'}
                                 obj.(propNames{ii}) = timesignal(objToParse.(propNames{ii}));
-                            case 'struct'
-                                subPropNames = fieldnames(objToParse.(propNames{ii}));
-                                for kk = 1:numel(subPropNames)
-                                    obj.(propNames{ii}).(subPropNames{kk}) = timesignal(objToParse.(propNames{ii}).(subPropNames{kk}));
-                                end
+                            case {'signalcontainer','struct'}
+                                obj.(propNames{ii}) = signalcontainer(objToParse.(propNames{ii}));
                         end
                     end
                 otherwise
                     error('Unknown data type to parse')
             end
             
-            % Print out power summary for the user
-            if p.Results.Verbose
-                obj.powerSummary
-            end
+            
             
         end
         
