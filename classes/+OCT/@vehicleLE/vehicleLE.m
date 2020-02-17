@@ -1,4 +1,4 @@
-classdef vehicle < dynamicprops
+classdef vehicleLE < dynamicprops
     
     %VEHICLE Summary of this class goes here
     %   Detailed explanation goes here
@@ -98,7 +98,7 @@ classdef vehicle < dynamicprops
     
     methods
         %% Constructor
-        function obj = vehicle
+        function obj = vehicleLE
             %VEHICLE Construct an instance of this class
             obj.fluidDensity = SIM.parameter('Unit','kg/m^3','Description','Fluid density');
             obj.numTethers  = SIM.parameter('Description','Number of tethers','NoScale',true);

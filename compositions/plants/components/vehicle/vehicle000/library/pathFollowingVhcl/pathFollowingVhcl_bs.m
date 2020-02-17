@@ -74,7 +74,7 @@ vhcl.setVsClMin(-1.7,'');
 vhcl.setFuseDiameter(0.15,'m')
 vhcl.setFuseEndDragCoeff(0,'')
 vhcl.setFuseSideDragCoeff(0,'')
-vhcl.setFuseRCmToNose([-2;0;0],'m')
+vhcl.setFuseRNose_LE([-2;0;0],'m')
 
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile2','');

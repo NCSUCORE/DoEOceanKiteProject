@@ -86,7 +86,7 @@ thFunc = @(x,t) 5*t*(0.2969*x.^0.5 - 0.126*x - 0.3516*x.^2 + 0.2843*x.^3 ...
 vhcl.setFuseDiameter(2*mean(thFunc(0:0.01:1,fuseAirfoil)*fuseChord)*(1/Lscale),'m')
 vhcl.setFuseEndDragCoeff(0.6,'')
 vhcl.setFuseSideDragCoeff(1,'')
-vhcl.setFuseRCmToNose(-([45;0;0]*1e-3 + rCM_LE)*(1/Lscale),'m')
+vhcl.setFuseRNose_LE(-([45;0;0]*1e-3)*(1/Lscale),'m')
 
 % % % data file name
 vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');

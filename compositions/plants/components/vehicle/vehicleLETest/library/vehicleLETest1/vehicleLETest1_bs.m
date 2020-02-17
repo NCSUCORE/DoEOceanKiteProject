@@ -3,21 +3,28 @@ clc
 format compact
 
 % this is the build script for creating a vechile using class definition
-% 'vehicle' for a three tethered system that is being used by ayaz
+% 'vehicle_v2' for a three tethered system that is being used by ayaz
 
-% the script saves the variable 'vhcl' to a 'ayazThreeTetVhcl.mat'
+% the script saves the variable 'vhcl' to a 'pathFollowingVhcl.mat'
 
-%% variant
-VEHICLE               = 'vehicle000';
+VEHICLE               = "vehicleLETest";
+SIXDOFDYNAMICS        = "sixDoFDynamicsEuler";
 
 %% lifiting body
 vhcl = OCT.vehicle;
+
 vhcl.setFluidDensity(1000,'kg/m^3')
-vhcl.setNumTethers(3,'');
+vhcl.setNumTethers(1,'');
 vhcl.setNumTurbines(2,'');
 vhcl.setBuoyFactor(1.0,'');
 
+%Control Surfaces (Defaults are saved)
+% vhcl.setMaxCtrlDef(30,'deg');
+% vhcl.setMinCtrlDef(-30,'deg');
+% vhcl.setMaxCtrlDefSpeed(60,'deg/s');
+
 % % % volume and inertias
+% vhcl.setVolume(2.85698,'m^3')
 vhcl.setVolume(945352023.474*1e-9,'m^3');
 vhcl.setIxx(6.303080401918E+09*1e-6,'kg*m^2');
 vhcl.setIyy(2080666338.077*1e-6,'kg*m^2');
@@ -29,6 +36,7 @@ vhcl.setCentOfBuoy([0;0;0],'m');
 vhcl.setRbridle_cm([0;0;0],'m');
 
 % % % wing
+% vhcl.setRwingLE_cm([-.47064 0 0],'m');
 vhcl.setRwingLE_cm([0;0;0],'m');
 vhcl.setWingChord(1,'m');
 vhcl.setWingAR(10,'');
@@ -62,14 +70,21 @@ vhcl.setVsNACA('0015','');
 vhcl.setVsClMax(1.7,'');
 vhcl.setVsClMin(-1.7,'');
 
+% % % Fuselage (could use more realistic numbers)
+vhcl.setFuseDiameter(0.15,'m')
+vhcl.setFuseEndDragCoeff(0,'')
+vhcl.setFuseSideDragCoeff(0,'')
+vhcl.setFuseRNose_LE([-2;0;0],'m')
+
 % % % data file name
 vhcl.setFluidCoeffsFileName('someFile2','');
 
-% % % load/generate fluid dynamic data
+% % % load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
-
+% vhcl.calcAddedMass
+vhcl.addedMass.setValue(zeros(3,3),'kg')
 %% save file in its respective directory
-saveBuildFile('vhcl',mfilename,'variant','VEHICLE');
+saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
 
 
 
