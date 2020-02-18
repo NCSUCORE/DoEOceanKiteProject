@@ -10,7 +10,7 @@ xlim([0,timevec(end)])
  [~,i2]=min(abs(timevec -250)); %(timevec(end)/2)));
  [~,poweri1]=min(tsc.winchPower.Data(i1:i2));
  poweri1 = poweri1 + i1;
-[~,i3]=min(abs(timevec - 250));
+[~,i3]=min(abs(timevec - 300));
 [~,i4]=min(abs(timevec - timevec(end)));
 i4=i4-1;
 [~,poweri2]=min(tsc.winchPower.Data(i3:i4));

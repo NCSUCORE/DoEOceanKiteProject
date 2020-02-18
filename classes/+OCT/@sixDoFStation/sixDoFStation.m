@@ -373,8 +373,8 @@ classdef sixDoFStation < dynamicprops
             
             areaExt = [frontArea*ones(1,numel(obj.angMatExt.Value));sideArea*ones(1,numel(obj.angMatExt.Value));zeros(1,numel(obj.angMatExt.Value))];
             areaInt =  zeros(3,numel(obj.rMatInt.Value));
-            areaT   = ((pi*(obj.cylRad.Value)^2)/(numel(obj.angMatB.Value)))*[zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value));-1*ones(1,numel(obj.angMatB.Value))];
-            areaB   = ((pi*(obj.cylRad.Value)^2)/(numel(obj.angMatB.Value)))*[zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value));-1*ones(1,numel(obj.angMatB.Value))];
+            areaT   = ((pi*(obj.cylRad.Value)^2)/(numel(obj.angMatB.Value)))*[zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value)); ones(1,numel(obj.angMatB.Value))];
+            areaB   = ((pi*(obj.cylRad.Value)^2)/(numel(obj.angMatB.Value)))*[zeros(1,numel(obj.angMatB.Value));zeros(1,numel(obj.angMatB.Value)); ones(1,numel(obj.angMatB.Value))];
             obj.setLumpedMassAreaMat([areaExt,areaInt,areaT,areaB],'m^2')
             
             

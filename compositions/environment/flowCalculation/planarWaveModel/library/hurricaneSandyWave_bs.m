@@ -5,7 +5,7 @@ clear all;clc;format compact
 env = ENV.env;
 env.addFlow({'water'},{'constXYZT'},'FlowDensities',995);
 env.addFlow({'waterWave'},{'planarWaves'});
-env.waterWave.setNumWaves(1,'');
+env.waterWave.setNumWaves(2,'');
 env.waterWave.build;
 
 Hs = 7.6;   % meters
@@ -14,15 +14,30 @@ w =   2*pi/13.33; % rad/s
 k = (w^2)/9.81; %rad/m
 
 
-env.waterWave.wave1.waveNumber.setValue(k,'rad/m')
-env.waterWave.wave1.frequency.setValue(w,'rad/s')
-env.waterWave.wave1.amplitude.setValue(Hs,'m')
+% env.waterWave.wave1.waveNumber.setValue(k,'rad/m')
+% env.waterWave.wave1.frequency.setValue(w,'rad/s')
+% env.waterWave.wave1.amplitude.setValue(Hs,'m')
+% env.waterWave.wave1.phase.setValue(0,'rad')
+% 
+% env.waterWave.wave2.waveNumber.setValue(0,'rad/m')
+% env.waterWave.wave2.frequency.setValue(0,'rad/s')
+% env.waterWave.wave2.amplitude.setValue(0,'m')
+% env.waterWave.wave2.phase.setValue(0,'rad')
+env.waterWave.wave1.waveNumber.setValue(0,'rad/m')
+env.waterWave.wave1.frequency.setValue(0,'rad/s')
+env.waterWave.wave1.amplitude.setValue(0,'m')
 env.waterWave.wave1.phase.setValue(0,'rad')
 
-% env.waterWave.wave2.waveNumber.setValue(1,'rad/m')
-% env.waterWave.wave2.frequency.setValue(.4,'rad/s')
-% env.waterWave.wave2.amplitude.setValue(.1,'m')
-% env.waterWave.wave2.phase.setValue(0,'rad')
+env.waterWave.wave2.waveNumber.setValue(0,'rad/m')
+env.waterWave.wave2.frequency.setValue(0,'rad/s')
+env.waterWave.wave2.amplitude.setValue(0,'m')
+env.waterWave.wave2.phase.setValue(0,'rad')
+% 
+
+
+
+
+
 % 
 % env.waterWave.wave3.waveNumber.setValue(1,'rad/m')
 % env.waterWave.wave3.frequency.setValue(.6,'rad/s')
