@@ -101,7 +101,7 @@ elems(11).Unit = 'm';
 
 elems(12) = Simulink.BusElement;
 elems(12).Name = 'avgTetherLength';
-elems(12).Dimensions = 1; 
+elems(12).Dimensions = [1 1]; 
 elems(12).DimensionsMode = 'Fixed';
 elems(12).DataType = 'double';
 elems(12).SampleTime = -1;
@@ -147,7 +147,7 @@ elems(16).Unit = 'm';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
-CONTROL.Description = 'Bus containing signals produced by the all actuator controller';
+CONTROL.Description = 'Bus containing signals produced by the plant model';
 
 assignin('base','plantBus',CONTROL)
 

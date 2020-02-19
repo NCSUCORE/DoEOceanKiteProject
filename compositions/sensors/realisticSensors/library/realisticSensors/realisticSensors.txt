@@ -1,0 +1,6 @@
+sns.pwrQnt.zeroOffset.Value = 0.0000e+00
+sns.pwrQnt.zeroOffset.Unit is unitless or has no unit specified
+sns.pwrQnt.zeroOffset.NoScale = false
+sns.pwrQnt.stepSize.Value = 1.0000e+00
+sns.pwrQnt.stepSize.Unit is unitless or has no unit specified
+sns.pwrQnt.stepSize.NoScale = false

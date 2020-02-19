@@ -12,9 +12,7 @@ loadComponent('oneDoFGSCtrlBasic');
 % High level controller
 loadComponent('constBoothLem')
 % Ground station
-   loadComponent('pathFollowingGndStn');
-
-%     loadComponent('oneThrThreeAnchGndStn001');
+loadComponent('pathFollowingGndStn');
 % Winches
 loadComponent('oneDOFWnchPTO');
 % Tether
@@ -23,8 +21,11 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('constXYZT');
-%loadComponent('CNAPsTurbJames');
-%  loadComponent('CNAPsMitchell');
+% Sensors
+loadComponent('idealSensors')
+% Sensor processing
+loadComponent('idealSensorProcessing')
+
 %% Environment IC's and dependant properties
 env.water.setflowVec([1 0 0],'m/s')
 
