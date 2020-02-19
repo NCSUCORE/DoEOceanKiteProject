@@ -13,7 +13,6 @@ loadComponent('oneDoFGSCtrlBasic');
 loadComponent('constBoothLem')
 % Ground station
 loadComponent('oneThrThreeAnchGndStn001');
-
 % Winches
 loadComponent('oneDOFWnchPTO');
 % Tether
@@ -22,6 +21,10 @@ loadComponent('pathFollowingTether');
 loadComponent('pathFollowingVhcl');
 % Environment
 loadComponent('hurricaneSandyWave');
+% Sensors
+loadComponent('idealSensors')
+% Sensor processing
+loadComponent('idealSensorProcessing')
 
 %% Environment IC's and dependant properties
 env.water.setflowVec([1 0 0],'m/s')
