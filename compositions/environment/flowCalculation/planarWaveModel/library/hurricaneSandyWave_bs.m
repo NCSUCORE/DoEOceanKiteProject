@@ -8,7 +8,7 @@ env.addFlow({'waterWave'},{'planarWaves'});
 env.waterWave.setNumWaves(2,'');
 env.waterWave.build;
 
-Hs = 6;   % meters
+Hs = 7.6;   % meters
 tp = 13.33; % seconds
 w =   2*pi/13.33; % rad/s
 k = (w^2)/9.81; %rad/m
