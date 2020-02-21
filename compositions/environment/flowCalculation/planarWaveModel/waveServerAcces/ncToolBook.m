@@ -23,8 +23,10 @@ setup_nctoolbox
 
 % USER ENTERS STATION NUMBER AND START/END DATES FOR PLOT
 stn = '430';
-startdate = '10/28/2012 00:00';
-enddate = '10/29/2012 23:59';
+% startdate = '10/28/2012 00:00';
+% enddate = '10/29/2012 23:59';
+ startdate = '10/28/2008 00:00';
+ enddate   = '10/29/2019 23:59';
 
 
 
@@ -89,7 +91,7 @@ figure % Create new figure
 % FIRST SUBPLOT
 subplot(3,1,1)
 plot(xvals,yvals1,'DatetimeTickFormat','dd')
-ylim([0 8])
+% ylim([0 8])
 grid on
 grid minor
 title(monthtitle)
@@ -98,7 +100,7 @@ ylabel('Hs, m')
 % SECOND SUBPLOT
 subplot(3,1,2)
 plot(xvals,yvals2,'DatetimeTickFormat','dd')
-ylim([0 25])
+% ylim([0 25])
 grid on
 grid minor
 ylabel('Tp, s')

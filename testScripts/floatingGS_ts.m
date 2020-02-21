@@ -1,7 +1,7 @@
 %% Test script to test the floating ground station simulation and animation
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(400,'s');
+simParams.setDuration(100,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -81,6 +81,11 @@ tsc = signalcontainer(logsout);
 %     'TracerDuration',10,...
 %     'GroundStation',gndStn,...
 %     'GifTimeStep',1/30)
+figure;
+plotAnchThrTen;
+figure;
+tsc.gndStnPositionVec.plot
+
 vhcl.animateSim(tsc,1,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PlotTracer',true,...

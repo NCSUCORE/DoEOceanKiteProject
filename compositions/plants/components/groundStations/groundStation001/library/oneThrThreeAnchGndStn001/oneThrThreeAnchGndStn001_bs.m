@@ -360,11 +360,11 @@ GROUNDSTATION         = 'groundStation001';
 sixDOFDynamics         = 'sixDoFDynamicsEuler';
 gndStn = OCT.sixDoFStation;
 
-gndStn.cylRad.setValue(4,'m')
+gndStn.cylRad.setValue(6,'m')
 gndStn.angSpac.setValue(pi/4,'rad')
-gndStn.heightSpac.setValue(.5,'m')
+gndStn.heightSpac.setValue(2.5,'m')
 
-gndStn.setVolume(pi*gndStn.cylRad.Value^2*2,'m^3');
+gndStn.setVolume(pi*gndStn.cylRad.Value^2*10,'m^3');
 gndStn.setMass(gndStn.volume.Value*(1000/2),'kg');
 gndStn.setInertia([.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0,0;...
    0,.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0;
@@ -373,21 +373,21 @@ gndStn.setInertia([.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0,0;...
 
 
 gndStn.angMatExt.setValue([linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8)],'rad');
-gndStn.zMatExt.setValue([-1*ones(1,8),1*ones(1,8),.5*ones(1,8),-.5*ones(1,8)],'m');
+gndStn.zMatExt.setValue([-5*ones(1,8),5*ones(1,8),2.5*ones(1,8),-2.5*ones(1,8)],'m');
 gndStn.rMatExt.setValue(repmat(gndStn.cylRad.Value,[1,32]),'m');
 
 gndStn.angMatT.setValue([linspace(0,1.75*pi,8),0],'rad')
 gndStn.angMatB.setValue([linspace(0,1.75*pi,8),0],'rad')
 
-gndStn.zMatB.setValue(-1*ones(1,9),'m')
-gndStn.zMatT.setValue(1*ones(1,9),'m')
+gndStn.zMatB.setValue(-5*ones(1,9),'m')
+gndStn.zMatT.setValue(5*ones(1,9),'m')
 
 gndStn.rMatT.setValue([repmat(.5*gndStn.cylRad.Value,[1,8]),0],'m')
 gndStn.rMatB.setValue([repmat(.5*gndStn.cylRad.Value,[1,8]),0],'m')
 
-gndStn.angMatInt.setValue([linspace(0,1.75*pi,8),linspace(0,1.75*pi,8)],'rad')
-gndStn.zMatInt.setValue([-.5*ones(1,8),.5*ones(1,8)],'m');
-gndStn.rMatInt.setValue(repmat(.5*gndStn.cylRad.Value,[1,16]),'m')
+gndStn.angMatInt.setValue([linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8)],'rad')
+gndStn.zMatInt.setValue([-2.5*ones(1,8),2.5*ones(1,8),-1.25*ones(1,8),1.25*ones(1,8)],'m');
+gndStn.rMatInt.setValue(repmat(.5*gndStn.cylRad.Value,[1,32]),'m')
 
 
 %number of tethers that go from the GS to the KITE
@@ -408,7 +408,7 @@ gndStn.aMZ.setValue(.1,'')
 gndStn.addedMass.setValue(zeros(3,3),'')
 gndStn.addedInertia.setValue(zeros(3,3),'')
 
-gndStn.lumpedMassSphereRadius.setValue(.5,'m'); % 1/2 at 1 m height
+gndStn.lumpedMassSphereRadius.setValue(.5*gndStn.heightSpac.Value,'m'); 
 
 
 % tether attach point for the tether that goes from the GS to the KITE
@@ -421,13 +421,13 @@ gndStn.addThrAttch('pltThrAttchPt1',[gndStn.cylRad.Value 0 -0.5*gndStn.cylTotH.V
 gndStn.addThrAttch('pltThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('pltThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 
-gndStn.addThrAttch('inrThrAttchPt1',[400 0 0]');
+gndStn.addThrAttch('inrThrAttchPt1',[250 0 0]');
 gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 
-
-% gndStn.initAnchTetherLength.setValue(gndStn.calcInitTetherLen,'m')
-gndStn.initAnchTetherLength.setValue([440.4143  440.4143  440.4143],'m')
+gndStn.setInitPosVecGnd([0 0 200],'m')
+% gndStn.calcInitTetherLen 0.9937
+gndStn.initAnchTetherLength.setValue(0.9937*gndStn.calcInitTetherLen,'m')
 
 
 
