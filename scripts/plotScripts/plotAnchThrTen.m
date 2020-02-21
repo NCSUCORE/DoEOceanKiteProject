@@ -6,7 +6,7 @@ t3sq = squeeze(tenMat(:,3,:).^2);
 
 t1 = sqrt(sum(t1sq,1));
 t2 = sqrt(sum(t2sq,1));
-t3 = sqrt(sum(t3sq,1));
+t3 = sqrt(sum(t3sq,1)) ;
 
 plot(tsc.anchThrNode1FVec.Time , t1 + t2 + t3)
 
