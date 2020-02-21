@@ -537,7 +537,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     if isfield(h,'gndStn')
         R = rotation_sequence(tscTmp.gndStnEulerAngles.getsamples(ii).Data);
-        posVec = tsc.gndStnPositionVec.getsamples(ii).Data(:);
+        posVec = tscTmp.gndStnPositionVec.getsamples(ii).Data(:);
         pts = R*[xCyl(:)' ; yCyl(:)' ; zCyl(:)'];
         h.gndStn.XData = reshape(pts(1,:),size(xCyl)) + posVec(1);
         h.gndStn.YData = reshape(pts(2,:),size(yCyl)) + posVec(2);
