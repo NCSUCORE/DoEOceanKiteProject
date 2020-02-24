@@ -758,6 +758,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     drawnow
     
+    zlim([0,220])
     % Save gif of results
     if p.Results.SaveGif
         frame       = getframe(h.fig);

@@ -402,6 +402,7 @@ classdef sixDoFStation < dynamicprops
             obj.initAngVelVec.setValue(val,unit);
         end
         
+         val = animateGS(obj,tsc,timeStep,varargin)
         % Function to get properties according to their class
         % May be able to vectorize this somehow
         function val = getPropsByClass(obj,className)
