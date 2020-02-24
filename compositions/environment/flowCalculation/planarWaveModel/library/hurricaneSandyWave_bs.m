@@ -10,8 +10,16 @@ env.waterWave.build;
 
 Hs = 7.6;   % meters
 tp = 13.33; % seconds
-w =   2*pi/13.33; % rad/s
+w =   2*pi/tp; % rad/s
 k = (w^2)/9.81; %rad/m
+
+%% calm waves
+
+% Hs = 2.08;   % meters
+% tp = 9.68; % seconds
+% w =   2*pi/tp; % rad/s
+% k = (w^2)/9.81; %rad/m
+
 
 
 % env.waterWave.wave1.waveNumber.setValue(k,'rad/m')
@@ -23,9 +31,9 @@ k = (w^2)/9.81; %rad/m
 % env.waterWave.wave2.frequency.setValue(0,'rad/s')
 % env.waterWave.wave2.amplitude.setValue(0,'m')
 % env.waterWave.wave2.phase.setValue(0,'rad')
-env.waterWave.wave1.waveNumber.setValue(0,'rad/m')
-env.waterWave.wave1.frequency.setValue(0,'rad/s')
-env.waterWave.wave1.amplitude.setValue(0,'m')
+env.waterWave.wave1.waveNumber.setValue(k ,'rad/m')
+env.waterWave.wave1.frequency.setValue(w,'rad/s')
+env.waterWave.wave1.amplitude.setValue(Hs,'m')
 env.waterWave.wave1.phase.setValue(0,'rad')
 
 env.waterWave.wave2.waveNumber.setValue(0,'rad/m')
