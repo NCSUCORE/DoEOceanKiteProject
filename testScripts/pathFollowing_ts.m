@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(1000,'s');
+simParams.setDuration(5000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -10,7 +10,7 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('constBoothLem')
+loadComponent('constBoothLem');
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -19,7 +19,7 @@ loadComponent('oneDOFWnch');
 loadComponent('pathFollowingTether');
 % Vehicle
 loadComponent('pathFollowingVhcl');
-SIXDOFDYNAMICS='sixDoFDynamics6x6'; %#ok<NASGU>
+SIXDOFDYNAMICS='sixDoFDynamicsCoupled'; %#ok<NASGU>
 
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
