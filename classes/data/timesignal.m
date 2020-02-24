@@ -145,10 +145,10 @@ classdef timesignal < timeseries
             close(hFig);
             newobj = newobj.crop(min(x),max(x));
         end
-        
+
         % Function to crop things
         function newObj = crop(obj,varargin)
-            newObj = obj;
+            newObj = timesignal(obj);
             % User can provide either a two element vector or two inputs
             switch numel(varargin)
                 case 1
@@ -168,6 +168,7 @@ classdef timesignal < timeseries
                     % If they gave more inputs, throw error
                     error('Incorrect number of times provided')
             end
+            newObj.Name = obj.Name + "Cropped";
         end
         
         % Function to resample data to different rate

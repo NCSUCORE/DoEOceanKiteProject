@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(5000,'s');
+simParams.setDuration(500,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -23,21 +23,21 @@ loadComponent('idealSensors')
 loadComponent('idealSensorProcessing')
 % Vehicle
 loadComponent('pathFollowingVhcl');
-SIXDOFDYNAMICS='sixDoFDynamicsCoupled'; %#ok<NASGU>
+SIXDOFDYNAMICS='sixDoFDynamicsCoupled';
 
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
-% loadComponent('CNAPsNoTurbJosh');
-loadComponent('ConstXYZT');
+loadComponent('CNAPsTurbJames');
+% loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([1.5 0 0],'m/s')
+% env.water.setflowVec([1.5 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,.36,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.4,-.36,0*pi/180,125],'') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
-gndStn.setPosVec([0 0 0],'m')
+gndStn.setPosVec([0 0 200],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
@@ -70,13 +70,13 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 simWithMonitor('OCTModel')
-tsc6 = signalcontainer(logsout);
-vhcl6 = vhcl;
+tsc = signalcontainer(logsout);
+% vhcl6 = vhcl;
 
-SIXDOFDYNAMICS='sixDoFDynamicsEuler';
-simWithMonitor('OCTModel')
-tsce = signalcontainer(logsout);
-vhcle = vhcl;
+% SIXDOFDYNAMICS='sixDoFDynamicsEuler';
+% simWithMonitor('OCTModel')
+% tsce = signalcontainer(logsout);
+% vhcle = vhcl;
 
 % %%
 % vhcl.animateSim(tsc,1,...
