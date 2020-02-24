@@ -17,6 +17,10 @@ loadComponent('pathFollowingGndStn');
 loadComponent('oneDOFWnch');
 % Tether
 loadComponent('pathFollowingTether');
+% Sensors
+loadComponent('idealSensors')
+% Sensor processing
+loadComponent('idealSensorProcessing')
 % Vehicle
 loadComponent('pathFollowingVhcl');
 SIXDOFDYNAMICS='sixDoFDynamicsCoupled'; %#ok<NASGU>
