@@ -124,7 +124,7 @@ classdef signalcontainer < dynamicprops
         end
         
         % Function to summarize power
-        function powerSummary(obj)
+        function varargout = powerSummary(obj)
             % Print out power summary
             if isprop(obj,'winchPower')
                 diffTime = diff(obj.winchPower.Time);
@@ -145,6 +145,9 @@ classdef signalcontainer < dynamicprops
                     bounds = [floor(length(obj.winchPower.Time)/2) length(obj.winchPower.Time)];
                     powAvg = sum(energy(bounds(1):bounds(2)))/(obj.winchPower.Time(bounds(2))-obj.winchPower.Time(bounds(1)));
                     fprintf('Average power for the last half of the simulation = %.5g kW.\n',powAvg/1000);
+                end
+                if nargout == 1
+                    varargout{1}=powAvg;
                 end
             end
         end

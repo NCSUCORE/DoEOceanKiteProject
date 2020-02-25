@@ -1,4 +1,4 @@
-figure; 
+
 plot(tsc.vhclFlowVecs.Time, tsc.winchPower.Data)
 title('Power vs. Time ' ) 
 xlabel('Time (s) ' ) 

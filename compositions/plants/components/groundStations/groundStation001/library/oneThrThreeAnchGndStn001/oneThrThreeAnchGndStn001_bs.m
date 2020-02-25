@@ -360,7 +360,7 @@ GROUNDSTATION         = 'groundStation001';
 sixDOFDynamics         = 'sixDoFDynamicsEuler';
 gndStn = OCT.sixDoFStation;
 
-gndStn.cylRad.setValue(6,'m')
+gndStn.cylRad.setValue(9,'m')
 gndStn.angSpac.setValue(pi/4,'rad')
 gndStn.heightSpac.setValue(1.5,'m')
 

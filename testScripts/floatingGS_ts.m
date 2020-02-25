@@ -29,6 +29,7 @@ loadComponent('idealSensorProcessing')
 %% Environment IC's and dependant properties
 env.water.setflowVec([1 0 0],'m/s')
 
+% env.waterWave.waveParamMat.setValue([0,0,0,0;0,0,0,0],'')
 %% Set basis parameters for high level controller
 hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
 
