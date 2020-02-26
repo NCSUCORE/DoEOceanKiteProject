@@ -22,6 +22,7 @@ classdef vehicle < dynamicprops
         maxCtrlDefSpeed
         Ma6x6
         D6x6
+        flowGradientDist
         % center of buoyancy
         centOfBuoy
         % bridle location
@@ -117,6 +118,7 @@ classdef vehicle < dynamicprops
             obj.addedMass      = SIM.parameter('Value',zeros(3),'Unit','kg','Description','addedMass');
             obj.Ma6x6          = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Added Mass Matrix');
             obj.D6x6           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Added Mass Matrix');
+            obj.flowGradientDist=SIM.parameter('Value',.1,'Unit','m','Description','Distance to space points used fore estimating gradient of the flow field');
             obj.addedInertia   = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','addedInertia');
             obj.maxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
             obj.minCtrlDef     = SIM.parameter('Value',-30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the negative direction');
@@ -241,6 +243,18 @@ classdef vehicle < dynamicprops
         
         function setCentOfBuoy(obj,val,units)
             obj.centOfBuoy.setValue(reshape(val,3,1),units);
+        end
+        
+        function setMa6x6(obj,val,units)
+            obj.Ma6x6.setValue(val,units);
+        end
+        
+        function setD6x6(obj,val,units)
+            obj.D6x6.setValue(val,units);
+        end
+        
+        function setFlowGradientDist(obj,val,units)
+            obj.flowGradientDist.setValue(val,units);
         end
         
         function setRbridle_cm(obj,val,units)

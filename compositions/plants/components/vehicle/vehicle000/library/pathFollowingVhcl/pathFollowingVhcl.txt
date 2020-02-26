@@ -70,6 +70,10 @@ vhcl.D6x6.Value = [0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0
 vhcl.D6x6.Unit is unitless or has no unit specified
 vhcl.D6x6.NoScale = false
 vhcl.D6x6.Description = '6x6 Added Mass Matrix'
+vhcl.flowGradientDist.Value = 1.0000e-01
+vhcl.flowGradientDist.Unit = 'm'
+vhcl.flowGradientDist.NoScale = false
+vhcl.flowGradientDist.Description = 'Distance to space points used fore estimating gradient of the flow field'
 vhcl.centOfBuoy.Value = [0;0;0]
 vhcl.centOfBuoy.Unit = 'm'
 vhcl.centOfBuoy.NoScale = false

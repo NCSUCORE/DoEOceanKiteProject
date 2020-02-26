@@ -5,7 +5,7 @@ dynamicCalc = '';
 
 %% Load components
 % Flight Controller
-loadComponent('pathFollowingCtrlForILC');
+loadComponent('pathFollowingCtrlAddedMass');
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
@@ -27,11 +27,13 @@ SIXDOFDYNAMICS='sixDoFDynamicsCoupled';
 
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
-loadComponent('CNAPsTurbJames');
-% loadComponent('ConstXYZT');
+% loadComponent('CNAPsNoTurbJosh');
+% loadComponent('CNAPsTurbJames');
+% loadComponent('CNAPsTurbMitchell');
+loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-% env.water.setflowVec([1.5 0 0],'m/s')
+env.water.setflowVec([1.5 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
@@ -48,6 +50,7 @@ vhcl.setICsOnPath(...
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
     (11/2)*norm([ 1 0 0 ])) % Initial speed
+
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -69,8 +72,27 @@ vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
+%% Run Simulation
+% vhcl.setFlowGradientDist(.01,'m')
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
+
+vhcl.setMa6x6(diag([5300 4184 9246 24040 11760 35800]),'');
+simWithMonitor('OCTModel')
+tscam = signalcontainer(logsout);
+% 
+% vhcl.setFlowGradientDist(.1,'m')
+% simWithMonitor('OCTModel')
+% tsc1 = signalcontainer(logsout);
+% 
+% vhcl.setFlowGradientDist(1,'m')
+% simWithMonitor('OCTModel')
+% tsc2 = signalcontainer(logsout);
+
+% vhcl.setFlowGradientDist(5,'m')
+% simWithMonitor('OCTModel')
+% tsc3 = signalcontainer(logsout);
+
 % vhcl6 = vhcl;
 
 % SIXDOFDYNAMICS='sixDoFDynamicsEuler';
@@ -79,11 +101,4 @@ tsc = signalcontainer(logsout);
 % vhcle = vhcl;
 
 % %%
-% vhcl.animateSim(tsc,1,...
-%     'PathFunc',fltCtrl.fcnName.Value,...
-%     'PlotTracer',true,...
-%     'FontSize',24,...
-%     'PowerBar',false,...
-%     'PlotAxes',false,...
-%     'TracerDuration',10,...
-%     'SaveGif',false)
+vhcl.animateSim(tscam,1,'PathFunc',fltCtrl.fcnName.Value,'PlotTracer',true,'FontSize',18)

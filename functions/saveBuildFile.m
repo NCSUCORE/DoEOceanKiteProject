@@ -57,6 +57,8 @@ if all(emptyCheck)
             
             eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
             save(saveFile,p.Results.object,p.Results.variant);
+            proj=slproject.getCurrentProject;
+            addFile(proj,saveFile);
             saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
         else
             save(saveFile,p.Results.object);

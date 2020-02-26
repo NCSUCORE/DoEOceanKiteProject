@@ -117,6 +117,10 @@ sz = getBusDims;
 %% Plot things
 % Plot the aerodynamic surfaces
 h = obj.plot('Basic',true);
+f=gcf;
+oldUL = f.Position(2) + f.Position(4);
+f.Position(3:4) = f.Position(3:4)*2;
+f.Position(2) = oldUL - f.Position(4);
 h.ax = gca;
 
 % Add scroll plots if specified
@@ -467,9 +471,14 @@ minZ = min([minZ allPlots(ii).ZData(:)']);
 maxZ = max([maxZ allPlots(ii).ZData(:)']);
 end
 % If one is not zero, make X and Y symmetric
-xlim([minX maxX])
-ylim([minY maxY])
-zlim([minZ maxZ])
+xlim([minX maxX+5])
+YlimVal = max(abs(minY),abs(maxY));
+ylim([-YlimVal-5 YlimVal+5])
+if abs(minZ)>abs(maxZ)
+    zlim([minZ-5 maxZ])
+else
+    zlim([minZ maxZ+5])
+end
 
 
 % Set the custom x, y and z limits
