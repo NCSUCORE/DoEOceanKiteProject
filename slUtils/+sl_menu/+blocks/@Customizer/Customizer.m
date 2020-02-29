@@ -10,6 +10,10 @@ classdef Customizer < sl_menu.Customizer
         schema = showHideBlockName(callbackInfo)
         schema = createBusObject(callbackInfo)
         schema = inheritPortNames(callbackInfo)
+        schema = alignLeft(callbackInfo)
+        schema = alignRight(callbackInfo)
+        schema = alignTop(callbackInfo)
+        schema = alignBottom(callbackInfo)
                 
         % Implement Abstract
         setFilters(cm)

@@ -11,5 +11,5 @@ end
 
 function autoArrangeDiagramCb(callbackInfo)
 % Callback function: autoArrangeDiagram menu item
-Simulink.BlockDiagram.arrangeSystem(gcs)
+Simulink.BlockDiagram.arrangeSystem(gcs);
 end
