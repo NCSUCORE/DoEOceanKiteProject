@@ -1,4 +1,4 @@
-% User is notified automatically that this file is run
+% % User is notified automatically that this file is run
 % Change anything with "Interpreter" in the name to use Latex formatting
 props = get(groot, 'factory');
 fnames = fieldnames(props);
@@ -23,7 +23,7 @@ if strcmpi(getenv('username'),'mcobb') % User is Mitchell
 end
 
 % Refresh simulink customizations
-% sl_refresh_customizations
+sl_refresh_customizations
 
 % Clear the variables created by this script
 clearvars props fnames ii propName
