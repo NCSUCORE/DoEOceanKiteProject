@@ -2,11 +2,12 @@
 % Use is subject to the LGPL license.
 
 function setFilters(cm)
-cm.addCustomFilterFcn('SimulinkUtils:MatchSize', @sl_menu.Customizer.checkMultiBlocks);
-cm.addCustomFilterFcn('SimulinkUtils:ShowHideName', @sl_menu.Customizer.checkBlocks);
-cm.addCustomFilterFcn('SimulinkUtils:CreateBusObject', @checkCreateBusObject);
-cm.addCustomFilterFcn('SimulinkUtils:InheritPortNames', @sl_menu.Customizer.checkOneSubsystem);
 
+cm.addCustomFilterFcn('SimulinkUtils:AlignLeftEdge', @sl_menu.Customizer.checkMultiBlocks);
+cm.addCustomFilterFcn('SimulinkUtils:AlignBottomEdge', @sl_menu.Customizer.checkMultiBlocks);
+cm.addCustomFilterFcn('SimulinkUtils:AlignRightEdge', @sl_menu.Customizer.checkMultiBlocks);
+cm.addCustomFilterFcn('SimulinkUtils:AlignTopEdge', @sl_menu.Customizer.checkMultiBlocks);
+cm.addCustomFilterFcn('SimulinkUtils:AutoArrangeDiagram', @sl_menu.Customizer.checkMultiBlocks);
 end
 
 function state = checkCreateBusObject(callbackInfo)

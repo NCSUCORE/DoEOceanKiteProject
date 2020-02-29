@@ -5,15 +5,10 @@ classdef Customizer < sl_menu.Customizer
     
     methods (Static)
         % Customizing Methods
-        schema = autoArrangeDiagram(callbackInfo)
         schema = matchSizeOfBlocks(callbackInfo)
         schema = showHideBlockName(callbackInfo)
         schema = createBusObject(callbackInfo)
         schema = inheritPortNames(callbackInfo)
-        schema = alignLeft(callbackInfo)
-        schema = alignRight(callbackInfo)
-        schema = alignTop(callbackInfo)
-        schema = alignBottom(callbackInfo)
                 
         % Implement Abstract
         setFilters(cm)

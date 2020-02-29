@@ -18,6 +18,7 @@ cm.addCustomMenuFcn('Stateflow:ContextMenu', @getCustomStateflowContext);
 % Add custom filters
 sl_menu.styleguide.Customizer.setFilters(cm);
 sl_menu.blocks.Customizer.setFilters(cm);
+sl_menu.align.Customizer.setFilters(cm);
 sl_menu.stateflow.blocks.Customizer.setFilters(cm);
 sl_menu.signals.Customizer.setFilters(cm);
 

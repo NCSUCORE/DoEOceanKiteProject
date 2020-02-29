@@ -11,6 +11,7 @@ schema.label    = 'Utils';                  % Set menu label
 % Initialize Customizers to add
 customizers = {
     sl_menu.blocks.Customizer()
+    sl_menu.align.Customizer()
     sl_menu.signals.Customizer()
     sl_menu.styleguide.Customizer()
     sl_menu.generation.Customizer()
