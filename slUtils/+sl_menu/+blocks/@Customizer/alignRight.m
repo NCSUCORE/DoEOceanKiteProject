@@ -1,7 +1,7 @@
 function schema = alignRight(callbackInfo)
 schema              = sl_action_schema();           % Initialize schema
 schema.tag          = 'SimulinkUtils:AlignRightEdge';    % Set menu item tag
-schema.label        = 'Align right Edge';                 % Set menu item label
+schema.label        = 'Align Right Edge';                 % Set menu item label
 schema.accelerator  = 'Ctrl+Alt+R';                 % Set accelerator/short-cut
 schema.callback     = @alignRightCb;         % Set callback function
 
