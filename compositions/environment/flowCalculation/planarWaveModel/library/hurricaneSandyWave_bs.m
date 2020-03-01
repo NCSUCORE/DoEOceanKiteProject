@@ -15,10 +15,10 @@ k = (w^2)/9.81; %rad/m
 
 %% calm waves
 
-Hs = 2.08;   % meters
-tp = 9.68; % seconds
-w =   2*pi/tp; % rad/s
-k = (w^2)/9.81; %rad/m
+% Hs = 2.08;   % meters
+% tp = 9.68; % seconds
+% w =   2*pi/tp; % rad/s
+% k = (w^2)/9.81; %rad/m
 
 
 

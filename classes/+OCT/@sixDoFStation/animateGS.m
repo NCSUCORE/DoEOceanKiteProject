@@ -750,7 +750,7 @@ grid on
     zlim([0,220])
     % Save gif of results
     if p.Results.SaveGif
-        frame       = getframe(h.fig);
+        frame       = getframe(gca);
         im          = frame2im(frame);
         [imind,cm]  = rgb2ind(im,256);
         if ii == 1
