@@ -16,7 +16,7 @@ env.water.elevation is non-string and non-numeric and takes up 1.5000e+01 bytes
 env.waterWave.numWaves.Value = 2.0000e+00
 env.waterWave.numWaves.Unit is unitless or has no unit specified
 env.waterWave.numWaves.NoScale = true
-env.waterWave.waveParamMat.Value = [0.0226480299414169 0.471356737222775 7.6 0;0 0 0 0]
+env.waterWave.waveParamMat.Value = [0.0800405771615234 0.730602942695301 4.1 0;0 0 0 0]
 env.waterWave.waveParamMat.Unit is unitless or has no unit specified
 env.waterWave.waveParamMat.NoScale = true
 env.waterWave.wave2.waveNumber.Value = 0.0000e+00
@@ -31,13 +31,13 @@ env.waterWave.wave2.amplitude.NoScale = false
 env.waterWave.wave2.phase.Value = 0.0000e+00
 env.waterWave.wave2.phase.Unit = 'rad'
 env.waterWave.wave2.phase.NoScale = false
-env.waterWave.wave1.waveNumber.Value = 2.2648e-02
+env.waterWave.wave1.waveNumber.Value = 8.0041e-02
 env.waterWave.wave1.waveNumber.Unit = 'rad/m'
 env.waterWave.wave1.waveNumber.NoScale = false
-env.waterWave.wave1.frequency.Value = 4.7136e-01
+env.waterWave.wave1.frequency.Value = 7.3060e-01
 env.waterWave.wave1.frequency.Unit = 'rad/s'
 env.waterWave.wave1.frequency.NoScale = false
-env.waterWave.wave1.amplitude.Value = 7.6000e+00
+env.waterWave.wave1.amplitude.Value = 4.1000e+00
 env.waterWave.wave1.amplitude.Unit = 'm'
 env.waterWave.wave1.amplitude.NoScale = false
 env.waterWave.wave1.phase.Value = 0.0000e+00

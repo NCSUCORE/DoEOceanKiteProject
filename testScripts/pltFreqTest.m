@@ -11,7 +11,7 @@ tetherDist = [ 200 250 300 350 400]';
 
 for k = 4:4
     for j = 1:1
-        for i = 3:3
+        for i = 2:2
             
             clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'i' 'j' 'k' 'tetherDist'
             
@@ -22,9 +22,9 @@ gndStn = OCT.sixDoFStation;
 
 gndStn.cylRad.setValue(9,'m')
 gndStn.angSpac.setValue(pi/4,'rad')
-gndStn.heightSpac.setValue(1.5,'m')
+gndStn.heightSpac.setValue(2.5,'m')
 
-gndStn.setVolume(pi*gndStn.cylRad.Value^2*6,'m^3');
+gndStn.setVolume(pi*gndStn.cylRad.Value^2*10,'m^3');
 gndStn.setMass(gndStn.volume.Value*(1000/2),'kg');
 gndStn.setInertia([.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0,0;...
    0,.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0;
@@ -33,20 +33,20 @@ gndStn.setInertia([.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0,0;...
 
 
 gndStn.angMatExt.setValue([linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8)],'rad');
-gndStn.zMatExt.setValue([-3*ones(1,8),3*ones(1,8),1.5*ones(1,8),-1.5*ones(1,8)],'m');
+gndStn.zMatExt.setValue([-5*ones(1,8),5*ones(1,8),2.5*ones(1,8),-2.5*ones(1,8)],'m');
 gndStn.rMatExt.setValue(repmat(gndStn.cylRad.Value,[1,32]),'m');
 
 gndStn.angMatT.setValue([linspace(0,1.75*pi,8),0],'rad')
 gndStn.angMatB.setValue([linspace(0,1.75*pi,8),0],'rad')
 
-gndStn.zMatB.setValue(-3*ones(1,9),'m')
-gndStn.zMatT.setValue(3*ones(1,9),'m')
+gndStn.zMatB.setValue(-5*ones(1,9),'m')
+gndStn.zMatT.setValue(5*ones(1,9),'m')
 
 gndStn.rMatT.setValue([repmat(.5*gndStn.cylRad.Value,[1,8]),0],'m')
 gndStn.rMatB.setValue([repmat(.5*gndStn.cylRad.Value,[1,8]),0],'m')
 
 gndStn.angMatInt.setValue([linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8),linspace(0,1.75*pi,8)],'rad')
-gndStn.zMatInt.setValue([-1.5*ones(1,8),1.5*ones(1,8),-.75*ones(1,8),.75*ones(1,8)],'m');
+gndStn.zMatInt.setValue([-2.5*ones(1,8),2.5*ones(1,8),-1.25*ones(1,8),1.25*ones(1,8)],'m');
 gndStn.rMatInt.setValue(repmat(.5*gndStn.cylRad.Value,[1,32]),'m')
 
 
@@ -87,7 +87,7 @@ gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrT
 
 gndStn.setInitPosVecGnd([0 0 200],'m')
 % gndStn.calcInitTetherLen 0.9937
-gndStn.initAnchTetherLength.setValue(0.9937*gndStn.calcInitTetherLen,'m')
+gndStn.initAnchTetherLength.setValue(0.97*gndStn.calcInitTetherLen,'m')
 
 
 
@@ -166,7 +166,7 @@ saveBuildFile('gndStn','oneThrThreeAnchGndStn001_bs','variant','GROUNDSTATION');
             
             env.waterWave.waveParamMat.setValue([waveNumber(i),Frequencies(i),Amplitudes(i) ,0;0,0,0,0],'')
             %% Set basis parameters for high level controller
-            hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
+            hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,200],'') % Lemniscate of Booth
             
             %% Ground Station IC's and dependant properties
             gndStn.setInitPosVecGnd([0 0 200],'m')
@@ -236,7 +236,7 @@ saveBuildFile('gndStn','oneThrThreeAnchGndStn001_bs','variant','GROUNDSTATION');
         end
     end
 end
-vhcl.animateSim(tsc,.1,...
+vhcl.animateSim(tsc,1,...
     'PathFunc',fltCtrl.fcnName.Value,...
     'PlotTracer',true,...
     'FontSize',24,...
