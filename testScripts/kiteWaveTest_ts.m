@@ -21,7 +21,7 @@ Amplitudes  =  linspace(.27, 4.1,10);
 
 
 
-for i = 1:4
+for i = 1:1
     
     % %% Script to run ILC path optimization
     clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'i' 'j'
