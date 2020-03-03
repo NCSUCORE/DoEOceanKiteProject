@@ -9,9 +9,9 @@ tetherDist = [ 200 250 300 350 400]';
 
 
 
-for k = 1:1
-    for j = 1:1
-        for i = 2:2
+for k = 4:4
+    for j = 2:2
+        for i = 6:6
             
             clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'i' 'j' 'k' 'tetherDist'
             
