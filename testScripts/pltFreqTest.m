@@ -9,9 +9,9 @@ tetherDist = [ 200 250 300 350 400]';
 
 
 
-for k = 1:5
-    for j = 1:2
-        for i = 1:8
+for k = 1:1
+    for j = 1:1
+        for i = 2:2
             
             clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'i' 'j' 'k' 'tetherDist'
             
@@ -87,8 +87,8 @@ gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -2*pi/3])*gndStn.inrT
 
 gndStn.setInitPosVecGnd([0 0 200],'m')
 % gndStn.calcInitTetherLen 0.9937
-gndStn.initAnchTetherLength.setValue(.9937*gndStn.calcInitTetherLen,'m')
-
+% gndStn.initAnchTetherLength.setValue(.9937*gndStn.calcInitTetherLen,'m')
+gndStn.initAnchTetherLength.setValue(.985*gndStn.calcInitTetherLen,'m')
 
 
 % Anchor Tethers
@@ -99,7 +99,7 @@ gndStn.anchThrs.build;
 % Tether 1 properties
 gndStn.anchThrs.tether1.diameter.setValue(.05,'m');              % tether diameter
 gndStn.anchThrs.tether1.youngsMod.setValue(500e9,'Pa');          % tether Young's Modulus
-gndStn.anchThrs.tether1.dampingRatio.setValue(.2,'');           % zeta, damping ratio
+gndStn.anchThrs.tether1.dampingRatio.setValue(.3,'');           % zeta, damping ratio
 gndStn.anchThrs.tether1.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether1.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether1.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
@@ -110,7 +110,7 @@ gndStn.anchThrs.tether1.netBuoyEnable.setValue(1,'');
 % Tether 2 properties
 gndStn.anchThrs.tether2.diameter.setValue(.05,'m');              % tether diameter
 gndStn.anchThrs.tether2.youngsMod.setValue(500e9,'Pa');          % tether Young's Modulus
-gndStn.anchThrs.tether2.dampingRatio.setValue(.2,'');           % zeta, damping ratio
+gndStn.anchThrs.tether2.dampingRatio.setValue(.3,'');           % zeta, damping ratio
 gndStn.anchThrs.tether2.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether2.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether2.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
@@ -122,7 +122,7 @@ gndStn.anchThrs.tether2.netBuoyEnable.setValue(1,'');
 % Tether 3 properties
 gndStn.anchThrs.tether3.diameter.setValue(.05,'m');              % tether diameter
 gndStn.anchThrs.tether3.youngsMod.setValue(500e9,'Pa');          % tether Young's Modulus
-gndStn.anchThrs.tether3.dampingRatio.setValue(.2,'');           % zeta, damping ratio
+gndStn.anchThrs.tether3.dampingRatio.setValue(.3,'');           % zeta, damping ratio
 gndStn.anchThrs.tether3.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
 gndStn.anchThrs.tether3.density.setValue(1300,'kg/m^3');         % tether density
 gndStn.anchThrs.tether3.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
@@ -166,7 +166,7 @@ saveBuildFile('gndStn','oneThrThreeAnchGndStn001_bs','variant','GROUNDSTATION');
             
             env.waterWave.waveParamMat.setValue([waveNumber(i),Frequencies(i),Amplitudes(i) ,0;0,0,0,0],'')
             %% Set basis parameters for high level controller
-            hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
+            hiLvlCtrl.basisParams.setValue([.8,1.6,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
             
             %% Ground Station IC's and dependant properties
             gndStn.setInitPosVecGnd([0 0 200],'m')
