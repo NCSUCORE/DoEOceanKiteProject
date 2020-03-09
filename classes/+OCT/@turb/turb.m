@@ -17,6 +17,25 @@ classdef turb < handle
             obj.powerCoeff           = SIM.parameter;
             obj.dragCoeff            = SIM.parameter;
         end
+        function setDiameter(obj,val,units)
+            obj.diameter.setValue(val,units)
+        end
+
+        function setAxisUnitVec(obj,val,units)
+            obj.axisUnitVec.setValue(val,units)
+        end
+
+        function setAttachPtVec(obj,val,units)
+            obj.attachPtVec.setValue(val,units)
+        end
+
+        function setPowerCoeff(obj,val,units)
+            obj.powerCoeff.setValue(val,units)
+        end
+
+        function setDragCoeff(obj,val,units)
+            obj.dragCoeff.setValue(val,units)
+        end
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)

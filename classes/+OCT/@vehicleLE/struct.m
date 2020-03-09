@@ -1,4 +1,4 @@
-function [val,varargout] = struct(obj,className)
+function [val,varargout] = structLE(obj,className)
 % Function returns all properties of the specified class in a
 % 1xN struct useable in a for loop in simulink
 % Example classnames: OCT.turb, OCT.aeroSurf
@@ -14,11 +14,19 @@ if  ismember(props{1},{'portWing','stbdWing','hStab','vStab'})
     props{4} = 'vStab';
 end
 subProps = properties(obj.(props{1}));
-
+if any(contains(subProps,'CL'))
+    subProps =  {"CL" "CD" "alpha" "gainCL" "gainCD" "RSurf2Bdy" "maxCtrlDefSpeed" "maxCtrlDef" "minCtrlDef", "incAlphaUnitVecSurf"};
+end
 if numel(obj.(props{1})) == 1
     for ii = 1:length(props)
-        for jj = 1:numel(subProps)
-            val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
+        try
+            for jj = 1:numel(subProps)
+                if isnumeric(obj.(props{ii}).(subProps{jj}).Value)
+                    val(ii).(subProps{jj}) = obj.(props{ii}).(subProps{jj}).Value;
+                end
+            end
+        catch
+            disp(1);
         end
     end
 else

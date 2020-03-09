@@ -1,88 +1,93 @@
-clear
-clc
-format compact
-
-% this is the build script for creating a vechile using class definition
-% 'vehicle_v2' for a three tethered system that is being used by ayaz
-
-% the script saves the variable 'vhcl' to a 'pathFollowingVhcl.mat'
+% clear
+% clc
+% format compact
 
 VEHICLE               = "vehicleLETest";
-SIXDOFDYNAMICS        = "sixDoFDynamicsEuler";
+SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
 
-%% lifiting body
-vhcl = OCT.vehicle;
+%% Essential Values
+vhcl = OCT.vehicleLE;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
-vhcl.setNumTurbines(2,'');
 vhcl.setBuoyFactor(1.0,'');
+vhcl.setFluidCoeffsFileName('someFile3','');
 
-%Control Surfaces (Defaults are saved)
-% vhcl.setMaxCtrlDef(30,'deg');
-% vhcl.setMinCtrlDef(-30,'deg');
-% vhcl.setMaxCtrlDefSpeed(60,'deg/s');
+%% Turbines
+vhcl.setNumTurbines(2,'');
+vhcl.setTurbDiam(0,'m');
 
-% % % volume and inertias
-% vhcl.setVolume(2.85698,'m^3')
+%% Volumes and Inertia
 vhcl.setVolume(945352023.474*1e-9,'m^3');
-vhcl.setIxx(6.303080401918E+09*1e-6,'kg*m^2');
-vhcl.setIyy(2080666338.077*1e-6,'kg*m^2');
-vhcl.setIzz(8.320369733598E+09*1e-6,'kg*m^2');
-vhcl.setIxy(0,'kg*m^2');
-vhcl.setIxz(81875397.942*1e-6,'kg*m^2');
-vhcl.setIyz(0,'kg*m^2');
-vhcl.setCentOfBuoy([0;0;0],'m');
-vhcl.setRbridle_cm([0;0;0],'m');
+% vhcl.setVolume(2.85698,'m^3')
+Ixx=6.303080401918E+09*1e-6;
+Iyy=2080666338.077*1e-6;
+Izz=8.320369733598E+09*1e-6;
+Ixy=0;
+Ixz=81875397.942*1e-6;
+Iyz=0;
+vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
+                    -Ixy Iyy -Iyz;...
+                    -Ixz -Iyz Izz],'kg*m^2')
 
-% % % wing
+%% Added Mass/Damping (defaults to zeros)
+% vhcl.setMa6x6_B([],'');
+% vhcl.setD6x6_B([],'');
+
+%% Control Surfaces
+vhcl.setAllMaxCtrlDef(30,'deg');
+vhcl.setAllMinCtrlDef(-30,'deg');
+vhcl.setAllMaxCtrlDefSpeed(60,'deg/s');
+
+%% Important Points
+vhcl.setRB_LE([0;0;0],'m');
+vhcl.setRCM_LE([0;0;0],'m');
+vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
+vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
+
+%% Wing
 % vhcl.setRwingLE_cm([-.47064 0 0],'m');
-vhcl.setRwingLE_cm([0;0;0],'m');
-vhcl.setWingChord(1,'m');
+vhcl.setWingRootChord(1,'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(5,'deg');
 vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
 vhcl.setWingNACA('2412','');
-vhcl.setWingClMax(1.7,'');
 vhcl.setWingClMin(-1.7,'');
+vhcl.setWingClMax(1.7,'');
 
-% % % H-stab
-vhcl.setRhsLE_wingLE([6;0;0],'m');
-vhcl.setHsChord(0.5,'m');
-vhcl.setHsAR(8,'');
-vhcl.setHsTR(0.8,'');
-vhcl.setHsSweep(10,'deg');
-vhcl.setHsDihedral(0,'deg');
-vhcl.setHsIncidence(-13.5,'deg');
-vhcl.setHsNACA('0015','');
-vhcl.setHsClMaxl(1.7,'');
-vhcl.setHsClMin(-1.7,'');
+%% H-stab and V-stab
+vhcl.hStab.setRSurfLE_WingLEBdy([6;0;0],'m');
+vhcl.hStab.setNumTraps(2,'');
+vhcl.hStab.setRootChord(.5,'m');
+vhcl.hStab.setSpanOrAR('AR',8,'');
+vhcl.hStab.setTR(.8,'');
+vhcl.hStab.setSweep(10,'deg');
+vhcl.hStab.setIncidence(-13.5,'deg');
+vhcl.hStab.setNACA('0015','');
+vhcl.hStab.setClMin(-1.7,'');
+vhcl.hStab.setClMax(1.7,'');
 
-% % % V-stab
-vhcl.setRvs_wingLE([6;0;0],'m');
-vhcl.setVsChord(0.6,'m');
-vhcl.setVsSpan(2.0,'m');
-vhcl.setVsTR(0.8,'');
-vhcl.setVsSweep(15,'deg');
-vhcl.setVsNACA('0015','');
-vhcl.setVsClMax(1.7,'');
-vhcl.setVsClMin(-1.7,'');
+vhcl.vStab.setRSurfLE_WingLEBdy([6;0;0],'m');
+vhcl.vStab.setRootChord(.6,'m');
+vhcl.vStab.setSpanOrAR('Span',2,'m');
+vhcl.vStab.setTR(.8,'');
+vhcl.vStab.setSweep(15,'deg');
+vhcl.vStab.setNACA('0015','');
+vhcl.vStab.setClMin(-1.7,'');
+vhcl.vStab.setClMax(1.7,'');
 
-% % % Fuselage (could use more realistic numbers)
-vhcl.setFuseDiameter(0.15,'m')
-vhcl.setFuseEndDragCoeff(0,'')
-vhcl.setFuseSideDragCoeff(0,'')
-vhcl.setFuseRNose_LE([-2;0;0],'m')
-
-% % % data file name
-vhcl.setFluidCoeffsFileName('someFile2','');
-
-% % % load/generate fluid dynamic datan
+%% Fuselage (could use more realistic numbers)
+vhcl.fuse.setDiameter(0.15,'m');
+vhcl.fuse.setEndDragCoeff(0,'');
+vhcl.fuse.setSideDragCoeff(0,'');
+vhcl.fuse.setRNose_LE([-2;0;0],'m');
+vhcl.fuse.setREnd_LE([min(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
+    
+%% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
-% vhcl.calcAddedMass
-vhcl.addedMass.setValue(zeros(3,3),'kg')
+
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
 

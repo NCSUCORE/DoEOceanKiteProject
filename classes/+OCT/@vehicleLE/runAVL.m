@@ -1,6 +1,6 @@
-function runAVL(obj)
+function varargout = runAVL(obj)
     presFolder = pwd;
-    avlCreateInputFilePart_v2(obj)
+    avlCreateInputFilePart_v2LE(obj)
                     
     %% wing
     alp_max = 55;
@@ -11,7 +11,7 @@ function runAVL(obj)
     ailerons = 0;
 
     % run AVL for right wing
-    avlProcessPart_v2(obj,'wing',alphas,ailerons,'Parallel',true);
+    avlProcessPart_v2LE(obj,'wing',alphas,ailerons,'Parallel',true);
     load('resultFile','results');
 
     [CLWingTab,CDWingTab] = avlPartitionedLookupTable(results);
@@ -21,7 +21,7 @@ function runAVL(obj)
     alphas = 0;
     ailerons = linspace(-5,5,n_case);
 
-    avlProcessPart_v2(obj,'wing',alphas,ailerons,'Parallel',true);
+    avlProcessPart_v2LE(obj,'wing',alphas,ailerons,'Parallel',true);
     load('resultFile','results');
 
     CL_w = NaN(1,n_case);
@@ -57,7 +57,7 @@ function runAVL(obj)
     ailerons = 0;
 
     % run AVL for HS
-    avlProcessPart_v2(obj,'H_stab',alphas,ailerons,'Parallel',true);
+    avlProcessPart_v2LE(obj,'H_stab',alphas,ailerons,'Parallel',true);
     load('resultFile','results');
 
     [CLHSTab,CDHSTab] = avlPartitionedLookupTable(results);
@@ -66,7 +66,7 @@ function runAVL(obj)
     alphas = 0;
     ailerons = linspace(-5,5,n_case);
 
-    avlProcessPart_v2(obj,'H_stab',alphas,ailerons,'Parallel',true);
+    avlProcessPart_v2LE(obj,'H_stab',alphas,ailerons,'Parallel',true);
     load('resultFile','results');
 
     CL_hs = NaN(1,n_case);
@@ -95,7 +95,7 @@ function runAVL(obj)
     ailerons = 0;
 
     % run AVL for VS
-    avlProcessPart_v2(obj,'V_stab',alphas,ailerons,'Parallel',true);
+    avlProcessPart_v2LE(obj,'V_stab',alphas,ailerons,'Parallel',true);
     load('resultFile','results');
 
     [CLVSTab,CDVSTab] = avlPartitionedLookupTable(results);
@@ -104,7 +104,7 @@ function runAVL(obj)
     alphas = 0;
     ailerons = linspace(-5,5,n_case);
 
-    avlProcessPart_v2(obj,'V_stab',alphas,ailerons,'Parallel',true);
+    avlProcessPart_v2LE(obj,'V_stab',alphas,ailerons,'Parallel',true);
     load('resultFile','results');
 
     CL_vs = NaN(1,n_case);
@@ -134,7 +134,6 @@ function runAVL(obj)
     delete('V_stab');
     delete('dsgnMassFile.mass')
     
-    %
     filepath = fileparts(which('avl.exe'));
 
     delete(fullfile(filepath,strcat('resultFile','.mat')));
@@ -143,4 +142,8 @@ function runAVL(obj)
         obj.fluidCoeffsFileName.Value,fileparts(which(obj.fluidCoeffsFileName.Value)));
 
     cd(presFolder);
+    
+    if nargout == 1
+        varargout{1} = aeroStruct;
+    end
 end

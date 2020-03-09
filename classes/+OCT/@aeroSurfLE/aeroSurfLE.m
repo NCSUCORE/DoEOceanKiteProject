@@ -12,11 +12,15 @@ classdef aeroSurfLE < handle
         dihedral
         incidence
         NACA
+        ClMin
+        ClMax
         maxCtrlDef
         minCtrlDef
         maxCtrlDefSpeed
         spanUnitVec
         chordUnitVec
+        incAlphaUnitVecSurf
+        numTraps
         
         CL
         CD
@@ -25,27 +29,32 @@ classdef aeroSurfLE < handle
         gainCD
     end
     properties (Dependent)
-        rAeroCent_SurfLE
         RSurf2Bdy
+        rAeroCent_SurfLE
+        outlinePts
     end
     
     methods
         function obj = aeroSurfLE
-            obj.rSurfLE_WingLEBdy = SIM.parameter('Unit','m','Description','Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface');
-            obj.rootChord         = SIM.parameter('Unit','m','Description','Root chord');
-            obj.span              = SIM.parameter('Unit','m','Description','Surface span, not full wingspan');
-            obj.AR                = SIM.parameter('Description','Aspect ratio','NoScale',true);
-            obj.TR                = SIM.parameter('Value',1,'Description','Taper ratio','NoScale',true);
-            obj.sweep             = SIM.parameter('Value',0,'Unit','deg','Description','Sweep angle');
-            obj.dihedral          = SIM.parameter('Value',0,'Unit','deg','Description','Dihedral angle');
-            obj.incidence         = SIM.parameter('Value',0,'Unit','deg','Description','Flow incidence angle');
-            obj.NACA              = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
-            obj.spanUnitVec       = SIM.parameter('Description','Body frame unit vector for the span before dihedral/incidence');
-            obj.chordUnitVec      = SIM.parameter('Description','Body frame unit vector for the chord before dihedral/incidence');
-            obj.maxCtrlDef        = SIM.parameter('Unit','deg');
-            obj.minCtrlDef        = SIM.parameter('Unit','deg');
-            obj.maxCtrlDefSpeed   = SIM.parameter('Unit','deg/s');
-            
+            obj.rSurfLE_WingLEBdy   = SIM.parameter('Unit','m','Description','Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface');
+            obj.rootChord           = SIM.parameter('Unit','m','Description','Root chord');
+            obj.span                = SIM.parameter('Unit','m','Description','Surface span, not full wingspan');
+            obj.AR                  = SIM.parameter('Description','Aspect ratio','NoScale',true);
+            obj.TR                  = SIM.parameter('Value',1,'Description','Taper ratio','NoScale',true);
+            obj.sweep               = SIM.parameter('Value',0,'Unit','deg','Description','Sweep angle');
+            obj.dihedral            = SIM.parameter('Value',0,'Unit','deg','Description','Dihedral angle');
+            obj.incidence           = SIM.parameter('Value',0,'Unit','deg','Description','Flow incidence angle');
+            obj.NACA                = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
+            obj.ClMin               = SIM.parameter('Description','Minimum section lift coef','NoScale',true);
+            obj.ClMax               = SIM.parameter('Description','Maximum section lift coef','NoScale',true);
+            obj.spanUnitVec         = SIM.parameter('Description','Body frame unit vector for the span before dihedral/incidence');
+            obj.chordUnitVec        = SIM.parameter('Description','Body frame unit vector for the chord before dihedral/incidence');
+            obj.incAlphaUnitVecSurf = SIM.parameter('Description','Unit vector in the surface frame about which the apparent velocity vector is rotated to obtain an increasing alpha');
+            obj.maxCtrlDef          = SIM.parameter('Unit','deg');
+            obj.minCtrlDef          = SIM.parameter('Unit','deg');
+            obj.maxCtrlDefSpeed     = SIM.parameter('Unit','deg/s');
+            obj.numTraps            = SIM.parameter('Value',1,'Description','1 for one trapazoid, 2 for 2 trapazoids symmetric about root chord');
+                        
             %AVL Params
             obj.CL                = SIM.parameter('NoScale',true);
             obj.CD                = SIM.parameter('NoScale',true);
@@ -69,7 +78,7 @@ classdef aeroSurfLE < handle
                 obj.span.setValue(obj.AR.Value * obj.rootChord.Value,'m');
             elseif strcmpi(spanOrAR,"span")
                 obj.span.setValue(val,units);
-                obj.AR.setValue(obj.span.Value / obj.rootChord.Value)
+                obj.AR.setValue(obj.span.Value / obj.rootChord.Value,'')
             else
                 error("parameter spanOrAR must contain either 'span' or 'AR'")
             end
@@ -93,6 +102,14 @@ classdef aeroSurfLE < handle
 
         function setNACA(obj,val,units)
             obj.NACA.setValue(val,units)
+        end
+        
+        function setClMin(obj,val,units)
+            obj.ClMin.setValue(val,units)
+        end
+
+        function setClMax(obj,val,units)
+            obj.ClMax.setValue(val,units)
         end
 
         function setMaxCtrlDef(obj,val,units)
@@ -118,7 +135,15 @@ classdef aeroSurfLE < handle
         function setChordUnitVec(obj,val,units)
             obj.chordUnitVec.setValue(val,units)
         end
+        
+        function setIncAlphaUnitVecSurf(obj,val,units)
+            obj.incAlphaUnitVecSurf.setValue(val,units)
+        end
 
+        function setNumTraps(obj,val,units)
+            obj.numTraps.setValue(val,units)
+        end
+        
         function setCL(obj,val,units)
             obj.CL.setValue(val,units)
         end
@@ -132,59 +157,88 @@ classdef aeroSurfLE < handle
         end
 
         function setGainCL(obj,val,units)
-            obj.GainCL.setValue(val,units)
+            obj.gainCL.setValue(val,units)
         end
 
         function setGainCD(obj,val,units)
-            obj.GainCD.setValue(val,units)
+            obj.gainCD.setValue(val,units)
         end
 
         %% Getters
         function val = get.RSurf2Bdy(obj)
-            value = [...
-                obj.chordUnitVec.Value(:)';...
-                obj.spanUnitVec.Value(:)';...
-                cross(obj.chordUnitVec.Value(:)',obj.spanUnitVec.Value(:)')];
+            value = [obj.chordUnitVec.Value(:)...
+                     obj.spanUnitVec.Value(:)...
+                     cross(obj.chordUnitVec.Value(:)',obj.spanUnitVec.Value(:))'];
             val = SIM.parameter('Value',value,'Description','rotation matrix from the surface coordinates to the body coordinates');
         end
         
         function val = get.rAeroCent_SurfLE(obj)
-            tr=obj.TR.Value;
-            MACLength = (2/3)*obj.rootChord.Value*((1+tr+tr^2)/(1+tr));
-            yac = (obj.span.Value / 3) * ((1 + 2*tr)/(1+tr));
-            xac = (yac * tand(obj.sweep.Value)) + (MACLength*.25);
-            zac = yac * sind(obj.dihedral.Value);
-            val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
-        end        
-
+            if obj.numTraps.Value == 1
+                tr=obj.TR.Value;
+                MACLength = (2/3)*obj.rootChord.Value*((1+tr+tr^2)/(1+tr));
+                yac = (obj.span.Value / 3) * ((1 + 2*tr)/(1+tr));
+                xac = (yac * tand(obj.sweep.Value)) + (MACLength*.25);
+                zac = yac * sind(obj.dihedral.Value);
+                val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
+            elseif obj.numTraps.Value == 2
+                tr=obj.TR.Value;
+                MACLength = (2/3)*obj.rootChord.Value*((1+tr+tr^2)/(1+tr));
+                yacSide = (obj.span.Value / 3) * ((1 + 2*tr)/(1+tr));
+                xac = (yacSide * tand(obj.sweep.Value)) + (MACLength*.25);
+                yac = 0;%From symmetry
+                zac = yacSide * sind(obj.dihedral.Value);
+                val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
+            else
+                warning("numTraps must be 1 or 2")
+            end
+        end
+        
+        function val = get.outlinePts(obj)
+            %Returns the points of points in the body frame, relative to
+            %the Wing leading edge. The points go clockwise looking down
+            %from the surface positive z axis.
+            %For 2 symmetric trapazoids, it starts in the center LE
+            lsweep=obj.sweep.Value;
+            lspan=obj.span.Value;
+            lTR=obj.TR.Value;
+            lrc=obj.rootChord.Value;
+            ldihedral=obj.dihedral.Value;
+            if obj.numTraps.Value == 1
+                val=zeros(3,5);
+                val(:,2)=[tand(lsweep)*lspan;...
+                          lspan;
+                          sind(ldihedral)*lspan];
+                val(:,3)=[tand(lsweep)*lspan + lTR*lrc;...
+                         lspan;
+                         sind(ldihedral)*lspan];
+                val(:,4)=[lrc;...
+                          0;
+                          0];
+            elseif obj.numTraps.Value == 2
+                lhalfspan = lspan / 2;
+                val=zeros(3,7);
+                val(:,2)=[tand(lsweep)*lhalfspan;...
+                          lhalfspan;
+                          sind(ldihedral)*lhalfspan];
+                val(:,3)=[tand(lsweep)*lhalfspan + lTR*lrc;...
+                         lhalfspan;
+                         sind(ldihedral)*lhalfspan];
+                val(:,4)=[lrc;...
+                          0;
+                          0];
+                val(:,5)=[val(1,3);-val(2,3);val(3,3)];
+                val(:,6)=[val(1,2);-val(2,2);val(3,2)];
+            else
+                warning("numTraps must be 1 or 2")
+            end
+            val=SIM.parameter('Value',obj.rSurfLE_WingLEBdy.Value + val);
+        end
         %% Other Methods
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
-        end
-        
-        function pts = getWingOutlinePts(obj)
-            %Returns the points of points in the body frame, relative to
-            %the Wing leading edge. The points go clockwise looking down
-            %from the surface positive z axis.
-            lsweep=obj.sweep.Value;
-            lspan=obj.span.Value;
-            lTR=obj.TR.Value;
-            lrc=obj.rootChord.Value;
-            ldihedral=obj.dihedral.Value;
-            pts=zeros(3,5);
-            pts(:,2)=[tand(lsweep)*lspan;...
-                      lspan;
-                      sind(ldihedral)*lspan];
-            pts(:,3)=[tand(lsweep)*lspan + lTR*lrc;...
-                     lspan;
-                     sind(ldihedral)*lspan];
-            pts(:,2)=[lrc;...
-                      0;
-                      0];
-                  
         end
     end
 end

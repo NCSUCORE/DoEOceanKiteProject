@@ -125,14 +125,20 @@ classdef winches < dynamicprops
             q = 0.5*env.water.density.Value*(norm(VRelBdy))^2;
             
             % Get list of aerodynamic surfaces in the vehicle
+%Pick One --------------------------------------------------------
             aeroSurfs = vhcl.getPropsByClass('OCT.aeroSurf');
+%             aeroSurfs = vhcl.getPropsByClass('OCT.aeroSurfLE');
+%-----------------------------------------------------------------
             normSurfs = aeroSurfs(~contains(aeroSurfs,'vStab'));
             vStabSurf = aeroSurfs(contains(aeroSurfs,'vStab'));
             
             % Calculate the forces from the "normal" surfaces
             F_aero = [0;0;0];
             for ii = 1:numel(normSurfs)
+%Pick One --------------------------------------------------------
                 Sref = vhcl.(normSurfs{ii}).refArea.Value;
+%                 Sref = vhcl.fluidRefArea.Value;
+%-----------------------------------------------------------------
                 CL = interp1(...
                     vhcl.(normSurfs{ii}).alpha.Value,...
                     vhcl.(normSurfs{ii}).CL.Value,...
@@ -151,7 +157,10 @@ classdef winches < dynamicprops
             CD = interp1(vhcl.(vStabSurf{1}).alpha.Value,...
                 vhcl.(vStabSurf{1}).CL.Value,...
                 alphaVStab);
+%Pick One --------------------------------------------------------
             F_aero = F_aero + q*vhcl.(vStabSurf{1}).refArea.Value*(CL*ULiftGndvStab+CD*UDragGnd);
+%             F_aero = F_aero + q*vhcl.fluidRefArea.Value*(CL*ULiftGndvStab+CD*UDragGnd);
+%-----------------------------------------------------------------
             
             % Calculate component in the direction of the tether
             FNet = F_grav + F_buoy + F_aero;

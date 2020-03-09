@@ -117,10 +117,6 @@ sz = getBusDims;
 %% Plot things
 % Plot the aerodynamic surfaces
 h = obj.plot('Basic',true);
-f=gcf;
-oldUL = f.Position(2) + f.Position(4);
-f.Position(3:4) = f.Position(3:4)*2;
-f.Position(2) = oldUL - f.Position(4);
 h.ax = gca;
 
 % Add scroll plots if specified
