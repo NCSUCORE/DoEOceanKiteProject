@@ -552,7 +552,7 @@ vhcl.turbines.powerCoeff.NoScale = false
 vhcl.turbines.dragCoeff.Value = 1.2800e+00
 vhcl.turbines.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.dragCoeff.NoScale = false
-vhcl.fluidMomentArms.Value = [0.4437 0.4437 6.125 6.4029;-2.5 2.5 0 0;0.0873 0.0873 0 1]
+vhcl.fluidMomentArms.Value = [0.44372165881481 0.44372165881481 6.125 6.40294919243112;-2.5 2.5 0 0;0.0873019237293693 0.0873019237293693 0 1]
 vhcl.fluidMomentArms.Unit = 'm'
 vhcl.fluidMomentArms.NoScale = false
 vhcl.thrMomentArms.Value = [0;0;0]
