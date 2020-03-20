@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(2000,'s');
+simParams.setDuration(500,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -23,7 +23,8 @@ loadComponent('idealSensors')
 % Sensor processing
 loadComponent('idealSensorProcessing')
 % Vehicle
-loadComponent('pathFollowingVhcl');
+% loadComponent('pathFollowingVhcl');
+loadComponent('vehicleLETest1');
 SIXDOFDYNAMICS='sixDoFDynamicsCoupled';
 
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
@@ -57,7 +58,7 @@ vhcl.setICsOnPath(...
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
     +gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.rThrAttch_LE.Value,'m');
 
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
@@ -69,7 +70,7 @@ wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[ 1 0 0]);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
-vhcl.addedMass.setValue(zeros(3,3),'kg')
+% vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
