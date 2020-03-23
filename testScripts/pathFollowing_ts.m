@@ -24,7 +24,7 @@ loadComponent('idealSensors')
 loadComponent('idealSensorProcessing')
 % Vehicle
 % loadComponent('pathFollowingVhcl');
-loadComponent('vehicleLETest1');
+loadComponent('vehicleLE1');
 SIXDOFDYNAMICS='sixDoFDynamicsCoupled';
 
 % SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
@@ -58,7 +58,7 @@ vhcl.setICsOnPath(...
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
     +gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.rThrAttch_LE.Value,'m');
+    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
