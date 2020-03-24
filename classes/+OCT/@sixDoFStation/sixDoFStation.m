@@ -65,11 +65,10 @@ classdef sixDoFStation < dynamicprops
         
         % BS Params forced by the fact that we use the same 6dof dynamics
         % model
-        
-        addedMass
-        addedInertia
-        
-        
+        Ma6x6_B
+    end
+    properties (Dependent)
+        M6x6_B
     end
     
     methods
@@ -127,9 +126,8 @@ classdef sixDoFStation < dynamicprops
             
             %number of tethers from GS to KITE
             obj.numTethers                  = SIM.parameter('Unit','','Description','number of tethers from GS to KITE');
-            
-            obj.addedMass                     = SIM.parameter('Unit','');
-            obj.addedInertia                  = SIM.parameter('Unit','');
+
+            obj.Ma6x6_B                     = SIM.parameter('Unit','','Value',zeros(6),'Description','Added Mass Matrix');
             
             % Anchor tethers
             obj.anchThrs = OCT.tethers;
@@ -313,7 +311,15 @@ classdef sixDoFStation < dynamicprops
             obj.lumpedMassAreaMat.setValue(val,unit)
         end
         
+        function setMa6x6_B(obj,val,unit)
+            obj.Ma6x6_B.setValue(val,unit)
+        end
         % getters
+        function val = get.M6x6_B(obj)
+            val = SIM.parameter('Value',[diag([obj.mass.Value obj.mass.Value obj.mass.Value]) zeros(3);...
+                                         zeros(3) obj.inertia.Value]);
+        end
+        
         function val = get.cylTotH(obj)
             val = obj.cylTotH;
             height = max(obj.zMatExt.Value)-min(obj.zMatExt.Value);

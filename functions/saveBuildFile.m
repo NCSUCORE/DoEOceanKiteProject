@@ -66,7 +66,8 @@ if all(emptyCheck)
                 eval([char(p.Results.variant(i)) ' =  evalin(''caller'',p.Results.variant(i));']);
                  save(saveFile,char(p.Results.variant(i)),'-append');
             end
-                
+                proj=slproject.getCurrentProject;
+                addFile(proj,saveFile);
                 saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
         end
     else

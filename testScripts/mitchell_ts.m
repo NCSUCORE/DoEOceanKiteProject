@@ -18,7 +18,7 @@ loadComponent('oneDOFWnchPTO');
 % Tether
 loadComponent('pathFollowingTether');
 % Vehicle
-loadComponent('pathFollowingVhcl');
+loadComponent('pathFollowingVhclForComp');
 % Environment
 loadComponent('constXYZT');
 % Sensors
@@ -44,13 +44,12 @@ vhcl.setICsOnPath(...
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
     (11/2)*norm([ 1 0 0 ])) % Initial speed
-vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
     +gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
@@ -67,7 +66,6 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 %     hiLvlCtrl.initBasisParams.Value,...
 %     gndStn.posVec.Value);
-vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);

@@ -18,7 +18,7 @@ loadComponent('oneDOFWnchPTO');
 % Tether
 loadComponent('pathFollowingTether');
 % Vehicle
-loadComponent('pathFollowingVhcl');
+loadComponent('pathFollowingVhclForComp');
 % Environment
 loadComponent('hurricaneSandyWave');
 % Sensors
@@ -46,13 +46,12 @@ vhcl.setICsOnPath(...
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.initPosVecGnd.Value,... % Center point of path sphere
     (11/2)*norm(env.water.flowVec.Value)) % Initial speed
-vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
     +gndStn.initPosVecGnd.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
@@ -64,7 +63,6 @@ wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,[ 1 0 0]);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
-vhcl.addedMass.setValue(zeros(3,3),'kg')
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.initPosVecGnd.Value);

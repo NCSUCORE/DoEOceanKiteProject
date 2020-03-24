@@ -14,6 +14,10 @@ simParams.setDuration(simTime*sqrt(lengthScaleFactor),'s');
 
 %% Set up simulation
 GNDSTNCONTROLLER      = 'oneDoF';
+% Sensors
+loadComponent('idealSensors')
+% Sensor processing
+loadComponent('idealSensorProcessing')
 
 %% common parameters
 numTurbines = 2;
@@ -25,7 +29,7 @@ flowSpeed = vfdInputToFlowSpeed(vfdValue);
 env.water.flowVec.setValue([flowSpeed 0 0]','m/s');
 
 %% lifiting body
-load('ayazThreeTetVhcl.mat')
+load('ayazThreeTetVhclForComp.mat')
 
 altiSP = 35e-2;
 iniX = 0.2319;
@@ -61,7 +65,7 @@ for ii = 1:3
         (gndStn.posVec.Value + ...
         gndStn.(strcat('thrAttch',num2str(ii))).posVec.Value(:),'m');
     thr.(strcat('tether',num2str(ii))).initAirNodePos.setValue...
-        (vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts(ii).posVec.Value,'m');
+        (vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B(ii).posVec.Value,'m');
     thr.(strcat('tether',num2str(ii))).initGndNodeVel.setValue([0 0 0]','m/s');
     thr.(strcat('tether',num2str(ii))).initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.(strcat('tether',num2str(ii))).vehicleMass.setValue(vhcl.mass.Value,'kg');
@@ -135,11 +139,11 @@ initVals.CDhStab = vhcl.hStab.CD.Value;
 initVals.CLvStab = vhcl.vStab.CL.Value;
 initVals.CDvStab = vhcl.vStab.CD.Value;
 
-initVals.fuseEndDrag = vhcl.fuseEndDragCoeff.Value;
-initVals.fuseSideDrag = vhcl.fuseSideDragCoeff.Value;
+initVals.fuseEndDrag = vhcl.fuse.endDragCoeff.Value;
+initVals.fuseSideDrag = vhcl.fuse.sideDragCoeff.Value;
 
 initVals.addedMass = vhcl.addedMass.Value;
-initVals.addedInertia = vhcl.addedInertia.Value;
+% initVals.addedInertia = vhcl.addedInertia.Value; %not a thing anymore -JLD
 initVals.buoyFactor = vhcl.buoyFactor.Value;
 
 initVals.wnchMaxReleaseSpeed = wnch.winch1.maxSpeed.Value;

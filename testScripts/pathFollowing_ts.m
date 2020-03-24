@@ -23,11 +23,8 @@ loadComponent('idealSensors')
 % Sensor processing
 loadComponent('idealSensorProcessing')
 % Vehicle
-% loadComponent('pathFollowingVhcl');
-loadComponent('vehicleLE1');
-SIXDOFDYNAMICS='sixDoFDynamicsCoupled';
+loadComponent('fullScale1thr');
 
-% SIXDOFDYNAMICS = "sixDoFDynamicsQuat";
 % Environment
 % loadComponent('CNAPsNoTurbJosh');
 % loadComponent('CNAPsTurbJames');

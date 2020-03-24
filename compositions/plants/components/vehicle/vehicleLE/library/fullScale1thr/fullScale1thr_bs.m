@@ -2,7 +2,7 @@
 % clc
 % format compact
 
-VEHICLE               = "vehicleLETest";
+VEHICLE               = "vehicleLE";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
 
 %% Essential Values
@@ -18,8 +18,7 @@ vhcl.setNumTurbines(2,'');
 vhcl.setTurbDiam(0,'m');
 
 %% Volumes and Inertia
-vhcl.setVolume(945352023.474*1e-9,'m^3');
-% vhcl.setVolume(2.85698,'m^3')
+vhcl.setVolume(2.85698,'m^3')
 Ixx=6.303080401918E+09*1e-6;
 Iyy=2080666338.077*1e-6;
 Izz=8.320369733598E+09*1e-6;
@@ -40,13 +39,12 @@ vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(60,'deg/s');
 
 %% Important Points
-vhcl.setRB_LE([0;0;0],'m');
-vhcl.setRCM_LE([0;0;0],'m');
+vhcl.setRB_LE([.47064 0 0],'m');
+vhcl.setRCM_LE([.47064 0 0],'m');
 vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
 %% Wing
-% vhcl.setRwingLE_cm([-.47064 0 0],'m');
 vhcl.setWingRootChord(1,'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');

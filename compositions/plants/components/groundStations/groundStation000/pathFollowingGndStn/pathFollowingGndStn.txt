@@ -36,3 +36,4 @@ gndStn.lumpedMassPositionMatrixBdy.NoScale = false
 gndStn.thrAttch1.posVec.Value = [0;0;0]
 gndStn.thrAttch1.posVec.Unit = 'm'
 gndStn.thrAttch1.posVec.NoScale = false
+gndStn.thrAttch1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'

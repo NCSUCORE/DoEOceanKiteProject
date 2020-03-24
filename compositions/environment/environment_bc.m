@@ -57,7 +57,7 @@ elems(1).Description = 'Flow velocity vector in the ground coordinate system at 
 
 elems(2) = Simulink.BusElement;
 elems(2).Name = 'oceanHeightAtVhcl';
-elems(2).Dimensions = [11,1]; % Assumes 5 fluid dynamic surfaces (4 + fuselage)
+elems(2).Dimensions = [11,1]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
 elems(2).DimensionsMode = 'Fixed';
 elems(2).DataType = 'double';
 elems(2).SampleTime = -1;
@@ -78,7 +78,11 @@ elems(3).Description = 'Flow velocity vector in the ground coordinate system at 
 
 elems(4) = Simulink.BusElement;
 elems(4).Name = 'oceanHeightAtThr';
-elems(4).Dimensions = [1,sz.thrLinkFlowVecsSize(2)];
+if length(size(sz.thrLinkFlowVecsSize))==2
+    elems(4).Dimensions = [1,sz.thrLinkFlowVecsSize(2)];
+else
+    elems(4).Dimensions = [1,max(sz.thrLinkFlowVecsSize(2),sz.thrLinkFlowVecsSize(3))];
+end
 elems(4).DimensionsMode = 'Fixed';
 elems(4).DataType = 'double';
 elems(4).SampleTime = -1;

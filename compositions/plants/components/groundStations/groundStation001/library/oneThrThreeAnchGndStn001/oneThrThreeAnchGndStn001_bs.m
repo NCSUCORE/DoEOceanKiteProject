@@ -364,10 +364,6 @@ gndStn.cylRad.setValue(9,'m')
 gndStn.angSpac.setValue(pi/4,'rad')
 gndStn.heightSpac.setValue(1.5,'m')
 
- gndStn.addedMass.setValue([945.3520,0,0;0,945.3520,0;0,0,945.352],'');
- gndStn.addedInertia.setValue(1.0e+03 *[6.3031,         0 ,  -0.0819; 0    ,2.0807     ,    0; -0.0819 ,        0 ,   8.3204],'')
- 
-
 gndStn.setVolume(pi*gndStn.cylRad.Value^2*6,'m^3');
 gndStn.setMass(gndStn.volume.Value*(1000/2),'kg');
 gndStn.setInertia([.25*gndStn.mass.Value*gndStn.cylRad.Value^2,0,0;...
@@ -409,8 +405,6 @@ gndStn.cdZ.setValue(1,'')
 gndStn.aMX.setValue(.1,'')
 gndStn.aMY.setValue(.1,'')
 gndStn.aMZ.setValue(.1,'')
-gndStn.addedMass.setValue(zeros(3,3),'')
-gndStn.addedInertia.setValue(zeros(3,3),'')
 
 gndStn.lumpedMassSphereRadius.setValue(.5*gndStn.heightSpac.Value,'m'); 
 

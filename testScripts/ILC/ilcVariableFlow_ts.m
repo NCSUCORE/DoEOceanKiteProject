@@ -1,7 +1,7 @@
 %% Script to run ILC path optimization
 clear;clc;close all
-sim = SIM.simParams;
-sim.setDuration(2*3600,'s');
+simParams = SIM.simParams;
+simParams.setDuration(2*3600,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -18,9 +18,13 @@ loadComponent('oneDOFWnch');
 % Tether
 loadComponent('fiveNodeSingleTether');
 % Vehicle
-loadComponent('pathFollowingVhcl');
+loadComponent('pathFollowingVhclForComp');
 % Environment
 loadComponent('CNAPsTurbMitchell');
+% Sensors
+loadComponent('idealSensors')
+% Sensor processing
+loadComponent('idealSensorProcessing')
 
 
 %% Environment IC's and dependant properties
@@ -41,13 +45,12 @@ vhcl.setICsOnPath(...
     hiLvlCtrl.initBasisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
     (11/2)*norm(squeeze(env.water.flowVecTimeseries.Value.Data(3,15,9,:,1)))) % Initial speed
-vhcl.setAddedMISwitch(false,'');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
     +gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts.posVec.Value,'m');
+    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');

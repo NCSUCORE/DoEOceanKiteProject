@@ -2,15 +2,16 @@
 % clc
 % format compact
 
-VEHICLE               = "vehicleLETest";
+VEHICLE               = "vehicleLE";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
 
 %% Essential Values
-vhcl = OCT.vehicleLE;
+vhcl = OCT.vehicle;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,'');
+vhcl.oldFluidMomentArms.setValue(1,'');
 vhcl.setFluidCoeffsFileName('someFile3','');
 
 %% Turbines

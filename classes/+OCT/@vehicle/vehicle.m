@@ -7,6 +7,7 @@ classdef vehicle < dynamicprops
         buoyFactor
         fluidCoeffsFileName
         flowGradientDist
+        oldFluidMomentArms
         
         numTurbines
         turbDiam
@@ -72,6 +73,7 @@ classdef vehicle < dynamicprops
             obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor = (Kite Density)/(Water Density)','NoScale',true);
             obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data','NoScale',true);
             obj.flowGradientDist=SIM.parameter('Value',.1,'Unit','m','Description','Distance to space points used fore estimating gradient of the flow field');
+            obj.oldFluidMomentArms=SIM.parameter('Value',0,'Description','Turns on the old (incorrect) calculation for fluid moment arms');
             
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
@@ -181,6 +183,10 @@ classdef vehicle < dynamicprops
             end
         end
 
+        function setOldFluidMomentArms(obj,val,units)
+            obj.oldFluidMomentArms.setValue(val,units);
+        end
+        
         function setVolume(obj,val,units)
             obj.volume.setValue(val,units);
         end
@@ -210,19 +216,19 @@ classdef vehicle < dynamicprops
         end
 
         function setRB_LE(obj,val,units)
-            obj.rB_LE.setValue(val,units);
+            obj.rB_LE.setValue(val(:),units);
         end
 
         function setRCM_LE(obj,val,units)
-            obj.rCM_LE.setValue(val,units);
+            obj.rCM_LE.setValue(val(:),units);
         end
 
         function setRBridle_LE(obj,val,units)
-            obj.rBridle_LE.setValue(val,units);
+            obj.rBridle_LE.setValue(val(:),units);
         end
 
         function setRCentOfBuoy_LE(obj,val,units)
-            obj.rCentOfBuoy_LE.setValue(val,units);
+            obj.rCentOfBuoy_LE.setValue(val(:),units);
         end
 
         function setWingRootChord(obj,val,units)
@@ -279,19 +285,19 @@ classdef vehicle < dynamicprops
         end
 
         function setInitPosVecGnd(obj,val,units)
-            obj.initPosVecGnd.setValue(val,units);
+            obj.initPosVecGnd.setValue(val(:),units);
         end
 
         function setInitVelVecBdy(obj,val,units)
-            obj.initVelVecBdy.setValue(val,units);
+            obj.initVelVecBdy.setValue(val(:),units);
         end
 
         function setInitEulAng(obj,val,units)
-            obj.initEulAng.setValue(val,units);
+            obj.initEulAng.setValue(val(:),units);
         end
 
         function setInitAngVelVec(obj,val,units)
-            obj.initAngVelVec.setValue(val,units);
+            obj.initAngVelVec.setValue(val(:),units);
         end
         
         %% getters
@@ -306,10 +312,22 @@ classdef vehicle < dynamicprops
         %Moment Arms
         function val = get.fluidMomentArms(obj)
             arms=zeros(3,4);
-            arms(:,1)=-obj.rB_LE.Value + obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rAeroCent_SurfLE.Value);
-            arms(:,2)=-obj.rB_LE.Value + obj.stbdWing.rSurfLE_WingLEBdy.Value + (obj.stbdWing.RSurf2Bdy.Value * obj.stbdWing.rAeroCent_SurfLE.Value);
-            arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + (obj.hStab.RSurf2Bdy.Value * obj.hStab.rAeroCent_SurfLE.Value);
-            arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + (obj.vStab.RSurf2Bdy.Value * obj.vStab.rAeroCent_SurfLE.Value);
+            if obj.oldFluidMomentArms.Value
+                hspan = obj.wingRootChord.Value * obj.wingAR.Value * .5;
+                arms(:,1)=-obj.rB_LE.Value + [hspan*tand(obj.wingSweep.Value)/2 + obj.wingRootChord.Value*(1+obj.wingTR.Value)/8;
+                                              -hspan/2;
+                                              hspan*tand(obj.wingDihedral.Value)/2];
+                arms(:,2)=arms(:,1).*[1;-1;1];
+                arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + [obj.hStab.rootChord.Value/4;0;0];
+                arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + ...
+                    [obj.vStab.span.Value*tand(obj.vStab.sweep.Value)/2 + obj.vStab.rootChord.Value * (1+obj.vStab.TR.Value)/8;0;obj.vStab.span.Value*.5];
+            else
+                %Updated Calculations    
+                arms(:,1)=-obj.rB_LE.Value + obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rAeroCent_SurfLE.Value);
+                arms(:,2)=-obj.rB_LE.Value + obj.stbdWing.rSurfLE_WingLEBdy.Value + (obj.stbdWing.RSurf2Bdy.Value * obj.stbdWing.rAeroCent_SurfLE.Value);
+                arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + (obj.hStab.RSurf2Bdy.Value * obj.hStab.rAeroCent_SurfLE.Value);
+                arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + (obj.vStab.RSurf2Bdy.Value * obj.vStab.rAeroCent_SurfLE.Value);
+            end
             val = SIM.parameter('Value',arms,'Unit','m');
         end
         function val = get.fuseMomentArm(obj)
@@ -339,18 +357,18 @@ classdef vehicle < dynamicprops
                 case 1
                     val(1).setPosVec(-obj.rB_LE.Value + obj.rBridle_LE.Value,'m');              
                 case 3
-                    port_thr = -obj.rB_LE.Value +  obj.portWing.outlinePts(:,2)-...%outside leading edge
+                    port_thr = -obj.rB_LE.Value +  obj.portWing.outlinePts.Value(:,2)-...%outside leading edge
                         1.2*[obj.wingRootChord.Value;0;0];
                     %                        + [obj.wingRootChord.Value*obj.wingTR.Value/2;0;0];
                     aft_thr = -obj.rB_LE.Value + -obj.rCM_LE.Value + ...
-                        [min(obj.hStab.rsurf_WingLEBdy.Value(1),obj.vStab.rsurf_WingLEBdy.Value(1));0;0];...
+                        [min(obj.hStab.rSurfLE_WingLEBdy.Value(1),obj.vStab.rSurfLE_WingLEBdy.Value(1));0;0];...
 %                         + [max(obj.hsChord.Value,obj.vsChord.Value);0;0] ...
 %                         -[obj.hsChord];
                     stbd_thr = port_thr.*[1;-1;1];
 
-                    val(1).setRThrAttch(port_thr,'m');
-                    val(2).setRThrAttch(aft_thr,'m');
-                    val(3).setRThrAttch(stbd_thr,'m');
+                    val(1).setPosVec(port_thr,'m');
+                    val(2).setPosVec(aft_thr,'m');
+                    val(3).setPosVec(stbd_thr,'m');
                 otherwise
                     error('No get method programmed for %d tether attachment points',obj.numTethers.Value);
             end
@@ -722,12 +740,12 @@ classdef vehicle < dynamicprops
             
             linkaxes([ax4,ax8],'x');
             
-            axis([ax1 ax2 ax3 ax4],[-20 20 ...
-                min([hWingCL_ax.YLim(1),hhStabCL_ax.YLim(1),hvStabCL_ax.YLim(1)])...
-                max([hWingCL_ax.YLim(2),hhStabCL_ax.YLim(2),hvStabCL_ax.YLim(2)])]);
-            axis([ax5 ax6 ax7 ax8],[-20 20 ...
-                min([hWingCD_ax.YLim(1),hhStabCD_ax.YLim(1),hvStabCD_ax.YLim(1)])...
-                max([hWingCD_ax.YLim(2),hhStabCD_ax.YLim(2),hvStabCD_ax.YLim(2)])]);
+%             axis([ax1 ax2 ax3 ax4],[-20 20 ...
+%                 min([hWingCL_ax.YLim(1),hhStabCL_ax.YLim(1),hvStabCL_ax.YLim(1)])...
+%                 max([hWingCL_ax.YLim(2),hhStabCL_ax.YLim(2),hvStabCL_ax.YLim(2)])]);
+%             axis([ax5 ax6 ax7 ax8],[-20 20 ...
+%                 min([hWingCD_ax.YLim(1),hhStabCD_ax.YLim(1),hvStabCD_ax.YLim(1)])...
+%                 max([hWingCD_ax.YLim(2),hhStabCD_ax.YLim(2),hvStabCD_ax.YLim(2)])]);
             
         end
         

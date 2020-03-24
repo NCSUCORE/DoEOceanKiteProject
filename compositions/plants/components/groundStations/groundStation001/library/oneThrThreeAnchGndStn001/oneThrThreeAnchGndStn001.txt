@@ -156,6 +156,48 @@ gndStn.anchThrs.maxPercentageElongation.NoScale = false
 gndStn.anchThrs.maxAppFlowMultiplier.Value = 2.0000e+00
 gndStn.anchThrs.maxAppFlowMultiplier.Unit is unitless or has no unit specified
 gndStn.anchThrs.maxAppFlowMultiplier.NoScale = false
+gndStn.anchThrs.tether3.numNodes.Value = 2.0000e+00
+gndStn.anchThrs.tether3.numNodes.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.numNodes.NoScale = true
+gndStn.anchThrs.tether3.diameter.Value = 5.0000e-02
+gndStn.anchThrs.tether3.diameter.Unit = 'm'
+gndStn.anchThrs.tether3.diameter.NoScale = false
+gndStn.anchThrs.tether3.youngsMod.Value = 5.0000e+11
+gndStn.anchThrs.tether3.youngsMod.Unit = 'Pa'
+gndStn.anchThrs.tether3.youngsMod.NoScale = false
+gndStn.anchThrs.tether3.vehicleMass.Value = 7.6341e+05
+gndStn.anchThrs.tether3.vehicleMass.Unit = 'kg'
+gndStn.anchThrs.tether3.vehicleMass.NoScale = false
+gndStn.anchThrs.tether3.dampingRatio.Value = 3.0000e-01
+gndStn.anchThrs.tether3.dampingRatio.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dampingRatio.NoScale = false
+gndStn.anchThrs.tether3.dragCoeff.Value = 5.0000e-01
+gndStn.anchThrs.tether3.dragCoeff.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dragCoeff.NoScale = false
+gndStn.anchThrs.tether3.density.Value = 1.3000e+03
+gndStn.anchThrs.tether3.density.Unit = 'kg/m^3'
+gndStn.anchThrs.tether3.density.NoScale = false
+gndStn.anchThrs.tether3.initGndNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initGndNodePos.NoScale = false
+gndStn.anchThrs.tether3.initAirNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initAirNodePos.NoScale = false
+gndStn.anchThrs.tether3.initGndNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initGndNodeVel.NoScale = false
+gndStn.anchThrs.tether3.initAirNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initAirNodeVel.NoScale = false
+gndStn.anchThrs.tether3.initNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initNodePos.NoScale = false
+gndStn.anchThrs.tether3.initNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initNodeVel.NoScale = false
+gndStn.anchThrs.tether3.dragEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether3.dragEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dragEnable.NoScale = true
+gndStn.anchThrs.tether3.springDamperEnable.Value = true
+gndStn.anchThrs.tether3.springDamperEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.springDamperEnable.NoScale = true
+gndStn.anchThrs.tether3.netBuoyEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether3.netBuoyEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.netBuoyEnable.NoScale = true
 gndStn.anchThrs.tether1.numNodes.Value = 2.0000e+00
 gndStn.anchThrs.tether1.numNodes.Unit is unitless or has no unit specified
 gndStn.anchThrs.tether1.numNodes.NoScale = true
@@ -240,75 +282,42 @@ gndStn.anchThrs.tether2.springDamperEnable.NoScale = true
 gndStn.anchThrs.tether2.netBuoyEnable.Value = 1.0000e+00
 gndStn.anchThrs.tether2.netBuoyEnable.Unit is unitless or has no unit specified
 gndStn.anchThrs.tether2.netBuoyEnable.NoScale = true
-gndStn.anchThrs.tether3.numNodes.Value = 2.0000e+00
-gndStn.anchThrs.tether3.numNodes.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.numNodes.NoScale = true
-gndStn.anchThrs.tether3.diameter.Value = 5.0000e-02
-gndStn.anchThrs.tether3.diameter.Unit = 'm'
-gndStn.anchThrs.tether3.diameter.NoScale = false
-gndStn.anchThrs.tether3.youngsMod.Value = 5.0000e+11
-gndStn.anchThrs.tether3.youngsMod.Unit = 'Pa'
-gndStn.anchThrs.tether3.youngsMod.NoScale = false
-gndStn.anchThrs.tether3.vehicleMass.Value = 7.6341e+05
-gndStn.anchThrs.tether3.vehicleMass.Unit = 'kg'
-gndStn.anchThrs.tether3.vehicleMass.NoScale = false
-gndStn.anchThrs.tether3.dampingRatio.Value = 3.0000e-01
-gndStn.anchThrs.tether3.dampingRatio.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.dampingRatio.NoScale = false
-gndStn.anchThrs.tether3.dragCoeff.Value = 5.0000e-01
-gndStn.anchThrs.tether3.dragCoeff.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.dragCoeff.NoScale = false
-gndStn.anchThrs.tether3.density.Value = 1.3000e+03
-gndStn.anchThrs.tether3.density.Unit = 'kg/m^3'
-gndStn.anchThrs.tether3.density.NoScale = false
-gndStn.anchThrs.tether3.initGndNodePos.Unit = 'm'
-gndStn.anchThrs.tether3.initGndNodePos.NoScale = false
-gndStn.anchThrs.tether3.initAirNodePos.Unit = 'm'
-gndStn.anchThrs.tether3.initAirNodePos.NoScale = false
-gndStn.anchThrs.tether3.initGndNodeVel.Unit = 'm/s'
-gndStn.anchThrs.tether3.initGndNodeVel.NoScale = false
-gndStn.anchThrs.tether3.initAirNodeVel.Unit = 'm/s'
-gndStn.anchThrs.tether3.initAirNodeVel.NoScale = false
-gndStn.anchThrs.tether3.initNodePos.Unit = 'm'
-gndStn.anchThrs.tether3.initNodePos.NoScale = false
-gndStn.anchThrs.tether3.initNodeVel.Unit = 'm/s'
-gndStn.anchThrs.tether3.initNodeVel.NoScale = false
-gndStn.anchThrs.tether3.dragEnable.Value = 1.0000e+00
-gndStn.anchThrs.tether3.dragEnable.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.dragEnable.NoScale = true
-gndStn.anchThrs.tether3.springDamperEnable.Value = true
-gndStn.anchThrs.tether3.springDamperEnable.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.springDamperEnable.NoScale = true
-gndStn.anchThrs.tether3.netBuoyEnable.Value = 1.0000e+00
-gndStn.anchThrs.tether3.netBuoyEnable.Unit is unitless or has no unit specified
-gndStn.anchThrs.tether3.netBuoyEnable.NoScale = true
-gndStn.addedMass.Value = [0 0 0;0 0 0;0 0 0]
-gndStn.addedMass.Unit is unitless or has no unit specified
-gndStn.addedMass.NoScale = false
-gndStn.addedInertia.Value = [0 0 0;0 0 0;0 0 0]
-gndStn.addedInertia.Unit is unitless or has no unit specified
-gndStn.addedInertia.NoScale = false
-gndStn.pltThrAttchPt2.posVec.Value = [-4.5;7.79422863405995;-3]
-gndStn.pltThrAttchPt2.posVec.Unit = 'm'
-gndStn.pltThrAttchPt2.posVec.NoScale = false
-gndStn.pltThrAttchPt1.posVec.Value = [9;0;-3]
-gndStn.pltThrAttchPt1.posVec.Unit = 'm'
-gndStn.pltThrAttchPt1.posVec.NoScale = false
-gndStn.inrThrAttchPt2.posVec.Value = [-175;303.108891324554;0]
-gndStn.inrThrAttchPt2.posVec.Unit = 'm'
-gndStn.inrThrAttchPt2.posVec.NoScale = false
-gndStn.thrAttch1.posVec.Value = [0;0;0]
-gndStn.thrAttch1.posVec.Unit = 'm'
-gndStn.thrAttch1.posVec.NoScale = false
-gndStn.pltThrAttchPt3.posVec.Value = [-4.5;-7.79422863405995;-3]
-gndStn.pltThrAttchPt3.posVec.Unit = 'm'
-gndStn.pltThrAttchPt3.posVec.NoScale = false
-gndStn.inrThrAttchPt3.posVec.Value = [-175;-303.108891324554;0]
-gndStn.inrThrAttchPt3.posVec.Unit = 'm'
-gndStn.inrThrAttchPt3.posVec.NoScale = false
-gndStn.inrThrAttchPt1.posVec.Value = [350;0;0]
-gndStn.inrThrAttchPt1.posVec.Unit = 'm'
-gndStn.inrThrAttchPt1.posVec.NoScale = false
+gndStn.Ma6x6_B.Value = [0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0]
+gndStn.Ma6x6_B.Unit is unitless or has no unit specified
+gndStn.Ma6x6_B.NoScale = false
+gndStn.Ma6x6_B.Description = 'Added Mass Matrix'
+gndStn.M6x6_B.Value = [763407.01482232 0 0 0 0 0;0 763407.01482232 0 0 0 0;0 0 763407.01482232 0 0 0;0 0 0 15458992.050152 0 0;0 0 0 0 15458992.050152 0;0 0 0 0 0 30917984.1003039]
+gndStn.M6x6_B.Unit is unitless or has no unit specified
+gndStn.M6x6_B.NoScale = false
 gndStn.kitThrAttchPt1.posVec.Value = [0 0 0]
 gndStn.kitThrAttchPt1.posVec.Unit = 'm'
 gndStn.kitThrAttchPt1.posVec.NoScale = false
+gndStn.kitThrAttchPt1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.inrThrAttchPt3.posVec.Value = [-175;-303.108891324554;0]
+gndStn.inrThrAttchPt3.posVec.Unit = 'm'
+gndStn.inrThrAttchPt3.posVec.NoScale = false
+gndStn.inrThrAttchPt3.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.inrThrAttchPt1.posVec.Value = [350;0;0]
+gndStn.inrThrAttchPt1.posVec.Unit = 'm'
+gndStn.inrThrAttchPt1.posVec.NoScale = false
+gndStn.inrThrAttchPt1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.inrThrAttchPt2.posVec.Value = [-175;303.108891324554;0]
+gndStn.inrThrAttchPt2.posVec.Unit = 'm'
+gndStn.inrThrAttchPt2.posVec.NoScale = false
+gndStn.inrThrAttchPt2.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.thrAttch1.posVec.Value = [0;0;0]
+gndStn.thrAttch1.posVec.Unit = 'm'
+gndStn.thrAttch1.posVec.NoScale = false
+gndStn.thrAttch1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.pltThrAttchPt3.posVec.Value = [-4.5;-7.79422863405995;-3]
+gndStn.pltThrAttchPt3.posVec.Unit = 'm'
+gndStn.pltThrAttchPt3.posVec.NoScale = false
+gndStn.pltThrAttchPt3.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.pltThrAttchPt1.posVec.Value = [9;0;-3]
+gndStn.pltThrAttchPt1.posVec.Unit = 'm'
+gndStn.pltThrAttchPt1.posVec.NoScale = false
+gndStn.pltThrAttchPt1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.pltThrAttchPt2.posVec.Value = [-4.5;7.79422863405995;-3]
+gndStn.pltThrAttchPt2.posVec.Unit = 'm'
+gndStn.pltThrAttchPt2.posVec.NoScale = false
+gndStn.pltThrAttchPt2.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
