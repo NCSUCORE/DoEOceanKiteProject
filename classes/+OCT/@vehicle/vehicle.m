@@ -62,6 +62,8 @@ classdef vehicle < dynamicprops
         
         fluidRefArea
         M6x6_B
+        
+        staticMargin
     end
     
     methods
@@ -419,6 +421,20 @@ classdef vehicle < dynamicprops
                          -x*z     , -y*z     , x^2 + y^2]);
             val = SIM.parameter('Value',M,'Unit','','Description',...
                 '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span');
+        end
+        
+        function val = get.staticMargin(obj)
+            h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
+            eta_s = .6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
+            hStabArea = 2*(obj.hStab.span.Value * .5 * (1+obj.hStab.TR.Value)*obj.hStab.rootChord.Value);
+            wingArea = 2*(obj.portWing.span.Value * .5 * (1+obj.portWing.TR.Value)*obj.portWing.rootChord.Value);
+            cla_wing = (obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
+            cla_hs = (obj.hStab.CL.Value(ceil(end/2)+1)-obj.hStab.CL.Value(ceil(end/2)-1))/(obj.hStab.alpha.Value(ceil(end/2)+1)-obj.hStab.alpha.Value(ceil(end/2)-1));
+            V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
+            depsilon_dalpha = .5;
+            hn = h0 + eta_s*V_s*(cla_hs/cla_wing)*(1-depsilon_dalpha);
+            margin = hn - (obj.rCM_LE.Value(1) / obj.portWing.MACLength.Value);
+            val = SIM.parameter('Unit','m','Value',margin,'Description','Static Margin of Stability');
         end
            
         %% other methods

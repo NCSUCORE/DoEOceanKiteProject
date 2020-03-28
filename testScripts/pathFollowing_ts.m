@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(500,'s');
+simParams.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -24,6 +24,7 @@ loadComponent('idealSensors')
 loadComponent('idealSensorProcessing')
 % Vehicle
 loadComponent('fullScale1thr');
+% loadComponent('pathFollowingVhclForComp')
 
 % Environment
 % loadComponent('CNAPsNoTurbJosh');
@@ -75,12 +76,12 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 % vhcl.setFlowGradientDist(.01,'m')
 % simWithMonitor('OCTModel')
 % tsc = signalcontainer(logsout);
-%     vhcl.setMa6x6([125 0    0     0     0     0;...
-%                    0   1233 0     -627  0     2585;...
-%                    0   0    8922  0     -7359 0;...
-%                    0   -627 0     67503 0     -2892;...
-%                    9   0    -7359 0     20312 0;...
-%                    0   2525 0     -2892 0     14381;],'');
+    vhcl.setMa6x6_B([125 0    0     0     0     0;...
+                   0   1233 0     -627  0     2585;...
+                   0   0    8922  0     -7359 0;...
+                   0   -627 0     67503 0     -2892;...
+                   9   0    -7359 0     20312 0;...
+                   0   2525 0     -2892 0     14381;],'');
 %     vhcl.setMa6x6(diag([5300 4184 9246 24040 11760 35800]),'');
 %     vhcl.setMa6x6(diag([126 4072 12154 67350 11733 11760]),'');
     simWithMonitor('OCTModel')
@@ -89,6 +90,7 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 % 
 % vhcl.setFlowGradientDist(.1,'m')
 % simWithMonitor('OCTModel')
+
 % tsc1 = signalcontainer(logsout);
 % 
 % vhcl.setFlowGradientDist(1,'m')

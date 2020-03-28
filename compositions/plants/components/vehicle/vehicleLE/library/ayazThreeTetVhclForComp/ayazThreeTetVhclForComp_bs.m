@@ -95,7 +95,7 @@ vhcl.fuse.setDiameter(2*mean(thFunc(0:0.01:1,fuseAirfoil)*fuseChord)*(1/Lscale),
 vhcl.fuse.setEndDragCoeff(.6,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE(-([45;0;0]*1e-3)*(1/Lscale),'m');
-vhcl.fuse.setREnd_LE([min(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
+vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
     
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
