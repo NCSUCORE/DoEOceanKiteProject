@@ -7,8 +7,10 @@ function saveClassTxt(obj,fulltxtFilePath,name)
     elseif nargin == 2 && isempty(inputname(1))
         cycleProps(FID,'obj',obj);
     end
-    proj=slproject.getCurrentProject;
-    addFile(proj,fulltxtFilePath);
+    if ~exist(fulltxtFilePath,'file')
+        proj=slproject.getCurrentProject;
+        addFile(proj,fulltxtFilePath);
+    end
     fclose(FID);
 end
 

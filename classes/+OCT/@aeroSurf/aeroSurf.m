@@ -32,13 +32,14 @@ classdef aeroSurf < handle
         RSurf2Bdy
         rAeroCent_SurfLE
         outlinePts
+        MACLength
     end
     
     methods
         function obj = aeroSurf
             obj.rSurfLE_WingLEBdy   = SIM.parameter('Unit','m','Description','Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface');
             obj.rootChord           = SIM.parameter('Unit','m','Description','Root chord');
-            obj.span                = SIM.parameter('Unit','m','Description','Surface span, not full wingspan');
+            obj.span                = SIM.parameter('Unit','m','Description','Distance between the root chord and tip chord (not full wingspan for 2 traps)');
             obj.AR                  = SIM.parameter('Description','Aspect ratio','NoScale',true);
             obj.TR                  = SIM.parameter('Value',1,'Description','Taper ratio','NoScale',true);
             obj.sweep               = SIM.parameter('Value',0,'Unit','deg','Description','Sweep angle');
@@ -172,19 +173,23 @@ classdef aeroSurf < handle
             val = SIM.parameter('Value',value,'Description','rotation matrix from the surface coordinates to the body coordinates');
         end
         
+        function val = get.MACLength(obj)
+            tr=obj.TR.Value;
+            MAC = (2/3)*obj.rootChord.Value*((1+tr+tr^2)/(1+tr));
+            val = SIM.parameter('Unit','m','Value',MAC,'Description','length of the Mean Aerodynamic Chord');
+        end
+        
         function val = get.rAeroCent_SurfLE(obj)
             if obj.numTraps.Value == 1
                 tr=obj.TR.Value;
-                MACLength = (2/3)*obj.rootChord.Value*((1+tr+tr^2)/(1+tr));
                 yac = (obj.span.Value / 3) * ((1 + 2*tr)/(1+tr));
-                xac = (yac * tand(obj.sweep.Value)) + (MACLength*.25);
+                xac = (yac * tand(obj.sweep.Value)) + (obj.MACLength.Value*.25);
                 zac = yac * sind(obj.dihedral.Value);
                 val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
             elseif obj.numTraps.Value == 2
                 tr=obj.TR.Value;
-                MACLength = (2/3)*obj.rootChord.Value*((1+tr+tr^2)/(1+tr));
                 yacSide = (obj.span.Value / 3) * ((1 + 2*tr)/(1+tr));
-                xac = (yacSide * tand(obj.sweep.Value)) + (MACLength*.25);
+                xac = (yacSide * tand(obj.sweep.Value)) + (obj.MACLength.Value*.25);
                 yac = 0;%From symmetry
                 zac = yacSide * sind(obj.dihedral.Value);
                 val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
