@@ -1,0 +1,29 @@
+hiLvlCtrl.excitationAmp.Value = [0 0]
+hiLvlCtrl.excitationAmp.Unit = '[deg deg]'
+hiLvlCtrl.excitationAmp.NoScale = false
+hiLvlCtrl.numInitLaps.Value = 2.0000e+00
+hiLvlCtrl.numInitLaps.Unit is unitless or has no unit specified
+hiLvlCtrl.numInitLaps.NoScale = false
+hiLvlCtrl.trustRegion.Value = [1 1]
+hiLvlCtrl.trustRegion.Unit = '[deg deg]'
+hiLvlCtrl.trustRegion.NoScale = false
+hiLvlCtrl.initBasisParams.Unit = '[deg deg]'
+hiLvlCtrl.initBasisParams.NoScale = false
+hiLvlCtrl.forgettingFactor.Value = 9.9000e-01
+hiLvlCtrl.forgettingFactor.Unit is unitless or has no unit specified
+hiLvlCtrl.forgettingFactor.NoScale = false
+hiLvlCtrl.learningGain.Value = 1.0000e-04
+hiLvlCtrl.learningGain.Unit is unitless or has no unit specified
+hiLvlCtrl.learningGain.NoScale = false
+hiLvlCtrl.filtTimeConst.Value = 1.0000e-01
+hiLvlCtrl.filtTimeConst.Unit = 's'
+hiLvlCtrl.filtTimeConst.NoScale = false
+hiLvlCtrl.distPenaltyWght.Value = 1.0000e+04
+hiLvlCtrl.distPenaltyWght.Unit = 'W/deg'
+hiLvlCtrl.distPenaltyWght.NoScale = false
+hiLvlCtrl.pathVarUpperLim.Value = 5.0000e-02
+hiLvlCtrl.pathVarUpperLim.Unit is unitless or has no unit specified
+hiLvlCtrl.pathVarUpperLim.NoScale = false
+hiLvlCtrl.pathVarLowerLim.Value = 1.0000e-03
+hiLvlCtrl.pathVarLowerLim.Unit is unitless or has no unit specified
+hiLvlCtrl.pathVarLowerLim.NoScale = false

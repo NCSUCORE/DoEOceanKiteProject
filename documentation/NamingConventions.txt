@@ -1,0 +1,38 @@
+A few of the naming conventions I try to stick to:
+
+
+VARIABLE NAMING CONVENTIONS:
+
+I try to stick to naming variables according to this convention:
+[PREFIX]_[DESCRIPTION]_[UNITS]
+
+PREFIX doesn't get used much, but it's usually relates to where in the model a variable is. (eg "ctrl_x" would indicate that it's a variable called "x", somewhere in the controller, as opposed to "plnt_x" which would be a variable called "x" somewhere in the plant).  I usually abbreviate these quantities by removing vowels and then taking the first three or four letters (eg ctrl = "controller" and plnt = "plant")
+
+DESCRIPTION is a wordy description of what something is.  I personally HATE when people just name things "x" or "gamma" something that doesn't tell me what the variable is.  So I try to name things "xPosition" or "xVelocity" or something more descriptive.  Also note that I try to stick to camel-case, rather than underscores (eg xPosition, not x_position).
+
+UNITS is the SI abbreviation for the units.  I abbreviate the per in something like "meters per second" with a capital P.
+
+Example: speed in the y direction, as measured in the controller: ctrl_ySpeed_mPs
+
+FILE NAMING CONVENTIONS:
+In general, there are 4 types of files, .slx models, .slx libraries, .m, and .prj files.
+
+There should be only one .slx model, and one .prj file.  The .prj file is a Simulink Project file that does a lot of the book-keeping with the model.  This keeps track of things like the path definition for the project, source control, etc.  The single .slx model file is the actual model that you run to run a simulation.  Everything else should be .slx libraries, and .m files.
+
+The architecture of this model is that the one .slx model is built up out of smaller "compositions" and "units".  A "unit" is the most basic building block of the model.  The idea is that this should be something you can test in isolation, in a separate model.  This accelerates debugging because that way you don't have to run the entire model when all you really want to do is test one small component.  The "compositions" are really just assemblies of individual "units".  They're basically just wrappers that keep track of how individual units are hooked up to each other.
+
+PRIMARY FILE TYPES
+
+-[DESCRIPTION]_ul.slx : "ul" = "unit library", the smallest bit of stand-alone code, saved as a simulink library.  You should be able to take this and drop it into a stand-alone model to test it.
+
+-[DESCRIPTION]_cl.slx : "cl" = "composition library", a collection of units all hooked up to eachother, saved as a simulink library.  You can also take this and drop it into a standalone model to test it.  However, a lot of the time these reach such a high level of complexity that there's a million inputs and outputs, so that's not aways possible.  However, for small compositions (containing only a few units), it may be possible.
+
+-[DESCRIPTION]_cm.slx : "cm" = "composition model", the highest level model, containing all the composition libraries that comprise the model.  This is the only file that actually has model configuration parameters associated with it, so it's the only thing that you can actually run.
+
+-[DESCRIPTION]_init.m : "init" = "initialization", the script (NOT FUNCTION), that you have to run to get all the right variables into the base workspace so that your model will run.  These should directly parallel the naming structure of the compositions and units.  So say we have a composition library called "controller_cl.slx".  The file "controller_init.m" will be a script that sets the values of variables and parameters used by controller_cl.slx, in the base workspace (for example, controller gains).
+
+-[DESCRIPTION]_th.slx : "th" = "test harness", as alluded to above, you often want to take individual units or compositions and test them alone, in isolation.  This is a simulink model used for that purpose.  The description should parallel whatever unit or composition that you want to test.  For examble, "gain_th.slx" could be a simulink model where you want to test the unit in the unit library "gain_ul.slx".
+
+-[DESCRIPTION]_ts.m : "ts" = "test script", this is a script used to set parameters and call the test harness model.
+
+-[DESCRIPTION]_prrn.m : "prrn" = "pre-run", this is a script that should be run before running a simulation.  Usually, this initializes the variables needed for whatever model variant is active.

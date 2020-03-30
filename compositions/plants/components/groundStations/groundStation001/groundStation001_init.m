@@ -1,0 +1,1 @@
+set_param([gcb '/anchorTethers'],'numNodes',num2str(get_param(gcb,'numNodes')));

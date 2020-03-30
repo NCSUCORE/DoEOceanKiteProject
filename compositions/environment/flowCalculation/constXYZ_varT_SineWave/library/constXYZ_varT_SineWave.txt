@@ -1,0 +1,26 @@
+env.gravAccel.Value = 9.8100e+00
+env.gravAccel.Unit = 'm/s^2'
+env.gravAccel.NoScale = true
+env.water.density.Value = 1.0000e+03
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false
+env.water.amplitude.Value = 0.0000e+00
+env.water.amplitude.Unit is unitless or has no unit specified
+env.water.amplitude.NoScale = true
+env.water.waveBias.Value = 1.5000e+00
+env.water.waveBias.Unit is unitless or has no unit specified
+env.water.waveBias.NoScale = true
+env.water.gravAccel.Unit = 'm/s^2'
+env.water.gravAccel.NoScale = false
+env.water.frequency.Value = 1.0000e-03
+env.water.frequency.Unit = '1/s'
+env.water.frequency.NoScale = true
+env.water.phase.Value = 0.0000e+00
+env.water.phase.Unit = 'rad'
+env.water.phase.NoScale = true
+env.water.azimuth.Value = 0.0000e+00
+env.water.azimuth.Unit = 'rad'
+env.water.azimuth.NoScale = true
+env.water.elevation.Value = 0.0000e+00
+env.water.elevation.Unit = 'rad'
+env.water.elevation.NoScale = true
