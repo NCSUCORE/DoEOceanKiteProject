@@ -1,1 +1,0 @@
-createTethersMomentInputBus(arms)

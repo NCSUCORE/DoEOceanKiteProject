@@ -1,1 +1,0 @@
-set_param([gcb '/pathGeometry'],'LabelModeActiveChoice',fcnName);

@@ -1,1 +1,0 @@
-sns is non-string and non-numeric and takes up 0.0000e+00 bytes
