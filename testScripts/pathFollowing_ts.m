@@ -108,5 +108,6 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 % tsce = signalcontainer(logsout);
 % vhcle = vhcl;
 
-% %%
-% vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,'PlotTracer',true,'FontSize',18)
+%%
+vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',true,'FontSize',18)

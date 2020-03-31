@@ -553,15 +553,15 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     % Update the path
     if ~isempty(p.Results.PathFunc)
         % Get basis parameters
-        currentBasisParams = tscTmp.basisParams.getsamples(ii).Data;
+        currentBasisParams = tscTmp.basisParams.getdatasamplesholdlast(ii);
         % Overwrite the last one with radius
         currentBasisParams(end) = norm(...
             tscTmp.positionVec.getsamples(ii).Data...
-            -tscTmp.gndStnPositionVec.getsamples(ii).Data);
+            -tscTmp.gndStnPositionVec.getdatasamplesholdlast(ii));
         % Evaluate the path function
         path = feval(p.Results.PathFunc,...
             linspace(0,1,1000),currentBasisParams,...
-            tscTmp.gndStnPositionVec.getsamples(ii).Data);
+            tscTmp.gndStnPositionVec.getdatasamplesholdlast(ii));
         
         h.path.XData = path(1,:);
         h.path.YData = path(2,:);
