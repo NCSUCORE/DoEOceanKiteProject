@@ -11,7 +11,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('fullScale','');
+vhcl.setFluidCoeffsFileName('fullScale3','');
 
 %% Turbines
 vhcl.setNumTurbines(2,'');
@@ -48,7 +48,7 @@ vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0.02136;0;0.0682],'m');% [.492,0,.06
 vhcl.setWingRootChord(1,'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
-vhcl.setWingSweep(2.3,'deg');
+vhcl.setWingSweep(15,'deg');
 vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
 vhcl.setWingNACA('2412','');
@@ -56,18 +56,18 @@ vhcl.setWingClMin(-1.7,'');
 vhcl.setWingClMax(1.7,'');
 
 %% H-stab and V-stab
-vhcl.hStab.setRSurfLE_WingLEBdy([4.5;0;0],'m');
+vhcl.hStab.setRSurfLE_WingLEBdy([5.5;0;0],'m');
 vhcl.hStab.setNumTraps(2,'');
 vhcl.hStab.setRootChord(.5,'m');
 vhcl.hStab.setSpanOrAR('AR',8,'');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setSweep(2.8624,'deg');
-vhcl.hStab.setIncidence(0,'deg'); %Needs to be re-optimized
+vhcl.hStab.setIncidence(-13.5,'deg'); %Needs to be re-optimized
 vhcl.hStab.setNACA('0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
 
-vhcl.vStab.setRSurfLE_WingLEBdy([4.35;0;0],'m');
+vhcl.vStab.setRSurfLE_WingLEBdy([5.35;0;0],'m');
 vhcl.vStab.setRootChord(.65,'m');
 vhcl.vStab.setSpanOrAR('Span',2.4375,'m');
 vhcl.vStab.setTR(.8,'');

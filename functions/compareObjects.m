@@ -41,6 +41,7 @@ function compareObjects(obj1,obj2,varargin)
                 val2 = obj2.(props{i}).Value;
                 if ~isequal(val1,val2)
                     anyDiffs=true;
+                    prefix = strrep(prefix,'0x2E','.');
                     if max(size(val1))==1 || max(size(val2))==1
                         fprintf(['For the property %s.%s, %s had a value of'...
                                 ' %6.3f, and %s had a value of %6.3f.\n'],...
