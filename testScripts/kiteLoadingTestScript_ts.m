@@ -1,4 +1,4 @@
-%% Script to run ILC path optimization
+
 
 % This is the section where the simulation parameters are set. Mainly the
 % length of the simulation
