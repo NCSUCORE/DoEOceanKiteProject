@@ -83,7 +83,7 @@ classdef vehicle < dynamicprops
             
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
-            obj.inertia_CM        = SIM.parameter('Unit','kg*m^2','Description','Inertia Matrix');
+            obj.inertia_CM     = SIM.parameter('Unit','kg*m^2','Description','Inertia Matrix');
             
             %Added Mass Matrices
             obj.Ma6x6_B          = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Added Mass Matrix');
@@ -101,7 +101,7 @@ classdef vehicle < dynamicprops
             obj.rCentOfBuoy_LE = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
             
             % Overall Wing Properties (Used to create portWing and stbdWing
-            obj.wingRootChord      = SIM.parameter('Unit','m','Description','Wing root chord');
+            obj.wingRootChord  = SIM.parameter('Unit','m','Description','Wing root chord');
             obj.wingAR         = SIM.parameter('Description','Wing Aspect ratio','NoScale',true);
             obj.wingTR         = SIM.parameter('Description','Wing Taper ratio','NoScale',true);
             obj.wingSweep      = SIM.parameter('Unit','deg','Description','Wing sweep angle');

@@ -4,10 +4,10 @@
 % length of the simulation
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(500,'s');
+simParams.setDuration(1,'s');
 dynamicCalc = '';
 
-runBaseline = true;
+% runBaseline = true;
 
 %% Load components
 
@@ -105,7 +105,7 @@ simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 
 
-%this animates the simulation
-vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-    'PlotTracer',true,'FontSize',18)
+%% this animates the simulation
+vhcl.animateSim(tsc,0.1,'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',true,'FontSize',18,'LocalAero',true)
 
