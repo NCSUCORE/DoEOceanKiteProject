@@ -210,7 +210,9 @@ end
 
 % Plot the path
 if ~isempty(p.Results.PathFunc)
-    path = eval(sprintf('%s(linspace(0,1,1000),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
+    initBasisParams = tscTmp.basisParams.Data(:,:,1);
+    initBasisParams(5) = sqrt(sum((tscTmp.gndStnPositionVec.getsamples(1).Data(:) - tscTmp.positionVec.getsamples(1).Data(:)).^2));
+    path = eval(sprintf('%s(linspace(0,1,1000),initBasisParams,tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
     h.path = plot3(...
         path(1,:),...
@@ -763,7 +765,6 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     drawnow
     
-    zlim([0,220])
     % Save gif of results
     if p.Results.SaveGif
         frame       = getframe(h.fig);

@@ -70,16 +70,16 @@ classdef vehicle < dynamicprops
         %% Constructor
         function obj = vehicle
             %VEHICLE Construct an instance of this class
-            obj.fluidDensity = SIM.parameter('Unit','kg/m^3','Description','Fluid density');
-            obj.numTethers  = SIM.parameter('Description','Number of tethers','NoScale',true);
-            obj.buoyFactor = SIM.parameter('Description','Buoyancy Factor = (Kite Density)/(Water Density)','NoScale',true);
+            obj.fluidDensity        = SIM.parameter('Unit','kg/m^3','Description','Fluid density, used to calculate mass');
+            obj.numTethers          = SIM.parameter('Description','Number of tethers','NoScale',true);
+            obj.buoyFactor          = SIM.parameter('Description','Buoyancy Factor = (Kite Density)/(Water Density)','NoScale',true);
             obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data','NoScale',true);
-            obj.flowGradientDist=SIM.parameter('Value',.1,'Unit','m','Description','Distance to space points used fore estimating gradient of the flow field');
-            obj.oldFluidMomentArms=SIM.parameter('Value',0,'Description','Turns on the old (incorrect) calculation for fluid moment arms');
+            obj.flowGradientDist    = SIM.parameter('Value',0.1,'Unit','m','Description','Distance to space points used for estimating gradient of the flow field');
+            obj.oldFluidMomentArms  = SIM.parameter('Value',0,'Description','Turns on the old (incorrect) calculation for fluid moment arms');
             
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
-            obj.turbDiam = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
+            obj.turbDiam    = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
             
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');

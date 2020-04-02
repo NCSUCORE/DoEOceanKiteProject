@@ -4,8 +4,11 @@
 % length of the simulation
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(1,'s');
+simParams.setDuration(100,'s');
 dynamicCalc = '';
+
+lengthScaleFactor = 0.1;
+densityScaleFactor = 1;
 
 % runBaseline = true;
 
@@ -96,6 +99,17 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 
 
+%% Scale everything down
+vhcl.scale(lengthScaleFactor,densityScaleFactor);
+wnch.scale(lengthScaleFactor,densityScaleFactor);
+thr.scale(lengthScaleFactor,densityScaleFactor);
+gndStn.scale(lengthScaleFactor,densityScaleFactor);
+env.scale(lengthScaleFactor,densityScaleFactor);
+hiLvlCtrl.scale(lengthScaleFactor,densityScaleFactor);
+fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
+simParams.scale(lengthScaleFactor,densityScaleFactor);
+
+
 %% Run the simulation
 % this is where the simulation is commanded to run
 simWithMonitor('OCTModel')
@@ -105,7 +119,9 @@ simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 
 
+tsc.ctrlSurfDeflCmd.plot
+
 %% this animates the simulation
-vhcl.animateSim(tsc,0.1,'PathFunc',fltCtrl.fcnName.Value,...
-    'PlotTracer',true,'FontSize',18,'LocalAero',true)
+vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',true,'FontSize',18)
 
