@@ -210,7 +210,9 @@ end
 
 % Plot the path
 if ~isempty(p.Results.PathFunc)
-    path = eval(sprintf('%s(linspace(0,1,1000),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
+    initBasisParams = tscTmp.basisParams.Data(:,:,1);
+    initBasisParams(5) = sqrt(sum((tscTmp.gndStnPositionVec.getsamples(1).Data(:) - tscTmp.positionVec.getsamples(1).Data(:)).^2));
+    path = eval(sprintf('%s(linspace(0,1,1000),initBasisParams,tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
     h.path = plot3(...
         path(1,:),...
@@ -330,7 +332,7 @@ if p.Results.LocalAero
         
         % Calculate the position of the aerodynamic center
         aeroCentVec = tscTmp.positionVec.Data(:,:,1)+...
-            rotation_sequence(tscTmp.eulerAngles.Data(:,:,1))*aeroStruct(ii).aeroCentPosVec(:);
+            rotation_sequence(tscTmp.eulerAngles.Data(:,:,1))*obj.fluidMomentArms.Value(:,ii);
         
         % Plot the vectors
         h.liftVecs(ii) = quiver3(...
@@ -647,7 +649,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
             h.table.Data{4*jj+0,2} = sprintf('%0.0f',sqrt(sum(FDragPart(jj).^2,1)));
             
             aeroCentVec = posVec(:)+...
-                rotation_sequence(eulAngs)*aeroStruct(jj).aeroCentPosVec(:);
+                rotation_sequence(eulAngs)*obj.fluidMomentArms.Value(:,jj);
             
             h.liftVecs(jj).XData = aeroCentVec(1);
             h.liftVecs(jj).YData = aeroCentVec(2);
@@ -763,7 +765,6 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     drawnow
     
-    zlim([0,220])
     % Save gif of results
     if p.Results.SaveGif
         frame       = getframe(h.fig);

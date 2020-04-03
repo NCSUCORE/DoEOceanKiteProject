@@ -28,9 +28,16 @@ classdef simParams < handle
         function setDuration(obj,val,units)
             obj.duration.setValue(val,units);
         end
-%         function setDynamicCalc(obj,val,units)
-%             obj.dynamicCalc.setValue(val,units);
-%         end
+        
+        function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
+            props = findAttrValue(obj,'SetAccess','private');
+            for ii = 1:numel(props)
+                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+            end
+        end
+        %         function setDynamicCalc(obj,val,units)
+        %             obj.dynamicCalc.setValue(val,units);
+        %         end
     end
 end
 

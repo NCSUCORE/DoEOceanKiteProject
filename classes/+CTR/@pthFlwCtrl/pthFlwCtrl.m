@@ -109,6 +109,14 @@ classdef pthFlwCtrl < handle
             for ii = 1:numel(props)
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
+            props = getPropsByClass(obj,'CTR.FPID');
+            for ii = 1:numel(props)
+                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+            end
+            props = getPropsByClass(obj,'CTR.PID');
+            for ii = 1:numel(props)
+                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+            end
         end % end scale
         
         val = getPropsByClass(obj,className)

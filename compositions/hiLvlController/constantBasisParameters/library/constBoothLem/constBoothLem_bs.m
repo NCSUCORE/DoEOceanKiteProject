@@ -5,9 +5,9 @@ PATHGEOMETRY = 'lemOfBooth';
 hiLvlCtrl.add('GainNames',...
     {'basisParams'},...
     'GainUnits',...
-    {''});
+    {'[rad rad rad rad m]'});
 
-hiLvlCtrl.basisParams.setValue([.73,.6,.36,0,125,0.25,0.125],'');
+hiLvlCtrl.basisParams.setValue([.73,.6,.36,0,125],'[rad rad rad rad m]');
 
 
 %% save file in its respective directory

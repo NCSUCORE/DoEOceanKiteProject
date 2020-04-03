@@ -608,4 +608,7 @@ vhcl.M6x6_B.Value = [2856.98 0 0 0 0 0;0 2856.98 0 0 0 0;0 0 2856.98 0 0 0;0 0 0
 vhcl.M6x6_B.Unit is unitless or has no unit specified
 vhcl.M6x6_B.NoScale = false
 vhcl.M6x6_B.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'
-vhcl.Ma6x6_B is non-string and non-numeric and takes up 3.9900e+02 bytes
+vhcl.staticMargin.Value = 7.2025e-01
+vhcl.staticMargin.Unit = 'm'
+vhcl.staticMargin.NoScale = false
+vhcl.staticMargin.Description = 'Static Margin of Stability'

@@ -1,7 +1,6 @@
 close all
 clear
 clc
-
 %% Set up environment
 loadComponent('pathFollowingTether');
 env = ENV.env; % Create generalized high-level environment object
@@ -15,14 +14,7 @@ env.water.setDensity(1000,'kg/m^3');
 env.water.setXGridPoints(0:75:150,'m');
 env.water.setYGridPoints(-150:25:150,'m');
 
-% env.water.setDepthMin(13,''); %minimum index, not meters
-% env.water.setDepthMax(60,'');  %maximum index, not meters
-% env.water = env.water.setStartADCPTime(3600*459,'s');
-% env.water =   env.water.setEndADCPTime(3600*461,'s');
-% env.water.yBreakPoints.setValue(-140:10:140,'m');
-
 env.addFlow({'waterTurb'},{'FAUTurb'});
-
 
 env.waterTurb.setIntensity(0.1,'');
 env.waterTurb.setMinFreqHz(0.1,'Hz');

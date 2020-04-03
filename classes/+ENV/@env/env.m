@@ -31,8 +31,13 @@ classdef env < dynamicprops
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
             for ii = 1:numel(props)
+                try
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+                catch
+                    x = 1;
+                end
             end
+            
         end
     end
 end
