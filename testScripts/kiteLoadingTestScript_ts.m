@@ -1,16 +1,12 @@
-
-
 % This is the section where the simulation parameters are set. Mainly the
-% length of the simulation
 clear;clc;close all
 simParams = SIM.simParams;
 simParams.setDuration(100,'s');
+
 dynamicCalc = '';
 
-lengthScaleFactor = 0.1;
+lengthScaleFactor  = 0.1;
 densityScaleFactor = 1;
-
-% runBaseline = true;
 
 %% Load components
 
@@ -51,7 +47,9 @@ env.water.setflowVec([1 0 0],'m/s')
 %width of the figure eight, the second determines the height, the third
 %determines the center of the paths elevation angle, the four sets the path
 %centers azimuth angle, the fifth is the initial tether length
-hiLvlCtrl.basisParams.setValue([.8,1.6,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue(...
+    [.8,1.6,-20*pi/180,0*pi/180,125],...
+    '[rad rad rad rad m]') % Lemniscate of Booth
 
 
 %% Ground Station IC's and dependant properties
@@ -98,15 +96,20 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 
+%% 
+% fltCtrl.rollMoment.setKp(fltCtrl.rollMoment.kp.Value/10,fltCtrl.rollMoment.kp.Unit);
+% fltCtrl.rollMoment.setKi(fltCtrl.rollMoment.ki.Value/10,fltCtrl.rollMoment.ki.Unit);
+% fltCtrl.rollMoment.setKd(fltCtrl.rollMoment.kd.Value*10,fltCtrl.rollMoment.kd.Unit);
+
 
 %% Scale everything down
+fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
+gndStn.scale(lengthScaleFactor,densityScaleFactor);
+hiLvlCtrl.scale(lengthScaleFactor,densityScaleFactor);
 vhcl.scale(lengthScaleFactor,densityScaleFactor);
 wnch.scale(lengthScaleFactor,densityScaleFactor);
 thr.scale(lengthScaleFactor,densityScaleFactor);
-gndStn.scale(lengthScaleFactor,densityScaleFactor);
 env.scale(lengthScaleFactor,densityScaleFactor);
-hiLvlCtrl.scale(lengthScaleFactor,densityScaleFactor);
-fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
 simParams.scale(lengthScaleFactor,densityScaleFactor);
 
 
@@ -115,13 +118,15 @@ simParams.scale(lengthScaleFactor,densityScaleFactor);
 simWithMonitor('OCTModel')
 
 %this stores all of the logged signals from the model. To veiw, type
-%tsc.signalname.data to veiw data, tsc.signalname.plot to plot ect.
+%tsc.signalname.data to view data, tsc.signalname.plot to plot etc.
 tsc = signalcontainer(logsout);
 
-
+%%
 tsc.ctrlSurfDeflCmd.plot
-
-%% this animates the simulation
+% figure
+% tsc.velocityVec.plot
+% 
+% %% this animates the simulation
 vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
     'PlotTracer',true,'FontSize',18)
 

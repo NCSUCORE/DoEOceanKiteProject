@@ -568,9 +568,9 @@ classdef vehicle < dynamicprops
             if isempty(p.Results.FigHandle)
                 h.fig = figure;
                 h.fig.Name ='Design';
-                oldUL = h.fig.Position(2) + h.fig.Position(4);
-                h.fig.Position(3:4) = h.fig.Position(3:4)*2;
-                h.fig.Position(2) = oldUL - h.fig.Position(4);
+%                 oldUL = h.fig.Position(2) + h.fig.Position(4);
+%                 h.fig.Position(3:4) = h.fig.Position(3:4)*2;
+%                 h.fig.Position(2) = oldUL - h.fig.Position(4);
                 h.ax = gca;
             else
                 h.fig = p.Results.FigHandle;
