@@ -38,10 +38,22 @@ vhcl.inertia_CM.Value = [10940.5761316872 0 -529.382716049383;0 12476.049382716 
 vhcl.inertia_CM.Unit = 'kg*m^2'
 vhcl.inertia_CM.NoScale = false
 vhcl.inertia_CM.Description = 'Inertia Matrix'
-vhcl.Ma6x6_B.Value = [0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0]
-vhcl.Ma6x6_B.Unit is unitless or has no unit specified
-vhcl.Ma6x6_B.NoScale = false
-vhcl.Ma6x6_B.Description = '6x6 Added Mass Matrix'
+vhcl.Ma6x6_BUL.Value = [125 0 0;0 1233 0;0 0 8922]
+vhcl.Ma6x6_BUL.Unit = 'kg'
+vhcl.Ma6x6_BUL.NoScale = false
+vhcl.Ma6x6_BUL.Description = 'Upper left quadrant 6x6 Added Mass Matrix'
+vhcl.Ma6x6_BUR.Value = [0 0 0;-627 0 2585;0 -7359 0]
+vhcl.Ma6x6_BUR.Unit = 'kg*m'
+vhcl.Ma6x6_BUR.NoScale = false
+vhcl.Ma6x6_BUR.Description = 'Upper right quadrant 6x6 Added Mass Matrix'
+vhcl.Ma6x6_BLL.Value = [0 -627 0;9 0 -7359;0 2525 0]
+vhcl.Ma6x6_BLL.Unit = 'kg*m'
+vhcl.Ma6x6_BLL.NoScale = false
+vhcl.Ma6x6_BLL.Description = 'Lower left quadrant 6x6 Added Mass Matrix'
+vhcl.Ma6x6_BLR.Value = [67503 0 -2892;0 20312 0;-2892 0 14381]
+vhcl.Ma6x6_BLR.Unit = 'kg*m^2'
+vhcl.Ma6x6_BLR.NoScale = false
+vhcl.Ma6x6_BLR.Description = 'Lower right quadrant 6x6 Added Mass Matrix'
 vhcl.D6x6_B.Value = [0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0]
 vhcl.D6x6_B.Unit is unitless or has no unit specified
 vhcl.D6x6_B.NoScale = false
@@ -596,7 +608,4 @@ vhcl.M6x6_B.Value = [2856.98 0 0 0 0 0;0 2856.98 0 0 0 0;0 0 2856.98 0 0 0;0 0 0
 vhcl.M6x6_B.Unit is unitless or has no unit specified
 vhcl.M6x6_B.NoScale = false
 vhcl.M6x6_B.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'
-vhcl.staticMargin.Value = 7.2025e-01
-vhcl.staticMargin.Unit = 'm'
-vhcl.staticMargin.NoScale = false
-vhcl.staticMargin.Description = 'Static Margin of Stability'
+vhcl.Ma6x6_B is non-string and non-numeric and takes up 3.9900e+02 bytes

@@ -30,7 +30,12 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
 
 %% Added Mass/Damping (defaults to zeros)
-% vhcl.setMa6x6_B([],'');
+vhcl.setMa6x6_B([125 0    0     0     0     0;...
+                 0   1233 0     -627  0     2585;...
+                 0   0    8922  0     -7359 0;...
+                 0   -627 0     67503 0     -2892;...
+                 9   0    -7359 0     20312 0;...
+                 0   2525 0     -2892 0     14381;],'');
 % vhcl.setD6x6_B([],'');
 
 %% Control Surfaces
@@ -48,7 +53,7 @@ vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0.02136;0;0.0682],'m');% [.492,0,.06
 vhcl.setWingRootChord(1,'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
-vhcl.setWingSweep(15,'deg');
+vhcl.setWingSweep(15,'deg'); %Need justification for sweep. (Moving the wing back moves Neutral point back)
 vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
 vhcl.setWingNACA('2412','');
