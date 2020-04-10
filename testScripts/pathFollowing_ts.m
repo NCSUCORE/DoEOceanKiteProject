@@ -33,13 +33,13 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([1.5 0 0],'m/s')
+env.water.setflowVec([2 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,-.36,0*pi/180,125],'') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.4,.36,0*pi/180,50],'[rad rad rad rad m]') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
-gndStn.setPosVec([0 0 200],'m')
+gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
@@ -50,7 +50,6 @@ vhcl.setICsOnPath(...
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
     (11/2)*norm([ 1 0 0 ])) % Initial speed
-
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -63,8 +62,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 %% Winches IC's and dependant properties
-% wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[ 1 0 0]);
+wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
@@ -76,14 +74,8 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 % vhcl.setFlowGradientDist(.01,'m')
 % simWithMonitor('OCTModel')
 % tsc = signalcontainer(logsout);
-    vhcl.setMa6x6_B([125 0    0     0     0     0;...
-                   0   1233 0     -627  0     2585;...
-                   0   0    8922  0     -7359 0;...
-                   0   -627 0     67503 0     -2892;...
-                   9   0    -7359 0     20312 0;...
-                   0   2525 0     -2892 0     14381;],'');
-%     vhcl.setMa6x6(diag([5300 4184 9246 24040 11760 35800]),'');
-%     vhcl.setMa6x6(diag([126 4072 12154 67350 11733 11760]),'');
+
+
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
     fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))

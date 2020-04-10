@@ -439,7 +439,7 @@ classdef vehicle < dynamicprops
         end
         
         function val = get.Ma6x6_B(obj)
-            mat = [obj.Ma6x6_BUL obj.Ma6x6_BUR;obj.Ma6x6_BUL obj.Ma6x6_BUR;];
+            mat = [obj.Ma6x6_BUL.Value obj.Ma6x6_BUR.Value;obj.Ma6x6_BUL.Value obj.Ma6x6_BUR.Value;];
             val = SIM.parameter('Value',mat,'Unit','','Description','6x6 Added Mass Matrix. Created from scaled quadrant matrices');
         end
         

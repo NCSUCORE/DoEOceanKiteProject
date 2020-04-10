@@ -89,7 +89,7 @@ fltCtrl.startControl.Description = 'Time at which we switch the roll controller 
 fltCtrl.outRanges.Unit is unitless or has no unit specified
 fltCtrl.outRanges.NoScale = false
 fltCtrl.outRanges.Description = 'Upper/lower limits of path variable for spooling'
-fltCtrl.elevatorReelInDef.Value = 2.3000e+01
+fltCtrl.elevatorReelInDef.Value = 2.0000e+01
 fltCtrl.elevatorReelInDef.Unit = 'deg'
 fltCtrl.elevatorReelInDef.NoScale = false
 fltCtrl.elevatorReelInDef.Description = 'Deflection angle of elevator used during spool in'
