@@ -25,6 +25,7 @@ classdef pthFlwCtrl < handle
         fcnName
         initPathVar
         firstSpoolLap
+        rudderGain
     end
     
     methods
@@ -51,6 +52,7 @@ classdef pthFlwCtrl < handle
             obj.fcnName             = SIM.parameter('Unit','','Description','Name of the path shape function you want to use.','NoScale',true);
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable');
             obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
+            obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
         end
         
         function setWinchSpeedIn(obj,val,unit)

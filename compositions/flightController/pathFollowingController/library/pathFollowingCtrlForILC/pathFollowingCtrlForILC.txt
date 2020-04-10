@@ -107,3 +107,7 @@ fltCtrl.firstSpoolLap.Value = 1.0000e+00
 fltCtrl.firstSpoolLap.Unit is unitless or has no unit specified
 fltCtrl.firstSpoolLap.NoScale = false
 fltCtrl.firstSpoolLap.Description = 'First Lap to begin spooling'
+fltCtrl.rudderGain.Value = 1.0000e+00
+fltCtrl.rudderGain.Unit is unitless or has no unit specified
+fltCtrl.rudderGain.NoScale = false
+fltCtrl.rudderGain.Description = '0 Turns off rudder'
