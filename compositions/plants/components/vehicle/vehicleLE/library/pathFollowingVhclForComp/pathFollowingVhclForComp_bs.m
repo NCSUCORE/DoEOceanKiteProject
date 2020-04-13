@@ -32,8 +32,8 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
 
 %% Added Mass/Damping (defaults to zeros)
-% vhcl.setMa6x6_B([],'');
-% vhcl.setD6x6_B([],'');
+% vhcl.setMa6x6_LE([],'');
+% vhcl.setD6x6_LE([],'');
 
 %% Control Surfaces
 vhcl.setAllMaxCtrlDef(30,'deg');

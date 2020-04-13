@@ -15,11 +15,11 @@ classdef vehicle < dynamicprops
         volume
         inertia_CM
         
-        Ma6x6_BUL
-        Ma6x6_BUR
-        Ma6x6_BLL
-        Ma6x6_BLR
-        D6x6_B
+        Ma6x6_LEUL
+        Ma6x6_LEUR
+        Ma6x6_LELL
+        Ma6x6_LELR
+        D6x6_LE
 
         allMaxCtrlDef
         allMinCtrlDef
@@ -65,7 +65,7 @@ classdef vehicle < dynamicprops
         
         fluidRefArea
         M6x6_B
-        Ma6x6_B
+        Ma6x6_LE
         
         
         staticMargin
@@ -91,11 +91,11 @@ classdef vehicle < dynamicprops
             obj.inertia_CM     = SIM.parameter('Unit','kg*m^2','Description','Inertia Matrix');
             
             %Added Mass Matrices
-            obj.Ma6x6_BUL        = SIM.parameter('Value',zeros(3),'Unit','kg','Description','Upper left quadrant 6x6 Added Mass Matrix');
-            obj.Ma6x6_BUR        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Upper right quadrant 6x6 Added Mass Matrix');
-            obj.Ma6x6_BLL        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
-            obj.Ma6x6_BLR       = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
-            obj.D6x6_B           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
+            obj.Ma6x6_LEUL        = SIM.parameter('Value',zeros(3),'Unit','kg','Description','Upper left quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LEUR        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Upper right quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LELL        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LELR       = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
+            obj.D6x6_LE           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
             
             %Control Surface Deflections
             obj.allMaxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
@@ -205,19 +205,19 @@ classdef vehicle < dynamicprops
             obj.inertia_CM.setValue(val,units);
         end
 
-        function setMa6x6_B(obj,val,units)
+        function setMa6x6_LE(obj,val,units)
             if isempty(units)
-                obj.Ma6x6_BUL.setValue(val(1:3,1:3),'kg');
-                obj.Ma6x6_BUR.setValue(val(1:3,4:6),'kg*m');
-                obj.Ma6x6_BLL.setValue(val(4:6,1:3),'kg*m');
-                obj.Ma6x6_BLR.setValue(val(4:6,4:6),'kg*m^2');
+                obj.Ma6x6_LEUL.setValue(val(1:3,1:3),'kg');
+                obj.Ma6x6_LEUR.setValue(val(1:3,4:6),'kg*m');
+                obj.Ma6x6_LELL.setValue(val(4:6,1:3),'kg*m');
+                obj.Ma6x6_LELR.setValue(val(4:6,4:6),'kg*m^2');
             else
-                error('Units for Ma6x6_B should be '''', the setter will define the partial matrix units')
+                error('Units for Ma6x6_LE should be '''', the setter will define the partial matrix units')
             end
         end
 
-        function setD6x6_B(obj,val,units)
-            obj.D6x6_B.setValue(val,units);
+        function setD6x6_LE(obj,val,units)
+            obj.D6x6_LE.setValue(val,units);
         end
 
         function setAllMaxCtrlDef(obj,val,units)
@@ -438,8 +438,8 @@ classdef vehicle < dynamicprops
                 '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span');
         end
         
-        function val = get.Ma6x6_B(obj)
-            mat = [obj.Ma6x6_BUL.Value obj.Ma6x6_BUR.Value;obj.Ma6x6_BUL.Value obj.Ma6x6_BUR.Value;];
+        function val = get.Ma6x6_LE(obj)
+            mat = [obj.Ma6x6_LEUL.Value obj.Ma6x6_LEUR.Value;obj.Ma6x6_LELL.Value obj.Ma6x6_LELR.Value;];
             val = SIM.parameter('Value',mat,'Unit','','Description','6x6 Added Mass Matrix. Created from scaled quadrant matrices');
         end
         

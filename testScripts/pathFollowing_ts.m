@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(500,'s');
+simParams.setDuration(1000,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -34,7 +34,7 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([.5 0 0],'m/s')
+env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
@@ -80,27 +80,6 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
     fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
-% 
-% vhcl.setFlowGradientDist(.1,'m')
-% simWithMonitor('OCTModel')
-
-% tsc1 = signalcontainer(logsout);
-% 
-% vhcl.setFlowGradientDist(1,'m')
-% simWithMonitor('OCTModel')
-% tsc2 = signalcontainer(logsout);
-
-% vhcl.setFlowGradientDist(5,'m')
-% simWithMonitor('OCTModel')
-% tsc3 = signalcontainer(logsout);
-
-% vhcl6 = vhcl;
-
-% SIXDOFDYNAMICS='sixDoFDynamicsEuler';
-% simWithMonitor('OCTModel')
-% tsce = signalcontainer(logsout);
-% vhcle = vhcl;
-
-%%
-vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-    'PlotTracer',true,'FontSize',18)
+%
+% vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+%     'PlotTracer',true,'FontSize',18)
