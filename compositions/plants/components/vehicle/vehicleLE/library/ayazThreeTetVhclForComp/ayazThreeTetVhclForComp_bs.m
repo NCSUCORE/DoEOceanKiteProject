@@ -68,8 +68,8 @@ vhcl.setWingClMax(Clmax,'');
 vhcl.hStab.setRSurfLE_WingLEBdy([67.5e-3;0;0]*(1/Lscale),'m');
 vhcl.hStab.setNumTraps(2,'');
 vhcl.hStab.setRootChord(7.5e-3*(1/Lscale),'m');
-vhcl.hStab.setSpanOrAR('AR',8,'');
 vhcl.hStab.setTR(.8,'');
+vhcl.hStab.setHalfSpanGivenAR(8,'');
 vhcl.hStab.setSweep(2.8624,'deg');
 vhcl.hStab.setIncidence(0,'deg');
 vhcl.hStab.setNACA('0015','');
@@ -78,7 +78,7 @@ vhcl.hStab.setClMax(Clmax,'');
 
 vhcl.vStab.setRSurfLE_WingLEBdy([65.25e-3;0;0]*(1/Lscale),'m');
 vhcl.vStab.setRootChord(9.75e-3*(1/Lscale),'m');
-vhcl.vStab.setSpanOrAR('Span',36.5625e-3*(1/Lscale),'m');
+vhcl.vStab.setHalfSpan(36.5625e-3*(1/Lscale),'m');
 vhcl.vStab.setTR(.8,'');
 vhcl.vStab.setSweep(3.44,'deg');
 vhcl.vStab.setNACA('0015','');
@@ -115,11 +115,11 @@ CDhStab = (CD0015 + (CLhStab.^2)./(pi*vhcl.hStab.AR.Value*spanEffFactor))*...
     (vhcl.hStab.AR.Value*(vhcl.hStab.rootChord.Value^2)...
     /vhcl.fluidRefArea.Value);
 
-CLvStab = spanEffFactor*CL0015.*(vhcl.vStab.rootChord.Value*vhcl.vStab.span.Value...
+CLvStab = spanEffFactor*CL0015.*(vhcl.vStab.rootChord.Value*vhcl.vStab.halfSpan.Value...
     /vhcl.fluidRefArea.Value);
 CDvStab = (CD0015 + ...
-    (CLvStab.^2)./(pi*(vhcl.vStab.span.Value/vhcl.vStab.rootChord.Value)*spanEffFactor))*...
-    (vhcl.vStab.rootChord.Value*vhcl.vStab.span.Value...
+    (CLvStab.^2)./(pi*(vhcl.vStab.halfSpan.Value/vhcl.vStab.rootChord.Value)*spanEffFactor))*...
+    (vhcl.vStab.rootChord.Value*vhcl.vStab.halfSpan.Value...
     /vhcl.fluidRefArea.Value);
 
 vhcl.portWing.CL.setValue(CLWing,'')

@@ -24,7 +24,7 @@ fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollMoment.kd.setValue((10e4)/(11*pi/180),'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
-fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
+fltCtrl.yawMoment.kp.setValue(200*(1e3)/(10*pi/180),'(N*m)/(rad)');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')

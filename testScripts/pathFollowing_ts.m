@@ -34,7 +34,7 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([1 0 0],'m/s')
+env.water.setflowVec([1.5 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
@@ -80,6 +80,9 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
     fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
+    disp(hiLvlCtrl.basisParams.Value)
+    [y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
+    sound(y*.2, Fs, 16)
 %
 % vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
 %     'PlotTracer',true,'FontSize',18)

@@ -374,7 +374,7 @@ classdef vehicle < dynamicprops
                 case 1
                     val(1).setPosVec(-obj.rB_LE.Value + obj.rBridle_LE.Value,'m');              
                 case 3
-                    port_thr = -obj.rB_LE.Value +  obj.portWing.outlinePts.Value(:,2)-...%outside leading edge
+                    port_thr = -obj.rB_LE.Value +  obj.portWing.outlinePtsBdy.Value(:,2)-...%outside leading edge
                         1.2*[obj.wingRootChord.Value;0;0];
                     %                        + [obj.wingRootChord.Value*obj.wingTR.Value/2;0;0];
                     aft_thr = -obj.rB_LE.Value + -obj.rCM_LE.Value + ...
@@ -446,8 +446,8 @@ classdef vehicle < dynamicprops
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
             eta_s = .6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
-            hStabArea = 2*(obj.hStab.span.Value * .5 * (1+obj.hStab.TR.Value)*obj.hStab.rootChord.Value);
-            wingArea = 2*(obj.portWing.span.Value * .5 * (1+obj.portWing.TR.Value)*obj.portWing.rootChord.Value);
+            hStabArea = 2*(obj.hStab.halfSpan.Value * .5 * (1+obj.hStab.TR.Value)*obj.hStab.rootChord.Value);
+            wingArea = 2*(obj.portWing.halfSpan.Value * .5 * (1+obj.portWing.TR.Value)*obj.portWing.rootChord.Value);
             cla_wing = (obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
             cla_hs = (obj.hStab.CL.Value(ceil(end/2)+1)-obj.hStab.CL.Value(ceil(end/2)-1))/(obj.hStab.alpha.Value(ceil(end/2)+1)-obj.hStab.alpha.Value(ceil(end/2)-1));
             V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
@@ -491,8 +491,10 @@ classdef vehicle < dynamicprops
             obj.portWing.setSpanUnitVec([0;-1;0],'');
             obj.portWing.setChordUnitVec([1;0;0],'');
             obj.portWing.setRootChord(obj.wingRootChord.Value,'m');
-            obj.portWing.setSpanOrAR('AR',obj.wingAR.Value/2,'');
             obj.portWing.setTR(obj.wingTR.Value,'');
+            if ~isempty(obj.wingTR) && ~isempty(obj.wingTR.Value)
+                obj.portWing.setHalfSpanGivenAR(obj.wingAR.Value/2,'');
+            end
             obj.portWing.setSweep(obj.wingSweep.Value,'deg');
             %Negative because in the wing frame, the dihedral and incidence
             %are flipped if they match the stbd wing
@@ -513,8 +515,10 @@ classdef vehicle < dynamicprops
             obj.stbdWing.setSpanUnitVec([0;1;0],'');
             obj.stbdWing.setChordUnitVec([1;0;0],'');
             obj.stbdWing.setRootChord(obj.wingRootChord.Value,'m');
-            obj.stbdWing.setSpanOrAR('AR',obj.wingAR.Value/2,'');
             obj.stbdWing.setTR(obj.wingTR.Value,'');
+            if ~isempty(obj.wingTR) && ~isempty(obj.wingTR.Value)
+                obj.stbdWing.setHalfSpanGivenAR(obj.wingAR.Value/2,'');
+            end
             obj.stbdWing.setSweep(obj.wingSweep.Value,'deg');
             obj.stbdWing.setDihedral(obj.wingDihedral.Value,'deg');
             obj.stbdWing.setIncidence(obj.wingIncidence.Value,'deg');
@@ -599,7 +603,7 @@ classdef vehicle < dynamicprops
             fs = obj.getPropsByClass("OCT.aeroSurf");
             % Aero surfaces (and fuselage)
             for ii = 1:4
-                pts = R*obj.(fs{ii}).RSurf2Bdy.Value*obj.(fs{ii}).outlinePts.Value;
+                pts = R*obj.(fs{ii}).outlinePtsBdy.Value;
                 h.surf{ii} = plot3(...
                     pts(1,:)+p.Results.Position(1),...
                     pts(2,:)+p.Results.Position(2),...
@@ -614,7 +618,7 @@ classdef vehicle < dynamicprops
                                   'LineWidth',1.2,'Color','k','LineStyle','-',...
                                   'DisplayName','Fluid Dynamic Surfaces');
             else
-                x=linspace(obj.fuse.rNose_LE.Value(1),obj.fuse.rEnd_LE.Value(1),p.Results.fuseRings);
+                x=linspace(obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value,obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value,p.Results.fuseRings);
                 perSlice = 10;
                 x = reshape(repmat(x,perSlice,1),[1 numel(x)*perSlice]);
                 th=linspace(0,2*pi,perSlice);
@@ -632,14 +636,38 @@ classdef vehicle < dynamicprops
                 end
                 y(end+1:end+numextra) = reshape(repmat(y(2:perSlice),2,1),[1 numextra]);
                 z(end+1:end+numextra) = reshape(repmat(z(2:perSlice),2,1),[1 numextra]);
+                
+                [sx, sy, sz]=sphere;
+                sx = reshape(obj.fuse.diameter.Value*sx,[1 numel(sx)]);
+                sy = reshape(obj.fuse.diameter.Value*sy,[1 numel(sy)]);
+                sz = reshape(obj.fuse.diameter.Value*sz,[1 numel(sz)]);
+                nosex = sy(1:ceil(numel(sx)/2))+obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value;
+                nosey = sx(1:ceil(numel(sx)/2));
+                nosez = sz(1:ceil(numel(sx)/2));
+%                 x(end+1:end+numel(nosex))=nosex;
+%                 y(end+1:end+numel(nosey))=nosey;
+%                 z(end+1:end+numel(nosez))=nosez;
+                
+                endx = sy(ceil(numel(sx)/2):end)+obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value;
+                endy = sx(ceil(numel(sx)/2):end);
+                endz = sz(ceil(numel(sx)/2):end);
+%                 x(end+1:end+numel(endx))=endx;
+%                 y(end+1:end+numel(endy))=endy;
+%                 z(end+1:end+numel(endz))=endz;
+                
+                
                 h.surf{5}=plot3(x,y,z,'LineWidth',.2,'Color','k','LineStyle','-',...
+                      'DisplayName','Fluid Dynamic Surfaces');
+                h.surf{6}=plot3(nosex,nosey,nosez,'LineWidth',.2,'Color','k','LineStyle','-',...
+                      'DisplayName','Fluid Dynamic Surfaces');
+                h.surf{7}=plot3(endx,endy,endz,'LineWidth',.2,'Color','k','LineStyle','-',...
                       'DisplayName','Fluid Dynamic Surfaces');
             end
                          
             if ~p.Results.Basic
                 % Tether attachment points
                 for ii = 1:obj.numTethers.Value
-                    pts = R*obj.thrAttchPts(ii).posVec.Value;
+                    pts = R*obj.thrAttchPts_B(ii).posVec.Value;
                     h.thrAttchPts{ii} = plot3(...
                         pts(1)+p.Results.Position(1),...
                         pts(2)+p.Results.Position(2),...

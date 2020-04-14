@@ -90,7 +90,7 @@ vhcl.wingRootChord.Value = 1.0000e+00
 vhcl.wingRootChord.Unit = 'm'
 vhcl.wingRootChord.NoScale = false
 vhcl.wingRootChord.Description = 'Wing root chord'
-vhcl.wingAR.Value = 1.0000e+01
+vhcl.wingAR.Value = 1.1111e+01
 vhcl.wingAR.Unit is unitless or has no unit specified
 vhcl.wingAR.NoScale = true
 vhcl.wingAR.Description = 'Wing Aspect ratio'
@@ -130,14 +130,10 @@ vhcl.hStab.rootChord.Value = 5.0000e-01
 vhcl.hStab.rootChord.Unit = 'm'
 vhcl.hStab.rootChord.NoScale = false
 vhcl.hStab.rootChord.Description = 'Root chord'
-vhcl.hStab.span.Value = 4.0000e+00
-vhcl.hStab.span.Unit = 'm'
-vhcl.hStab.span.NoScale = false
-vhcl.hStab.span.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
-vhcl.hStab.AR.Value = 8.0000e+00
-vhcl.hStab.AR.Unit is unitless or has no unit specified
-vhcl.hStab.AR.NoScale = true
-vhcl.hStab.AR.Description = 'Aspect ratio'
+vhcl.hStab.halfSpan.Value = 2.0000e+00
+vhcl.hStab.halfSpan.Unit = 'm'
+vhcl.hStab.halfSpan.NoScale = false
+vhcl.hStab.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
 vhcl.hStab.TR.Value = 8.0000e-01
 vhcl.hStab.TR.Unit is unitless or has no unit specified
 vhcl.hStab.TR.NoScale = true
@@ -206,17 +202,25 @@ vhcl.hStab.gainCL.NoScale = false
 vhcl.hStab.gainCD.Value = [1.78568181818181e-05 -0.000891 0]
 vhcl.hStab.gainCD.Unit = '1/deg'
 vhcl.hStab.gainCD.NoScale = false
+vhcl.hStab.AR.Value = 8.8889e+00
+vhcl.hStab.AR.Unit is unitless or has no unit specified
+vhcl.hStab.AR.NoScale = false
+vhcl.hStab.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.hStab.planformArea.Value = 1.8000e+00
+vhcl.hStab.planformArea.Unit is unitless or has no unit specified
+vhcl.hStab.planformArea.NoScale = false
+vhcl.hStab.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
 vhcl.hStab.RSurf2Bdy.Value = [1 0 0;0 1 0;0 0 1]
 vhcl.hStab.RSurf2Bdy.Unit is unitless or has no unit specified
 vhcl.hStab.RSurf2Bdy.NoScale = false
 vhcl.hStab.RSurf2Bdy.Description = 'rotation matrix from the surface coordinates to the body coordinates'
-vhcl.hStab.rAeroCent_SurfLE.Value = [0.209259083150881;0;0]
+vhcl.hStab.rAeroCent_SurfLE.Value = [0.161111023056922;0;0]
 vhcl.hStab.rAeroCent_SurfLE.Unit = 'm'
 vhcl.hStab.rAeroCent_SurfLE.NoScale = false
 vhcl.hStab.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
-vhcl.hStab.outlinePts.Value = [5.5 5.59999981711822 5.99999981711822 6 5.99999981711822 5.59999981711822 5.5;0 2 2 0 -2 -2 0;0 0 0 0 0 0 0]
-vhcl.hStab.outlinePts.Unit is unitless or has no unit specified
-vhcl.hStab.outlinePts.NoScale = false
+vhcl.hStab.outlinePtsBdy.Value = [5.5 5.59999981711822 5.99999981711822 6 5.99999981711822 5.59999981711822 5.5;0 2 2 0 -2 -2 0;0 0 0 0 0 0 0]
+vhcl.hStab.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.hStab.outlinePtsBdy.NoScale = false
 vhcl.hStab.MACLength.Value = 4.5185e-01
 vhcl.hStab.MACLength.Unit = 'm'
 vhcl.hStab.MACLength.NoScale = false
@@ -229,14 +233,10 @@ vhcl.vStab.rootChord.Value = 6.5000e-01
 vhcl.vStab.rootChord.Unit = 'm'
 vhcl.vStab.rootChord.NoScale = false
 vhcl.vStab.rootChord.Description = 'Root chord'
-vhcl.vStab.span.Value = 2.4375e+00
-vhcl.vStab.span.Unit = 'm'
-vhcl.vStab.span.NoScale = false
-vhcl.vStab.span.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
-vhcl.vStab.AR.Value = 3.7500e+00
-vhcl.vStab.AR.Unit is unitless or has no unit specified
-vhcl.vStab.AR.NoScale = true
-vhcl.vStab.AR.Description = 'Aspect ratio'
+vhcl.vStab.halfSpan.Value = 2.4375e+00
+vhcl.vStab.halfSpan.Unit = 'm'
+vhcl.vStab.halfSpan.NoScale = false
+vhcl.vStab.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
 vhcl.vStab.TR.Value = 8.0000e-01
 vhcl.vStab.TR.Unit is unitless or has no unit specified
 vhcl.vStab.TR.NoScale = true
@@ -305,6 +305,14 @@ vhcl.vStab.gainCL.NoScale = false
 vhcl.vStab.gainCD.Value = [1.62e-05 -1.07567568011653e-20 0]
 vhcl.vStab.gainCD.Unit = '1/deg'
 vhcl.vStab.gainCD.NoScale = false
+vhcl.vStab.AR.Value = 4.1667e+00
+vhcl.vStab.AR.Unit is unitless or has no unit specified
+vhcl.vStab.AR.NoScale = false
+vhcl.vStab.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.vStab.planformArea.Value = 1.4259e+00
+vhcl.vStab.planformArea.Unit is unitless or has no unit specified
+vhcl.vStab.planformArea.NoScale = false
+vhcl.vStab.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
 vhcl.vStab.RSurf2Bdy.Value = [1 0 0;0 0 -1;0 1 0]
 vhcl.vStab.RSurf2Bdy.Unit is unitless or has no unit specified
 vhcl.vStab.RSurf2Bdy.NoScale = false
@@ -313,9 +321,9 @@ vhcl.vStab.rAeroCent_SurfLE.Value = [0.217399460784396;1.17361111111111;0]
 vhcl.vStab.rAeroCent_SurfLE.Unit = 'm'
 vhcl.vStab.rAeroCent_SurfLE.NoScale = false
 vhcl.vStab.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
-vhcl.vStab.outlinePts.Value = [5.35 5.49652195701375 6.01652195701375 6 5.35;0 2.4375 2.4375 0 0;0 0 0 0 0]
-vhcl.vStab.outlinePts.Unit is unitless or has no unit specified
-vhcl.vStab.outlinePts.NoScale = false
+vhcl.vStab.outlinePtsBdy.Value = [5.35 5.49652195701375 6.01652195701375 6 5.35;0 0 0 0 0;0 2.4375 2.4375 0 0]
+vhcl.vStab.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.vStab.outlinePtsBdy.NoScale = false
 vhcl.vStab.MACLength.Value = 5.8741e-01
 vhcl.vStab.MACLength.Unit = 'm'
 vhcl.vStab.MACLength.NoScale = false
@@ -328,14 +336,10 @@ vhcl.portWing.rootChord.Value = 1.0000e+00
 vhcl.portWing.rootChord.Unit = 'm'
 vhcl.portWing.rootChord.NoScale = false
 vhcl.portWing.rootChord.Description = 'Root chord'
-vhcl.portWing.span.Value = 5.0000e+00
-vhcl.portWing.span.Unit = 'm'
-vhcl.portWing.span.NoScale = false
-vhcl.portWing.span.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
-vhcl.portWing.AR.Value = 5.0000e+00
-vhcl.portWing.AR.Unit is unitless or has no unit specified
-vhcl.portWing.AR.NoScale = true
-vhcl.portWing.AR.Description = 'Aspect ratio'
+vhcl.portWing.halfSpan.Value = 5.0000e+00
+vhcl.portWing.halfSpan.Unit = 'm'
+vhcl.portWing.halfSpan.NoScale = false
+vhcl.portWing.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
 vhcl.portWing.TR.Value = 8.0000e-01
 vhcl.portWing.TR.Unit is unitless or has no unit specified
 vhcl.portWing.TR.NoScale = true
@@ -404,6 +408,14 @@ vhcl.portWing.gainCL.NoScale = false
 vhcl.portWing.gainCD.Value = [4.76488636363636e-05 0.000347672727272727 0]
 vhcl.portWing.gainCD.Unit = '1/deg'
 vhcl.portWing.gainCD.NoScale = false
+vhcl.portWing.AR.Value = 5.5556e+00
+vhcl.portWing.AR.Unit is unitless or has no unit specified
+vhcl.portWing.AR.NoScale = false
+vhcl.portWing.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.portWing.planformArea.Value = 4.5000e+00
+vhcl.portWing.planformArea.Unit is unitless or has no unit specified
+vhcl.portWing.planformArea.NoScale = false
+vhcl.portWing.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
 vhcl.portWing.RSurf2Bdy.Value = [1 0 0;0 -1 0;0 0 -1]
 vhcl.portWing.RSurf2Bdy.Unit is unitless or has no unit specified
 vhcl.portWing.RSurf2Bdy.NoScale = false
@@ -412,9 +424,9 @@ vhcl.portWing.rAeroCent_SurfLE.Value = [0.322617395661758;2.40740740740741;-0.08
 vhcl.portWing.rAeroCent_SurfLE.Unit = 'm'
 vhcl.portWing.rAeroCent_SurfLE.NoScale = false
 vhcl.portWing.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
-vhcl.portWing.outlinePts.Value = [0 0.200820744835959 1.00082074483596 1 0;0 5 5 0 0;0 -0.174497483512505 -0.174497483512505 0 0]
-vhcl.portWing.outlinePts.Unit is unitless or has no unit specified
-vhcl.portWing.outlinePts.NoScale = false
+vhcl.portWing.outlinePtsBdy.Value = [0 0.200820744835959 1.00082074483596 1 0;0 -5 -5 0 0;0 0.174497483512505 0.174497483512505 0 0]
+vhcl.portWing.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.portWing.outlinePtsBdy.NoScale = false
 vhcl.portWing.MACLength.Value = 9.0370e-01
 vhcl.portWing.MACLength.Unit = 'm'
 vhcl.portWing.MACLength.NoScale = false
@@ -427,14 +439,10 @@ vhcl.stbdWing.rootChord.Value = 1.0000e+00
 vhcl.stbdWing.rootChord.Unit = 'm'
 vhcl.stbdWing.rootChord.NoScale = false
 vhcl.stbdWing.rootChord.Description = 'Root chord'
-vhcl.stbdWing.span.Value = 5.0000e+00
-vhcl.stbdWing.span.Unit = 'm'
-vhcl.stbdWing.span.NoScale = false
-vhcl.stbdWing.span.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
-vhcl.stbdWing.AR.Value = 5.0000e+00
-vhcl.stbdWing.AR.Unit is unitless or has no unit specified
-vhcl.stbdWing.AR.NoScale = true
-vhcl.stbdWing.AR.Description = 'Aspect ratio'
+vhcl.stbdWing.halfSpan.Value = 5.0000e+00
+vhcl.stbdWing.halfSpan.Unit = 'm'
+vhcl.stbdWing.halfSpan.NoScale = false
+vhcl.stbdWing.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
 vhcl.stbdWing.TR.Value = 8.0000e-01
 vhcl.stbdWing.TR.Unit is unitless or has no unit specified
 vhcl.stbdWing.TR.NoScale = true
@@ -503,6 +511,14 @@ vhcl.stbdWing.gainCL.NoScale = false
 vhcl.stbdWing.gainCD.Value = [4.76488636363636e-05 0.000347672727272727 0]
 vhcl.stbdWing.gainCD.Unit = '1/deg'
 vhcl.stbdWing.gainCD.NoScale = false
+vhcl.stbdWing.AR.Value = 5.5556e+00
+vhcl.stbdWing.AR.Unit is unitless or has no unit specified
+vhcl.stbdWing.AR.NoScale = false
+vhcl.stbdWing.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.stbdWing.planformArea.Value = 4.5000e+00
+vhcl.stbdWing.planformArea.Unit is unitless or has no unit specified
+vhcl.stbdWing.planformArea.NoScale = false
+vhcl.stbdWing.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
 vhcl.stbdWing.RSurf2Bdy.Value = [1 0 0;0 1 0;0 0 1]
 vhcl.stbdWing.RSurf2Bdy.Unit is unitless or has no unit specified
 vhcl.stbdWing.RSurf2Bdy.NoScale = false
@@ -511,9 +527,9 @@ vhcl.stbdWing.rAeroCent_SurfLE.Value = [0.322617395661758;2.40740740740741;0.084
 vhcl.stbdWing.rAeroCent_SurfLE.Unit = 'm'
 vhcl.stbdWing.rAeroCent_SurfLE.NoScale = false
 vhcl.stbdWing.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
-vhcl.stbdWing.outlinePts.Value = [0 0.200820744835959 1.00082074483596 1 0;0 5 5 0 0;0 0.174497483512505 0.174497483512505 0 0]
-vhcl.stbdWing.outlinePts.Unit is unitless or has no unit specified
-vhcl.stbdWing.outlinePts.NoScale = false
+vhcl.stbdWing.outlinePtsBdy.Value = [0 0.200820744835959 1.00082074483596 1 0;0 5 5 0 0;0 0.174497483512505 0.174497483512505 0 0]
+vhcl.stbdWing.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.stbdWing.outlinePtsBdy.NoScale = false
 vhcl.stbdWing.MACLength.Value = 9.0370e-01
 vhcl.stbdWing.MACLength.Unit = 'm'
 vhcl.stbdWing.MACLength.NoScale = false
@@ -585,7 +601,7 @@ vhcl.turbines.powerCoeff.NoScale = false
 vhcl.turbines.dragCoeff.Value = 1.2800e+00
 vhcl.turbines.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.dragCoeff.NoScale = false
-vhcl.fluidMomentArms.Value = [0.322617395661758 0.322617395661758 5.70925908315088 5.5673994607844;-2.40740740740741 2.40740740740741 0 0;0.0840173068763912 0.0840173068763912 0 1.17361111111111]
+vhcl.fluidMomentArms.Value = [0.322617395661758 0.322617395661758 5.66111102305692 5.5673994607844;-2.40740740740741 2.40740740740741 0 0;0.0840173068763912 0.0840173068763912 0 1.17361111111111]
 vhcl.fluidMomentArms.Unit = 'm'
 vhcl.fluidMomentArms.NoScale = false
 vhcl.fuseMomentArm.Value = [1.75;0;0]
@@ -600,7 +616,7 @@ vhcl.turbMomentArms.NoScale = false
 vhcl.rCM_B.Value = [0;0;0]
 vhcl.rCM_B.Unit = 'm'
 vhcl.rCM_B.NoScale = false
-vhcl.fluidRefArea.Value = 1.0000e+01
+vhcl.fluidRefArea.Value = 1.1111e+01
 vhcl.fluidRefArea.Unit = 'm^2'
 vhcl.fluidRefArea.NoScale = false
 vhcl.fluidRefArea.Description = 'Reference area for aerodynamic calculations'
@@ -612,7 +628,7 @@ vhcl.Ma6x6_LE.Value = [134 0 0 0 14 0;0 1591 0 -986 0 5166;0 0 9265 0 -8202 0;0 
 vhcl.Ma6x6_LE.Unit is unitless or has no unit specified
 vhcl.Ma6x6_LE.NoScale = false
 vhcl.Ma6x6_LE.Description = '6x6 Added Mass Matrix. Created from scaled quadrant matrices'
-vhcl.staticMargin.Value = 6.2891e-01
+vhcl.staticMargin.Value = 4.9295e-01
 vhcl.staticMargin.Unit = 'm'
 vhcl.staticMargin.NoScale = false
 vhcl.staticMargin.Description = 'Static Margin of Stability'
