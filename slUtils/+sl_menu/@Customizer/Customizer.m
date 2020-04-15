@@ -41,6 +41,7 @@ classdef Customizer < handle
         state = checkOneSubsystem(callbackInfo)
         state = checkSFBlocks(callbackInfo)
         state = checkSignals(callbackInfo)
+        state = checkIsLibrary(callbackInfo)
     end
     
     methods (Static, Abstract)
