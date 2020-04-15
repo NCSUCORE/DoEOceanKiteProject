@@ -1,0 +1,59 @@
+wnch.numWinches.Value = 1.0000e+00
+wnch.numWinches.Unit is unitless or has no unit specified
+wnch.numWinches.NoScale = true
+wnch.winch1.initLength.Unit = 'm'
+wnch.winch1.initLength.NoScale = false
+wnch.winch1.maxSpeed.Value = 1.0000e+06
+wnch.winch1.maxSpeed.Unit = 'm/s'
+wnch.winch1.maxSpeed.NoScale = false
+wnch.winch1.timeConst.Value = 1.0000e+00
+wnch.winch1.timeConst.Unit = 's'
+wnch.winch1.timeConst.NoScale = false
+wnch.winch1.maxAccel.Value = 1.0000e+06
+wnch.winch1.maxAccel.Unit = 'm/s^2'
+wnch.winch1.maxAccel.NoScale = false
+wnch.winch1.rectifierEfficiency.Value = 9.2160e-01
+wnch.winch1.rectifierEfficiency.Unit is unitless or has no unit specified
+wnch.winch1.rectifierEfficiency.NoScale = false
+wnch.winch1.inverterEfficiency.Value = 9.2160e-01
+wnch.winch1.inverterEfficiency.Unit is unitless or has no unit specified
+wnch.winch1.inverterEfficiency.NoScale = false
+wnch.winch1.statorResistanceGen.Value = 4.0000e-02
+wnch.winch1.statorResistanceGen.Unit is unitless or has no unit specified
+wnch.winch1.statorResistanceGen.NoScale = false
+wnch.winch1.rotorMagneticFluxGen.Value = 3.0000e-01
+wnch.winch1.rotorMagneticFluxGen.Unit is unitless or has no unit specified
+wnch.winch1.rotorMagneticFluxGen.NoScale = false
+wnch.winch1.frictionCoefficiantGen.Value = 1.0000e-03
+wnch.winch1.frictionCoefficiantGen.Unit is unitless or has no unit specified
+wnch.winch1.frictionCoefficiantGen.NoScale = false
+wnch.winch1.numPolePairsGen.Value = 4.0000e+01
+wnch.winch1.numPolePairsGen.Unit is unitless or has no unit specified
+wnch.winch1.numPolePairsGen.NoScale = false
+wnch.winch1.statorResistanceMot.Value = 3.6000e-02
+wnch.winch1.statorResistanceMot.Unit is unitless or has no unit specified
+wnch.winch1.statorResistanceMot.NoScale = false
+wnch.winch1.rotorMagneticFluxMot.Value = 3.0000e-01
+wnch.winch1.rotorMagneticFluxMot.Unit is unitless or has no unit specified
+wnch.winch1.rotorMagneticFluxMot.NoScale = false
+wnch.winch1.frictionCoefficiantMot.Value = 1.0000e-03
+wnch.winch1.frictionCoefficiantMot.Unit is unitless or has no unit specified
+wnch.winch1.frictionCoefficiantMot.NoScale = false
+wnch.winch1.numPolePairsMot.Value = 4.0000e+01
+wnch.winch1.numPolePairsMot.Unit is unitless or has no unit specified
+wnch.winch1.numPolePairsMot.NoScale = false
+wnch.winch1.drumRadius.Value = 5.0000e-01
+wnch.winch1.drumRadius.Unit = 'm'
+wnch.winch1.drumRadius.NoScale = false
+wnch.winch1.drumInertia.Value = 1.0000e+02
+wnch.winch1.drumInertia.Unit = 'kg*m^2'
+wnch.winch1.drumInertia.NoScale = false
+wnch.winch1.initReleaseRate.Value = 0.0000e+00
+wnch.winch1.initReleaseRate.Unit = 'm/s'
+wnch.winch1.initReleaseRate.NoScale = false
+wnch.winch1.gearRatio.Value = 4.0000e-01
+wnch.winch1.gearRatio.Unit is unitless or has no unit specified
+wnch.winch1.gearRatio.NoScale = false
+wnch.winch1.numOfGearPairs.Value = 4.0000e+00
+wnch.winch1.numOfGearPairs.Unit is unitless or has no unit specified
+wnch.winch1.numOfGearPairs.NoScale = false

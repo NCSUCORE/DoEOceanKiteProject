@@ -137,6 +137,7 @@ classdef signalcontainer < dynamicprops
                     if ~isempty(lapInds) && length(lapInds)>=2
                         bounds=[lapInds(end-1) lapInds(end)];
                         powAvg=sum(energy(bounds(1):bounds(2)))/(obj.winchPower.Time(bounds(2))-obj.winchPower.Time(bounds(1)));
+                       
                         fprintf('Average power for the last lap = %.5g kW.\n',powAvg/1000);
                     else
                         bounds = [1 length(obj.winchPower.Time)];
@@ -151,6 +152,7 @@ classdef signalcontainer < dynamicprops
                 if nargout == 1
                     varargout{1}=powAvg;
                 end
+                save('pow.mat','powAvg')
             end
         end
         

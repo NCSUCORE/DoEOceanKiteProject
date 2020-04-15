@@ -8,10 +8,6 @@ env.addFlow({'waterWave'},{'planarWaves'});
 env.waterWave.setNumWaves(2,'');
 env.waterWave.build;
 
-Hs = 3;   % meters
-% tp = 13.33; % seconds
-w =   .6; % rad/s
-k = 0.0359; %rad/m
 
 %% calm waves
 
@@ -24,10 +20,10 @@ k = 0.0359; %rad/m
 % tp = 5.7; % seconds
 % w =   2*pi/tp % rad/s
 % k = (2*pi)/(33.8)%(w^2)/9.81 %rad/m
-Hs = 4.1;   % meters
-tp = 8.6; % seconds
-w =   2*pi/tp % rad/s
-k = (2*pi)/(78.5)%(w^2)/9.81 %rad/m
+Hs = 0.8311110;   % meters
+tp = 20; % seconds
+w =   2*pi/tp; % rad/s
+k = (w^2)/9.8; %rad/m
 
 
 

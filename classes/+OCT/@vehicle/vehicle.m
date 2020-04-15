@@ -15,11 +15,11 @@ classdef vehicle < dynamicprops
         volume
         inertia_CM
         
-        Ma6x6_BUL
-        Ma6x6_BUR
-        Ma6x6_BLL
-        Ma6x6_BLR
-        D6x6_B
+        Ma6x6_LEUL
+        Ma6x6_LEUR
+        Ma6x6_LELL
+        Ma6x6_LELR
+        D6x6_LE
 
         allMaxCtrlDef
         allMinCtrlDef
@@ -65,7 +65,7 @@ classdef vehicle < dynamicprops
         
         fluidRefArea
         M6x6_B
-        Ma6x6_B
+        Ma6x6_LE
         
         
         staticMargin
@@ -91,11 +91,11 @@ classdef vehicle < dynamicprops
             obj.inertia_CM     = SIM.parameter('Unit','kg*m^2','Description','Inertia Matrix');
             
             %Added Mass Matrices
-            obj.Ma6x6_BUL        = SIM.parameter('Value',zeros(3),'Unit','kg','Description','Upper left quadrant 6x6 Added Mass Matrix');
-            obj.Ma6x6_BUR        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Upper right quadrant 6x6 Added Mass Matrix');
-            obj.Ma6x6_BLL        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
-            obj.Ma6x6_BLR       = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
-            obj.D6x6_B           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
+            obj.Ma6x6_LEUL        = SIM.parameter('Value',zeros(3),'Unit','kg','Description','Upper left quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LEUR        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Upper right quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LELL        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LELR       = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
+            obj.D6x6_LE           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
             
             %Control Surface Deflections
             obj.allMaxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
@@ -205,19 +205,19 @@ classdef vehicle < dynamicprops
             obj.inertia_CM.setValue(val,units);
         end
 
-        function setMa6x6_B(obj,val,units)
+        function setMa6x6_LE(obj,val,units)
             if isempty(units)
-                obj.Ma6x6_BUL.setValue(val(1:3,1:3),'kg');
-                obj.Ma6x6_BUR.setValue(val(1:3,4:6),'kg*m');
-                obj.Ma6x6_BLL.setValue(val(4:6,1:3),'kg*m');
-                obj.Ma6x6_BLR.setValue(val(4:6,4:6),'kg*m^2');
+                obj.Ma6x6_LEUL.setValue(val(1:3,1:3),'kg');
+                obj.Ma6x6_LEUR.setValue(val(1:3,4:6),'kg*m');
+                obj.Ma6x6_LELL.setValue(val(4:6,1:3),'kg*m');
+                obj.Ma6x6_LELR.setValue(val(4:6,4:6),'kg*m^2');
             else
-                error('Units for Ma6x6_B should be '''', the setter will define the partial matrix units')
+                error('Units for Ma6x6_LE should be '''', the setter will define the partial matrix units')
             end
         end
 
-        function setD6x6_B(obj,val,units)
-            obj.D6x6_B.setValue(val,units);
+        function setD6x6_LE(obj,val,units)
+            obj.D6x6_LE.setValue(val,units);
         end
 
         function setAllMaxCtrlDef(obj,val,units)
@@ -374,7 +374,7 @@ classdef vehicle < dynamicprops
                 case 1
                     val(1).setPosVec(-obj.rB_LE.Value + obj.rBridle_LE.Value,'m');              
                 case 3
-                    port_thr = -obj.rB_LE.Value +  obj.portWing.outlinePts.Value(:,2)-...%outside leading edge
+                    port_thr = -obj.rB_LE.Value +  obj.portWing.outlinePtsBdy.Value(:,2)-...%outside leading edge
                         1.2*[obj.wingRootChord.Value;0;0];
                     %                        + [obj.wingRootChord.Value*obj.wingTR.Value/2;0;0];
                     aft_thr = -obj.rB_LE.Value + -obj.rCM_LE.Value + ...
@@ -438,16 +438,16 @@ classdef vehicle < dynamicprops
                 '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span');
         end
         
-        function val = get.Ma6x6_B(obj)
-            mat = [obj.Ma6x6_BUL obj.Ma6x6_BUR;obj.Ma6x6_BUL obj.Ma6x6_BUR;];
+        function val = get.Ma6x6_LE(obj)
+            mat = [obj.Ma6x6_LEUL.Value obj.Ma6x6_LEUR.Value;obj.Ma6x6_LELL.Value obj.Ma6x6_LELR.Value;];
             val = SIM.parameter('Value',mat,'Unit','','Description','6x6 Added Mass Matrix. Created from scaled quadrant matrices');
         end
         
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
             eta_s = .6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
-            hStabArea = 2*(obj.hStab.span.Value * .5 * (1+obj.hStab.TR.Value)*obj.hStab.rootChord.Value);
-            wingArea = 2*(obj.portWing.span.Value * .5 * (1+obj.portWing.TR.Value)*obj.portWing.rootChord.Value);
+            hStabArea = 2*(obj.hStab.halfSpan.Value * .5 * (1+obj.hStab.TR.Value)*obj.hStab.rootChord.Value);
+            wingArea = 2*(obj.portWing.halfSpan.Value * .5 * (1+obj.portWing.TR.Value)*obj.portWing.rootChord.Value);
             cla_wing = (obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
             cla_hs = (obj.hStab.CL.Value(ceil(end/2)+1)-obj.hStab.CL.Value(ceil(end/2)-1))/(obj.hStab.alpha.Value(ceil(end/2)+1)-obj.hStab.alpha.Value(ceil(end/2)-1));
             V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
@@ -491,8 +491,10 @@ classdef vehicle < dynamicprops
             obj.portWing.setSpanUnitVec([0;-1;0],'');
             obj.portWing.setChordUnitVec([1;0;0],'');
             obj.portWing.setRootChord(obj.wingRootChord.Value,'m');
-            obj.portWing.setSpanOrAR('AR',obj.wingAR.Value/2,'');
             obj.portWing.setTR(obj.wingTR.Value,'');
+            if ~isempty(obj.wingTR) && ~isempty(obj.wingTR.Value)
+                obj.portWing.setHalfSpanGivenAR(obj.wingAR.Value/2,'');
+            end
             obj.portWing.setSweep(obj.wingSweep.Value,'deg');
             %Negative because in the wing frame, the dihedral and incidence
             %are flipped if they match the stbd wing
@@ -513,8 +515,10 @@ classdef vehicle < dynamicprops
             obj.stbdWing.setSpanUnitVec([0;1;0],'');
             obj.stbdWing.setChordUnitVec([1;0;0],'');
             obj.stbdWing.setRootChord(obj.wingRootChord.Value,'m');
-            obj.stbdWing.setSpanOrAR('AR',obj.wingAR.Value/2,'');
             obj.stbdWing.setTR(obj.wingTR.Value,'');
+            if ~isempty(obj.wingTR) && ~isempty(obj.wingTR.Value)
+                obj.stbdWing.setHalfSpanGivenAR(obj.wingAR.Value/2,'');
+            end
             obj.stbdWing.setSweep(obj.wingSweep.Value,'deg');
             obj.stbdWing.setDihedral(obj.wingDihedral.Value,'deg');
             obj.stbdWing.setIncidence(obj.wingIncidence.Value,'deg');
@@ -599,7 +603,7 @@ classdef vehicle < dynamicprops
             fs = obj.getPropsByClass("OCT.aeroSurf");
             % Aero surfaces (and fuselage)
             for ii = 1:4
-                pts = R*obj.(fs{ii}).RSurf2Bdy.Value*obj.(fs{ii}).outlinePts.Value;
+                pts = R*obj.(fs{ii}).outlinePtsBdy.Value;
                 h.surf{ii} = plot3(...
                     pts(1,:)+p.Results.Position(1),...
                     pts(2,:)+p.Results.Position(2),...
@@ -614,7 +618,7 @@ classdef vehicle < dynamicprops
                                   'LineWidth',1.2,'Color','k','LineStyle','-',...
                                   'DisplayName','Fluid Dynamic Surfaces');
             else
-                x=linspace(obj.fuse.rNose_LE.Value(1),obj.fuse.rEnd_LE.Value(1),p.Results.fuseRings);
+                x=linspace(obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value,obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value,p.Results.fuseRings);
                 perSlice = 10;
                 x = reshape(repmat(x,perSlice,1),[1 numel(x)*perSlice]);
                 th=linspace(0,2*pi,perSlice);
@@ -632,14 +636,38 @@ classdef vehicle < dynamicprops
                 end
                 y(end+1:end+numextra) = reshape(repmat(y(2:perSlice),2,1),[1 numextra]);
                 z(end+1:end+numextra) = reshape(repmat(z(2:perSlice),2,1),[1 numextra]);
+                
+                [sx, sy, sz]=sphere;
+                sx = reshape(obj.fuse.diameter.Value*sx,[1 numel(sx)]);
+                sy = reshape(obj.fuse.diameter.Value*sy,[1 numel(sy)]);
+                sz = reshape(obj.fuse.diameter.Value*sz,[1 numel(sz)]);
+                nosex = sy(1:ceil(numel(sx)/2))+obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value;
+                nosey = sx(1:ceil(numel(sx)/2));
+                nosez = sz(1:ceil(numel(sx)/2));
+%                 x(end+1:end+numel(nosex))=nosex;
+%                 y(end+1:end+numel(nosey))=nosey;
+%                 z(end+1:end+numel(nosez))=nosez;
+                
+                endx = sy(ceil(numel(sx)/2):end)+obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value;
+                endy = sx(ceil(numel(sx)/2):end);
+                endz = sz(ceil(numel(sx)/2):end);
+%                 x(end+1:end+numel(endx))=endx;
+%                 y(end+1:end+numel(endy))=endy;
+%                 z(end+1:end+numel(endz))=endz;
+                
+                
                 h.surf{5}=plot3(x,y,z,'LineWidth',.2,'Color','k','LineStyle','-',...
+                      'DisplayName','Fluid Dynamic Surfaces');
+                h.surf{6}=plot3(nosex,nosey,nosez,'LineWidth',.2,'Color','k','LineStyle','-',...
+                      'DisplayName','Fluid Dynamic Surfaces');
+                h.surf{7}=plot3(endx,endy,endz,'LineWidth',.2,'Color','k','LineStyle','-',...
                       'DisplayName','Fluid Dynamic Surfaces');
             end
                          
             if ~p.Results.Basic
                 % Tether attachment points
                 for ii = 1:obj.numTethers.Value
-                    pts = R*obj.thrAttchPts(ii).posVec.Value;
+                    pts = R*obj.thrAttchPts_B(ii).posVec.Value;
                     h.thrAttchPts{ii} = plot3(...
                         pts(1)+p.Results.Position(1),...
                         pts(2)+p.Results.Position(2),...

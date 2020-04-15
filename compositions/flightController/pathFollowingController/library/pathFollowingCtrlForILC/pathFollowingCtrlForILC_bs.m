@@ -31,8 +31,6 @@ fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
-fltCtrl.elevatorReelInDef.setValue(23,'deg')
-
 pitchKp = (1e5)/(2*pi/180);
 
 %% Save

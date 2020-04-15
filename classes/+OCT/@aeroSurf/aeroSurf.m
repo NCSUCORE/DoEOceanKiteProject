@@ -5,8 +5,7 @@ classdef aeroSurf < handle
     properties (SetAccess = private)
         rSurfLE_WingLEBdy
         rootChord
-        span
-        AR
+        halfSpan
         TR
         sweep
         dihedral
@@ -29,9 +28,11 @@ classdef aeroSurf < handle
         gainCD
     end
     properties (Dependent)
+        AR
+        planformArea
         RSurf2Bdy
         rAeroCent_SurfLE
-        outlinePts
+        outlinePtsBdy
         MACLength
     end
     
@@ -39,9 +40,8 @@ classdef aeroSurf < handle
         function obj = aeroSurf
             obj.rSurfLE_WingLEBdy   = SIM.parameter('Unit','m','Description','Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface');
             obj.rootChord           = SIM.parameter('Unit','m','Description','Root chord');
-            obj.span                = SIM.parameter('Unit','m','Description','Distance between the root chord and tip chord (not full wingspan for 2 traps)');
-            obj.AR                  = SIM.parameter('Description','Aspect ratio','NoScale',true);
-            obj.TR                  = SIM.parameter('Value',1,'Description','Taper ratio','NoScale',true);
+            obj.halfSpan            = SIM.parameter('Unit','m','Description','Distance between the root chord and tip chord (not full wingspan for 2 traps)');
+            obj.TR                  = SIM.parameter('Description','Taper ratio','NoScale',true);
             obj.sweep               = SIM.parameter('Value',0,'Unit','deg','Description','Sweep angle');
             obj.dihedral            = SIM.parameter('Value',0,'Unit','deg','Description','Dihedral angle');
             obj.incidence           = SIM.parameter('Value',0,'Unit','deg','Description','Flow incidence angle');
@@ -73,15 +73,23 @@ classdef aeroSurf < handle
             obj.rootChord.setValue(val,units)
         end
 
-        function setSpanOrAR(obj,spanOrAR,val,units)
-            if strcmpi(spanOrAR,"AR")
-                obj.AR.setValue(val,units);
-                obj.span.setValue(obj.AR.Value * obj.rootChord.Value,'m');
-            elseif strcmpi(spanOrAR,"span")
-                obj.span.setValue(val,units);
-                obj.AR.setValue(obj.span.Value / obj.rootChord.Value,'')
+        function setHalfSpan(obj,val,units)
+            obj.halfSpan.setValue(val,units);
+        end
+        
+        function setHalfSpanGivenAR(obj,AR,~)
+            %For 1 Trap, give AR using half Span
+            %For 2 Traps, give AR using full Span
+            if isempty(obj.TR.Value) || isempty(obj.rootChord.Value)
+                warning('Taper Ratio and root chord must be set before defining Span given an Aspect Ratio.')
+            end
+            %span = AR * meanChord = AR * .5*(rootChord + tipChord)
+            if obj.numTraps.Value == 1
+                obj.halfSpan.setValue(AR*.5*(obj.rootChord.Value + obj.TR.Value*obj.rootChord.Value),'m');
+            elseif obj.numTraps.Value == 2
+                obj.halfSpan.setValue(.5* AR*.5*(obj.rootChord.Value + obj.TR.Value*obj.rootChord.Value),'m');
             else
-                error("parameter spanOrAR must contain either 'span' or 'AR'")
+                error("numTraps must be 1 or 2")
             end
         end
 
@@ -166,6 +174,28 @@ classdef aeroSurf < handle
         end
 
         %% Getters
+        function val = get.AR(obj)
+            if obj.numTraps.Value == 1
+                aspect = obj.halfSpan.Value^2 / obj.planformArea.Value;
+            elseif obj.numTraps.Value == 2
+                aspect = (2*obj.halfSpan.Value)^2 / obj.planformArea.Value;
+            else
+                error("numTraps must be 1 or 2")
+            end
+            val = SIM.parameter('Value',aspect,'Description','halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps');
+        end
+        
+        function val = get.planformArea(obj)
+            if obj.numTraps.Value == 1
+                area = obj.halfSpan.Value * .5 * (obj.rootChord.Value + obj.TR.Value*obj.rootChord.Value);
+            elseif obj.numTraps.Value == 2
+                area = 2 * obj.halfSpan.Value * .5 * (obj.rootChord.Value + obj.TR.Value*obj.rootChord.Value);
+            else
+                error("numTraps must be 1 or 2")
+            end
+            val = SIM.parameter('Value',area,'Description','Planform area of entire surface 1 or 2 traps');
+        end
+        
         function val = get.RSurf2Bdy(obj)
             value = [obj.chordUnitVec.Value(:)...
                      obj.spanUnitVec.Value(:)...
@@ -179,64 +209,63 @@ classdef aeroSurf < handle
             val = SIM.parameter('Unit','m','Value',MAC,'Description','length of the Mean Aerodynamic Chord');
         end
         
-        function val = get.rAeroCent_SurfLE(obj)
+        function val = get.rAeroCent_SurfLE(obj) %CHECK SPAN FOR 2 TRAPS
             if obj.numTraps.Value == 1
                 tr=obj.TR.Value;
-                yac = (obj.span.Value / 3) * ((1 + 2*tr)/(1+tr));
+                yac = (obj.halfSpan.Value / 3) * ((1 + 2*tr)/(1+tr));
                 xac = (yac * tand(obj.sweep.Value)) + (obj.MACLength.Value*.25);
                 zac = yac * sind(obj.dihedral.Value);
                 val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
             elseif obj.numTraps.Value == 2
                 tr=obj.TR.Value;
-                yacSide = (obj.span.Value / 3) * ((1 + 2*tr)/(1+tr));
+                yacSide = (obj.halfSpan.Value / 3) * ((1 + 2*tr)/(1+tr));
                 xac = (yacSide * tand(obj.sweep.Value)) + (obj.MACLength.Value*.25);
                 yac = 0;%From symmetry
                 zac = yacSide * sind(obj.dihedral.Value);
                 val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
             else
-                warning("numTraps must be 1 or 2")
+                error("numTraps must be 1 or 2")
             end
         end
         
-        function val = get.outlinePts(obj)
+        function val = get.outlinePtsBdy(obj) %CHECK SPAN FOR 2 TRAPS
             %Returns the points of points in the body frame, relative to
             %the Wing leading edge. The points go clockwise looking down
             %from the surface positive z axis.
             %For 2 symmetric trapazoids, it starts in the center LE
-            lsweep=obj.sweep.Value;
-            lspan=obj.span.Value;
-            lTR=obj.TR.Value;
-            lrc=obj.rootChord.Value;
-            ldihedral=obj.dihedral.Value;
+            tempSweep=obj.sweep.Value;
+            tempHalfSpan=obj.halfSpan.Value;
+            tempTR=obj.TR.Value;
+            tempRC=obj.rootChord.Value;
+            tempDihedral=obj.dihedral.Value;
             if obj.numTraps.Value == 1
                 val=zeros(3,5);
-                val(:,2)=[tand(lsweep)*lspan;...
-                          lspan;
-                          sind(ldihedral)*lspan];
-                val(:,3)=[tand(lsweep)*lspan + lTR*lrc;...
-                         lspan;
-                         sind(ldihedral)*lspan];
-                val(:,4)=[lrc;...
+                val(:,2)=[tand(tempSweep)*tempHalfSpan;...
+                          tempHalfSpan;
+                          sind(tempDihedral)*tempHalfSpan];
+                val(:,3)=[tand(tempSweep)*tempHalfSpan + tempTR*tempRC;...
+                         tempHalfSpan;
+                         sind(tempDihedral)*tempHalfSpan];
+                val(:,4)=[tempRC;...
                           0;
                           0];
             elseif obj.numTraps.Value == 2
-                lhalfspan = lspan / 2;
                 val=zeros(3,7);
-                val(:,2)=[tand(lsweep)*lhalfspan;...
-                          lhalfspan;
-                          sind(ldihedral)*lhalfspan];
-                val(:,3)=[tand(lsweep)*lhalfspan + lTR*lrc;...
-                         lhalfspan;
-                         sind(ldihedral)*lhalfspan];
-                val(:,4)=[lrc;...
+                val(:,2)=[tand(tempSweep)*tempHalfSpan;...
+                          tempHalfSpan;
+                          sind(tempDihedral)*tempHalfSpan];
+                val(:,3)=[tand(tempSweep)*tempHalfSpan + tempTR*tempRC;...
+                         tempHalfSpan;
+                         sind(tempDihedral)*tempHalfSpan];
+                val(:,4)=[tempRC;...
                           0;
                           0];
                 val(:,5)=[val(1,3);-val(2,3);val(3,3)];
                 val(:,6)=[val(1,2);-val(2,2);val(3,2)];
             else
-                warning("numTraps must be 1 or 2")
+                error("numTraps must be 1 or 2")
             end
-            val=SIM.parameter('Value',obj.rSurfLE_WingLEBdy.Value + val);
+            val=SIM.parameter('Value',obj.rSurfLE_WingLEBdy.Value + obj.RSurf2Bdy.Value*val);
         end
         %% Other Methods
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)

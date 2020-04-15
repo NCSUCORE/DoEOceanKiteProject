@@ -21,7 +21,7 @@ hs_inc_angle = obj.hStab.incidence.Value;
 hs_afile =  obj.hStab.NACA.Value;
 
 c_r_vs = obj.vStab.rootChord.Value;
-b_vs = obj.vStab.span.Value;
+b_vs = obj.vStab.halfSpan.Value;
 sw_vs = obj.vStab.sweep.Value;
 tr_vs = obj.vStab.TR.Value;
 vs_afile =  obj.vStab.NACA.Value;

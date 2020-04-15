@@ -22,11 +22,11 @@ setup_nctoolbox
 
 
 % USER ENTERS STATION NUMBER AND START/END DATES FOR PLOT
-stn = '430';
+stn = '192';
 % startdate = '10/28/2012 00:00';
 % enddate = '10/29/2012 23:59';
  startdate = '10/28/2008 00:00';
- enddate   = '10/29/2019 23:59';
+ enddate   = '10/29/2020 23:59';
 
 
 
