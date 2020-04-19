@@ -49,7 +49,7 @@ vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 %% Wing
 % vhcl.setRwingLE_cm([-.47064 0 0],'m');
 vhcl.setWingRootChord(1,'m');
-vhcl.setWingAR(10,'');
+vhcl.setWingAR(100/9,'');
 vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(5,'deg');
 vhcl.setWingDihedral(2,'deg');
@@ -62,8 +62,8 @@ vhcl.setWingClMax(1.7,'');
 vhcl.hStab.setRSurfLE_WingLEBdy([6;0;0],'m');
 vhcl.hStab.setNumTraps(2,'');
 vhcl.hStab.setRootChord(.5,'m');
-vhcl.hStab.setSpanOrAR('AR',8,'');
 vhcl.hStab.setTR(.8,'');
+vhcl.hStab.setHalfSpanGivenAR(4/.45,'');
 vhcl.hStab.setSweep(10,'deg');
 vhcl.hStab.setIncidence(-13.5,'deg');
 vhcl.hStab.setNACA('0015','');
@@ -72,7 +72,7 @@ vhcl.hStab.setClMax(1.7,'');
 
 vhcl.vStab.setRSurfLE_WingLEBdy([6;0;0],'m');
 vhcl.vStab.setRootChord(.6,'m');
-vhcl.vStab.setSpanOrAR('Span',2,'m');
+vhcl.vStab.setHalfSpan(2,'m');
 vhcl.vStab.setTR(.8,'');
 vhcl.vStab.setSweep(15,'deg');
 vhcl.vStab.setNACA('0015','');

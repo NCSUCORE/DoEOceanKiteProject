@@ -19,7 +19,7 @@ hs_cl_max = obj.hStab.ClMax.Value;
 
 vs_chord = obj.vStab.rootChord.Value;
 vs_TR = obj.vStab.TR.Value;
-vs_span = obj.vStab.span.Value;
+vs_span = obj.vStab.halfSpan.Value;
 vs_cl_min = obj.vStab.ClMin.Value;
 vs_cl_max = obj.vStab.ClMax.Value;
 

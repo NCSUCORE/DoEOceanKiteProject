@@ -11,7 +11,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('fullScale4','');
+vhcl.setFluidCoeffsFileName('fullScale1thrCoeffs','');
 
 %% Turbines
 vhcl.setNumTurbines(2,'');
@@ -55,7 +55,7 @@ vhcl.setAllMaxCtrlDefSpeed(60,'deg/s');
 
 %% Wing
 vhcl.setWingRootChord(1,'m');
-vhcl.setWingAR(10,'');
+vhcl.setWingAR(100/9,''); %Span 10, hspan 5
 vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(2.3,'deg');
 vhcl.setWingDihedral(2,'deg');
@@ -68,8 +68,8 @@ vhcl.setWingClMax(1.7,'');
 vhcl.hStab.setRSurfLE_WingLEBdy([5.5;0;0],'m');
 vhcl.hStab.setNumTraps(2,'');
 vhcl.hStab.setRootChord(.5,'m');
-vhcl.hStab.setSpanOrAR('AR',8,'');
 vhcl.hStab.setTR(.8,'');
+vhcl.hStab.setHalfSpanGivenAR(4/.45,''); %Span 4, hspan 2
 vhcl.hStab.setSweep(2.8624,'deg');
 vhcl.hStab.setIncidence(-13.5,'deg');
 vhcl.hStab.setNACA('0015','');
@@ -78,7 +78,7 @@ vhcl.hStab.setClMax(1.7,'');
 
 vhcl.vStab.setRSurfLE_WingLEBdy([5.35;0;0],'m');
 vhcl.vStab.setRootChord(.65,'m');
-vhcl.vStab.setSpanOrAR('Span',2.4375,'m');
+vhcl.vStab.setHalfSpan(2.4375,'m');
 vhcl.vStab.setTR(.8,'');
 vhcl.vStab.setSweep(3.44,'deg');
 vhcl.vStab.setNACA('0015','');

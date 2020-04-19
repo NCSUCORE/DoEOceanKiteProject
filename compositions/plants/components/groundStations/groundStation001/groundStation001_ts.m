@@ -1,7 +1,7 @@
 %% Test script to test the floating ground station simulation and animation
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(100,'s');
+simParams.setDuration(800,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -42,7 +42,7 @@ gndStn.initAngVelVec.setValue([0 0 0],'rad/s');
 %%
 
 simWithMonitor('groundStation001_th')
-tsc = signalcontainer(logsout)
+tsc = signalcontainer(logsout);
 
 
 % vhcl.animateSim(tsc,.4,...
