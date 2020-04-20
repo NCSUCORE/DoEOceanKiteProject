@@ -8,7 +8,7 @@ for ii = 1:3
         % This is the section where the simulation parameters are set. Mainly the
         % length of the simulation
         simParams = SIM.simParams;
-        simParams.setDuration(500,'s');
+        simParams.setDuration(1500,'s');
         dynamicCalc = '';
         
         % runBaseline = true;
@@ -45,7 +45,7 @@ for ii = 1:3
         
         %if you are using constant flow, this is where the constant flow speed is
         %set
-        env.water.setflowVec([1 0 0],'m/s')
+        env.water.setflowVec([flowspeeds(ii) 0 0],'m/s')
         
         %% Set basis parameters for high level controller
         
@@ -53,7 +53,8 @@ for ii = 1:3
         %width of the figure eight, the second determines the height, the third
         %determines the center of the paths elevation angle, the four sets the path
         %centers azimuth angle, the fifth is the initial tether length
-        hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+       hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,tetherLengths(jj)],'[rad rad rad rad m]') % Lemniscate of Booth
+
         
         
         %% Ground Station IC's and dependant properties
@@ -102,13 +103,13 @@ for ii = 1:3
         
         
         %% Run the simulation
-        % this is where the simulation is commanded to run
-        vhcl.setMa6x6_LE([125  0    0     0     0     0;...
-            0   1233 0     -627  0     2585;...
-            0   0    8922  0     -7359 0;...
-            0   -627 0     67503 0     -2892;...
-            9   0    -7359 0     20312 0;...
-            0   2525 0     -2892 0     14381;],'');
+%         % this is where the simulation is commanded to run
+%         vhcl.setMa6x6_B([125  0    0     0     0     0;...
+%             0   1233 0     -627  0     2585;...
+%             0   0    8922  0     -7359 0;...
+%             0   -627 0     67503 0     -2892;...
+%             9   0    -7359 0     20312 0;...
+%             0   2525 0     -2892 0     14381;],'');
         
         
         simWithMonitor('OCTModel')
@@ -116,38 +117,57 @@ for ii = 1:3
         %this stores all of the logged signals from the model. To veiw, type
         %tsc.signalname.data to veiw data, tsc.signalname.plot to plot ect.
         tsc = signalcontainer(logsout);
-        
+        gifString = 'FLOW_SPEED_%0.1f_MPS_TETHER_%dM.gif';
+        gifName = sprintf(gifString,flowspeeds(ii),tetherLengths(jj));
+        % Plot/Animate the Results
+        vhcl.animateSim(tsc,1,...
+            'PathFunc',fltCtrl.fcnName.Value,...
+            'PlotTracer',true,...
+            'FontSize',24,...
+            'PowerBar',false,...
+            'PlotAxes',false,...
+            'TracerDuration',10,...
+            'GifTimeStep',.05,...
+            'ColorTracer',true,...
+            'SaveGif',true,...
+        'GifFile',gifName)
+        load('lapTime.mat')
+        steadyStateLapTime = selLapTime;
         % tsc.FDragBdy.plot
         % tsc.FLiftBdy.plot
-        tscTmp = tsc.resample(5);
-        TimeInSeconds  = tscTmp.FDragBdy.Time;
-        ForceOnHStab    = squeeze(tscTmp.FDragBdyPart.Data(:,3,:)) + squeeze(tscTmp.FDragBdyPart.Data(:,3,:));
+        tscTmp1 = tsc.resample(5);
+        TimeInSeconds  = tscTmp1.FDragBdy.Time;
+        posXYZ =squeeze(tscTmp1.positionVec.Data(:,1,:));
+        xPos = posXYZ(1,:)';
+        yPos = posXYZ(2,:)';
+        zPos = posXYZ(3,:)';
+        ForceOnHStab    = squeeze(tscTmp1.FDragBdyPart.Data(:,3,:)) + squeeze(tscTmp1.FLiftBdyPart.Data(:,3,:));
         ForceOnHStabX    = ForceOnHStab(1,:)';
         ForceOnHStabY    = ForceOnHStab(2,:)';
         ForceOnHStabZ    = ForceOnHStab(3,:)';
         
-        ForceOnVStab    = squeeze(tscTmp.FDragBdyPart.Data(:,4,:)) + squeeze(tscTmp.FDragBdyPart.Data(:,4,:));
+        ForceOnVStab    = squeeze(tscTmp1.FDragBdyPart.Data(:,4,:)) + squeeze(tscTmp1.FLiftBdyPart.Data(:,4,:));
         ForceOnVStabX    = ForceOnVStab(1,:)';
         ForceOnVStabY    = ForceOnVStab(2,:)';
         ForceOnVStabZ    = ForceOnVStab(3,:)';
         
-        ForceOnPortWing = squeeze(tscTmp.FDragBdyPart.Data(:,1,:)) + squeeze(tscTmp.FDragBdyPart.Data(:,1,:));
+        ForceOnPortWing = squeeze(tscTmp1.FDragBdyPart.Data(:,1,:)) + squeeze(tscTmp1.FLiftBdyPart.Data(:,1,:));
         ForceOnPortWingX    = ForceOnPortWing(1,:)';
         ForceOnPortWingY    = ForceOnPortWing(2,:)';
         ForceOnPortWingZ    = ForceOnPortWing(3,:)';
         
-        ForceOnStarWing = squeeze(tscTmp.FDragBdyPart.Data(:,2,:)) + squeeze(tscTmp.FDragBdyPart.Data(:,2,:));
+        ForceOnStarWing = squeeze(tscTmp1.FDragBdyPart.Data(:,2,:)) + squeeze(tscTmp1.FLiftBdyPart.Data(:,2,:));
         ForceOnStarWingX    = ForceOnStarWing(1,:)';
         ForceOnStarWingY    = ForceOnStarWing(2,:)';
         ForceOnStarWingZ    = ForceOnStarWing(3,:)';
         
-        ForceFromTether = squeeze(tscTmp.fThrNetBody.Data);
+        ForceFromTether = squeeze(tscTmp1.FThrNetBdy.Data);
         ForceFromTetherX    = ForceFromTether(1,:)';
         ForceFromTetherY    = ForceFromTether(2,:)';
         ForceFromTetherZ    = ForceFromTether(3,:)';
         
         T = table(TimeInSeconds,ForceOnHStabX,ForceOnHStabY,ForceOnHStabZ,ForceOnVStabX,ForceOnVStabY,ForceOnVStabZ,...
-            ForceOnPortWingX,ForceOnPortWingY,ForceOnPortWingZ,ForceOnStarWingX,ForceOnStarWingY,ForceOnStarWingZ,ForceFromTetherX,ForceFromTetherY,ForceFromTetherZ);
+            ForceOnPortWingX,ForceOnPortWingY,ForceOnPortWingZ,ForceOnStarWingX,ForceOnStarWingY,ForceOnStarWingZ,ForceFromTetherX,ForceFromTetherY,ForceFromTetherZ,xPos,yPos,zPos);
         
         
         filename = 'kiteLoading.xlsx';
@@ -244,16 +264,27 @@ for ii = 1:3
             minForceOnVStabX; maxForceOnVStabX; ninetyPercentileVSforceX; minForceOnVStabY; maxForceOnVStabY; ninetyPercentileVSforceY; minForceOnVStabZ; maxForceOnVStabZ; ninetyPercentileVSforceZ;...
             minForceOnPortWingX; maxForceOnPortWingX; ninetyPercentilePWforceX; minForceOnPortWingY; maxForceOnPortWingY; ninetyPercentilePWforceY; minForceOnPortWingZ; maxForceOnPortWingZ; ninetyPercentilePWforceZ;...
             minForceOnStarWingX; maxForceOnStarWingX; ninetyPercentileSWforceX; minForceOnStarWingY; maxForceOnStarWingY; ninetyPercentileSWforceY; minForceOnStarWingZ; maxForceOnStarWingZ; ninetyPercentileSWforceZ;...
-            minForceFromTetherX;maxForceFromTetherX;ninetyPercentileThrforceX;minForceFromTetherY;maxForceFromTetherY;ninetyPercentileThrforceY;minForceFromTetherZ;maxForceFromTetherZ;ninetyPercentileThrforceZ];
+            minForceFromTetherX;maxForceFromTetherX;ninetyPercentileThrforceX;minForceFromTetherY;maxForceFromTetherY;ninetyPercentileThrforceY;minForceFromTetherZ;maxForceFromTetherZ;ninetyPercentileThrforceZ;steadyStateLapTime];
         
         minMaxPercVecString = [ "minForceOnHStabX"; "maxForceOnHStabX"; "ninetyPercentileHSforceX"; "minForceOnHStabY"; "maxForceOnHStabY"; "ninetyPercentileHSforceY"; "minForceOnHStabZ";" maxForceOnHStabZ"; "ninetyPercentileHSforceZ"; ...
             "minForceOnVStabX"; "maxForceOnVStabX"; "ninetyPercentileVSforceX"; "minForceOnVStabY"; "maxForceOnVStabY"; "ninetyPercentileVSforceY"; "minForceOnVStabZ"; "maxForceOnVStabZ"; "ninetyPercentileVSforceZ";...
             "minForceOnPortWingX"; "maxForceOnPortWingX"; "ninetyPercentilePWforceX"; "minForceOnPortWingY"; "maxForceOnPortWingY"; "ninetyPercentilePWforceY"; "minForceOnPortWingZ"; "maxForceOnPortWingZ";"ninetyPercentilePWforceZ";...
             "minForceOnStarWingX"; "maxForceOnStarWingX"; "ninetyPercentileSWforceX"; "minForceOnStarWingY"; "maxForceOnStarWingY"; "ninetyPercentileSWforceY"; "minForceOnStarWingZ"; "maxForceOnStarWingZ"; "ninetyPercentileSWforceZ";...
-            "minForceFromTetherX";"maxForceFromTetherX";"ninetyPercentileThrforceX";"minForceFromTetherY";"maxForceFromTetherY";"ninetyPercentileThrforceY";"minForceFromTetherZ";"maxForceFromTetherZ";"ninetyPercentileThrforceZ";];
+            "minForceFromTetherX";"maxForceFromTetherX";"ninetyPercentileThrforceX";"minForceFromTetherY";"maxForceFromTetherY";"ninetyPercentileThrforceY";"minForceFromTetherZ";"maxForceFromTetherZ";"ninetyPercentileThrforceZ";"steadyStateLapTime"];
         
         TT = table(minMaxPercVecString,minMaxPercVec);
         writetable(TT,filename,'Sheet',sheetName,'Range','A1')
+        
+         
+        matString = 'FLOW_SPEED_%0.1f_MPS_TETHER_%dM.mat';
+        matName = sprintf(matString,flowspeeds(ii),tetherLengths(jj));
+        save(matName,'minForceOnHStabX',  'maxForceOnHStabX', 'ninetyPercentileHSforceX', 'minForceOnHStabY', 'maxForceOnHStabY', 'ninetyPercentileHSforceY', 'minForceOnHStabZ', 'maxForceOnHStabZ', 'ninetyPercentileHSforceZ', ...
+           'minForceOnVStabX','maxForceOnVStabX', 'ninetyPercentileVSforceX', 'minForceOnVStabY', 'maxForceOnVStabY', 'ninetyPercentileVSforceY', 'minForceOnVStabZ', 'maxForceOnVStabZ', 'ninetyPercentileVSforceZ',...
+            'minForceOnPortWingX', 'maxForceOnPortWingX', 'ninetyPercentilePWforceX', 'minForceOnPortWingY', 'maxForceOnPortWingY', 'ninetyPercentilePWforceY', 'minForceOnPortWingZ', 'maxForceOnPortWingZ', 'ninetyPercentilePWforceZ',...
+            'minForceOnStarWingX', 'maxForceOnStarWingX', 'ninetyPercentileSWforceX', 'minForceOnStarWingY', 'maxForceOnStarWingY', 'ninetyPercentileSWforceY','minForceOnStarWingZ','maxForceOnStarWingZ', 'ninetyPercentileSWforceZ',...
+           'minForceFromTetherX','maxForceFromTetherX','ninetyPercentileThrforceX','minForceFromTetherY','maxForceFromTetherY','ninetyPercentileThrforceY','minForceFromTetherZ','maxForceFromTetherZ','ninetyPercentileThrforceZ','steadyStateLapTime',...
+           'TimeInSeconds','ForceOnHStabX','ForceOnHStabY','ForceOnHStabZ','ForceOnVStabX','ForceOnVStabY','ForceOnVStabZ',...
+            'ForceOnPortWingX','ForceOnPortWingY','ForceOnPortWingZ','ForceOnStarWingX','ForceOnStarWingY','ForceOnStarWingZ','ForceFromTetherX','ForceFromTetherY','ForceFromTetherZ','xPos','yPos','zPos')
         
     end
 end
