@@ -54,6 +54,11 @@ addParameter(p,'PlotTracer',true,@islogical)
 addParameter(p,'GroundStation',[],@(x) isa(x,'OCT.sixDoFStation'))
 % Color tracer according to power production/consumption
 addParameter(p,'ColorTracer',false,@islogical)
+% Change Color tracer variable structure
+% Must have properties: timesignal, min, max, minColor, and maxColor
+% the timesignal must be singular in the non time dimention.
+% the colors should be 3 by 1 vectors with values from 0 to 1.
+addParameter(p,'ColorTracerVariableStruct',false)
 % How long (in seconds) to keep the tracer on for
 addParameter(p,'TracerDuration',5,@isnumeric)
 % Plot a red dot on the closest point on the path
@@ -170,8 +175,8 @@ end
 if p.Results.PlotTracer
     %Build the colorData structure used to interpolate instantaneous power
     %production
-    minPwr = -100 + min(sqrt(sum(squeeze(tscTmp.FThrNetBdy.Data(:,1,:)).^2)) + sqrt(sum(squeeze(tscTmp.FDragBdy.Data(:,1,:)).^2)) + sqrt(sum(squeeze(tscTmp.FLiftBdy.Data(:,1,:)).^2)));%min(tscTmp.winchPower.Data);
-    maxPwr = 100 + max(sqrt(sum(squeeze(tscTmp.FThrNetBdy.Data(:,1,:)).^2)) + sqrt(sum(squeeze(tscTmp.FDragBdy.Data(:,1,:)).^2)) + sqrt(sum(squeeze(tscTmp.FLiftBdy.Data(:,1,:)).^2)));%max(tscTmp.winchPower.Data);
+    minPwr = min(tscTmp.winchPower.Data);
+    maxPwr = max(tscTmp.winchPower.Data);
     
     % If the system never spooled tether
     if minPwr == maxPwr && minPwr ==0
@@ -180,16 +185,12 @@ if p.Results.PlotTracer
     end
     
     colorData.input(1) = minPwr;
-    colorData.input(2) = ((.5*minPwr + .5*maxPwr) + minPwr)/2;
-    colorData.input(3) = .5*minPwr + .5*maxPwr ;
-    colorData.input(4) = ((.5*minPwr + .5*maxPwr) + maxPwr)/2;
-    colorData.input(5) = maxPwr;
+    colorData.input(2) = 0;
+    colorData.input(3) = maxPwr;
     
-    colorData.output(1,:) = [0 0 1];
-    colorData.output(2,:) = [0 1 0];
-    colorData.output(3,:) = [1 1 0];
-    colorData.output(4,:) = [ 1 .5 0];
-    colorData.output(5,:) = [1 0 0];
+    colorData.output(1,:) = [0.8 0 0];
+    colorData.output(2,:) = 0.8*[1 1 1];
+    colorData.output(3,:) = [0 0.8 0];
     
     for ii = 1:round(p.Results.TracerDuration/p.Results.timeStep)
         h.tracer(ii) = line([nan nan],[nan nan],[nan nan],...
@@ -416,9 +417,9 @@ if p.Results.PowerBar
         'HeadStyle','none',...
         'LineWidth',1.5);
 end
-set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
+% set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 1 1]);
 % Get rid of tool bar and pulldown menus that are along top of figure.
-set(gcf, 'Toolbar', 'none', 'Menu', 'none');
+% set(gcf, 'Toolbar', 'none', 'Menu', 'none');
 % Plot the tangent coordinate system
 if p.Results.TangentCoordSys
     h.tanCoordX = plot3(...
@@ -537,29 +538,21 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.tracer(end).YData(end+1) = newLine.YData(1);
         h.tracer(end).ZData(end+1) = newLine.ZData(1);
         
-%         size(sum(squeeze(tsc.FDragBdy.Data(:,1,:)).^2))
-
-% size(sum(squeeze(tsc.FLiftBdy.Data(:,1,:)).^2))
-
-
-% size(sum(squeeze(tsc.FThrNetBdy.Data(:,1,:)).^2))
-        
-        interpColorJames = sqrt(sum(squeeze(tscTmp.FThrNetBdy.getsamples(ii).Data(:,1,:)).^2)) ...
-           + sqrt(sum(squeeze(tscTmp.FLiftBdy.getsamples(ii).Data(:,1,:)).^2))...
-           + sqrt(sum(squeeze(tscTmp.FDragBdy.getsamples(ii).Data(:,1,:)).^2));%+ tscTmp.winchPower.getsamples(ii).Data + tscTmp.winchPower.getsamples(ii).Data;
         if p.Results.ColorTracer
-            newColor = [ interp1(colorData.input,colorData.output(:,1),interpColorJames ),...
-                  interp1(colorData.input,colorData.output(:,2),interpColorJames ),...
-                  interp1(colorData.input,colorData.output(:,3),interpColorJames )];
-                
-%                 interp1(colorData.input,colorData.output(:,1),tscTmp.winchPower.getsamples(ii).Data),...
-%                 interp1(colorData.input,colorData.output(:,2),tscTmp.winchPower.getsamples(ii).Data),...
-%                 interp1(colorData.input,colorData.output(:,3),tscTmp.winchPower.getsamples(ii).Data)];
-try
+            if ~isstruct(p.Results.ColorTracerVariableStruct)
+                newColor = [...
+                    interp1(colorData.input,colorData.output(:,1),tscTmp.winchPower.getsamples(ii).Data),...
+                    interp1(colorData.input,colorData.output(:,2),tscTmp.winchPower.getsamples(ii).Data),...
+                    interp1(colorData.input,colorData.output(:,3),tscTmp.winchPower.getsamples(ii).Data)];
+            else
+                varStruct = p.Results.ColorTracerVariableStruct;
+                currentVal = varStruct.timesignal.getsampleusingtime(tscTmp.positionVec.getsamples(ii).Time).Data;
+                currentVal = min(max(currentVal,varStruct.min),varStruct.max);
+                newColor = [interp1([varStruct.min varStruct.max],[varStruct.minColor(1) varStruct.maxColor(1)],currentVal,'linear','extrap');...
+                            interp1([varStruct.min varStruct.max],[varStruct.minColor(2) varStruct.maxColor(2)],currentVal,'linear','extrap');...
+                            interp1([varStruct.min varStruct.max],[varStruct.minColor(3) varStruct.maxColor(3)],currentVal,'linear','extrap')];
+            end
             newLine.Color = newColor;
-catch
-   b = 1; 
-end
         end
         h.tracer = [h.tracer(2:end) newLine];
         uistack(h.tracer(end),'top');
