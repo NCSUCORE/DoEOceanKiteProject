@@ -103,5 +103,5 @@ tsc = signalcontainer(logsout);
 
 %%
 vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-    'PlotTracer',true,'FontSize',18)
+    'PlotTracer',false,'FontSize',18)
 

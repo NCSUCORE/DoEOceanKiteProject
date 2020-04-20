@@ -6,7 +6,7 @@ loadComponent('fullScale1Thr')
 
 gndStn = vhcl;
 
-vhcl.scale(20,1);
+vhcl.scale(50,1);
 GROUNDSTATION         = 'groundStation002';
 
 %% save file in its respective directory
