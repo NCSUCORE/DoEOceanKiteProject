@@ -2,7 +2,7 @@ clear
 clc
 format compact
 
-loadComponent('pathFollowingVhclForComp')
+loadComponent('fullScale1Thr')
 
 gndStn = vhcl;
 

@@ -22,7 +22,7 @@ loadComponent('oneDOFWnch');
 % Tether
 loadComponent('fiveNodeSingleTether');
 % Vehicle
-loadComponent('pathFollowingVhclForComp');
+loadComponent('fullScale1Thr');
 % Environment
 loadComponent('constXYZT');
 % Sensors
@@ -51,9 +51,10 @@ hiLvlCtrl.basisParams.setValue(...
 %% Ground Station IC's and dependant properties
 
 % this is where the ground station initial parameters are set. 
-gndStn.setBuoyFactor(0,'')
-gndStn.initAngPos.setValue(0,'rad');
-gndStn.initAngVel.setValue(0,'rad/s');
+gndStn.setInitPosVecGnd([0 0 0],'m')
+gndStn.setInitVelVecBdy([0 0 0],'m/s')
+gndStn.setInitEulAng([0 0 0],'rad')
+gndStn.setInitAngVelVec([0 0 0],'rad/s')
 
 %% Set vehicle initial conditions
 
@@ -62,15 +63,15 @@ vhcl.setICsOnPath(...
     0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    gndStn.posVec.Value,... % Center point of path sphere
+    gndStn.initPosVecGnd.Value,... % Center point of path sphere
     (11/2)*norm(env.water.flowVec.Value)) % Initial speed
 
 %% Tethers IC's and dependant properties'
 
 % This is where the Kite tether initial conditions and parameter values are
 % set
-thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
-    +gndStn.posVec.Value(:),'m');
+thr.tether1.initGndNodePos.setValue(gndStn.thrAttchPts_B.posVec.Value(:)...
+    +gndStn.initPosVecGnd.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 
@@ -81,7 +82,7 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
 %this sets the initial tether length that the winch has spooled out
-wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,env.water.flowVec.Value);
 
 %% Controller User Def. Parameters and dependant properties
 
@@ -90,7 +91,7 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % Set initial conditions
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
-    gndStn.posVec.Value);
+    gndStn.initPosVecGnd.Value);
 
 %% 
 % fltCtrl.rollMoment.setKp(fltCtrl.rollMoment.kp.Value/10,fltCtrl.rollMoment.kp.Unit);
