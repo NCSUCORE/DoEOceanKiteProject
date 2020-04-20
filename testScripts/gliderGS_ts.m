@@ -2,7 +2,7 @@
 % -Mitchell
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(0,'s');
+simParams.setDuration(60,'s');
 
 %% Load components
 
@@ -44,7 +44,7 @@ env.water.setflowVec([1 0 0],'m/s')
 %determines the center of the paths elevation angle, the four sets the path
 %centers azimuth angle, the fifth is the initial tether length
 hiLvlCtrl.basisParams.setValue(...
-    [.8,1.6,-20*pi/180,0*pi/180,125],...
+    [.8,1.6,20*pi/180,0*pi/180,125],...
     '[rad rad rad rad m]') % Lemniscate of Booth
 
 
@@ -93,37 +93,15 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.initPosVecGnd.Value);
 
-%% 
-% fltCtrl.rollMoment.setKp(fltCtrl.rollMoment.kp.Value/10,fltCtrl.rollMoment.kp.Unit);
-% fltCtrl.rollMoment.setKi(fltCtrl.rollMoment.ki.Value/10,fltCtrl.rollMoment.ki.Unit);
-% fltCtrl.rollMoment.setKd(fltCtrl.rollMoment.kd.Value*10,fltCtrl.rollMoment.kd.Unit);
-
-
-%% Scale everything down
-fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
-gndStn.scale(lengthScaleFactor,densityScaleFactor);
-hiLvlCtrl.scale(lengthScaleFactor,densityScaleFactor);
-vhcl.scale(lengthScaleFactor,densityScaleFactor);
-wnch.scale(lengthScaleFactor,densityScaleFactor);
-thr.scale(lengthScaleFactor,densityScaleFactor);
-env.scale(lengthScaleFactor,densityScaleFactor);
-simParams.scale(lengthScaleFactor,densityScaleFactor);
-
-
 %% Run the simulation
 % this is where the simulation is commanded to run
-simWithMonitor('OCTModel')
+sim('OCTModel')
 
 %this stores all of the logged signals from the model. To veiw, type
 %tsc.signalname.data to view data, tsc.signalname.plot to plot etc.
 tsc = signalcontainer(logsout);
 
 %%
-tsc.ctrlSurfDeflCmd.plot
-% figure
-% tsc.velocityVec.plot
-% 
-% %% this animates the simulation
 vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
     'PlotTracer',true,'FontSize',18)
 

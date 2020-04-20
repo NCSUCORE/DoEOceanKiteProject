@@ -45,13 +45,13 @@ env.water.setflowVec([1 0 0],'m/s')
 %width of the figure eight, the second determines the height, the third
 %determines the center of the paths elevation angle, the four sets the path
 %centers azimuth angle, the fifth is the initial tether length
-hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.4,20*pi/180,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
 
 
 %% Ground Station IC's and dependant properties
 
 % this is where the ground station initial parameters are set.
-gndStn.setPosVec([0 0 200],'m')
+gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
 
@@ -103,26 +103,15 @@ vhcl.setMa6x6_LE([125  0    0     0     0     0;...
     0   2525 0     -2892 0     14381;],'');
 
 
-simWithMonitor('OCTModel')
+sim('OCTModel')
 
 %this stores all of the logged signals from the model. To veiw, type
 %tsc.signalname.data to veiw data, tsc.signalname.plot to plot ect.
 tsc = signalcontainer(logsout);
 
 %%
-fNet = tsc.FLiftBdyPart + tsc.FDragBdyPart;
-
-fPort = timesignal(timeseries(squeeze(fNet.Data(:,1,:)),fNet.Time));
-fStar = timesignal(timeseries(squeeze(fNet.Data(:,2,:)),fNet.Time));
-fHStb = timesignal(timeseries(squeeze(fNet.Data(:,3,:)),fNet.Time));
-fVStb = timesignal(timeseries(squeeze(fNet.Data(:,4,:)),fNet.Time));
-
-fPort.Name = 'PortFVecBdy';
-fStar.Name = 'StarFVecBdy';
-fHStb.Name = 'HStbFVecBdy';
-fVStb.Name = 'VStbFVecBdy';
-
-fPort.writeToExcel('Loading.xls')
-fStar.writeToExcel('Loading.xls')
-fHStb.writeToExcel('Loading.xls')
-fVStb.writeToExcel('Loading.xls')
+vhcl.animateSim(tsc,.1,...
+    'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',true,...
+    'FontSize',24,...
+    'TracerDuration',10)
