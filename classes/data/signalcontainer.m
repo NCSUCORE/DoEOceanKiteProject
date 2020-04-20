@@ -249,6 +249,14 @@ classdef signalcontainer < dynamicprops
             end
         end
         
+        function writeToExcel(obj,fileName,sigNames)
+            for ii = 1:numel(sigNames)
+                obj.(sigNames{ii}).writeToExcel(fileName)
+            end
+        end
+        
+        
+        
     end
 end
 

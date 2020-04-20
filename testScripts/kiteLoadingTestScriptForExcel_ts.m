@@ -53,7 +53,7 @@ for ii = 1:3
         %width of the figure eight, the second determines the height, the third
         %determines the center of the paths elevation angle, the four sets the path
         %centers azimuth angle, the fifth is the initial tether length
-        hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'') % Lemniscate of Booth
+        hiLvlCtrl.basisParams.setValue([1,1.4,-20*pi/180,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
         
         
         %% Ground Station IC's and dependant properties

@@ -289,6 +289,30 @@ classdef timesignal < timeseries
         function x = getdatasamplesholdlast(obj,indx)
             x = obj.getdatasamples(min([indx,numel(obj.Time)]));
         end
+        
+        % Function to return data in table format
+        function tb = table(obj)
+            data = [];
+            dims = size(obj.Data);
+            tDimMask = numel(obj.Time)==dims;
+            
+            % put time in the first column and reshape the others to rows
+            data = [obj.Time(:) reshape(obj.Data,[numel(obj.Time) prod(dims(~tDimMask))])];
+            % build column headers
+            [r,c] = ind2sub(size(obj.getdatasamples(1)),1:numel(obj.getdatasamples(1)));
+            heads{1} = 'Time';
+            for ii = 1:numel(r)
+               heads{ii+1} = sprintf('(%d,%d)',r(ii),c(ii));
+            end
+            tb = array2table(data);
+            tb.Properties.VariableNames = heads;
+        end
+        
+        % Function to write to excel
+        function writeToExcel(obj,fileName)
+            writetable(obj.table,fileName,...
+                    'WriteVariableNames',true,'Sheet',obj.Name);
+        end
     end
 end
 
