@@ -34,6 +34,10 @@ switch evalin('base','class(gndStn)')
         numNodesAnchor    = evalin('base','thr.numNodes.Value');   % Get the number of nodes
         numTethersAnchor  = evalin('base','gndStn.anchThrs.numTethers.Value'); % Get the number of tethers
         gndStnLmpMasPos = evalin('base','gndStn.lumpedMassPositionMatrixBdy.Value');
+    case 'OCT.vehicle'
+        numNodesAnchor      = 2; % anchor tether node signal is used for vehicle poll positions
+        numTethersAnchor    = 1; % Get the number of tethers
+        gndStnLmpMasPos = [evalin('base','gndStn.fluidMomentArms.Value') zeros(3,7)]; % fluid centers, 4, fuselage centers, 1, gradient poll positions, 6
     otherwise
         dbstack
         error('Unknown ground station class')
