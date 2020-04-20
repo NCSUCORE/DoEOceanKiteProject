@@ -20,7 +20,7 @@ waveNumber  =  (Frequencies.^2)/9.81;
 tetherL = [125,200];
 flowSpeeds = [1,2];
 
-for kk = 1:1
+for kk = 1:2
     for jj = 1:13
         for ii = 1:1
             
@@ -59,17 +59,25 @@ for kk = 1:1
             % loadComponent('CNAPsNoTurbJosh');
             % loadComponent('CNAPsTurbJames');
             % loadComponent('CNAPsTurbMitchell');
-%             loadComponent('ConstXYZT');
+            %             loadComponent('ConstXYZT');
             loadComponent('hurricaneSandyWave')
             
             
             env.waterWave.waveParamMat.setValue([waveNumber(jj),Frequencies(jj),Amplitudes(jj) ,0;0,0,0,0],'')
-%              env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
+            %              env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
             env.water.setflowVec([flowSpeeds(kk) 0 0],'m/s')
             
-            %% Set basis parameters for high level controller
-            % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-            hiLvlCtrl.basisParams.setValue([1,1.4,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+            if flowSpeeds(kk) == 1
+                %% Set basis parameters for high level controller
+                % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
+                hiLvlCtrl.basisParams.setValue([1,2.4,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+                
+            else
+                %% Set basis parameters for high level controller
+                % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
+                hiLvlCtrl.basisParams.setValue([1.4,2.4,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+                
+            end
             %% Ground Station IC's and dependant properties
             gndStn.setPosVec([0 0 200],'m')
             gndStn.initAngPos.setValue(0,'rad');
@@ -109,7 +117,7 @@ for kk = 1:1
             try
                 load('pow.mat')
                 
-                powerMatSaverKiteBigStation(ii,jj,kk) = powAvg;
+                powerMatSaverKiteBigStation(jj,kk) = powAvg;
                 
                 
             catch

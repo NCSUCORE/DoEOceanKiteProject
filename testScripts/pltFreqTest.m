@@ -8,15 +8,15 @@ waveNumber  =  (Frequencies.^2)/9.81;
 tetherL = [125,200];
 flowSpeeds = [1,2];
 
-tetherDist = [ 200 250 300 350 400]; 
+tetherDist = [ 200 250 300 350 400];
 
 
-heights = [4 4.5 5 5.5 6 6.5];
-for qq = 1:5
-    for pp = 1:6
+heights = [4 8];
+for qq = 3:3
+    for pp = 1:2
         for kk = 1:2
             for jj = 1:13
-                for ii = 1:2
+                for ii = 1:1
                     
                     clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'ii' 'jj' 'qq' 'powerMatSaverKiteFloatingStation' 'kk' 'tetherL'  'flowSpeeds' 'heights' 'pp' 'tetherDist'
                     
@@ -143,7 +143,7 @@ for qq = 1:5
                     clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'ii' 'jj' 'qq' 'pp' 'powerMatSaverKiteFloatingStation' 'kk' 'tetherL'  'flowSpeeds' 'heights' 'tetherDist'
                     clc;close all
                     simParams = SIM.simParams;
-                    simParams.setDuration(1000,'s');
+                    simParams.setDuration(2000,'s');
                     dynamicCalc = '';
                     
                     %% Load components
@@ -183,9 +183,17 @@ for qq = 1:5
                     %              env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
                     env.water.setflowVec([flowSpeeds(kk) 0 0],'m/s')
                     
-                    %% Set basis parameters for high level controller
-                    % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-                    hiLvlCtrl.basisParams.setValue([1,1.4,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+                    if flowSpeeds(kk) == 1
+                        %% Set basis parameters for high level controller
+                        % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
+                        hiLvlCtrl.basisParams.setValue([1,2.4,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+                        
+                    else
+                        %% Set basis parameters for high level controller
+                        % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
+                        hiLvlCtrl.basisParams.setValue([1.4,2.4,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+                        
+                    end
                     %% Ground Station IC's and dependant properties
                     gndStn.initPosVecGnd.setValue([0 0 200],'m')
                     gndStn.initEulAng.setValue([0;0;0],'rad');
@@ -225,9 +233,9 @@ for qq = 1:5
                     try
                         load('pow.mat')
                         
-                        tpowerMatSaverKiteFloatingStation(ii,jj,kk,pp,qq) = powAvg;
+                        powerMatSaverKiteFloatingStation(ii,jj,kk,pp,qq) = powAvg;
                         
-                        
+                       save('powerMatSaverKiteFloatingStation.mat','powerMatSaverKiteFloatingStation')
                     catch
                     end
                     
@@ -237,3 +245,8 @@ for qq = 1:5
         end
     end
 end
+
+plot(tsc.winchPower.Time,tsc.winchPower.Data)
+title('Power (W)')
+xlabel('Time')
+ylabel('Power (Watts)')
