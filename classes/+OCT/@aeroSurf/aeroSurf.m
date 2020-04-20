@@ -269,7 +269,7 @@ classdef aeroSurf < handle
         end
         %% Other Methods
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
-            props = properties(obj);
+            props = findAttrValue(obj,'SetAccess','private');
             for ii = 1:numel(props)
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end

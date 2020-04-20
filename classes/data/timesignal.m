@@ -58,10 +58,10 @@ classdef timesignal < timeseries
                         % If the data is 4D, slice along 3rd dimension,
                         % call plotting on each of the slides
                         for ii = 1:size(obj.Data,3)
-                           figure('Name',sprintf('Slice %d',ii));
-                           newObj = timesignal(obj);
-                           newObj.Data = squeeze(obj.Data(:,:,ii,:));
-                           newObj.plot;
+                            figure('Name',sprintf('Slice %d',ii));
+                            newObj = timesignal(obj);
+                            newObj.Data = squeeze(obj.Data(:,:,ii,:));
+                            newObj.plot;
                         end
                         return
                         % If the signal is 5D or higher, no plot method
@@ -125,7 +125,7 @@ classdef timesignal < timeseries
                         else
                             error("You need to specify dimentions with plotMag('vectorDim',#,...)")
                         end
-                end     
+                end
             end
             newobj=timesignal(obj);
             newobj.Data = sqrt(sum(obj.Data.^2,vdim));
@@ -145,7 +145,7 @@ classdef timesignal < timeseries
             close(hFig);
             newobj = newobj.crop(min(x),max(x));
         end
-
+        
         % Function to crop things
         function newObj = crop(obj,varargin)
             newObj = timesignal(obj);
@@ -162,7 +162,7 @@ classdef timesignal < timeseries
                     end
                 case 2
                     % If two inputs, take the first as start and second as end
-%                     getsampleusingtime@timeseries(newObj,varargin{1},varargin{2})
+                    %                     getsampleusingtime@timeseries(newObj,varargin{1},varargin{2})
                     newObj = timesignal(newObj.getsampleusingtime(varargin{1},varargin{2}));
                 otherwise
                     % If they gave more inputs, throw error
@@ -264,30 +264,69 @@ classdef timesignal < timeseries
         
         % Plot 3D vector as a trace in space
         function h = plot3(obj,varargin)
-           nt = numel(obj.Time);
-           sz = size(obj.getsamples(1).Data);
-           switch find(sz==3)
-               case 1 % First dimension is 3
-                   indX={1,1,1:nt};
-                   indY={2,1,1:nt};
-                   indZ={3,1,1:nt};
-               case 2 % Second dimension is 3
-                   indX={1,1,1:nt};
-                   indY={1,2,1:nt};
-                   indZ={1,3,1:nt};
-               otherwise
-              error('Incorrect data dimensions')     
-           end
-           h = plot3(...
-               squeeze(obj.Data(indX{:})),...
-               squeeze(obj.Data(indY{:})),...
-               squeeze(obj.Data(indZ{:})),varargin{:});
+            nt = numel(obj.Time);
+            sz = size(obj.getsamples(1).Data);
+            switch find(sz==3)
+                case 1 % First dimension is 3
+                    indX={1,1,1:nt};
+                    indY={2,1,1:nt};
+                    indZ={3,1,1:nt};
+                case 2 % Second dimension is 3
+                    indX={1,1,1:nt};
+                    indY={1,2,1:nt};
+                    indZ={1,3,1:nt};
+                otherwise
+                    error('Incorrect data dimensions')
+            end
+            h = plot3(...
+                squeeze(obj.Data(indX{:})),...
+                squeeze(obj.Data(indY{:})),...
+                squeeze(obj.Data(indZ{:})),varargin{:});
         end
         
         % Function that returns gets a sample but holds value at the last
         % known value if polled after last known value
         function x = getdatasamplesholdlast(obj,indx)
             x = obj.getdatasamples(min([indx,numel(obj.Time)]));
+        end
+        
+        % Function to return data in table format
+        function tb = table(obj)
+            data = [];
+            dims = size(obj.Data);
+            tDimMask = numel(obj.Time)==dims;
+            
+            % Put time in the first column and reshape the others to rows
+            obj = obj.samplereshape(prod(dims(~tDimMask)));
+            data = [obj.Time(:) obj.Data];
+            % build column headers
+            [r,c] = ind2sub(size(obj.getdatasamples(1)),1:numel(obj.getdatasamples(1)));
+            heads{1} = 'Time';
+            for ii = 1:numel(r)
+                heads{ii+1} = sprintf('(%d,%d)',r(ii),c(ii));
+            end
+            tb = array2table(data);
+            tb.Properties.VariableNames = heads;
+        end
+        
+        % Function to write to excel
+        function writeToExcel(obj,fileName)
+            writetable(obj.table,fileName,...
+                'WriteVariableNames',true,'Sheet',obj.Name);
+        end
+        
+        function obj = samplereshape(obj,dims)
+            nt = numel(obj.Time);
+            if obj.IsTimeFirst
+                newDims = [nt dims(:)'];
+            else
+                newDims = [dims(:)' nt];
+            end
+            newData = reshape(obj.Data,newDims);
+            if ismatrix(newData) && size(newData,2) == numel(obj.Time)
+                newData = newData';
+            end
+            obj.Data = newData;
         end
     end
 end

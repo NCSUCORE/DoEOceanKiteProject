@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 gndStn.mass.Value = 5.0894e+05
 gndStn.mass.Unit = 'kg'
 gndStn.mass.NoScale = false
@@ -370,3 +371,327 @@ gndStn.pltThrAttchPt4.posVec.Value = [-9;1.10218211923262e-15;-3]
 gndStn.pltThrAttchPt4.posVec.Unit = 'm'
 gndStn.pltThrAttchPt4.posVec.NoScale = false
 gndStn.pltThrAttchPt4.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+=======
+gndStn.mass.Value = 2.2619e+05
+gndStn.mass.Unit = 'kg'
+gndStn.mass.NoScale = false
+gndStn.mass.Description = 'Total mass of system'
+gndStn.inertia.Value = [2035752.03952619 0 0;0 2035752.03952619 0;0 0 4071504.07905237]
+gndStn.inertia.Unit = 'kg*m^2'
+gndStn.inertia.NoScale = false
+gndStn.inertia.Description = '3x3 inertia matrix'
+gndStn.volume.Value = 4.5239e+02
+gndStn.volume.Unit = 'm^3'
+gndStn.volume.NoScale = false
+gndStn.volume.Description = 'Total volume used in buoyancy calculation'
+gndStn.lumpedMassNetBouyancyForce.Value = [0 0 54121.2127581352]
+gndStn.lumpedMassNetBouyancyForce.Unit = 'N'
+gndStn.lumpedMassNetBouyancyForce.NoScale = false
+gndStn.lumpedMassNetBouyancyForce.Description = 'lumped mass bouyancy force'
+gndStn.gravForcePerLM.Value = [0 0 -27060.6063790676]
+gndStn.gravForcePerLM.Unit = 'N'
+gndStn.gravForcePerLM.NoScale = false
+gndStn.gravForcePerLM.Description = 'lumped mass gravity force'
+gndStn.cdX.Value = 1.0000e+00
+gndStn.cdX.Unit is unitless or has no unit specified
+gndStn.cdX.NoScale = false
+gndStn.cdX.Description = 'lumped mass drag coefficiant x direction'
+gndStn.cdY.Value = 1.0000e+00
+gndStn.cdY.Unit is unitless or has no unit specified
+gndStn.cdY.NoScale = false
+gndStn.cdY.Description = 'lumped mass drag coefficiant y direction'
+gndStn.cdZ.Value = 1.0000e+00
+gndStn.cdZ.Unit is unitless or has no unit specified
+gndStn.cdZ.NoScale = false
+gndStn.cdZ.Description = 'lumped mass drag coefficiant z direction'
+gndStn.aMX.Value = 1.0000e-01
+gndStn.aMX.Unit is unitless or has no unit specified
+gndStn.aMX.NoScale = false
+gndStn.aMX.Description = 'lumped mass added mass coefficiant x direction'
+gndStn.aMY.Value = 1.0000e-01
+gndStn.aMY.Unit is unitless or has no unit specified
+gndStn.aMY.NoScale = false
+gndStn.aMY.Description = 'lumped mass added mass coefficiant y direction'
+gndStn.aMZ.Value = 1.0000e-01
+gndStn.aMZ.Unit is unitless or has no unit specified
+gndStn.aMZ.NoScale = false
+gndStn.aMZ.Description = 'lumped mass added mass coefficiant z direction'
+gndStn.lumpedMassPositionMatrixBdy.Value is too big to display and takes up 1.9680e+03 bytes
+gndStn.lumpedMassPositionMatrixBdy.Unit = 'm'
+gndStn.lumpedMassPositionMatrixBdy.NoScale = false
+gndStn.lumpedMassPositionMatrixBdy.Description = 'lumped mass position matrix'
+gndStn.lumpedMassSphereRadius.Value = 5.0000e-01
+gndStn.lumpedMassSphereRadius.Unit = 'm'
+gndStn.lumpedMassSphereRadius.NoScale = false
+gndStn.lumpedMassSphereRadius.Description = 'lumped mass sphere radius'
+gndStn.angMatExt.Value = [0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214]
+gndStn.angMatExt.Unit = 'rad'
+gndStn.angMatExt.NoScale = false
+gndStn.angMatExt.Description = 'the angle on a cylinder that the exterior lumped masses lie'
+gndStn.zMatExt.Value = [-2 -2 -2 -2 -2 -2 -2 -2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 -1 -1 -1 -1 -1 -1 -1 -1]
+gndStn.zMatExt.Unit = 'm'
+gndStn.zMatExt.NoScale = false
+gndStn.zMatExt.Description = 'the z coordinate on a cylinder that the exterior lumped masses lie'
+gndStn.rMatExt.Value = [6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6]
+gndStn.rMatExt.Unit = 'm'
+gndStn.rMatExt.NoScale = false
+gndStn.rMatExt.Description = 'the radius on a cylinder that the exterior lumped masses lie'
+gndStn.angMatT.Value = [0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0]
+gndStn.angMatT.Unit = 'rad'
+gndStn.angMatT.NoScale = false
+gndStn.angMatT.Description = 'the angle on a cylinder that the top  lumped masses lie'
+gndStn.zMatT.Value = [2 2 2 2 2 2 2 2 2]
+gndStn.zMatT.Unit = 'm'
+gndStn.zMatT.NoScale = false
+gndStn.zMatT.Description = 'the z coordinate on a cylinder that the top lumped masses lie'
+gndStn.rMatT.Value = [3 3 3 3 3 3 3 3 0]
+gndStn.rMatT.Unit = 'm'
+gndStn.rMatT.NoScale = false
+gndStn.rMatT.Description = 'the radius on a cylinder that the top lumped masses lie'
+gndStn.angMatB.Value = [0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0]
+gndStn.angMatB.Unit = 'rad'
+gndStn.angMatB.NoScale = false
+gndStn.angMatB.Description = 'the angle on a cylinder that the bottom lumped masses lie'
+gndStn.zMatB.Value = [-2 -2 -2 -2 -2 -2 -2 -2 -2]
+gndStn.zMatB.Unit = 'm'
+gndStn.zMatB.NoScale = false
+gndStn.zMatB.Description = 'the z coordinate on a cylinder that the bottom lumped masses lie'
+gndStn.rMatB.Value = [3 3 3 3 3 3 3 3 0]
+gndStn.rMatB.Unit = 'm'
+gndStn.rMatB.NoScale = false
+gndStn.rMatB.Description = 'the radius on a cylinder that the top bottom masses lie'
+gndStn.angMatInt.Value = [0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214 0 0.785398163397448 1.5707963267949 2.35619449019234 3.14159265358979 3.92699081698724 4.71238898038469 5.49778714378214]
+gndStn.angMatInt.Unit = 'rad'
+gndStn.angMatInt.NoScale = false
+gndStn.angMatInt.Description = 'the angle on a cylinder that the interior lumped masses lie'
+gndStn.zMatInt.Value = [-1 -1 -1 -1 -1 -1 -1 -1 1 1 1 1 1 1 1 1 -0.5 -0.5 -0.5 -0.5 -0.5 -0.5 -0.5 -0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5]
+gndStn.zMatInt.Unit = 'm'
+gndStn.zMatInt.NoScale = false
+gndStn.zMatInt.Description = 'the z coordinate on a cylinder that the interior lumped masses lie'
+gndStn.rMatInt.Value = [3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3]
+gndStn.rMatInt.Unit = 'm'
+gndStn.rMatInt.NoScale = false
+gndStn.rMatInt.Description = 'the radius on a cylinder that the interior lumped masses lie'
+gndStn.cylRad.Value = 6.0000e+00
+gndStn.cylRad.Unit = 'm'
+gndStn.cylRad.NoScale = false
+gndStn.cylRad.Description = 'the radius of the cylinder'
+gndStn.cylTotH.Value = 4.0000e+00
+gndStn.cylTotH.Unit = 'm'
+gndStn.cylTotH.NoScale = false
+gndStn.cylTotH.Description = 'the cylinder total height'
+gndStn.angSpac.Value = 7.8540e-01
+gndStn.angSpac.Unit = 'rad'
+gndStn.angSpac.NoScale = false
+gndStn.angSpac.Description = 'the lumped Mass Angle Spacing'
+gndStn.heightSpac.Value = 1.0000e+00
+gndStn.heightSpac.Unit = 'm'
+gndStn.heightSpac.NoScale = false
+gndStn.heightSpac.Description = 'the gnd station height spacing'
+gndStn.lumpedMassNormalVecMat.Value is too big to display and takes up 1.9680e+03 bytes
+gndStn.lumpedMassNormalVecMat.Unit is unitless or has no unit specified
+gndStn.lumpedMassNormalVecMat.NoScale = false
+gndStn.lumpedMassNormalVecMat.Description = 'normal vectors of the area of each lumped mass'
+gndStn.lumpedMassAreaMat.Value is too big to display and takes up 1.9680e+03 bytes
+gndStn.lumpedMassAreaMat.Unit = 'm^2'
+gndStn.lumpedMassAreaMat.NoScale = false
+gndStn.lumpedMassAreaMat.Description = 'area of each lumped mass'
+gndStn.initPosVecGnd.Value = [0 0 200]
+gndStn.initPosVecGnd.Unit = 'm'
+gndStn.initPosVecGnd.NoScale = false
+gndStn.initPosVecGnd.Description = 'Initial position of the station in the ground frame.'
+gndStn.initVelVecBdy.Unit = 'm/s'
+gndStn.initVelVecBdy.NoScale = false
+gndStn.initVelVecBdy.Description = 'Initial velocity of the station in the ground frame.'
+gndStn.initEulAng.Unit = 'rad'
+gndStn.initEulAng.NoScale = false
+gndStn.initEulAng.Description = 'Initial Euler angles of the station in the ground frame, radians.'
+gndStn.initAngVelVec.Unit = 'rad/s'
+gndStn.initAngVelVec.NoScale = false
+gndStn.initAngVelVec.Description = 'Initial angular velocity of the station in the ground frame, radians per sec'
+gndStn.initAnchTetherLength.Value = [273.042284271136 273.042284271136 273.042284271136]
+gndStn.initAnchTetherLength.Unit = 'm'
+gndStn.initAnchTetherLength.NoScale = false
+gndStn.initAnchTetherLength.Description = 'Unstretched Tether Length'
+gndStn.numTethers.Value = 1.0000e+00
+gndStn.numTethers.Unit is unitless or has no unit specified
+gndStn.numTethers.NoScale = false
+gndStn.numTethers.Description = 'number of tethers from GS to KITE'
+gndStn.anchThrs.numTethers.Value = 3.0000e+00
+gndStn.anchThrs.numTethers.Unit is unitless or has no unit specified
+gndStn.anchThrs.numTethers.NoScale = true
+gndStn.anchThrs.numNodes.Value = 2.0000e+00
+gndStn.anchThrs.numNodes.Unit is unitless or has no unit specified
+gndStn.anchThrs.numNodes.NoScale = true
+gndStn.anchThrs.numNodes.Description = 'Number of nodes in each tether, all tethers have the same number of nodes'
+gndStn.anchThrs.maxPercentageElongation.Value = 5.0000e-02
+gndStn.anchThrs.maxPercentageElongation.Unit is unitless or has no unit specified
+gndStn.anchThrs.maxPercentageElongation.NoScale = false
+gndStn.anchThrs.maxAppFlowMultiplier.Value = 2.0000e+00
+gndStn.anchThrs.maxAppFlowMultiplier.Unit is unitless or has no unit specified
+gndStn.anchThrs.maxAppFlowMultiplier.NoScale = false
+gndStn.anchThrs.tether2.numNodes.Value = 2.0000e+00
+gndStn.anchThrs.tether2.numNodes.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether2.numNodes.NoScale = true
+gndStn.anchThrs.tether2.diameter.Value = 5.0000e-02
+gndStn.anchThrs.tether2.diameter.Unit = 'm'
+gndStn.anchThrs.tether2.diameter.NoScale = false
+gndStn.anchThrs.tether2.youngsMod.Value = 5.0000e+11
+gndStn.anchThrs.tether2.youngsMod.Unit = 'Pa'
+gndStn.anchThrs.tether2.youngsMod.NoScale = false
+gndStn.anchThrs.tether2.vehicleMass.Value = 2.2619e+05
+gndStn.anchThrs.tether2.vehicleMass.Unit = 'kg'
+gndStn.anchThrs.tether2.vehicleMass.NoScale = false
+gndStn.anchThrs.tether2.dampingRatio.Value = 3.0000e-01
+gndStn.anchThrs.tether2.dampingRatio.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether2.dampingRatio.NoScale = false
+gndStn.anchThrs.tether2.dragCoeff.Value = 5.0000e-01
+gndStn.anchThrs.tether2.dragCoeff.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether2.dragCoeff.NoScale = false
+gndStn.anchThrs.tether2.density.Value = 1.3000e+03
+gndStn.anchThrs.tether2.density.Unit = 'kg/m^3'
+gndStn.anchThrs.tether2.density.NoScale = false
+gndStn.anchThrs.tether2.initGndNodePos.Unit = 'm'
+gndStn.anchThrs.tether2.initGndNodePos.NoScale = false
+gndStn.anchThrs.tether2.initAirNodePos.Unit = 'm'
+gndStn.anchThrs.tether2.initAirNodePos.NoScale = false
+gndStn.anchThrs.tether2.initGndNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether2.initGndNodeVel.NoScale = false
+gndStn.anchThrs.tether2.initAirNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether2.initAirNodeVel.NoScale = false
+gndStn.anchThrs.tether2.initNodePos.Unit = 'm'
+gndStn.anchThrs.tether2.initNodePos.NoScale = false
+gndStn.anchThrs.tether2.initNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether2.initNodeVel.NoScale = false
+gndStn.anchThrs.tether2.dragEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether2.dragEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether2.dragEnable.NoScale = true
+gndStn.anchThrs.tether2.springDamperEnable.Value = true
+gndStn.anchThrs.tether2.springDamperEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether2.springDamperEnable.NoScale = true
+gndStn.anchThrs.tether2.netBuoyEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether2.netBuoyEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether2.netBuoyEnable.NoScale = true
+gndStn.anchThrs.tether1.numNodes.Value = 2.0000e+00
+gndStn.anchThrs.tether1.numNodes.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether1.numNodes.NoScale = true
+gndStn.anchThrs.tether1.diameter.Value = 5.0000e-02
+gndStn.anchThrs.tether1.diameter.Unit = 'm'
+gndStn.anchThrs.tether1.diameter.NoScale = false
+gndStn.anchThrs.tether1.youngsMod.Value = 5.0000e+11
+gndStn.anchThrs.tether1.youngsMod.Unit = 'Pa'
+gndStn.anchThrs.tether1.youngsMod.NoScale = false
+gndStn.anchThrs.tether1.vehicleMass.Value = 2.2619e+05
+gndStn.anchThrs.tether1.vehicleMass.Unit = 'kg'
+gndStn.anchThrs.tether1.vehicleMass.NoScale = false
+gndStn.anchThrs.tether1.dampingRatio.Value = 3.0000e-01
+gndStn.anchThrs.tether1.dampingRatio.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether1.dampingRatio.NoScale = false
+gndStn.anchThrs.tether1.dragCoeff.Value = 5.0000e-01
+gndStn.anchThrs.tether1.dragCoeff.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether1.dragCoeff.NoScale = false
+gndStn.anchThrs.tether1.density.Value = 1.3000e+03
+gndStn.anchThrs.tether1.density.Unit = 'kg/m^3'
+gndStn.anchThrs.tether1.density.NoScale = false
+gndStn.anchThrs.tether1.initGndNodePos.Unit = 'm'
+gndStn.anchThrs.tether1.initGndNodePos.NoScale = false
+gndStn.anchThrs.tether1.initAirNodePos.Unit = 'm'
+gndStn.anchThrs.tether1.initAirNodePos.NoScale = false
+gndStn.anchThrs.tether1.initGndNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether1.initGndNodeVel.NoScale = false
+gndStn.anchThrs.tether1.initAirNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether1.initAirNodeVel.NoScale = false
+gndStn.anchThrs.tether1.initNodePos.Unit = 'm'
+gndStn.anchThrs.tether1.initNodePos.NoScale = false
+gndStn.anchThrs.tether1.initNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether1.initNodeVel.NoScale = false
+gndStn.anchThrs.tether1.dragEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether1.dragEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether1.dragEnable.NoScale = true
+gndStn.anchThrs.tether1.springDamperEnable.Value = true
+gndStn.anchThrs.tether1.springDamperEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether1.springDamperEnable.NoScale = true
+gndStn.anchThrs.tether1.netBuoyEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether1.netBuoyEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether1.netBuoyEnable.NoScale = true
+gndStn.anchThrs.tether3.numNodes.Value = 2.0000e+00
+gndStn.anchThrs.tether3.numNodes.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.numNodes.NoScale = true
+gndStn.anchThrs.tether3.diameter.Value = 5.0000e-02
+gndStn.anchThrs.tether3.diameter.Unit = 'm'
+gndStn.anchThrs.tether3.diameter.NoScale = false
+gndStn.anchThrs.tether3.youngsMod.Value = 5.0000e+11
+gndStn.anchThrs.tether3.youngsMod.Unit = 'Pa'
+gndStn.anchThrs.tether3.youngsMod.NoScale = false
+gndStn.anchThrs.tether3.vehicleMass.Value = 2.2619e+05
+gndStn.anchThrs.tether3.vehicleMass.Unit = 'kg'
+gndStn.anchThrs.tether3.vehicleMass.NoScale = false
+gndStn.anchThrs.tether3.dampingRatio.Value = 3.0000e-01
+gndStn.anchThrs.tether3.dampingRatio.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dampingRatio.NoScale = false
+gndStn.anchThrs.tether3.dragCoeff.Value = 5.0000e-01
+gndStn.anchThrs.tether3.dragCoeff.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dragCoeff.NoScale = false
+gndStn.anchThrs.tether3.density.Value = 1.3000e+03
+gndStn.anchThrs.tether3.density.Unit = 'kg/m^3'
+gndStn.anchThrs.tether3.density.NoScale = false
+gndStn.anchThrs.tether3.initGndNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initGndNodePos.NoScale = false
+gndStn.anchThrs.tether3.initAirNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initAirNodePos.NoScale = false
+gndStn.anchThrs.tether3.initGndNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initGndNodeVel.NoScale = false
+gndStn.anchThrs.tether3.initAirNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initAirNodeVel.NoScale = false
+gndStn.anchThrs.tether3.initNodePos.Unit = 'm'
+gndStn.anchThrs.tether3.initNodePos.NoScale = false
+gndStn.anchThrs.tether3.initNodeVel.Unit = 'm/s'
+gndStn.anchThrs.tether3.initNodeVel.NoScale = false
+gndStn.anchThrs.tether3.dragEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether3.dragEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.dragEnable.NoScale = true
+gndStn.anchThrs.tether3.springDamperEnable.Value = true
+gndStn.anchThrs.tether3.springDamperEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.springDamperEnable.NoScale = true
+gndStn.anchThrs.tether3.netBuoyEnable.Value = 1.0000e+00
+gndStn.anchThrs.tether3.netBuoyEnable.Unit is unitless or has no unit specified
+gndStn.anchThrs.tether3.netBuoyEnable.NoScale = true
+gndStn.addedMass.Value = [0 0 0;0 0 0;0 0 0]
+gndStn.addedMass.Unit is unitless or has no unit specified
+gndStn.addedMass.NoScale = false
+gndStn.addedInertia.Value = [0 0 0;0 0 0;0 0 0]
+gndStn.addedInertia.Unit is unitless or has no unit specified
+gndStn.addedInertia.NoScale = false
+gndStn.inrThrAttchPt2.posVec.Value = [-100;173.205080756888;0]
+gndStn.inrThrAttchPt2.posVec.Unit = 'm'
+gndStn.inrThrAttchPt2.posVec.NoScale = false
+gndStn.inrThrAttchPt2.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.pltThrAttchPt3.posVec.Value = [-3;-5.19615242270663;-2]
+gndStn.pltThrAttchPt3.posVec.Unit = 'm'
+gndStn.pltThrAttchPt3.posVec.NoScale = false
+gndStn.pltThrAttchPt3.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.inrThrAttchPt1.posVec.Value = [200;0;0]
+gndStn.inrThrAttchPt1.posVec.Unit = 'm'
+gndStn.inrThrAttchPt1.posVec.NoScale = false
+gndStn.inrThrAttchPt1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.kitThrAttchPt1.posVec.Value = [0 0 0]
+gndStn.kitThrAttchPt1.posVec.Unit = 'm'
+gndStn.kitThrAttchPt1.posVec.NoScale = false
+gndStn.kitThrAttchPt1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.thrAttch1.posVec.Value = [0;0;0]
+gndStn.thrAttch1.posVec.Unit = 'm'
+gndStn.thrAttch1.posVec.NoScale = false
+gndStn.thrAttch1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.inrThrAttchPt3.posVec.Value = [-100;-173.205080756888;0]
+gndStn.inrThrAttchPt3.posVec.Unit = 'm'
+gndStn.inrThrAttchPt3.posVec.NoScale = false
+gndStn.inrThrAttchPt3.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.pltThrAttchPt2.posVec.Value = [-3;5.19615242270663;-2]
+gndStn.pltThrAttchPt2.posVec.Unit = 'm'
+gndStn.pltThrAttchPt2.posVec.NoScale = false
+gndStn.pltThrAttchPt2.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.pltThrAttchPt1.posVec.Value = [6;0;-2]
+gndStn.pltThrAttchPt1.posVec.Unit = 'm'
+gndStn.pltThrAttchPt1.posVec.NoScale = false
+gndStn.pltThrAttchPt1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+>>>>>>> 730e7cbcbe6d20cd84294c25f25cd13f405a3892
