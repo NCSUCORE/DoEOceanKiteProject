@@ -2,7 +2,7 @@
 close all;clear;clc
 
 % Setting sim time to zero runs a single time step
-simTime = 25;
+simTime = 10;
 SampleTime = .1;
 time = 0:SampleTime:simTime;
 
@@ -10,7 +10,7 @@ ReelInVelcoity = 0;
 TetherTotalLength = 100;
 TopLinkLength = 10;
 
-NumberNodesTotal = 10;
+NumberNodesTotal = 8;
 LinkUnstrechedLengths = [((TetherTotalLength-TopLinkLength)/(NumberNodesTotal-2))*ones(1,NumberNodesTotal-2),TopLinkLength];
 FirstLinkLengthI = LinkUnstrechedLengths(1);
 FirstLinkLengthF = FirstLinkLengthI+ReelInVelcoity*simTime;
@@ -55,7 +55,7 @@ airNodeVelTS = timeseries(airNodeVel,time);
 VelocityReelInTS = timeseries(ReelInVelcoity*ones(length(time),1),time);
 FirstLinkLengthTS= timeseries(FirstLinkLength,time);
 
-linkFlowVelVecs = [.00001*ones(1,NumberNodesTotal-1);0*ones(1,NumberNodesTotal-1);0*ones(1,NumberNodesTotal-1)];
+linkFlowVelVecs = [.00000001*ones(1,NumberNodesTotal-1);0*ones(1,NumberNodesTotal-1);0*ones(1,NumberNodesTotal-1)];
 
 %simTime = 0;
 simout = sim('tether001_th');
