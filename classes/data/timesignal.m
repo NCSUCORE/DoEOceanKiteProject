@@ -101,13 +101,11 @@ classdef timesignal < timeseries
             end
         end
         
-        %Plots the magnitude of a given signal. Assumes vectors have a
-        %length of 3 unless given a vector Dimention.
-        function varargout = plotMag(obj,varargin)
+        % Calculate the magnitude of the signal
+        function newobj = mag(obj,varargin)
             p=inputParser;
             p.addOptional('vectorDim',[],@(x)isnumeric(x));
             parse(p,varargin{:})
-            
             sz = size(obj.Data);
             timeDim = find(sz==length(obj.Time));
             nonTimeDims = 1:length(sz);
@@ -130,11 +128,6 @@ classdef timesignal < timeseries
             newobj=timesignal(obj);
             newobj.Data = sqrt(sum(obj.Data.^2,vdim));
             newobj.Name = obj.Name + "Mag";
-            if nargout == 1
-                varargout{1}=newobj.plot;
-            else
-                newobj.plot;
-            end
         end
         
         % Function to crop with GUI
