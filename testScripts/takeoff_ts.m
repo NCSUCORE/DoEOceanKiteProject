@@ -29,7 +29,7 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('constBoothLem')
+loadComponent('constEllipse')
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches

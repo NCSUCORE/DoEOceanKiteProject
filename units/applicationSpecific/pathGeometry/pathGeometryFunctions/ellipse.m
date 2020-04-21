@@ -11,7 +11,7 @@ function [posGround,varargout] = ellipse(pathVariable,geomParams,cntrPtPosVec)
 %   posGround is the position in the ground frame at the given pathVar
 %   The second output, if requested is a ground frame unit vector in the
 %       direction tangent to the curve (the direction to go)
-
+    pathVariable = rem(pathVariable+.25,1);
     width = geomParams(1);
     height = geomParams(2);
     latCurve = geomParams(3);
