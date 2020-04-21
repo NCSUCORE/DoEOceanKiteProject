@@ -1,5 +1,5 @@
-% Function to return data in table format
 function tb = table(obj)
+%% Return data as table object, used to write to excel
 data = [];
 dims = size(obj.Data);
 tDimMask = numel(obj.Time)==dims;

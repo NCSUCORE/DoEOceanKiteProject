@@ -1,14 +1,18 @@
 classdef timesignal < timeseries
-    %SIGNAL derived from timeseries class.  Custom class to implement
-    %overloaded methods like cropping and plotting.
+    %TIMESIGNAL is a custom class used to implement commonly used signal
+    %operations.  It is a subclass of timeseries and thus inherets all the
+    %properties and methods associated with timeseries objects.
     
     properties
         blockPath
     end
     
     methods
-        % Contstructor
+
         function obj = timesignal(tsIn,varargin)
+            %% Constructor
+            
+            % Parse inputs
             p = inputParser;
             addOptional(p,'BlockPath',[],@(x) isa(x,'Simulink.SimulationData.BlockPath'))
             parse(p,varargin{:})
@@ -21,14 +25,9 @@ classdef timesignal < timeseries
             
         end
         
-        
-        
-        
-        
-        
-
-        
-        
+        % Other methods are stored in standalone .m files
+        % See doc timesignal, methods('timesignal'), or
+        % cd(fileparts(which('timesignal.m'))) for details.
     end
 end
 

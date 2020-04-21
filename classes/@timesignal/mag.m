@@ -1,5 +1,5 @@
-% Calculate the magnitude of the signal
 function newobj = mag(obj,varargin)
+%% Calculate magnitude of signal, return as new timesignal
 p=inputParser;
 p.addOptional('vectorDim',[],@(x)isnumeric(x));
 parse(p,varargin{:})

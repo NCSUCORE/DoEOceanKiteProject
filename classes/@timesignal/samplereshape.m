@@ -1,4 +1,5 @@
 function obj = samplereshape(obj,dims)
+%% Reshape every sample to match user specified input dimensions
 nt = numel(obj.Time);
 if obj.IsTimeFirst
     newDims = [nt dims(:)'];

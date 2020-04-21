@@ -1,5 +1,5 @@
-% Function to crop things
 function newObj = crop(obj,varargin)
+%% Select a subset of data spanning a time-range
 newObj = timesignal(obj);
 % User can provide either a two element vector or two inputs
 switch numel(varargin)

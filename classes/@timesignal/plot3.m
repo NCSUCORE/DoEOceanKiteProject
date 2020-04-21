@@ -1,5 +1,5 @@
-% Plot 3D vector as a trace in space
 function h = plot3(obj,varargin)
+%% Plot 3D vector as a trace in space
 nt = numel(obj.Time);
 sz = size(obj.getsamples(1).Data);
 switch find(sz==3)

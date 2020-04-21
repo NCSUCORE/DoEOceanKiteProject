@@ -1,5 +1,6 @@
-% Function to resample data to different rate
+
 function newobj = resample(obj,t,varargin)
+%% Resample data to different rate or time step sequence
 newobj = timesignal(obj);
 % If t has too many dimensions or if more than 1 dimension has
 % more than 1 element

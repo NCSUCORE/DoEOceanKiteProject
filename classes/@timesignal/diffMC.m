@@ -1,4 +1,5 @@
 function derivSignal = diffMC(obj)
+%% Another method for differentiation that Mitchell was working on
 derivSignal = timesignal(obj);
 timeDimInd = find(size(obj.Data) == numel(obj.Time));
 tDimsDes             = ones(1,ndims(obj.Data));

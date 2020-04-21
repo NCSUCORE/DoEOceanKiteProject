@@ -1,5 +1,5 @@
-%Method to calculate 3 point numerical derivative
 function derivSignal = diff(obj)
+%% 3 point numerical approximation of derivitive with respect to time
 derivSignal=timesignal(obj);
 tdiffvec = diff(obj.Time(:));
 %tdiffs(1) = tdiffvec(1)/2
