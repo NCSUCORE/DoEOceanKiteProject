@@ -20,8 +20,8 @@ env.waterWave.build;
 % tp = 5.7; % seconds
 % w =   2*pi/tp % rad/s
 % k = (2*pi)/(33.8)%(w^2)/9.81 %rad/m
-Hs = 12;   % meters
-tp = 12.7; % seconds
+Hs = 15;   % meters
+tp = 15.89; % seconds
 w =   2*pi/tp; % rad/s
 k = (w^2)/9.8; %rad/m
 
