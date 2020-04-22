@@ -59,7 +59,7 @@ classdef signalcontainer < dynamicprops
                     end
                     % Print out power summary for the user
                     if p.Results.Verbose
-                        obj.powerSummary
+                        obj.powersummary
                     end
                 case 'struct'
                     % Add metadata to the signal container at highest level

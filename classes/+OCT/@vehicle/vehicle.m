@@ -69,6 +69,8 @@ classdef vehicle < dynamicprops
         
         
         staticMargin
+        
+        contactPoints
     end
     
     methods
@@ -455,6 +457,18 @@ classdef vehicle < dynamicprops
             hn = h0 + eta_s*V_s*(cla_hs/cla_wing)*(1-depsilon_dalpha);
             margin = hn - (obj.rCM_LE.Value(1) / obj.portWing.MACLength.Value);
             val = SIM.parameter('Unit','m','Value',margin,'Description','Static Margin of Stability');
+        end
+        
+        function val = get.contactPoints(obj)
+            % Calculate location of points at the edges of the body where
+            % we will calculate forces and moments from contact with ground
+            ptsMat=[...
+                obj.portWing.outlinePtsBdy.Value(:,2)... % Port wing tip LE point
+                obj.stbdWing.outlinePtsBdy.Value(:,2)... % Starboard wing tip LE point
+                obj.hStab.outlinePtsBdy.Value(:,[3 5])... % H stabilizer TE tip points
+                obj.fuse.rNose_LE.Value-[0 0 obj.fuse.diameter.Value/2]'...% Fuselage nose - diameter/2 (in body z)
+                obj.fuse.rEnd_LE.Value-[0 0 obj.fuse.diameter.Value/2]'];% Fuselage tail - diameter/2 (in body z)
+            val = SIM.parameter('Unit','m','Value',ptsMat,'Description','Points where contact forces are modeled');
         end
            
         %% other methods
