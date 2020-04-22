@@ -67,8 +67,8 @@ for kk = 1:1
 %             loadComponent('hurricaneSandyWave')
             
             
-%              env.waterWave.waveParamMat.setValue([waveNumber(jj),Frequencies(jj),Amplitudes(jj) ,0;0,0,0,0],'')
-           env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
+          env.waterWave.waveParamMat.setValue([waveNumber(jj),Frequencies(jj),Amplitudes(jj) ,0;0,0,0,0],'')
+%            env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
 %             env.water.setflowVec([flowSpeeds(kk) 0 0],'m/s')
             
             %% Set basis parameters for high level controller

@@ -18,10 +18,10 @@ Amplitudes  =  [0.6621026, 0.9118301, 1.1457409,  1.3625439, 1.3299433,1.3610456
 Frequencies =  (2*pi)./(periodMat);
 waveNumber  =  (Frequencies.^2)/9.81;
 tetherL = [125,200];
-flowSpeeds = [1.5,2];
+flowSpeeds = [1,2];
 
-for kk = 1:1
-    for jj = 1:1
+for kk = 1:2
+    for jj = 1:13
         for ii = 1:1
             
             % %% Script to run ILC path optimization
@@ -63,11 +63,11 @@ for kk = 1:1
             loadComponent('hurricaneSandyWave')
             
             
-%             env.waterWave.waveParamMat.setValue([waveNumber(jj),Frequencies(jj),Amplitudes(jj) ,0;0,0,0,0],'')
-                          env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
+             env.waterWave.waveParamMat.setValue([waveNumber(jj),Frequencies(jj),Amplitudes(jj) ,0;0,0,0,0],'')
+%                           env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
             env.water.setflowVec([flowSpeeds(kk) 0 0],'m/s')
             
-            if flowSpeeds(kk) == 1.5
+            if flowSpeeds(kk) == 1
                 %% Set basis parameters for high level controller
                 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
                 hiLvlCtrl.basisParams.setValue([1.2,2.2,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
