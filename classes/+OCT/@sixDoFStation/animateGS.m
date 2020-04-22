@@ -276,6 +276,9 @@ grid on
     end
     
     drawnow
+    xlabel('X (m)')
+    ylabel('Y (m)')
+    zlabel('Distance from Seabed (m)')
     
     zlim([0,220])
     % Save gif of results

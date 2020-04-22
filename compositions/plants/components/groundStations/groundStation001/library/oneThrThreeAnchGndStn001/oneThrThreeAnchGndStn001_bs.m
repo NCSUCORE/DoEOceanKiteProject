@@ -2,7 +2,7 @@ GROUNDSTATION         = 'groundStation001';
 sixDOFDynamics         = 'sixDoFDynamicsEuler';
 gndStn = OCT.sixDoFStation;
 
-height = 6;
+height = 4;
 gndStn.cylRad.setValue(1.5*height,'m')
 gndStn.angSpac.setValue(pi/4,'rad')
 gndStn.heightSpac.setValue(height/4,'m')
@@ -60,24 +60,28 @@ gndStn.addThrAttch('kitThrAttchPt1',[0 0 0]);
 
 % tether attach points for the tether that goes from the GS to the GND
 gndStn.addThrAttch('pltThrAttchPt1',[gndStn.cylRad.Value 0 -0.5*gndStn.cylTotH.Value]');
-gndStn.addThrAttch('pltThrAttchPt2',rotation_sequence([0 0 pi/2])*gndStn.pltThrAttchPt1.posVec.Value(:));
-gndStn.addThrAttch('pltThrAttchPt3',rotation_sequence([0 0 -pi/2])*gndStn.pltThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('pltThrAttchPt2',rotation_sequence([0 0 pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('pltThrAttchPt3',rotation_sequence([0 0 2*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('pltThrAttchPt4',rotation_sequence([0 0 pi])*gndStn.pltThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('pltThrAttchPt5',rotation_sequence([0 0 4*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('pltThrAttchPt6',rotation_sequence([0 0 5*pi/3])*gndStn.pltThrAttchPt1.posVec.Value(:));
 
 gndStn.addThrAttch('inrThrAttchPt1',[200 0 0]');
-gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  pi/2])*gndStn.inrThrAttchPt1.posVec.Value(:));
-gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 -pi/2])*gndStn.inrThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('inrThrAttchPt2',rotation_sequence([0 0  pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('inrThrAttchPt3',rotation_sequence([0 0 2*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 gndStn.addThrAttch('inrThrAttchPt4',rotation_sequence([0 0 pi])*gndStn.inrThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('inrThrAttchPt5',rotation_sequence([0 0 4*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
+gndStn.addThrAttch('inrThrAttchPt6',rotation_sequence([0 0 5*pi/3])*gndStn.inrThrAttchPt1.posVec.Value(:));
 
 gndStn.setInitPosVecGnd([0 0 200],'m')
 % gndStn.calcInitTetherLen 0.9937
 % gndStn.initAnchTetherLength.setValue(.9937*gndStn.calcInitTetherLen,'m')
-gndStn.initAnchTetherLength.setValue(.99*gndStn.calcInitTetherLen,'m')
+gndStn.initAnchTetherLength.setValue(.995*gndStn.calcInitTetherLen,'m')
 
 
 % Anchor Tethers
 gndStn.anchThrs.setNumNodes(2,'');
-gndStn.anchThrs.setNumTethers(4,'');
+gndStn.anchThrs.setNumTethers(6,'');
 gndStn.anchThrs.build;
 
 % Tether 1 properties
@@ -125,6 +129,34 @@ gndStn.anchThrs.tether4.density.setValue(1000,'kg/m^3');         % tether densit
 gndStn.anchThrs.tether4.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
 gndStn.anchThrs.tether4.dragEnable.setValue(1,'');
 gndStn.anchThrs.tether4.netBuoyEnable.setValue(1,'');
+
+
+
+
+
+% Tether 5 properties
+gndStn.anchThrs.tether5.diameter.setValue(.14,'m');              % tether diameter
+gndStn.anchThrs.tether5.youngsMod.setValue(27e9,'Pa');          % tether Young's Modulus
+gndStn.anchThrs.tether5.dampingRatio.setValue(.01,'');           % zeta, damping ratio
+gndStn.anchThrs.tether5.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
+gndStn.anchThrs.tether5.density.setValue(1000,'kg/m^3');         % tether density
+gndStn.anchThrs.tether5.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
+gndStn.anchThrs.tether5.dragEnable.setValue(1,'');
+gndStn.anchThrs.tether5.netBuoyEnable.setValue(1,'');
+
+
+
+
+% Tether 6 properties
+gndStn.anchThrs.tether6.diameter.setValue(.14,'m');              % tether diameter
+gndStn.anchThrs.tether6.youngsMod.setValue(27e9,'Pa');          % tether Young's Modulus
+gndStn.anchThrs.tether6.dampingRatio.setValue(.01,'');           % zeta, damping ratio
+gndStn.anchThrs.tether6.dragCoeff.setValue(.5,'');               % drag coefficient for intermediate nodes
+gndStn.anchThrs.tether6.density.setValue(1000,'kg/m^3');         % tether density
+gndStn.anchThrs.tether6.vehicleMass.setValue(gndStn.mass.Value,'kg'); % mass of platform for damping coefficient calculations
+gndStn.anchThrs.tether6.dragEnable.setValue(1,'');
+gndStn.anchThrs.tether6.netBuoyEnable.setValue(1,'');
+
 
 % Save the variable
 saveBuildFile('gndStn','oneThrThreeAnchGndStn001_bs','variant','GROUNDSTATION');

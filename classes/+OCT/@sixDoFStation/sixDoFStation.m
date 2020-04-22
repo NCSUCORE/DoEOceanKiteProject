@@ -451,6 +451,10 @@ classdef sixDoFStation < dynamicprops
             
             p4 =  obj.inrThrAttchPt4.posVec.Value;
             
+            p5 =  obj.inrThrAttchPt5.posVec.Value;
+            
+            p6 =  obj.inrThrAttchPt6.posVec.Value;
+            
             p1b =  obj.pltThrAttchPt1.posVec.Value + obj.initPosVecGnd.Value(:);
             
             p2b =  obj.pltThrAttchPt2.posVec.Value + obj.initPosVecGnd.Value(:);
@@ -459,10 +463,13 @@ classdef sixDoFStation < dynamicprops
             
             p4b =  obj.pltThrAttchPt4.posVec.Value + obj.initPosVecGnd.Value(:);
 
+            p5b =  obj.pltThrAttchPt5.posVec.Value + obj.initPosVecGnd.Value(:);
             
-            x = [ p1(1),p2(1),p3(1),p4(1),p1b(1),p2b(1),p3b(1) ,p4b(1)];
-            y = [ p1(2),p2(2),p3(2),p4(2),p1b(2),p2b(2),p3b(2) ,p4b(2)];
-            z = [ p1(3),p2(3),p3(3),p4(3),p1b(3),p2b(3),p3b(3) ,p4b(3)];
+            p6b =  obj.pltThrAttchPt6.posVec.Value + obj.initPosVecGnd.Value(:);
+            
+            x = [ p1(1),p2(1),p3(1),p4(1),p5(1),p6(1),p1b(1),p2b(1),p3b(1) ,p4b(1),p5b(1) ,p6b(1)];
+            y = [ p1(2),p2(2),p3(2),p4(2),p5(2),p6(2),p1b(2),p2b(2),p3b(2) ,p4b(2),p5b(2) ,p6b(2)];
+            z = [ p1(3),p2(3),p3(3),p4(3),p5(3),p6(3),p1b(3),p2b(3),p3b(3) ,p4b(3),p5b(3) ,p6b(3)];
             scatter3(x,y,z)
         end
         
@@ -477,6 +484,11 @@ classdef sixDoFStation < dynamicprops
             
             p4g =  obj.inrThrAttchPt4.posVec.Value;
             
+            p5g =  obj.inrThrAttchPt5.posVec.Value;
+            
+            p6g =  obj.inrThrAttchPt6.posVec.Value;
+            
+            
             %body initially lined up with gnd frame. body points
             p1b =  obj.pltThrAttchPt1.posVec.Value + obj.initPosVecGnd.Value(:);
             
@@ -486,14 +498,20 @@ classdef sixDoFStation < dynamicprops
             
             p4b =  obj.pltThrAttchPt4.posVec.Value + obj.initPosVecGnd.Value(:);
             
+            p5b =  obj.pltThrAttchPt5.posVec.Value + obj.initPosVecGnd.Value(:);
+            
+            p6b =  obj.pltThrAttchPt6.posVec.Value + obj.initPosVecGnd.Value(:);
+            
             t1Dist =  sqrt(sum(((p1b - p1g)).^2));
             t2Dist =  sqrt(sum(((p2b - p2g)).^2));
             t3Dist =  sqrt(sum(((p3b - p3g)).^2));
             t4Dist =  sqrt(sum(((p4b - p4g)).^2));
+            t5Dist =  sqrt(sum(((p5b - p5g)).^2));
+            t6Dist =  sqrt(sum(((p6b - p6g)).^2));
 %             disp(t1Dist)
 %             disp(t2Dist)
 %             disp(t3Dist)
-            tdists = [ t1Dist ,t2Dist,t3Dist,t4Dist];
+            tdists = [ t1Dist ,t2Dist,t3Dist,t4Dist,t5Dist,t6Dist];
         end
         
     end
