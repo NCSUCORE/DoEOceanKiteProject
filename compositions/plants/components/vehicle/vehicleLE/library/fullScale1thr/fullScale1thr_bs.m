@@ -11,7 +11,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('fullScale1thrCoeffs','');
+vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
 
 %% Turbines
 vhcl.setNumTurbines(2,'');
