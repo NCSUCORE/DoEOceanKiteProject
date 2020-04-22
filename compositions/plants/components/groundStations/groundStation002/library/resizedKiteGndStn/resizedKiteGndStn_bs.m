@@ -4,18 +4,18 @@ format compact
 
 loadComponent('fullScale1Thr')
 
-m = vhcl.mass.Value;
-
-vhcl.scale(20,1);
+vhcl.scale(10,1);
 
 gndStn = vhcl;
+gndStn.setBuoyFactor(0.95,'')
 gndStn.addprop('oceanFloor')
 gndStn.oceanFloor = OCT.floor;
-gndStn.oceanFloor.setBedrockZ(-0.5,'m');
+gndStn.oceanFloor.setBedrockZ(-gndStn.fuse.diameter.Value,'m');
 gndStn.oceanFloor.setOceanFloorZ(0,'m');
-gndStn.oceanFloor.setStiffnessZPt(0.01,'m');
-gndStn.oceanFloor.setStiffnessFMag(m*9.8,'N');
-gndStn.oceanFloor.setFricCoeff(0.5,'');
+gndStn.oceanFloor.setStiffnessZPt(-0.2,'m');
+% Set stiffness coefficient to counteract net vertical force
+gndStn.oceanFloor.setStiffnessFMag(-(gndStn.buoyFactor.Value-1)*gndStn.mass.Value*9.8,'N');
+gndStn.oceanFloor.setFricCoeff(1,'');
 
 GROUNDSTATION = 'groundStation002';
 

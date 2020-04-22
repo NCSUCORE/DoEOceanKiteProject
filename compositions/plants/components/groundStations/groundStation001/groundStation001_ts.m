@@ -41,7 +41,7 @@ gndStn.initAngVelVec.setValue([0 0 0],'rad/s');
 
 %%
 
-simWithMonitor('groundStation001_th')
+sim('groundStation001_th')
 tsc = signalcontainer(logsout);
 
 
@@ -140,7 +140,8 @@ tsc.gndStnPositionVec.plot
  ten2 = sqrt(squeeze(tsc.anchThrNode1FVec.Data(1,1,2,:)).^2  + squeeze(tsc.anchThrNode1FVec.Data(2,1,2,:)).^2 + squeeze(tsc.anchThrNode1FVec.Data(3,1,2,:)).^2);
  ten3 = sqrt(squeeze(tsc.anchThrNode1FVec.Data(1,1,3,:)).^2  + squeeze(tsc.anchThrNode1FVec.Data(2,1,3,:)).^2 + squeeze(tsc.anchThrNode1FVec.Data(3,1,3,:)).^2);
  ten4 = sqrt(squeeze(tsc.anchThrNode1FVec.Data(1,1,4,:)).^2  + squeeze(tsc.anchThrNode1FVec.Data(2,1,4,:)).^2 + squeeze(tsc.anchThrNode1FVec.Data(3,1,4,:)).^2);
-
+ ten5 = sqrt(squeeze(tsc.anchThrNode1FVec.Data(1,1,5,:)).^2  + squeeze(tsc.anchThrNode1FVec.Data(2,1,5,:)).^2 + squeeze(tsc.anchThrNode1FVec.Data(3,1,5,:)).^2);
+ ten6 = sqrt(squeeze(tsc.anchThrNode1FVec.Data(1,1,6,:)).^2  + squeeze(tsc.anchThrNode1FVec.Data(2,1,6,:)).^2 + squeeze(tsc.anchThrNode1FVec.Data(3,1,6,:)).^2);
  figure;
  plot(tsc.anchThrNode1FVec.Time,ten1)
  title('Mooring Line 1 Force Magnitude')
@@ -165,8 +166,21 @@ tsc.gndStnPositionVec.plot
  xlabel('Time (Seconds)')
  ylabel('Force (Newtons)')
  
-% gndStn.animateGS(tsc,2,...
-%     'FontSize',24,...
-%     'GroundStation',gndStn,...
-%     'GifTimeStep',1/30,...
-%     'SaveGif',true)
+  figure;
+ plot(tsc.anchThrNode1FVec.Time,ten5)
+ title('Mooring Line 5 Force Magnitude')
+ xlabel('Time (Seconds)')
+ ylabel('Force (Newtons)')
+ 
+ 
+  figure;
+ plot(tsc.anchThrNode1FVec.Time,ten6)
+ title('Mooring Line 6 Force Magnitude')
+ xlabel('Time (Seconds)')
+ ylabel('Force (Newtons)')
+ 
+gndStn.animateGS(tsc,2,...
+    'FontSize',24,...
+    'GroundStation',gndStn,...
+    'GifTimeStep',1/30,...
+    'SaveGif',true)

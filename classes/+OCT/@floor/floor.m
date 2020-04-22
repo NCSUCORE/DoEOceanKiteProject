@@ -9,6 +9,10 @@ classdef floor < handle
         fricCoeff
     end
     
+    properties (Dependent)
+        stiffnessCoefficient
+    end
+    
     methods
         function obj = floor
             obj.bedrockZ        = SIM.parameter('Unit','m','Description','Z position where normal force goes to inf');
@@ -34,14 +38,35 @@ classdef floor < handle
             obj.fricCoeff.setValue(val,unit);
         end
         
+        function val = get.stiffnessCoefficient(obj)
+            FnStar  = obj.stiffnessFMag.Value;
+            zStar   = obj.stiffnessZPt.Value;
+            z0      = obj.bedrockZ.Value;
+            z1      = obj.oceanFloorZ.Value;
+            value = FnStar*((zStar-z1)/(z0-(zStar-z1)))^-2;
+            val = SIM.parameter('Value',value,'Unit','rad/m','Description','Coefficient describing how spring force changes with depth');
+        end
+        
+        function [FSpring] = calcNormForceMag(obj,z)
+            % method to calculate net vertical force
+            FStar = obj.stiffnessFMag.Value;
+            zStar = obj.stiffnessZPt.Value;
+            z0    = obj.bedrockZ.Value;
+            z1    = obj.oceanFloorZ.Value;
+            k     = obj.stiffnessCoefficient.Value;
+            FSpring = zeros(size(z));
+            FSpring(z<z1) = k*((z(z<z1)-z1)./(z0-(z(z<z1)-z1))).^2;
+            
+        end
         
         % Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
-            props = properties(obj);
+            props = findAttrValue(obj,'SetAccess','private');
             for ii = 1:numel(props)
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
         end
+        
     end
 end
 

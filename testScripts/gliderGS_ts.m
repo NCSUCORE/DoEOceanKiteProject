@@ -2,7 +2,7 @@
 % -Mitchell
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(60,'s');
+simParams.setDuration(50,'s');
 
 %% Load components
 
@@ -60,7 +60,7 @@ gndStn.setInitAngVelVec([0 0 0],'rad/s')
 
 %This is where the vehicle initial conditions are aet.
 vhcl.setICsOnPath(...
-    0,... % Initial path position
+    0.01,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.initPosVecGnd.Value,... % Center point of path sphere
@@ -95,13 +95,17 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 %% Run the simulation
 % this is where the simulation is commanded to run
-sim('OCTModel')
+simWithMonitor('OCTModel')
 
 %this stores all of the logged signals from the model. To veiw, type
 %tsc.signalname.data to view data, tsc.signalname.plot to plot etc.
-tsc = signalcontainer(logsout);
+tsc = signalcontainer(logsout,'Verbose',false);
 
 %%
+close all
 vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-    'PlotTracer',false,'FontSize',18)
+    'PlotTracer',false,'FontSize',18,...
+    'Glider',gndStn,...
+    'Bedrock',true)
+
 
