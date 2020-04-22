@@ -52,6 +52,8 @@ addParameter(p,'FontSize',get(0,'defaultAxesFontSize'),@isnumeric)
 addParameter(p,'PlotTracer',true,@islogical)
 % Plot the ground station
 addParameter(p,'GroundStation',[],@(x) isa(x,'OCT.sixDoFStation'))
+% Plot the glider
+addParameter(p,'Glider',[],@(x) isa(x,'OCT.vehicle'))
 % Color tracer according to power production/consumption
 addParameter(p,'ColorTracer',false,@islogical)
 % Change Color tracer variable structure
@@ -83,6 +85,8 @@ addParameter(p,'PowerBar',false,@islogical)
 addParameter(p,'TangentCoordSys',false,@islogical);
 % Optional scrolling plots on the side
 addParameter(p,'ScrollPlots',{}, @(x) isa(x,'cell') && all(isa([x{:}],'timeseries'))); % Must be a cell array of timeseries objects
+% Plot bedrock or not
+addParameter(p,'Bedrock',true,@islogical)
 
 % ---Parse the output---
 parse(p,tsc,timeStep,varargin{:})
@@ -123,7 +127,35 @@ sz = getBusDims;
 % Plot the aerodynamic surfaces
 h = obj.plot('Basic',true);
 h.ax = gca;
-
+hold on
+% Plot the glider
+if ~isempty(p.Results.Glider)
+    h.glider = p.Results.Glider.plot('AxHandle',gca);
+    xPos = squeeze(tscTmp.gndStnPositionVec.Data(1,:,:));
+    yPos = squeeze(tscTmp.gndStnPositionVec.Data(2,:,:));
+    zPos = squeeze(tscTmp.gndStnPositionVec.Data(3,:,:));
+    xMin = min(xPos - p.Results.Glider.portWing.halfSpan.Value);
+    xMax = max(xPos + p.Results.Glider.portWing.halfSpan.Value);
+    yMin = min(yPos - p.Results.Glider.portWing.halfSpan.Value);
+    yMax = max(yPos + p.Results.Glider.portWing.halfSpan.Value);
+    floorZ = p.Results.Glider.oceanFloor.oceanFloorZ.Value;
+    bedrockZ = p.Results.Glider.oceanFloor.bedrockZ.Value;
+    [x,y] = meshgrid([xMin xMax],[yMin,yMax]);
+    % Plot the sea floor
+    if p.Results.Bedrock
+        alpha =0.25;
+    else
+        alpha = 1;
+    end
+    surf(x,y,floorZ*ones(size(x)),...
+        repmat(reshape(0.5*[1 1 0],[1 1 3]),[size(x,1),size(x,2),1]),...
+        'FaceAlpha',alpha);
+    % Plot the bedrock underneath
+    if p.Results.Bedrock
+    surf(x,y,bedrockZ*ones(size(x)),...
+        0.5*repmat(ones(size(x)),[1 1 3]))
+    end
+end
 % Add scroll plots if specified
 if ~isempty(p.Results.ScrollPlots)
     numPlots        = numel(p.Results.ScrollPlots);
@@ -155,6 +187,14 @@ for ii = 1:length(h.surf)
     hStatic{ii}.x = h.surf{ii}.XData;
     hStatic{ii}.y = h.surf{ii}.YData;
     hStatic{ii}.z = h.surf{ii}.ZData;
+end
+
+if isfield(h,'glider')
+   for ii = 1:numel(h.glider.surf)
+    hglStatic{ii}.x = h.glider.surf{ii}.XData;
+    hglStatic{ii}.y = h.glider.surf{ii}.YData;
+    hglStatic{ii}.z = h.glider.surf{ii}.ZData;
+   end
 end
 hold on
 
@@ -524,6 +564,26 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.surf{jj}.YData = pts(2,:);
         h.surf{jj}.ZData = pts(3,:);
     end
+    
+    if ~isempty(p.Results.Glider)
+        gsEulAngs = tscTmp.gndStnEulerAngles.getdatasamples(ii);
+        gsPosVec  = tscTmp.gndStnPositionVec.getdatasamples(ii);
+        % Rotate and translate all aero surfaces
+        for jj = 1:numel(hglStatic)
+        pts = rotation_sequence(gsEulAngs)...
+            *[...
+            hglStatic{jj}.x(:)';...
+            hglStatic{jj}.y(:)';...
+            hglStatic{jj}.z(:)']+...
+            gsPosVec(:);
+        
+            h.glider.surf{jj}.XData = pts(1,:);
+            h.glider.surf{jj}.YData = pts(2,:);
+            h.glider.surf{jj}.ZData = pts(3,:);
+        end
+    end
+    
+    
     % Update the tracer
     if p.Results.PlotTracer
         delete(h.tracer(1));
@@ -808,4 +868,5 @@ if p.Results.SaveMPEG
 end
 
 end
+
 

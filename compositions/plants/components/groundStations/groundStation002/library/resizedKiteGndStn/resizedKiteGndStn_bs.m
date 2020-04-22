@@ -4,13 +4,13 @@ format compact
 
 loadComponent('fullScale1Thr')
 
-vhcl.scale(20,1);
+vhcl.scale(10,1);
 
 gndStn = vhcl;
-gndStn.setBuoyFactor(0.9,'')
+gndStn.setBuoyFactor(0.95,'')
 gndStn.addprop('oceanFloor')
 gndStn.oceanFloor = OCT.floor;
-gndStn.oceanFloor.setBedrockZ(-1,'m');
+gndStn.oceanFloor.setBedrockZ(-gndStn.fuse.diameter.Value,'m');
 gndStn.oceanFloor.setOceanFloorZ(0,'m');
 gndStn.oceanFloor.setStiffnessZPt(-0.2,'m');
 % Set stiffness coefficient to counteract net vertical force
