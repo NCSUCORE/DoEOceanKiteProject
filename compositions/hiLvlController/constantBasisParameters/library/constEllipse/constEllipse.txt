@@ -1,0 +1,3 @@
+hiLvlCtrl.basisParams.Value = [1 1.4 0.36 0 125]
+hiLvlCtrl.basisParams.Unit = '[rad rad rad rad m]'
+hiLvlCtrl.basisParams.NoScale = false

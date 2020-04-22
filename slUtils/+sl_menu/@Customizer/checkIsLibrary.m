@@ -4,10 +4,10 @@
 function state = checkIsLibrary(callbackInfo)
 % Check if current system is a library or not
 
-if ~bdIsLibrary(gcs)
-    state = 'Disabled';
-else
+% if ~bdIsLibrary(gcb)
+%     state = 'Disabled';
+% else
     state = 'Enabled';
-end
+% end
 
 end

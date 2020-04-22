@@ -57,9 +57,12 @@ if all(emptyCheck)
             
             eval([p.Results.variant ' =  evalin(''caller'',p.Results.variant);']);
             save(saveFile,p.Results.object,p.Results.variant);
-            if ~exist(saveFile,'file')
+            try
                 proj=slproject.getCurrentProject;
-                addFile(proj,saveFile);
+                if ~any(arrayfun(@(projFile) projFile.Path==string(saveFile),proj.Files))
+                    addFile(proj,saveFile);
+                end
+            catch
             end
             saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
         else
@@ -68,9 +71,12 @@ if all(emptyCheck)
                 eval([char(p.Results.variant(i)) ' =  evalin(''caller'',p.Results.variant(i));']);
                  save(saveFile,char(p.Results.variant(i)),'-append');
             end
-            if ~exist(saveFile,'file')
+            try
                 proj=slproject.getCurrentProject;
-                addFile(proj,saveFile);
+                if ~any(arrayfun(@(projFile) projFile.Path==string(saveFile),proj.Files))
+                    addFile(proj,saveFile);
+                end
+            catch
             end
             saveClassTxt(evalin('caller',p.Results.object),txtFile,p.Results.object);
         end

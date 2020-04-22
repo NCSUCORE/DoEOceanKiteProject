@@ -1,5 +1,5 @@
-classdef metaData
-    %METADATA classdef to hold metadata for the signal container class
+classdef metadata
+    %metadata classdef to hold metadata for the signal container class
     properties
         author
         machine
@@ -13,7 +13,7 @@ classdef metaData
             newObj = obj;
         end
         
-        function obj = metaData(varargin)
+        function obj = metadata(varargin)
             if ~isempty(varargin)
                 verbose=varargin{1};
             end
