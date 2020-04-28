@@ -3,40 +3,38 @@ function avlCreateInputFilePart_v2LE(obj)
 
 % simplify variable names
 c_r_w = obj.wingRootChord.Value;
-AR_w = obj.wingAR.Value;
 sw_w =  obj.wingSweep.Value;
 di_w = obj.wingDihedral.Value;
 tr_w = obj.wingTR.Value;
 w_inc_angle = obj.wingIncidence.Value;
 w_afile =  obj.wingNACA.Value;
+b_w = 2 * obj.portWing.halfSpan.Value;
+S_w = 2* obj.portWing.planformArea.Value;
+c_t_w = c_r_w*tr_w; % tip chord
 w_Ns = 50;
 w_Nc = 10;
 
 c_r_hs = obj.hStab.rootChord.Value;
-AR_hs = obj.hStab.AR.Value;
 sw_hs = obj.hStab.sweep.Value;
 di_hs = obj.hStab.dihedral.Value;
 tr_hs = obj.hStab.TR.Value;
 hs_inc_angle = obj.hStab.incidence.Value;
 hs_afile =  obj.hStab.NACA.Value;
+b_hs = 2 * obj.hStab.halfSpan.Value;
+c_t_hs = c_r_hs*tr_hs; % tip chord
 
 c_r_vs = obj.vStab.rootChord.Value;
 b_vs = obj.vStab.halfSpan.Value;
 sw_vs = obj.vStab.sweep.Value;
 tr_vs = obj.vStab.TR.Value;
 vs_afile =  obj.vStab.NACA.Value;
+c_t_vs = c_r_vs*tr_vs; % tip chord
 
 % cm cordinates
 R_ref = obj.rCM_LE.Value;
 
 %% calculations
 % wing and reference calculations %%%%%%%%%%%%%%%%%%
-% span
-b_w = c_r_w*AR_w;
-% planform area
-S_w = c_r_w*b_w;
-% tip chord
-c_t_w = c_r_w*tr_w;
 % wing tip coordinates
 x_t_w = (b_w/2)*tand(sw_w);
 y_t_w = (b_w/2);
@@ -55,10 +53,6 @@ if mod(N_b_w,1) ~= 0 || N_b_w <= 0
 end
 
 % horizonatal stbilizer calculations %%%%%%%%%%%%%
-% span
-b_hs = c_r_hs*AR_hs;
-% tip chord
-c_t_hs = c_r_hs*tr_hs;
 % HS tip cordinates
 x_t_hs = (b_hs/2)*tand(sw_hs);
 y_t_hs = (b_hs/2);
@@ -77,8 +71,6 @@ if mod(N_b_hs,1) ~= 0 || N_b_hs <= 0
 end
 
 % vertical stabilizer calculations
-% tip chord
-c_t_vs = c_r_vs*tr_vs;
 % HS tip cordinates
 x_t_vs = b_vs*tand(sw_vs);
 y_t_vs = 0;

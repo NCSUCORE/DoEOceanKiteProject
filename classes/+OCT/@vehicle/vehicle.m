@@ -416,7 +416,7 @@ classdef vehicle < dynamicprops
                 
         % aerodynamic reference area
         function val = get.fluidRefArea(obj)
-            Sref = obj.wingAR.Value*obj.wingRootChord.Value^2;
+            Sref = 2 * obj.portWing.planformArea.Value;
             val = SIM.parameter('Value',Sref,'Unit','m^2',...
                 'Description','Reference area for aerodynamic calculations');
         end
