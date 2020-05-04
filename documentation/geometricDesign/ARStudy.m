@@ -1,4 +1,4 @@
-classdef ARStudyTest < matlab.apps.AppBase
+classdef ARStudy < matlab.apps.AppBase
     
     % Properties that correspond to app components
     properties (Access = public)
@@ -20,9 +20,15 @@ classdef ARStudyTest < matlab.apps.AppBase
         
         % Create UIFigure and components
         function createComponents(app)
+            % Script to create struct of simParam objects containing
+            % defaults, min/max, etc.
             createDefaultParams
+            
+            % Margins around elements of the figure, in % width or height
             xMargin = 0.01;
             yMargin = 0.05;
+            
+            % Font size of plot axes, not slides
             fontSize = 16;
             
             % Create UIFigure and hide until all components are created
@@ -51,7 +57,7 @@ classdef ARStudyTest < matlab.apps.AppBase
             ylabel(app.PowerAxes, 'P [kW]', 'Interpreter', 'latex')
             app.PowerAxes.LineStyleOrder = '-';
             app.PowerAxes.TickLabelInterpreter = 'tex';
-            app.PowerAxes.Position = [x(45) round(d(4)/2) x(90)-x(60) round(d(4)*(0.9-yMargin-0.5))];
+            app.PowerAxes.Position = [x(40) round(d(4)/2) x(end)-x(40) round(d(4)*(0.9-yMargin-0.5))];
             app.PowerAxes.FontSize = fontSize;
             
             app.PowerPlot = struct;
@@ -75,12 +81,13 @@ classdef ARStudyTest < matlab.apps.AppBase
             ylabel(app.EffAxes, '$C_L^3/C_D^2$', 'Interpreter', 'latex')
             app.EffAxes.LineStyleOrder = '-';
             app.EffAxes.TickLabelInterpreter = 'tex';
-            app.EffAxes.Position = [x(45) round(d(4)*yMargin) x(90)-x(60) round(d(4)*(0.9-yMargin-0.5))];
+            app.EffAxes.Position = [x(40) round(d(4)*yMargin) x(end)-x(40) round(d(4)*(0.9-yMargin-0.5))];
             app.EffAxes.FontSize = fontSize;
             
             app.EffPlot = struct;
             app.EffPlot.Plot = plot(app.EffAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),'Color','k','LineWidth',1);
             
+            drawnow
             
             for ii =1:numel(varNames)
                 app.Sliders.(varNames{ii}) = uislider(app.UIFigure);
@@ -95,6 +102,7 @@ classdef ARStudyTest < matlab.apps.AppBase
                 app.Sliders.(varNames{ii}).MinorTicks = ticks(2:2:end);
                 app.Sliders.(varNames{ii}).Tooltip = p.(varNames{ii}).description;
                 app.Sliders.(varNames{ii}).ValueChangedFcn = @(sld,event) updatePlots(app);
+                app.Sliders.(varNames{ii}).BusyAction = 'cancel';
                 
                 app.SliderLabels.(varNames{ii}) = uilabel(app.UIFigure);
                 app.SliderLabels.(varNames{ii}).Position(1) = x(1);
@@ -123,9 +131,7 @@ classdef ARStudyTest < matlab.apps.AppBase
                 app.UnitLabels.(varNames{ii}).VerticalAlignment = 'bottom';
                 app.UnitLabels.(varNames{ii}).Tooltip = p.(varNames{ii}).unit;
             end
-            % Show the figure after all components are created
-            app.UIFigure.Visible = 'on';
-            app.UIFigure.WindowState = 'maximized';
+
             updatePlots(app)
         end
     end
@@ -134,7 +140,7 @@ classdef ARStudyTest < matlab.apps.AppBase
     methods (Access = public)
         
         % Construct app
-        function app = ARStudyTest
+        function app = ARStudy
             
             % Create UIFigure and components
             createComponents(app)
