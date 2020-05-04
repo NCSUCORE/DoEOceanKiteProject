@@ -20,6 +20,13 @@ classdef ARStudy < matlab.apps.AppBase
         
         % Create UIFigure and components
         function createComponents(app)
+            
+            % Create structs to hold handles of plots
+            app.SliderLabels = struct;
+            app.Sliders = struct;
+            app.ValueLabels = struct;
+            app.UnitLabels = struct;
+
             % Script to create struct of simParam objects containing
             % defaults, min/max, etc.
             createDefaultParams
@@ -33,23 +40,17 @@ classdef ARStudy < matlab.apps.AppBase
             
             % Create UIFigure and hide until all components are created
             app.UIFigure = uifigure('Visible', 'off');
-            app.UIFigure.Color = [1 1 1];
-            
             app.UIFigure.Name = 'Geometric Design Tool';
+            app.UIFigure.Color = [1 1 1];
             app.UIFigure.Visible = 'on';
             app.UIFigure.WindowState = 'maximized';
 
-            app.SliderLabels = struct;
-            app.Sliders = struct;
-            app.ValueLabels = struct;
-            app.UnitLabels = struct;
-            
+            % Get screen dimensions
             d = get(0,'screensize');
             x = round(linspace(round(xMargin*d(3)),round(d(3)-xMargin*d(3)),100));
             y = round(linspace(round(yMargin*d(4)),round(d(4)-yMargin*d(4)),numel(varNames)+1));
             
-            
-            % Create Power Axes
+            % Create Power Axes and Plots
             app.PowerAxes = uiaxes(app.UIFigure);
             app.PowerAxes.NextPlot = 'add';
             app.PowerAxes.BackgroundColor = [1 1 1];
@@ -59,7 +60,6 @@ classdef ARStudy < matlab.apps.AppBase
             app.PowerAxes.TickLabelInterpreter = 'tex';
             app.PowerAxes.Position = [x(40) round(d(4)/2) x(end)-x(40) round(d(4)*(0.9-yMargin-0.5))];
             app.PowerAxes.FontSize = fontSize;
-            
             app.PowerPlot = struct;
             app.PowerPlot.Plot = plot(app.PowerAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),...
                 'Color','k','LineWidth',1,'DisplayName','$\alpha=$ Specified');
@@ -74,7 +74,7 @@ classdef ARStudy < matlab.apps.AppBase
             app.Legend.FontSize = fontSize;
             app.Legend.Box = 'off';
             
-            % Create Aerodynamic Efficiency axes
+            % Create Aerodynamic Efficiency Axes and Plots
             app.EffAxes = uiaxes(app.UIFigure,'NextPlot','add');
             app.EffAxes.BackgroundColor = [1 1 1];
             xlabel(app.EffAxes, '$AR_w$', 'Interpreter', 'latex')
@@ -83,13 +83,12 @@ classdef ARStudy < matlab.apps.AppBase
             app.EffAxes.TickLabelInterpreter = 'tex';
             app.EffAxes.Position = [x(40) round(d(4)*yMargin) x(end)-x(40) round(d(4)*(0.9-yMargin-0.5))];
             app.EffAxes.FontSize = fontSize;
-            
             app.EffPlot = struct;
             app.EffPlot.Plot = plot(app.EffAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),'Color','k','LineWidth',1);
             
-            drawnow
-            
             for ii =1:numel(varNames)
+                % Create sliders down the left hand side
+                ticks = linspace(p.(varNames{ii}).min,p.(varNames{ii}).max,9);
                 app.Sliders.(varNames{ii}) = uislider(app.UIFigure);
                 app.Sliders.(varNames{ii}).Position(1) = x(6);
                 app.Sliders.(varNames{ii}).Position(2) = y(numel(varNames)+1-ii);
@@ -97,13 +96,13 @@ classdef ARStudy < matlab.apps.AppBase
                 app.Sliders.(varNames{ii}).Limits(1) = p.(varNames{ii}).min;
                 app.Sliders.(varNames{ii}).Limits(2) = p.(varNames{ii}).max;
                 app.Sliders.(varNames{ii}).Value = p.(varNames{ii}).default;
-                ticks = linspace(p.(varNames{ii}).min,p.(varNames{ii}).max,9);
                 app.Sliders.(varNames{ii}).MajorTicks = ticks(1:2:end);
                 app.Sliders.(varNames{ii}).MinorTicks = ticks(2:2:end);
                 app.Sliders.(varNames{ii}).Tooltip = p.(varNames{ii}).description;
                 app.Sliders.(varNames{ii}).ValueChangedFcn = @(sld,event) updatePlots(app);
                 app.Sliders.(varNames{ii}).BusyAction = 'cancel';
                 
+                % Create name label to the left of the sliders
                 app.SliderLabels.(varNames{ii}) = uilabel(app.UIFigure);
                 app.SliderLabels.(varNames{ii}).Position(1) = x(1);
                 app.SliderLabels.(varNames{ii}).Position(2) = y(numel(varNames)+1-ii);
@@ -113,6 +112,7 @@ classdef ARStudy < matlab.apps.AppBase
                 app.SliderLabels.(varNames{ii}).VerticalAlignment = 'bottom';
                 app.SliderLabels.(varNames{ii}).Tooltip = p.(varNames{ii}).description;
                 
+                % Create value label to the right hand side
                 app.ValueLabels.(varNames{ii}) = uilabel(app.UIFigure);
                 app.ValueLabels.(varNames{ii}).Position(1) = x(30);
                 app.ValueLabels.(varNames{ii}).Position(2) = y(numel(varNames)+1-ii);
@@ -122,6 +122,7 @@ classdef ARStudy < matlab.apps.AppBase
                 app.ValueLabels.(varNames{ii}).VerticalAlignment = 'bottom';
                 app.ValueLabels.(varNames{ii}).Tooltip = p.(varNames{ii}).description;
                 
+                % Create unit label to the right hand side
                 app.UnitLabels.(varNames{ii}) = uilabel(app.UIFigure);
                 app.UnitLabels.(varNames{ii}).Position(1) = x(35);
                 app.UnitLabels.(varNames{ii}).Position(2) = y(numel(varNames)+1-ii);
@@ -131,7 +132,8 @@ classdef ARStudy < matlab.apps.AppBase
                 app.UnitLabels.(varNames{ii}).VerticalAlignment = 'bottom';
                 app.UnitLabels.(varNames{ii}).Tooltip = p.(varNames{ii}).unit;
             end
-
+            
+            % Initialize the plots with the values from the sliders
             updatePlots(app)
         end
     end
@@ -182,31 +184,39 @@ classdef ARStudy < matlab.apps.AppBase
             % Calculate at the specified alpha
             alpha = alpha*pi/180;
             
+            % Areas
             Sw = (bw.^2)./ARw;
             Sh = (bh.^2)./ARh;
             Sf = pi*rf.^2;
             
+            % Lift alpha-sensitivity coefficients
             CLaw = 2*pi*gammaw./(1+((2.*pi.*gammaw)./(pi.*eLw.*ARw)));
             CLah = 2*pi*gammah./(1+((2.*pi.*gammah)./(pi.*eLh.*ARh)));
             
+            % Overall lift coefficients
             CLw =           CLaw.*alpha + CLa0w;
             CLh = (Sh./Sw)*(CLah.*alpha + CLa0h);
             
+            % Overall drag coefficients
             CDw =           CD0w + (CLw.^2)./(pi*eDw.*ARw);
             CDh = (Sh./Sw).*(CD0h + (CLh.^2)./(pi*eDh.*ARh));
             CDf = (Sf./Sw).*(CD0f + CDaf*alpha.^2);
             
+            % Total vehicle lift and drag
             CL = CLw+CLh;
             CD = CDw+CDh+CDf;
             
+            % Loyd power
             P = (2/27).*eta.*1000.*vw.^3.*Sw.*(CL.^3)./(CD.^2);
-            [~,AROptIndx] = max(P);
+            [POpt,AROptIndx] = max(P);
             AROpt = ARw(AROptIndx);
-            POpt = max(P);
+            
+            % Update plots
             app.PowerPlot.Plot.YData = 0.001*P;
             app.EffPlot.Plot.YData = (CL.^3)./(CD.^2);
             
-            % Calculate at the optimal alpha
+            % Calculate at the optimal alpha (this repeats a lot of the
+            % code above, this could be optimized)
             alpha = linspace(1,20)*pi/180;
             
             Sw = (bw.^2)./ARw;
@@ -232,11 +242,12 @@ classdef ARStudy < matlab.apps.AppBase
             [POptOpt,AROptOptIndx] = max(maxP);
             AROptOpt = ARw(AROptOptIndx);
 
-            drawnow
-            
+
             % Get plot limits and update opimal markers
             xLims = app.PowerAxes.XLim;
             yLims = app.PowerAxes.YLim;
+            
+            % Update marker lines
             app.PowerPlot.OptMarker.XData = [xLims(1) AROpt AROpt];
             app.PowerPlot.OptMarker.YData = [POpt/1000 POpt/1000 yLims(1)];
             
