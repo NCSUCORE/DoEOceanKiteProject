@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     77317,       1752]
-NotebookOptionsPosition[     72635,       1686]
-NotebookOutlinePosition[     73013,       1702]
-CellTagsIndexPosition[     72970,       1699]
+NotebookDataLength[     65490,       1468]
+NotebookOptionsPosition[     63915,       1436]
+NotebookOutlinePosition[     64293,       1452]
+CellTagsIndexPosition[     64250,       1449]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -46,8 +46,6 @@ Cell[BoxData[
  CellChangeTimes->{{3.79674283737982*^9, 3.79674283778578*^9}, 
    3.7967457403434525`*^9},ExpressionUUID->"1c1a58be-589a-495b-88c0-\
 1a840952bcda"],
-
-Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
@@ -386,360 +384,7 @@ Cell[BoxData[{
    3.796744132741766*^9, 3.7967441352129917`*^9}, {3.796745559226365*^9, 
    3.79674559955868*^9}, {3.7970149988980317`*^9, 
    3.797015000291367*^9}},ExpressionUUID->"6d2ed80e-8cf8-46d6-8dd7-\
-5babf7c4f43d"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,49,20,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150158888884`*^9},ExpressionUUID->"627c8687-6d4c-4ddb-9834-\
-f6f099840734"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,50,21,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150160438156`*^9},ExpressionUUID->"9710212d-c351-451e-82fb-\
-3529bedcfbce"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,51,22,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150161177835`*^9},ExpressionUUID->"c1063e07-680a-4069-9347-\
-61e0f577d038"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,52,23,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150161867495`*^9},ExpressionUUID->"2507a7ae-a33c-4a2d-b762-\
-60ab455b22d3"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,53,24,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150162737064`*^9},ExpressionUUID->"ee051570-054d-4ab6-91c5-\
-fe9a25492a8a"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,54,25,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015016346675*^9},ExpressionUUID->"31384b01-7167-47a8-8ce8-\
-cc5b6d4484bc"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,55,26,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015016437634*^9},ExpressionUUID->"941952c3-d1d9-4d5e-8f99-\
-21217702cf96"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,56,27,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015016509598*^9},ExpressionUUID->"19d762a6-3dc3-4836-a165-\
-d2b704375f75"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,57,28,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015016589554*^9},ExpressionUUID->"42311f83-7f5c-42b2-af55-\
-7fb326a64cf2"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,58,29,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150166895065`*^9},ExpressionUUID->"02ad9e47-8f05-49c1-80c4-\
-b76353d5be04"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,59,30,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015016757492*^9},ExpressionUUID->"92e231d9-eb91-4c76-afd9-\
-130a3a4f8803"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,60,31,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150168484297`*^9},ExpressionUUID->"25b24f7b-5d83-4795-8d64-\
-886a5467dacb"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,61,32,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150169134045`*^9},ExpressionUUID->"7f38e61e-0d4d-49b3-a932-\
-49e16bfe83e0"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,62,33,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150169773674`*^9},ExpressionUUID->"f665519f-f181-4db6-82c1-\
-2d562d68119f"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,63,34,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150170333414`*^9},ExpressionUUID->"05c79670-8c9b-4a27-841d-\
-3d232c0a9557"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,64,35,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015017114303*^9},ExpressionUUID->"41130590-096c-4840-98c5-\
-2afab9601274"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,65,36,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150171782775`*^9},ExpressionUUID->"2d8c6dff-9b4d-44c9-822f-\
-20592e426013"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,66,37,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150172442408`*^9},ExpressionUUID->"1a754bf6-514f-42d8-a167-\
-6270432bb7b4"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,67,38,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150173112135`*^9},ExpressionUUID->"abe83b27-ec07-4c4c-b32d-\
-e63b92f04887"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,68,39,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150173781757`*^9},ExpressionUUID->"03b1dc4b-612c-4bd7-9be9-\
-06c1af3c7b65"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,69,40,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150174611435`*^9},ExpressionUUID->"eb046151-0f29-48b3-911f-\
-50365a068b34"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,70,41,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015017533101*^9},ExpressionUUID->"50d8336c-76e4-47a7-a496-\
-25fa04357887"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,71,42,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015017603072*^9},ExpressionUUID->"b9c2597c-d358-4572-92e7-\
-2581203d108f"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,72,43,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150176800385`*^9},ExpressionUUID->"2fbb66b4-8e1b-442c-bdd2-\
-cddf2970ca8a"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,73,44,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015017749004*^9},ExpressionUUID->"d400bc4a-ca92-4f7e-8565-\
-30ee61582769"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,74,45,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150178219633`*^9},ExpressionUUID->"340feb12-a585-4683-bcb6-\
-1c0c6f790228"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,75,46,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150178929296`*^9},ExpressionUUID->"66ebca39-c690-4e06-80e8-\
-6f2977f13ba1"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,76,47,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150179758883`*^9},ExpressionUUID->"fbdc6226-8e34-4503-881d-\
-2c3a8a4bcf55"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,77,48,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015018050852*^9},ExpressionUUID->"085a6fb9-fe5b-478a-abf4-\
-7ce7689a7f08"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,78,49,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150181148233`*^9},ExpressionUUID->"8fa911fc-1021-4647-a70e-\
-946c9f3f1396"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,79,50,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.7970150181807976`*^9},ExpressionUUID->"7ec235bc-dc28-408b-9521-\
-ddc51497a5d3"],
-
-Cell[BoxData[
- TemplateBox[{
-  "Symbolize","bsymbexs",
-   "\"Warning: The box structure attempting to be symbolized has a similar or \
-identical symbol already defined, possibly overriding previously symbolized \
-box structure.\"",2,80,51,33246357627093383104,"Local","Notation`Symbolize"},
-  "MessageTemplate2"]], "Message", "MSG",
- CellChangeTimes->{3.7969148394402084`*^9, 
-  3.797015018260759*^9},ExpressionUUID->"89d44b9b-3e82-429c-95ea-\
-425848d0bca4"]
-}, Open  ]]
+5babf7c4f43d"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -979,7 +624,14 @@ Cell[BoxData[{
         SubscriptBox["C", "L"], "3"], 
        SuperscriptBox[
         SubscriptBox["C", "D"], "2"]], "/.", "liftCoeff"}], "/.", 
-     "dragCoeff"}], "/.", "areas"}]}], ";"}]}], "Input",
+     "dragCoeff"}], "/.", "areas"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CL", " ", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      SubscriptBox["C", "L"], "/.", "liftCoeff"}], "/.", "dragCoeff"}], "/.", 
+    "areas"}]}], ";"}]}], "Input",
  CellChangeTimes->{{3.796648995180337*^9, 3.7966490110284653`*^9}, {
    3.7966490540759783`*^9, 3.7966491178070517`*^9}, {3.796649190061159*^9, 
    3.796649240243517*^9}, {3.796650143825411*^9, 3.796650144689*^9}, {
@@ -991,7 +643,9 @@ Cell[BoxData[{
    3.796744324382756*^9, {3.7967456250803957`*^9, 3.796745630483703*^9}, 
    3.796745705125152*^9, {3.796750268916539*^9, 3.7967502750843754`*^9}, {
    3.7967503136040144`*^9, 3.7967503242116365`*^9}, {3.7970150076948166`*^9, 
-   3.7970150085654044`*^9}},ExpressionUUID->"e626e271-0031-4d4e-a6ae-\
+   3.7970150085654044`*^9}, {3.797596986483788*^9, 3.7975970009878583`*^9}, {
+   3.7975970496975617`*^9, 
+   3.797597069709992*^9}},ExpressionUUID->"e626e271-0031-4d4e-a6ae-\
 2c494a150638"],
 
 Cell[TextData[{
@@ -1016,8 +670,8 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{
      RowBox[{"P", "=", "power"}], ",", 
-     RowBox[{"aeroEff", " ", "=", " ", "CL3CD2"}]}], "}"}], ",", 
-   "\[IndentingNewLine]", 
+     RowBox[{"aeroEff", " ", "=", " ", "CL3CD2"}], ",", 
+     RowBox[{"CLPLT", "=", "CL"}]}], "}"}], ",", "\[IndentingNewLine]", 
    RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
     RowBox[{
      RowBox[{"GraphicsColumn", "[", 
@@ -1056,7 +710,23 @@ Cell[BoxData[
             "\"\<\!\(\*SubscriptBox[\(A\), \(R, w\)]\)\>\"", ",", 
              "\"\<\!\(\*FractionBox[SuperscriptBox[SubscriptBox[\(C\), \
 \(L\)], \(3\)], SuperscriptBox[SubscriptBox[\(C\), \(D\)], \(2\)]]\)\>\""}], 
-            "}"}]}]}], "]"}]}], "\[IndentingNewLine]", "}"}], "]"}], ",", 
+            "}"}]}]}], "]"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"Plot", "[", 
+         RowBox[{
+          RowBox[{"aeroEff", "/.", 
+           RowBox[{"{", 
+            RowBox[{"\[Rho]", "\[Rule]", "1000"}], "}"}]}], ",", 
+          "\[IndentingNewLine]", "\t", 
+          RowBox[{"{", 
+           RowBox[{
+            SubscriptBox["A", 
+             RowBox[{"R", ",", "w"}]], ",", "1", ",", "20"}], "}"}], ",", 
+          RowBox[{"AxesLabel", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{
+            "\"\<\!\(\*SubscriptBox[\(A\), \(R, w\)]\)\>\"", ",", 
+             "\"\<\!\(\*SubscriptBox[\(C\), \(L\)]\)\>\""}], "}"}]}]}], 
+         "]"}]}], "\[IndentingNewLine]", "}"}], "]"}], ",", 
      "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
@@ -1301,8 +971,12 @@ Cell[BoxData[
    3.7967448035398655`*^9}, {3.796744939122657*^9, 3.796744939950261*^9}, {
    3.7967450610000615`*^9, 3.7967450623213515`*^9}, {3.7967456462685175`*^9, 
    3.7967456625212154`*^9}, {3.7967511820098286`*^9, 3.796751185239586*^9}, {
-   3.7970150121566944`*^9, 
-   3.797015013037263*^9}},ExpressionUUID->"e82b853f-47d1-4035-9888-\
+   3.7970150121566944`*^9, 3.797015013037263*^9}, {3.7975969713870153`*^9, 
+   3.7975969722336082`*^9}, {3.7975970043972254`*^9, 
+   3.7975970247934675`*^9}, {3.7975970752923183`*^9, 
+   3.7975970775102606`*^9}, {3.7975971086943464`*^9, 3.797597136658966*^9}, 
+   3.797597182656973*^9, {3.7975972157885485`*^9, 
+   3.7975972300787086`*^9}},ExpressionUUID->"e82b853f-47d1-4035-9888-\
 6064ca743510"],
 
 Cell[BoxData[
@@ -1339,7 +1013,7 @@ Comma\[UnderBracket]w$$ =
     0.5, $CellContext`\[Alpha]$$ = Rational[7, 180] 
     Pi, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]h$$ = 
     1, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$ = 
-    1, $CellContext`\[Eta]$$ = 0.586, Typeset`show$$ = True, 
+    1, $CellContext`\[Eta]$$ = 1, Typeset`show$$ = True, 
     Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
     Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
     "\"untitled\"", Typeset`specs$$ = {{{
@@ -1385,23 +1059,23 @@ Comma\[UnderBracket]w$$ =
        0.1}, 0.001, 0.5}, {{
        Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
 \[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Comma\[UnderBracket]\
-f$$], 0}, 0, 1}}, Typeset`size$$ = {648., {377., 387.}}, Typeset`update$$ = 0,
+f$$], 0}, 0, 1}}, Typeset`size$$ = {433., {384., 394.}}, Typeset`update$$ = 0,
      Typeset`initDone$$, Typeset`skipInitDone$$ = 
-    True, $CellContext`\[Eta]$30639$$ = 
-    0, $CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$30640$$ = 
-    0, $CellContext`\[Alpha]$30641$$ = 
-    0, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$30642$$ = 
+    True, $CellContext`\[Eta]$2964$$ = 
+    0, $CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$2965$$ = 
+    0, $CellContext`\[Alpha]$2966$$ = 
+    0, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$2967$$ = 
     0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
 Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\
-\[UnderBracket]Comma\[UnderBracket]w$30643$$ = 
+\[UnderBracket]Comma\[UnderBracket]w$2968$$ = 
     0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]\
-Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$30644$$ = 
-    0, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$30645$$ =
-     0, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
-Comma\[UnderBracket]w$30646$$ = 
+Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$2969$$ = 
+    0, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$2970$$ = 
+    0, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]w$2971$$ = 
     0, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]\
-Comma\[UnderBracket]w$30647$$ = 
-    0, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$30648$$ = 0}, 
+Comma\[UnderBracket]w$2972$$ = 
+    0, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$2973$$ = 0}, 
     DynamicBox[Manipulate`ManipulateBoxes[
      1, StandardForm, 
       "Variables" :> {$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
@@ -1437,34 +1111,34 @@ Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\
          Pi, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]h$$ = 
         1, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$ = 
         1, $CellContext`\[Eta]$$ = 1}, "ControllerVariables" :> {
-        Hold[$CellContext`\[Eta]$$, $CellContext`\[Eta]$30639$$, 0], 
+        Hold[$CellContext`\[Eta]$$, $CellContext`\[Eta]$2964$$, 0], 
         Hold[$CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$$, \
-$CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$30640$$, 0], 
-        Hold[$CellContext`\[Alpha]$$, $CellContext`\[Alpha]$30641$$, 0], 
+$CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$2965$$, 0], 
+        Hold[$CellContext`\[Alpha]$$, $CellContext`\[Alpha]$2966$$, 0], 
         Hold[$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$, \
-$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$30642$$, 0], 
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$2967$$, 0], 
         Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
 \[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
 \[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$, $CellContext`C\
 \[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\[UnderBracket]\
 \[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\[UnderBracket]Comma\
-\[UnderBracket]w$30643$$, 0], 
+\[UnderBracket]w$2968$$, 0], 
         Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
 \[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$, \
 $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
-\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$30644$$, 0], 
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$2969$$, 0], 
         Hold[$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$, \
-$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$30645$$, 0], 
+$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$2970$$, 0], 
         Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
 \[UnderBracket]Comma\[UnderBracket]w$$, \
 $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
-\[UnderBracket]w$30646$$, 0], 
+\[UnderBracket]w$2971$$, 0], 
         Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
 \[UnderBracket]Comma\[UnderBracket]w$$, \
 $CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
-\[UnderBracket]w$30647$$, 0], 
+\[UnderBracket]w$2972$$, 0], 
         Hold[$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$, \
-$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$30648$$, 0]}, 
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$2973$$, 0]}, 
       "OtherVariables" :> {
        Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
         Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
@@ -1564,7 +1238,83 @@ $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 $CellContext`b\
 Comma\[UnderBracket]h$$ + 
                2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
 \[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
-                
+                2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$)) + 
+             2 Pi $CellContext`\[Alpha]$$ \
+$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+              2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^3 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) 
+              Pi $CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$^2 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$ + $CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]\
+\[Alpha]\[UnderBracket]Comma\[UnderBracket]f$$ $CellContext`\[Alpha]$$^2) + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) ($CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]h$$ + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-3) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w^2 $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^4 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-4) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]h$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$ + 
+                  2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
+                   2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$))^2) + $CellContext`A\[UnderBracket]Subscript\
+\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w^(-1) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]w$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + 
+                2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+                 2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^2)^(-2), {$CellContext`\[Rho] -> 
+            1000}], {$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w, 1, 20}, 
+          AxesLabel -> {
+           "\!\(\*SubscriptBox[\(A\), \(R, w\)]\)", 
+            "\!\(\*FractionBox[SuperscriptBox[SubscriptBox[\(C\), \(L\)], \(3\
+\)], SuperscriptBox[SubscriptBox[\(C\), \(D\)], \(2\)]]\)"}], 
+         Plot[
+          
+          ReplaceAll[($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]h$$\
+^(-1) $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]\
+Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 $CellContext`b\
+\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\[UnderBracket]\
+Comma\[UnderBracket]h$$ + 
+               2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
                 2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
 \[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
 $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
@@ -1667,7 +1417,7 @@ h$$, 1}, 0.7,
          0.5}, {{$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
 \[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Comma\[UnderBracket]\
 f$$, 0}, 0, 1}}, "Options" :> {}, "DefaultOptions" :> {}],
-     ImageSizeCache->{1187., {429., 440.}},
+     ImageSizeCache->{972., {436., 447.}},
      SingleEvaluation->True],
     Deinitialization:>None,
     DynamicModuleValues:>{},
@@ -1678,9 +1428,9 @@ f$$, 0}, 0, 1}}, "Options" :> {}, "DefaultOptions" :> {}],
    Deployed->True,
    StripOnInput->False],
   Manipulate`InterpretManipulate[1]]], "Output",
- CellChangeTimes->{3.796914841370409*^9, 
-  3.7970150184276724`*^9},ExpressionUUID->"1c070adb-10a7-49b2-a479-\
-151e8411265d"]
+ CellChangeTimes->{{3.797597194205861*^9, 
+  3.7975972193518353`*^9}},ExpressionUUID->"5923c594-b451-482d-aee2-\
+0b8faf577cd9"]
 }, Open  ]]
 }, Open  ]]
 },
@@ -1706,52 +1456,18 @@ Cell[580, 22, 160, 3, 118, "Section",ExpressionUUID->"8eeb5006-e1b3-4e9b-aab2-84
 Cell[743, 27, 461, 11, 61, "Text",ExpressionUUID->"fc34f8d5-85cc-45bf-83f1-bc6617ff1d59"],
 Cell[1207, 40, 129, 1, 50, "Input",ExpressionUUID->"dc2be948-a244-4d9f-84bd-504d6aa59140"],
 Cell[1339, 43, 197, 4, 50, "Input",ExpressionUUID->"1c1a58be-589a-495b-88c0-1a840952bcda"],
-Cell[CellGroupData[{
-Cell[1561, 51, 11871, 337, 2095, "Input",ExpressionUUID->"6d2ed80e-8cf8-46d6-8dd7-5babf7c4f43d"],
-Cell[13435, 390, 460, 9, 42, "Message",ExpressionUUID->"627c8687-6d4c-4ddb-9834-f6f099840734"],
-Cell[13898, 401, 460, 9, 42, "Message",ExpressionUUID->"9710212d-c351-451e-82fb-3529bedcfbce"],
-Cell[14361, 412, 460, 9, 42, "Message",ExpressionUUID->"c1063e07-680a-4069-9347-61e0f577d038"],
-Cell[14824, 423, 460, 9, 42, "Message",ExpressionUUID->"2507a7ae-a33c-4a2d-b762-60ab455b22d3"],
-Cell[15287, 434, 460, 9, 42, "Message",ExpressionUUID->"ee051570-054d-4ab6-91c5-fe9a25492a8a"],
-Cell[15750, 445, 458, 9, 42, "Message",ExpressionUUID->"31384b01-7167-47a8-8ce8-cc5b6d4484bc"],
-Cell[16211, 456, 458, 9, 42, "Message",ExpressionUUID->"941952c3-d1d9-4d5e-8f99-21217702cf96"],
-Cell[16672, 467, 458, 9, 42, "Message",ExpressionUUID->"19d762a6-3dc3-4836-a165-d2b704375f75"],
-Cell[17133, 478, 458, 9, 42, "Message",ExpressionUUID->"42311f83-7f5c-42b2-af55-7fb326a64cf2"],
-Cell[17594, 489, 460, 9, 42, "Message",ExpressionUUID->"02ad9e47-8f05-49c1-80c4-b76353d5be04"],
-Cell[18057, 500, 458, 9, 42, "Message",ExpressionUUID->"92e231d9-eb91-4c76-afd9-130a3a4f8803"],
-Cell[18518, 511, 460, 9, 42, "Message",ExpressionUUID->"25b24f7b-5d83-4795-8d64-886a5467dacb"],
-Cell[18981, 522, 460, 9, 42, "Message",ExpressionUUID->"7f38e61e-0d4d-49b3-a932-49e16bfe83e0"],
-Cell[19444, 533, 460, 9, 42, "Message",ExpressionUUID->"f665519f-f181-4db6-82c1-2d562d68119f"],
-Cell[19907, 544, 460, 9, 42, "Message",ExpressionUUID->"05c79670-8c9b-4a27-841d-3d232c0a9557"],
-Cell[20370, 555, 458, 9, 42, "Message",ExpressionUUID->"41130590-096c-4840-98c5-2afab9601274"],
-Cell[20831, 566, 460, 9, 42, "Message",ExpressionUUID->"2d8c6dff-9b4d-44c9-822f-20592e426013"],
-Cell[21294, 577, 460, 9, 42, "Message",ExpressionUUID->"1a754bf6-514f-42d8-a167-6270432bb7b4"],
-Cell[21757, 588, 460, 9, 42, "Message",ExpressionUUID->"abe83b27-ec07-4c4c-b32d-e63b92f04887"],
-Cell[22220, 599, 460, 9, 42, "Message",ExpressionUUID->"03b1dc4b-612c-4bd7-9be9-06c1af3c7b65"],
-Cell[22683, 610, 460, 9, 42, "Message",ExpressionUUID->"eb046151-0f29-48b3-911f-50365a068b34"],
-Cell[23146, 621, 458, 9, 42, "Message",ExpressionUUID->"50d8336c-76e4-47a7-a496-25fa04357887"],
-Cell[23607, 632, 458, 9, 42, "Message",ExpressionUUID->"b9c2597c-d358-4572-92e7-2581203d108f"],
-Cell[24068, 643, 460, 9, 42, "Message",ExpressionUUID->"2fbb66b4-8e1b-442c-bdd2-cddf2970ca8a"],
-Cell[24531, 654, 458, 9, 42, "Message",ExpressionUUID->"d400bc4a-ca92-4f7e-8565-30ee61582769"],
-Cell[24992, 665, 460, 9, 42, "Message",ExpressionUUID->"340feb12-a585-4683-bcb6-1c0c6f790228"],
-Cell[25455, 676, 460, 9, 42, "Message",ExpressionUUID->"66ebca39-c690-4e06-80e8-6f2977f13ba1"],
-Cell[25918, 687, 460, 9, 42, "Message",ExpressionUUID->"fbdc6226-8e34-4503-881d-2c3a8a4bcf55"],
-Cell[26381, 698, 458, 9, 42, "Message",ExpressionUUID->"085a6fb9-fe5b-478a-abf4-7ce7689a7f08"],
-Cell[26842, 709, 460, 9, 42, "Message",ExpressionUUID->"8fa911fc-1021-4647-a70e-946c9f3f1396"],
-Cell[27305, 720, 460, 9, 42, "Message",ExpressionUUID->"7ec235bc-dc28-408b-9521-ddc51497a5d3"],
-Cell[27768, 731, 458, 9, 42, "Message",ExpressionUUID->"89d44b9b-3e82-429c-95ea-425848d0bca4"]
-}, Open  ]]
+Cell[1539, 49, 11871, 337, 2095, "Input",ExpressionUUID->"6d2ed80e-8cf8-46d6-8dd7-5babf7c4f43d"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[28275, 746, 313, 5, 118, "Section",ExpressionUUID->"29b00cf3-9374-4518-ba77-69eaa9fac084"],
-Cell[28591, 753, 317, 7, 61, "Text",ExpressionUUID->"e14fb292-aca8-4fbc-9ca7-c219fd8c8996"],
-Cell[28911, 762, 5892, 181, 494, "Input",ExpressionUUID->"b5efad1e-8eb7-4e78-a4eb-2b13efa964bf"],
-Cell[34806, 945, 290, 7, 61, "Text",ExpressionUUID->"297919d6-8bed-4da1-a63a-e6e925baecdf"],
-Cell[35099, 954, 1716, 40, 186, "Input",ExpressionUUID->"e626e271-0031-4d4e-a6ae-2c494a150638"],
-Cell[36818, 996, 532, 12, 61, "Text",ExpressionUUID->"1317ac65-3bd3-4dc0-8692-7c821278384e"],
+Cell[13447, 391, 313, 5, 118, "Section",ExpressionUUID->"29b00cf3-9374-4518-ba77-69eaa9fac084"],
+Cell[13763, 398, 317, 7, 61, "Text",ExpressionUUID->"e14fb292-aca8-4fbc-9ca7-c219fd8c8996"],
+Cell[14083, 407, 5892, 181, 494, "Input",ExpressionUUID->"b5efad1e-8eb7-4e78-a4eb-2b13efa964bf"],
+Cell[19978, 590, 290, 7, 61, "Text",ExpressionUUID->"297919d6-8bed-4da1-a63a-e6e925baecdf"],
+Cell[20271, 599, 2023, 49, 226, "Input",ExpressionUUID->"e626e271-0031-4d4e-a6ae-2c494a150638"],
+Cell[22297, 650, 532, 12, 61, "Text",ExpressionUUID->"1317ac65-3bd3-4dc0-8692-7c821278384e"],
 Cell[CellGroupData[{
-Cell[37375, 1012, 12156, 293, 1291, "Input",ExpressionUUID->"e82b853f-47d1-4035-9888-6064ca743510"],
-Cell[49534, 1307, 23073, 375, 935, "Output",ExpressionUUID->"1c070adb-10a7-49b2-a479-151e8411265d"]
+Cell[22854, 666, 13118, 313, 1360, "Input",ExpressionUUID->"e82b853f-47d1-4035-9888-6064ca743510"],
+Cell[35975, 981, 27912, 451, 916, "Output",ExpressionUUID->"5923c594-b451-482d-aee2-0b8faf577cd9"]
 }, Open  ]]
 }, Open  ]]
 }
