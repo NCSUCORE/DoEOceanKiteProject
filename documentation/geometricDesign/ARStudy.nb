@@ -1,0 +1,1476 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     65490,       1468]
+NotebookOptionsPosition[     63915,       1436]
+NotebookOutlinePosition[     64293,       1452]
+CellTagsIndexPosition[     64250,       1449]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Set up code", "Section",
+ CellChangeTimes->{{3.7966615080443316`*^9, 
+  3.7966615109467125`*^9}},ExpressionUUID->"8eeb5006-e1b3-4e9b-aab2-\
+8416c2e6749c"],
+
+Cell[TextData[{
+ "This section defines a bunch of variables as symbol objects so that \
+Mathematica handles them properly. (ie ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["x", "x"], TraditionalForm]],ExpressionUUID->
+  "61e5cc20-1a39-40ea-92d0-16a69ad18872"],
+ " doesn\[CloseCurlyQuote]t end up with recursive definition)"
+}], "Text",
+ CellChangeTimes->{{3.796661514027379*^9, 
+  3.796661568733015*^9}},ExpressionUUID->"fc34f8d5-85cc-45bf-83f1-\
+bc6617ff1d59"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Notation`\>\"", "]"}]], "Input",ExpressionUUID->"dc2be948-a244-4d9f-84bd-504d6aa59140"],
+
+Cell[BoxData[
+ RowBox[{"Clear", ";"}]], "Input",
+ CellChangeTimes->{{3.79674283737982*^9, 3.79674283778578*^9}, 
+   3.7967457403434525`*^9},ExpressionUUID->"1c1a58be-589a-495b-88c0-\
+1a840952bcda"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{"\[Eta]"},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Lumped", " ", "efficiency", " ", "factor", " ", "multiplying", " ", 
+    "Loyd", " ", "power"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["\[Alpha]", "0"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Symbolize", " ", "alpha_", "0", " ", "so", " ", "Mathematica", " ", 
+    "interprets", " ", "it", " ", "correctly"}], "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Total", " ", "Vehicle", " ", "Parameters"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", "L"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Total", " ", "lift", " ", "coefficient", " ", "of", " ", "vehicle"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", "D"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Total", " ", "drag", " ", "coefficient", " ", "of", " ", "vehicle"}], 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Wing", " ", "Parameters"}], "*)"}], " "}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["b", "w"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Wing", " ", "span"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["S", "w"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Wing", " ", "planform", " ", "area"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["A", 
+       RowBox[{"R", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Aspect", " ", "ratio", " ", "of", " ", "the", " ", "wing"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"L", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Total", " ", "wing", " ", "lift", " ", "coefficient"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"L", ",", "\[Alpha]", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Wing", " ", "lift", " ", "curve", " ", "slope"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"L", ",", 
+         SubscriptBox["\[Alpha]", "0"], ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Wing", " ", "lift", " ", "at", " ", "zero", " ", "alpha"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["\[Gamma]", "w"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Wing", " ", "airfoil", " ", "lift", " ", "curve", " ", "slope", " ", 
+    "multiplicative", " ", "constant"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Total", " ", "wing", " ", "drag"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "0", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Wing", " ", "drag", " ", "coefficient", " ", "at", " ", "zero", " ", 
+    "alpha"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "i", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Wing", " ", "induced", " ", "drag"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["e", 
+       RowBox[{"L", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Lift", " ", "efficiency", " ", "factor", " ", "of", " ", "wing"}],
+    "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["e", 
+       RowBox[{"D", ",", "w"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Drag", " ", "efficiency", " ", "factor", " ", "of", " ", "wing"}],
+    "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Horizontal", " ", "Stabilizer", " ", "Parameters"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["b", "h"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Horizontal", " ", "stabilizer", " ", "span"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["S", "h"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Horizonstal", " ", "stabilizer", " ", "planform", " ", "area"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["A", 
+       RowBox[{"R", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Horizontal", " ", "stabilizer", " ", "aspect", " ", "ratio"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"L", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "total", " ", "lift", " ", 
+    "coefficient"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"L", ",", "\[Alpha]", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "lift", " ", "curve", " ", "slope"}],
+    "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"L", ",", 
+         SubscriptBox["\[Alpha]", "0"], ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "lift", " ", "at", " ", "zero", " ", 
+    "alpha"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["\[Gamma]", "h"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "airfoil", " ", "lift", " ", "curve",
+     " ", "slope", " ", "multiplicative", " ", "constant"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "total", " ", "drag", " ", 
+    "coefficient"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "0", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "drag", " ", "coefficient", " ", 
+    "at", " ", "zero", " ", "lift"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "i", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Horizontal", " ", "stabilizer", " ", "induced", " ", "drag"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["e", 
+       RowBox[{"L", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "lift", " ", "efficiency", " ", 
+    "factor"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["e", 
+       RowBox[{"D", ",", "h"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Horizontal", " ", "stabilizer", " ", "drag", " ", "efficiency", " ", 
+    "factor"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Fuselage", " ", "Parameters"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "f"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Fuselage", " ", "drag", " ", "coefficient"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "0", ",", "f"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Fuselage", " ", "drag", " ", "coefficient", " ", "at", " ", "zero", " ", 
+    "alpha"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["C", 
+       RowBox[{"D", ",", "\[Alpha]", ",", "f"}]]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Fuselage", " ", "drag", " ", "alpha"}], "-", 
+    RowBox[{"sensitivity", " ", "coefficient"}]}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["r", "f"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Fuselage", " ", "radius"}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Environmental", " ", "Parameters"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Symbolize", "[", 
+    TemplateBox[{SubscriptBox["v", "w"]},
+     "NotationTemplateTag"], "]"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"Wind", " ", "speed"}], "*)"}]}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.7966484679975843`*^9, 3.79664850674103*^9}, {
+   3.7966485424429383`*^9, 3.79664866698689*^9}, 3.7966488341873407`*^9, {
+   3.796650687793112*^9, 3.79665069030622*^9}, {3.7966508056991696`*^9, 
+   3.7966508102573414`*^9}, {3.796650888611246*^9, 3.7966508908486867`*^9}, {
+   3.7966509482833347`*^9, 3.796650955042353*^9}, {3.7966524908587723`*^9, 
+   3.7966524940232744`*^9}, {3.796655339791494*^9, 3.796655368525607*^9}, {
+   3.7966554222054377`*^9, 3.7966554868175073`*^9}, {3.7966555254909945`*^9, 
+   3.796655582453081*^9}, {3.796655710155167*^9, 3.7966557499407496`*^9}, {
+   3.7966560349889793`*^9, 3.796656136936179*^9}, {3.796656401041902*^9, 
+   3.796656433643747*^9}, {3.7966564933785725`*^9, 3.7966565028830247`*^9}, {
+   3.7966567196208143`*^9, 3.796656720067601*^9}, {3.796658039744274*^9, 
+   3.79665804571342*^9}, {3.7966600481556487`*^9, 3.79666039270932*^9}, {
+   3.7966608185660725`*^9, 3.796660837909573*^9}, {3.7967240628613596`*^9, 
+   3.7967241431048985`*^9}, {3.796725129481228*^9, 3.7967251649849186`*^9}, {
+   3.7967252015479774`*^9, 3.7967252179481363`*^9}, {3.79673441577281*^9, 
+   3.7967344353902173`*^9}, {3.7967422597172413`*^9, 
+   3.7967423985076613`*^9}, {3.796742703967204*^9, 3.796742796775165*^9}, {
+   3.796744132741766*^9, 3.7967441352129917`*^9}, {3.796745559226365*^9, 
+   3.79674559955868*^9}, {3.7970149988980317`*^9, 
+   3.797015000291367*^9}},ExpressionUUID->"6d2ed80e-8cf8-46d6-8dd7-\
+5babf7c4f43d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Examine the power vs aspect ratio expression for a given \[Alpha]", \
+"Section",
+ CellChangeTimes->{{3.796653915004964*^9, 3.7966539245094137`*^9}, {
+  3.7966614843325567`*^9, 3.796661496765477*^9}, {3.796751162147808*^9, 
+  3.7967511633152494`*^9}},ExpressionUUID->"29b00cf3-9374-4518-ba77-\
+69eaa9fac084"],
+
+Cell["\<\
+Define replacement expressions for various quantities of interest.  Assumes \
+idealized lift curve slope of 2\[Pi].\
+\>", "Text",
+ CellChangeTimes->{{3.79664935302692*^9, 3.796649364826157*^9}, {
+  3.7966567773766336`*^9, 
+  3.7966567927232895`*^9}},ExpressionUUID->"e14fb292-aca8-4fbc-9ca7-\
+c219fd8c8996"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"liftCurveSlopes", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox["C", 
+       RowBox[{"L", ",", "\[Alpha]", ",", "w"}]], "\[Rule]", 
+      FractionBox[
+       RowBox[{"2", "\[Pi]", " ", 
+        SubscriptBox["\[Gamma]", "w"]}], 
+       RowBox[{"1", "+", 
+        FractionBox[
+         RowBox[{"2", "\[Pi]", " ", 
+          SubscriptBox["\[Gamma]", "w"]}], 
+         RowBox[{"\[Pi]", " ", 
+          SubscriptBox["e", 
+           RowBox[{"L", ",", "w"}]], 
+          SubscriptBox["A", 
+           RowBox[{"R", ",", "w"}]]}]]}]]}], ",", 
+     RowBox[{
+      SubscriptBox["C", 
+       RowBox[{"L", ",", "\[Alpha]", ",", "h"}]], "\[Rule]", 
+      FractionBox[
+       RowBox[{"2", "\[Pi]", " ", 
+        SubscriptBox["\[Gamma]", "h"]}], 
+       RowBox[{"1", "+", 
+        FractionBox[
+         RowBox[{"2", "\[Pi]", " ", 
+          SubscriptBox["\[Gamma]", "h"]}], 
+         RowBox[{"\[Pi]", " ", 
+          SubscriptBox["e", 
+           RowBox[{"L", ",", "h"}]], 
+          SubscriptBox["A", 
+           RowBox[{"R", ",", "h"}]]}]]}]]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"liftCoeffs", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       SubscriptBox["C", 
+        RowBox[{"L", ",", "w"}]], "\[Rule]", " ", 
+       RowBox[{
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"L", ",", "\[Alpha]", ",", "w"}]], "\[Alpha]"}], " ", "+", 
+        SubscriptBox["C", 
+         RowBox[{"L", ",", 
+          SubscriptBox["\[Alpha]", "0"], ",", "w"}]]}]}], ",", 
+      RowBox[{
+       SubscriptBox["C", 
+        RowBox[{"L", ",", "h"}]], "\[Rule]", " ", 
+       RowBox[{
+        FractionBox[
+         SubscriptBox["S", "h"], 
+         SubscriptBox["S", "w"]], 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           SubscriptBox["C", 
+            RowBox[{"L", ",", "\[Alpha]", ",", "h"}]], "\[Alpha]"}], " ", "+", 
+          SubscriptBox["C", 
+           RowBox[{"L", ",", 
+            SubscriptBox["\[Alpha]", "0"], ",", "h"}]]}], ")"}]}]}]}], "}"}], 
+    "/.", "liftCurveSlopes"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"liftCoeff", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox["C", "L"], "\[Rule]", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        SubscriptBox["C", 
+         RowBox[{"L", ",", "w"}]], "+", 
+        SubscriptBox["C", 
+         RowBox[{"L", ",", "h"}]]}], ")"}]}], "}"}], "/.", "liftCoeffs"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dragCoeffs", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       SubscriptBox["C", 
+        RowBox[{"D", ",", "w"}]], "\[Rule]", 
+       RowBox[{
+        SubscriptBox["C", 
+         RowBox[{"D", ",", "0", ",", "w"}]], "+", 
+        FractionBox[
+         SuperscriptBox[
+          SubscriptBox["C", 
+           RowBox[{"L", ",", "w"}]], "2"], 
+         RowBox[{"\[Pi]", " ", 
+          SubscriptBox["e", 
+           RowBox[{"D", ",", "w"}]], 
+          SubscriptBox["A", 
+           RowBox[{"R", ",", "w"}]]}]]}]}], ",", 
+      RowBox[{
+       SubscriptBox["C", 
+        RowBox[{"D", ",", "h"}]], "\[Rule]", 
+       RowBox[{
+        SubscriptBox["C", 
+         RowBox[{"D", ",", "0", ",", "h"}]], "+", 
+        FractionBox[
+         SuperscriptBox[
+          SubscriptBox["C", 
+           RowBox[{"L", ",", "h"}]], "2"], 
+         RowBox[{"\[Pi]", " ", 
+          SubscriptBox["e", 
+           RowBox[{"D", ",", "h"}]], 
+          SubscriptBox["A", 
+           RowBox[{"R", ",", "h"}]]}]]}]}], ",", 
+      RowBox[{
+       SubscriptBox["C", 
+        RowBox[{"D", ",", "f"}]], "\[Rule]", " ", 
+       RowBox[{
+        SubscriptBox["C", 
+         RowBox[{"D", ",", "0", ",", "f"}]], "+", 
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"D", ",", "\[Alpha]", ",", "f"}]], 
+         SuperscriptBox["\[Alpha]", "2"]}]}]}]}], "}"}], "/.", 
+    "liftCoeffs"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"dragCoeff", " ", "=", " ", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox["C", "D"], "\[Rule]", 
+      RowBox[{
+       SubscriptBox["C", 
+        RowBox[{"D", ",", "w"}]], "+", " ", 
+       RowBox[{
+        FractionBox[
+         SubscriptBox["S", "h"], 
+         SubscriptBox["S", "w"]], 
+        SubscriptBox["C", 
+         RowBox[{"D", ",", "h"}]]}], "+", 
+       RowBox[{
+        FractionBox[
+         SubscriptBox["S", "f"], 
+         SubscriptBox["S", "w"]], 
+        SubscriptBox["C", 
+         RowBox[{"D", ",", "f"}]]}]}]}], "}"}], "/.", "dragCoeffs"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"areas", " ", "=", " ", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox["S", "w"], "\[Rule]", 
+      FractionBox[
+       SuperscriptBox[
+        SubscriptBox["b", "w"], "2"], 
+       SubscriptBox["A", 
+        RowBox[{"R", ",", "w"}]]]}], ",", 
+     RowBox[{
+      SubscriptBox["S", "h"], "\[Rule]", 
+      FractionBox[
+       SuperscriptBox[
+        SubscriptBox["b", "h"], "2"], 
+       SubscriptBox["A", 
+        RowBox[{"R", ",", "h"}]]]}], ",", 
+     RowBox[{
+      SubscriptBox["S", "f"], "\[Rule]", 
+      RowBox[{"\[Pi]", " ", 
+       SuperscriptBox[
+        SubscriptBox["r", "f"], "2"]}]}]}], "}"}]}], ";"}]}], "Input",
+ CellChangeTimes->CompressedData["
+1:eJwlxVsoQ2EAB/C5JJmM8eK+k+SSGGliIZYyhHOWUZa0UiTxwovIpMZckqSN
+kSRNuSUtkpZ5mTNJK1sTXkiG5AVNwvf/PPz6Mdpuri1QIBBICJzfFa8ZVb6U
+/bSrO3Dm80kPrpF+9uKH2M1ZvKJy0mcZhQkP6l4XcHBZyw5mq3bpZ95+0RjZ
+9yiMxF+1AxLsF47Rb73sPHY59AvYLi8sMpDzD4PkOELNVuCexTn6+Vbx0Tg5
+TxfH4xmN1ovDlPwVdodc3+JAf9MbtuhfAybIy8aPUCxJnRLh6ePTZFwjDk7H
+fcaoeiyMVvhwlsVEX4pJ+cUlSSzd7WoNmiRrOw30/crtROysq07CMrtuD487
+G2z43sDLNslDnFCOzdHhLN6zV3B4zWNuwQ7e9X9yrxUPqpkDbMt+ytklvx9d
+FuByqawYN34v01dtTJqVnHCynoGHpy5y8Y5Fo8A8c8PhZqlOhe9KAzZwtUdM
+949oPrHV80z/A8qtAGg=
+  "],ExpressionUUID->"b5efad1e-8eb7-4e78-a4eb-2b13efa964bf"],
+
+Cell["\<\
+Calculate our expression for power in terms of the aspect ratio and angle of \
+attack\
+\>", "Text",
+ CellChangeTimes->{{3.796649373690813*^9, 3.7966493808104057`*^9}, {
+  3.7966494120424547`*^9, 
+  3.7966494181775165`*^9}},ExpressionUUID->"297919d6-8bed-4da1-a63a-\
+e6e925baecdf"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"power", "=", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       FractionBox["2", "27"], "\[Eta]", " ", "\[Rho]", " ", 
+       SuperscriptBox[
+        SubscriptBox["v", "w"], "3"], " ", 
+       SubscriptBox["S", "w"], " ", 
+       FractionBox[
+        SuperscriptBox[
+         SubscriptBox["C", "L"], "3"], 
+        SuperscriptBox[
+         SubscriptBox["C", "D"], "2"]]}], "/.", "liftCoeff"}], "/.", 
+     "dragCoeff"}], "/.", "areas"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CL3CD2", " ", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      FractionBox[
+       SuperscriptBox[
+        SubscriptBox["C", "L"], "3"], 
+       SuperscriptBox[
+        SubscriptBox["C", "D"], "2"]], "/.", "liftCoeff"}], "/.", 
+     "dragCoeff"}], "/.", "areas"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CL", " ", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      SubscriptBox["C", "L"], "/.", "liftCoeff"}], "/.", "dragCoeff"}], "/.", 
+    "areas"}]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.796648995180337*^9, 3.7966490110284653`*^9}, {
+   3.7966490540759783`*^9, 3.7966491178070517`*^9}, {3.796649190061159*^9, 
+   3.796649240243517*^9}, {3.796650143825411*^9, 3.796650144689*^9}, {
+   3.796650208502084*^9, 3.7966502150435266`*^9}, {3.796650262564596*^9, 
+   3.7966502738918324`*^9}, {3.7966568779110274`*^9, 
+   3.7966569289535875`*^9}, {3.796724195273424*^9, 3.796724220041067*^9}, {
+   3.7967243667393255`*^9, 3.7967243677343583`*^9}, {3.796724528032035*^9, 
+   3.7967245281977124`*^9}, {3.7967415647377167`*^9, 3.796741578841442*^9}, 
+   3.796744324382756*^9, {3.7967456250803957`*^9, 3.796745630483703*^9}, 
+   3.796745705125152*^9, {3.796750268916539*^9, 3.7967502750843754`*^9}, {
+   3.7967503136040144`*^9, 3.7967503242116365`*^9}, {3.7970150076948166`*^9, 
+   3.7970150085654044`*^9}, {3.797596986483788*^9, 3.7975970009878583`*^9}, {
+   3.7975970496975617`*^9, 
+   3.797597069709992*^9}},ExpressionUUID->"e626e271-0031-4d4e-a6ae-\
+2c494a150638"],
+
+Cell[TextData[{
+ "Plot power vs ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["A", "R"], TraditionalForm]],ExpressionUUID->
+  "ef990e68-1014-4b98-942b-3304709fd137"],
+ " for the wing, assuming some values for span, b, and fluid density \[Rho]:"
+}], "Text",
+ CellChangeTimes->{{3.796653247990243*^9, 3.796653251891384*^9}, {
+  3.7966551942030573`*^9, 3.7966552088540444`*^9}, {3.7966575184637804`*^9, 
+  3.796657519848118*^9}, {3.79666042712201*^9, 
+  3.7966604452779446`*^9}},ExpressionUUID->"1317ac65-3bd3-4dc0-8692-\
+7c821278384e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"With", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"P", "=", "power"}], ",", 
+     RowBox[{"aeroEff", " ", "=", " ", "CL3CD2"}], ",", 
+     RowBox[{"CLPLT", "=", "CL"}]}], "}"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"GraphicsColumn", "[", 
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"Plot", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"0.001", "*", "P"}], "/.", 
+           RowBox[{"{", 
+            RowBox[{"\[Rho]", "\[Rule]", "1000"}], "}"}]}], ",", 
+          "\[IndentingNewLine]", "\t", 
+          RowBox[{"{", 
+           RowBox[{
+            SubscriptBox["A", 
+             RowBox[{"R", ",", "w"}]], ",", "1", ",", "20"}], "}"}], ",", 
+          RowBox[{"AxesLabel", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{
+            "\"\<\!\(\*SubscriptBox[\(A\), \(R, w\)]\)\>\"", ",", 
+             "\"\<P, [kW]\>\""}], "}"}]}]}], "]"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Plot", "[", 
+         RowBox[{
+          RowBox[{"aeroEff", "/.", 
+           RowBox[{"{", 
+            RowBox[{"\[Rho]", "\[Rule]", "1000"}], "}"}]}], ",", 
+          "\[IndentingNewLine]", "\t", 
+          RowBox[{"{", 
+           RowBox[{
+            SubscriptBox["A", 
+             RowBox[{"R", ",", "w"}]], ",", "1", ",", "20"}], "}"}], ",", 
+          RowBox[{"AxesLabel", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{
+            "\"\<\!\(\*SubscriptBox[\(A\), \(R, w\)]\)\>\"", ",", 
+             "\"\<\!\(\*FractionBox[SuperscriptBox[SubscriptBox[\(C\), \
+\(L\)], \(3\)], SuperscriptBox[SubscriptBox[\(C\), \(D\)], \(2\)]]\)\>\""}], 
+            "}"}]}]}], "]"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"Plot", "[", 
+         RowBox[{
+          RowBox[{"aeroEff", "/.", 
+           RowBox[{"{", 
+            RowBox[{"\[Rho]", "\[Rule]", "1000"}], "}"}]}], ",", 
+          "\[IndentingNewLine]", "\t", 
+          RowBox[{"{", 
+           RowBox[{
+            SubscriptBox["A", 
+             RowBox[{"R", ",", "w"}]], ",", "1", ",", "20"}], "}"}], ",", 
+          RowBox[{"AxesLabel", "\[Rule]", 
+           RowBox[{"{", 
+            RowBox[{
+            "\"\<\!\(\*SubscriptBox[\(A\), \(R, w\)]\)\>\"", ",", 
+             "\"\<\!\(\*SubscriptBox[\(C\), \(L\)]\)\>\""}], "}"}]}]}], 
+         "]"}]}], "\[IndentingNewLine]", "}"}], "]"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\[Eta]", ",", "1"}], "}"}], ",", "0", ",", "1"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Lumped", " ", "efficiency"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["v", "w"], ",", "0.5"}], "}"}], ",", "0.1", ",", "3"}], 
+      "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Wind", " ", "speed"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\[Alpha]", ",", 
+         RowBox[{"7", 
+          FractionBox["\[Pi]", "180"]}]}], "}"}], ",", "0", ",", 
+       RowBox[{"20", 
+        FractionBox["\[Pi]", "180"]}]}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Angle", " ", "of", " ", "attack"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Wing", " ", "Parameters"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["b", "w"], ",", "8"}], "}"}], ",", "7", ",", "11"}], 
+      "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Wing", " ", "span"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"L", ",", 
+           SubscriptBox["\[Alpha]", "0"], ",", "w"}]], ",", "0.25"}], "}"}], 
+       ",", "0", ",", "0.5"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{
+      "Wing", " ", "lift", " ", "coefficient", " ", "at", " ", "zero", " ", 
+       "alpha"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"D", ",", "0", ",", "w"}]], ",", "0.015"}], "}"}], ",", "0",
+        ",", "0.3"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{
+      "Wing", " ", "drag", " ", "coefficient", " ", "at", " ", "zero", " ", 
+       "lift"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["\[Gamma]", "w"], ",", "1"}], "}"}], ",", "0.7", ",", 
+       "1"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{
+      "Wing", " ", "airfoil", " ", "lift", " ", "curve", " ", "slope", " ", 
+       "modifier"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["e", 
+          RowBox[{"L", ",", "w"}]], ",", "0.90"}], "}"}], ",", "0.8", ",", 
+       "1"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Wing", " ", "lift", " ", "efficiency"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["e", 
+          RowBox[{"D", ",", "w"}]], ",", "0.90"}], "}"}], ",", "0.8", ",", 
+       "1"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Wing", " ", "drag", " ", "efficiency"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Horizontal", " ", "Stabilizer", " ", "Parameters"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["b", "h"], ",", "4.5"}], "}"}], ",", "0.5", ",", "5"}], 
+      "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"H", " ", "stab", " ", "span"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["A", 
+          RowBox[{"R", ",", "h"}]], ",", "5"}], "}"}], ",", "1", ",", "10"}], 
+      "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"H", " ", "stab", " ", "aspect", " ", "ratio"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"L", ",", 
+           SubscriptBox["\[Alpha]", "0"], ",", "h"}]], ",", "0"}], "}"}], ",", 
+       RowBox[{"-", "0.25"}], ",", "0.25"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{
+      "H", " ", "stab", " ", "lift", " ", "coefficient", " ", "at", " ", 
+       "zero", " ", "alpha"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"D", ",", "0", ",", "h"}]], ",", "0.015"}], "}"}], ",", "0",
+        ",", "0.3"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{
+      "H", " ", "stab", " ", "drag", " ", "coefficient", " ", "zero", " ", 
+       "lift"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["\[Gamma]", "h"], ",", "1"}], "}"}], ",", "0.7", ",", 
+       "1"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{
+      "H", " ", "stab", " ", "airfoil", " ", "lift", " ", "curve", " ", 
+       "slope", " ", "modifier"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["e", 
+          RowBox[{"L", ",", "h"}]], ",", "0.90"}], "}"}], ",", "0.8", ",", 
+       "1"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"H", " ", "stab", " ", "lift", " ", "efficiency"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["e", 
+          RowBox[{"D", ",", "h"}]], ",", "0.90"}], "}"}], ",", "0.8", ",", 
+       "1"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"H", " ", "stab", " ", "drag", " ", "efficiency"}], "*)"}], 
+     "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{"Fuselage", " ", "Parameters"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["r", "f"], ",", "0.75"}], "}"}], ",", "0.1", ",", "3"}],
+       "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Fuselage", " ", "radius"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"D", ",", "0", ",", "f"}]], ",", "0.1"}], "}"}], ",", 
+       "0.001", ",", "0.5"}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{
+      "Lumped", " ", "fuselage", " ", "drag", " ", "coefficient", " ", "at", 
+       " ", "zero", " ", "alpha"}], "*)"}], "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["C", 
+          RowBox[{"D", ",", "\[Alpha]", ",", "f"}]], ",", "0"}], "}"}], ",", 
+       "0", ",", "1"}], "}"}]}], 
+    RowBox[{"(*", 
+     RowBox[{
+      RowBox[{"Fuselage", " ", "drag", " ", "coefficient", " ", "\[Alpha]"}], 
+      "-", "sensitivity"}], "*)"}], "\[IndentingNewLine]", "]"}]}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.796650405998837*^9, 3.796650444018977*^9}, {
+   3.7966505164200354`*^9, 3.7966505529697027`*^9}, {3.796650601913384*^9, 
+   3.7966506279604745`*^9}, {3.7966506605058656`*^9, 
+   3.7966507189291983`*^9}, {3.7966507747770786`*^9, 
+   3.7966507838049364`*^9}, {3.796650816355422*^9, 3.796650881791253*^9}, {
+   3.796650932579537*^9, 3.796650966139987*^9}, {3.7966511184630795`*^9, 
+   3.7966511741475754`*^9}, {3.796651289082464*^9, 3.7966512942585287`*^9}, {
+   3.7966513561523314`*^9, 3.796651359948043*^9}, 3.796651451068287*^9, {
+   3.7966514951777773`*^9, 3.796651555984823*^9}, {3.79665158641979*^9, 
+   3.7966516120761795`*^9}, 3.7966516496210318`*^9, {3.7966518148433084`*^9, 
+   3.7966518408494577`*^9}, {3.7966519960165334`*^9, 3.796652016286835*^9}, 
+   3.796652433602093*^9, {3.7966525131301584`*^9, 3.7966525142476225`*^9}, 
+   3.796652824413108*^9, {3.7966528651497145`*^9, 3.7966528926294317`*^9}, {
+   3.796652939074458*^9, 3.7966529516687*^9}, 3.7966530524025316`*^9, {
+   3.7966530878934555`*^9, 3.796653096849167*^9}, {3.7966531434819517`*^9, 
+   3.796653180083629*^9}, 3.7966532634678335`*^9, {3.7966533365051217`*^9, 
+   3.796653351050151*^9}, {3.79665342484377*^9, 3.7966534449105024`*^9}, {
+   3.7966551911004567`*^9, 3.7966552195849075`*^9}, {3.796656978227*^9, 
+   3.796657050107024*^9}, {3.796657116291626*^9, 3.7966572280181484`*^9}, {
+   3.7966572701700397`*^9, 3.79665732520235*^9}, {3.796657381061611*^9, 
+   3.7966573850586977`*^9}, {3.7966574221389484`*^9, 3.796657467738403*^9}, {
+   3.796657532075273*^9, 3.796657582459345*^9}, 3.7966576214426827`*^9, {
+   3.796657666307207*^9, 3.7966576825854287`*^9}, 3.7966577285614185`*^9, {
+   3.7966579059955416`*^9, 3.7966579192621694`*^9}, {3.7966580090599194`*^9, 
+   3.7966580313363004`*^9}, 3.79665833444267*^9, 3.7966588099019628`*^9, {
+   3.7966588418966455`*^9, 3.796658983233415*^9}, {3.7966604662506657`*^9, 
+   3.79666046632763*^9}, {3.796660511923826*^9, 3.7966606226714907`*^9}, {
+   3.796660789076225*^9, 3.79666078913146*^9}, {3.7966608509059625`*^9, 
+   3.7966608712012987`*^9}, {3.7967242715717115`*^9, 3.796724312290619*^9}, 
+   3.796724559982872*^9, {3.796724666681353*^9, 3.796724669106767*^9}, {
+   3.7967247249655266`*^9, 3.796724728788867*^9}, {3.7967252317907925`*^9, 
+   3.7967252835468683`*^9}, {3.796725532744339*^9, 3.7967255328123317`*^9}, {
+   3.7967345127044325`*^9, 3.7967345254963055`*^9}, {3.796741453348079*^9, 
+   3.796741493639339*^9}, {3.796741587154632*^9, 3.796741610871918*^9}, {
+   3.796741666831297*^9, 3.796741670255334*^9}, {3.7967417075055017`*^9, 
+   3.7967417546955004`*^9}, {3.796741795992916*^9, 3.7967419102476745`*^9}, {
+   3.7967420662900977`*^9, 3.796742066905306*^9}, {3.796742937941314*^9, 
+   3.796743072869914*^9}, {3.7967431080726657`*^9, 3.79674315819872*^9}, {
+   3.796743212396881*^9, 3.7967432370135098`*^9}, {3.7967432774416656`*^9, 
+   3.7967432779514217`*^9}, {3.796743341377945*^9, 3.796743343913732*^9}, {
+   3.796743386875374*^9, 3.7967433878399086`*^9}, {3.796743436105215*^9, 
+   3.7967435016956835`*^9}, {3.796743760135167*^9, 3.796743791415479*^9}, {
+   3.796743866321657*^9, 3.7967438666384993`*^9}, {3.7967438990013776`*^9, 
+   3.7967438991273165`*^9}, {3.796744091136836*^9, 3.7967441151829157`*^9}, {
+   3.796744439864251*^9, 3.7967444474171076`*^9}, {3.7967447890229297`*^9, 
+   3.7967448035398655`*^9}, {3.796744939122657*^9, 3.796744939950261*^9}, {
+   3.7967450610000615`*^9, 3.7967450623213515`*^9}, {3.7967456462685175`*^9, 
+   3.7967456625212154`*^9}, {3.7967511820098286`*^9, 3.796751185239586*^9}, {
+   3.7970150121566944`*^9, 3.797015013037263*^9}, {3.7975969713870153`*^9, 
+   3.7975969722336082`*^9}, {3.7975970043972254`*^9, 
+   3.7975970247934675`*^9}, {3.7975970752923183`*^9, 
+   3.7975970775102606`*^9}, {3.7975971086943464`*^9, 3.797597136658966*^9}, 
+   3.797597182656973*^9, {3.7975972157885485`*^9, 
+   3.7975972300787086`*^9}},ExpressionUUID->"e82b853f-47d1-4035-9888-\
+6064ca743510"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$ = 
+    5, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$ = 
+    4.5, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$ = 
+    8, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]\
+Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$ = 
+    0.1, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]\
+Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$ = 
+    0.015, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ = 
+    0.015, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Comma\[UnderBracket]\
+f$$ = 0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]h$$ = 
+    0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]w$$ = 
+    0.25, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]h$$ = 
+    0.9, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]\
+Comma\[UnderBracket]w$$ = 
+    0.9, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]h$$ = 
+    0.9, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]w$$ = 
+    0.9, $CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$ = 
+    0.75, $CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$$ = 
+    0.5, $CellContext`\[Alpha]$$ = Rational[7, 180] 
+    Pi, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]h$$ = 
+    1, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$ = 
+    1, $CellContext`\[Eta]$$ = 1, Typeset`show$$ = True, 
+    Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`\[Eta]$$], 1}, 0, 1}, {{
+       Hold[$CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$$], 0.5}, 
+      0.1, 3}, {{
+       Hold[$CellContext`\[Alpha]$$], Rational[7, 180] Pi}, 0, Rational[1, 9] 
+      Pi}, {{
+       Hold[$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$], 8}, 7, 
+      11}, {{
+       Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$], 0.25}, 0, 0.5}, {{
+       Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$], 
+       0.015}, 0, 0.3}, {{
+       Hold[$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$], 
+       1}, 0.7, 1}, {{
+       Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]w$$], 0.9}, 0.8, 1}, {{
+       Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]w$$], 0.9}, 0.8, 1}, {{
+       Hold[$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$], 4.5}, 
+      0.5, 5}, {{
+       Hold[$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$], 5}, 1, 10}, {{
+       Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$], 0}, -0.25, 0.25}, {{
+       Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$], 
+       0.015}, 0, 0.3}, {{
+       Hold[$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]h$$], 
+       1}, 0.7, 1}, {{
+       Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]h$$], 0.9}, 0.8, 1}, {{
+       Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]h$$], 0.9}, 0.8, 1}, {{
+       Hold[$CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$], 0.75}, 
+      0.1, 3}, {{
+       Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$], 
+       0.1}, 0.001, 0.5}, {{
+       Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Comma\[UnderBracket]\
+f$$], 0}, 0, 1}}, Typeset`size$$ = {433., {384., 394.}}, Typeset`update$$ = 0,
+     Typeset`initDone$$, Typeset`skipInitDone$$ = 
+    True, $CellContext`\[Eta]$2964$$ = 
+    0, $CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$2965$$ = 
+    0, $CellContext`\[Alpha]$2966$$ = 
+    0, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$2967$$ = 
+    0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]w$2968$$ = 
+    0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]\
+Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$2969$$ = 
+    0, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$2970$$ = 
+    0, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]w$2971$$ = 
+    0, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]\
+Comma\[UnderBracket]w$2972$$ = 
+    0, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$2973$$ = 0}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, 
+      "Variables" :> {$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$ = 
+        5, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$ = 
+        4.5, $CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$ = 
+        8, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$ = 
+        0.1, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$ = 
+        0.015, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ = 
+        0.015, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Comma\[UnderBracket]\
+f$$ = 0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]\
+Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]h$$ = 
+        0, $CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ = 
+        0.25, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]h$$ = 
+        0.9, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]w$$ = 
+        0.9, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]h$$ = 
+        0.9, $CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]w$$ = 
+        0.9, $CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$ = 
+        0.75, $CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$$ = 
+        0.5, $CellContext`\[Alpha]$$ = 
+        Rational[7, 180] 
+         Pi, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]h$$ = 
+        1, $CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$ = 
+        1, $CellContext`\[Eta]$$ = 1}, "ControllerVariables" :> {
+        Hold[$CellContext`\[Eta]$$, $CellContext`\[Eta]$2964$$, 0], 
+        Hold[$CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$$, \
+$CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$2965$$, 0], 
+        Hold[$CellContext`\[Alpha]$$, $CellContext`\[Alpha]$2966$$, 0], 
+        Hold[$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$, \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$2967$$, 0], 
+        Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$, $CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\[UnderBracket]\
+\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\[UnderBracket]Comma\
+\[UnderBracket]w$2968$$, 0], 
+        Hold[$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$, \
+$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$2969$$, 0], 
+        Hold[$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$, \
+$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$2970$$, 0], 
+        Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]w$$, \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$2971$$, 0], 
+        Hold[$CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]w$$, \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]w$2972$$, 0], 
+        Hold[$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$, \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$2973$$, 0]}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> GraphicsColumn[{
+         Plot[
+          ReplaceAll[
+          0.001 (Rational[
+             2, 27] $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^2 $CellContext`v\
+\[UnderBracket]Subscript\[UnderBracket]w$$^3 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\[UnderBracket]\
+Comma\[UnderBracket]w$$ + $CellContext`A\[UnderBracket]Subscript\
+\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]h$$^(-1) $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 $CellContext`b\
+\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\[UnderBracket]\
+Comma\[UnderBracket]h$$ + 
+                2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
+                 2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$)) + 
+              2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+               2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^3 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) 
+               Pi $CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$^2 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$ + $CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]\
+\[Alpha]\[UnderBracket]Comma\[UnderBracket]f$$ $CellContext`\[Alpha]$$^2) + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) ($CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]h$$ + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-3) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w^2 $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^4 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-4) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]h$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$ + 
+                   2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
+                    2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$))^2) + $CellContext`A\[UnderBracket]Subscript\
+\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w^(-1) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]w$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + 
+                 2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+                  2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^2)^(-2) $CellContext`\[Eta]$$ $CellContext`\[Rho]), \
+{$CellContext`\[Rho] -> 
+            1000}], {$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w, 1, 20}, 
+          AxesLabel -> {"\!\(\*SubscriptBox[\(A\), \(R, w\)]\)", "P, [kW]"}], 
+         Plot[
+          
+          ReplaceAll[($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]h$$\
+^(-1) $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]\
+Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 $CellContext`b\
+\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\[UnderBracket]\
+Comma\[UnderBracket]h$$ + 
+               2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
+                2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$)) + 
+             2 Pi $CellContext`\[Alpha]$$ \
+$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+              2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^3 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) 
+              Pi $CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$^2 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$ + $CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]\
+\[Alpha]\[UnderBracket]Comma\[UnderBracket]f$$ $CellContext`\[Alpha]$$^2) + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) ($CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]h$$ + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-3) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w^2 $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^4 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-4) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]h$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$ + 
+                  2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
+                   2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$))^2) + $CellContext`A\[UnderBracket]Subscript\
+\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w^(-1) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]w$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + 
+                2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+                 2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^2)^(-2), {$CellContext`\[Rho] -> 
+            1000}], {$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w, 1, 20}, 
+          AxesLabel -> {
+           "\!\(\*SubscriptBox[\(A\), \(R, w\)]\)", 
+            "\!\(\*FractionBox[SuperscriptBox[SubscriptBox[\(C\), \(L\)], \(3\
+\)], SuperscriptBox[SubscriptBox[\(C\), \(D\)], \(2\)]]\)"}], 
+         Plot[
+          
+          ReplaceAll[($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]h$$\
+^(-1) $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]\
+Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 $CellContext`b\
+\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\[UnderBracket]0\[UnderBracket]\
+Comma\[UnderBracket]h$$ + 
+               2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
+                2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$)) + 
+             2 Pi $CellContext`\[Alpha]$$ \
+$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+              2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^3 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + $CellContext`A\
+\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) 
+              Pi $CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$^2 \
+($CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$ + $CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]\
+\[Alpha]\[UnderBracket]Comma\[UnderBracket]f$$ $CellContext`\[Alpha]$$^2) + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^2 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-2) ($CellContext`C\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]0\
+\[UnderBracket]Comma\[UnderBracket]h$$ + \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-3) \
+$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\[UnderBracket]Comma\
+\[UnderBracket]w^2 $CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$^4 \
+$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$^(-4) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]h$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$ + 
+                  2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]h$$/(1 + 
+                   2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]h$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]h$$))^2) + $CellContext`A\[UnderBracket]Subscript\
+\[UnderBracket]R\[UnderBracket]Comma\[UnderBracket]w^(-1) $CellContext`e\
+\[UnderBracket]Subscript\[UnderBracket]D\[UnderBracket]Comma\[UnderBracket]w$$\
+^(-1) Pi^(-1) ($CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$ + 
+                2 Pi $CellContext`\[Alpha]$$ $CellContext`\[Gamma]\
+\[UnderBracket]Subscript\[UnderBracket]w$$/(1 + 
+                 2 $CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w^(-1) \
+$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\[UnderBracket]Comma\
+\[UnderBracket]w$$^(-1) $CellContext`\[Gamma]\[UnderBracket]Subscript\
+\[UnderBracket]w$$))^2)^(-2), {$CellContext`\[Rho] -> 
+            1000}], {$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]w, 1, 20}, 
+          AxesLabel -> {
+           "\!\(\*SubscriptBox[\(A\), \(R, w\)]\)", 
+            "\!\(\*FractionBox[SuperscriptBox[SubscriptBox[\(C\), \(L\)], \(3\
+\)], SuperscriptBox[SubscriptBox[\(C\), \(D\)], \(2\)]]\)"}]}], 
+      "Specifications" :> {{{$CellContext`\[Eta]$$, 1}, 0, 
+         1}, {{$CellContext`v\[UnderBracket]Subscript\[UnderBracket]w$$, 0.5},
+          0.1, 3}, {{$CellContext`\[Alpha]$$, Rational[7, 180] Pi}, 0, 
+         Rational[1, 9] 
+         Pi}, {{$CellContext`b\[UnderBracket]Subscript\[UnderBracket]w$$, 8}, 
+         7, 11}, {{$CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$, 0.25}, 0, 
+         0.5}, {{$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]w$$, 
+          0.015}, 0, 
+         0.3}, {{$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]\
+w$$, 1}, 0.7, 
+         1}, {{$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]w$$, 0.9}, 0.8, 
+         1}, {{$CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]w$$, 0.9}, 0.8, 
+         1}, {{$CellContext`b\[UnderBracket]Subscript\[UnderBracket]h$$, 4.5},
+          0.5, 5}, {{$CellContext`A\[UnderBracket]Subscript\[UnderBracket]R\
+\[UnderBracket]Comma\[UnderBracket]h$$, 5}, 1, 
+         10}, {{$CellContext`C\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Subscript\
+\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$, 0}, -0.25, 
+         0.25}, {{$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]h$$, 
+          0.015}, 0, 
+         0.3}, {{$CellContext`\[Gamma]\[UnderBracket]Subscript\[UnderBracket]\
+h$$, 1}, 0.7, 
+         1}, {{$CellContext`e\[UnderBracket]Subscript\[UnderBracket]L\
+\[UnderBracket]Comma\[UnderBracket]h$$, 0.9}, 0.8, 
+         1}, {{$CellContext`e\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]h$$, 0.9}, 0.8, 
+         1}, {{$CellContext`r\[UnderBracket]Subscript\[UnderBracket]f$$, 
+          0.75}, 0.1, 
+         3}, {{$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]0\[UnderBracket]Comma\[UnderBracket]f$$, 
+          0.1}, 0.001, 
+         0.5}, {{$CellContext`C\[UnderBracket]Subscript\[UnderBracket]D\
+\[UnderBracket]Comma\[UnderBracket]\[Alpha]\[UnderBracket]Comma\[UnderBracket]\
+f$$, 0}, 0, 1}}, "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{972., {436., 447.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.797597194205861*^9, 
+  3.7975972193518353`*^9}},ExpressionUUID->"5923c594-b451-482d-aee2-\
+0b8faf577cd9"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1920, 997},
+WindowMargins->{{-8, Automatic}, {Automatic, -8}},
+Magnification:>1.8 Inherited,
+FrontEndVersion->"11.2 for Microsoft Windows (64-bit) (September 10, 2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 160, 3, 118, "Section",ExpressionUUID->"8eeb5006-e1b3-4e9b-aab2-8416c2e6749c"],
+Cell[743, 27, 461, 11, 61, "Text",ExpressionUUID->"fc34f8d5-85cc-45bf-83f1-bc6617ff1d59"],
+Cell[1207, 40, 129, 1, 50, "Input",ExpressionUUID->"dc2be948-a244-4d9f-84bd-504d6aa59140"],
+Cell[1339, 43, 197, 4, 50, "Input",ExpressionUUID->"1c1a58be-589a-495b-88c0-1a840952bcda"],
+Cell[1539, 49, 11871, 337, 2095, "Input",ExpressionUUID->"6d2ed80e-8cf8-46d6-8dd7-5babf7c4f43d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13447, 391, 313, 5, 118, "Section",ExpressionUUID->"29b00cf3-9374-4518-ba77-69eaa9fac084"],
+Cell[13763, 398, 317, 7, 61, "Text",ExpressionUUID->"e14fb292-aca8-4fbc-9ca7-c219fd8c8996"],
+Cell[14083, 407, 5892, 181, 494, "Input",ExpressionUUID->"b5efad1e-8eb7-4e78-a4eb-2b13efa964bf"],
+Cell[19978, 590, 290, 7, 61, "Text",ExpressionUUID->"297919d6-8bed-4da1-a63a-e6e925baecdf"],
+Cell[20271, 599, 2023, 49, 226, "Input",ExpressionUUID->"e626e271-0031-4d4e-a6ae-2c494a150638"],
+Cell[22297, 650, 532, 12, 61, "Text",ExpressionUUID->"1317ac65-3bd3-4dc0-8692-7c821278384e"],
+Cell[CellGroupData[{
+Cell[22854, 666, 13118, 313, 1360, "Input",ExpressionUUID->"e82b853f-47d1-4035-9888-6064ca743510"],
+Cell[35975, 981, 27912, 451, 916, "Output",ExpressionUUID->"5923c594-b451-482d-aee2-0b8faf577cd9"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

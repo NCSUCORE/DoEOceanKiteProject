@@ -14,10 +14,6 @@ for ii = 1:length(vars)
     varName = varName{end};
     varName(1) = genvarname(lower(varName(1)));
     
-%     if strcmpi(varName,'tether000')
-%         x = 1;
-%     end
-        
     try
         evalin('base',sprintf('VSS_%s_%s = Simulink.Variant(''strcmpi(%s,''''%s'''')'');',blkName,varName,controlName,varName));
     catch

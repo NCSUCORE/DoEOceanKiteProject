@@ -2,7 +2,7 @@
 % -Mitchell
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(60,'s');
+simParams.setDuration(50,'s');
 
 %% Load components
 
@@ -99,10 +99,13 @@ simWithMonitor('OCTModel')
 
 %this stores all of the logged signals from the model. To veiw, type
 %tsc.signalname.data to view data, tsc.signalname.plot to plot etc.
-tsc = signalcontainer(logsout);
+tsc = signalcontainer(logsout,'Verbose',false);
 
 %%
-% vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-%     'PlotTracer',false,'FontSize',18)
+close all
+vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',false,'FontSize',18,...
+    'Glider',gndStn,...
+    'Bedrock',true)
 
 

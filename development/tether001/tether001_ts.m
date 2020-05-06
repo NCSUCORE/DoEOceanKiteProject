@@ -1,7 +1,4 @@
 
-
-
-
 close all;clear;clc
 
 % Setting sim time to zero runs a single time step
@@ -9,36 +6,43 @@ simTime = 10;
 SampleTime = .1;
 time = 0:SampleTime:simTime;
 
-TetherLengthI = 91;
-TetherLengthF = 1.01;
+ReelInVelcoity = 0; 
+TetherTotalLength = 100;
+TopLinkLength = 10;
 
-LastLinkLength = 1;
+NumberNodesTotal = 8;
+LinkUnstrechedLengths = [((TetherTotalLength-TopLinkLength)/(NumberNodesTotal-2))*ones(1,NumberNodesTotal-2),TopLinkLength];
+FirstLinkLengthI = LinkUnstrechedLengths(1);
+FirstLinkLengthF = FirstLinkLengthI+ReelInVelcoity*simTime;
+% if FirstLinkLengthF<=0
+%     fprintf('Wont Work')
+%     FirstLinkLengthF
+% end
 
-numNodes = 8;
-initNodePosTotal = [0,15,30,45,60,75,90,91];%linspace(0,TetherLength,numNodes)
+INITIALLINE = linspace(LinkUnstrechedLengths(2),TetherTotalLength-TopLinkLength,NumberNodesTotal-2);
+initNodeVel = [zeros(1,NumberNodesTotal-2);zeros(1,NumberNodesTotal-2);zeros(1,NumberNodesTotal-2)];
+%initNodePos = [zeros(1,NumberNodesTotal-2);zeros(1,NumberNodesTotal-2);INITIALLINE];
+initNodePos = [zeros(1,NumberNodesTotal-2);INITIALLINE;zeros(1,NumberNodesTotal-2)];
 
+k = 0:SampleTime:simTime;
+FirstLinkLength = linspace(FirstLinkLengthI,FirstLinkLengthF,length(k));
 
-initNodeVel = zeros(3,numNodes-2);
-initNodePos = [zeros(1,numNodes-2);zeros(1,numNodes-2);initNodePosTotal(2:end-1)];
-
-gndNodePos = zeros(3,1);
-gndNodeVel = zeros(3,1);
-airNodePos = [0;0;initNodePosTotal(end)];
-airNodeVel = zeros(3,1);
-
-k = SampleTime:SampleTime:simTime;
-TetherLength = linspace(TetherLengthI,TetherLengthF,length(k));
+HORZ = linspace(0,10,length(k));
 for i = 1:length(k)
-    gndNodePos(1:3,i+1) = [0,0,0];
-    %gndNodePos(1:3,i+1) = [-k(i)*SampleTime,0,0];
-    airNodePos(1:3,i+1) = [5*k(i)*SampleTime,0,TetherLength(i)];
-    %airNodePos(1:3,i+1) = [0,0,TetherLength];
-    LinkUnstrechedLengths(i+1,:) = [((TetherLength(i)-LastLinkLength)/(numNodes-2))*ones(1,numNodes-2),LastLinkLength];
+    gndNodePos(1:3,i) = [0,0,0];
+    %gndNodePos(1:3,i) = [-k(i)*SampleTime,0,0];
+    %airNodePos(1:3,i) = [HORZ(i),0,TetherTotalLength+FirstLinkLengthI-FirstLinkLength(i)];
+    %airNodePos(1:3,i) = [0,0,TetherTotalLength];
+    airNodePos(1:3,i) = [0,TetherTotalLength,0];
 end
-LinkUnstrechedLengths(1,:) = [((TetherLength(1)-LastLinkLength)/(numNodes-2))*ones(1,numNodes-2),LastLinkLength];
-TetherLength = [TetherLengthI,TetherLength];
 
-
+% for i = ((length(k)/2)+1):length(k)
+%     gndNodePos(1:3,i) = [0,0,0];
+%     %gndNodePos(1:3,i+1) = [-k(i)*SampleTime,0,0];
+%     airNodePos(1:3,i) = [HORZ(length(k)/2),0,TetherTotalLength+FirstLinkLengthI-FirstLinkLength(length(k)/2)];
+%     %airNodePos(1:3,i+1) = [0,0,TetherLength(end)];
+%     %airNodePos(1:3,i+1) = [0,TetherLength(end),0];
+% end
 
 gndNodeVel = gradient(gndNodePos);
 airNodeVel = gradient(airNodePos);
@@ -47,25 +51,21 @@ gndNodePosTS = timeseries(gndNodePos,time);
 gndNodeVelTS = timeseries(gndNodeVel,time);
 airNodePosTS = timeseries(airNodePos,time);
 airNodeVelTS = timeseries(airNodeVel,time);
-TetherLengthTS = timeseries(TetherLength,time);
-UnstrechedLengthsTS = timeseries(LinkUnstrechedLengths,time);
 
+VelocityReelInTS = timeseries(ReelInVelcoity*ones(length(time),1),time);
+FirstLinkLengthTS= timeseries(FirstLinkLength,time);
 
-linkFlowVelVecs = [.0000001*ones(1,numNodes-1);0*ones(1,numNodes-1);0*ones(1,numNodes-1)];
+linkFlowVelVecs = [.00000001*ones(1,NumberNodesTotal-1);0*ones(1,NumberNodesTotal-1);0*ones(1,NumberNodesTotal-1)];
 
+%simTime = 0;
 simout = sim('tether001_th');
+%simout = sim('tether000Comparison_th');
 
 tsc = signalcontainer(simout.logsout);
 
-nodePositionVecs = tsc.nodePositionVecs.Data;
-forceVecBdy = tsc.forceVecBdy.Data;
-a = tsc.a.Data;
-v = tsc.v.Data;
-x = tsc.x.Data;
-
-Num = size(x);
 Time = tsc.x.Time;
-
+x = tsc.x.Data;
+Num = size(x);
 h = figure;
 axis tight manual % this ensures that getframe() returns a consistent size
 filename = 'testAnimated.gif'; 
@@ -75,9 +75,12 @@ for i = 1:Num(3)
     C = [gndNodePos(3,i),x(3,:,i),airNodePos(3,i)];
     plot3(A',B',C','.-');
     title(['Time (s) ',num2str(round(round(Time(i),2,'significant'),4))])
-    xlim([-50,50]);
-    ylim([-50,50]);
-    zlim([0,max(TetherLength)]);
+%     xlim([-50,50]);
+%     ylim([-50,50]);
+%     zlim([0,max(TetherTotalLength)]);
+    xlim([-10,50]);
+    ylim([-10,TetherTotalLength+5]);
+    zlim([-30,30]);
           % Capture the plot as an image 
       frame = getframe(h); 
       im = frame2im(frame); 
@@ -100,6 +103,30 @@ drawnow
 
 
 
+% 
+% Node1Acceleration = tsc.Node1Acceleration.Data;
+% a = tsc.a.Data;
+% v = tsc.v.Data;
+% x = tsc.x.Data;
+% PMAT = tsc.PMAT.Data;
+% KMAT = tsc.KMAT.Data;
+% XMAT = tsc.XMAT.Data;
+% INVMASS = tsc.INVMASS.Data;
+% min(INVMASS(INVMASS>0))
+% WMAT = tsc.WMAT.Data;
+% FTOTAL = tsc.FTOTAL.Data;
+% D2R_DS2 = tsc.D2R_DS2.Data;
+% FW = tsc.FW.Data;
+% FK = tsc.FK.Data;
+% 
+% i=10;
+% INVM = [INVMASS(:,:,i)*(PMAT(:,:,i)*KMAT(:,:,i)*XMAT(i,:)'+PMAT(:,:,i)*WMAT(i,:)'),...
+%         INVMASS(:,:,end)*(PMAT(:,:,end)*KMAT(:,:,end)*XMAT(end,:)'+PMAT(:,:,end)*WMAT(end,:)')];
+% F_Tot = reshape(FTOTAL(i,:)',3,numel(FTOTAL(i,:)')/3)
+% FW = reshape(FW(i,:)',3,numel(FW(i,:)')/3)
+% FK = reshape(FK(i,:)',3,numel(FK(i,:)')/3)
+% d2rdsr2 = reshape(D2R_DS2(i,:)',3,numel(D2R_DS2(i,:)')/3)
+% r = x(:,:,end)
 
 
 

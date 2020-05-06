@@ -7,13 +7,13 @@ n_cases = length(batch_res);
 
 w_chord = obj.wingRootChord.Value;
 w_TR = obj.wingTR.Value;
-w_span = obj.wingRootChord.Value^2*obj.wingAR.Value;
+w_span = 2 * obj.portWing.halfSpan.Value;
 w_cl_min = obj.wingClMin.Value;
 w_cl_max = obj.wingClMax.Value;
 
 hs_chord = obj.hStab.rootChord.Value;
 hs_TR = obj.hStab.TR.Value;
-hs_span = obj.hStab.rootChord.Value^2*obj.hStab.AR.Value;
+hs_span = 2 * obj.hStab.halfSpan.Value;
 hs_cl_min = obj.hStab.ClMin.Value;
 hs_cl_max = obj.hStab.ClMax.Value;
 

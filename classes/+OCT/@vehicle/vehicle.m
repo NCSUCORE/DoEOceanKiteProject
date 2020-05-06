@@ -69,6 +69,8 @@ classdef vehicle < dynamicprops
         
         
         staticMargin
+        
+        contactPoints
     end
     
     methods
@@ -414,7 +416,7 @@ classdef vehicle < dynamicprops
                 
         % aerodynamic reference area
         function val = get.fluidRefArea(obj)
-            Sref = obj.wingAR.Value*obj.wingRootChord.Value^2;
+            Sref = 2 * obj.portWing.planformArea.Value;
             val = SIM.parameter('Value',Sref,'Unit','m^2',...
                 'Description','Reference area for aerodynamic calculations');
         end
@@ -455,6 +457,18 @@ classdef vehicle < dynamicprops
             hn = h0 + eta_s*V_s*(cla_hs/cla_wing)*(1-depsilon_dalpha);
             margin = hn - (obj.rCM_LE.Value(1) / obj.portWing.MACLength.Value);
             val = SIM.parameter('Unit','m','Value',margin,'Description','Static Margin of Stability');
+        end
+        
+        function val = get.contactPoints(obj)
+            % Calculate location of points at the edges of the body where
+            % we will calculate forces and moments from contact with ground
+            ptsMat=[...
+                obj.portWing.outlinePtsBdy.Value(:,2)... % Port wing tip LE point
+                obj.stbdWing.outlinePtsBdy.Value(:,2)... % Starboard wing tip LE point
+                obj.hStab.outlinePtsBdy.Value(:,[3 5])... % H stabilizer TE tip points
+                obj.fuse.rNose_LE.Value-[0 0 obj.fuse.diameter.Value/2]'...% Fuselage nose - diameter/2 (in body z)
+                obj.fuse.rEnd_LE.Value-[0 0 obj.fuse.diameter.Value/2]'];% Fuselage tail - diameter/2 (in body z)
+            val = SIM.parameter('Unit','m','Value',ptsMat,'Description','Points where contact forces are modeled');
         end
            
         %% other methods
@@ -581,6 +595,7 @@ classdef vehicle < dynamicprops
             
             p = inputParser;
             addParameter(p,'FigHandle',[],@(x) isa(x,'matlab.ui.Figure'));
+            addParameter(p,'AxHandle',[],@(x) isa(x,'matlab.graphics.axis.Axes'));
             addParameter(p,'EulerAngles',[0 0 0],@isnumeric)
             addParameter(p,'Position',[0 0 0]',@isnumeric)
             addParameter(p,'fuseRings',8,@isnumeric);
@@ -589,22 +604,24 @@ classdef vehicle < dynamicprops
             
             R = rotation_sequence(p.Results.EulerAngles);
             
-            if isempty(p.Results.FigHandle)
+            if isempty(p.Results.FigHandle) && isempty(p.Results.AxHandle)
                 h.fig = figure;
                 h.fig.Name ='Design';
-%                 oldUL = h.fig.Position(2) + h.fig.Position(4);
-%                 h.fig.Position(3:4) = h.fig.Position(3:4)*2;
-%                 h.fig.Position(2) = oldUL - h.fig.Position(4);
-                h.ax = gca;
             else
                 h.fig = p.Results.FigHandle;
+            end
+            
+            if isempty(p.Results.AxHandle)
+                h.ax = gca;
+            else
+                h.ax = p.Results.AxHandle;
             end
             
             fs = obj.getPropsByClass("OCT.aeroSurf");
             % Aero surfaces (and fuselage)
             for ii = 1:4
                 pts = R*obj.(fs{ii}).outlinePtsBdy.Value;
-                h.surf{ii} = plot3(...
+                h.surf{ii} = plot3(h.ax,...
                     pts(1,:)+p.Results.Position(1),...
                     pts(2,:)+p.Results.Position(2),...
                     pts(3,:)+p.Results.Position(3),...
@@ -614,7 +631,7 @@ classdef vehicle < dynamicprops
             end
             if p.Results.fuseRings == 0
                 fusepts = [obj.fuse.rNose_LE.Value obj.fuse.rEnd_LE.Value];
-                h.surf{5} = plot3(fusepts(1,:),fusepts(2,:),fusepts(3,:),...
+                h.surf{5} = plot3(h.ax,fusepts(1,:),fusepts(2,:),fusepts(3,:),...
                                   'LineWidth',1.2,'Color','k','LineStyle','-',...
                                   'DisplayName','Fluid Dynamic Surfaces');
             else
@@ -656,11 +673,11 @@ classdef vehicle < dynamicprops
 %                 z(end+1:end+numel(endz))=endz;
                 
                 
-                h.surf{5}=plot3(x,y,z,'LineWidth',.2,'Color','k','LineStyle','-',...
+                h.surf{5}=plot3(h.ax,x,y,z,'LineWidth',.2,'Color','k','LineStyle','-',...
                       'DisplayName','Fluid Dynamic Surfaces');
-                h.surf{6}=plot3(nosex,nosey,nosez,'LineWidth',.2,'Color','k','LineStyle','-',...
+                h.surf{6}=plot3(h.ax,nosex,nosey,nosez,'LineWidth',.2,'Color','k','LineStyle','-',...
                       'DisplayName','Fluid Dynamic Surfaces');
-                h.surf{7}=plot3(endx,endy,endz,'LineWidth',.2,'Color','k','LineStyle','-',...
+                h.surf{7}=plot3(h.ax,endx,endy,endz,'LineWidth',.2,'Color','k','LineStyle','-',...
                       'DisplayName','Fluid Dynamic Surfaces');
             end
                          
@@ -668,7 +685,7 @@ classdef vehicle < dynamicprops
                 % Tether attachment points
                 for ii = 1:obj.numTethers.Value
                     pts = R*obj.thrAttchPts_B(ii).posVec.Value;
-                    h.thrAttchPts{ii} = plot3(...
+                    h.thrAttchPts{ii} = plot3(h.ax,...
                         pts(1)+p.Results.Position(1),...
                         pts(2)+p.Results.Position(2),...
                         pts(3)+p.Results.Position(3),...
@@ -677,7 +694,7 @@ classdef vehicle < dynamicprops
                 % Turbines
                 for ii = 1:obj.numTurbines.Value
                     pts = R*obj.turbines(ii).attachPtVec.Value;
-                    h.turb{ii} = plot3(...
+                    h.turb{ii} = plot3(h.ax,...
                         pts(1)+p.Results.Position(1),...
                         pts(2)+p.Results.Position(2),...
                         pts(3)+p.Results.Position(3),...
@@ -686,7 +703,7 @@ classdef vehicle < dynamicprops
                 
                 for ii = 1:4
                     pts = R*obj.fluidMomentArms.Value(:,ii);
-                    h.momArms{ii} = plot3(...
+                    h.momArms{ii} = plot3(h.ax,...
                         pts(1)+p.Results.Position(1),...
                         pts(2)+p.Results.Position(2),...
                         pts(3)+p.Results.Position(3),...
@@ -694,12 +711,13 @@ classdef vehicle < dynamicprops
                     
                 end
                 % Center of mass
-                h.centOfMass = plot3(obj.rCM_LE.Value(1)+p.Results.Position(1),...
-                                     obj.rCM_LE.Value(2)+p.Results.Position(2),...
-                                     obj.rCM_LE.Value(3)+p.Results.Position(3),...
-                                     'r*','DisplayName','Center of Mass');
+                h.centOfMass = plot3(h.ax,...
+                                    obj.rCM_LE.Value(1)+p.Results.Position(1),...
+                                    obj.rCM_LE.Value(2)+p.Results.Position(2),...
+                                    obj.rCM_LE.Value(3)+p.Results.Position(3),...
+                                    'r*','DisplayName','Center of Mass');
                 % Coordinate origin
-                h.origin = plot3(p.Results.Position(1),p.Results.Position(2),p.Results.Position(3),'kx','DisplayName','Body Frame Origin/Leading Edge');
+                h.origin = plot3(h.ax,p.Results.Position(1),p.Results.Position(2),p.Results.Position(3),'kx','DisplayName','Body Frame Origin/Leading Edge');
                 legend(h.ax,[h.surf{1} h.thrAttchPts{1} h.turb{1} h.momArms{2} h.centOfMass h.origin],'Location','northeast')
             end
             grid on

@@ -25,7 +25,7 @@ for kk = 1:1
         for ii = 1:1
             
             % %% Script to run ILC path optimization
-            clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'ii' 'jj'  'powerMatSaverKiteBigStation' 'kk' 'tetherL'  'flowSpeeds'
+            clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'ii' 'jj'  'powerMatSaverKiteBigStationTurb' 'kk' 'tetherL'  'flowSpeeds'
             clc;close all
             simParams = SIM.simParams;
             simParams.setDuration(1000,'s');
@@ -57,19 +57,23 @@ for kk = 1:1
             
             % Environment
             % loadComponent('CNAPsNoTurbJosh');
-            % loadComponent('CNAPsTurbJames');
+             loadComponent('CNAPsTurbJames');
+             FLOWCALCULATION = 'combinedHighLowFreqDataPlanarWave';
+             env.addFlow({'waterWave'},{'planarWaves'});
+             env.waterWave.setNumWaves(2,'');
+             env.waterWave.build;
             % loadComponent('CNAPsTurbMitchell');
 %             loadComponent('ConstXYZT');
-            loadComponent('hurricaneSandyWave')
+%             loadComponent('hurricaneSandyWave')
             
             
-            env.waterWave.waveParamMat.setValue([waveNumber(jj),Frequencies(jj),Amplitudes(jj) ,0;0,0,0,0],'')
-%              env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
-            env.water.setflowVec([flowSpeeds(kk) 0 0],'m/s')
+          env.waterWave.waveParamMat.setValue([waveNumber(jj),Frequencies(jj),Amplitudes(jj) ,0;0,0,0,0],'')
+%            env.waterWave.waveParamMat.setValue([0,0,0 ,0;0,0,0,0],'')
+%             env.water.setflowVec([flowSpeeds(kk) 0 0],'m/s')
             
             %% Set basis parameters for high level controller
             % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-            hiLvlCtrl.basisParams.setValue([1,1.4,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+            hiLvlCtrl.basisParams.setValue([1.2,2.2,-.36,0*pi/180,tetherL(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
             %% Ground Station IC's and dependant properties
             gndStn.setPosVec([0 0 200],'m')
             gndStn.initAngPos.setValue(0,'rad');
@@ -94,7 +98,7 @@ for kk = 1:1
             
             thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
             %% Winches IC's and dependant properties
-            wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+            wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[1 0 0 ]');
             
             %% Controller User Def. Parameters and dependant properties
             fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
@@ -109,9 +113,9 @@ for kk = 1:1
             try
                 load('pow.mat')
                 
-                powerMatSaverKiteBigStation(ii,jj,kk) = powAvg;
+                powerMatSaverKiteBigStationTurb(ii,jj,kk) = powAvg;
                 
-                
+                save('powerMatSaverKiteBigStationTurb.mat',' powerMatSaverKiteBigStationTurb')
             catch
             end
             
