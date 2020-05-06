@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 gndStn.fluidDensity.Value = 1.0000e+03
 gndStn.fluidDensity.Unit = 'kg/m^3'
 gndStn.fluidDensity.NoScale = false
@@ -601,7 +602,7 @@ gndStn.turbines.powerCoeff.NoScale = false
 gndStn.turbines.dragCoeff.Value = 1.2800e+00
 gndStn.turbines.dragCoeff.Unit is unitless or has no unit specified
 gndStn.turbines.dragCoeff.NoScale = false
-gndStn.fluidMomentArms.Value = [3.22617395661758 3.22617395661758 56.6111102305692 55.673994607844;-24.0740740740741 24.0740740740741 0 0;0.840173068763912 0.840173068763912 0 11.7361111111111]
+gndStn.fluidMomentArms.Value = [6.45234791323516 6.45234791323516 113.222220461138 111.347989215688;-48.1481481481482 48.1481481481482 0 0;1.68034613752782 1.68034613752782 0 23.4722222222222]
 gndStn.fluidMomentArms.Unit = 'm'
 gndStn.fluidMomentArms.NoScale = false
 gndStn.fuseMomentArm.Value = [17.5;0;0]
