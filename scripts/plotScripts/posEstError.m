@@ -24,8 +24,10 @@ z_est = zeros(1,length(midNodePosX));
 x_err = zeros(1,length(midNodePosX)); 
 y_err = zeros(1,length(midNodePosX)); 
 z_err = zeros(1,length(midNodePosX)); 
-El_err = zeros(1,length(midNodePosX)); 
-Az_err = zeros(1,length(midNodePosX)); 
+El_err_p = zeros(1,length(midNodePosX)); 
+Az_err_p = zeros(1,length(midNodePosX)); 
+El_err_raw = zeros(1,length(midNodePosX)); 
+Az_err_raw = zeros(1,length(midNodePosX)); 
 
 
 for i = 1:length(midNodePosX)
@@ -44,9 +46,14 @@ for i = 1:length(midNodePosX)
 end 
 
 for ii= 1:length(midNodePosX)
-    El_err = (El_est-El);%/max(El); 
-    Az_err = (Az_est-Az);%/max(Az); 
+    El_err_p = (El_est-El)/max(El); 
+    Az_err_p = (Az_est-Az)/max(Az); 
+    El_err_raw = (El_est-El); 
+    Az_err_raw = (Az_est-Az); 
 end 
+
+%% 
+
 figure; 
 plot(time,100*x_err)
 hold on 
@@ -57,9 +64,9 @@ title('error(%) of Angle estimates using LAS')
 legend('X error','Y error','Z error')
 
 figure; 
-plot(time,100*El_err)
+plot(time,100*El_err_p)
 hold on 
-plot(time,100*Az_err)
+plot(time,100*Az_err_p)
 hold off 
 title('error(%) of position estimates using LAS') 
 legend('El error','Az error')
@@ -84,13 +91,16 @@ hold on
 plot(time,200-z_est,'--')
 title('z positions') 
 legend('true value','LAS Estimate')
+%% 
 
 
 max_X_error = 100*max(x_err) 
 max_Y_error = 100*max(y_err) 
 max_Z_error = 100*max(z_err) 
-max_El_error = 100*max(El_err) 
-max_Az_error = 100*max(Az_err) 
+max_El_error = 100*max(El_err_p) 
+max_Az_error = 100*max(Az_err_p) 
+max_El_error = max(El_err_raw)*(180/pi) 
+max_Az_error = max(Az_err_raw)*(180/pi) 
 
 %% 
 
