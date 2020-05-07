@@ -157,7 +157,7 @@ classdef DARPA < handle
                 timeVec = obj.allFlowVecTimeseries.Value.Time;
             end
             % Calculate magnitude
-            data = squeeze(sqrt(sum(data.^2,2)));
+            data = squeeze(sqrt(sum(data.^2,2))); 
             
             % If the user wants minutes, divide the time by 60
             if strcmpi(p.Results.TimeUnits,'m') ||strcmpi(p.Results.TimeUnits,'min')
