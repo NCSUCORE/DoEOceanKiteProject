@@ -9,7 +9,7 @@ env.gravAccel.setValue(9.81,'m/s^2'); % Set gravity
 % Add a flow profile to the environment
 env.addFlow({'water'},{'DARPA'});
 
-env.water.setStartTime(7200,'s');
+env.water.setStartTime(7200*40,'s');
 env.water.setEndTime(env.water.startTime.Value+3600*3,'s');
 env.water.setDensity(1000,'kg/m^3');
 

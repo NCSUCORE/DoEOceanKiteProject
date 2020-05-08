@@ -45,12 +45,24 @@ classdef DARPA < handle
             end
             
             depths = linspace(0,300,25);
-            % 6*24*30 = 4320, every ten minutes, for 24 hours in a 30 day month
-            tNum = 4320 ;
+            % 60*24*30 = 2592000, every second, for 24 hours in a 30 day month
+            %the data is actually upsidedown
+            tNum = 4320;
+            uvelmn  = -flip(uvelmn,3);
+            uvelsd  =  flip(uvelsd ,3);
+            
+            vvelmn  = -flip(vvelmn,3);
+            vvelsd  =  flip(vvelsd ,3);
+            
+            wvelmn  =  flip(wvelmn,3);
+            wvelsd  =  flip(wvelsd ,3);
+            
+            
+            
             for ii = 1:tNum
                 data(:,:,:,1,ii) = randn(size(uvelsd)).*uvelsd + uvelmn;
-                data(:,:,:,2,ii) = randn(size(uvelsd)).*vvelsd + vvelmn;
-                data(:,:,:,3,ii) = randn(size(uvelsd)).*wvelsd + wvelmn;
+                data(:,:,:,2,ii) = randn(size(vvelsd)).*vvelsd + vvelmn;
+                data(:,:,:,3,ii) = randn(size(wvelsd)).*wvelsd + wvelmn;
                 
             end
             
@@ -58,21 +70,22 @@ classdef DARPA < handle
             
             %time in seconds
             timeVec =  0:10*60:tNum*10*60-10*60;   % 0 to one month (30 days) in seconds with 10 minute dilineations
-            
+            H = tf(1,[3600,1]);
             
             % Have to filter each 3d gridpoint
-            b =  -0.001665;
-            a = [-0.9983,1];
+           
             for qq = 1:3 % number of flow components
                 for pp = 1:numel(depths)
                     for kk = 1:numel(Y)
                         for jj = 1:numel(X)
                             
-                            b =  -0.001665;
-                            a = [-0.9983,1];
+%                             b =  -0.1535;
+%                             a = [-0.84652,1];
                             currentFilterInput = squeeze(data(jj,kk,pp,qq,:));
-                            data(jj,kk,pp,qq,:) = filter(b,a,currentFilterInput);
-                            
+                           data(jj,kk,pp,qq,:) =  lsim(H,currentFilterInput,timeVec);
+%                             data(jj,kk,pp,qq,:) = filter(b,a,currentFilterInput);
+%                             plot(squeeze(data(jj,kk,pp,qq,:)))
+%                             close all
                         end
                     end
                 end
