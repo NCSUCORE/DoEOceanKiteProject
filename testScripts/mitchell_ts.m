@@ -1,6 +1,6 @@
 
 
-flowspeeds = [1];
+flowspeeds = [0.25];
 tetherLengths = [125];
 for ii = 1:numel(flowspeeds)
     for jj = 1:numel(tetherLengths)
