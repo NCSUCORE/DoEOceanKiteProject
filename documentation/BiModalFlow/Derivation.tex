@@ -20,12 +20,19 @@ The goal of this document is to derive an analytical expression for a bimodal pr
 \item the standard deviation, $\sigma$, and
 \item the mean-squared, $m$.
 \end{itemize}	
+In order to calculate each of these from a given probability density function, $P(x)$, we use the expressions
+\begin{align}
+\mu & = \int_{-\infty}^{\infty} x P(x)dx\\
+  m & = \int_{-\infty}^{\infty} x^2 P(x)dx\\
+\sigma^2 & = \int_{-\infty}^{\infty} \left(x-\mu\right)^2 P(x)dx
+\end{align}
+
 
 In order to build up this probability density function, I choose to model it as the sum of two normal distributions.  Each of these has the form:
 \begin{equation}
 P_n(x,\mu,\sigma) = A e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}
 \end{equation}
-so that the PDF has the form
+so that the overall PDF, composed of two of these has the form
 \begin{align}
 P(x,\mu_1,\sigma_1,\mu_2,\sigma_2) & = P_n(x,\mu_1,\sigma_1) + P_n(x,\mu_2,\sigma_2)\\
 & =  A e^{-\frac{1}{2}\left(\frac{x-\mu_1}{\sigma_1}\right)^2}+ A e^{-\frac{1}{2}\left(\frac{x-\mu_2}{\sigma_2}\right)^2}.

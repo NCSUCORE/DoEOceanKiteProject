@@ -29,7 +29,7 @@ end
 
 p.eta.min = 0;
 p.eta.max = 1;
-p.eta.default = 1;
+p.eta.default = 0.3;
 p.eta.symbol = 'eta';
 p.eta.description = 'Lumped Lyod efficiency';
 p.eta.unit = '-';
@@ -146,7 +146,7 @@ p.rf.symbol = 'rf';
 p.rf.description = 'Fuselage radius';
 p.rf.unit = 'm';
 
-p.CD0f.min = 0.001;
+p.CD0f.min = 0.0001;
 p.CD0f.max = 0.5;
 p.CD0f.default = 0.1;
 p.CD0f.symbol = 'CD0f';

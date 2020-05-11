@@ -264,12 +264,14 @@ classdef ARStudy < matlab.apps.AppBase
             app.OptPowerPlot.OptMarker.XData = [xLims(1) AROptOpt AROptOpt];
             app.OptPowerPlot.OptMarker.YData = [PwrOptOpr PwrOptOpr yLims(1)];
             
-            % Make a new title to reflect numerical data
+            % Make new titles to reflect numerical data
             app.PowerPlot.Title.Interpreter = 'tex';
             app.PowerPlot.Title.String = ...
-                {['(',num2str(AROptUsr,3),'^{\circ}, ',num2str(PwrOptUsr,3),' kW ), ',...
-                sprintf('\\color[rgb]{%f, %f, %f}%s', [0.8 0 0], ['(',num2str(AROptOpt,3),'^{\circ}, ',num2str(PwrOptOpr,3),' kW )'])]};
+                {['(',num2str(AROptUsr,3),', ',num2str(PwrOptUsr,3),' kW), ',...
+                sprintf('\\color[rgb]{%f, %f, %f}%s', [0.8 0 0], ['(',num2str(AROptOpt,3),', ',num2str(PwrOptOpr,3),' kW)'])]};
              app.PowerPlot.Title.Interpreter = 'tex';
+             
+             
             drawnow
         end
         
