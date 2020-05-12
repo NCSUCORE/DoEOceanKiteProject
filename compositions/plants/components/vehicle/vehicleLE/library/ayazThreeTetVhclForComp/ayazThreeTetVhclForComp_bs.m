@@ -37,7 +37,12 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
 
 %% Added Mass/Damping (defaults to zeros)
-% vhcl.setMa6x6_LE([],'');
+vhcl.setMa6x6_LE((1/1000)*[0.3735    0.0000   -0.0000   -0.0000    0.0005    0.0000
+    0.0000    4.8776    0.0000   -0.0376   -0.0000    0.1846
+   -0.0000    0.0000   26.3716   -0.0000   -0.3302    0.0000
+   -0.0000   -0.0376   -0.0000    0.0374    0.0000   -0.0026
+    0.0005   -0.0000   -0.3302    0.0000    0.0141   -0.0000
+    0.0000    0.1846    0.0000   -0.0026   -0.0000    0.0134],'');
 % vhcl.setD6x6_LE([],'');
 
 %% Control Surfaces
@@ -58,7 +63,7 @@ vhcl.setWingRootChord(15e-3*(1/Lscale),'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(2.3,'deg');
-vhcl.setWingDihedral(-4,'deg');
+vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
 vhcl.setWingNACA('2412','');
 vhcl.setWingClMin(-Clmax,'');
