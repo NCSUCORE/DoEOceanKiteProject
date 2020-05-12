@@ -1,4 +1,4 @@
-function [val,varargout] = structLE(obj,className)
+function [val,varargout] = struct(obj,className)
 % Function returns all properties of the specified class in a
 % 1xN struct useable in a for loop in simulink
 % Example classnames: OCT.turb, OCT.aeroSurf

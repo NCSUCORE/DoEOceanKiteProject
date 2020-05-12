@@ -16,7 +16,8 @@ vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
 
 %% Turbines
 vhcl.setNumTurbines(2,'');
-vhcl.setTurbDiam(.45,'m');
+vhcl.setTurbDiam(.0,'m');
+
 %% Scaling Parameters
 Lscale = 0.015;
 xCM_LE = 12.032e-3;
