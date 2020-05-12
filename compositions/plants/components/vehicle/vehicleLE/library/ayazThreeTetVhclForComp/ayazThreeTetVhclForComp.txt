@@ -601,4 +601,38 @@ vhcl.turbines.powerCoeff.NoScale = false
 vhcl.turbines.dragCoeff.Value = 1.2800e+00
 vhcl.turbines.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turbines.dragCoeff.NoScale = false
-vhcl.fluidMomentArms is non-string and non-numeric and takes up 3.6500e+02 bytes
+vhcl.fluidMomentArms.Value = [-0.00715084441373031 -0.00715084441373031 0.057343 0.0565106646776031;-0.0375 0.0375 0 0;-0.00012947114405946 -0.00012947114405946 -0.001439 0.01684225]
+vhcl.fluidMomentArms.Unit = 'm'
+vhcl.fluidMomentArms.NoScale = false
+vhcl.fuseMomentArm.Value = [-0.000781999999999998;0;-0.001439]
+vhcl.fuseMomentArm.Unit = 'm'
+vhcl.fuseMomentArm.NoScale = false
+vhcl.buoyMomentArm.Value = [-0.004652;0;-0.000416]
+vhcl.buoyMomentArm.Unit = 'm'
+vhcl.buoyMomentArm.NoScale = false
+vhcl.turbMomentArms.Value = [0.053218 0.053218;-0.015 0.015;0.007701 0.007701]
+vhcl.turbMomentArms.Unit = 'm'
+vhcl.turbMomentArms.NoScale = false
+vhcl.rCM_B.Value = [0;0;0]
+vhcl.rCM_B.Unit = 'm'
+vhcl.rCM_B.NoScale = false
+vhcl.fluidRefArea.Value = 1.8225e-03
+vhcl.fluidRefArea.Unit = 'm^2'
+vhcl.fluidRefArea.NoScale = false
+vhcl.fluidRefArea.Description = 'Reference area for aerodynamic calculations'
+vhcl.M6x6_B.Value = [0.00930742818181818 0 0 0 0 0;0 0.00930742818181818 0 0 0 0;0 0 0.00930742818181818 0 0 0;0 0 0 8.308e-06 0 -4.02e-07;0 0 0 0 9.474e-06 0;0 0 0 -4.02e-07 0 1.8738e-05]
+vhcl.M6x6_B.Unit is unitless or has no unit specified
+vhcl.M6x6_B.NoScale = false
+vhcl.M6x6_B.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'
+vhcl.Ma6x6_LE.Value = [1.2605625e-09 0 0 0 2.53125e-14 0;0 1.64619e-08 0 -1.9035e-12 0 9.345375e-12;0 0 8.900415e-08 0 -1.6716375e-11 0;0 -1.9035e-12 0 2.8400625e-14 0 -1.974375e-15;2.53125e-14 0 -1.6716375e-11 0 1.07071875e-14 0;0 9.345375e-12 0 -1.974375e-15 0 1.0175625e-14]
+vhcl.Ma6x6_LE.Unit is unitless or has no unit specified
+vhcl.Ma6x6_LE.NoScale = false
+vhcl.Ma6x6_LE.Description = '6x6 Added Mass Matrix. Created from scaled quadrant matrices'
+vhcl.staticMargin.Value = -5.2299e-01
+vhcl.staticMargin.Unit = 'm'
+vhcl.staticMargin.NoScale = false
+vhcl.staticMargin.Description = 'Static Margin of Stability'
+vhcl.contactPoints.Value = [0.00271108005528545 0.00271108005528545 0.074849997531096 0.074849997531096 -0.045 0.0675;-0.0675 0.0675 0.027 -0.027 0 0;0.00235571602741882 0.00235571602741882 0 0 -0.00333393003782987 -0.00333393003782987]
+vhcl.contactPoints.Unit = 'm'
+vhcl.contactPoints.NoScale = false
+vhcl.contactPoints.Description = 'Points where contact forces are modeled'

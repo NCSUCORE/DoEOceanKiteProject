@@ -632,3 +632,7 @@ vhcl.staticMargin.Value = 4.9424e-01
 vhcl.staticMargin.Unit = 'm'
 vhcl.staticMargin.NoScale = false
 vhcl.staticMargin.Description = 'Static Margin of Stability'
+vhcl.contactPoints.Value = [0.200820744835959 0.200820744835959 5.99999981711822 5.99999981711822 -2 5.5;-5 5 2 -2 0 0;0.174497483512505 0.174497483512505 0 0 -0.22225 -0.22225]
+vhcl.contactPoints.Unit = 'm'
+vhcl.contactPoints.NoScale = false
+vhcl.contactPoints.Description = 'Points where contact forces are modeled'
