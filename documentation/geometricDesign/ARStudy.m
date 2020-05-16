@@ -13,6 +13,7 @@ classdef ARStudy < matlab.apps.AppBase
         PowerPlot     struct
         PowerSurf     struct
         OptPowerPlot  struct
+        OptEffPlot    struct
         EffPlot       struct
         Legend        matlab.graphics.illustration.Legend
     end
@@ -44,7 +45,7 @@ classdef ARStudy < matlab.apps.AppBase
             app.UIFigure = uifigure('Visible', 'off');
             app.UIFigure.Name = 'Geometric Design Tool';
             app.UIFigure.Color = [1 1 1];
-            app.UIFigure.Visible = 'on';
+            app.UIFigure.Visible = 'off';
             app.UIFigure.WindowState = 'maximized';
 
             % Get screen dimensions
@@ -78,6 +79,7 @@ classdef ARStudy < matlab.apps.AppBase
             app.Legend = legend(app.PowerAxes);
             app.Legend.FontSize = fontSize;
             app.Legend.Box = 'off';
+            app.Legend.Color ='none';
             
             % Create Power Surface Axes and Plots
             app.PowerSurfAxes = uiaxes(app.UIFigure);
@@ -99,17 +101,32 @@ classdef ARStudy < matlab.apps.AppBase
             
             
             % Create Aerodynamic Efficiency Axes and Plots
-            app.EffAxes = uiaxes(app.UIFigure,'NextPlot','add');
+            app.EffAxes = uiaxes(app.UIFigure);
+            app.EffAxes.NextPlot = 'add';
             app.EffAxes.BackgroundColor = [1 1 1];
             xlabel(app.EffAxes, '$AR_w$', 'Interpreter', 'latex')
             ylabel(app.EffAxes, '$C_L^3/C_D^2$', 'Interpreter', 'latex')
             app.EffAxes.LineStyleOrder = '-';
             app.EffAxes.TickLabelInterpreter = 'tex';
-            app.EffAxes.Position = [x(30) round(d(4)*yMargin) x(60)-x(30) round(d(4)*(0.9-yMargin-0.5))];
+            app.EffAxes.Position = [x(30) y(1) x(60)-x(30) round(d(4)*(0.9-yMargin-0.45))];
             app.EffAxes.FontSize = fontSize;
+
             app.EffPlot = struct;
-            app.EffPlot.Plot = plot(app.EffAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),'Color','k','LineWidth',1);
-            
+            app.EffPlot.Plot = plot(app.EffAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),...
+                'Color','k','LineWidth',1,'DisplayName','$\alpha=$ Specified');
+            app.EffPlot.OptMarker = plot(app.EffAxes,[nan nan nan],[nan nan nan],'Color',[0 0 0],'LineStyle','--');
+            app.EffPlot.OptMarker.HandleVisibility = 'off';
+            app.OptEffPlot = struct;
+            app.OptEffPlot.Plot = plot(app.EffAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),...
+                'Color',[0.75 0 0],'LineWidth',1,'DisplayName','$\alpha=$ Optimal');
+            app.OptEffPlot.OptMarker = plot(app.EffAxes,[nan nan nan],[nan nan nan],'Color',0.75*[1 0 0],'LineStyle','--');
+            app.OptEffPlot.OptMarker.HandleVisibility = 'off';
+            app.EffPlot.Title = title(app.EffAxes,'');
+%             app.EffPlot.Title.Interpreter = 'tex';
+            app.Legend = legend(app.EffAxes);
+            app.Legend.FontSize = fontSize;
+            app.Legend.Box = 'off';
+            app.Legend.Color ='none';
             for ii =1:numel(varNames)
                 % Create sliders down the left hand side
                 ticks = linspace(p.(varNames{ii}).min,p.(varNames{ii}).max,9);
@@ -156,7 +173,8 @@ classdef ARStudy < matlab.apps.AppBase
                 app.UnitLabels.(varNames{ii}).VerticalAlignment = 'bottom';
                 app.UnitLabels.(varNames{ii}).Tooltip = p.(varNames{ii}).unit;
             end
-            
+            pause(2) % Give matlab enough time to finish drawing things
+            app.UIFigure.Visible = 'on';
             % Initialize the plots with the values from the sliders
             updatePlots(app)
         end
@@ -227,7 +245,10 @@ classdef ARStudy < matlab.apps.AppBase
             CL = CLw + CLh;
             CD = CDw + CDh + CDf;
             
+            % Overall power
             P = 0.001*(2/27).*eta.*1000.*vw.^3.*Sw.*(CL.^3)./(CD.^2);
+            % Aerodynamic efficiency
+            Eff = (CL.^3)./(CD.^2);
             
             % Convert angles of attack back to degrees
             a = a*180/pi;
@@ -239,39 +260,58 @@ classdef ARStudy < matlab.apps.AppBase
             
             % Find max over all alphas and plot
             maxPOverAlpha = max(P,[],2);
+            maxEOverAlpha = max(Eff,[],2);
             app.OptPowerPlot.Plot.XData = ARw(:,1);
             app.OptPowerPlot.Plot.YData = maxPOverAlpha;
+            app.OptEffPlot.Plot.XData = ARw(:,1);
+            app.OptEffPlot.Plot.YData = maxEOverAlpha;
             
             % Find user-specified value and plot
             mask = (a == app.Sliders.alphaw.Value);
             app.PowerPlot.Plot.XData = ARw(:,1);
             app.PowerPlot.Plot.YData = P(mask);
+            app.EffPlot.Plot.XData = ARw(:,1);
+            app.EffPlot.Plot.YData = Eff(mask);
 
             % Get plot limits and update opimal markers
             xLims = app.PowerAxes.XLim;
             yLims = app.PowerAxes.YLim;
             
             % Update marker lines
-            [PwrOptUsr,AROptIndUsr] = max(app.PowerPlot.Plot.YData);
-            AROptUsr = app.PowerPlot.Plot.XData(AROptIndUsr);
+            [PwrOptUsr,AROptIndPwrUsr] = max(app.PowerPlot.Plot.YData);
+            [EffOptUsr,AROptIndEffUsr] = max(app.EffPlot.Plot.YData);
+            AROptPwrUsr = app.PowerPlot.Plot.XData(AROptIndPwrUsr);
+            AROptEffUsr = app.EffPlot.Plot.XData(AROptIndEffUsr);
+
+            [PwrOptOpr,AROptPwrInd] = max(app.OptPowerPlot.Plot.YData);
+            [EffOptOpr,AROptEffInd] = max(app.OptEffPlot.Plot.YData);
+            AROptPwrOpt = app.OptPowerPlot.Plot.XData(AROptPwrInd);
+            AROptEffOpt = app.OptEffPlot.Plot.XData(AROptEffInd);
             
-            [PwrOptOpr,AROptOprInd] = max(app.OptPowerPlot.Plot.YData);
-            AROptOpt = app.OptPowerPlot.Plot.XData(AROptOprInd);
-            
-            app.PowerPlot.OptMarker.XData = [xLims(1) AROptUsr AROptUsr];
+            app.PowerPlot.OptMarker.XData = [xLims(1) AROptPwrUsr AROptPwrUsr];
             app.PowerPlot.OptMarker.YData = [PwrOptUsr PwrOptUsr yLims(1)];
             
-            app.OptPowerPlot.OptMarker.XData = [xLims(1) AROptOpt AROptOpt];
+            app.EffPlot.OptMarker.XData = [xLims(1) AROptEffUsr AROptEffUsr];
+            app.EffPlot.OptMarker.YData = [EffOptUsr EffOptUsr yLims(1)];
+            
+            app.OptPowerPlot.OptMarker.XData = [xLims(1) AROptPwrOpt AROptPwrOpt];
             app.OptPowerPlot.OptMarker.YData = [PwrOptOpr PwrOptOpr yLims(1)];
+            
+            app.OptEffPlot.OptMarker.XData = [xLims(1) AROptEffOpt AROptEffOpt];
+            app.OptEffPlot.OptMarker.YData = [EffOptOpr EffOptOpr yLims(1)];
             
             % Make new titles to reflect numerical data
             app.PowerPlot.Title.Interpreter = 'tex';
             app.PowerPlot.Title.String = ...
-                {['(',num2str(AROptUsr,3),', ',num2str(PwrOptUsr,3),' kW), ',...
-                sprintf('\\color[rgb]{%f, %f, %f}%s', [0.8 0 0], ['(',num2str(AROptOpt,3),', ',num2str(PwrOptOpr,3),' kW)'])]};
+                {['(',num2str(AROptPwrUsr,3),', ',num2str(PwrOptUsr,3),' kW), ',...
+                sprintf('\\color[rgb]{%f, %f, %f}%s', [0.8 0 0], ['(',num2str(AROptPwrOpt,3),', ',num2str(PwrOptOpr,3),' kW)'])]};
              app.PowerPlot.Title.Interpreter = 'tex';
              
-             
+             app.EffPlot.Title.Interpreter = 'tex';
+            app.EffPlot.Title.String = ...
+                {['(',num2str(AROptEffUsr,3),', ',num2str(EffOptUsr,3),'), ',...
+                sprintf('\\color[rgb]{%f, %f, %f}%s', [0.8 0 0], ['(',num2str(AROptEffOpt,3),', ',num2str(EffOptOpr,3),')'])]};
+             app.EffPlot.Title.Interpreter = 'tex';
             drawnow
         end
         
