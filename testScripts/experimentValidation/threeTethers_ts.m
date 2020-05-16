@@ -124,10 +124,10 @@ fltCtrl.yawSP.setValue(0*ones(size(timeVec)),'deg',timeVec);
 datFileName = 'data_24_Jan_2020_15_50_38.mat';
 fullFileName = strcat(cd,'\Jan24DataFiles\',datFileName);
 
-tscExp = processExpData(fullFileName,...
-    'Ro_c_in_meters',[22;-0.76*1;-4.0]./100,...
-    'yawOffset',1*2.6707,...
-    'rollOffset',1*0.2505);
+% tscExp = processExpData(fullFileName,...
+%     'Ro_c_in_meters',[22;-0.76*1;-4.0]./100,...
+%     'yawOffset',1*2.6707,...
+%     'rollOffset',1*0.2505);
 
 %% adjust parameters
 initVals.CLWing = vhcl.portWing.CL.Value;
@@ -142,7 +142,7 @@ initVals.CDvStab = vhcl.vStab.CD.Value;
 initVals.fuseEndDrag = vhcl.fuse.endDragCoeff.Value;
 initVals.fuseSideDrag = vhcl.fuse.sideDragCoeff.Value;
 
-initVals.addedMass = vhcl.addedMass.Value;
+% initVals.addedMass = vhcl.addedMass.Value;
 % initVals.addedInertia = vhcl.addedInertia.Value; %not a thing anymore -JLD
 initVals.buoyFactor = vhcl.buoyFactor.Value;
 
@@ -156,7 +156,7 @@ initCoeffs = ones(10,1);
 
 % initCoeffs = [1 1.001 1 1.473 0.7 1.000 0.402 0.575 0.408 1.068]';
 
-initCoeffs(7:9) = 0.5;
+% initCoeffs(7:9) = 0.5;
 
 
 lowLims = [repmat([0.6;1],3,1); 0.4*ones(3,1); 1];
@@ -204,8 +204,8 @@ dataRange = [80 140];
 simWithMonitor('OCTModel')
 % parseLogsout
 
-plotAyaz
-compPlots
+% plotAyaz
+% compPlots
 
 % fullKitePlot
 

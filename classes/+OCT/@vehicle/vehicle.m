@@ -339,7 +339,7 @@ classdef vehicle < dynamicprops
                 arms(:,2)=arms(:,1).*[1;-1;1];
                 arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + [obj.hStab.rootChord.Value/4;0;0];
                 arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + ...
-                    [obj.vStab.span.Value*tand(obj.vStab.sweep.Value)/2 + obj.vStab.rootChord.Value * (1+obj.vStab.TR.Value)/8;0;obj.vStab.span.Value*.5];
+                    [obj.vStab.halfSpan.Value*tand(obj.vStab.sweep.Value)/2 + obj.vStab.rootChord.Value * (1+obj.vStab.TR.Value)/8;0;obj.vStab.halfSpan.Value*.5];
             else
                 %Updated Calculations    
                 arms(:,1)=-obj.rB_LE.Value + obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rAeroCent_SurfLE.Value);
