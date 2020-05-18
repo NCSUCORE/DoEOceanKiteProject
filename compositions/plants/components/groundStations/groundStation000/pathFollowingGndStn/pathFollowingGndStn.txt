@@ -17,6 +17,8 @@ gndStn.freeSpnEnbl.NoScale = true
 gndStn.posVec.Value = [0 0 0]
 gndStn.posVec.Unit = 'm'
 gndStn.posVec.NoScale = false
+gndStn.velVec.Unit = 'm/s'
+gndStn.velVec.NoScale = false
 gndStn.anchThrs.numTethers.Value = 1.0000e+00
 gndStn.anchThrs.numTethers.Unit is unitless or has no unit specified
 gndStn.anchThrs.numTethers.NoScale = true
