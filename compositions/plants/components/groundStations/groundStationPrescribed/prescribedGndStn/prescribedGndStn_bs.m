@@ -3,11 +3,11 @@
 % format compact
 
 
-GROUNDSTATION         = 'groundStation000';
+GROUNDSTATION         = 'groundStationPrescribed';
 % this is the build script for creating a ground station using class definition
 % 'station' for a three tethered system that is being used by ayaz
 
-% the script saves the variable 'gndStn' to a 'pathFollowingGndStn.mat'
+% the script saves the variable 'gndStn' to a 'prescribedGndStn.mat'
 %% Ground Station
 % Create
 gndStn = OCT.oneDoFStation;
@@ -17,6 +17,7 @@ gndStn.build;
 % Set values
 gndStn.inertia.setValue(1,'kg*m^2');
 gndStn.posVec.setValue([0 0 0],'m');
+gndStn.velVec.setValue([0 0 0],'m/s');
 gndStn.dampCoeff.setValue(100,'(N*m)/(rad/s)');
 gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
 gndStn.freeSpnEnbl.setValue(false,'');
