@@ -1,4 +1,4 @@
-varNames = {'eta','vw','alpha',...
+varNames = {'eta','vw','alphaw',...
     'bw','CLa0w','CD0w','gammaw','eLw','eDw',...
     'bh','ARh','CLa0h','CD0h','gammah','eLh','eDh',...
     'rf','CD0f','CDaf'};
@@ -29,7 +29,7 @@ end
 
 p.eta.min = 0;
 p.eta.max = 1;
-p.eta.default = 1;
+p.eta.default = 0.3;
 p.eta.symbol = 'eta';
 p.eta.description = 'Lumped Lyod efficiency';
 p.eta.unit = '-';
@@ -41,12 +41,12 @@ p.vw.symbol = 'vw';
 p.vw.description = 'Wind speed';
 p.vw.unit = 'm/s';
 
-p.alpha.min = 0;
-p.alpha.max = 20;
-p.alpha.default = 7;
-p.alpha.symbol = 'alpha';
-p.alpha.description = 'Angle of attack';
-p.alpha.unit = 'deg';
+p.alphaw.min = 0;
+p.alphaw.max = 20;
+p.alphaw.default = 7;
+p.alphaw.symbol = 'alphaw';
+p.alphaw.description = 'Angle of attack';
+p.alphaw.unit = 'deg';
 
 p.bw.min = 7;
 p.bw.max = 11;
@@ -146,7 +146,7 @@ p.rf.symbol = 'rf';
 p.rf.description = 'Fuselage radius';
 p.rf.unit = 'm';
 
-p.CD0f.min = 0.001;
+p.CD0f.min = 0.0001;
 p.CD0f.max = 0.5;
 p.CD0f.default = 0.1;
 p.CD0f.symbol = 'CD0f';

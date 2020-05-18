@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{bbold}
+\usepackage{soul}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tabularx}
+\usepackage[margin=0.25in]{geometry}
+
+\begin{document}
+
+The goal of this document is to derive an analytical expression for a bimodal probability density function that is characterized entirely in terms of three variables
+\begin{itemize}
+\item the mean, $\mu$,
+\item the standard deviation, $\sigma$, and
+\item the mean-squared, $m$.
+\end{itemize}	
+In order to calculate each of these from a given probability density function, $P(x)$, we use the expressions
+\begin{align}
+\mu & = \int_{-\infty}^{\infty} x P(x)dx\\
+  m & = \int_{-\infty}^{\infty} x^2 P(x)dx\\
+\sigma^2 & = \int_{-\infty}^{\infty} \left(x-\mu\right)^2 P(x)dx
+\end{align}
+
+
+In order to build up this probability density function, I choose to model it as the sum of two normal distributions.  Each of these has the form:
+\begin{equation}
+P_n(x,\mu,\sigma) = A e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}
+\end{equation}
+so that the overall PDF, composed of two of these has the form
+\begin{align}
+P(x,\mu_1,\sigma_1,\mu_2,\sigma_2) & = P_n(x,\mu_1,\sigma_1) + P_n(x,\mu_2,\sigma_2)\\
+& =  A e^{-\frac{1}{2}\left(\frac{x-\mu_1}{\sigma_1}\right)^2}+ A e^{-\frac{1}{2}\left(\frac{x-\mu_2}{\sigma_2}\right)^2}.
+\end{align}
+So our first task is to figure out the normalization constant, $A$.  To calculate this, we require that
+\begin{align}
+1 = \int_{-\infty}^{\infty} P(x,\mu_1,\sigma_1,\mu_2,\sigma_2)dx
+\end{align}
+Solving this in Mathematica yields:
+\begin{align}
+A=\frac{1}{\sqrt{2 \pi}\left(\sigma_1 + \sigma_2 \right)}
+\end{align}
+So the complete PDF has the form
+\begin{equation}
+P(x,\mu_1,\sigma_1,\mu_2,\sigma_2) = \frac{1}{\sqrt{2 \pi}\left(\sigma_1 + \sigma_2 \right)}\left( e^{-\frac{1}{2}\left(\frac{x-\mu_1}{\sigma_1}\right)^2}+  e^{-\frac{1}{2}\left(\frac{x-\mu_2}{\sigma_2}\right)^2}\right)
+\end{equation}
+So our goal here is to relate these parameters, which describe individual distributions, to the parameters in the bulleted list above, which describe the composite overall distribution.  Scott Stickels told me that ``mode separation is approximately $\sqrt{m-\mu^2-\sigma}$''.  I interpret this to mean that:
+\begin{align}
+\mu_1 & = \mu - \frac{1}{2}\sqrt{m-\mu^2-\sigma} \\
+\mu_2 & = \mu + \frac{1}{2}\sqrt{m-\mu^2-\sigma} 
+\end{align}
+Therefore, we can simplify our expression for $P$ using this, but we also need to relate $\sigma_1$ and $\sigma_2$ to $\sigma$.  In order to do that, we can assume that the distribution is symmetric (ie $\sigma_1=\sigma_2=s$), substitute in the expressions above for $\mu_1$, and $\mu_2$, and calculate the variance 
+\begin{align}
+\sigma^2 = \frac{1}{4}\left(m+4s^2-\mu^2-\sigma \right)
+\end{align}
+Therefore, we can solve this expression for the standard deviation of the individual normal distributions, $s$.  The result is two solutions:
+\begin{align}
+s & = -\frac{1}{2}\sqrt{-m + \mu^2 + \sigma + 4\sigma^2}\\
+s & = \frac{1}{2}\sqrt{-m + \mu^2 + \sigma + 4\sigma^2}\\
+\end{align}
+Since the standard deviation should be positive, I choose the second one.  Therefore, the total PDF is
+\begin{equation}
+P(x,\mu,\sigma,m) = \frac{1}{\sqrt{2 \pi}\sqrt{-m+\mu^2+\sigma + 4\sigma}}\left( 
+e^{
+	-\frac{1}{2}
+	\frac{\left(2x-2\mu+\sqrt{m-\mu^2-\sigma}\right)^2}
+	{-m+\mu^2+\sigma+4\sigma^2}}+ 
+e^{
+	-\frac{1}{2}
+	\frac{\left(-2x+2\mu+\sqrt{m-\mu^2-\sigma}\right)^2}
+	{-m+\mu^2+\sigma+4\sigma^2}}\right)
+\end{equation}
+
+\end{document}

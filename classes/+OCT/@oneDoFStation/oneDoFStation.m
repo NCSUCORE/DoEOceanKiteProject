@@ -10,6 +10,7 @@ classdef oneDoFStation < dynamicprops
         initAngVel
         freeSpnEnbl
         posVec
+        velVec
         anchThrs
         lumpedMassPositionMatrixBdy
     end
@@ -24,6 +25,7 @@ classdef oneDoFStation < dynamicprops
             obj.initAngVel                  = SIM.parameter('Unit','rad/s');
             obj.freeSpnEnbl                 = SIM.parameter('NoScale',true);
             obj.posVec                      = SIM.parameter('Unit','m');
+            obj.velVec                      = SIM.parameter('Unit','m/s');
             obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m');
             
             obj.anchThrs = OCT.tethers;
@@ -48,6 +50,9 @@ classdef oneDoFStation < dynamicprops
         end
         function setPosVec(obj,val,unit)
             obj.posVec.setValue(val,unit);
+        end
+        function setVelVec(obj,val,unit)
+            obj.velVec.setValue(val,unit);
         end
         function setLumpedMassPositionMatrixBdy(obj,val,unit)
             obj.lumpedMassPositionMatrixBdy.setValue(val,unit);

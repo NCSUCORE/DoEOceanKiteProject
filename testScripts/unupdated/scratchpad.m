@@ -1,8 +1,8 @@
-close all
-gndStn.oceanFloor.setOceanFloorZ(1,'m')
-z = linspace(-gndStn.fuse.diameter.Value/2,gndStn.fuse.diameter.Value,1000);
-Fn = gndStn.oceanFloor.calcNormForceMag(z);
-plot(z,Fn)
+phi = linspace(0,2*pi,100);
 
-gndStn.oceanFloor.calcNormForceMag(gndStn.oceanFloor.stiffnessZPt.Value) ...
-    - gndStn.oceanFloor.stiffnessFMag.Value
+A1 = 1+0.4*sin(phi)+0*sin(2*phi)+0*sin(4*phi);
+A2 = 1+0*sin(phi)+0*sin(2*phi)+0*sin(4*phi);
+x = A1.*sin(phi);
+y = A2.*sin(2*phi);
+
+plot(x,y)
