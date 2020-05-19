@@ -83,9 +83,9 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     tsc = signalcontainer(logsout);
     fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
     disp(hiLvlCtrl.basisParams.Value)
-    [y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
-    sound(y*.2, Fs, 16)
+    %[y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
+    %sound(y*.2, Fs, 16)
     fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
-%
-% vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-%     'PlotTracer',true,'FontSize',18)
+
+ vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+     'PlotTracer',true,'FontSize',18)
