@@ -1,6 +1,9 @@
 % clear;clc;close all
+clearvars tsc logsout
 
 simLength = 1000;
+startPos = [0 0 0];
+endPos = [1500 0 0];
 simParams = SIM.simParams;
 simParams.setDuration(simLength,'s');
 dynamicCalc = '';
@@ -44,10 +47,16 @@ env.water.setflowVec([0 0 0],'m/s')
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
 hiLvlCtrl.basisParams.setValue([1.2,2.2,.36,180*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
-gndStn.setInitPosVec([0 0 0],'m')
-gndStn.setVelVec([1.5 0 0],'m/s')
+
+%gndStn.setInitPosVec([0 0 0],'m')
+%gndStn.setVelVec([1.5 0 0],'m/s')
 gndStn.initAngPos.setValue(0,'rad');
 gndStn.initAngVel.setValue(0,'rad/s');
+
+%% Set position trajectory
+time = [0 simParams.duration.Value];
+posVecPoints = [startPos(:)'; endPos(:)'];
+gndStn.setPosVecTrajectory(timesignal(timeseries(posVecPoints,time)),'m');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
