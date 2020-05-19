@@ -14,12 +14,9 @@ gndStn.initAngVel.NoScale = false
 gndStn.freeSpnEnbl.Value = false
 gndStn.freeSpnEnbl.Unit is unitless or has no unit specified
 gndStn.freeSpnEnbl.NoScale = true
-gndStn.initPosVec.Value = [0 0 0]
-gndStn.initPosVec.Unit = 'm'
-gndStn.initPosVec.NoScale = false
-gndStn.velVec.Value = [0 0 0]
-gndStn.velVec.Unit = 'm/s'
-gndStn.velVec.NoScale = false
+gndStn.posVecTrajectory.Unit = 'm'
+gndStn.posVecTrajectory.NoScale = false
+gndStn.posVecTrajectory.Description = 'Timesignal for position vector over time'
 gndStn.anchThrs.numTethers.Value = 1.0000e+00
 gndStn.anchThrs.numTethers.Unit is unitless or has no unit specified
 gndStn.anchThrs.numTethers.NoScale = true
@@ -36,7 +33,4 @@ gndStn.anchThrs.maxAppFlowMultiplier.NoScale = false
 gndStn.lumpedMassPositionMatrixBdy.Value = [0;0;0]
 gndStn.lumpedMassPositionMatrixBdy.Unit = 'm'
 gndStn.lumpedMassPositionMatrixBdy.NoScale = false
-gndStn.thrAttch1.posVec.Value = [0;0;0]
-gndStn.thrAttch1.posVec.Unit = 'm'
-gndStn.thrAttch1.posVec.NoScale = false
-gndStn.thrAttch1.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+gndStn.initPosVec is non-string and non-numeric and takes up 2.7000e+01 bytes

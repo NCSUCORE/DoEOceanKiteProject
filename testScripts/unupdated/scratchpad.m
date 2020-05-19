@@ -1,8 +1,8 @@
-phi = linspace(0,2*pi,100);
+testPosYZ = zeros(100,2);
+testPosX = linspace(1,100)';
+testPos = [testPosX testPosYZ];
+time = linspace(0,200);
 
-A1 = 1+0.4*sin(phi)+0*sin(2*phi)+0*sin(4*phi);
-A2 = 1+0*sin(phi)+0*sin(2*phi)+0*sin(4*phi);
-x = A1.*sin(phi);
-y = A2.*sin(2*phi);
-
-plot(x,y)
+ts = timesignal(timeseries(testPos,time));
+gndStn.setPosVecTrajectory(ts,'m');
+gndStn.velVecTrajectory.Value.plot

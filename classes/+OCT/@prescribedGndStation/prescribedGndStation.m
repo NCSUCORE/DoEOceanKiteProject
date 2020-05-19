@@ -9,10 +9,14 @@ classdef prescribedGndStation < dynamicprops
         initAngPos
         initAngVel
         freeSpnEnbl
-        initPosVec
-        velVec
+        posVecTrajectory
         anchThrs
         lumpedMassPositionMatrixBdy
+    end
+    
+    properties (Dependent)
+        initPosVec
+        velVecTrajectory
     end
     
     methods
@@ -24,12 +28,16 @@ classdef prescribedGndStation < dynamicprops
             obj.initAngPos                  = SIM.parameter('Unit','rad');
             obj.initAngVel                  = SIM.parameter('Unit','rad/s');
             obj.freeSpnEnbl                 = SIM.parameter('NoScale',true);
-            obj.initPosVec                      = SIM.parameter('Unit','m');
-            obj.velVec                      = SIM.parameter('Unit','m/s');
+            %obj.initPosVec                  = SIM.parameter('Unit','m');
+            obj.posVecTrajectory            = SIM.parameter('Unit','m','Description','Timesignal for position vector over time');
+            %obj.velVecTrajectory            = SIM.parameter('Unit','m/s','Description','Timesignal for velocity vector over time');
             obj.lumpedMassPositionMatrixBdy = SIM.parameter('Unit','m');
             
             obj.anchThrs = OCT.tethers;
         end
+        
+        % Setters
+        
         function setNumTethers(obj,val,unit)
             obj.numTethers.setValue(val,unit);
         end
@@ -48,16 +56,22 @@ classdef prescribedGndStation < dynamicprops
         function setFreeSpnEnbl(obj,val,unit)
             obj.freeSpnEnbl.setValue(val,unit);
         end
-        function setInitPosVec(obj,val,unit)
-            obj.initPosVec.setValue(val,unit);
-        end
-        function setVelVec(obj,val,unit)
-            obj.velVec.setValue(val,unit);
+        function setPosVecTrajectory(obj,val,unit)
+            obj.posVecTrajectory.setValue(val,unit);
         end
         function setLumpedMassPositionMatrixBdy(obj,val,unit)
             obj.lumpedMassPositionMatrixBdy.setValue(val,unit);
         end
         
+        % Getters
+        function val = get.initPosVec(obj,varargin)
+            posVal = obj.posVecTrajectory.Value.getsampleusingtime(0).Data;
+            val = SIM.parameter('Value',posVal,'Unit','m');
+        end    
+        function val = get.velVecTrajectory(obj,varargin)
+            velVal = obj.posVecTrajectory.Value.diff;
+            val = SIM.parameter('Value',velVal,'Unit','m/s');
+        end  
         
         % Function to build the ground station (add tether attachment
         % properties)
