@@ -15,12 +15,12 @@ gndStn.numTethers.setValue(1,'');
 gndStn.build;
 
 % Set values
-gndStn.inertia.setValue(1,'kg*m^2');
+%gndStn.inertia.setValue(1,'kg*m^2');
 %gndStn.initPosVec.setValue([0 0 0],'m');
 %gndStn.velVec.setValue([0 0 0],'m/s');
-gndStn.dampCoeff.setValue(100,'(N*m)/(rad/s)');
+%gndStn.dampCoeff.setValue(100,'(N*m)/(rad/s)');
 gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
-gndStn.freeSpnEnbl.setValue(false,'');
+%gndStn.freeSpnEnbl.setValue(false,'');
 gndStn.lumpedMassPositionMatrixBdy.setValue([0,0,0]','m');
 
 %dummy , allows the env. to work for this ground station and the other

@@ -1,17 +1,12 @@
 gndStn.numTethers.Value = 1.0000e+00
 gndStn.numTethers.Unit is unitless or has no unit specified
 gndStn.numTethers.NoScale = true
-gndStn.inertia.Value = 1.0000e+00
 gndStn.inertia.Unit = 'kg*m^2'
 gndStn.inertia.NoScale = false
-gndStn.dampCoeff.Value = 1.0000e+02
 gndStn.dampCoeff.Unit = '(N*m)/(rad/s)'
 gndStn.dampCoeff.NoScale = false
-gndStn.initAngPos.Unit = 'rad'
-gndStn.initAngPos.NoScale = false
-gndStn.initAngVel.Unit = 'rad/s'
-gndStn.initAngVel.NoScale = false
-gndStn.freeSpnEnbl.Value = false
+gndStn.eulerAngVec.Unit = 'rad'
+gndStn.eulerAngVec.NoScale = false
 gndStn.freeSpnEnbl.Unit is unitless or has no unit specified
 gndStn.freeSpnEnbl.NoScale = true
 gndStn.posVecTrajectory.Unit = 'm'

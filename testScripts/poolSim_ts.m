@@ -50,8 +50,9 @@ hiLvlCtrl.basisParams.setValue([1.2,2.2,.36,180*pi/180,125],'[rad rad rad rad m]
 
 %gndStn.setInitPosVec([0 0 0],'m')
 %gndStn.setVelVec([1.5 0 0],'m/s')
-gndStn.initAngPos.setValue(0,'rad');
-gndStn.initAngVel.setValue(0,'rad/s');
+% gndStn.initAngPos.setValue(0,'rad');
+% gndStn.initAngVel.setValue(0,'rad/s');
+gndStn.setEulerAngVec([0 0 0],'rad');
 
 %% Set position trajectory
 time = [0 simParams.duration.Value];

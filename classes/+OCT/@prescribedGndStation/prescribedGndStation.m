@@ -6,8 +6,7 @@ classdef prescribedGndStation < dynamicprops
         numTethers
         inertia
         dampCoeff
-        initAngPos
-        initAngVel
+        eulerAngVec
         freeSpnEnbl
         posVecTrajectory
         anchThrs
@@ -25,8 +24,7 @@ classdef prescribedGndStation < dynamicprops
             obj.numTethers                  = SIM.parameter('NoScale',true);
             obj.inertia                     = SIM.parameter('Unit','kg*m^2');
             obj.dampCoeff                   = SIM.parameter('Unit','(N*m)/(rad/s)');
-            obj.initAngPos                  = SIM.parameter('Unit','rad');
-            obj.initAngVel                  = SIM.parameter('Unit','rad/s');
+            obj.eulerAngVec                 = SIM.parameter('Unit','rad');
             obj.freeSpnEnbl                 = SIM.parameter('NoScale',true);
             %obj.initPosVec                  = SIM.parameter('Unit','m');
             obj.posVecTrajectory            = SIM.parameter('Unit','m','Description','Timesignal for position vector over time');
@@ -47,11 +45,8 @@ classdef prescribedGndStation < dynamicprops
         function setDampCoeff(obj,val,unit)
             obj.dampCoeff.setValue(val,unit);
         end
-        function setInitAngPos(obj,val,unit)
-            obj.initAngPos.setValue(val,unit);
-        end
-        function setInitAngVel(obj,val,unit)
-            obj.initAngVel.setValue(val,unit);
+        function setEulerAngVec(obj,val,unit)
+            obj.eulerAngVec.setValue(val,unit);
         end
         function setFreeSpnEnbl(obj,val,unit)
             obj.freeSpnEnbl.setValue(val,unit);
@@ -131,14 +126,14 @@ classdef prescribedGndStation < dynamicprops
         end
         
         % function to set initial conditions
-        function obj = setICs(obj,varargin)
-            p = inputParser;
-            addParameter(p,'InitAngPos',0,@isnumeric)
-            addParameter(p,'InitAngVel',0,@isnumeric)
-            parse(p,varargin{:})
-            obj.initAngPos.Value    = p.Results.InitPos;
-            obj.initAngVel.Value    = p.Results.InitVel;
-        end
+%         function obj = setICs(obj,varargin)
+%             p = inputParser;
+%             addParameter(p,'InitAngPos',0,@isnumeric)
+%             addParameter(p,'InitAngVel',0,@isnumeric)
+%             parse(p,varargin{:})
+%             obj.initAngPos.Value    = p.Results.InitPos;
+%             obj.initAngVel.Value    = p.Results.InitVel;
+%         end
     end
 end
 
