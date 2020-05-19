@@ -8,6 +8,9 @@ simParams = SIM.simParams;
 simParams.setDuration(simLength,'s');
 dynamicCalc = '';
 
+lengthScaleFactor = .8;
+densityScaleFactor = 1;
+
 %% Load components
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
@@ -86,6 +89,17 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.initPosVec.Value);
+
+%% Scale everything down
+fltCtrl.scale(lengthScaleFactor,densityScaleFactor);
+gndStn.scale(lengthScaleFactor,densityScaleFactor);
+hiLvlCtrl.scale(lengthScaleFactor,densityScaleFactor);
+vhcl.scale(lengthScaleFactor,densityScaleFactor);
+wnch.scale(lengthScaleFactor,densityScaleFactor);
+thr.scale(lengthScaleFactor,densityScaleFactor);
+env.scale(lengthScaleFactor,densityScaleFactor);
+simParams.scale(lengthScaleFactor,densityScaleFactor);
+
 %% Run Simulation
 % vhcl.setFlowGradientDist(.01,'m')
 % simWithMonitor('OCTModel')
