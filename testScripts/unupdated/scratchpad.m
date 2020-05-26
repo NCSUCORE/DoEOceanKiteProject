@@ -1,8 +1,2 @@
-testPosYZ = zeros(100,2);
-testPosX = linspace(1,100)';
-testPos = [testPosX testPosYZ];
-time = linspace(0,200);
+[posGround,varargout] = lemOfBooth(linspace(0,1,1000),[1,2.4,20*pi/180,0*pi/180,tetherLengths(ii)],[0 0 0]);
 
-ts = timesignal(timeseries(testPos,time));
-gndStn.setPosVecTrajectory(ts,'m');
-gndStn.velVecTrajectory.Value.plot
