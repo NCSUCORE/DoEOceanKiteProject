@@ -1,8 +1,8 @@
-close all
-gndStn.oceanFloor.setOceanFloorZ(1,'m')
-z = linspace(-gndStn.fuse.diameter.Value/2,gndStn.fuse.diameter.Value,1000);
-Fn = gndStn.oceanFloor.calcNormForceMag(z);
-plot(z,Fn)
+testPosYZ = zeros(100,2);
+testPosX = linspace(1,100)';
+testPos = [testPosX testPosYZ];
+time = linspace(0,200);
 
-gndStn.oceanFloor.calcNormForceMag(gndStn.oceanFloor.stiffnessZPt.Value) ...
-    - gndStn.oceanFloor.stiffnessFMag.Value
+ts = timesignal(timeseries(testPos,time));
+gndStn.setPosVecTrajectory(ts,'m');
+gndStn.velVecTrajectory.Value.plot

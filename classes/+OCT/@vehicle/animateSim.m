@@ -87,6 +87,8 @@ addParameter(p,'TangentCoordSys',false,@islogical);
 addParameter(p,'ScrollPlots',{}, @(x) isa(x,'cell') && all(isa([x{:}],'timeseries'))); % Must be a cell array of timeseries objects
 % Plot bedrock or not
 addParameter(p,'Bedrock',true,@islogical)
+% Plot bedrock or not
+addParameter(p,'LineAngleEst',false,@islogical)
 
 % ---Parse the output---
 parse(p,tsc,timeStep,varargin{:})
@@ -426,7 +428,20 @@ for ii = 1:sz.numTethers
         'Color','k','LineWidth',1.5,'LineStyle','-','Marker','o',...
         'MarkerSize',4,'MarkerFaceColor','k');
 end
-
+if p.Results.LineAngleEst
+    for ii = 1:sz.numTethers
+        thrLength = sqrt(sum(tscTmp.positionVec.getsamples(1).Data.^2));
+        lae = posVecs(:,2,ii) - posVecs(:,1,ii);
+        lae = lae / sqrt(sum(lae.^2));
+        lae = lae * thrLength;
+        lae = squeeze(lae);
+        h.lineAngleEst{ii} = plot3(...
+            [posVecs(1,1,ii), lae(1)],...
+            [posVecs(2,1,ii), lae(2)],...
+            [posVecs(3,1,ii), lae(3)],...
+            'Color','k','LineWidth',3,'LineStyle','--');
+    end
+end
 % Plot the anchor tethers
 if ~isempty(p.Results.GroundStation) && isprop(tscTmp,'anchThrNodePosVecs')
     nodePosVecs = tscTmp.anchThrNodePosVecs.getsamples(1).Data;
@@ -545,7 +560,7 @@ h.title = title({strcat(sprintf('Time = %.1f s',0),',',...
     sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.Data(:,:,1)))),...
     sprintf('Flow Speed = %.1f m/s',norm(tscTmp.vhclFlowVecs.Data(:,end,1)))});
 
-
+%% Update the plots
 for ii = 1:numel(tscTmp.positionVec.Time)
 %     timeStamp = tscTmp.positionVec.Time(ii);
     eulAngs   = tscTmp.eulerAngles.getsamples(ii).Data;
@@ -766,6 +781,19 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.thr{jj}.ZData = posVecs(3,:,jj);
     end
     
+    if p.Results.LineAngleEst
+        for jj = 1:sz.numTethers
+            thrLength = sqrt(sum(tscTmp.positionVec.getsamples(1).Data.^2));
+            lae = posVecs(:,2,jj) - posVecs(:,1,jj);
+            lae = lae / sqrt(sum(lae.^2));
+            lae = lae * thrLength;
+            lae = squeeze(lae);
+            h.lineAngleEst{jj}.XData = [posVecs(1,1,jj), lae(1)];
+            h.lineAngleEst{jj}.YData = [posVecs(2,1,jj), lae(2)];
+            h.lineAngleEst{jj}.ZData = [posVecs(3,1,jj), lae(3)];
+        end
+    end
+    
     % update the anchor tether(s) if exists
     if isfield(h,'anchThr')
         nodePosVecs = tscTmp.anchThrNodePosVecs.getsamples(ii).Data;
@@ -841,7 +869,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     
     drawnow
     
-    % Save gif of results
+    %% Save gif of results
     if p.Results.SaveGif
         frame       = getframe(h.fig);
         im          = frame2im(frame);

@@ -9,6 +9,14 @@ tdiffs = .5*([0; tdiffvec]+[tdiffvec; 0]);
 timeDimInd = find(size(obj.Data) == numel(obj.Time));
 otherDims = size(obj.Data);
 otherDims = otherDims(1:ndims(obj.Data) ~= timeDimInd);
+if max(size(otherDims))==1
+    otherInd = find(size(obj.Data)==otherDims);
+    if otherInd==1
+        otherDims = [otherDims 1];
+    else
+        otherDims = [1 otherDims];
+    end
+end
 ddiffvec = diff(obj.Data,1,timeDimInd);
 %ddiffs(1) = ddiffvec(1)/2
 %ddiffs(end) = ddiffvec(end)/2
