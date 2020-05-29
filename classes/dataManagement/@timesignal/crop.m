@@ -24,7 +24,11 @@ switch numel(varargin)
             newObj = timesignal(newObj.getsampleusingtime(0));
             newObj.Time = varargin{1};
         else
-            newObj = timesignal(newObj.getsampleusingtime(varargin{1},varargin{2}));
+            try
+                newObj = timesignal(newObj.getsampleusingtime(varargin{1},varargin{2}));
+            catch
+                warning(sprintf('Crop Failed on timesignal %s',newObj.Name))
+            end
         end
     otherwise
         % If they gave more inputs, throw error

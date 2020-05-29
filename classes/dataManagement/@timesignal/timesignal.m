@@ -25,6 +25,7 @@ classdef timesignal < timeseries
             
         end
         
+        ind = closestIndex(obj,time)
         % Other methods are stored in standalone .m files
         % See doc timesignal, methods('timesignal'), or
         % cd(fileparts(which('timesignal.m'))) for details.
