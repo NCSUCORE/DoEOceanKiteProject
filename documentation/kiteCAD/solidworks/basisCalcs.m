@@ -13,7 +13,7 @@ sweepAngle = atan(2*(1-taperRatio)/aspectRatio)*180/pi;
 % kite reference area
 sKite = 10;
 % approximate kite drag coefficient
-CDkite = 0.15;
+CDkite = 0.2;
 % nominal turbine power coefficient
 CpNom = 0.5;
 % nominal turbine drag coefficient
