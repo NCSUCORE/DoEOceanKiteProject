@@ -6,6 +6,7 @@ classdef ARStudy < matlab.apps.AppBase
         PowerAxes     matlab.ui.control.UIAxes
         PowerSurfAxes matlab.ui.control.UIAxes
         EffAxes       matlab.ui.control.UIAxes
+        PowerCurveAxes matlab.ui.control.UIAxes
         Sliders       struct
         SliderLabels  struct
         ValueLabels   struct
@@ -14,6 +15,7 @@ classdef ARStudy < matlab.apps.AppBase
         PowerSurf     struct
         OptPowerPlot  struct
         OptEffPlot    struct
+        PowerCurve    struct
         EffPlot       struct
         Legend        matlab.graphics.illustration.Legend
     end
@@ -53,6 +55,16 @@ classdef ARStudy < matlab.apps.AppBase
             x = round(linspace(round(xMargin*d(3)),round(d(3)-xMargin*d(3)),100));
             y = round(linspace(round(yMargin*d(4)),round(d(4)-yMargin*d(4)),numel(varNames)+1));
             
+            % Pick number of critical parameters
+            nalpha = 50;
+            nARw   = 75;
+            nVf    = 100;
+            
+            alphas = linspace(1,15,nalpha);
+            ARws   = linspace(1,20,nARw);
+            vws    = linspace(0.1,0.5,nVf);
+%             vwRange = [0.1 0.5];
+            
             % Create Power Axes and Plots
             app.PowerAxes = uiaxes(app.UIFigure);
             app.PowerAxes.NextPlot = 'add';
@@ -65,17 +77,16 @@ classdef ARStudy < matlab.apps.AppBase
             app.PowerAxes.FontSize = fontSize;
 
             app.PowerPlot = struct;
-            app.PowerPlot.Plot = plot(app.PowerAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),...
-                'Color','k','LineWidth',1,'DisplayName','$\alpha=$ Specified');
+            app.PowerPlot.Plot = plot(app.PowerAxes,ARws,nan(size(ARws)),...
+                'Color','k','LineWidth',1,'DisplayName','$\alpha$ Specified');
             app.PowerPlot.OptMarker = plot(app.PowerAxes,[nan nan nan],[nan nan nan],'Color',[0 0 0],'LineStyle','--');
             app.PowerPlot.OptMarker.HandleVisibility = 'off';
             app.OptPowerPlot = struct;
-            app.OptPowerPlot.Plot = plot(app.PowerAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),...
-                'Color',[0.75 0 0],'LineWidth',1,'DisplayName','$\alpha=$ Optimal');
+            app.OptPowerPlot.Plot = plot(app.PowerAxes,ARws,nan(size(ARws)),...
+                'Color',[0.75 0 0],'LineWidth',1,'DisplayName','$\alpha$ Optimal');
             app.OptPowerPlot.OptMarker = plot(app.PowerAxes,[nan nan nan],[nan nan nan],'Color',0.75*[1 0 0],'LineStyle','--');
             app.OptPowerPlot.OptMarker.HandleVisibility = 'off';
             app.PowerPlot.Title = title(app.PowerAxes,'');
-%             app.PowerPlot.Title.Interpreter = 'tex';
             app.Legend = legend(app.PowerAxes);
             app.Legend.FontSize = fontSize;
             app.Legend.Box = 'off';
@@ -87,16 +98,14 @@ classdef ARStudy < matlab.apps.AppBase
             app.PowerSurfAxes.BackgroundColor = [1 1 1];
             xlabel(app.PowerSurfAxes, '$\alpha$ [$^{\circ}$]', 'Interpreter', 'latex')
             ylabel(app.PowerSurfAxes, '$AR_w$', 'Interpreter', 'latex')
-            zlabel(app.PowerSurfAxes, 'P [kW]', 'Interpreter', 'latex')
+            zlabel(app.PowerSurfAxes, 'Power [kW]', 'Interpreter', 'latex')
             app.PowerSurfAxes.LineStyleOrder = '-';
-%             app.PowerSurfAxes.TickLabelInterpreter = 'tex';
             app.PowerSurfAxes.Position = [x(61) round(d(4)/2) x(91)-x(61) round(d(4)*(0.9-yMargin-0.5))];
             app.PowerSurfAxes.FontSize = fontSize;
-            % view(app.PowerSurfAxes,-27.1281,44) % Setting view angles
-            % seems to break things.
             colormap(app.PowerSurfAxes,[linspace(0,1)' zeros(100,1) linspace(0.4,0)']);
             app.PowerSurf = struct;
-            app.PowerSurf.Surf = surf(app.PowerSurfAxes,nan(2,2),nan(2,2),nan(2,2));
+            [alphaSurf,ARwSurf] = meshgrid(alphas,ARws);
+            app.PowerSurf.Surf = surf(app.PowerSurfAxes,alphaSurf,ARwSurf,nan(size(ARwSurf)));
             app.PowerSurf.Surf.EdgeColor = 'none';
             
             
@@ -112,13 +121,13 @@ classdef ARStudy < matlab.apps.AppBase
             app.EffAxes.FontSize = fontSize;
 
             app.EffPlot = struct;
-            app.EffPlot.Plot = plot(app.EffAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),...
-                'Color','k','LineWidth',1,'DisplayName','$\alpha=$ Specified');
+            app.EffPlot.Plot = plot(app.EffAxes,ARws,nan(size(ARws)),...
+                'Color','k','LineWidth',1,'DisplayName','$\alpha$ Specified');
             app.EffPlot.OptMarker = plot(app.EffAxes,[nan nan nan],[nan nan nan],'Color',[0 0 0],'LineStyle','--');
             app.EffPlot.OptMarker.HandleVisibility = 'off';
             app.OptEffPlot = struct;
-            app.OptEffPlot.Plot = plot(app.EffAxes,linspace(1,20,150),nan(size(linspace(1,20,150))),...
-                'Color',[0.75 0 0],'LineWidth',1,'DisplayName','$\alpha=$ Optimal');
+            app.OptEffPlot.Plot = plot(app.EffAxes,ARws,nan(size(ARws)),...
+                'Color',[0.75 0 0],'LineWidth',1,'DisplayName','$\alpha$ Optimal');
             app.OptEffPlot.OptMarker = plot(app.EffAxes,[nan nan nan],[nan nan nan],'Color',0.75*[1 0 0],'LineStyle','--');
             app.OptEffPlot.OptMarker.HandleVisibility = 'off';
             app.EffPlot.Title = title(app.EffAxes,'');
@@ -127,6 +136,28 @@ classdef ARStudy < matlab.apps.AppBase
             app.Legend.FontSize = fontSize;
             app.Legend.Box = 'off';
             app.Legend.Color ='none';
+            
+           
+            app.PowerCurveAxes = uiaxes(app.UIFigure);
+            app.PowerCurveAxes.NextPlot = 'add';
+            app.PowerCurveAxes.BackgroundColor = [1 1 1];
+            xlabel(app.PowerCurveAxes, '$v_{flow}$, [m/s]', 'Interpreter', 'latex')
+            ylabel(app.PowerCurveAxes, 'Power, [kW]', 'Interpreter', 'latex')
+            app.PowerCurveAxes.LineStyleOrder = '-';
+            app.PowerCurveAxes.TickLabelInterpreter = 'tex';
+            app.PowerCurveAxes.Position = [x(61) y(1) x(91)-x(61) round(d(4)*(0.9-yMargin-0.45))];
+            app.PowerCurveAxes.FontSize = fontSize;
+            
+            app.PowerCurve = struct;
+            app.PowerCurve.Plot = plot(app.PowerCurveAxes,...
+                vws,nan(size(vws)),...
+                'Color','k','LineWidth',1,'DisplayName','$\alpha$ Spec. $AR_w$ Opt.');
+            app.PowerCurve.Plot2 = plot(app.PowerCurveAxes,...
+                vws,nan(size(vws)),...
+                'Color',0.75*[1 0 0],'LineWidth',1,'DisplayName','$\alpha$ Opt. $AR_w$ Opt.');
+            app.PowerCurve.Leg = legend(app.PowerCurveAxes);
+            app.PowerCurve.Leg.FontSize = fontSize;
+            
             for ii =1:numel(varNames)
                 % Create sliders down the left hand side
                 ticks = linspace(p.(varNames{ii}).min,p.(varNames{ii}).max,9);
@@ -173,7 +204,7 @@ classdef ARStudy < matlab.apps.AppBase
                 app.UnitLabels.(varNames{ii}).VerticalAlignment = 'bottom';
                 app.UnitLabels.(varNames{ii}).Tooltip = p.(varNames{ii}).unit;
             end
-            pause(2) % Give matlab enough time to finish drawing things
+            pause(3) % Give matlab enough time to finish drawing things
             app.UIFigure.Visible = 'on';
             % Initialize the plots with the values from the sliders
             updatePlots(app)
@@ -212,7 +243,6 @@ classdef ARStudy < matlab.apps.AppBase
         % Code to update the plot of power
         function updatePowerPlot(app)
             % Extract parameter values
-            ARw = app.PowerPlot.Plot.XData(:);
             paramNames = fieldnames(app.Sliders);
             for ii = 1:numel(paramNames)
                 eval(sprintf('%s = app.Sliders.%s.Value;',paramNames{ii},paramNames{ii}))
@@ -223,55 +253,52 @@ classdef ARStudy < matlab.apps.AppBase
                 app.ValueLabels.(paramNames{ii}).Text = num2str(app.Sliders.(paramNames{ii}).Value);
             end
             
-            % Calculate at the optimal alpha (this repeats a lot of the
-            % code above, this could be optimized)
-            a = sort(cat(2,(pi/180)*alphaw,(pi/180).*linspace(1,30) ));
-            [a,ARw] = meshgrid(a,ARw);
-            
-            Sw = (bw.^2)./ARw;
+            % 3D meshgrid, alpha, wing aspect ratios, flow speeds
+            alphas  = sort(cat(2,alphaw,app.PowerSurf.Surf.XData(1,:) ))*(pi/180);
+            ARws    = app.PowerPlot.Plot.XData(:);
+            vws     = sort(cat(2,vw    ,app.PowerCurve.Plot.XData(:)'));  
+            % Get indices in 3D meshgrid for user-specified values
+            alphaIndx = find(alphas==alphaw*pi/180,1);
+            vwIndx    = find(vws == vw,1);
+            % Create meshgrid
+            [alphas,ARws,vws] = meshgrid(alphas,ARws,vws);
+                        
+            Sw = (bw.^2)./ARws;
             Sh = (bh.^2)./ARh;
             Sf = pi*rf.^2;
             
-            CLaw = 2*pi*gammaw./(1+((2.*pi.*gammaw)./(pi.*eLw.*ARw)));
+            CLaw = 2*pi*gammaw./(1+((2.*pi.*gammaw)./(pi.*eLw.*ARws)));
             CLah = 2*pi*gammah./(1+((2.*pi.*gammah)./(pi.*eLh.*ARh)));
             
-            CLw =            CLaw.*a + CLa0w;
-            CLh = (Sh./Sw).*(CLah.*a + CLa0h);
+            CLw =            CLaw.*alphas + CLa0w;
+            CLh = (Sh./Sw).*(CLah.*alphas + CLa0h);
             
-            CDw =            CD0w + (CLw.^2)./(pi*eDw.*ARw);
+            CDw =            CD0w + (CLw.^2)./(pi*eDw.*ARws);
             CDh = (Sh./Sw).*(CD0h + (CLh.^2)./(pi*eDh.*ARh));
-            CDf = (Sf./Sw).*(CD0f + CDaf*a.^2);
+            CDf = (Sf./Sw).*(CD0f + CDaf*alphas.^2);
             
             CL = CLw + CLh;
             CD = CDw + CDh + CDf;
-            
-            % Overall power
-            P = 0.001*(2/27).*eta.*1000.*vw.^3.*Sw.*(CL.^3)./(CD.^2);
             % Aerodynamic efficiency
             Eff = (CL.^3)./(CD.^2);
+            % Overall power
+            P = 0.001*(2/27).*eta.*1000.*vws.^3.*Sw.*Eff;
             
-            % Convert angles of attack back to degrees
-            a = a*180/pi;
-            
-            % Update surface plot
-            app.PowerSurf.Surf.XData = a;
-            app.PowerSurf.Surf.YData = ARw;
-            app.PowerSurf.Surf.ZData = P;
+            % Update surface plot at specified flow speed
+            slice = P(:,:,vwIndx); % Extract slice at user specified flow speed
+            slice(:,alphaIndx) = []; % Get rid of data at user specified alpha
+            app.PowerSurf.Surf.ZData = slice; % Plot it
             
             % Find max over all alphas and plot
-            maxPOverAlpha = max(P,[],2);
-            maxEOverAlpha = max(Eff,[],2);
-            app.OptPowerPlot.Plot.XData = ARw(:,1);
+            maxPOverAlpha = max(P(:,:,vwIndx),[],2);
+            maxEOverAlpha = max(Eff(:,:,vwIndx),[],2);
+            
             app.OptPowerPlot.Plot.YData = maxPOverAlpha;
-            app.OptEffPlot.Plot.XData = ARw(:,1);
             app.OptEffPlot.Plot.YData = maxEOverAlpha;
             
-            % Find user-specified value and plot
-            mask = (a == app.Sliders.alphaw.Value);
-            app.PowerPlot.Plot.XData = ARw(:,1);
-            app.PowerPlot.Plot.YData = P(mask);
-            app.EffPlot.Plot.XData = ARw(:,1);
-            app.EffPlot.Plot.YData = Eff(mask);
+            % Find power at user-specified alpha
+            app.PowerPlot.Plot.YData = P(:,alphaIndx,vwIndx);
+            app.EffPlot.Plot.YData = Eff(:,alphaIndx,vwIndx);
 
             % Get plot limits and update opimal markers
             xLims = app.PowerAxes.XLim;
@@ -308,11 +335,29 @@ classdef ARStudy < matlab.apps.AppBase
              app.PowerPlot.Title.Interpreter = 'tex';
              
              app.EffPlot.Title.Interpreter = 'tex';
-            app.EffPlot.Title.String = ...
-                {['(',num2str(AROptEffUsr,3),', ',num2str(EffOptUsr,3),'), ',...
-                sprintf('\\color[rgb]{%f, %f, %f}%s', [0.8 0 0], ['(',num2str(AROptEffOpt,3),', ',num2str(EffOptOpr,3),')'])]};
+             app.EffPlot.Title.String = ...
+                 {['(',num2str(AROptEffUsr,3),', ',num2str(EffOptUsr,3),'), ',...
+                 sprintf('\\color[rgb]{%f, %f, %f}%s', [0.8 0 0], ['(',num2str(AROptEffOpt,3),', ',num2str(EffOptOpr,3),')'])]};
              app.EffPlot.Title.Interpreter = 'tex';
-            drawnow
+             
+             % Extract powers at specified alpha, for all speeds
+             slice = P(:,alphaIndx,:);
+             % Delete user specified speed
+             slice(:,:,vwIndx) = [];
+             % Extract powers at optimal ARw
+             slice = slice(AROptIndPwrUsr,:,:);
+             % Plot the result
+             app.PowerCurve.Plot.YData = slice;
+             
+             % Extract powers at optimal alpha, for all speeds
+             slice = max(P(:,:,:),[],2);
+             % Delete user specified speed
+             slice(:,:,vwIndx) = [];
+             % Extract powers at optimal ARw
+             slice = slice(AROptPwrInd,:,:);
+             % Plot the result
+             app.PowerCurve.Plot2.YData = slice;
+             drawnow
         end
         
     end

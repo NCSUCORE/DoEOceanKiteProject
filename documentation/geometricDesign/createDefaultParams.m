@@ -36,9 +36,9 @@ p.eta.unit = '-';
 
 p.vw.min = 0.1;
 p.vw.max = 3;
-p.vw.default = 0.5;
+p.vw.default = 0.25;
 p.vw.symbol = 'vw';
-p.vw.description = 'Wind speed';
+p.vw.description = 'Flow speed';
 p.vw.unit = 'm/s';
 
 p.alphaw.min = 0;

@@ -1,11 +1,11 @@
 % This is the section where the simulation parameters are set. Mainly the
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(100,'s');
+simParams.setDuration(1000,'s');
 
 dynamicCalc = '';
 
-lengthScaleFactor  = 0.1;
+lengthScaleFactor  = 1;
 densityScaleFactor = 1;
 
 %% Load components

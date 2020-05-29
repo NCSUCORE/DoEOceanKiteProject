@@ -893,6 +893,10 @@ classdef vehicle < dynamicprops
         %returns a cell array of properties of the desired class
         output = getPropsByClass(obj,className);
                
+        % calculate max equilibrium speed at a given azimuth, elevation, and
+        % flow velocity vector
+        [sp,tanRoll,velAng] = eqSpeed(obj,vf,az,el)
+        
         % Functions to animate the vehicle
         val = animateSim(obj,tsc,timeStep,varargin)
         val = animateBody(obj,tsc,timeStep,varargin)
