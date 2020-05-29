@@ -83,6 +83,9 @@ classdef tether < handle
         function obj = setInitNodeVel(obj,val,units)
             obj.initNodeVel.setValue(val,units);
         end
+        function obj = setNumNodes(obj,val,units)
+            obj.numNodes.setValue(val,units);
+        end
         function obj = setDragEnable(obj,val,units)
             if ~islogical(val)
                 warning('Value is not logical, converting to %s',num2str(logical(val)))

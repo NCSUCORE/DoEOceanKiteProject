@@ -12,7 +12,7 @@ function makeSetters(fileName)
             flag=false;
         else
             li = strtrim(li);
-            if ~isempty(li)
+            if ~isempty(li) && li(1)~='%'
                 strlist{end+1}=li; %#ok<AGROW>
             end
         end
