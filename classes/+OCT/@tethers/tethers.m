@@ -38,12 +38,13 @@ classdef tethers < dynamicprops
             
             p = inputParser;
             addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
+            addParameter(p,'TetherClass','tether',@(x) any(strcmp(x,{'tether','tether001'})))
             parse(p,varargin{:})
             
             % Create tethers
             for ii = 1:obj.numTethers.Value
                 obj.addprop(p.Results.TetherNames{ii});
-                obj.(p.Results.TetherNames{ii}) = OCT.tether(obj.numNodes.Value);
+                obj.(p.Results.TetherNames{ii}) = eval(sprintf('OCT.%s(obj.numNodes.Value)',p.Results.TetherClass));
             end
         end
         
