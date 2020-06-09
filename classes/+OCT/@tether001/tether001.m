@@ -118,7 +118,7 @@ classdef tether001 < handle
         end
         
         function val = get.orgLengths(obj)
-            val = ((obj.maxLength.Value)/(obj.numNodes.Value-2))*ones(1,obj.numNodes.Value-2);
+            val = ((obj.maxLength.Value)/(obj.numNodes.Value-1))*ones(1,obj.numNodes.Value-1);
             val = SIM.parameter('Value',val,'Unit','m');
         end
         
