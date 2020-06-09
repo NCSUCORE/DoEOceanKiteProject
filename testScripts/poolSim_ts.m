@@ -18,7 +18,7 @@ densityScaleFactor = 1;
 % loadComponent('newSpoolCtrl');
 loadComponent('fullCycleCtrl');
 fltCtrl.rudderGain.setValue(0,'')
-fltCtrl.dockedTetherLength.setValue(100,'m')
+fltCtrl.dockedTetherLength.setValue(1,'m')
 % SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
@@ -64,16 +64,17 @@ gndStn.setEulerAngVec([0 0 0],'rad');
 time = [0 simParams.duration.Value];
 posVecPoints = [startPos(:)'; endPos(:)'];
 gndStn.setPosVecTrajectory(timesignal(timeseries(posVecPoints,time)),'m');
-
+vGndStn = gndStn.posVecTrajectory.Value.diff;
+vGndStnInit = vGndStn.getdatasamples(1);
 %% Set vehicle initial conditions
-
+% 
 vhcl.setInitAngVelVec([0 0 0],'rad/s')
-vhcl.setInitEulAng([0*pi/180 0*pi/180 0],'rad')
+vhcl.setInitEulAng([0*pi/180 0*pi/180 180*pi/180],'rad')
 initelev = 20;
 initTL = fltCtrl.dockedTetherLength.Value; % m
-vhcl.setInitPosVecGnd([initTL*cosd(initelev),0,initTL*sind(initelev)],'m')
-vhcl.setInitVelVecBdy([0 0 0],'m/s')
-
+vhcl.setInitPosVecGnd([-initTL*cosd(initelev) 0 initTL*sind(initelev)],'m')
+vhcl.setInitVelVecBdy(rotation_sequence(vhcl.initEulAng.Value)*vGndStnInit(:),'m/s')
+% 
 % vhcl.setICsOnPath(...
 %     .05,... % Initial path position
 %     PATHGEOMETRY,... % Name of path function
@@ -114,3 +115,7 @@ simParams.scale(lengthScaleFactor,densityScaleFactor);
 %% Run Simulation
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
+%%
+vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',true,'FontSize',18,'Pause',false)
+
