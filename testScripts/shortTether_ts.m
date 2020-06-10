@@ -11,7 +11,9 @@ dynamicCalc = '';
 %variant subsystem identifiers are loaded into the model
 
 % Flight Controller
+%loadComponent('newSpoolCtrl');
 loadComponent('pathFollowingCtrlForILC');
+
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
@@ -101,12 +103,13 @@ simWithMonitor('OCTModel')
 %tsc.signalname.data to view data, tsc.signalname.plot to plot etc.
 tsc = signalcontainer(logsout);
 
-%%
-tsc.ctrlSurfDeflCmd.plot
+%tsc.ctrlSurfDeflCmd.plot
 % figure
 % tsc.velocityVec.plot
 % 
 % %% this animates the simulation
-vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-    'PlotTracer',true,'FontSize',18)
+vhcl.animateSim(tsc,.5)
+
+%'PathFunc',fltCtrl.fcnName.Value,...
+%   'PlotTracer',false,'FontSize',18)
 
