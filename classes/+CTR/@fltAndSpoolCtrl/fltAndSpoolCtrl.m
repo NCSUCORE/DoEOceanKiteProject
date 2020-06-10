@@ -27,6 +27,7 @@ classdef fltAndSpoolCtrl < handle
         initSpdVec
         initCtrlVec
         intraDrift
+        dockedTetherLength
         
         %Multicycle
         initTL
@@ -65,6 +66,7 @@ classdef fltAndSpoolCtrl < handle
             obj.initCtrlVec         = SIM.parameter('Unit','','Description','initial control Vec parameter; depends on chosen functions');
             obj.initSpdVec          = SIM.parameter('Unit','m/s','Description','initial speed Vec parameter; depends on chosen functions');
             obj.intraDrift          = SIM.parameter('Value',0,'Unit','m','Description','Meters of drift per lap during intracycle');
+            obj.dockedTetherLength  = SIM.parameter('Unit','m','Description','Meters of unspooled tether while kite is docked to groundstation');
             
             obj.initTL                  = SIM.parameter('Unit','m','Description','initial/spool-in/pure-intracycle tether length');
             obj.maxTL                   = SIM.parameter('Unit','m','Description','max tether length for multicycle');
@@ -139,6 +141,10 @@ classdef fltAndSpoolCtrl < handle
 
         function setIntraDrift(obj,val,units)
             obj.intraDrift.setValue(val,units)
+        end
+        
+        function setDockedTetherLength(obj,val,units)
+            obj.dockedTetherLength.setValue(val,units)
         end
 
         function setInitTL(obj,val,units)

@@ -1,21 +1,24 @@
 % clear;clc;close all
 clearvars tsc logsout
 
-simLength = 1000;
+simLength = 300;
 startPos = [0 0 0];
-endPos = [1500 0 0];
+endPos = [1000 0 0];
 simParams = SIM.simParams;
 simParams.setDuration(simLength,'s');
 dynamicCalc = '';
 
-lengthScaleFactor = .8;
+lengthScaleFactor = 1;
 densityScaleFactor = 1;
 
 %% Load components
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
-loadComponent('pathFollowingCtrlForILC');
+% loadComponent('pathFollowingCtrlForILC');
+% loadComponent('newSpoolCtrl');
+loadComponent('fullCycleCtrl');
 fltCtrl.rudderGain.setValue(0,'')
+fltCtrl.dockedTetherLength.setValue(1,'m')
 % SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
@@ -48,7 +51,7 @@ env.water.setflowVec([0 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1.2,2.2,.36,180*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1.2,2.2,.36,180*pi/180,100],'[rad rad rad rad m]') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 
 %gndStn.setInitPosVec([0 0 0],'m')
@@ -61,14 +64,23 @@ gndStn.setEulerAngVec([0 0 0],'rad');
 time = [0 simParams.duration.Value];
 posVecPoints = [startPos(:)'; endPos(:)'];
 gndStn.setPosVecTrajectory(timesignal(timeseries(posVecPoints,time)),'m');
-
+vGndStn = gndStn.posVecTrajectory.Value.diff;
+vGndStnInit = vGndStn.getdatasamples(1);
 %% Set vehicle initial conditions
-vhcl.setICsOnPath(...
-    .05,... % Initial path position
-    PATHGEOMETRY,... % Name of path function
-    hiLvlCtrl.basisParams.Value,... % Geometry parameters
-    gndStn.initPosVec.Value,... % Initial center point of path sphere
-    (11/2)*norm([ 1 0 0 ])) % Initial speed
+% 
+vhcl.setInitAngVelVec([0 0 0],'rad/s')
+vhcl.setInitEulAng([0*pi/180 0*pi/180 180*pi/180],'rad')
+initelev = 20;
+initTL = fltCtrl.dockedTetherLength.Value; % m
+vhcl.setInitPosVecGnd([-initTL*cosd(initelev) 0 initTL*sind(initelev)],'m')
+vhcl.setInitVelVecBdy(rotation_sequence(vhcl.initEulAng.Value)*vGndStnInit(:),'m/s')
+% 
+% vhcl.setICsOnPath(...
+%     .05,... % Initial path position
+%     PATHGEOMETRY,... % Name of path function
+%     hiLvlCtrl.basisParams.Value,... % Geometry parameters
+%     gndStn.initPosVec.Value,... % Initial center point of path sphere
+%     (11/2)*norm([ 1 0 0 ])) % Initial speed
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -101,18 +113,9 @@ env.scale(lengthScaleFactor,densityScaleFactor);
 simParams.scale(lengthScaleFactor,densityScaleFactor);
 
 %% Run Simulation
-% vhcl.setFlowGradientDist(.01,'m')
-% simWithMonitor('OCTModel')
-% tsc = signalcontainer(logsout);
+simWithMonitor('OCTModel')
+tsc = signalcontainer(logsout);
+%%
+vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+    'PlotTracer',true,'FontSize',18,'Pause',false)
 
-
-    simWithMonitor('OCTModel')
-    tsc = signalcontainer(logsout);
-    fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
-    disp(hiLvlCtrl.basisParams.Value)
-    %[y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
-    %sound(y*.2, Fs, 16)
-    fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
-
- vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-     'PlotTracer',true,'FontSize',18)
