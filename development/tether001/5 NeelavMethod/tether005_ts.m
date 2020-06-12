@@ -10,8 +10,8 @@ TetherLength = 400;
 numNodes = 11;
 TopLinkLength = TetherLength/(numNodes-1);
 OriginalLengths = [((TetherLength-TopLinkLength)/(numNodes-2))*ones(1,numNodes-2),TopLinkLength];
-LengthI = 1; %TetherLength;
-LengthF = 400;
+LengthI = 400; %TetherLength;
+LengthF = 1;
 % if FirstLinkLengthF<=0
 %     fprintf('Wont Work')
 %     FirstLinkLengthF
@@ -33,7 +33,7 @@ ReeledOutLength = linspace(LengthI,LengthF,length(k));
 ReelInVel = -(LengthI-LengthF)/simTime;
 
 %AIR = linspace(LengthI,LengthF,length(k));
-AIRDiag = linspace(sqrt((LengthI^2)/3)+.0001,sqrt((LengthF^2)/3)+10,length(k));
+AIRDiag = linspace(sqrt((LengthI^2)/3)+8,sqrt((LengthF^2)/3)+.002,length(k));
 GND = linspace(0,0,length(k));
 for i = 1:length(k)
     gndNodePos(1:3,i) = [0,0,GND(i)];
@@ -78,8 +78,8 @@ ReeledOutLengthTS = setinterpmethod(timeseries(ReeledOutLength,time),'zoh');
 
 linkFlowVelVecs = [10*ones(1,numNodes-1);10*ones(1,numNodes-1);.001*ones(1,numNodes-1)];
 
-3
-simout2 = sim('tether003_th');
+%3
+%simout2 = sim('tether003_th');
 5
 simout = sim('tether005_th');
 
@@ -87,12 +87,12 @@ simout = sim('tether005_th');
 
 
 tsc = signalcontainer(simout.logsout);
-tsc2 = signalcontainer(simout2.logsout);
+%tsc2 = signalcontainer(simout2.logsout);
 
 
 Time = tsc.x.Time;
 x = tsc.x.Data;
-x2 = tsc2.x.Data;
+%x2 = tsc2.x.Data;
 %Scope = tsc.Scope.Data;
 
 % for i = 2:length(Scope)
@@ -108,15 +108,15 @@ figure(1)
         OneForce(i) = norm(tsc.OneForce.Data(:,1,i));
     end
     
-    for i = 1:size(tsc2.NForce.Data,3)
-        NForceCurr(i) = norm(tsc2.NForce.Data(:,1,i));
-        OneForceCurr(i) = norm(tsc2.OneForce.Data(:,1,i));
-    end
+%    for i = 1:size(tsc2.NForce.Data,3)
+      %  NForceCurr(i) = norm(tsc2.NForce.Data(:,1,i));
+       % OneForceCurr(i) = norm(tsc2.OneForce.Data(:,1,i));
+    %end
     
     NForceTime = tsc.NForce.Time;    
     OneForceTime = tsc.OneForce.Time;
-    NForceTimeCurr = tsc2.NForce.Time;
-    OneForceTimeCurr = tsc2.OneForce.Time;
+    %NForceTimeCurr = tsc2.NForce.Time;
+    %OneForceTimeCurr = tsc2.OneForce.Time;
     
     Timestart = 2;    
     %Direction = 3; %x(1) y(2) z(3)
@@ -125,12 +125,12 @@ figure(1)
     %Timestart = 11000;
     plot(NForceTime(Timestart:end,1),NForce(Timestart:end))
     %Timestart = 1000;
-    plot(NForceTimeCurr(Timestart:end,1),NForceCurr(Timestart:end),'--')
+    %plot(NForceTimeCurr(Timestart:end,1),NForceCurr(Timestart:end),'--')
     
     %Ground
     %Timestart = 11000;
     plot(OneForceTime(Timestart:end,1),OneForce(Timestart:end))
-    plot(OneForceTimeCurr(Timestart:end,1),OneForceCurr(Timestart:end),'--')
+    %plot(OneForceTimeCurr(Timestart:end,1),OneForceCurr(Timestart:end),'--')
     
     legend('Air New','Air Org','Ground New','Ground Org')
     title('X Direction Force')
@@ -160,11 +160,10 @@ for i = 1:Num(3)
      A = [gndNodePos(1,i),x(1,:,i),airNodePos(1,i)];
      B = [gndNodePos(2,i),x(2,:,i),airNodePos(2,i)];
      C = [gndNodePos(3,i),x(3,:,i),airNodePos(3,i)];
-     A2 = [gndNodePos(1,i),x2(1,:,i),airNodePos(1,i)];
-     B2 = [gndNodePos(2,i),x2(2,:,i),airNodePos(2,i)];
-     C2 = [gndNodePos(3,i),x2(3,:,i),airNodePos(3,i)];
-    plot3(A2',B2',C2','.-r','LineWidth',.9,'MarkerSize',10);
-    hold on
+    % A2 = [gndNodePos(1,i),x2(1,:,i),airNodePos(1,i)];
+    % B2 = [gndNodePos(2,i),x2(2,:,i),airNodePos(2,i)];
+    % C2 = [gndNodePos(3,i),x2(3,:,i),airNodePos(3,i)];
+   % plot3(A2',B2',C2','.-r','LineWidth',.9,'MarkerSize',10);
     plot3(A',B',C','.-b','LineWidth',.9,'MarkerSize',10);
     hold on
     plot3(A(1)',B(1)',C(1)','.g','MarkerSize',25);
