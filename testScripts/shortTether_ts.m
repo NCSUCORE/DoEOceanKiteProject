@@ -1,9 +1,12 @@
 % This is the section where the simulation parameters are set. Mainly the
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(100,'s');
+simParams.setDuration(300,'s');
 
 dynamicCalc = '';
+
+% set tether number "000 or 001"
+TetherNum = 000;
 
 %% Load components
 
@@ -11,8 +14,8 @@ dynamicCalc = '';
 %variant subsystem identifiers are loaded into the model
 
 % Flight Controller
-%loadComponent('newSpoolCtrl');
-loadComponent('pathFollowingCtrlForILC');
+loadComponent('newSpoolCtrl');
+%loadComponent('pathFollowingCtrlForILC');
 
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
@@ -23,7 +26,12 @@ loadComponent('pathFollowingGndStn');
 % Winches
 loadComponent('oneDOFWnch');
 % Tether
-loadComponent('shortTether');
+if TetherNum==000
+    loadComponent('shortTetherCompare');
+elseif TetherNum==001
+    loadComponent('shortTether');
+end
+
 % Vehicle
 loadComponent('fullScale1thr');
 % Environment
@@ -47,7 +55,7 @@ env.water.setflowVec([1 0 0],'m/s')
 %determines the center of the paths elevation angle, the four sets the path
 %centers azimuth angle, the fifth is the initial tether length
 hiLvlCtrl.basisParams.setValue(...
-    [.8,1.6,-20*pi/180,0*pi/180,125],...
+    [.8,1.6,-20*pi/180,0*pi/180,400],...
     '[rad rad rad rad m]') % Lemniscate of Booth
 
 
@@ -70,17 +78,26 @@ vhcl.setICsOnPath(...
 
 %% Tethers IC's and dependant properties'
 
-% This is where the Kite tether initial conditions and parameter values are
-% set
-thr.tether1.setInitGndNodePos(gndStn.thrAttch1.posVec.Value(:)...
-    +gndStn.posVec.Value(:),'m');
-thr.tether1.setInitAirNodePos(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+% This is where the Kite tether initial conditions and parameter values are set
 
-thr.tether1.setInitGndNodeVel([0 0 0]','m/s');
-thr.tether1.setInitAirNodeVel(vhcl.initVelVecBdy.Value(:),'m/s');
+if TetherNum==000 %Tether000
+    thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
+        +gndStn.posVec.Value(:),'m');
+    thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+        +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+    thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+    thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+    thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+elseif TetherNum==001%Tether001
+    thr.tether1.setInitGndNodePos(gndStn.thrAttch1.posVec.Value(:)...
+        +gndStn.posVec.Value(:),'m');
+    thr.tether1.setInitAirNodePos(vhcl.initPosVecGnd.Value(:)...
+        +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+    thr.tether1.setInitGndNodeVel([0 0 0]','m/s');
+    thr.tether1.setInitAirNodeVel(vhcl.initVelVecBdy.Value(:),'m/s');
+    thr.tether1.setVehicleMass(vhcl.mass.Value,'kg');
+end
 
-thr.tether1.setVehicleMass(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
 %this sets the initial tether length that the winch has spooled out
@@ -103,13 +120,11 @@ simWithMonitor('OCTModel')
 %tsc.signalname.data to view data, tsc.signalname.plot to plot etc.
 tsc = signalcontainer(logsout);
 
-%tsc.ctrlSurfDeflCmd.plot
-% figure
-% tsc.velocityVec.plot
-% 
-% %% this animates the simulation
 vhcl.animateSim(tsc,.5)
 
-%'PathFunc',fltCtrl.fcnName.Value,...
-%   'PlotTracer',false,'FontSize',18)
-
+figure(2)
+Tension = [];
+for ii=1:size(tsc.airTenVecs.Data,3)
+    Tension(ii) = norm(tsc.airTenVecs.Data(:,:,ii));
+end
+plot(tsc.airTenVecs.Time,Tension)
