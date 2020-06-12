@@ -10,6 +10,8 @@ classdef Manta < handle
         zGridPoints
         maxSpeed
         minSpeed
+        month
+        day
     end
     
     properties (Hidden = true)
@@ -18,7 +20,7 @@ classdef Manta < handle
     end
     
     methods
-        function obj = Manta(mnthIndx,dayIndx)
+        function obj = Manta(mnthIndx,dayIndx,varargin)
             % Input mnthIndx is a single element of [1 4 7 10] indicating
             % which month of data that you want to use, and then dayIndx
             % is the index of the day within that month that you'd like to
@@ -26,7 +28,8 @@ classdef Manta < handle
             p = inputParser;
             addRequired(p,'mnthIndx',@(x) mod(x,1)==0);
             addRequired(p,'dayIndx',@(x) mod(x,1)==0);
-            parse(p,mnthIndx,dayIndx)
+            addOptional(p,'ForceRecompile',false,@(x) islogical(x));
+            parse(p,mnthIndx,dayIndx,varargin{:})
             % Get base path to where the model is stored on your computer
             basePath = fileparts(which('OCTModel'));
             % Append path to include the location of this classdef
@@ -43,7 +46,7 @@ classdef Manta < handle
             % Get the name of the .mat file that should contain this data
             fName = fullfile(dataPath,['2017',mnthString,dayString '.mat']);
             % If it doesn't exist, then attempt to build it
-            if ~isfile(fName)
+            if ~isfile(fName) || p.Results.ForceRecompile
                 % Check if the folder for that data exists
                 folder = folders(contains({folders.name},['2017' mnthString '_hourly']));
                 if isempty(folder)
@@ -72,9 +75,11 @@ classdef Manta < handle
             obj.startTime               = SIM.parameter('Value',3600*timeVec(1),'Unit','s');
             obj.endTime                 = SIM.parameter('Value',3600*timeVec(end),'Unit','s');
             obj.flowVecTimeseries       = SIM.parameter('Unit','m/s');
-            obj.xGridPoints            = SIM.parameter('Value',xBreak,'Unit','m');
-            obj.yGridPoints            = SIM.parameter('Value',yBreak,'Unit','m');
-            obj.zGridPoints            = SIM.parameter('Value',zBreak,'Unit','m');
+            obj.xGridPoints             = SIM.parameter('Value',xBreak,'Unit','m');
+            obj.yGridPoints             = SIM.parameter('Value',yBreak,'Unit','m');
+            obj.zGridPoints             = SIM.parameter('Value',zBreak,'Unit','m');
+            obj.month                   = SIM.parameter('Value',p.Results.mnthIndx,'Unit','','NoScale',true);
+            obj.day                     = SIM.parameter('Value',p.Results.dayIndx,'Unit','','NoScale',true);
             obj.crop(obj.startTime.Value,obj.endTime.Value); % Sets the 
         end
         function setDensity(obj,val,unit)
@@ -233,6 +238,7 @@ classdef Manta < handle
             ylabel('y, [m]')
             zlabel('z, [m]')
             h.colorbar.Label.String = 'Capacity Factor';
+            h.title = title({'Capacity Factor',sprintf('Month %d Day %d',obj.month.Value,obj.day.Value)});
         end
     end
 end
