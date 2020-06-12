@@ -190,36 +190,49 @@ classdef Manta < handle
             end
         end
         
-        function capFactor(obj,vRated)
-            binSize = 0.01;
-            bins = 0:binSize:obj.maxSpeed.Value+binSize;
-            binCent = (bins(1:end-1)+bins(2:end))/2;
+        function h = capFactor(obj,vRated,vCutIn,varargin)
+            % Parse optional input arguments
+            p = inputParser;
+            addParameter(p,'BinSize',0.1,@(x) x>0)
+            addParameter(p,'NumOfColorBands',5,@(x) mod(x,1)==0);
+            addRequired(p,'vRated',@(x) x>0);
+            addRequired(p,'vCutIn',@(x) x>0);
+            parse(p,vRated,vCutIn,varargin{:})
+            % Define the bin edges for the histogram
+            binsEdges = 0:p.Results.BinSize:obj.maxSpeed.Value+p.Results.BinSize;
+            % Degine the center point of the bins for the histograms
+            binCents = (binsEdges(1:end-1)+binsEdges(2:end))/2;
             % Calculate flow speed at every point in the grid
-            vFlow = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
-            for ii = 1:size(vFlow,1)
-                for jj = 1:size(vFlow,2)
-                    for kk = 2:size(vFlow,3)
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Loop through every grid point
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    for kk = 1:size(flowSpeeds,3)
                         % Get the flow speeds at this grid point
-                        vFlows  = squeeze(vFlow(ii,jj,kk,:));
-                        cnts    = histcounts(vFlows,bins);
-                        pdf     = cnts./sum(cnts);
-                        intArg  = squeeze(min(binCent.^3,vRated.^3)).*pdf;
-                        CF(ii,jj,kk) = trapz(binCent,intArg)./vRated.^3;
+                        vFlows  = squeeze(flowSpeeds(ii,jj,kk,:));
+                        vFlows(vFlows<p.Results.vCutIn) = 0;
+                        % Calculate the histogram
+                        pdf    = histcounts(vFlows,binsEdges,'Normalization','pdf');
+                        intArg  = min(binCents.^3,p.Results.vRated.^3).*pdf;
+                        CF(ii,jj,kk) = trapz(binCents,intArg)./p.Results.vRated.^3;
+                        avg(ii,jj,kk) = mean(vFlows);
                     end
                 end
             end
+            % Set up meshgrid for plots
             [x,y,z] = meshgrid(...
                 obj.xGridPoints.Value,...
                 obj.yGridPoints.Value,...
                 obj.zGridPoints.Value);
-            colormap(copper)
-            scatter3(x(:),y(:),z(:),40,CF(:),'filled');
+            % Set the colorbands
+            colormap([linspace(0,1,p.Results.NumOfColorBands)' zeros(p.Results.NumOfColorBands,1) linspace(1,0,p.Results.NumOfColorBands)'])
+            h.scatter3 = scatter3(x(:),y(:),z(:),40,CF(:),'filled');
             h.colorbar = colorbar;
             set(gca,'FontSize',24)
             xlabel('x, [m]')
             ylabel('y, [m]')
             zlabel('z, [m]')
-            h.colorbar.Label.String = 'CF';
+            h.colorbar.Label.String = 'Capacity Factor';
         end
     end
 end
