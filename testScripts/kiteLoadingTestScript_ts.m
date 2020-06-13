@@ -1,11 +1,11 @@
 % This is the section where the simulation parameters are set. Mainly the
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(1000,'s');
+simParams.setDuration(500,'s');
 
 dynamicCalc = '';
 
-lengthScaleFactor  = 1;
+lengthScaleFactor  = 0.8;
 densityScaleFactor = 1;
 
 %% Load components
@@ -26,7 +26,7 @@ loadComponent('oneDOFWnch');
 % Tether
 loadComponent('fiveNodeSingleTether');
 % Vehicle
-loadComponent('pathFollowingVhclForComp');
+loadComponent('fullScale1thr');
 % Environment
 loadComponent('constXYZT');
 % Sensors

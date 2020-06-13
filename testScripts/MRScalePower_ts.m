@@ -6,7 +6,7 @@ lengthScaleFactors  = 1;%0.8;
 
 %% Set up critical system parameters
 simParams = SIM.simParams;
-simParams.setDuration(1000,'s');
+simParams.setDuration(1,'s');
 dynamicCalc = '';
 w = 90*pi/180;
 h = 10*pi/180;
