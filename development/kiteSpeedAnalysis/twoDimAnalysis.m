@@ -10,7 +10,7 @@ LbyD = 10;
 gamma = atan(1/LbyD);
 
 % flow speed
-vf = 1;
+vf = 2;
   
 % calculate vk for kite going upwind (see derivation)
 vkEqnUpwind = @(vf,phi,gamma) vf*sin(0.5*pi - phi - gamma)/sin(gamma);
@@ -21,8 +21,8 @@ vkEqnDownwind = @(vf,phi,gamma) vf*((cos(phi)/tan(gamma)) + sin(phi));
 
 %% loop through azimuth angles
 % azimuth
-% phi = 30*pi/180;
-phi = (pi/180)*linspace(-0,60,200);
+phi = 0*pi/180;
+% phi = (pi/180)*linspace(-0,60,200);
 
 vkUpwind = NaN*phi;
 vkDownwind = NaN*phi;
