@@ -240,8 +240,9 @@ classdef ARStudy < matlab.apps.AppBase
             updatePowerPlot(app);
         end
         
-        % Code to update the plot of power
-        function updatePowerPlot(app)
+        %Function to calculate Power and Aerodynamic efficiency
+        function [alphaIndx,P,vwIndx,Eff] = PowEffCalc(app)
+           
             % Extract parameter values
             paramNames = fieldnames(app.Sliders);
             for ii = 1:numel(paramNames)
@@ -282,7 +283,14 @@ classdef ARStudy < matlab.apps.AppBase
             % Aerodynamic efficiency
             Eff = (CL.^3)./(CD.^2);
             % Overall power
-            P = 0.001*(2/27).*eta.*1000.*vws.^3.*Sw.*Eff;
+            P = 0.001*(2/27).*eta.*1000.*vws.^3.*Sw.*Eff; 
+            
+        end
+        
+        % Code to update the plot of power
+        function updatePowerPlot(app)
+            %Calculation Power and Aerodynamic efficiency
+            [alphaIndx,P,vwIndx,Eff] = PowEffCalc(app);
             
             % Update surface plot at specified flow speed
             slice = P(:,:,vwIndx); % Extract slice at user specified flow speed
