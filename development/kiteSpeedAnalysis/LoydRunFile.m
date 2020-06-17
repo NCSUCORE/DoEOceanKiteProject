@@ -29,7 +29,7 @@ cL = 1;
 % roll angle (degrees)
 rollAngle = 0;
 % speed in azimuth direction (m/s)
-vAzim = 1;
+vAzim = 0;
 % speed in zenith direction
 vZen = 0;
 % rate of change of azimuth angle (rad/s)

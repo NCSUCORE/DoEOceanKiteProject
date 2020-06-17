@@ -41,7 +41,7 @@ yPos = NaN*A;
 zPos = NaN*A;
 azimuthSpeed = NaN*A;
 ElevationSpeed = NaN*A;
-maxTotalSpeed = NaN*A;;
+maxTotalSpeed = NaN*A;
 
 for ii = 1:numZen
     for jj = 1:numAzim
