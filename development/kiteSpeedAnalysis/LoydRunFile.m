@@ -49,7 +49,8 @@ meanElevation = 15*pi/180;
 %% calculate values
 % sweep of azimuth angle
 numAzim = 100;
-azimuthSweep = linspace(-pi/2,pi/2,numAzim);
+azimuthSweep = linspace(-0,pi/2,numAzim);
+azimuthSweep(abs(azimuthSweep)<=0) = 0.1;
 % sweep of zenith angles
 numZen = 100;
 zenithSweep = linspace(0.2,pi/2,numZen);
