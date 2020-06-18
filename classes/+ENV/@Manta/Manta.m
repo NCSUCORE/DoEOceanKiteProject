@@ -44,7 +44,8 @@ classdef Manta < handle
             mnthString = sprintf('%02d',p.Results.mnthIndx);
             dayString = sprintf('%02d',p.Results.dayIndx);
             % Get the name of the .mat file that should contain this data
-            fName = fullfile(dataPath,['2017',mnthString,dayString '.mat']);
+%             fName = fullfile(dataPath,['2017',mnthString,dayString '.mat']);
+            fName = fullfile(dataPath,['TS_FlowData_2017_',mnthString '.mat']);
             % If it doesn't exist, then attempt to build it
             if ~isfile(fName) || p.Results.ForceRecompile
                 % Check if the folder for that data exists
@@ -57,13 +58,16 @@ classdef Manta < handle
                 % Get files in that folder
                 files = dir(fullfile(folder.folder,folder.name));
                 % Get files that match the specified day
-                files = files(contains({files.name},[dayString '00_t']));
+%                 files = files(contains({files.name},[dayString '00_t']));
+                % Ignore the first 2 items
+                files = files(3:end);
                 % If the list of files is empty, throw an error
                 if isempty(files)
                     error('Unknown day')
                 end
                 % Build the .mat file
-                [data,xBreak,yBreak,zBreak] = obj.buildMantaMAT(files);
+%                 [data,xBreak,yBreak,zBreak] = obj.buildMantaMAT(files);
+                [data,xBreak,yBreak,zBreak] = obj.buildMantaMAT2(files);
                 save(fName,'data','xBreak','yBreak','zBreak');
             else
                 load(fName);
@@ -233,12 +237,90 @@ classdef Manta < handle
             colormap([linspace(0,1,p.Results.NumOfColorBands)' zeros(p.Results.NumOfColorBands,1) linspace(1,0,p.Results.NumOfColorBands)'])
             h.scatter3 = scatter3(x(:),y(:),z(:),40,CF(:),'filled');
             h.colorbar = colorbar;
-            set(gca,'FontSize',24)
+            set(gca,'FontSize',14)
             xlabel('x, [m]')
             ylabel('y, [m]')
             zlabel('z, [m]')
             h.colorbar.Label.String = 'Capacity Factor';
             h.title = title({'Capacity Factor',sprintf('Month %d Day %d',obj.month.Value,obj.day.Value)});
+        end
+        function h = velFieldAvg(obj,varargin)
+            % Parse optional input arguments
+            p = inputParser;
+            addParameter(p,'BinSize',0.1,@(x) x>0)
+            addParameter(p,'NumOfColorBands',10,@(x) mod(x,1)==0);
+            parse(p,varargin{:})
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Loop through every grid point
+            vFlows = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    for kk = 1:size(flowSpeeds,3)
+                        % Get the flow speeds at this grid point
+                        vFlows(ii,jj,kk) = mean(squeeze(flowSpeeds(ii,jj,kk,:)));
+                    end
+                end
+            end
+            % Set up meshgrid for plots
+            [x,y,z] = meshgrid(...
+                obj.xGridPoints.Value,...
+                obj.yGridPoints.Value,...
+                obj.zGridPoints.Value);
+            % Set the colorbands
+            colormap([linspace(0,1,p.Results.NumOfColorBands)' zeros(p.Results.NumOfColorBands,1) linspace(1,0,p.Results.NumOfColorBands)'])
+            h.scatter3 = scatter3(x(:),y(:),z(:),40,vFlows(:),'filled');
+            h.colorbar = colorbar;
+            set(gca,'FontSize',14)
+            xlabel('x, [m]')
+            ylabel('y, [m]')
+            zlabel('z, [m]')
+            h.colorbar.Label.String = 'Flow Speed [m/s]';
+            h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
+        end
+        function h = velPDF(obj,xIdx,yIdx,varargin)
+            % Parse optional input arguments
+            p = inputParser;
+            addParameter(p,'BinSize',0.1,@(x) x>0)
+            addParameter(p,'NumOfColorBands',10,@(x) mod(x,1)==0);
+            parse(p,varargin{:})
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Get mean flow velocity along each column
+            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
+                end
+            end
+            % Which column produces the greatest average flow speed
+            [XIdx,YIdx] = find(max(max(colAvg))==colAvg);
+            % Get velocities at the grid points of interest 
+            zIdx = [15 20 22 23 24 25];
+            colVel = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
+            colVels = squeeze(flowSpeeds(XIdx,YIdx,zIdx,:));
+            % Plot Histograms
+            h = figure();
+            for ii = 1:6
+                subplot(3,2,ii);
+                hold on;    grid on 
+                b = histogram(colVel(ii,:),20);
+                r = histogram(colVels(ii,:),20);
+                set(b,'FaceColor','b'); set(b,'EdgeColor','b')
+                set(r,'FaceColor','r'); set(r,'EdgeColor','r')
+                set(gca,'FontSize',12)
+                YL = get(gca,'YLim');
+                plot([mean(colVel(ii,:)) mean(colVel(ii,:))],[0 50],'b-')
+                plot([mean(colVel(ii,:)) mean(colVel(ii,:))],[0 50],'k-.')
+                plot([mean(colVels(ii,:)) mean(colVels(ii,:))],[0 50],'r-')
+                plot([mean(colVels(ii,:)) mean(colVels(ii,:))],[0 50],'k-.')
+                set(gca,'YLim',YL)
+                if ii >= 5
+                    xlabel('Velocity [m/s]');
+                end
+                title(['Depth = ',num2str(obj.zGridPoints.Value(zIdx(ii))),' m'])
+            end
+            suptitle(['Velocity Histograms for Month ',num2str(obj.month.Value)])
         end
     end
 end

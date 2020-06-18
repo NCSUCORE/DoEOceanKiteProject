@@ -1,8 +1,10 @@
-function [data,xBreak,yBreak,zBreak] = buildMantaMAT(obj,files)
+function [data,xBreak,yBreak,zBreak] = buildMantaMAT2(obj,files)
 % Sort the filenames alphanumerically
 fNames = sort({files.name})';
 % Note that this *should* get things in the proper order to just loop
 % through and compile
+kk = 1;
+tt = 1;
 for ii = 1:numel(fNames)
     % Construct the full file name
     fName = fullfile(files(ii).folder,fNames{ii});
@@ -22,7 +24,7 @@ for ii = 1:numel(fNames)
     end
     % Figure out which component we're dealing with
     componentName = regexp(dataVar,'[u,v,w]vel','match','once');
-    switch componentName{1}
+    switch componentName{kk}
         case 'uvel'
             componentIndex = 1;
         case 'vvel'
@@ -33,9 +35,15 @@ for ii = 1:numel(fNames)
             error('Unknown velocity component')
     end
     % Figure out which time step we're looking at
-    timeIndx = regexp(fNames{ii},'_t\d{3}_','match','once');
-    timeIndx = str2double(timeIndx(3:end-1));
-    data(:,:,:,componentIndex,timeIndx) = eval(dataVar{1});
+%     timeIndx = regexp(fNames{ii},'_t\d{3}_','match','once');
+%     timeIndx = str2double(timeIndx(3:end-1));
+    data(:,:,:,componentIndex,tt) = eval(dataVar{kk});
+    if kk == 3
+        kk = 1;
+        tt = tt+1;
+    else
+        kk = kk+1;
+    end
 end
 % Convert x and y breakpoints to m, center them at zero
 xBreak = 1000*(xindx-mean(xindx));
