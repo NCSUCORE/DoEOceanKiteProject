@@ -304,8 +304,8 @@ classdef Manta < handle
             for ii = 1:6
                 subplot(3,2,ii);
                 hold on;    grid on 
-                b = histogram(colVel(ii,:),20);
-                r = histogram(colVels(ii,:),20);
+                b = histogram(colVel(ii,:),20,'Normalization','pdf');
+                r = histogram(colVels(ii,:),20,'Normalization','pdf');
                 set(b,'FaceColor','b'); set(b,'EdgeColor','b')
                 set(r,'FaceColor','r'); set(r,'EdgeColor','r')
                 set(gca,'FontSize',12)
