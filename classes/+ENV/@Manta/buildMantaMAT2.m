@@ -46,8 +46,8 @@ for ii = 1:numel(fNames)
     end
 end
 % Convert x and y breakpoints to m, center them at zero
-xBreak = 1000*(xindx-mean(xindx));
-yBreak = 1000*(yindx-mean(yindx));
+xBreak = 2000*(xindx-mean(xindx));
+yBreak = 2000*(yindx-mean(yindx));
 % Flip the order of the z breakpoints so that largest = surface
 zBreak = -sort(depth);
 end

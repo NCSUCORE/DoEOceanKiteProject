@@ -11,7 +11,6 @@ classdef Manta < handle
         maxSpeed
         minSpeed
         month
-        day
     end
     
     properties (Hidden = true)
@@ -20,16 +19,15 @@ classdef Manta < handle
     end
     
     methods
-        function obj = Manta(mnthIndx,dayIndx,varargin)
+        function obj = Manta(mnthIndx,varargin)
             % Input mnthIndx is a single element of [1 4 7 10] indicating
             % which month of data that you want to use, and then dayIndx
             % is the index of the day within that month that you'd like to
             % use
             p = inputParser;
             addRequired(p,'mnthIndx',@(x) mod(x,1)==0);
-            addRequired(p,'dayIndx',@(x) mod(x,1)==0);
             addOptional(p,'ForceRecompile',false,@(x) islogical(x));
-            parse(p,mnthIndx,dayIndx,varargin{:})
+            parse(p,mnthIndx,varargin{:})
             % Get base path to where the model is stored on your computer
             basePath = fileparts(which('OCTModel'));
             % Append path to include the location of this classdef
@@ -42,9 +40,7 @@ classdef Manta < handle
             folders = folders(3:end);
             % Build two-character string for the month and day numbers
             mnthString = sprintf('%02d',p.Results.mnthIndx);
-            dayString = sprintf('%02d',p.Results.dayIndx);
             % Get the name of the .mat file that should contain this data
-%             fName = fullfile(dataPath,['2017',mnthString,dayString '.mat']);
             fName = fullfile(dataPath,['TS_FlowData_2017_',mnthString '.mat']);
             % If it doesn't exist, then attempt to build it
             if ~isfile(fName) || p.Results.ForceRecompile
@@ -58,7 +54,6 @@ classdef Manta < handle
                 % Get files in that folder
                 files = dir(fullfile(folder.folder,folder.name));
                 % Get files that match the specified day
-%                 files = files(contains({files.name},[dayString '00_t']));
                 % Ignore the first 2 items
                 files = files(3:end);
                 % If the list of files is empty, throw an error
@@ -83,7 +78,6 @@ classdef Manta < handle
             obj.yGridPoints             = SIM.parameter('Value',yBreak,'Unit','m');
             obj.zGridPoints             = SIM.parameter('Value',zBreak,'Unit','m');
             obj.month                   = SIM.parameter('Value',p.Results.mnthIndx,'Unit','','NoScale',true);
-            obj.day                     = SIM.parameter('Value',p.Results.dayIndx,'Unit','','NoScale',true);
             obj.crop(obj.startTime.Value,obj.endTime.Value); % Sets the 
         end
         function setDensity(obj,val,unit)
@@ -214,6 +208,8 @@ classdef Manta < handle
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
             % Loop through every grid point
+            CF = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
+            avg = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
             for ii = 1:size(flowSpeeds,1)
                 for jj = 1:size(flowSpeeds,2)
                     for kk = 1:size(flowSpeeds,3)
@@ -248,7 +244,7 @@ classdef Manta < handle
             % Parse optional input arguments
             p = inputParser;
             addParameter(p,'BinSize',0.1,@(x) x>0)
-            addParameter(p,'NumOfColorBands',10,@(x) mod(x,1)==0);
+            addParameter(p,'NumOfColorBands',20,@(x) mod(x,1)==0);
             parse(p,varargin{:})
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
@@ -272,9 +268,9 @@ classdef Manta < handle
             h.scatter3 = scatter3(x(:),y(:),z(:),40,vFlows(:),'filled');
             h.colorbar = colorbar;
             set(gca,'FontSize',14)
-            xlabel('x, [m]')
-            ylabel('y, [m]')
-            zlabel('z, [m]')
+            xlabel('x [m]')
+            ylabel('y [m]')
+            zlabel('z [m]')
             h.colorbar.Label.String = 'Flow Speed [m/s]';
             h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
         end
@@ -293,34 +289,102 @@ classdef Manta < handle
                     colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
                 end
             end
+            % Get velocities at the grid points of interest 
+            zIdx = [15 20 22 23 24 25];
+            colVel = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
+            % Plot Histograms
+            h = figure();
+            for ii = 1:6
+                subplot(3,2,ii);
+                hold on;    grid on 
+                b = histogram(colVel(ii,:),20,'Normalization','probability');
+                set(b,'FaceColor','b'); set(b,'EdgeColor','b')
+                set(gca,'FontSize',12)
+                YL = get(gca,'YLim');
+                plot([mean(colVel(ii,:)) mean(colVel(ii,:))],[0 50],'r-','linewidth',2)
+                set(gca,'YLim',YL)
+                if ii >= 5
+                    xlabel('Velocity [m/s]');
+                end
+                title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+            end
+        end
+        function h = velPDFstar(obj,varargin)
+            % Parse optional input arguments
+            p = inputParser;
+            addParameter(p,'BinSize',0.1,@(x) x>0)
+            addParameter(p,'NumOfColorBands',10,@(x) mod(x,1)==0);
+            parse(p,varargin{:})
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Get mean flow velocity along each column
+            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
+                end
+            end
             % Which column produces the greatest average flow speed
             [XIdx,YIdx] = find(max(max(colAvg))==colAvg);
             % Get velocities at the grid points of interest 
             zIdx = [15 20 22 23 24 25];
-            colVel = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
             colVels = squeeze(flowSpeeds(XIdx,YIdx,zIdx,:));
             % Plot Histograms
             h = figure();
             for ii = 1:6
                 subplot(3,2,ii);
                 hold on;    grid on 
-                b = histogram(colVel(ii,:),20,'Normalization','pdf');
-                r = histogram(colVels(ii,:),20,'Normalization','pdf');
-                set(b,'FaceColor','b'); set(b,'EdgeColor','b')
-                set(r,'FaceColor','r'); set(r,'EdgeColor','r')
+                r = histogram(colVels(ii,:),20,'Normalization','probability');
+                set(r,'FaceColor','b'); set(r,'EdgeColor','b')
                 set(gca,'FontSize',12)
                 YL = get(gca,'YLim');
-                plot([mean(colVel(ii,:)) mean(colVel(ii,:))],[0 50],'b-')
-                plot([mean(colVel(ii,:)) mean(colVel(ii,:))],[0 50],'k-.')
-                plot([mean(colVels(ii,:)) mean(colVels(ii,:))],[0 50],'r-')
-                plot([mean(colVels(ii,:)) mean(colVels(ii,:))],[0 50],'k-.')
+                plot([mean(colVels(ii,:)) mean(colVels(ii,:))],[0 50],'r-','linewidth',2)
                 set(gca,'YLim',YL)
                 if ii >= 5
                     xlabel('Velocity [m/s]');
                 end
-                title(['Depth = ',num2str(obj.zGridPoints.Value(zIdx(ii))),' m'])
+                title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
             end
-            suptitle(['Velocity Histograms for Month ',num2str(obj.month.Value)])
+        end
+        function h = timeScale(obj,method,varargin)
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Get mean flow velocity along each column
+            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
+                end
+            end
+            [xIdx,yIdx] = find(max(max(colAvg))==colAvg);
+            zIdx = [20 23 25];
+            % Get velocities at the grid points of interest 
+            Vel = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
+            Time = linspace(obj.startTime.Value,obj.endTime.Value,length(Vel(1,:)))/3600;
+            % Plot FFT results
+            h = figure();
+            for ii = 1:numel(zIdx)
+                subplot(2,3,ii);    hold on;    grid on;
+                plot(Time,Vel(ii,:),'b-');     xlabel('Time [hr]');
+                ylabel('$v_w$ [m/s]');  title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+                %%%% Matlab FFT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                N = length(Vel(ii,:));  fs = 1/3600;
+                X = fft(Vel(ii,:),N);   df = fs/N;
+                sampleIndex = 0:N-1;    f1 = sampleIndex*df;
+                %%%% My FFT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                [P1,f] = mydft(Vel(ii,:),fs);
+                subplot(2,3,ii+3);    hold on;    grid on
+                if method == 1
+                    plot(1./f1/3600,abs(X),'b-');
+                    xlabel('$1/\omega$/3600 [hr]');
+                    ylabel('$|\mathrm{DFT}(v_w)|$');
+                else
+                    plot(1./f,P1,'b-');
+                    xlim([0 1/5e-5]);
+                    xlabel('$1/\omega$ [s]')
+                    ylabel('$\mathrm{DFT}(v_w)$')
+                end
+            end
         end
     end
 end

@@ -1,0 +1,178 @@
+env.gravAccel.Value = 9.8100e+00
+env.gravAccel.Unit = 'm/s^2'
+env.gravAccel.NoScale = true
+env.water.density.Value = 1.0000e+03
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false
+env.water.startTime.Value = 0.0000e+00
+env.water.startTime.Unit = 's'
+env.water.startTime.NoScale = false
+env.water.endTime.Value = 4.2840e+05
+env.water.endTime.Unit = 's'
+env.water.endTime.NoScale = false
+env.water.flowVecTimeseries.Value.Name = 'unnamed'
+env.water.flowVecTimeseries.Value.Data is too big to display and takes up 3.5280e+06 bytes
+env.water.flowVecTimeseries.Value.DataInfo.Interpolation.Fhandle is non-string and non-numeric and takes up 2.5200e+02 bytes
+env.water.flowVecTimeseries.Value.DataInfo.Interpolation.Name = 'linear'
+env.water.flowVecTimeseries.Value.DataInfo.InterpretSingleRowDataAs3D = false
+env.water.flowVecTimeseries.Value.Time = [0;3600;7200;10800;14400;18000;21600;25200;28800;32400;36000;39600;43200;46800;50400;54000;57600;61200;64800;68400;72000;75600;79200;82800;86400;90000;93600;97200;100800;104400;108000;111600;115200;118800;122400;126000;129600;133200;136800;140400;144000;147600;151200;154800;158400;162000;165600;169200;172800;176400;180000;183600;187200;190800;194400;198000;201600;205200;208800;212400;216000;219600;223200;226800;230400;234000;237600;241200;244800;248400;252000;255600;259200;262800;266400;270000;273600;277200;280800;284400;288000;291600;295200;298800;302400;306000;309600;313200;316800;320400;324000;327600;331200;334800;338400;342000;345600;349200;352800;356400;360000;363600;367200;370800;374400;378000;381600;385200;388800;392400;396000;399600;403200;406800;410400;414000;417600;421200;424800;428400]
+env.water.flowVecTimeseries.Value.TimeInfo.Units = 'seconds'
+env.water.flowVecTimeseries.Value.TimeInfo.Length = 1.2000e+02
+env.water.flowVecTimeseries.Value.TimeInfo.End = 4.2840e+05
+env.water.flowVecTimeseries.Value.TimeInfo.Increment = 3.6000e+03
+env.water.flowVecTimeseries.Value.TimeInfo.Start = 0.0000e+00
+env.water.flowVecTimeseries.Value.IsTimeFirst = false
+env.water.flowVecTimeseries.Value.TreatNaNasMissing = true
+env.water.flowVecTimeseries.Value.Length = 1.2000e+02
+env.water.flowVecTimeseries.Unit = 'm/s'
+env.water.flowVecTimeseries.NoScale = false
+env.water.xGridPoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.water.xGridPoints.Unit = 'm'
+env.water.xGridPoints.NoScale = false
+env.water.yGridPoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.water.yGridPoints.Unit = 'm'
+env.water.yGridPoints.NoScale = false
+env.water.zGridPoints.Value = [0;2;4;6;8;10;12;15;20;25;30;35;40;45;50;60;70;80;90;100;125;150;200;250;300]
+env.water.zGridPoints.Unit = 'm'
+env.water.zGridPoints.NoScale = false
+env.water.maxSpeed.Value = 6.6263e-01
+env.water.maxSpeed.Unit = 'm/s'
+env.water.maxSpeed.NoScale = false
+env.water.minSpeed.Value = 7.7747e-04
+env.water.minSpeed.Unit = 'm/s'
+env.water.minSpeed.NoScale = false
+env.water.month.Value = 7.0000e+00
+env.water.month.Unit is unitless or has no unit specified
+env.water.month.NoScale = true
+env.waterTurb.intensity.Value = 1.0000e-01
+env.waterTurb.intensity.Unit is unitless or has no unit specified
+env.waterTurb.intensity.NoScale = false
+env.waterTurb.minFreqHz.Value = 1.0000e-01
+env.waterTurb.minFreqHz.Unit = 'Hz'
+env.waterTurb.minFreqHz.NoScale = false
+env.waterTurb.maxFreqHz.Value = 1.0000e+00
+env.waterTurb.maxFreqHz.Unit = 'Hz'
+env.waterTurb.maxFreqHz.NoScale = false
+env.waterTurb.numMidFreqs.Value = 4.0000e+00
+env.waterTurb.numMidFreqs.Unit is unitless or has no unit specified
+env.waterTurb.numMidFreqs.NoScale = false
+env.waterTurb.lateralStDevRatio.Value = 1.0000e-01
+env.waterTurb.lateralStDevRatio.Unit is unitless or has no unit specified
+env.waterTurb.lateralStDevRatio.NoScale = false
+env.waterTurb.verticalStDevRatio.Value = 1.0000e-01
+env.waterTurb.verticalStDevRatio.Unit is unitless or has no unit specified
+env.waterTurb.verticalStDevRatio.NoScale = false
+env.waterTurb.spatialCorrFactor.Value = 5.0000e+00
+env.waterTurb.spatialCorrFactor.Unit is unitless or has no unit specified
+env.waterTurb.spatialCorrFactor.NoScale = false
+env.waterTurb.midFreqs.Value = [0.2125;0.4375;0.6625;0.8875]
+env.waterTurb.midFreqs.Unit = 'Hz'
+env.waterTurb.midFreqs.NoScale = false
+env.waterTurb.uStarLUT.Value.Table.Value is too big to display and takes up 9.4080e+06 bytes
+env.waterTurb.uStarLUT.Value.Table.Dimensions = [7 7 25 4 120]
+env.waterTurb.uStarLUT.Value.Table.DataType = 'auto'
+env.waterTurb.uStarLUT.Value.Table.Unit is unitless or has no unit specified
+env.waterTurb.uStarLUT.Value.Table.FieldName = 'Table'
+env.waterTurb.uStarLUT.Value.BreakpointsSpecification = 'Explicit values'
+env.waterTurb.uStarLUT.Value.Breakpoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.waterTurb.uStarLUT.Value.Breakpoints.TunableSizeName = 'N1'
+env.waterTurb.uStarLUT.Value.Breakpoints.Dimensions = [7 1]
+env.waterTurb.uStarLUT.Value.Breakpoints.DataType = 'auto'
+env.waterTurb.uStarLUT.Value.Breakpoints.Unit is unitless or has no unit specified
+env.waterTurb.uStarLUT.Value.Breakpoints.FieldName = 'BP1'
+env.waterTurb.uStarLUT.Value.SupportTunableSize = false
+env.waterTurb.uStarLUT.Value.CoderInfo is non-string and non-numeric and takes up 0.0000e+00 bytes
+env.waterTurb.uStarLUT.Value.StructTypeInfo.Name = 'uStarLUTObj'
+env.waterTurb.uStarLUT.Value.StructTypeInfo.DataScope = 'Auto'
+env.waterTurb.uStarLUT.Unit = 'm/s'
+env.waterTurb.uStarLUT.NoScale = false
+env.waterTurb.uThLUT.Value.Table.Value is too big to display and takes up 4.7040e+06 bytes
+env.waterTurb.uThLUT.Value.Table.Dimensions = [7 7 25 4 120]
+env.waterTurb.uThLUT.Value.Table.DataType = 'auto'
+env.waterTurb.uThLUT.Value.Table.Unit is unitless or has no unit specified
+env.waterTurb.uThLUT.Value.Table.FieldName = 'Table'
+env.waterTurb.uThLUT.Value.BreakpointsSpecification = 'Explicit values'
+env.waterTurb.uThLUT.Value.Breakpoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.waterTurb.uThLUT.Value.Breakpoints.TunableSizeName = 'N1'
+env.waterTurb.uThLUT.Value.Breakpoints.Dimensions = [7 1]
+env.waterTurb.uThLUT.Value.Breakpoints.DataType = 'auto'
+env.waterTurb.uThLUT.Value.Breakpoints.Unit is unitless or has no unit specified
+env.waterTurb.uThLUT.Value.Breakpoints.FieldName = 'BP1'
+env.waterTurb.uThLUT.Value.SupportTunableSize = false
+env.waterTurb.uThLUT.Value.CoderInfo is non-string and non-numeric and takes up 0.0000e+00 bytes
+env.waterTurb.uThLUT.Value.StructTypeInfo.Name = 'uThLUTObj'
+env.waterTurb.uThLUT.Value.StructTypeInfo.DataScope = 'Auto'
+env.waterTurb.uThLUT.Unit = 'rad'
+env.waterTurb.uThLUT.NoScale = false
+env.waterTurb.vStarLUT.Value.Table.Value is too big to display and takes up 9.4080e+06 bytes
+env.waterTurb.vStarLUT.Value.Table.Dimensions = [7 7 25 4 120]
+env.waterTurb.vStarLUT.Value.Table.DataType = 'auto'
+env.waterTurb.vStarLUT.Value.Table.Unit is unitless or has no unit specified
+env.waterTurb.vStarLUT.Value.Table.FieldName = 'Table'
+env.waterTurb.vStarLUT.Value.BreakpointsSpecification = 'Explicit values'
+env.waterTurb.vStarLUT.Value.Breakpoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.waterTurb.vStarLUT.Value.Breakpoints.TunableSizeName = 'N1'
+env.waterTurb.vStarLUT.Value.Breakpoints.Dimensions = [7 1]
+env.waterTurb.vStarLUT.Value.Breakpoints.DataType = 'auto'
+env.waterTurb.vStarLUT.Value.Breakpoints.Unit is unitless or has no unit specified
+env.waterTurb.vStarLUT.Value.Breakpoints.FieldName = 'BP1'
+env.waterTurb.vStarLUT.Value.SupportTunableSize = false
+env.waterTurb.vStarLUT.Value.CoderInfo is non-string and non-numeric and takes up 0.0000e+00 bytes
+env.waterTurb.vStarLUT.Value.StructTypeInfo.Name = 'vStarLUTObj'
+env.waterTurb.vStarLUT.Value.StructTypeInfo.DataScope = 'Auto'
+env.waterTurb.vStarLUT.Unit = 'm/s'
+env.waterTurb.vStarLUT.NoScale = false
+env.waterTurb.vThLUT.Value.Table.Value is too big to display and takes up 4.7040e+06 bytes
+env.waterTurb.vThLUT.Value.Table.Dimensions = [7 7 25 4 120]
+env.waterTurb.vThLUT.Value.Table.DataType = 'auto'
+env.waterTurb.vThLUT.Value.Table.Unit is unitless or has no unit specified
+env.waterTurb.vThLUT.Value.Table.FieldName = 'Table'
+env.waterTurb.vThLUT.Value.BreakpointsSpecification = 'Explicit values'
+env.waterTurb.vThLUT.Value.Breakpoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.waterTurb.vThLUT.Value.Breakpoints.TunableSizeName = 'N1'
+env.waterTurb.vThLUT.Value.Breakpoints.Dimensions = [7 1]
+env.waterTurb.vThLUT.Value.Breakpoints.DataType = 'auto'
+env.waterTurb.vThLUT.Value.Breakpoints.Unit is unitless or has no unit specified
+env.waterTurb.vThLUT.Value.Breakpoints.FieldName = 'BP1'
+env.waterTurb.vThLUT.Value.SupportTunableSize = false
+env.waterTurb.vThLUT.Value.CoderInfo is non-string and non-numeric and takes up 0.0000e+00 bytes
+env.waterTurb.vThLUT.Value.StructTypeInfo.Name = 'vThLUTObj'
+env.waterTurb.vThLUT.Value.StructTypeInfo.DataScope = 'Auto'
+env.waterTurb.vThLUT.Unit = 'rad'
+env.waterTurb.vThLUT.NoScale = false
+env.waterTurb.wStarLUT.Value.Table.Value is too big to display and takes up 9.4080e+06 bytes
+env.waterTurb.wStarLUT.Value.Table.Dimensions = [7 7 25 4 120]
+env.waterTurb.wStarLUT.Value.Table.DataType = 'auto'
+env.waterTurb.wStarLUT.Value.Table.Unit is unitless or has no unit specified
+env.waterTurb.wStarLUT.Value.Table.FieldName = 'Table'
+env.waterTurb.wStarLUT.Value.BreakpointsSpecification = 'Explicit values'
+env.waterTurb.wStarLUT.Value.Breakpoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.waterTurb.wStarLUT.Value.Breakpoints.TunableSizeName = 'N1'
+env.waterTurb.wStarLUT.Value.Breakpoints.Dimensions = [7 1]
+env.waterTurb.wStarLUT.Value.Breakpoints.DataType = 'auto'
+env.waterTurb.wStarLUT.Value.Breakpoints.Unit is unitless or has no unit specified
+env.waterTurb.wStarLUT.Value.Breakpoints.FieldName = 'BP1'
+env.waterTurb.wStarLUT.Value.SupportTunableSize = false
+env.waterTurb.wStarLUT.Value.CoderInfo is non-string and non-numeric and takes up 0.0000e+00 bytes
+env.waterTurb.wStarLUT.Value.StructTypeInfo.Name = 'wStarLUTObj'
+env.waterTurb.wStarLUT.Value.StructTypeInfo.DataScope = 'Auto'
+env.waterTurb.wStarLUT.Unit = 'm/s'
+env.waterTurb.wStarLUT.NoScale = false
+env.waterTurb.wThLUT.Value.Table.Value is too big to display and takes up 4.7040e+06 bytes
+env.waterTurb.wThLUT.Value.Table.Dimensions = [7 7 25 4 120]
+env.waterTurb.wThLUT.Value.Table.DataType = 'auto'
+env.waterTurb.wThLUT.Value.Table.Unit is unitless or has no unit specified
+env.waterTurb.wThLUT.Value.Table.FieldName = 'Table'
+env.waterTurb.wThLUT.Value.BreakpointsSpecification = 'Explicit values'
+env.waterTurb.wThLUT.Value.Breakpoints.Value = [-6000;-4000;-2000;0;2000;4000;6000]
+env.waterTurb.wThLUT.Value.Breakpoints.TunableSizeName = 'N1'
+env.waterTurb.wThLUT.Value.Breakpoints.Dimensions = [7 1]
+env.waterTurb.wThLUT.Value.Breakpoints.DataType = 'auto'
+env.waterTurb.wThLUT.Value.Breakpoints.Unit is unitless or has no unit specified
+env.waterTurb.wThLUT.Value.Breakpoints.FieldName = 'BP1'
+env.waterTurb.wThLUT.Value.SupportTunableSize = false
+env.waterTurb.wThLUT.Value.CoderInfo is non-string and non-numeric and takes up 0.0000e+00 bytes
+env.waterTurb.wThLUT.Value.StructTypeInfo.Name = 'wThLUTObj'
+env.waterTurb.wThLUT.Value.StructTypeInfo.DataScope = 'Auto'
+env.waterTurb.wThLUT.Unit = 'rad'
+env.waterTurb.wThLUT.NoScale = false

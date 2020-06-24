@@ -1,12 +1,12 @@
 %% Test script to characterize power production of the manta ray system
 clear;clc;close all
-tetherLengths       = 150;%400;
-flowSpeeds          = 1;%0.25;
-lengthScaleFactors  = 1;%0.8;
+tetherLengths       = 400;
+flowSpeeds          = .25;
+lengthScaleFactors  = 0.8;
 
 %% Set up critical system parameters
 simParams = SIM.simParams;
-simParams.setDuration(1,'s');
+simParams.setDuration(5000,'s');
 dynamicCalc = '';
 w = 90*pi/180;
 h = 10*pi/180;
@@ -52,7 +52,7 @@ for ii = 1:numel(tetherLengths)
     
     %% Set basis parameters for high level controller
     hiLvlCtrl.basisParams.setValue(...
-        [1.2,2.2,0.36,0*pi/180,tetherLengths(ii)],...
+        [a,b,10*pi/180,0*pi/180,tetherLengths(ii)],...
         '[rad rad rad rad m]') % Lemniscate of Booth
     
     %% Ground Station IC's and dependant properties
@@ -90,11 +90,11 @@ for ii = 1:numel(tetherLengths)
         gndStn.posVec.Value);
     
     %% Hack things to make it run at lower flow speeds
-%     fltCtrl.setElevatorReelInDef(8,'deg')
-%     fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*10,fltCtrl.tanRoll.kp.Unit);
-%     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit)
-%     thr.tether1.setDiameter(0.007,thr.tether1.diameter.Unit);
-%     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
+    fltCtrl.setElevatorReelInDef(0,'deg')
+    fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*10,fltCtrl.tanRoll.kp.Unit);
+    thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
+    thr.tether1.setDiameter(0.007,thr.tether1.diameter.Unit);
+    thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
     
     %% Run Simulation
     simWithMonitor('OCTModel')

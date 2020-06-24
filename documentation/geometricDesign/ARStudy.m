@@ -367,6 +367,82 @@ classdef ARStudy < matlab.apps.AppBase
              app.PowerCurve.Plot2.YData = slice;
              drawnow
         end
-        
+        %Function to calculate Power output for Manta flowspeeds
+        function h = powPDFstar(app,mnthIdx,vR,vC)
+            % Create flow speed obj 
+            flow = ENV.Manta(mnthIdx);
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(flow.flowVecTimeseries.Value.Data.^2,4)));
+            % Get mean flow velocity along each column
+            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
+                end
+            end
+            % Which column produces the greatest average flow speed
+            [XIdx,YIdx] = find(max(max(colAvg))==colAvg);
+            % Get velocities at the grid points of interest 
+            zIdx = [15 20 22 23 24 25];
+            colVels = squeeze(flowSpeeds(XIdx,YIdx,zIdx,:));
+            colVels(colVels>=vR) = vR;
+            colVels(colVels<=vC) = vC;
+            powX = app.PowerCurve.Plot2.XData;
+            powY = app.PowerCurve.Plot2.YData;
+            P = interp1(powX,powY,colVels,'linear','extrap');
+            % Plot Histograms
+            h = figure();
+            for ii = 1:6
+                subplot(3,2,ii);
+                hold on;    grid on 
+                r = histogram(P(ii,:),20,'Normalization','probability');
+                set(r,'FaceColor','r'); set(r,'EdgeColor','r')
+                set(gca,'FontSize',12)
+                YL = get(gca,'YLim');
+                plot([mean(P(ii,:)) mean(P(ii,:))],[0 50],'b-','linewidth',2)
+                set(gca,'YLim',YL)
+                if ii >= 5
+                    xlabel('Power Output [kW]');
+                end
+                title(['Depth = ',num2str(-flow.zGridPoints.Value(zIdx(ii))),' m'])
+            end
+        end
+        function h = powPDF(app,mnthIdx,vR,vC,xIdx,yIdx)
+            % Create flow speed obj 
+            flow = ENV.Manta(mnthIdx);
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(flow.flowVecTimeseries.Value.Data.^2,4)));
+            % Get mean flow velocity along each column
+            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
+                end
+            end
+            % Get velocities at the grid points of interest 
+            zIdx = [15 20 22 23 24 25];
+            colVels = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
+            colVels(colVels>=vR) = vR;
+            colVels(colVels<=vC) = vC;
+            powX = app.PowerCurve.Plot2.XData;
+            powY = app.PowerCurve.Plot2.YData;
+            P = interp1(powX,powY,colVels,'linear','extrap');
+            % Plot Histograms
+            h = figure();
+            for ii = 1:6
+                subplot(3,2,ii);
+                hold on;    grid on 
+                r = histogram(P(ii,:),20,'Normalization','probability');
+                set(r,'FaceColor','r'); set(r,'EdgeColor','r')
+                set(gca,'FontSize',12)
+                YL = get(gca,'YLim');
+                plot([mean(P(ii,:)) mean(P(ii,:))],[0 50],'b-','linewidth',2)
+                set(gca,'YLim',YL)
+                if ii >= 5
+                    xlabel('Power Output [kW]');
+                end
+                title(['Depth = ',num2str(-flow.zGridPoints.Value(zIdx(ii))),' m'])
+            end
+        end
     end
 end
