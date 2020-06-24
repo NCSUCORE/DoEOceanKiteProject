@@ -16,11 +16,16 @@ classdef env < dynamicprops
             addRequired(p,'FlowNames',@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addRequired(p,'FlowTypes',@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'FlowDensities',[],@(x) all(isnumeric(x)))
+            addOptional(p,'MnthIdx',1,@(x) mod(x,1)==0);
             parse(p,FlowNames,FlowTypes,varargin{:})
             % Create properties of env according to the specified classes
             for ii = 1:numel(p.Results.FlowNames)
                 obj.addprop(p.Results.FlowNames{ii});
-                obj.(p.Results.FlowNames{ii}) = ENV.(p.Results.FlowTypes{ii});
+                if strcmp(p.Results.FlowTypes{ii},'Manta')
+                    obj.(p.Results.FlowNames{ii}) = ENV.(p.Results.FlowTypes{ii})(p.Results.MnthIdx);
+                else
+                    obj.(p.Results.FlowNames{ii}) = ENV.(p.Results.FlowTypes{ii});
+                end
                 if ~isempty(p.Results.FlowDensities)
                     obj.(p.Results.FlowNames{ii}).density.setValue(p.Results.FlowDensities(ii),'kg/m^3');
                 end
