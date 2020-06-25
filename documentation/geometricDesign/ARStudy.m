@@ -373,18 +373,11 @@ classdef ARStudy < matlab.apps.AppBase
             flow = ENV.Manta(mnthIdx);
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(flow.flowVecTimeseries.Value.Data.^2,4)));
-            % Get mean flow velocity along each column
-            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
-            for ii = 1:size(flowSpeeds,1)
-                for jj = 1:size(flowSpeeds,2)
-                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
-                end
-            end
-            % Which column produces the greatest average flow speed
-            [XIdx,YIdx] = find(max(max(colAvg))==colAvg);
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = flow.colOpt;
             % Get velocities at the grid points of interest 
             zIdx = [15 20 22 23 24 25];
-            colVels = squeeze(flowSpeeds(XIdx,YIdx,zIdx,:));
+            colVels = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
             colVels(colVels>=vR) = vR;
             colVels(colVels<=vC) = vC;
             powX = app.PowerCurve.Plot2.XData;
