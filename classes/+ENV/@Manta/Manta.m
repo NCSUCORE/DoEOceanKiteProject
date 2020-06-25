@@ -366,7 +366,7 @@ classdef Manta < handle
             for ii = 1:numel(zIdx)
                 subplot(2,3,ii);    hold on;    grid on;
                 plot(Time,Vel(ii,:),'b-');     xlabel('Time [hr]');
-                ylabel('$v_w$ [m/s]');  title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+                ylabel('$|v_f|$ [m/s]');  title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
                 %%%% Matlab FFT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 N = length(Vel(ii,:));  fs = 1/3600;
                 X = fft(Vel(ii,:),N);   df = fs/N;
@@ -377,13 +377,50 @@ classdef Manta < handle
                 if method == 1
                     plot(1./f1/3600,abs(X),'b-');
                     xlabel('$1/\omega$/3600 [hr]');
-                    ylabel('$|\mathrm{DFT}(v_w)|$');
+                    ylabel('$|\mathrm{DFT}(v_f)|$');
                 else
                     plot(1./f,P1,'b-');
                     xlim([0 1/5e-5]);
                     xlabel('$1/\omega$ [s]')
-                    ylabel('$\mathrm{DFT}(v_w)$')
+                    ylabel('$\mathrm{DFT}(v_f)$')
                 end
+            end
+        end
+        function h = velXYZ(obj,varargin)
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            xFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,1,:));
+            yFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,2,:));
+            zFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,3,:));
+            % Get mean flow velocity along each column
+            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
+                end
+            end
+            [xIdx,yIdx] = find(max(max(colAvg))==colAvg);
+            zIdx = [20 23 25];
+            % Get velocities at the grid points of interest 
+            Vel = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
+            xVel = squeeze(xFlow(xIdx,yIdx,zIdx,:));
+            yVel = squeeze(yFlow(xIdx,yIdx,zIdx,:));
+            zVel = squeeze(zFlow(xIdx,yIdx,zIdx,:));
+            Time = linspace(obj.startTime.Value,obj.endTime.Value,length(Vel(1,:)))/3600;
+            % Plot FFT results
+            h = figure();
+            for ii = 1:length(zIdx)
+                subplot(3,3,ii);    hold on;    grid on;
+                plot(Time,xVel(ii,:),'b-');
+                ylabel('$v_x$ [m/s]');
+                title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+                subplot(3,3,ii+3);    hold on;    grid on;
+                plot(Time,yVel(ii,:),'b-');
+                ylabel('$v_y$ [m/s]');
+                subplot(3,3,ii+6);    hold on;    grid on;
+                plot(Time,zVel(ii,:),'b-');
+                ylabel('$v_z$ [m/s]');
+                xlabel('Time [hr]');
             end
         end
     end
