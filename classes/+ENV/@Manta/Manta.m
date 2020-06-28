@@ -147,6 +147,7 @@ classdef Manta < handle
             addParameter(p,'TimeUnits','s',@ischar);
             addParameter(p,'TimeStep',defaultTimeStep,@isnumeric);
             addParameter(p,'View',[40 40],@isnumeric);
+            addOptional(p,'zIdx',obj.zGridPoints.Value,@isnumeric);
             parse(p,varargin{:})
             
             obj.flowVecTimeseries.Value.resample(obj.flowVecTimeseries.Value.Time(1):p.Results.TimeStep:obj.flowVecTimeseries.Value.Time(end));
@@ -160,36 +161,41 @@ classdef Manta < handle
                     denom = 1;
             end
             timeVec = obj.flowVecTimeseries.Value.Time./denom;
-            
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = obj.colOpt;
             numTimeSteps = numel(timeVec);
+            zIdx = p.Results.zIdx;
             % Plot the initial data
-            
             [x,y,z] = meshgrid(...
-                obj.xGridPoints.Value,...
-                obj.yGridPoints.Value,...
-                obj.zGridPoints.Value);
+                obj.xGridPoints.Value(xIdx),...
+                obj.yGridPoints.Value(yIdx),...
+                obj.zGridPoints.Value(zIdx));
             x = squeeze(permute(x,[2 1 3]));
             y = squeeze(permute(y,[2 1 3]));
             z = squeeze(permute(z,[2 1 3]));
-            
+            figure('units','normalized','outerposition',[0 0 1 1])
             h.vecPlot = quiver3(...
                 x,y,z,...
-                squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,1,1)),...
-                squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,2,1)),...
-                squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,3,1)));
+                squeeze(obj.flowVecTimeseries.Value.Data(xIdx,xIdx,zIdx,1,1)),...
+                squeeze(obj.flowVecTimeseries.Value.Data(xIdx,xIdx,zIdx,2,1)),...
+                squeeze(obj.flowVecTimeseries.Value.Data(xIdx,xIdx,zIdx,3,1)));
             %             daspect([1 1 1])
             xlabel('x [m]')
             ylabel('y [m]')
             ylabel('z [m]')
+            xlim([obj.xGridPoints.Value(xIdx)-500 obj.xGridPoints.Value(xIdx)+500])
+            ylim([obj.yGridPoints.Value(yIdx)-500 obj.yGridPoints.Value(yIdx)+500])
+            zlim([-350 0])
             h.title = title(sprintf('Time: %.0f %s',timeVec(1),p.Results.TimeUnits));
             set(findall(gcf,'Type','axes'),'FontSize',p.Results.FontSize);
             view(p.Results.View) % Set view angle azimuth and elevation
             for ii = 2:numTimeSteps
-                h.vecPlot.UData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,1,ii));
-                h.vecPlot.VData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,2,ii));
-                h.vecPlot.WData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,3,ii));
+                h.vecPlot.UData = squeeze(obj.flowVecTimeseries.Value.Data(xIdx,xIdx,zIdx,1,ii));
+                h.vecPlot.VData = squeeze(obj.flowVecTimeseries.Value.Data(xIdx,xIdx,zIdx,2,ii));
+                h.vecPlot.WData = squeeze(obj.flowVecTimeseries.Value.Data(xIdx,xIdx,zIdx,3,ii));
                 h.title.String = sprintf('Time: %.0f %s',timeVec(ii),p.Results.TimeUnits);
                 drawnow
+                pause(.2)
             end
         end
         
@@ -272,7 +278,7 @@ classdef Manta < handle
             ylabel('y [m]')
             zlabel('z [m]')
             h.colorbar.Label.String = 'Flow Speed [m/s]';
-            h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
+%             h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
         end
         function h = velPDF(obj,xIdx,yIdx,varargin)
             % Parse optional input arguments
@@ -317,18 +323,11 @@ classdef Manta < handle
             parse(p,varargin{:})
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
-            % Get mean flow velocity along each column
-            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
-            for ii = 1:size(flowSpeeds,1)
-                for jj = 1:size(flowSpeeds,2)
-                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
-                end
-            end
-            % Which column produces the greatest average flow speed
-            [XIdx,YIdx] = find(max(max(colAvg))==colAvg);
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = obj.colOpt;
             % Get velocities at the grid points of interest 
             zIdx = [15 20 22 23 24 25];
-            colVels = squeeze(flowSpeeds(XIdx,YIdx,zIdx,:));
+            colVels = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
             % Plot Histograms
             h = figure();
             for ii = 1:6
@@ -346,17 +345,11 @@ classdef Manta < handle
                 title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
             end
         end
-        function h = timeScale(obj,method,varargin)
+        function h = timeScale(obj,varargin)
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
-            % Get mean flow velocity along each column
-            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
-            for ii = 1:size(flowSpeeds,1)
-                for jj = 1:size(flowSpeeds,2)
-                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
-                end
-            end
-            [xIdx,yIdx] = find(max(max(colAvg))==colAvg);
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = obj.colOpt;
             zIdx = [20 23 25];
             % Get velocities at the grid points of interest 
             Vel = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
@@ -366,40 +359,32 @@ classdef Manta < handle
             for ii = 1:numel(zIdx)
                 subplot(2,3,ii);    hold on;    grid on;
                 plot(Time,Vel(ii,:),'b-');     xlabel('Time [hr]');
-                ylabel('$|v_f|$ [m/s]');  title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+                if ii == 1
+                    ylabel('$v_w$ [m/s]');  
+                end
+                set(gca,'FontSize',12)
+                title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
                 %%%% Matlab FFT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 N = length(Vel(ii,:));  fs = 1/3600;
                 X = fft(Vel(ii,:),N);   df = fs/N;
                 sampleIndex = 0:N-1;    f1 = sampleIndex*df;
-                %%%% My FFT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                [P1,f] = mydft(Vel(ii,:),fs);
                 subplot(2,3,ii+3);    hold on;    grid on
-                if method == 1
-                    plot(1./f1/3600,abs(X),'b-');
-                    xlabel('$1/\omega$/3600 [hr]');
-                    ylabel('$|\mathrm{DFT}(v_f)|$');
-                else
-                    plot(1./f,P1,'b-');
-                    xlim([0 1/5e-5]);
-                    xlabel('$1/\omega$ [s]')
-                    ylabel('$\mathrm{DFT}(v_f)$')
+                plot(1./f1/3600,abs(X),'b-');
+                xlabel('$1/\omega$/3600 [hr]');
+                set(gca,'FontSize',12)
+                if ii == 1 
+                    ylabel('$|\mathrm{DFT}(v_w)|$');
                 end
             end
         end
         function h = velXYZ(obj,varargin)
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = obj.colOpt;
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
             xFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,1,:));
             yFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,2,:));
             zFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,3,:));
-            % Get mean flow velocity along each column
-            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
-            for ii = 1:size(flowSpeeds,1)
-                for jj = 1:size(flowSpeeds,2)
-                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
-                end
-            end
-            [xIdx,yIdx] = find(max(max(colAvg))==colAvg);
             zIdx = [20 23 25];
             % Get velocities at the grid points of interest 
             Vel = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
@@ -421,6 +406,77 @@ classdef Manta < handle
                 plot(Time,zVel(ii,:),'b-');
                 ylabel('$v_z$ [m/s]');
                 xlabel('Time [hr]');
+            end
+        end
+        function [xIdx,yIdx] = colOpt(obj,varargin)
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Get mean flow velocity along each column
+            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
+                end
+            end
+            [xIdx,yIdx] = find(max(max(colAvg))==colAvg);
+        end
+        function h = velVec(obj,zIdx,varargin)
+            % Calculate flow speed at every point in the grid
+            xFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,1,:));
+            yFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,2,:));
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = obj.colOpt;
+            tIdx = (1:3:25)+36;
+            % Get velocities at the grid points of interest 
+            X = obj.xGridPoints.Value*1e-3;
+            Y = obj.xGridPoints.Value*1e-3;
+            U = squeeze(xFlow(:,:,zIdx,tIdx));
+            V = squeeze(yFlow(:,:,zIdx,tIdx));
+            % Plot velocity vectors
+            h = figure();
+            for ii = 1:length(tIdx)
+                subplot(3,3,ii);    hold on;    grid on;
+                quiver(X,Y,U(:,:,ii),V(:,:,ii),'b');
+                title(['Hour ',num2str(tIdx(ii))])
+                if ii > 6
+                    xlabel('X [km]');
+                end
+                if ii == 1 || ii == 4 || ii == 7
+                    ylabel('Y [km]');
+                end
+                xlim([-7 7])
+                ylim([-7 7])
+            end
+        end
+        function h = velPDFstar1(obj,varargin)
+            % Parse optional input arguments
+            p = inputParser;
+            addParameter(p,'BinSize',0.1,@(x) x>0)
+            addParameter(p,'NumOfColorBands',10,@(x) mod(x,1)==0);
+            parse(p,varargin{:})
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = obj.colOpt;
+            % Get velocities at the grid points of interest 
+            zIdx = [20 23 25];
+            colVels = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
+            % Plot Histograms
+            h = figure();
+            for ii = 1:3
+                subplot(1,3,ii);
+                hold on;    grid on 
+                r = histogram(colVels(ii,:),20,'Normalization','probability');
+                set(r,'FaceColor','b'); set(r,'EdgeColor','b')
+                set(gca,'FontSize',12)
+                plot([mean(colVels(ii,:)) mean(colVels(ii,:))],[0 50],'r-','linewidth',2)
+                set(gca,'XLim',[0 .5])
+                set(gca,'YLim',[0 .15])
+                xlabel('Velocity [m/s]');
+                title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+                if ii == 1
+                    ylabel('Probability')
+                end
             end
         end
     end
