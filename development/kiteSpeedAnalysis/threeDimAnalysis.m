@@ -9,10 +9,6 @@ set(groot, 'defaultLegendInterpreter','latex');
 LbyD = 10;
 % flow speed
 vf = 2;
-% azimuth
-phi = 30*pi/180;
-% zenith
-theta = 90*pi/180;
 % tether length
 tetLength = 100;
 % lemniscate of booth path height
@@ -22,16 +18,12 @@ bBooth = 0.8;
 % lemniscate of booth mean elevation angle
 meanElevation = 15*pi/180;
 
-%% run function
-[vkx,vky] = calcMaxSpeed3D(vf,phi,theta,LbyD);
-
 %% calculate values
 % sweep of azimuth angle
-numAzim = 100;
-azimuthSweep = linspace(0,pi/2,numAzim);
+azimuthSweep = linspace(0,pi/2,100);
 % sweep of zenith angles
-numZen = 100;
-zenithSweep = linspace(0.2,pi/2,numZen);
+zenithSweep = linspace(0.2,pi/2,100);
+% zenithSweep = pi/2;
 % create grid
 [A,Z] = meshgrid(azimuthSweep,zenithSweep);
 
@@ -40,21 +32,25 @@ xPos = NaN*A;
 yPos = NaN*A;
 zPos = NaN*A;
 azimuthSpeed = NaN*A;
-ElevationSpeed = NaN*A;
+elevationSpeed = NaN*A;
 maxTotalSpeed = NaN*A;
 
-for ii = 1:numZen
-    for jj = 1:numAzim
+
+for ii = 1:length(zenithSweep)
+    for jj = 1:length(azimuthSweep)
         posVec = transpose(TcO(A(ii,jj),Z(ii,jj)))*[0;0;tetLength];
         xPos(ii,jj) = posVec(1);
         yPos(ii,jj) = posVec(2);
         zPos(ii,jj) = posVec(3);
         
-        [azimuthSpeed(ii,jj),ElevationSpeed(ii,jj)] = ...
+        [elevationSpeed(ii,jj),azimuthSpeed(ii,jj)] = ...
             calcMaxSpeed3D(vf,A(ii,jj),Z(ii,jj),LbyD);
         
+        azimuthSpeed(ii,jj) = azimuthSpeed(ii,jj)/vf;
+        elevationSpeed(ii,jj) = elevationSpeed(ii,jj)/vf;
+        
         maxTotalSpeed(ii,jj) = sqrt(azimuthSpeed(ii,jj)^2 + ...
-            ElevationSpeed(ii,jj)^2);
+            elevationSpeed(ii,jj)^2);
         
     end
 end
@@ -74,7 +70,7 @@ lemZ = tetLength*sin(pathLat+meanElevation);
 %% make surface plots
 figure(1)
 set(gcf,'position',[72 352 560 420])
-surf(xPos,yPos,zPos,azimuthSpeed./vf,'EdgeColor','none');
+surf(xPos,yPos,zPos,azimuthSpeed,'EdgeColor','none');
 c = colorbar;
 c.Label.String = 'azimuth speed (v_{kx}/v_{f})';
 xlabel('X (m)')
@@ -88,7 +84,7 @@ view(115,30)
 
 figure(2)
 set(gcf,'position',[72 352 560 420])
-surf(xPos,yPos,zPos,ElevationSpeed./vf,'EdgeColor','none');
+surf(xPos,yPos,zPos,elevationSpeed,'EdgeColor','none');
 c = colorbar;
 c.Label.String = 'Elevation speed (v_{ky}/v_{f})';
 xlabel('X (m)')
@@ -99,20 +95,20 @@ plot3(lemX,lemY,lemZ,'k-','linewidth',2)
 axis equal
 zlim([0 Inf])
 view(115,30)
-
-figure(3)
-set(gcf,'position',[72 352 560 420])
-surf(xPos,yPos,zPos,maxTotalSpeed./vf,'EdgeColor','none');
-c = colorbar;
-c.Label.String = 'Total speed (||v_{k}||/v_{f})';
-xlabel('X (m)')
-ylabel('Y (m)')
-zlabel('Z (m)')
-hold on
-plot3(lemX,lemY,lemZ,'k-','linewidth',2)
-axis equal
-zlim([0 Inf])
-view(115,30)
+% 
+% figure(3)
+% set(gcf,'position',[72 352 560 420])
+% surf(xPos,yPos,zPos,maxTotalSpeed./vf,'EdgeColor','none');
+% c = colorbar;
+% c.Label.String = 'Total speed (||v_{k}||/v_{f})';
+% xlabel('X (m)')
+% ylabel('Y (m)')
+% zlabel('Z (m)')
+% hold on
+% plot3(lemX,lemY,lemZ,'k-','linewidth',2)
+% axis equal
+% zlim([0 Inf])
+% view(115,30)
 
 % rotate vector from inertial to spherical frame
 function val = TcO(azimuth,zenith)
@@ -134,7 +130,9 @@ Ry = @(x) [cos(x) 0 -sin(x); 0 1 0; sin(x) 0 cos(x)];
 Rz = @(x) [cos(x) sin(x) 0; -sin(x) cos(x) 0; 0 0 1];
 
 % angle between L and tension vector
-gamma = atan(1/liftByDrag);
+gamma = atan(1/(liftByDrag*cos(pi/2 - zenith)*cos(azimuth)));
+gammaVky = atan(1/(liftByDrag*cos(pi/2 - zenith)));
+gammaVkx = atan(1/(liftByDrag*cos(azimuth)));
 
 % assume kite is flying in the azimuth and elevation direction
 % at a time in the T frame
@@ -150,12 +148,15 @@ vkAzim_O = OcT*vkAzim_T;
 vkElev_O = OcT*vkElev_T;
 
 % calculate angle between flow vector, and vkAzim_O and vkElev_O
-angVfVkx = acos(dot([1;0;0],vkAzim_O));
-angVfVky = acos(dot([1;0;0],vkElev_O));
+angVfVkx = acos(dot([1;0;0],vkElev_O));
+angVfVky = acos(dot([1;0;0],vkAzim_O));
 
 % calculate value of vkx
-vkx = flowSpeed*((sin(pi-gamma-angVfVkx))/(sin(gamma)));
-vky = flowSpeed*((sin(pi-gamma-angVfVky))/(sin(gamma)));
+vkx = flowSpeed*((sin(pi-gammaVkx-angVfVkx))/(sin(gammaVkx)));
+vky = flowSpeed*((sin(pi-gammaVky-angVfVky))/(sin(gammaVky)));
+
+% vkx = flowSpeed*((sin(pi-gamma-angVfVkx))/(sin(gamma)));
+% vky = flowSpeed*((sin(pi-gamma-angVfVky))/(sin(gamma)));
 
 end
 
