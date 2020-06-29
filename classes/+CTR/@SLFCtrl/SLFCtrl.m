@@ -91,7 +91,9 @@ classdef SLFCtrl < handle
         function setFcnName(obj,val,unit)
             obj.fcnName.setValue(val,unit);
         end
-        
+        function setFirstSpoolLap(obj,val,units)
+            obj.firstSpoolLap.setValue(val,units)
+        end
         function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec)
             pathVars = linspace(0,1,1000);
             posVecs = eval(sprintf('%s(pathVars,geomParams,pathCntPosVec)',obj.fcnName.Value));
