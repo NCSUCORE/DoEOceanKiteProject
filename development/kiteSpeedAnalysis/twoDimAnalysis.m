@@ -21,8 +21,8 @@ vkEqnDownwind = @(vf,phi,gamma) vf*((cos(phi)/tan(gamma)) + sin(phi));
 
 %% loop through azimuth angles
 % azimuth
-phi = 0*pi/180;
-% phi = (pi/180)*linspace(-0,60,200);
+% phi = 0*pi/180;
+phi = (pi/180)*linspace(0,90,100);
 
 vkUpwind = NaN*phi;
 vkDownwind = NaN*phi;

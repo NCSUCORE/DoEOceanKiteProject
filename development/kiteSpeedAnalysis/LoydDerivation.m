@@ -91,7 +91,7 @@ ua_T = va_T./vecNorm(va_T);
 fDrag_T = -(1/2)*fDensity*(liftCoeff/liftByDrag)*refArea*...
     (vecNorm(va_T)^2)*ua_T;
 
-% unit vector normal to radial axis and apprent velocity
+% unit vector normal to radial axis and apparent velocity
 nBar = cross([0;0;1],ua_T);
 
 % unit vector normal to apparent velocity and nBar
