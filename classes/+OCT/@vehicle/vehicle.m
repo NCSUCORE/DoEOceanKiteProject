@@ -409,6 +409,10 @@ classdef vehicle < dynamicprops
                     stbd_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;15e-3;9.14e-3];
                     val(1).setAttachPtVec(port_turb,'m');
                     val(2).setAttachPtVec(stbd_turb,'m');
+                case 1
+                    noseTurb = obj.fuse.rNose_LE.Value;
+                    val.setAttachPtVec(noseTurb,'m');
+                    val.setDragCoeff(.75,'');
                 otherwise
                     fprintf('get method not programmed for %d turbines',obj.numTurbines.Value) 
             end            

@@ -182,7 +182,7 @@ classdef Manta < handle
             %             daspect([1 1 1])
             xlabel('x [m]')
             ylabel('y [m]')
-            ylabel('z [m]')
+            zlabel('z [m]')
             xlim([obj.xGridPoints.Value(xIdx)-500 obj.xGridPoints.Value(xIdx)+500])
             ylim([obj.yGridPoints.Value(yIdx)-500 obj.yGridPoints.Value(yIdx)+500])
             zlim([-350 0])
@@ -195,7 +195,7 @@ classdef Manta < handle
                 h.vecPlot.WData = squeeze(obj.flowVecTimeseries.Value.Data(xIdx,xIdx,zIdx,3,ii));
                 h.title.String = sprintf('Time: %.0f %s',timeVec(ii),p.Results.TimeUnits);
                 drawnow
-                pause(.2)
+                pause(.1)
             end
         end
         
@@ -426,7 +426,7 @@ classdef Manta < handle
             yFlow = squeeze(obj.flowVecTimeseries.Value.Data(:,:,:,2,:));
             % Find water column with greatest avg flow velocity 
             [xIdx,yIdx] = obj.colOpt;
-            tIdx = (1:3:25)+36;
+            tIdx = (1:3:25)+0;
             % Get velocities at the grid points of interest 
             X = obj.xGridPoints.Value*1e-3;
             Y = obj.xGridPoints.Value*1e-3;
@@ -444,8 +444,8 @@ classdef Manta < handle
                 if ii == 1 || ii == 4 || ii == 7
                     ylabel('Y [km]');
                 end
-                xlim([-7 7])
-                ylim([-7 7])
+                xlim([X(xIdx)-2 X(xIdx)+2])
+                ylim([Y(yIdx)-2 Y(yIdx)+2])
             end
         end
         function h = velPDFstar1(obj,varargin)
