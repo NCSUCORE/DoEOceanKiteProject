@@ -35,7 +35,8 @@ for ii = 1:numel(tetherLengths)
     % Sensor processing
     loadComponent('idealSensorProcessing')
     % Vehicle
-    loadComponent('fullScale1thr');
+%     loadComponent('fullScale1thr');
+    loadComponent('JohnfullScale1thr');
     % Environment
     loadComponent('ConstXYZT');
     
@@ -64,11 +65,11 @@ for ii = 1:numel(tetherLengths)
     
     %% Set vehicle initial conditions
     vhcl.setICsOnPath(...
-        .05,... % Initial path position
-        PATHGEOMETRY,... % Name of path function
-        hiLvlCtrl.basisParams.Value,... % Geometry parameters
-        gndStn.posVec.Value,... % Center point of path sphere
-        (11/2)*norm(env.water.flowVec.Value)) % Initial speed
+        .05,...                                 % Initial path position
+        PATHGEOMETRY,...                        % Name of path function
+        hiLvlCtrl.basisParams.Value,...         % Geometry parameters
+        gndStn.posVec.Value,...                 % Center point of path sphere
+        (11/2)*norm(env.water.flowVec.Value))   % Initial speed
     
     %% Tethers IC's and dependant properties
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -89,7 +90,7 @@ for ii = 1:numel(tetherLengths)
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
         hiLvlCtrl.basisParams.Value,...
         gndStn.posVec.Value);
-    
+    fltCtrl.setFirstSpoolLap(1000,'');
     %% Hack things to make it run at lower flow speeds
     fltCtrl.setElevatorReelInDef(0,'deg')
     fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*10,fltCtrl.tanRoll.kp.Unit);
@@ -101,15 +102,17 @@ for ii = 1:numel(tetherLengths)
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
     
-%     tsc.winchPower.plot
-
-    %%
-    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-        'GifTimeStep',1,...
-        'PlotTracer',true,...
-        'FontSize',14,...
-        'Pause',false,...
-        'ZoomIn',false,...
-        'SaveGif',false,...
-        'GifFile',sprintf('SF%d_TL%d_FS%d.gif',lengthScaleFactors(1),tetherLengths(1),flowSpeeds(1)));
+    %%  Observe results
+    figure()
+    hold on;    grid on
+    plot(tsc.turbPow.Time,squeeze(tsc.turbPow.Data),'b-')
+    xlabel('Time [s]');     ylabel('Power [W]');
+%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+%         'GifTimeStep',1,...
+%         'PlotTracer',true,...
+%         'FontSize',14,...
+%         'Pause',false,...
+%         'ZoomIn',false,...
+%         'SaveGif',false,...
+%         'GifFile',sprintf('SF%d_TL%d_FS%d.gif',lengthScaleFactors(1),tetherLengths(1),flowSpeeds(1)));
 end

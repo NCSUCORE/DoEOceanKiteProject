@@ -373,18 +373,11 @@ classdef ARStudy < matlab.apps.AppBase
             flow = ENV.Manta(mnthIdx);
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(flow.flowVecTimeseries.Value.Data.^2,4)));
-            % Get mean flow velocity along each column
-            colAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
-            for ii = 1:size(flowSpeeds,1)
-                for jj = 1:size(flowSpeeds,2)
-                    colAvg(ii,jj) = mean(squeeze(flowSpeeds(ii,jj,:,:)),'all');
-                end
-            end
-            % Which column produces the greatest average flow speed
-            [XIdx,YIdx] = find(max(max(colAvg))==colAvg);
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = flow.colOpt;
             % Get velocities at the grid points of interest 
             zIdx = [15 20 22 23 24 25];
-            colVels = squeeze(flowSpeeds(XIdx,YIdx,zIdx,:));
+            colVels = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
             colVels(colVels>=vR) = vR;
             colVels(colVels<=vC) = vC;
             powX = app.PowerCurve.Plot2.XData;
@@ -405,6 +398,39 @@ classdef ARStudy < matlab.apps.AppBase
                     xlabel('Power Output [kW]');
                 end
                 title(['Depth = ',num2str(-flow.zGridPoints.Value(zIdx(ii))),' m'])
+            end
+        end
+        function h = powPDFstar1(app,mnthIdx,vR,vC)
+            % Create flow speed obj 
+            flow = ENV.Manta(mnthIdx);
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(flow.flowVecTimeseries.Value.Data.^2,4)));
+            % Find water column with greatest avg flow velocity 
+            [xIdx,yIdx] = flow.colOpt;
+            % Get velocities at the grid points of interest 
+            zIdx = [20 23 25];
+            colVels = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
+            colVels(colVels>=vR) = vR;
+            colVels(colVels<=vC) = vC;
+            powX = app.PowerCurve.Plot2.XData;
+            powY = app.PowerCurve.Plot2.YData;
+            P = interp1(powX,powY,colVels,'linear','extrap');
+            % Plot Histograms
+            h = figure();
+            for ii = 1:3
+                subplot(1,3,ii);
+                hold on;    grid on 
+                r = histogram(P(ii,:),20,'Normalization','probability');
+                set(r,'FaceColor','r'); set(r,'EdgeColor','r')
+                set(gca,'FontSize',12)
+                YL = get(gca,'YLim');
+                plot([mean(P(ii,:)) mean(P(ii,:))],[0 50],'b-','linewidth',2)
+                set(gca,'YLim',YL)
+                xlabel('Power Output [kW]');
+                title(['Depth = ',num2str(-flow.zGridPoints.Value(zIdx(ii))),' m'])
+                if ii == 1
+                    ylabel('Probability')
+                end
             end
         end
         function h = powPDF(app,mnthIdx,vR,vC,xIdx,yIdx)
@@ -443,6 +469,20 @@ classdef ARStudy < matlab.apps.AppBase
                 end
                 title(['Depth = ',num2str(-flow.zGridPoints.Value(zIdx(ii))),' m'])
             end
+        end
+        %Function to plot the power curve 
+        function h = powCurve(app,vR,vC)
+            vFlow = linspace(vC,vR,100);
+            powX = app.PowerCurve.Plot2.XData;
+            powY = app.PowerCurve.Plot2.YData;
+            P = interp1(powX,powY,vFlow,'linear','extrap');
+            % Plot Power curve 
+            h = figure();
+            hold on;    grid on 
+            plot(powX,powY,'r-');
+            set(gca,'FontSize',14)
+            xlabel('Flow Speed [m/s]')
+            ylabel('Power Output [kW]');
         end
     end
 end
