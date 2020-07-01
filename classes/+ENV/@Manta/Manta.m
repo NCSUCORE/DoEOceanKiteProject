@@ -162,7 +162,8 @@ classdef Manta < handle
             end
             timeVec = obj.flowVecTimeseries.Value.Time./denom;
             % Find water column with greatest avg flow velocity 
-            [xIdx,yIdx] = obj.colOpt;
+%             [xIdx,yIdx] = obj.colOpt;
+            xIdx = 1:7; yIdx = 1:7;
             numTimeSteps = numel(timeVec);
             zIdx = p.Results.zIdx;
             % Plot the initial data
@@ -183,8 +184,8 @@ classdef Manta < handle
             xlabel('x [m]')
             ylabel('y [m]')
             zlabel('z [m]')
-            xlim([obj.xGridPoints.Value(xIdx)-500 obj.xGridPoints.Value(xIdx)+500])
-            ylim([obj.yGridPoints.Value(yIdx)-500 obj.yGridPoints.Value(yIdx)+500])
+%             xlim([obj.xGridPoints.Value(xIdx)-500 obj.xGridPoints.Value(xIdx)+500])
+%             ylim([obj.yGridPoints.Value(yIdx)-500 obj.yGridPoints.Value(yIdx)+500])
             zlim([-350 0])
             h.title = title(sprintf('Time: %.0f %s',timeVec(1),p.Results.TimeUnits));
             set(findall(gcf,'Type','axes'),'FontSize',p.Results.FontSize);
@@ -198,7 +199,158 @@ classdef Manta < handle
                 pause(.1)
             end
         end
-        
+        function h = animateVecs2D(obj,zIdx,varargin)
+            if numel(obj.flowVecTimeseries.Value.Time)<2
+                defaultTimeStep = 3600;
+            else
+                defaultTimeStep = obj.flowVecTimeseries.Value.Time(2)-obj.flowVecTimeseries.Value.Time(1);
+            end
+            
+            p = inputParser;
+            addParameter(p,'Cropped',true,@islogical);
+            addParameter(p,'FontSize',get(0,'DefaultAxesFontSize'),@isnumeric);
+            addParameter(p,'Title','Manta Flow Speed',@ischar);
+            addParameter(p,'TimeUnits','s',@ischar);
+            addParameter(p,'TimeStep',defaultTimeStep,@isnumeric);
+            addParameter(p,'View',[40 40],@isnumeric);
+            addParameter(p,'GifFile','animation.gif');
+
+            parse(p,varargin{:})
+            filename = sprintf('Flow Direction for Month %d.gif',obj.month.Value);
+            obj.flowVecTimeseries.Value.resample(obj.flowVecTimeseries.Value.Time(1):p.Results.TimeStep:obj.flowVecTimeseries.Value.Time(end));
+            
+            switch lower(p.Results.TimeUnits)
+                case {'min','m'}
+                    denom = 60;
+                case {'hr','h'}
+                    denom = 3600;
+                otherwise
+                    denom = 1;
+            end
+            timeVec = obj.flowVecTimeseries.Value.Time./denom;
+            numTimeSteps = numel(timeVec);
+            % Plot the initial data
+            [x,y] = meshgrid(obj.xGridPoints.Value,obj.yGridPoints.Value);
+            x = squeeze(permute(x,[2 1 3]));
+            y = squeeze(permute(y,[2 1 3]));
+            x = x*1e-3; y = y*1e-3;
+            figure()
+            set(gcf,'Position',[1 250 1300 420])
+            a1 = subplot(1,3,1);
+            h.vecPlot = quiver(x,y,...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(1),1,1)),...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(1),2,1)),'b');
+            xlabel('x [km]');   ylabel('y [km]');
+            xlim([-8 8]);       ylim([-8 8]);
+            h.title = title( sprintf('Depth: %d m, Time: %.0f %s',...
+                    -obj.zGridPoints.Value(zIdx(1)),timeVec(1),p.Results.TimeUnits));
+            a2 = subplot(1,3,2);
+            h1.vecPlot = quiver(x,y,...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(2),1,1)),...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(2),2,1)),'b');
+            xlabel('x [km]');   ylabel('y [km]');
+            xlim([-8 8]);       ylim([-8 8]);
+            h1.title = title( sprintf('Depth: %d m, Time: %.0f %s',...
+                    -obj.zGridPoints.Value(zIdx(2)),timeVec(1),p.Results.TimeUnits));
+            a3 = subplot(1,3,3);
+            h2.vecPlot = quiver(x,y,...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(3),1,1)),...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(3),2,1)),'b');
+            xlabel('x [km]');   ylabel('y [km]');
+            xlim([-8 8]);       ylim([-8 8]);
+            h2.title = title( sprintf('Depth: %d m, Time: %.0f %s',...
+                    -obj.zGridPoints.Value(zIdx(3)),timeVec(1),p.Results.TimeUnits));
+            set(findall(gcf,'Type','axes'),'FontSize',p.Results.FontSize);
+            a1.Position = [0.05 0.11 0.27 0.815];
+            a2.Position = [0.37 0.11 0.27 0.815];
+            a3.Position = [0.69 0.11 0.27 0.815];
+            for ii = 1:numTimeSteps
+                h.vecPlot.UData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(1),1,ii));
+                h.vecPlot.VData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(1),2,ii));
+                h1.vecPlot.UData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(2),1,ii));
+                h1.vecPlot.VData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(2),2,ii));
+                h2.vecPlot.UData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(3),1,ii));
+                h2.vecPlot.VData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx(3),2,ii));
+                h.title.String = sprintf('Depth: %d m, Time: %.0f %s',...
+                    -obj.zGridPoints.Value(zIdx(1)),timeVec(ii),p.Results.TimeUnits);
+                h1.title.String = sprintf('Depth: %d m, Time: %.0f %s',...
+                    -obj.zGridPoints.Value(zIdx(2)),timeVec(ii),p.Results.TimeUnits);
+                h2.title.String = sprintf('Depth: %d m, Time: %.0f %s',...
+                    -obj.zGridPoints.Value(zIdx(3)),timeVec(ii),p.Results.TimeUnits);
+                drawnow
+                % Capture the plot as an image
+                frame       = getframe(gcf);
+                im          = frame2im(frame);
+                [imind,cm]  = rgb2ind(im,256);
+                % Write to the GIF File
+                if ii == 1
+                    imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+                else
+                    imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',.1);
+                end
+            end
+        end
+        function h = animateVecs2Da(obj,zIdx,varargin)
+            if numel(obj.flowVecTimeseries.Value.Time)<2
+                defaultTimeStep = 3600;
+            else
+                defaultTimeStep = obj.flowVecTimeseries.Value.Time(2)-obj.flowVecTimeseries.Value.Time(1);
+            end
+            
+            p = inputParser;
+            addParameter(p,'Cropped',true,@islogical);
+            addParameter(p,'FontSize',get(0,'DefaultAxesFontSize'),@isnumeric);
+            addParameter(p,'Title','Manta Flow Speed',@ischar);
+            addParameter(p,'TimeUnits','s',@ischar);
+            addParameter(p,'TimeStep',defaultTimeStep,@isnumeric);
+            addParameter(p,'View',[40 40],@isnumeric);
+            addParameter(p,'GifFile','animation.gif');
+
+            parse(p,varargin{:})
+            filename = sprintf('Flow Direction at %d m depth for Month %d.gif',-obj.zGridPoints.Value(zIdx),obj.month.Value);
+            obj.flowVecTimeseries.Value.resample(obj.flowVecTimeseries.Value.Time(1):p.Results.TimeStep:obj.flowVecTimeseries.Value.Time(end));
+            
+            switch lower(p.Results.TimeUnits)
+                case {'min','m'}
+                    denom = 60;
+                case {'hr','h'}
+                    denom = 3600;
+                otherwise
+                    denom = 1;
+            end
+            timeVec = obj.flowVecTimeseries.Value.Time./denom;
+            numTimeSteps = numel(timeVec);
+            % Plot the initial data
+            [x,y] = meshgrid(obj.xGridPoints.Value,obj.yGridPoints.Value);
+            x = squeeze(permute(x,[2 1 3]));
+            y = squeeze(permute(y,[2 1 3]));
+            figure()
+            h.vecPlot = quiver(x,y,...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx,1,1)),...
+                squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx,2,1)),'b');
+            xlabel('x [m]')
+            ylabel('y [m]')
+            xlim([-8000 8000])
+            ylim([-8000 8000])
+            h.title = title(sprintf('Time: %.0f %s',timeVec(1),p.Results.TimeUnits));
+            set(findall(gcf,'Type','axes'),'FontSize',p.Results.FontSize);
+            for ii = 1:numTimeSteps
+                h.vecPlot.UData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx,1,ii));
+                h.vecPlot.VData = squeeze(obj.flowVecTimeseries.Value.Data(:,:,zIdx,2,ii));
+                h.title.String = sprintf('Month: %d, Depth: %d, Time: %.0f %s',obj.month.Value,-obj.zGridPoints.Value(zIdx),timeVec(ii),p.Results.TimeUnits);
+                drawnow
+                % Capture the plot as an image
+                frame       = getframe(gcf);
+                im          = frame2im(frame);
+                [imind,cm]  = rgb2ind(im,256);
+                % Write to the GIF File
+                if ii == 1
+                    imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+                else
+                    imwrite(imind,cm,filename,'gif','WriteMode','append','DelayTime',.1);
+                end
+            end
+        end
         function h = capFactor(obj,vRated,vCutIn,varargin)
             % Parse optional input arguments
             p = inputParser;
@@ -444,8 +596,8 @@ classdef Manta < handle
                 if ii == 1 || ii == 4 || ii == 7
                     ylabel('Y [km]');
                 end
-                xlim([X(xIdx)-2 X(xIdx)+2])
-                ylim([Y(yIdx)-2 Y(yIdx)+2])
+                xlim([X(xIdx)-2 X(xIdx)+2]);    ylim([Y(yIdx)-2 Y(yIdx)+2])
+%                 xlim([X(xIdx)-2 X(xIdx)+2]);    ylim([Y(yIdx)-2 Y(yIdx)+2])
             end
         end
         function h = velPDFstar1(obj,varargin)

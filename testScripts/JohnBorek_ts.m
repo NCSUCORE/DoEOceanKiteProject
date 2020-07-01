@@ -70,7 +70,7 @@ for ii = 1:numel(tetherLengths)
         hiLvlCtrl.basisParams.Value,...         % Geometry parameters
         gndStn.posVec.Value,...                 % Center point of path sphere
         (11/2)*norm(env.water.flowVec.Value))   % Initial speed
-    
+%     vhcl.setTurbDiam(.3772,'m');
     %% Tethers IC's and dependant properties
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
         +gndStn.posVec.Value(:),'m');
@@ -105,8 +105,10 @@ for ii = 1:numel(tetherLengths)
     %%  Observe results
     figure()
     hold on;    grid on
-    plot(tsc.turbPow.Time,squeeze(tsc.turbPow.Data),'b-')
-    xlabel('Time [s]');     ylabel('Power [W]');
+    plot(tsc.turbPow.Time,squeeze(tsc.turbPow.Data),'b-');    ylabel('Power [W]');
+%     plot(tsc.turbEnrg.Time,squeeze(tsc.turbEnrg.Data)*1e-3,'b-');  ylabel('Energy [kJ]');
+    xlabel('Time [s]');
+    set(gcf,'Position',[1 300 800 400]);
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
 %         'GifTimeStep',1,...
 %         'PlotTracer',true,...
