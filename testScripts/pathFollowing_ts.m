@@ -1,9 +1,18 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(500,'s');
+simParams.setDuration(2000,'s');
 dynamicCalc = '';
 
-%% Load components
+flwSpd = .5;
+thrLength = 200;
+if thrLength == 125
+    a = 0.6;    b = 1.0;
+elseif thrLength == 200
+    a = 0.4;    b = 1.0;
+else
+    a = 1.0;    b = 2.2;
+end
+    %% Load components
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
 loadComponent('pathFollowingCtrlForILC');
@@ -28,6 +37,7 @@ loadComponent('idealSensorProcessing')
 % Vehicle
 loadComponent('fullScale1thr');
 % loadComponent('pathFollowingVhclForComp')
+% loadComponent('JohnfullScale1thr');
 
 % Environment
 % loadComponent('CNAPsNoTurbJosh');
@@ -36,11 +46,12 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([1.5 0 0],'m/s')
+env.water.setflowVec([flwSpd 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1.2,2.2,.36,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+% hiLvlCtrl.basisParams.setValue([0.6,1.0,.36,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,.36,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -52,7 +63,8 @@ vhcl.setICsOnPath(...
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
-    (11/2)*norm([ 1 0 0 ])) % Initial speed
+    (11/2)*norm(env.water.flowVec.Value))   % Initial speed
+% vhcl.setTurbDiam(.4859,'m');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -73,19 +85,32 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
+% fltCtrl.setFirstSpoolLap(1000,'');
+
 %% Run Simulation
 % vhcl.setFlowGradientDist(.01,'m')
 % simWithMonitor('OCTModel')
 % tsc = signalcontainer(logsout);
 
 
-    simWithMonitor('OCTModel')
-    tsc = signalcontainer(logsout);
-    fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
-    disp(hiLvlCtrl.basisParams.Value)
-    %[y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
-    %sound(y*.2, Fs, 16)
-    fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
+simWithMonitor('OCTModel')
+tsc = signalcontainer(logsout);
+%     fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
+%     disp(hiLvlCtrl.basisParams.Value)
+%     %[y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
+%     %sound(y*.2, Fs, 16)
+%     fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
 
- vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-     'PlotTracer',true,'FontSize',18)
+if vhcl.turbines.diameter.Value > 0
+    save(sprintf('Turb_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat',flwSpd,thrLength,a,b),'tsc')
+elseif vhcl.turbines(1).diameter.Value == 0 && fltCtrl.firstSpoolLap.Value == 1
+    save(sprintf('Winch_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat',flwSpd,thrLength,a,b),'tsc')
+else
+    save(sprintf('DOE_a-%.1f_b-%.1f.mat',a,b),'tsc')
+end
+
+%%
+filename = sprintf('DOE_SF%.1f_TL%d_FS%.2f.gif',1,200,.5);
+vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+    'GifTimeStep',.1,'PlotTracer',true,'FontSize',12,...
+    'Pause',false,'ZoomIn',false,'SaveGif',true,'GifFile',filename);

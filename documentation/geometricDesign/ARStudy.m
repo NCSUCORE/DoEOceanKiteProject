@@ -480,7 +480,7 @@ classdef ARStudy < matlab.apps.AppBase
             h = figure();
             hold on;    grid on 
             plot(powX,powY,'r-');
-            set(gca,'FontSize',14)
+            set(gca,'FontSize',12)
             xlabel('Flow Speed [m/s]')
             ylabel('Power Output [kW]');
         end
