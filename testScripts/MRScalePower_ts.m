@@ -6,10 +6,10 @@ lengthScaleFactors  = 0.8;
 
 %% Set up critical system parameters
 simParams = SIM.simParams;
-simParams.setDuration(5000,'s');
+simParams.setDuration(2000,'s');
 dynamicCalc = '';
-w = 90*pi/180;
-h = 10*pi/180;
+w = 30*pi/180;
+h = 15*pi/180;
 [a,b] = boothParamConversion(w,h);
 
 %% Loop over tether lengths and flow speeds

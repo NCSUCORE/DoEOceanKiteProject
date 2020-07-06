@@ -492,7 +492,7 @@ classdef vehicle < dynamicprops
             obj.setInitVelVecBdy([-speed 0 0],'m/s');
             % Initial body z points radially out
             bdyZ = (initPos(:)-pathCntrPt(:))./sqrt(sum((initPos(:)-pathCntrPt(:)).^2));
-            % Initial body x points backwards (opposite velocity(
+            % Initial body x points backwards (opposite velocity)
             bdyX = -initVel;
             % Initial body y is calculated from the cross product of z & x
             bdyY = cross(bdyZ,bdyX);

@@ -1,7 +1,7 @@
-FLIGHTCONTROLLER = 'steadyLevelFlightController';
+FLIGHTCONTROLLER = 'pathFollowingControllerManta';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
-fltCtrl = CTR.SLFCtrl;
+fltCtrl = CTR.pthFlwCtrl;
 
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
@@ -25,11 +25,6 @@ fltCtrl.rollMoment.kd.setValue((10e4)/(11*pi/180),'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
-
-fltCtrl.pitchMoment.kp.setValue(1,'(rad)/(rad)');
-fltCtrl.pitchMoment.ki.setValue(12,'(rad)/(rad*s)');
-fltCtrl.pitchMoment.kd.setValue(0.005,'(rad)/(rad/s)');
-fltCtrl.pitchMoment.tau.setValue(.01,'s');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
