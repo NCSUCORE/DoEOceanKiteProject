@@ -2,9 +2,9 @@
 hold on
 % pathParams = pathCtrl.pathParams.Value;
 % pathParams = [1,1.4,.37,0,125]; %Lem
-% pathParams = [.73,1.4,.36,0,125];%Circle
+pathParams = [.73,1.4,.36,0,125];%Circle
 % pathParams = [pi/24,3*pi/8,pi/8,0,125];%Racetrack
- pathParams = [1.200    2.2000    0.3600         0  125.0000];%Ellipse
+%  pathParams = [1.200    2.2000    0.3600         0  125.0000];%Ellipse
 
 %  pathParams = [1.6,.3,-.3,0,125];%Ellipse
 %  pathvals=ellipse(linspace(0,1,1000),pathParams,[0 0 0]');
