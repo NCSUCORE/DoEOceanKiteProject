@@ -15,7 +15,7 @@ thr.build('TetherClass','tether001');
 thrDia = 0.0144;
 
 thr.tether1.setYoungsMod(50e9,'Pa');
-thr.tether1.setDampingRatio(0.75,'');
+thr.tether1.setDampingRatio(.75,'');
 thr.tether1.setDragCoeff(0.5,'');
 thr.tether1.setDensity(1300,'kg/m^3');
 
@@ -25,6 +25,10 @@ thr.tether1.setNetBuoyEnable(true,'');
 thr.tether1.setDiameter(thrDia,'m');
 
 thr.tether1.setMaxLength(400,'m');
+thr.tether1.setMinLinkLength(2,'m');
+thr.tether1.setMinLinkDeviation(20,'m');
+thr.tether1.setMinSoftLength(0,'m');
+
 
 %% save file in its respective directory
 saveBuildFile('thr',mfilename,'variant','TETHERS');
