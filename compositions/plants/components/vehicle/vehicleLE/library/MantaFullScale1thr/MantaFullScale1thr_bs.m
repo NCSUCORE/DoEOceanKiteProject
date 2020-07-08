@@ -15,7 +15,7 @@ vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
 
 %% Turbines
 vhcl.setNumTurbines(1,'');
-vhcl.setTurbDiam(.3772,'m');
+vhcl.setTurbDiam(0,'m');
 
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD

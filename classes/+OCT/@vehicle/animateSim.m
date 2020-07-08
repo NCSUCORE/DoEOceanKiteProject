@@ -46,6 +46,8 @@ addParameter(p,'PathFunc',[],@ischar);
 addParameter(p,'PlotAxes',true,@islogical);
 % Set camera view angle [azimuth, elevation]
 addParameter(p,'View',[71,22],@isnumeric)
+% Set camera view angle [azimuth, elevation]
+addParameter(p,'FigPos',[488 342 560 420],@isnumeric)
 % Set font size
 addParameter(p,'FontSize',get(0,'defaultAxesFontSize'),@isnumeric)
 % Tracer (streaming red line behind the model)
@@ -554,7 +556,8 @@ end
 
 % Set data aspect ratio to realistic (not skewed)
 daspect([1 1 1])
-
+% Set figure position 
+h.fig.Position = p.Results.FigPos;
 % Create a title
 h.title = title({strcat(sprintf('Time = %.1f s',0),',',...
     sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.Data(:,:,1)))),...
