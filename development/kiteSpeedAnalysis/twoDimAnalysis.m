@@ -37,29 +37,31 @@ end
 %% plots
 figure(1)
 figProps = gcf;
-set(gcf,'Position',[figProps.Position(1:2).*[1 0.25] 560*2 420])
+set(gcf,'Position',[figProps.Position(1:2).*[1 0.25] 560*1 420])
 
-ax1 = subplot(1,2,1);
-plot(phi*180/pi,vkUpwind,'linewidth',1)
+% ax1 = subplot(1,2,1);
+plot(phi*180/pi,vkUpwind,'linewidth',1.5)
 grid on
 hold on
 xlabel('Azimuth angle (deg)')
 ylabel('$V_{k}/V_{f}$')
-title('Upwind')
-legend
+ylim([0 Inf])
+xlim(90*[-0 1])
+% title('Upwind')
+% legend
 
-ax2 = subplot(1,2,2);
-plot(phi*180/pi,vkDownwind,'linewidth',1)
-grid on
-hold on
-xlabel('Azimuth angle (deg)')
-ylabel('$V_{k}/V_{f}$')
-title('Downwind')
-legend
+% ax2 = subplot(1,2,2);
+% plot(phi*180/pi,vkDownwind,'linewidth',1)
+% grid on
+% hold on
+% xlabel('Azimuth angle (deg)')
+% ylabel('$V_{k}/V_{f}$')
+% title('Downwind')
+% legend
+% 
+% linkaxes([ax1,ax2],'xy');
 
-linkaxes([ax1,ax2],'xy');
-
-set(findobj('-property','FontSize'),'FontSize',11)
+set(findobj('-property','FontSize'),'FontSize',13)
 
 
 
