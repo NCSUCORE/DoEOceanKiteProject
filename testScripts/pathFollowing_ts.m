@@ -5,7 +5,7 @@ dynamicCalc = '';
 
 flwSpd = .5;
 lengthScaleFactors = 1;
-thrLength = 200;
+thrLength = 400;
 turbDiameter = 0;%1;
 if thrLength >= 100 && thrLength < 200
     a = 0.6;    b = 1.0;
