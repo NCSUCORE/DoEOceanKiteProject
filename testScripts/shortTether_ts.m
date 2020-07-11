@@ -2,7 +2,7 @@
 Simulink.sdi.clear
 clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(300,'s');
+simParams.setDuration(20,'s');
 
 dynamicCalc = '';
 
@@ -35,12 +35,13 @@ minSoftLength    = 0;
   
     %% Load components
 ii = 1;
-for TetherNum = [000, 001]
+for TetherNum = 001%[000, 001]
     %This is the section where all of the objects, simulation parameters and
     %variant subsystem identifiers are loaded into the model
 
     % Flight Controller
-    loadComponent('newSpoolCtrl');
+%     loadComponent('newSpoolCtrl');
+    loadComponent('LaRController');
     %loadComponent('fullCycleCtrl');
     %loadComponent('pathFollowingCtrlForILC');
 
@@ -60,7 +61,8 @@ for TetherNum = [000, 001]
     end
 
     % Vehicle
-    loadComponent('fullScale1thr');
+%     loadComponent('fullScale1thr');
+    loadComponent('MantaFullScale1thr');
     % Environment
     loadComponent('constXYZT');
     % Sensors
@@ -82,7 +84,7 @@ for TetherNum = [000, 001]
 
     %if you are using constant flow, this is where the constant flow speed is
     %set
-    env.water.setflowVec([1 0 0],'m/s')
+    env.water.setflowVec([.25 0 0],'m/s')
 
     %% Set basis parameters for high level controller
 
@@ -99,19 +101,21 @@ for TetherNum = [000, 001]
 
     % this is where the ground station initial parameters are set. 
     gndStn.setPosVec([0 0 0],'m')
+    gndStn.setVelVec([0 0 0],'m/s')
     gndStn.initAngPos.setValue(0,'rad');
     gndStn.initAngVel.setValue(0,'rad/s');
 
     %% Set vehicle initial conditions
 
     %This is where the vehicle initial conditions are aet.
-    vhcl.setICsOnPath(...
-        0,... % Initial path position
-        PATHGEOMETRY,... % Name of path function
-        hiLvlCtrl.basisParams.Value,... % Geometry parameters
-        gndStn.posVec.Value,... % Center point of path sphere
-        (11/2)*norm(env.water.flowVec.Value)) % Initial speed
-
+%     vhcl.setICsOnPath(...
+%         0,... % Initial path position
+%         PATHGEOMETRY,... % Name of path function
+%         hiLvlCtrl.basisParams.Value,... % Geometry parameters
+%         gndStn.posVec.Value,... % Center point of path sphere
+%         (11/2)*norm(env.water.flowVec.Value)) % Initial speed
+    vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
+    vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
     %% Tethers IC's and dependant properties'
 
     % This is where the Kite tether initial conditions and parameter values are set
@@ -147,6 +151,7 @@ for TetherNum = [000, 001]
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
         hiLvlCtrl.basisParams.Value,...
         gndStn.posVec.Value);
+% fltCtrl.setInitTL(400,'m')
 
     %% Run the simulation
     % this is where the simulation is commanded to run
@@ -161,14 +166,15 @@ for TetherNum = [000, 001]
     end
     
     simWithMonitor('OCTModel')
+    tsc = signalcontainer(logsout);
 
     %this stores all of the logged signals from the model. To veiw, type
 %     %tsc.signalname.data to view data, tsc.signalname.plot to plot etc.
-    if TetherNum == 000
-        tsc = signalcontainer(logsout);
-    elseif TetherNum == 001
-        tsc2 = signalcontainer(logsout);
-    end
+%     if TetherNum == 000
+%         tsc = signalcontainer(logsout);
+%     elseif TetherNum == 001
+%         tsc2 = signalcontainer(logsout);
+%     end
 
 %    tsc{ii} = signalcontainer(logsout);
 %     %vhcl.animateSim(tsc,.5)
@@ -180,6 +186,11 @@ for TetherNum = [000, 001]
     % end
     % plot(tsc.airTenVecs.Time,Tension)
 end
+%%
+vhcl.animateSim(tsc,2,'View',[0,0],'FigPos',[488-00 342 560 420],...
+    'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,...
+    'Pause',false,'ZoomIn',false,'SaveGif',true,'GifFile','Tether_Reelin_V-1.gif');
+%     'Pause',false,'ZoomIn',true,'SaveGif',true,'GifFile','Tether_Reelin_V-1.gif');
 
 %%
 % for ii = 1:length(A)
@@ -331,4 +342,4 @@ for ii = 1:length(A)
 end
 
     
-    vhcl.animateSim(tsc2,.5,'SaveGif',true)
+    vhcl.animateSim(tsc2,.5,'SaveGif',false)

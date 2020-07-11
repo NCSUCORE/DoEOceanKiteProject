@@ -1,4 +1,4 @@
-classdef fltAndSpoolCtrl < handle
+classdef SLFAndSpoolCtrl < handle
     %PTHFLWCTRL Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -20,7 +20,7 @@ classdef fltAndSpoolCtrl < handle
         elevatorReelInDef
         firstSpoolLap
         rudderGain
-        %Spooling
+        % Spooling
         ctrlVecUpdateFcn
         tetherLengthSetpointFcn
         winchAndElevCmdFcn
@@ -28,21 +28,15 @@ classdef fltAndSpoolCtrl < handle
         initCtrlVec
         intraDrift
         dockedTetherLength
-        
-        %Multicycle
         initTL
         maxTL
-        nonXCurrentElevator
-        nonXCurrentElevation
         switchFilterDuration
         switchFilterConstant
-        beginXCurrentFlowGain
-        beginNonXCurrentFlowGain
         nonXCurrentSpoolInGain
     end
     
     methods
-        function obj = fltAndSpoolCtrl
+        function obj = SLFAndSpoolCtrl
             %PTHFLWCTRL 
             obj.tanRoll             = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
@@ -71,12 +65,8 @@ classdef fltAndSpoolCtrl < handle
             
             obj.initTL                  = SIM.parameter('Unit','m','Description','initial/spool-in/pure-intracycle tether length');
             obj.maxTL                   = SIM.parameter('Unit','m','Description','max tether length for multicycle');
-            obj.nonXCurrentElevator     = CTR.FPID('rad','rad');
-            obj.nonXCurrentElevation    = SIM.parameter('Unit','deg','Description','elevation setpoint during non cross current');
             obj.switchFilterDuration    = SIM.parameter('Unit','s','Description','length of time to filter ctrlSurfDef after state switch');
             obj.switchFilterConstant    = SIM.parameter('Unit','s','Description','filter constant to use when filtering ctrlSurfDef after state switch');
-            obj.beginXCurrentFlowGain   = SIM.parameter('Unit','','Description','gain to multiply flowSpeed by to set threshold to enter Cross-Current');
-            obj.beginNonXCurrentFlowGain= SIM.parameter('Unit','','Description','gain to multiply flowSpeed by to set threshold to enter Non-Cross-Current');
             obj.nonXCurrentSpoolInGain  = SIM.parameter('Unit','','Description','Flow speed multiplier to get glide-in winch speed');
         end
         
@@ -156,14 +146,6 @@ classdef fltAndSpoolCtrl < handle
             obj.maxTL.setValue(val,units)
         end
 
-        function setNonXCurrentElevator(obj,val,units)
-            obj.nonXCurrentElevator.setValue(val,units)
-        end
-
-        function setNonXCurrentElevation(obj,val,units)
-            obj.nonXCurrentElevation.setValue(val,units)
-        end
-
         function setSwitchFilterDuration(obj,val,units)
             obj.switchFilterDuration.setValue(val,units)
         end
@@ -174,14 +156,6 @@ classdef fltAndSpoolCtrl < handle
 
         function setNonXCurrentSpoolInGain(obj,val,units)
             obj.nonXCurrentSpoolInGain.setValue(val,units)
-        end
-
-        function setBeginXCurrentFlowGain(obj,val,units)
-            obj.beginXCurrentFlowGain.setValue(val,units)
-        end
-
-        function setBeginNonXCurrentFlowGain(obj,val,units)
-            obj.beginNonXCurrentFlowGain.setValue(val,units)
         end
         
         function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec) %#ok<INUSD>

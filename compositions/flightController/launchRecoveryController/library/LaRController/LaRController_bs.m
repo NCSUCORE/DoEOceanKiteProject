@@ -1,16 +1,10 @@
-FLIGHTCONTROLLER = 'steadyLevelFlightController';
-SPOOLINGCONTROLLER = 'netZeroSpoolingController';
+FLIGHTCONTROLLER = 'LaRController';
+SPOOLINGCONTROLLER = 'universalSpoolingController';
 
-fltCtrl = CTR.SLFCtrl;
+fltCtrl = CTR.SLFAndSpoolCtrl;
 
-fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
-fltCtrl.setPerpErrorVal(6*pi/180,'rad');
 fltCtrl.setSearchSize(.5,'');
-fltCtrl.setMinR(100,'m')
-fltCtrl.setMaxR(200,'m')
 fltCtrl.setElevatorReelInDef(20,'deg')
-fltCtrl.setStartControl(1,'s')
 fltCtrl.firstSpoolLap.setValue(1,'');
 
 % Control surface parameters
@@ -36,7 +30,18 @@ fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
-pitchKp = (1e5)/(2*pi/180);
+%% Spooling
+fltCtrl.setCtrlVecUpdateFcn('combinedCmd','')
+fltCtrl.setTetherLengthSetpointFcn('combinedTLSP','')
+fltCtrl.setWinchAndElevCmdFcn('combinedCmd','')
+fltCtrl.setInitSpdVec([0 0 0 0 0],'m/s')
+fltCtrl.setInitCtrlVec([.25 .14 0 0 0 0 0 0],'');
+fltCtrl.setIntraDrift(10,'m');
+fltCtrl.setInitTL(80,'m')
+fltCtrl.setMaxTL(400,'m')
+fltCtrl.setSwitchFilterConstant(.1,'s')
+fltCtrl.setSwitchFilterDuration(10,'s')
+fltCtrl.setNonXCurrentSpoolInGain(1.5,'')
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
