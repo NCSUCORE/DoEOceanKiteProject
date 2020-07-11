@@ -1,4 +1,5 @@
-function     [ActiveNodes, ActiveLengths,FirstLink] = numberOfActiveNodes(OriginalLengths, ReeledOutLength, TetherLength,airNodePos, midNodePos, gndNodePos,ReelInVel,FirstLinkPrev,minLinkLength,minLinkDeviation)
+function     [ActiveNodes, ActiveLengths,FirstLink] = numberOfActiveNodes(OriginalLengths, ReeledOutLength, ... 
+    TetherLength,airNodePos, midNodePos, gndNodePos,ReelInVel,FirstLinkPrev,minLinkLength,minLinkDeviation)
 
 %minLinkLength = .1;
 %minLinkDeviation = .01;
@@ -26,6 +27,10 @@ if ReeledOutLength == TetherLength  %Full Extension
     a = a+1;
     L(1:end) = OriginalLengths(1:end);
     FirstLink = OriginalLengths(1);
+elseif ReeledOutLength > TetherLength
+    a = a+1;
+    L(1:end) = OriginalLengths(1:end);
+    FirstLink = OriginalLengths(1)+ReeledOutLength - TetherLength;
 else %Any amount of reel-in
     while flag == false %finds position of bottom link
         if ReeledOutLength == sum(OriginalLengths(a:end))
