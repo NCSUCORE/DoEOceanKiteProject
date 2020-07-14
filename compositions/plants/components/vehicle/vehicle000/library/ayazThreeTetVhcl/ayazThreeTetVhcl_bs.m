@@ -44,6 +44,8 @@ vhcl.setAddedMISwitch(true,'');
 % % % wing
 Clmax = 2;
 
+% vhcl.
+
 vhcl.setRwingLE_cm(-rCM_LE*(1/Lscale),'m');
 vhcl.setWingChord(15e-3*(1/Lscale),'m');
 vhcl.setWingAR(10,'');

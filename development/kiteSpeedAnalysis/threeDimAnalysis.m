@@ -22,8 +22,8 @@ meanElevation = 15*pi/180;
 % sweep of azimuth angle
 azimuthSweep = linspace(0,pi/2,100);
 % sweep of zenith angles
-zenithSweep = linspace(0.2,pi/2,100);
-% zenithSweep = pi/2;
+% zenithSweep = linspace(0.2,pi/2,100);
+zenithSweep = pi/2;
 % create grid
 [A,Z] = meshgrid(azimuthSweep,zenithSweep);
 
@@ -73,6 +73,7 @@ set(gcf,'position',[72 352 560 420])
 surf(xPos,yPos,zPos,azimuthSpeed,'EdgeColor','none');
 c = colorbar;
 c.Label.String = 'azimuth speed (v_{kx}/v_{f})';
+caxis([0 LbyD])
 xlabel('X (m)')
 ylabel('Y (m)')
 zlabel('Z (m)')
@@ -87,6 +88,7 @@ set(gcf,'position',[72 352 560 420])
 surf(xPos,yPos,zPos,elevationSpeed,'EdgeColor','none');
 c = colorbar;
 c.Label.String = 'Elevation speed (v_{ky}/v_{f})';
+caxis([0 LbyD])
 xlabel('X (m)')
 ylabel('Y (m)')
 zlabel('Z (m)')
@@ -95,6 +97,9 @@ plot3(lemX,lemY,lemZ,'k-','linewidth',2)
 axis equal
 zlim([0 Inf])
 view(115,30)
+
+set(findobj('-property','FontSize'),'FontSize',13)
+
 % 
 % figure(3)
 % set(gcf,'position',[72 352 560 420])
