@@ -3,7 +3,7 @@ Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario 
 %   0 = fig8;   1 = fig8-rotor;   2 = fig8-winch;   3 = steady;  4 = reel-in/out
-simScenario = 1;
+simScenario = 4;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
@@ -114,7 +114,7 @@ tRef = 0:500:10000;     pSP = [linspace(0,20,21)]';%linspace(20,2,10)];
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -139,9 +139,9 @@ switch simScenario
 end
 % save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env')
 %%  Animate Simulation 
-vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-    'GifTimeStep',.02,'PlotTracer',true,'FontSize',12,...
-    'Pause',false,'ZoomIn',false,'SaveGif',false,'GifFile',filename);
+% vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+%     'GifTimeStep',.02,'PlotTracer',true,'FontSize',12,...
+%     'Pause',false,'ZoomIn',false,'SaveGif',false,'GifFile',filename);
 % vhcl.animateSim(tsc,2,'View',[0,0],'FigPos',[488-1500 342 560 420],...
 %     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,...
 %     'Pause',false,'ZoomIn',true,'SaveGif',true,'GifFile',strrep(filename,'.mat','.gif'));
