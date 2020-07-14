@@ -15,7 +15,7 @@ vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
 
 %% Turbines
 vhcl.setNumTurbines(1,'');
-vhcl.setTurbDiam(.3772,'m');
+vhcl.setTurbDiam(0,'m');
 
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD
@@ -91,8 +91,6 @@ vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2;0;0],'m');
 vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
-
-
     
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs

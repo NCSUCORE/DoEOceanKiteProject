@@ -7,6 +7,7 @@ classdef fltAndSpoolCtrl < handle
         tanRoll
         yawMoment
         rollMoment
+        pitchMoment
         % Saturations
         maxBank
         controlSigMax
@@ -19,7 +20,6 @@ classdef fltAndSpoolCtrl < handle
         elevatorReelInDef
         firstSpoolLap
         rudderGain
-        
         %Spooling
         ctrlVecUpdateFcn
         tetherLengthSetpointFcn
@@ -47,6 +47,7 @@ classdef fltAndSpoolCtrl < handle
             obj.tanRoll             = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
+            obj.pitchMoment         = CTR.FPID('rad','N*m');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;

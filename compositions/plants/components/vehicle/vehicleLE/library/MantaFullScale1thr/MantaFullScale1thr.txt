@@ -26,7 +26,7 @@ vhcl.numTurbines.Value = 1.0000e+00
 vhcl.numTurbines.Unit is unitless or has no unit specified
 vhcl.numTurbines.NoScale = true
 vhcl.numTurbines.Description = 'Number of turbines'
-vhcl.turbDiam.Value = 3.7720e-01
+vhcl.turbDiam.Value = 0.0000e+00
 vhcl.turbDiam.Unit = 'm'
 vhcl.turbDiam.NoScale = false
 vhcl.turbDiam.Description = 'Turbine Diameter'
@@ -584,7 +584,7 @@ vhcl.thrAttchPts_B.posVec.Value = [0;0;0]
 vhcl.thrAttchPts_B.posVec.Unit = 'm'
 vhcl.thrAttchPts_B.posVec.NoScale = false
 vhcl.thrAttchPts_B.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
-vhcl.turbines.diameter.Value = 3.7720e-01
+vhcl.turbines.diameter.Value = 0.0000e+00
 vhcl.turbines.diameter.Unit = 'm'
 vhcl.turbines.diameter.NoScale = false
 vhcl.turbines.axisUnitVec.Value = [1;0;0]
