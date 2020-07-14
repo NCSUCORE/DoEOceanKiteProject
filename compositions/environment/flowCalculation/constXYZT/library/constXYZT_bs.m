@@ -3,7 +3,7 @@ clear all;clc;format compact
 %% Set up environment
 % Create
 env = ENV.env;
-env.addFlow({'water'},{'constXYZT'},'FlowDensities',995);
+env.addFlow({'water'},{'constXYZT'},'FlowDensities',1000);
 env.addFlow({'waterWave'},{'planarWaves'});
 env.waterWave.setNumWaves(3,'');
 env.waterWave.build;

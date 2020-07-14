@@ -1,4 +1,5 @@
-function [nodeForceVecs,Scope]  = tetherNodeTensionForce(ReeledOutLength, nodePos, nodeVel, ActiveLengths, NumberNodesActive, numNodes, thrDiam, youngsMod, dampingRatio, mass,minSoftLength)
+function [nodeForceVecs,Scope]  = tetherNodeTensionForce(ReeledOutLength, nodePos, nodeVel, ActiveLengths, ...
+    NumberNodesActive, numNodes, thrDiam, youngsMod, dampingRatio, mass,minSoftLength)
 
 % 
 % mass = .05
@@ -103,7 +104,8 @@ if SpringConsts(1) == 0
 end
 
 
-Scope = damperForces;
+Scope = [linkLength ActiveLengths];
+% Scope = damperForces;
 
 
 % for ii=1:3
