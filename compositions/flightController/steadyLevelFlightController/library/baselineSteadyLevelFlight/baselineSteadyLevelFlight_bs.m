@@ -26,6 +26,11 @@ fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 
+fltCtrl.pitchMoment.kp.setValue(1,'(rad)/(rad)');
+fltCtrl.pitchMoment.ki.setValue(12,'(rad)/(rad*s)');
+fltCtrl.pitchMoment.kd.setValue(0.005,'(rad)/(rad/s)');
+fltCtrl.pitchMoment.tau.setValue(.01,'s');
+
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 

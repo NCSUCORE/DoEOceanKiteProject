@@ -7,6 +7,7 @@ classdef SLFCtrl < handle
         tanRoll
         yawMoment
         rollMoment
+        pitchMoment
         % Saturations
         maxBank
         controlSigMax
@@ -31,9 +32,10 @@ classdef SLFCtrl < handle
     methods
         function obj = SLFCtrl
             %SLFCTRL 
-            obj.tanRoll              = CTR.FPID('rad','rad');
+            obj.tanRoll             = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
+            obj.pitchMoment         = CTR.FPID('rad','rad');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
