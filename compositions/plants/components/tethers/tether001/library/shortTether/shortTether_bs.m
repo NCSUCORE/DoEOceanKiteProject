@@ -29,6 +29,8 @@ thr.tether1.setMinLinkLength(2,'m');
 thr.tether1.setMinLinkDeviation(20,'m');
 thr.tether1.setMinSoftLength(0,'m');
 
+thr.tether1.minMaxLength.upperLimit.setValue(425,'')
+thr.tether1.minMaxLength.lowerLimit.setValue(1,'')
 
 %% save file in its respective directory
 saveBuildFile('thr',mfilename,'variant','TETHERS');

@@ -21,6 +21,7 @@ classdef tether001 < handle
         netBuoyEnable
         orgLengths
         maxLength
+        minMaxLength
         minLinkLength
         minLinkDeviation
         minSoftLength
@@ -48,7 +49,8 @@ classdef tether001 < handle
             obj.maxLength           = SIM.parameter('Unit','m');
             obj.minLinkLength       = SIM.parameter('Unit','m');
             obj.minLinkDeviation    = SIM.parameter('Unit','m');
-            obj.minSoftLength    = SIM.parameter('Unit','m');
+            obj.minSoftLength       = SIM.parameter('Unit','m');
+            obj.minMaxLength        = CTR.sat;
         end
         
         function obj = setNumNodes(obj,val,units)

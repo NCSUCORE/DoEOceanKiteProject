@@ -1,14 +1,14 @@
 %% Test script for John to control the kite model 
 Simulink.sdi.clear
-clear;clc;close all
+clear;clc;%close all
 %%  Select sim scenario 
 %   0 = fig8;   1 = fig8-rotor;   2 = fig8-winch;   3 = steady;  4 = reel-in/out
-simScenario = 4;
+simScenario = 1;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
-el = 30*pi/180;                                             %   rad - Mean elevation angle 
+el = 10*pi/180;                                             %   rad - Mean elevation angle 
 w = 40*pi/180;  h = 6.2*pi/180;                             %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
@@ -26,7 +26,7 @@ end
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
 loadComponent('constBoothLem');                             %   High level controller
 loadComponent('pathFollowingGndStn');                       %   Ground station
-loadComponent('oneDOFWnch');                                %   Winches
+loadComponent('winchManta');                                %   Winches
 switch simScenario                                          %   Tether
     case 4
         loadComponent('shortTether');                       %   Tether for reeling
@@ -59,6 +59,8 @@ vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Val
 if simScenario == 3 || simScenario == 4
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
+elseif simScenario == 1
+    vhcl.setTurbDiam(.8,'m')
 end
 %%  Tethers IC's and dependant properties
 if simScenario == 4
@@ -78,6 +80,7 @@ else
 end
 %%  Winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+wnch.winch1.LaRspeed.setValue(0,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
@@ -94,15 +97,24 @@ thr.tether1.setDiameter(0.007,thr.tether1.diameter.Unit);
 thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
 %%  Steady-flight controller parameters 
 if simScenario >= 3
-    fltCtrl.pitchMoment.kp.setValue(5,'(N*m)/(rad)');
-    fltCtrl.pitchMoment.ki.setValue(5,'(N*m)/(rad*s)');
-    fltCtrl.pitchMoment.kd.setValue(0,'(N*m)/(rad/s)');
-    fltCtrl.pitchMoment.tau.setValue(.01,'s');
+    fltCtrl.pitchSP.kp.setValue(3,'(deg)/(deg)');
+    fltCtrl.pitchSP.ki.setValue(.1,'(deg)/(deg*s)');
+    fltCtrl.pitchSP.kd.setValue(0,'(deg)/(deg/s)');
+    fltCtrl.pitchSP.tau.setValue(.01,'s');
+    
+    fltCtrl.elevCmd.kp.setValue(1,'(deg)/(rad)');
+    fltCtrl.elevCmd.ki.setValue(.5,'(deg)/(rad*s)');
+    fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
+    fltCtrl.elevCmd.tau.setValue(.01,'s');
+    fltCtrl.RelevationSP.setValue(35,'deg')
+    fltCtrl.pitchAngleMax.upperLimit.setValue(25,'')
+    vhcl.rCentOfBuoy_LE.setValue([.012,0,.0546]','m')
 end
+tRef = 0:500:10000;     pSP = [linspace(0,20,21)]';%linspace(20,2,10)];
+% pSP = linspace(1,1,numel(tRef))*5;
+% vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;
-simParams.setDuration(20,'s');
-dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -121,71 +133,18 @@ switch simScenario
         filename = sprintf(strcat('Manta_steady_V-%.2f_kp-%.2f_ki-%.2f_kd-%.2f_',dt,'.mat'),flwSpd(1),fltCtrl.pitchMoment.kp.Value,fltCtrl.pitchMoment.ki.Value,fltCtrl.pitchMoment.kd.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Steady\');
     case 4
-        filename = sprintf(strcat('Manta_LaR_V-%.2f_Thr-%d_w-%.2f_h-%.2f_',dt,'.mat'),flwSpd(1),thrLength,w*180/pi,h*180/pi);
+%         filename = sprintf(strcat('Manta_LaR_V-%.2f_Thr-%d_w-%.2f_h-%.2f_',dt,'.mat'),flwSpd(1),thrLength,w*180/pi,h*180/pi);
+        filename = sprintf(strcat('LaR_kp-%.1f_ki-%.1f_kd-%.1f_tau-%.2f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value,fltCtrl.elevCmd.kd.Value,fltCtrl.elevCmd.tau.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 end
-% save(strcat(fpath,filename),'tsc')
+% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env')
 %%  Animate Simulation 
-% vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%     'GifTimeStep',.02,'PlotTracer',true,'FontSize',12,...
-%     'Pause',false,'ZoomIn',false,'SaveGif',false,'GifFile',filename);
-vhcl.animateSim(tsc,2,'View',[0,0],'FigPos',[488-00 342 560 420],...
-    'GifTimeStep',.2,'PlotTracer',true,'FontSize',12,...
+vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+    'GifTimeStep',.02,'PlotTracer',true,'FontSize',12,...
     'Pause',false,'ZoomIn',false,'SaveGif',false,'GifFile',filename);
-%%  Plot Flight Control
-figure()
-subplot(3,2,1)
-hold on;    grid on
-plot(tsc.elevationAngle.Time,tsc.elevationSP.Data*ones(numel(tsc.elevationAngle.Time),1),'r-');
-plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-');
-ylabel('Elevation [deg]');
-legend('$\Theta_\mathrm{des}$','$\Theta_\mathrm{act}$')
-subplot(3,2,3)
-hold on;    grid on
-plot(tsc.ctrlSurfDeflCmd.Time,squeeze(tsc.ctrlSurfDeflCmd.Data(3,1,:)),'b-');
-ylabel('Elevator [deg]');
-subplot(3,2,5)
-hold on;    grid on
-% plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,1,:))*180/pi,'b-');
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(2,1,:))*180/pi,'r-');
-plot(tsc.pitchSP.Time,squeeze(tsc.pitchSP.Data),'r--');
-legend('Pitch','Pitch SP')
-xlabel('Time [s]'); ylabel('Angle [deg]');
-subplot(3,2,2)
-hold on;    grid on
-plot(tsc.airTenVecs.Time,squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1))),'r-');
-plot(tsc.gndNodeTenVecs.Time,squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1))),'b--');
-ylabel('Tension [N]');
-legend('Kite','Gnd')
-subplot(3,2,4)
-hold on;    grid on
-plot(tsc.FNetBdy.Time,squeeze(tsc.FNetBdy.Data(1,1,:)),'r-');
-plot(tsc.FNetBdy.Time,squeeze(tsc.FNetBdy.Data(3,1,:)),'b-');
-ylabel('Net Force [N]');
-legend('$F_b^x$','$F_b^z$')
-subplot(3,2,6)
-hold on;    grid on
-plot(tsc.FDragBdy.Time,squeeze(sqrt(sum(tsc.FLiftBdy.Data.^2,1)))./squeeze(sqrt(sum(tsc.FDragBdy.Data.^2,1))))
-xlabel('Time [s]'); ylabel('L/D');
-%%  Plot Angle of attack 
-% figure()
-% subplot(4,1,1)
-% hold on;    grid on
-% plot(tsc.alphaLocal.Time(1:500),squeeze(tsc.alphaLocal.Data(1,1,1:500)),'b-');   
-% ylabel('Port [rad]');   title('Angle of Attack')
-% subplot(4,1,2)
-% hold on;    grid on
-% plot(tsc.alphaLocal.Time(1:500),squeeze(tsc.alphaLocal.Data(1,2,1:500)),'b-');   
-% ylabel('Starboard [rad]');
-% subplot(4,1,3)
-% hold on;    grid on
-% plot(tsc.alphaLocal.Time(1:500),squeeze(tsc.alphaLocal.Data(1,3,1:500)),'b-');   
-% ylabel('Elevator [rad]');
-% subplot(4,1,4)
-% hold on;    grid on
-% plot(tsc.alphaLocal.Time(1:500),squeeze(tsc.alphaLocal.Data(1,4,1:500)),'b-');   
-% ylabel('Rudder [rad]');
-% xlabel('Time [s]');
-
-
-
+% vhcl.animateSim(tsc,2,'View',[0,0],'FigPos',[488-1500 342 560 420],...
+%     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,...
+%     'Pause',false,'ZoomIn',true,'SaveGif',true,'GifFile',strrep(filename,'.mat','.gif'));
+%%  Plot Results
+h = plotFlightResults(tsc,vhcl);
+h.OuterPosition = [-1.5422e+03 33.8000 1.5504e+03 838.4000];
