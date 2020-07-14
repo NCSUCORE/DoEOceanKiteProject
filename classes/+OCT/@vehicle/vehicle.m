@@ -492,7 +492,7 @@ classdef vehicle < dynamicprops
             obj.setInitVelVecBdy([-speed 0 0],'m/s');
             % Initial body z points radially out
             bdyZ = (initPos(:)-pathCntrPt(:))./sqrt(sum((initPos(:)-pathCntrPt(:)).^2));
-            % Initial body x points backwards (opposite velocity(
+            % Initial body x points backwards (opposite velocity)
             bdyX = -initVel;
             % Initial body y is calculated from the cross product of z & x
             bdyY = cross(bdyZ,bdyX);
@@ -574,18 +574,27 @@ classdef vehicle < dynamicprops
             obj.portWing.setAlpha(aeroStruct(1).alpha,'deg');
             obj.portWing.setGainCL(aeroStruct(1).GainCL,'1/deg');
             obj.portWing.setGainCD(aeroStruct(1).GainCD,'1/deg');
+            obj.portWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
+            obj.portWing.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
+            obj.portWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
 
             obj.stbdWing.setCL(aeroStruct(2).CL,'');
             obj.stbdWing.setCD(aeroStruct(2).CD,'');
             obj.stbdWing.setAlpha(aeroStruct(2).alpha,'deg');
             obj.stbdWing.setGainCL(aeroStruct(2).GainCL,'1/deg');
             obj.stbdWing.setGainCD(aeroStruct(2).GainCD,'1/deg');
+            obj.stbdWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
+            obj.stbdWing.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
+            obj.stbdWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
 
             obj.hStab.setCL(aeroStruct(3).CL,'');
             obj.hStab.setCD(aeroStruct(3).CD,'');
             obj.hStab.setAlpha(aeroStruct(3).alpha,'deg');
             obj.hStab.setGainCL(aeroStruct(3).GainCL,'1/deg');
             obj.hStab.setGainCD(aeroStruct(3).GainCD,'1/deg');
+            obj.hStab.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
+            obj.hStab.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
+            obj.hStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
 
             obj.vStab.setCL(aeroStruct(4).CL,'');
             obj.vStab.setCD(aeroStruct(4).CD,'');

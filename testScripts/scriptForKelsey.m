@@ -8,8 +8,14 @@ dynamicCalc = '';
 % loadComponent('pathFollowingCtrlAddedMass');
 loadComponent('pathFollowingCtrlForILC');
 fltCtrl.rudderGain.setValue(0,'')
+
+%%%% If "fltCtrl.firstSpoolLap.setValue(1000,'')" commented out, the you spool, if not you wont spool at
+%%%% all.
+% fltCtrl.firstSpoolLap.setValue(1000,'')
+
+
 % SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
-SPOOLINGCONTROLLER = 'netZeroSpoolingController';
+SPOOLINGCONTROLLER = 'netZeroSpoolingController'; %inter cycle spooling ( spooling in and out on the same lap%
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
@@ -26,7 +32,7 @@ loadComponent('idealSensors')
 % Sensor processing
 loadComponent('idealSensorProcessing')
 % Vehicle
-loadComponent('fullScale1thr');
+loadComponent('unchangingVhclForKelsey');
 % loadComponent('pathFollowingVhclForComp')
 
 % Environment
@@ -36,11 +42,10 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([1.5 0 0],'m/s')
-
+env.water.setflowVec([1.5 0 0],'m/s')   %THIS IS WHERE THE FLOW SPEED CHANGES
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1.2,2.2,.36,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1.2,2.2,.36,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth  width, hieght, center elevation angle, center azimuth angle, tether length
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -75,6 +80,8 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 
 %% Run Simulation
+
+
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 
@@ -97,9 +104,16 @@ groundSpeedMethod2 = squeeze(sqrt(sum(tsc.velocityVec.Data.^2,1))); % this produ
 tsc.angularVel.plot
 % Local apparent flow vectors in the body frame (x,y,z in rows, port wing,
 % starboard wing, horizontal stabilizer, vertical stabilizer in columns)
+figure;
 tsc.vAppLclBdy.plot
 
+figure;
+tsc.vAppWingTip.plot
 %% Calculate p*b/2*v
+
+%P = roll
+%Q = Pitch
+%R = yaw
 p = tsc.angularVel.Data(1,1,:); % Angular velocity vector in the body frame
 b = vhcl.portWing.halfSpan.Value; % The root-to-tip length of the port wing
 % To calculate magintude of apparent flow at the center of mass, we have to

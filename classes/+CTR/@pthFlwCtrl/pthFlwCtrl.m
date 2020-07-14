@@ -67,6 +67,9 @@ classdef pthFlwCtrl < handle
         function setSearchSize(obj,val,unit)
             obj.searchSize.setValue(val,unit);
         end
+        function setFirstSpoolLap(obj,val,units)
+            obj.firstSpoolLap.setValue(val,units)
+        end
         function setTraditionalBool(obj,val,unit)
             obj.traditionalBool.setValue(val,unit);
         end

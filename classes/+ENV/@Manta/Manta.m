@@ -418,16 +418,16 @@ classdef Manta < handle
             end
             % Set up meshgrid for plots
             [x,y,z] = meshgrid(...
-                obj.xGridPoints.Value,...
-                obj.yGridPoints.Value,...
+                obj.xGridPoints.Value*1e-3,...
+                obj.yGridPoints.Value*1e-3,...
                 obj.zGridPoints.Value);
             % Set the colorbands
             colormap([linspace(0,1,p.Results.NumOfColorBands)' zeros(p.Results.NumOfColorBands,1) linspace(1,0,p.Results.NumOfColorBands)'])
             h.scatter3 = scatter3(x(:),y(:),z(:),40,vFlows(:),'filled');
             h.colorbar = colorbar;
             set(gca,'FontSize',14)
-            xlabel('x [m]')
-            ylabel('y [m]')
+            xlabel('x [km]')
+            ylabel('y [km]')
             zlabel('z [m]')
             h.colorbar.Label.String = 'Flow Speed [m/s]';
 %             h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
