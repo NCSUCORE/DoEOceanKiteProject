@@ -7,7 +7,7 @@ fltCtrl.setSearchSize(.5,'');
 fltCtrl.setElevatorReelInDef(20,'deg')
 fltCtrl.firstSpoolLap.setValue(1,'');
 
-% Control surface parameters
+%%  Control surface parameters
 fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
@@ -20,16 +20,25 @@ fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 
-fltCtrl.pitchMoment.kp.setValue(5,'(N*m)/(rad)');
-fltCtrl.pitchMoment.ki.setValue(5,'(N*m)/(rad*s)');
-fltCtrl.pitchMoment.kd.setValue(0,'(N*m)/(rad/s)');
-fltCtrl.pitchMoment.tau.setValue(.01,'s');
+fltCtrl.pitchSP.kp.setValue(3,'(deg)/(deg)');
+fltCtrl.pitchSP.ki.setValue(.1,'(deg)/(deg*s)');
+fltCtrl.pitchSP.kd.setValue(0,'(deg)/(deg/s)');
+fltCtrl.pitchSP.tau.setValue(.01,'s');
+
+fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)');
+fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');
+fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
+fltCtrl.elevCmd.tau.setValue(.01,'s');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
+fltCtrl.pitchAngleMax.upperLimit.setValue(15,'')
+fltCtrl.pitchAngleMax.lowerLimit.setValue(-40,'')
+
 fltCtrl.startControl.setValue(0,'s');
 
+fltCtrl.RelevationSP.setValue(30,'deg');
 %% Spooling
 fltCtrl.setCtrlVecUpdateFcn('combinedCmd','')
 fltCtrl.setTetherLengthSetpointFcn('combinedTLSP','')

@@ -10,6 +10,7 @@ classdef winch < handle
         maxAccel
         motorEfficiency
         generatorEfficiency
+        LaRspeed
     end
     
     methods
@@ -20,6 +21,7 @@ classdef winch < handle
             obj.maxAccel    = SIM.parameter('Unit','m/s^2');
             obj.motorEfficiency     = SIM.parameter('Value',0.95,'Min',0,'Max',1);
             obj.generatorEfficiency = SIM.parameter('Value',0.9,'Min',0,'Max',1);
+            obj.LaRspeed = SIM.parameter('Unit','m/s','Description','Nominal speed at which the tether is reeled ib/out for launch and recovery.');
             
             obj.motorEfficiency.Description = sprintf('Electromechanical efficiency of winches during spool in, default = %.2f',obj.motorEfficiency.Value);
             obj.generatorEfficiency.Description = sprintf('Electromechanical regenerative efficiency of winches during spool out, default = %.2f',obj.generatorEfficiency.Value);

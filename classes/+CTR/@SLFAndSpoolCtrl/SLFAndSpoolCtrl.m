@@ -7,10 +7,12 @@ classdef SLFAndSpoolCtrl < handle
         tanRoll
         yawMoment
         rollMoment
-        pitchMoment
+        pitchSP
+        elevCmd
         % Saturations
         maxBank
         controlSigMax
+        pitchAngleMax
         % Lower Level
         searchSize
         initPathVar
@@ -20,6 +22,7 @@ classdef SLFAndSpoolCtrl < handle
         elevatorReelInDef
         firstSpoolLap
         rudderGain
+        RelevationSP
         % Spooling
         ctrlVecUpdateFcn
         tetherLengthSetpointFcn
@@ -41,10 +44,12 @@ classdef SLFAndSpoolCtrl < handle
             obj.tanRoll             = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
-            obj.pitchMoment         = CTR.FPID('rad','N*m');
+            obj.pitchSP             = CTR.FPID('deg','deg');
+            obj.elevCmd             = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
+            obj.pitchAngleMax       = CTR.sat;
             
             obj.searchSize          = SIM.parameter('Unit','','Description','Range of normalized path variable to search','NoScale',true);
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable to begin golden section search around');
@@ -54,6 +59,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
             obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
             obj.fcnName             = SIM.parameter('Unit','','Description','Path Style');
+            obj.RelevationSP         = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
             
             obj.ctrlVecUpdateFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
             obj.tetherLengthSetpointFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
@@ -108,6 +114,10 @@ classdef SLFAndSpoolCtrl < handle
 
         function setRudderGain(obj,val,units)
             obj.rudderGain.setValue(val,units)
+        end
+
+        function setRelevationSP(obj,val,units)
+            obj.RelevationSP.setValue(val,units)
         end
 
         function setCtrlVecUpdateFcn(obj,val,units)
