@@ -586,7 +586,7 @@ classdef vehicle < dynamicprops
             obj.stbdWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.stbdWing.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.stbdWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-            
+
             obj.hStab.setCL(aeroStruct(3).CL,'');
             obj.hStab.setCD(aeroStruct(3).CD,'');
             obj.hStab.setAlpha(aeroStruct(3).alpha,'deg');
@@ -594,7 +594,7 @@ classdef vehicle < dynamicprops
             obj.hStab.setGainCD(aeroStruct(3).GainCD,'1/deg');
             obj.hStab.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.hStab.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
-            obj.hStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')            
+            obj.hStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
 
             obj.vStab.setCL(aeroStruct(4).CL,'');
             obj.vStab.setCD(aeroStruct(4).CD,'');
