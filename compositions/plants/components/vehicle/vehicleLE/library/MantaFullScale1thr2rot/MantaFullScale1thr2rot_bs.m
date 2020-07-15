@@ -14,8 +14,8 @@ vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
 
 %% Turbines
-vhcl.setNumTurbines(1,'');
-vhcl.setTurbDiam(1,'m');
+vhcl.setNumTurbines(2,'');
+vhcl.setTurbDiam(.35,'m');
 
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD
