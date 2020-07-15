@@ -398,18 +398,22 @@ classdef vehicle < dynamicprops
             for ii = 1:obj.numTurbines.Value
                 val(ii,1) = OCT.turb;
                 val(ii,1).setDiameter(obj.turbDiam.Value,'m');
-                val(ii,1).setAxisUnitVec([1;0;0],'');
                 val(ii,1).setPowerCoeff(0.5,'');
                 val(ii,1).setDragCoeff(1.28,'');
                 % http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/introvisc/node11.html
             end
             switch obj.numTurbines.Value
                 case 2
-                    port_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;-15e-3;9.14e-3];
-                    stbd_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;15e-3;9.14e-3];
+%                     port_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;-15e-3;9.14e-3];
+%                     stbd_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;15e-3;9.14e-3];
+                    val(1).setAxisUnitVec([1;0;0],'');
+                    val(2).setAxisUnitVec([-1;0;0],'');
+                    port_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;-obj.portWing.halfSpan.Value;0];
+                    stbd_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;obj.portWing.halfSpan.Value;0];
                     val(1).setAttachPtVec(port_turb,'m');
                     val(2).setAttachPtVec(stbd_turb,'m');
                 case 1
+                    val(ii,1).setAxisUnitVec([1;0;0],'');
                     noseTurb = obj.fuse.rNose_LE.Value;
                     val.setAttachPtVec(noseTurb,'m');
                     val.setDragCoeff(.75,'');
