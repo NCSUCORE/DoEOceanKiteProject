@@ -123,7 +123,7 @@ classdef maneuverabilityAnalysisLibrary
             lemniscate.lemZ = tetLength*sin(pathLat+meanElev);
             % polar cooridnates
             polarCoord.azimuth = pathLong;
-            polarCoord.elevation = pathLat;
+            polarCoord.elevation = pathLat+meanElev;
             
         end
         
@@ -172,9 +172,9 @@ classdef maneuverabilityAnalysisLibrary
             text(azimLine(1,minAzimIdx),azimLine(2,minAzimIdx)-txtOffset,...
                 azimLine(3,minAzimIdx),sprintf('%.2f',minAzim*180/pi));
             % plot the 0 azimuth line line
-            elevLine = [obj.tetherLength*cos(polVal.elevation+avgEl);...
+            elevLine = [obj.tetherLength*cos(polVal.elevation);...
                 zeros(size(pathParam));
-                obj.tetherLength*sin(polVal.elevation+avgEl)];
+                obj.tetherLength*sin(polVal.elevation)];
             plot3(elevLine(1,:),elevLine(2,:),elevLine(3,:),...
                 'b:','linewidth',1);
             [maxElev,maxElevIdx] = max(polVal.elevation);
