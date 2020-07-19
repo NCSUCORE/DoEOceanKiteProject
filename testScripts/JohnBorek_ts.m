@@ -120,7 +120,7 @@ pSP = [linspace(0,16,9) linspace(16,0,9)];
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(600,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(1500,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -152,7 +152,7 @@ end
 if simScenario <= 2
     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',false,...
-        'ZoomIn',true,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
+        'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
 else
     vhcl.animateSim(tsc,2,'View',[0,0],'FigPos',[-6.2 33.8 1550.4 838.4],...
         'GifTimeStep',.1,'PlotTracer',true,'FontSize',12,'ZoomIn',true,...
@@ -165,4 +165,6 @@ if simScenario == 1 || simScenario == 1.1
 elseif simScenario >=3
     hh = plotFlightResults(tsc,vhcl);   
     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
+elseif simScenario == 0
+    plotLapResults(tsc,vhcl,'plotS',true,'lap2',false);   
 end
