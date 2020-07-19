@@ -32,7 +32,7 @@ classdef aeroSurf < handle
         planformArea
         RSurf2Bdy
         rAeroCent_SurfLE
-        rAeroCent_TipLE
+        rTipLE
         outlinePtsBdy
         MACLength
     end
@@ -229,7 +229,7 @@ classdef aeroSurf < handle
             end
         end
         
-        function val = get.rAeroCent_TipLE(obj) %CHECK SPAN FOR 2 TRAPS
+        function val = get.rTipLE(obj) %CHECK SPAN FOR 2 TRAPS
             if obj.numTraps.Value == 1
                 yac = obj.halfSpan.Value;
                 xac = .25*obj.outlinePtsBdy.Value(1,3)+.75*obj.outlinePtsBdy.Value(1,2);
