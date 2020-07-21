@@ -3,7 +3,7 @@ Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario 
 %   0 = fig8;   1 = fig8-rotor;   1.1 = fig8-2rotor;   2 = fig8-winch;   3 = steady;  4 = reel-in/out
-simScenario = 1.1;
+simScenario = 1;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
@@ -119,7 +119,7 @@ if simScenario >= 3
     fltCtrl.setNomSpoolSpeed(.5,'m/s');
     fltCtrl.setSpoolCtrlTimeConstant(2,'s');
     wnch.winch1.elevError.setValue(2,'deg');
-    vhcl.turbines.setPowerCoeff(0,'');
+    vhcl.turb1.setPowerCoeff(0,'');
 end
 tRef = [0 5000 10000];     
 pSP = [20 30 30];
@@ -151,7 +151,7 @@ switch simScenario
         filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.RelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 end
-save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
+% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 % save(strcat(fpath,filename),'tsc','-v7.3')
 %%  Animate Simulation 
 % if simScenario <= 2
