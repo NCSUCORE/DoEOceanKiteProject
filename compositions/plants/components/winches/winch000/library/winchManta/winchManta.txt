@@ -28,3 +28,7 @@ wnch.winch1.LaRspeed.Value = 1.0000e+00
 wnch.winch1.LaRspeed.Unit = 'm/s'
 wnch.winch1.LaRspeed.NoScale = false
 wnch.winch1.LaRspeed.Description = 'Nominal speed at which the tether is reeled ib/out for launch and recovery.'
+wnch.winch1.elevError.Value = 3.0000e+00
+wnch.winch1.elevError.Unit = 'deg'
+wnch.winch1.elevError.NoScale = false
+wnch.winch1.elevError.Description = 'Maximum elevator error at which spooling is allowed'

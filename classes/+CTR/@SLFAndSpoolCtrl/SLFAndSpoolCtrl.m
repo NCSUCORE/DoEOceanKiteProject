@@ -36,6 +36,8 @@ classdef SLFAndSpoolCtrl < handle
         switchFilterDuration
         switchFilterConstant
         nonXCurrentSpoolInGain
+        spoolCtrlTimeConstant
+        nomSpoolSpeed
     end
     
     methods
@@ -74,6 +76,8 @@ classdef SLFAndSpoolCtrl < handle
             obj.switchFilterDuration    = SIM.parameter('Unit','s','Description','length of time to filter ctrlSurfDef after state switch');
             obj.switchFilterConstant    = SIM.parameter('Unit','s','Description','filter constant to use when filtering ctrlSurfDef after state switch');
             obj.nonXCurrentSpoolInGain  = SIM.parameter('Unit','','Description','Flow speed multiplier to get glide-in winch speed');
+            obj.spoolCtrlTimeConstant   = SIM.parameter('Unit','s','Description','Time constant for spooling command');
+            obj.nomSpoolSpeed           = SIM.parameter('Unit','m/s','Description','Nominal spooling speed');
         end
         
         function setTanRoll(obj,val,units)
@@ -166,6 +170,14 @@ classdef SLFAndSpoolCtrl < handle
 
         function setNonXCurrentSpoolInGain(obj,val,units)
             obj.nonXCurrentSpoolInGain.setValue(val,units)
+        end
+        
+        function setSpoolCtrlTimeConstant(obj,val,units)
+            obj.spoolCtrlTimeConstant.setValue(val,units)
+        end
+        
+        function setNomSpoolSpeed(obj,val,units)
+            obj.nomSpoolSpeed.setValue(val,units)
         end
         
         function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec) %#ok<INUSD>
