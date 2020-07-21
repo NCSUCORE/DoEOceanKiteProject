@@ -1,5 +1,5 @@
 % clear
-% clc
+clc
 % format compact
 
 VEHICLE               = "vehicleManta";
@@ -12,10 +12,6 @@ vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
-
-%% Turbines
-vhcl.setNumTurbines(2,'');
-vhcl.setTurbDiam(.5,'m');
 
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD
@@ -92,6 +88,20 @@ vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2;0;0],'m');
 vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
     
+%% Turbines
+vhcl.setNumTurbines(2,'');
+vhcl.build('TurbClass','turb');
+% port rotor
+vhcl.turb1.setDiameter(.56,'m')
+vhcl.turb1.setAxisUnitVec([1;0;0],'')
+vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2),'m')
+vhcl.turb1.setPowerCoeff(.5,'')
+% starboard rotor
+vhcl.turb2.setDiameter(.56,'m')
+vhcl.turb2.setAxisUnitVec([1;0;0],'')
+vhcl.turb2.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2),'m')
+vhcl.turb2.setPowerCoeff(.5,'')
+
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
 

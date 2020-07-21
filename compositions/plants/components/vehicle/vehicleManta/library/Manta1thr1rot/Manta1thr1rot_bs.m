@@ -13,10 +13,6 @@ vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
 
-%% Turbines
-vhcl.setNumTurbines(1,'');
-vhcl.setTurbDiam(1,'m');
-
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD
 Ixx=1.094057613168724e+04;
@@ -92,6 +88,15 @@ vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2;0;0],'m');
 vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
     
+%% Turbines
+vhcl.setNumTurbines(1,'');
+vhcl.build('TurbClass','turb');
+% nose rotor
+vhcl.turb1.setDiameter(.8,'m')
+vhcl.turb1.setAxisUnitVec([1;0;0],'')
+vhcl.turb1.setAttachPtVec(vhcl.fuse.rNose_LE.Value,'m')
+vhcl.turb1.setPowerCoeff(.5,'')
+
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
 
