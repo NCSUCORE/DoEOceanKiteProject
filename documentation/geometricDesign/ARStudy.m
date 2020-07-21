@@ -471,7 +471,7 @@ classdef ARStudy < matlab.apps.AppBase
             end
         end
         %Function to plot the power curve 
-        function h = powCurve(app,vR,vC)
+        function [h,p] = powCurve(app,vR,vC)
             vFlow = linspace(vC,vR,100);
             powX = app.PowerCurve.Plot2.XData;
             powY = app.PowerCurve.Plot2.YData;
@@ -479,7 +479,7 @@ classdef ARStudy < matlab.apps.AppBase
             % Plot Power curve 
             h = figure();
             hold on;    grid on 
-            plot(powX,powY,'r-');
+            p = plot(powX,powY,'r-');
             set(gca,'FontSize',12)
             xlabel('Flow Speed [m/s]')
             ylabel('Power Output [kW]');

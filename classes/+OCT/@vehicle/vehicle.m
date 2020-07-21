@@ -10,7 +10,7 @@ classdef vehicle < dynamicprops
         oldFluidMomentArms
         
         numTurbines
-        turbDiam
+%         turbDiam
         
         volume
         inertia_CM
@@ -45,6 +45,7 @@ classdef vehicle < dynamicprops
         portWing
         stbdWing
         fuse
+%         turb
         
         initPosVecGnd
         initVelVecBdy
@@ -55,13 +56,14 @@ classdef vehicle < dynamicprops
     properties (Dependent)
         mass
         thrAttchPts_B %Used for moment arms
-        turbines
+%         turb
         
         fluidMomentArms
         fuseMomentArm
         buoyMomentArm
-        turbMomentArms
+%         turbMomentArms
         rCM_B
+        wingTipPositions
         
         fluidRefArea
         M6x6_B
@@ -86,7 +88,7 @@ classdef vehicle < dynamicprops
             
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
-            obj.turbDiam    = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
+%             obj.turbDiam    = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
             
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
@@ -143,6 +145,9 @@ classdef vehicle < dynamicprops
             obj.updateWings;
             
             obj.fuse = OCT.fuselage;
+%             obj.turb = OCT.turb;
+            
+%             obj.updateTurb;
             
             % initial conditions
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
@@ -155,6 +160,23 @@ classdef vehicle < dynamicprops
         end
         
         %% setters
+        function obj = build(obj,varargin)
+            defTurbName = {};
+            for ii = 1:obj.numTurbines.Value
+                defTurbName{ii} = sprintf('turb%d',ii);
+            end
+            
+            p = inputParser;
+            addParameter(p,'TurbNames',defTurbName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
+            addParameter(p,'TurbClass','turb',@(x) any(strcmp(x,{'turb'})))
+            parse(p,varargin{:})
+            
+            % Create tturbines
+            for ii = 1:obj.numTurbines.Value
+                obj.addprop(p.Results.TurbNames{ii});
+                obj.(p.Results.TurbNames{ii}) = eval(sprintf('OCT.%s',p.Results.TurbClass));
+            end
+        end
         function setFluidDensity(obj,val,units)
             obj.fluidDensity.setValue(val,units);
         end
@@ -183,17 +205,20 @@ classdef vehicle < dynamicprops
 
         function setNumTurbines(obj,val,units)
             obj.numTurbines.setValue(val,units);
-            if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
-                warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
-            end
+%             for ii = 1:obj.numTurbines.Value
+%                 obj.turb(ii,1) = OCT.turb;
+%             end
+%             if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
+%                 warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
+%             end
         end
 
-        function setTurbDiam(obj,val,units)
-            obj.turbDiam.setValue(val,units);
-            if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
-                warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
-            end
-        end
+%         function setTurbDiam(obj,val,units)
+%             obj.turbDiam.setValue(val,units);
+%             if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
+%                 warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
+%             end
+%         end
 
         function setOldFluidMomentArms(obj,val,units)
             obj.oldFluidMomentArms.setValue(val,units);
@@ -355,11 +380,19 @@ classdef vehicle < dynamicprops
         function val = get.buoyMomentArm(obj)
             val = SIM.parameter('Value',-obj.rB_LE.Value + obj.rCentOfBuoy_LE.Value,'Unit','m');
         end
-        function val = get.turbMomentArms(obj)
-            arms = zeros(3,obj.numTurbines.Value);
-            for i = 1:obj.numTurbines.Value
-                arms(:,i)=-obj.rB_LE.Value + obj.turbines(i).attachPtVec.Value;
-            end
+%         function val = get.turbMomentArms(obj)
+%             arms = zeros(3,obj.numTurbines.Value);
+%             for i = 1:obj.numTurbines.Value
+%                 arms(:,i)=-obj.rB_LE.Value + obj.turbines(i).attachPtVec.Value;
+%             end
+%             val = SIM.parameter('Value',arms,'Unit','m');
+%         end
+        function val = get.wingTipPositions(obj)
+            arms=zeros(3,4);
+            arms(:,1)=-obj.rB_LE.Value + obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rTipLE.Value);
+            arms(:,2)=-obj.rB_LE.Value + obj.stbdWing.rSurfLE_WingLEBdy.Value + (obj.stbdWing.RSurf2Bdy.Value * obj.stbdWing.rTipLE.Value);
+            arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + (obj.hStab.RSurf2Bdy.Value * obj.hStab.rTipLE.Value);
+            arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + (obj.vStab.RSurf2Bdy.Value * obj.vStab.rTipLE.Value);
             val = SIM.parameter('Value',arms,'Unit','m');
         end
         function val = get.rCM_B(obj)
@@ -394,29 +427,33 @@ classdef vehicle < dynamicprops
         end
         
         % turbines
-        function val = get.turbines(obj)
-            for ii = 1:obj.numTurbines.Value
-                val(ii,1) = OCT.turb;
-                val(ii,1).setDiameter(obj.turbDiam.Value,'m');
-                val(ii,1).setAxisUnitVec([1;0;0],'');
-                val(ii,1).setPowerCoeff(0.5,'');
-                val(ii,1).setDragCoeff(1.28,'');
-                % http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/introvisc/node11.html
-            end
-            switch obj.numTurbines.Value
-                case 2
-                    port_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;-15e-3;9.14e-3];
-                    stbd_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;15e-3;9.14e-3];
-                    val(1).setAttachPtVec(port_turb,'m');
-                    val(2).setAttachPtVec(stbd_turb,'m');
-                case 1
-                    noseTurb = obj.fuse.rNose_LE.Value;
-                    val.setAttachPtVec(noseTurb,'m');
-                    val.setDragCoeff(.75,'');
-                otherwise
-                    fprintf('get method not programmed for %d turbines',obj.numTurbines.Value) 
-            end            
-        end
+%         function val = get.turbines(obj)
+%             for ii = 1:obj.numTurbines.Value
+%                 val(ii,1) = OCT.turb;
+%                 val(ii,1).setDiameter(obj.turbDiam.Value,'m');
+%                 val(ii,1).setPowerCoeff(0.5,'');
+%                 val(ii,1).setDragCoeff(.75,'');
+%                 % http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/introvisc/node11.html
+%             end
+%             switch obj.numTurbines.Value
+%                 case 2
+% %                     port_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;-15e-3;9.14e-3];
+% %                     stbd_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;15e-3;9.14e-3];
+%                     val(1).setAxisUnitVec([1;0;0],'');
+%                     val(2).setAxisUnitVec([-1;0;0],'');
+%                     port_turb = [0;-obj.portWing.halfSpan.Value;0];
+%                     stbd_turb = [0;obj.portWing.halfSpan.Value;0];
+%                     val(1).setAttachPtVec(port_turb,'m');
+%                     val(2).setAttachPtVec(stbd_turb,'m');
+%                 case 1
+%                     val(ii,1).setAxisUnitVec([1;0;0],'');
+%                     noseTurb = obj.fuse.rNose_LE.Value;
+%                     val.setAttachPtVec(noseTurb,'m');
+%                     val.setDragCoeff(.75,'');
+%                 otherwise
+%                     fprintf('get method not programmed for %d turbines',obj.numTurbines.Value) 
+%             end            
+%         end
                 
         % aerodynamic reference area
         function val = get.fluidRefArea(obj)
@@ -474,7 +511,7 @@ classdef vehicle < dynamicprops
                 obj.fuse.rEnd_LE.Value-[0 0 obj.fuse.diameter.Value/2]'];% Fuselage tail - diameter/2 (in body z)
             val = SIM.parameter('Unit','m','Value',ptsMat,'Description','Points where contact forces are modeled');
         end
-           
+        
         %% other methods
         % Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)

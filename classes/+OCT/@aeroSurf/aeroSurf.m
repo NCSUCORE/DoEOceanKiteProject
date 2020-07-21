@@ -32,6 +32,7 @@ classdef aeroSurf < handle
         planformArea
         RSurf2Bdy
         rAeroCent_SurfLE
+        rTipLE
         outlinePtsBdy
         MACLength
     end
@@ -223,6 +224,23 @@ classdef aeroSurf < handle
                 yac = 0;%From symmetry
                 zac = yacSide * sind(obj.dihedral.Value);
                 val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates');
+            else
+                error("numTraps must be 1 or 2")
+            end
+        end
+        
+        function val = get.rTipLE(obj) %CHECK SPAN FOR 2 TRAPS
+            if obj.numTraps.Value == 1
+                yac = obj.halfSpan.Value;
+                xac = .25*obj.outlinePtsBdy.Value(1,3)+.75*obj.outlinePtsBdy.Value(1,2)-obj.outlinePtsBdy.Value(1,1);
+                zac = yac * sind(obj.dihedral.Value);
+                val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates');
+            elseif obj.numTraps.Value == 2
+                yacSide = (obj.halfSpan.Value);
+                xac = .25*obj.outlinePtsBdy.Value(1,3)+.75*obj.outlinePtsBdy.Value(1,2)-obj.outlinePtsBdy.Value(1,1);
+                yac = 0;%From symmetry
+                zac = yacSide * sind(obj.dihedral.Value);
+                val = SIM.parameter('Value',[xac;yac;zac],'unit','m','Description','vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates');
             else
                 error("numTraps must be 1 or 2")
             end
