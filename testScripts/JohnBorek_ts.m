@@ -3,7 +3,7 @@ Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario 
 %   0 = fig8;   1 = fig8-rotor;   1.1 = fig8-2rotor;   2 = fig8-winch;   3 = steady;  4 = reel-in/out
-simScenario = 4;
+simScenario = 1.1;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
@@ -65,10 +65,15 @@ if simScenario == 3 || simScenario == 4
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
 if simScenario ~= 1 && simScenario ~= 1.1
-    vhcl.setTurbDiam(0,'m')
+    vhcl.turb1.setDiameter(0,'m')
 elseif simScenario == 1.1
-    vhcl.setTurbDiam(.56,'m')
-    vhcl.turbines(1,1).setDragCoeff(.75,'')
+    vhcl.turb1.scale(lengthScaleFactors,1);
+    vhcl.turb2.scale(lengthScaleFactors,1);
+    vhcl.turb1.setDiameter(.56,'m')
+    vhcl.turb2.setDiameter(.56,'m')
+else
+    vhcl.turb1.scale(lengthScaleFactors,1);
+    vhcl.turb1.setDiameter(.8,'m')
 end
 %%  Tethers Properties
 if simScenario == 4
@@ -106,9 +111,6 @@ fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
 if simScenario >= 3
     fltCtrl.pitchSP.kp.setValue(5,'(deg)/(deg)');
     fltCtrl.pitchSP.ki.setValue(.5,'(deg)/(deg*s)');
-    fltCtrl.pitchSP.kd.setValue(0,'(deg)/(deg/s)');
-    fltCtrl.pitchSP.tau.setValue(.01,'s');
-    
     fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)');
     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');
     fltCtrl.RelevationSP.setValue(35,'deg');
@@ -117,6 +119,7 @@ if simScenario >= 3
     fltCtrl.setNomSpoolSpeed(.5,'m/s');
     fltCtrl.setSpoolCtrlTimeConstant(2,'s');
     wnch.winch1.elevError.setValue(2,'deg');
+    vhcl.turbines.setPowerCoeff(0,'');
 end
 tRef = [0 5000 10000];     
 pSP = [20 30 30];
