@@ -3,7 +3,11 @@ figure()
 %%  Plot Elevation Angle
 subplot(3,2,1)
 hold on;    grid on
-plot(tsc.elevationAngle.Time,tsc.elevationSP.Data*ones(numel(tsc.elevationAngle.Time),1),'r-');
+if numel(tsc.elevationSP.Data) == 1
+    plot(tsc.elevationAngle.Time,tsc.elevationSP.Data*ones(numel(tsc.elevationAngle.Time),1),'r-');
+else
+    plot(tsc.elevationSP.Time,squeeze(tsc.elevationSP.Data),'r-');
+end
 plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-');
 ylabel('Elevation [deg]');
 legend('$\Theta_\mathrm{des}$','$\Theta_\mathrm{act}$')

@@ -132,7 +132,7 @@ classdef Manta < handle
             val = SIM.parameter('Value',val,'Unit','m/s');
         end
             
-        
+        %%  Methods to observe/analyze 
         function h = animateVecs(obj,varargin)
             if numel(obj.flowVecTimeseries.Value.Time)<2
                 defaultTimeStep = 3600;

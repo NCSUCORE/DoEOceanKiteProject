@@ -21,6 +21,7 @@ wnch.winch1.maxAccel.setValue(1,'m/s^2');
 wnch.winch1.motorEfficiency.setValue(1,'')
 wnch.winch1.generatorEfficiency.setValue(1,'')
 wnch.winch1.LaRspeed.setValue(1,'m/s');
+wnch.winch1.elevError.setValue(3,'deg');
 
 %% save file in its respective directory
 saveBuildFile('wnch',mfilename,'variant','WINCH');
