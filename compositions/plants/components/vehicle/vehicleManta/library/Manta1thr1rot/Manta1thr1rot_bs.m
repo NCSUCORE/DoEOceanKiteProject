@@ -92,6 +92,7 @@ vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurf
 vhcl.setNumTurbines(1,'');
 vhcl.build('TurbClass','turb');
 % nose rotor
+vhcl.turb1.setMass(6,'kg')
 vhcl.turb1.setDiameter(.8,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.fuse.rNose_LE.Value,'m')
