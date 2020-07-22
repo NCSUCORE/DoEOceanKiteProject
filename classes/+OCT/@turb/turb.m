@@ -7,6 +7,8 @@ classdef turb < handle
         axisUnitVec
         attachPtVec
         powerCoeff
+        axialInductionFactor
+        tipSpeepRatio
     end
     properties (Dependent)
         dragCoeff
@@ -18,6 +20,8 @@ classdef turb < handle
             obj.axisUnitVec          = SIM.parameter('Description','Vector defining axis of rotation in body frame, should be close to [1 0 0]');
             obj.attachPtVec          = SIM.parameter('Unit','m','Description','Vector from CoM to turbine center, in body frame');
             obj.powerCoeff           = SIM.parameter('Unit','','Description','Coefficient used in power calculation');
+            obj.axialInductionFactor = SIM.parameter('Unit','','Description','Relationship between CP and CD');
+            obj.tipSpeepRatio        = SIM.parameter('Unit','','Description','Relationship between flow speed and rotor tip speed');
         end
         function setDiameter(obj,val,units)
             obj.diameter.setValue(val,units)
@@ -34,9 +38,17 @@ classdef turb < handle
         function setPowerCoeff(obj,val,units)
             obj.powerCoeff.setValue(val,units)
         end
+        
+        function setAxalInductionFactor(obj,val,units)
+            obj.axialInductionFactor.setValue(val,units)
+        end
+        
+        function setTipSpeedRatio(obj,val,units)
+            obj.tipSpeepRatio.setValue(val,units)
+        end
 
         function val = get.dragCoeff(obj)
-            val = SIM.parameter('Value',obj.powerCoeff.Value*1.5,'Unit','');
+            val = SIM.parameter('Value',obj.powerCoeff.Value*obj.axialInductionFactor.Value,'Unit','');
         end
         
         function val = get.momentArm(obj)

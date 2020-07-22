@@ -381,10 +381,7 @@ classdef vehicle < dynamicprops
             val = SIM.parameter('Value',-obj.rB_LE.Value + obj.rCentOfBuoy_LE.Value,'Unit','m');
         end
 %         function val = get.turbMomentArms(obj)
-%             arms = zeros(3,obj.numTurbines.Value);
-%             for i = 1:obj.numTurbines.Value
-%                 arms(:,i)=-obj.rB_LE.Value + obj.turbines(i).attachPtVec.Value;
-%             end
+%             arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
 %             val = SIM.parameter('Value',arms,'Unit','m');
 %         end
         function val = get.wingTipPositions(obj)
