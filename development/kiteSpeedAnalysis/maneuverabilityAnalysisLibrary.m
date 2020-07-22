@@ -49,6 +49,7 @@ classdef maneuverabilityAnalysisLibrary
             % latitude equation equation
             pathLat = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
+            pathLat = pathLat + obj.meanElevationInRadians;
             % first derivative
             dLong = diff(pathLong,pathParm);
             dLat = diff(pathLat,pathParm);
@@ -80,7 +81,7 @@ classdef maneuverabilityAnalysisLibrary
             % latitude equation equation
             elevation = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
-            
+%             elevation = elevation + obj.meanElevationInRadians;
             % using flat earth approximation
             y = r*elevation;
             x = r*azimuth*cos(elevation);
@@ -101,7 +102,7 @@ classdef maneuverabilityAnalysisLibrary
             % curvature
             eqK = matlabFunction(Knum/Kden);
             eqX = matlabFunction(x);
-            eqY = matlabFunction(y);
+            eqY = matlabFunction(y+r*obj.meanElevationInRadians);
             
         end
         
@@ -117,13 +118,14 @@ classdef maneuverabilityAnalysisLibrary
                 (1 + ((a/b)^2).*(cos(pathParam).^2));
             pathLat = (((a/b)^2)*sin(pathParam).*cos(pathParam))./...
                 (1 + ((a/b)^2).*(cos(pathParam).^2));
+            pathLat = pathLat + meanElev;
             % x,y,and z coordinates
-            lemniscate.lemX = tetLength*cos(pathLong).*cos(pathLat+meanElev);
-            lemniscate.lemY = tetLength*sin(pathLong).*cos(pathLat+meanElev);
-            lemniscate.lemZ = tetLength*sin(pathLat+meanElev);
+            lemniscate.lemX = tetLength*cos(pathLong).*cos(pathLat);
+            lemniscate.lemY = tetLength*sin(pathLong).*cos(pathLat);
+            lemniscate.lemZ = tetLength*sin(pathLat);
             % polar cooridnates
             polarCoord.azimuth = pathLong;
-            polarCoord.elevation = pathLat+meanElev;
+            polarCoord.elevation = pathLat;
             
         end
         
@@ -148,9 +150,8 @@ classdef maneuverabilityAnalysisLibrary
             val.yPosProjection = yLoc;
             % get lemniscate cordinates and polar coordinates
             [lemVal,polVal] = obj.getLemniScateCoordinates(pathParam);
-            [~,polVal2] = obj.getLemniScateCoordinates(0);
             % make plots
-            fig = figure;
+            fig = obj.findFigureObject('Results');
             set(gcf,'Position',fig.Position.*[1 0.1 1 2]);
             % 3D plot of the path
             subplot(3,1,1);
@@ -187,10 +188,10 @@ classdef maneuverabilityAnalysisLibrary
             subplot(3,1,2)
             plot(xLoc,yLoc,'k-')
             grid on;hold on;
-            xlabel('X (m)');ylabel('Y (m)');
+            xlabel('Y (m)');ylabel('Z (m)');
             % radius of curvature
             subplot(3,1,3)
-            maxPercRad = 5;
+            maxPercRad = 1;
             plot(pathParam(RFE<maxPercRad*obj.tetherLength),...
                 RFE(RFE<maxPercRad*obj.tetherLength),'k-');
             grid on;hold on;
@@ -219,6 +220,18 @@ classdef maneuverabilityAnalysisLibrary
             end
             
         end
+        
+        function val = findFigureObject(obj,figName)
+            val = findobj( 'Type', 'Figure', 'Name',figName);
+            
+            if isempty(val)
+                val = figure;
+                val.Name = figName;
+            else
+                figure(val);
+            end
+        end
+            
     end
 end
 
