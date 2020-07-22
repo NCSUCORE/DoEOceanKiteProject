@@ -96,11 +96,15 @@ vhcl.turb1.setDiameter(.56,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2),'m')
 vhcl.turb1.setPowerCoeff(.5,'')
+vhcl.turb1.setAxalInductionFactor(1.5,'')
+vhcl.turb1.setTipSpeedRatio(6,'')
 % starboard rotor
 vhcl.turb2.setDiameter(.56,'m')
 vhcl.turb2.setAxisUnitVec([1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2),'m')
 vhcl.turb2.setPowerCoeff(.5,'')
+vhcl.turb2.setAxalInductionFactor(1.5,'')
+vhcl.turb2.setTipSpeedRatio(6,'')
 
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs

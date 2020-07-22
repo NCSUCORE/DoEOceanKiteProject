@@ -96,6 +96,8 @@ vhcl.turb1.setDiameter(.8,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.fuse.rNose_LE.Value,'m')
 vhcl.turb1.setPowerCoeff(.5,'')
+vhcl.turb1.setAxalInductionFactor(1.5,'')
+vhcl.turb1.setTipSpeedRatio(6,'')
 
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
