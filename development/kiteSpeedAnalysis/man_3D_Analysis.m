@@ -8,8 +8,8 @@ set(groot, 'defaultLegendInterpreter','latex');
 %% make instance of class to use its methods
 cIn = maneuverabilityAnalysisLibrary;
 
-cIn.aBooth = 0.8;
-cIn.bBooth = 1.5;
+cIn.aBooth = 0.4;
+cIn.bBooth = 1.6;
 cIn.tetherLength = 50;
 cIn.meanElevationInRadians = 30*pi/180;
 
@@ -26,7 +26,7 @@ mass = 3e3;
 CL = 0.8;
 rho = 1e3;
 Aref = 10;
-maxTangentRollAngle = [5,15,25,40];
+maxTangentRollAngle = [5,10,15,20];
 
 staticVal = mass/(0.5*CL*rho*Aref);
 minR = staticVal./sind(maxTangentRollAngle);

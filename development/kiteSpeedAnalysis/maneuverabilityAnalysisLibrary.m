@@ -192,12 +192,10 @@ classdef maneuverabilityAnalysisLibrary
             % radius of curvature
             subplot(3,1,3)
             maxPercRad = 1;
-            plot(pathParam(RFE<maxPercRad*obj.tetherLength),...
-                RFE(RFE<maxPercRad*obj.tetherLength),'k-');
+            temp = RFE;
+            temp(RFE>=maxPercRad*obj.tetherLength) = NaN;
+            plot(pathParam,temp,'k-');
             grid on;hold on;
-            temp = find(RFE>=maxPercRad*obj.tetherLength);
-            plot(pathParam(temp),...
-                maxPercRad*obj.tetherLength*ones(size(temp)),'ko');
             xlabel('Path parameter');ylabel('Radius of osculating circle (m)');
             
             % analyse section
