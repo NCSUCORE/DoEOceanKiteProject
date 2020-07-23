@@ -158,7 +158,11 @@ classdef maneuverabilityAnalysisLibrary
             plot3(lemVal.lemX,lemVal.lemY,lemVal.lemZ,'k-');
             grid on; hold on;
             xlabel('X (m)');ylabel('Y (m)');zlabel('Z (m)');
-            view(120,35);
+            title(['$a$ = ',num2str(round(obj.aBooth,2)),...
+                ', $b$ = ',num2str(round(obj.bBooth,2)),...
+                ', $R$ = ',num2str(round(obj.tetherLength,1)),' m']);
+            
+            view(100,35);
             % plot the 0 elevation line line
             txtOffset = 0.5;
             azimLine = [obj.tetherLength*cos(avgEl)*cos(polVal.azimuth);...
@@ -189,6 +193,7 @@ classdef maneuverabilityAnalysisLibrary
             plot(xLoc,yLoc,'k-')
             grid on;hold on;
             xlabel('Y (m)');ylabel('Z (m)');
+            title('Projection of path');
             % radius of curvature
             subplot(3,1,3)
             maxPercRad = 1;
@@ -196,7 +201,8 @@ classdef maneuverabilityAnalysisLibrary
             temp(RFE>=maxPercRad*obj.tetherLength) = NaN;
             plot(pathParam,temp,'k-');
             grid on;hold on;
-            xlabel('Path parameter');ylabel('Radius of osculating circle (m)');
+            xlabel('Path parameter');ylabel('$R_{\mathrm{osc}}$ (m)');
+            title('Radius of osculating circle');
             
             % analyse section
             switch nargin
