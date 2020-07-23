@@ -1,4 +1,4 @@
-function h = plotFlightResults(tsc,vhcl)
+function h = plotLaRFlightResults(tsc,vhcl,varargin)
 figure()
 %%  Plot Elevation Angle
 subplot(3,2,1)
