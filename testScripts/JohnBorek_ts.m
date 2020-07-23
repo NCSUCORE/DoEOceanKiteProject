@@ -128,10 +128,11 @@ if simScenario >= 3
 end
 tRef = [0 5000 10000];     
 pSP = [20 30 30];
+% thr.tether1.dragEnable.setValue(0,'')
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(20,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -156,7 +157,7 @@ switch simScenario
         filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.RelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 end
-% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
+save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 % save(strcat(fpath,filename),'tsc','-v7.3')
 %%  Animate Simulation 
 % if simScenario <= 2
@@ -170,7 +171,8 @@ end
 % end
 %%  Plot Results
 if simScenario == 1 || simScenario == 1.1
-    plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',false);   
+%     plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',false);   
+    plotAeroResults(tsc,vhcl,'plot1Lap',true','plotS',false,'Vapp',false)
 %     plotTurbResults(tsc,vhcl,'plotS',true,'lap2',false);   
 %     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
 elseif simScenario >=3

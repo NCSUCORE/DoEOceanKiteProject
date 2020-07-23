@@ -95,10 +95,10 @@ classdef signalcontainer < dynamicprops
                         obj.addprop(propName);
                         % Loop through each signal stored in ts.Values
                         switch class(ts)
-                                case {'timeseries','timesignal'}
-                                    obj.(propName) = timesignal(ts,'BlockPath',p.Results.structBlockPath);
-                                case 'struct'
-                                    obj.(propName) = signalcontainer(ts,'structBlockPath',p.Results.structBlockPath);
+                            case {'timeseries','timesignal'}
+                                obj.(propName) = timesignal(ts,'BlockPath',p.Results.structBlockPath);
+                            case 'struct'
+                                obj.(propName) = signalcontainer(ts,'structBlockPath',p.Results.structBlockPath);
                         end
                     end
                 case 'signalcontainer'
@@ -119,8 +119,6 @@ classdef signalcontainer < dynamicprops
                     error('Unknown data type to parse')
             end
         end
-
-
     end
 end
 
