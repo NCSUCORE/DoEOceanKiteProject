@@ -132,7 +132,7 @@ pSP = [20 30 30];
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
