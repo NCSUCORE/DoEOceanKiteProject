@@ -13,6 +13,7 @@ if p.Results.LiftDrag
 else
     R = 3;  C = 2;
 end
+data = squeeze(obj.currentPathVar.Data);
 time = obj.lapNumS.Time;
 lap = p.Results.plot1Lap;
 con = p.Results.plotS;
@@ -35,8 +36,8 @@ if N == 1
     power = squeeze(obj.turbPow.Data(1,1,:));
     energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600;
 else
-    power = squeeze(sum(obj.turbPow.Data(1,1,:),2));
-    energy = squeeze(sum(obj.turbEnrg.Data(1,1,:),2))/1000/3600;
+    power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
+    energy = squeeze((obj.turbEnrg.Data(1,1,:)))/1000/3600+squeeze((obj.turbEnrg.Data(1,2,:)))/1000/3600;
 end
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
@@ -58,6 +59,7 @@ FLiftBdyP1 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,1,:).^2,1)));
 FLiftBdyP2 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,2,:).^2,1)));
 FLiftBdyP3 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,3,:).^2,1)));
 FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
+totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 vPotential = LiftDrag.*env.water.speed.Value;
 figure();
@@ -155,13 +157,19 @@ end
 subplot(R,C,6); hold on; grid on
 if lap
     if con
-        plot(data(ran),LiftDrag(ran),'b-');  xlabel('Path Position');  ylabel('L/D');
+%         plot(data(ran),LiftDrag(ran),'b-');  xlabel('Path Position');  ylabel('L/D');   
+        plot(data(ran),totDrag(ran),'r-');    xlabel('Path Position');  ylabel('Force [N]');   
+        plot(data(ran),FLiftBdy(ran),'b-');   xlabel('Path Position');  ylabel('Force [N]');  legend('Drag','Lift') 
     else
-        plot(time(ran),LiftDrag(ran),'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim)
+        plot(time(ran),LiftDrag(ran),'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);    
     end
 else
-    plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim)
+    plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);  
 end
+figure; hold on; grid on
+plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
+plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
+legend('CD','CL') 
 %%  Assess wing tips
 if p.Results.Vapp
     figure;
