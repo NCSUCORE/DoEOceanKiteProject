@@ -8,17 +8,14 @@ set(groot, 'defaultLegendInterpreter','latex');
 %% make instance of class to use its methods
 cIn = maneuverabilityAnalysisLibrary;
 
-cIn.aBooth = 0.4;
-cIn.bBooth = 1.6;
+cIn.aBooth = 0.6;
+cIn.bBooth = 2;
 cIn.tetherLength = 50;
 cIn.meanElevationInRadians = 30*pi/180;
 
 res = cIn.analyseFlatEarthRes([1 2]);
 
 subplot(3,1,1)
-title(['$a$ = ',num2str(round(cIn.aBooth,2)),...
-    ', $b$ = ',num2str(round(cIn.bBooth,2)),...
-    ', $R$ = ',num2str(round(cIn.tetherLength,1)),' m']);
 
 
 %% calculate max achievable radius
@@ -49,3 +46,4 @@ for ii = 1:numel(maxTangentRollAngle)
 end
 legend(H(1:end),S(1:end));
 
+set(findobj('-property','FontSize'),'FontSize',11)
