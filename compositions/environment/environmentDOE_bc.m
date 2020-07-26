@@ -1,4 +1,4 @@
-function  environment_bc
+function  environmentDOE_bc
 
 sz = getBusDims;
 
