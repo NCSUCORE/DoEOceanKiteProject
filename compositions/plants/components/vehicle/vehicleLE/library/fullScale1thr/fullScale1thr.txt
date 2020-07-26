@@ -26,10 +26,6 @@ vhcl.numTurbines.Value = 2.0000e+00
 vhcl.numTurbines.Unit is unitless or has no unit specified
 vhcl.numTurbines.NoScale = true
 vhcl.numTurbines.Description = 'Number of turbines'
-vhcl.turbDiam.Value = 0.0000e+00
-vhcl.turbDiam.Unit = 'm'
-vhcl.turbDiam.NoScale = false
-vhcl.turbDiam.Description = 'Turbine Diameter'
 vhcl.volume.Value = 2.8570e+00
 vhcl.volume.Unit = 'm^3'
 vhcl.volume.NoScale = false
@@ -218,6 +214,10 @@ vhcl.hStab.rAeroCent_SurfLE.Value = [0.161111023056922;0;0]
 vhcl.hStab.rAeroCent_SurfLE.Unit = 'm'
 vhcl.hStab.rAeroCent_SurfLE.NoScale = false
 vhcl.hStab.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.hStab.rTipLE.Value = [0.199999817118222;0;0]
+vhcl.hStab.rTipLE.Unit = 'm'
+vhcl.hStab.rTipLE.NoScale = false
+vhcl.hStab.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
 vhcl.hStab.outlinePtsBdy.Value = [5.5 5.59999981711822 5.99999981711822 6 5.99999981711822 5.59999981711822 5.5;0 2 2 0 -2 -2 0;0 0 0 0 0 0 0]
 vhcl.hStab.outlinePtsBdy.Unit is unitless or has no unit specified
 vhcl.hStab.outlinePtsBdy.NoScale = false
@@ -321,6 +321,10 @@ vhcl.vStab.rAeroCent_SurfLE.Value = [0.217399460784396;1.17361111111111;0]
 vhcl.vStab.rAeroCent_SurfLE.Unit = 'm'
 vhcl.vStab.rAeroCent_SurfLE.NoScale = false
 vhcl.vStab.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.vStab.rTipLE.Value = [0.276521957013745;2.4375;0]
+vhcl.vStab.rTipLE.Unit = 'm'
+vhcl.vStab.rTipLE.NoScale = false
+vhcl.vStab.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
 vhcl.vStab.outlinePtsBdy.Value = [5.35 5.49652195701375 6.01652195701375 6 5.35;0 0 0 0 0;0 2.4375 2.4375 0 0]
 vhcl.vStab.outlinePtsBdy.Unit is unitless or has no unit specified
 vhcl.vStab.outlinePtsBdy.NoScale = false
@@ -424,6 +428,10 @@ vhcl.portWing.rAeroCent_SurfLE.Value = [0.322617395661758;2.40740740740741;-0.08
 vhcl.portWing.rAeroCent_SurfLE.Unit = 'm'
 vhcl.portWing.rAeroCent_SurfLE.NoScale = false
 vhcl.portWing.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.portWing.rTipLE.Value = [0.400820744835959;5;-0.174497483512505]
+vhcl.portWing.rTipLE.Unit = 'm'
+vhcl.portWing.rTipLE.NoScale = false
+vhcl.portWing.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
 vhcl.portWing.outlinePtsBdy.Value = [0 0.200820744835959 1.00082074483596 1 0;0 -5 -5 0 0;0 0.174497483512505 0.174497483512505 0 0]
 vhcl.portWing.outlinePtsBdy.Unit is unitless or has no unit specified
 vhcl.portWing.outlinePtsBdy.NoScale = false
@@ -527,6 +535,10 @@ vhcl.stbdWing.rAeroCent_SurfLE.Value = [0.322617395661758;2.40740740740741;0.084
 vhcl.stbdWing.rAeroCent_SurfLE.Unit = 'm'
 vhcl.stbdWing.rAeroCent_SurfLE.NoScale = false
 vhcl.stbdWing.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.stbdWing.rTipLE.Value = [0.400820744835959;5;0.174497483512505]
+vhcl.stbdWing.rTipLE.Unit = 'm'
+vhcl.stbdWing.rTipLE.NoScale = false
+vhcl.stbdWing.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
 vhcl.stbdWing.outlinePtsBdy.Value = [0 0.200820744835959 1.00082074483596 1 0;0 5 5 0 0;0 0.174497483512505 0.174497483512505 0 0]
 vhcl.stbdWing.outlinePtsBdy.Unit is unitless or has no unit specified
 vhcl.stbdWing.outlinePtsBdy.NoScale = false
@@ -584,23 +596,6 @@ vhcl.thrAttchPts_B.posVec.Value = [0;0;0]
 vhcl.thrAttchPts_B.posVec.Unit = 'm'
 vhcl.thrAttchPts_B.posVec.NoScale = false
 vhcl.thrAttchPts_B.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
-vhcl.turbines.diameter.Value = 0.0000e+00
-vhcl.turbines.diameter.Unit = 'm'
-vhcl.turbines.diameter.NoScale = false
-vhcl.turbines.axisUnitVec.Value = [1;0;0]
-vhcl.turbines.axisUnitVec.Unit is unitless or has no unit specified
-vhcl.turbines.axisUnitVec.NoScale = false
-vhcl.turbines.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turbines.attachPtVec.Value = [5.35;-0.015;0.00914]
-vhcl.turbines.attachPtVec.Unit = 'm'
-vhcl.turbines.attachPtVec.NoScale = false
-vhcl.turbines.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
-vhcl.turbines.powerCoeff.Value = 5.0000e-01
-vhcl.turbines.powerCoeff.Unit is unitless or has no unit specified
-vhcl.turbines.powerCoeff.NoScale = false
-vhcl.turbines.dragCoeff.Value = 1.2800e+00
-vhcl.turbines.dragCoeff.Unit is unitless or has no unit specified
-vhcl.turbines.dragCoeff.NoScale = false
 vhcl.fluidMomentArms.Value = [0.322617395661758 0.322617395661758 5.66111102305692 5.5673994607844;-2.40740740740741 2.40740740740741 0 0;0.0840173068763912 0.0840173068763912 0 1.17361111111111]
 vhcl.fluidMomentArms.Unit = 'm'
 vhcl.fluidMomentArms.NoScale = false
@@ -610,12 +605,15 @@ vhcl.fuseMomentArm.NoScale = false
 vhcl.buoyMomentArm.Value = [0.02136;0;0.0682]
 vhcl.buoyMomentArm.Unit = 'm'
 vhcl.buoyMomentArm.NoScale = false
-vhcl.turbMomentArms.Value = [5.35 5.35;-0.015 0.015;0.00914 0.00914]
+vhcl.turbMomentArms.Value = [0.200820744835959 0.200820744835959;-5 5;0.174497483512505 0.174497483512505]
 vhcl.turbMomentArms.Unit = 'm'
 vhcl.turbMomentArms.NoScale = false
 vhcl.rCM_B.Value = [0;0;0]
 vhcl.rCM_B.Unit = 'm'
 vhcl.rCM_B.NoScale = false
+vhcl.wingTipPositions.Value = [0.400820744835959 0.400820744835959 5.69999981711822 5.62652195701375;-5 5 0 0;0.174497483512505 0.174497483512505 0 2.4375]
+vhcl.wingTipPositions.Unit = 'm'
+vhcl.wingTipPositions.NoScale = false
 vhcl.fluidRefArea.Value = 9.0000e+00
 vhcl.fluidRefArea.Unit = 'm^2'
 vhcl.fluidRefArea.NoScale = false
@@ -636,3 +634,77 @@ vhcl.contactPoints.Value = [0.200820744835959 0.200820744835959 5.99999981711822
 vhcl.contactPoints.Unit = 'm'
 vhcl.contactPoints.NoScale = false
 vhcl.contactPoints.Description = 'Points where contact forces are modeled'
+vhcl.turb1.mass.Value = 6.0000e+00
+vhcl.turb1.mass.Unit = 'kg'
+vhcl.turb1.mass.NoScale = false
+vhcl.turb1.mass.Description = 'Rotor mass'
+vhcl.turb1.diameter.Value = 0.0000e+00
+vhcl.turb1.diameter.Unit = 'm'
+vhcl.turb1.diameter.NoScale = false
+vhcl.turb1.diameter.Description = 'Diameter of the rotor'
+vhcl.turb1.axisUnitVec.Value = [1;0;0]
+vhcl.turb1.axisUnitVec.Unit is unitless or has no unit specified
+vhcl.turb1.axisUnitVec.NoScale = false
+vhcl.turb1.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
+vhcl.turb1.attachPtVec.Value = [0.200820744835959;-5;0.174497483512505]
+vhcl.turb1.attachPtVec.Unit = 'm'
+vhcl.turb1.attachPtVec.NoScale = false
+vhcl.turb1.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
+vhcl.turb1.powerCoeff.Value = 5.0000e-01
+vhcl.turb1.powerCoeff.Unit is unitless or has no unit specified
+vhcl.turb1.powerCoeff.NoScale = false
+vhcl.turb1.powerCoeff.Description = 'Coefficient used in power calculation'
+vhcl.turb1.axialInductionFactor.Value = 1.5000e+00
+vhcl.turb1.axialInductionFactor.Unit is unitless or has no unit specified
+vhcl.turb1.axialInductionFactor.NoScale = false
+vhcl.turb1.axialInductionFactor.Description = 'Relationship between CP and CD'
+vhcl.turb1.tipSpeepRatio.Value = 6.0000e+00
+vhcl.turb1.tipSpeepRatio.Unit is unitless or has no unit specified
+vhcl.turb1.tipSpeepRatio.NoScale = false
+vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
+vhcl.turb1.dragCoeff.Value = 7.5000e-01
+vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
+vhcl.turb1.dragCoeff.NoScale = false
+vhcl.turb1.momentArm.Value = [0.200820744835959;-5;0.174497483512505]
+vhcl.turb1.momentArm.Unit = 'm'
+vhcl.turb1.momentArm.NoScale = false
+vhcl.turb1.momentOfInertia.Value = 0.0000e+00
+vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
+vhcl.turb1.momentOfInertia.NoScale = false
+vhcl.turb2.mass.Value = 6.0000e+00
+vhcl.turb2.mass.Unit = 'kg'
+vhcl.turb2.mass.NoScale = false
+vhcl.turb2.mass.Description = 'Rotor mass'
+vhcl.turb2.diameter.Value = 0.0000e+00
+vhcl.turb2.diameter.Unit = 'm'
+vhcl.turb2.diameter.NoScale = false
+vhcl.turb2.diameter.Description = 'Diameter of the rotor'
+vhcl.turb2.axisUnitVec.Value = [-1;0;0]
+vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
+vhcl.turb2.axisUnitVec.NoScale = false
+vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
+vhcl.turb2.attachPtVec.Value = [0.200820744835959;5;0.174497483512505]
+vhcl.turb2.attachPtVec.Unit = 'm'
+vhcl.turb2.attachPtVec.NoScale = false
+vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
+vhcl.turb2.powerCoeff.Value = 5.0000e-01
+vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.powerCoeff.NoScale = false
+vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
+vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
+vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
+vhcl.turb2.axialInductionFactor.NoScale = false
+vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
+vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
+vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
+vhcl.turb2.tipSpeepRatio.NoScale = false
+vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
+vhcl.turb2.dragCoeff.Value = 7.5000e-01
+vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.dragCoeff.NoScale = false
+vhcl.turb2.momentArm.Value = [0.200820744835959;5;0.174497483512505]
+vhcl.turb2.momentArm.Unit = 'm'
+vhcl.turb2.momentArm.NoScale = false
+vhcl.turb2.momentOfInertia.Value = 0.0000e+00
+vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
+vhcl.turb2.momentOfInertia.NoScale = false
