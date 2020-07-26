@@ -3,6 +3,7 @@ clc
 % format compact
 
 VEHICLE               = "vehicleManta";
+PLANT                 = "plantManta";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
 
 %% Essential Values
@@ -112,7 +113,7 @@ vhcl.turb2.setTipSpeedRatio(6,'')
 vhcl.calcFluidDynamicCoefffs
 
 %% save file in its respective directory
-saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
+saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS"]);
 
 
 
