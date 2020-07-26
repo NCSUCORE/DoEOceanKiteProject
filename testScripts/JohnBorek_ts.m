@@ -52,6 +52,7 @@ thr.scale(lengthScaleFactors,1);
 env.scale(lengthScaleFactors,1);
 %%  Environment Properties 
 env.water.setflowVec([flwSpd 0 0],'m/s')
+ENVIRONMENT = 'environmentManta';
 %%  Set basis parameters for high level controller
 if strcmpi(PATHGEOMETRY,'ellipse')
     hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Ellipse
@@ -132,7 +133,7 @@ thr.tether1.dragEnable.setValue(0,'')
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(200,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);

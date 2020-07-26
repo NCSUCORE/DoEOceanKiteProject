@@ -26,5 +26,6 @@ env.waterWave.build;
 % env.waterWave.waveParamMat.setValue(env.waterWave.structAssem,'');
 % FLOWCALCULATION = 'constXYZT_planarWave';
 FLOWCALCULATION = 'constXYZT';
+ENVIRONMENT     = 'environmentDOE';
 
-saveBuildFile('env',mfilename,'variant','FLOWCALCULATION');
+saveBuildFile('env',mfilename,'variant',["FLOWCALCULATION","ENVIRONMENT"]);
