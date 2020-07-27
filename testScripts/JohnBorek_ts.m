@@ -133,7 +133,7 @@ thr.tether1.dragEnable.setValue(0,'')
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(400,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -162,9 +162,9 @@ save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 % save(strcat(fpath,filename),'tsc','-v7.3')
 %%  Animate Simulation 
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
+        'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',false,...
