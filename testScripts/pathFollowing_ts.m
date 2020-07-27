@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(2000,'s');
+simParams.setDuration(500,'s');
 dynamicCalc = '';
 
 flwSpd = .5;
@@ -69,7 +69,7 @@ vhcl.setICsOnPath(...
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
     (11/2)*norm(env.water.flowVec.Value))   % Initial speed
-vhcl.setTurbDiam(turbDiameter,'m');
+% vhcl.setTurbDiam(turbDiameter,'m');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -96,21 +96,21 @@ fltCtrl.elevatorReelInDef.setValue(10,'deg');
 %% Run Simulation
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
-
-dt = datestr(now,'mm-dd_HH-MM');
-if vhcl.turbines(1).diameter.Value > 0
-    filename = sprintf(strcat('DOE_',dt,'_turb_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat'),flwSpd,thrLength,a,b);
-elseif vhcl.turbines(1).diameter.Value == 0 && fltCtrl.firstSpoolLap.Value == 1
-    filename = sprintf(strcat('DOE_',dt,'_winch_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat'),flwSpd,thrLength,a,b);
-else
-    filename = sprintf(strcat('DOE_',dt,'_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat'),flwSpd,thrLength,a,b);
-end
-fpath = 'C:\Users\John Jr\Desktop\Manta Ray\Model\Results\DOE\';
-save(strcat(fpath,filename),'tsc')
-
-%%
-dt = datestr(now,'mm-dd_HH-MM');
-filename = sprintf(strcat('DOE_turb_Thr-%d_V-%.2f_',dt,'.gif'),thrLength(1),flwSpd(1));
-vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-    'GifTimeStep',.02,'PlotTracer',true,'FontSize',12,...
-    'Pause',false,'ZoomIn',false,'SaveGif',true,'GifFile',filename);
+% 
+% dt = datestr(now,'mm-dd_HH-MM');
+% if vhcl.turbines(1).diameter.Value > 0
+%     filename = sprintf(strcat('DOE_',dt,'_turb_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat'),flwSpd,thrLength,a,b);
+% elseif vhcl.turbines(1).diameter.Value == 0 && fltCtrl.firstSpoolLap.Value == 1
+%     filename = sprintf(strcat('DOE_',dt,'_winch_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat'),flwSpd,thrLength,a,b);
+% else
+%     filename = sprintf(strcat('DOE_',dt,'_V-%.1f_Thr-%d_a-%.1f_b-%.1f.mat'),flwSpd,thrLength,a,b);
+% end
+% fpath = 'C:\Users\John Jr\Desktop\Manta Ray\Model\Results\DOE\';
+% save(strcat(fpath,filename),'tsc')
+% 
+% %%
+% dt = datestr(now,'mm-dd_HH-MM');
+% filename = sprintf(strcat('DOE_turb_Thr-%d_V-%.2f_',dt,'.gif'),thrLength(1),flwSpd(1));
+% vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+%     'GifTimeStep',.02,'PlotTracer',true,'FontSize',12,...
+%     'Pause',false,'ZoomIn',false,'SaveGif',true,'GifFile',filename);
