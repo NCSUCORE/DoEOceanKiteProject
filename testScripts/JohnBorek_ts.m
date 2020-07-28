@@ -17,9 +17,6 @@ switch simScenario                                          %   Flight Controlle
         loadComponent('baselineSteadyLevelFlight');         %   Steady-level flight 
     case 4
         loadComponent('LaRController');                     %   Launch and recovery 
-        minLinkDeviation = .1;                              
-        minSoftLength = 0;                                  
-        minLinkLength = 1;                                  %   Length at which tether rediscretizes
     otherwise
         loadComponent('pathFollowingCtrlForManta');
 end
@@ -30,9 +27,12 @@ loadComponent('pathFollowingGndStn');                       %   Ground station
 loadComponent('winchManta');                                %   Winches
 switch simScenario                                          %   Tether
     case 4
+        minLinkDeviation = .1;                              
+        minSoftLength = 0;                                  
+        minLinkLength = 1;                                  %   Length at which tether rediscretizes
         loadComponent('shortTether');                       %   Tether for reeling
     otherwise 
-        loadComponent('pathFollowingTether');               %   Single link tether
+        loadComponent('MantaTether');                       %   Single link tether
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
@@ -44,12 +44,7 @@ end
 loadComponent('ConstXYZT');                                 %   Environment
 %%  Scale everything to Manta Ray, except environment and sim params
 fltCtrl.scale(lengthScaleFactors,1);
-gndStn.scale(lengthScaleFactors,1);
-hiLvlCtrl.scale(lengthScaleFactors,1);
 vhcl.scale(lengthScaleFactors,1);
-wnch.scale(lengthScaleFactors,1);
-thr.scale(lengthScaleFactors,1);
-env.scale(lengthScaleFactors,1);
 %%  Environment Properties 
 env.water.setflowVec([flwSpd 0 0],'m/s')
 ENVIRONMENT = 'environmentManta';
@@ -158,13 +153,13 @@ switch simScenario
         filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.RelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 end
-save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
+% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 % save(strcat(fpath,filename),'tsc','-v7.3')
 %%  Animate Simulation 
 % if simScenario <= 2
-    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-        'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
+%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
+%         'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',false,...

@@ -168,10 +168,10 @@ if lap
 else
     plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);  
 end
-figure; hold on; grid on
-plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
-plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
-legend('CD','CL') 
+% figure; hold on; grid on
+% plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
+% plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
+% legend('CD','CL') 
 %%  Assess wing tips
 if p.Results.Vapp
     figure;
