@@ -605,7 +605,7 @@ vhcl.fuseMomentArm.NoScale = false
 vhcl.buoyMomentArm.Value = [0.02136;0;0.0682]
 vhcl.buoyMomentArm.Unit = 'm'
 vhcl.buoyMomentArm.NoScale = false
-vhcl.turbMomentArms.Value = [0.200820744835959 0.200820744835959;-5 5;0.174497483512505 0.174497483512505]
+vhcl.turbMomentArms.Value = [0.133880496557306 0.133880496557306;-3.33333333333333 3.33333333333333;0.116331655675003 0.116331655675003]
 vhcl.turbMomentArms.Unit = 'm'
 vhcl.turbMomentArms.NoScale = false
 vhcl.rCM_B.Value = [0;0;0]
@@ -646,7 +646,7 @@ vhcl.turb1.axisUnitVec.Value = [1;0;0]
 vhcl.turb1.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turb1.axisUnitVec.NoScale = false
 vhcl.turb1.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turb1.attachPtVec.Value = [0.200820744835959;-5;0.174497483512505]
+vhcl.turb1.attachPtVec.Value = [0.133880496557306;-3.33333333333333;0.116331655675003]
 vhcl.turb1.attachPtVec.Unit = 'm'
 vhcl.turb1.attachPtVec.NoScale = false
 vhcl.turb1.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
@@ -665,7 +665,7 @@ vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and roto
 vhcl.turb1.dragCoeff.Value = 7.5000e-01
 vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoeff.NoScale = false
-vhcl.turb1.momentArm.Value = [0.200820744835959;-5;0.174497483512505]
+vhcl.turb1.momentArm.Value = [0.133880496557306;-3.33333333333333;0.116331655675003]
 vhcl.turb1.momentArm.Unit = 'm'
 vhcl.turb1.momentArm.NoScale = false
 vhcl.turb1.momentOfInertia.Value = 4.7040e-01
@@ -683,7 +683,7 @@ vhcl.turb2.axisUnitVec.Value = [-1;0;0]
 vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turb2.axisUnitVec.NoScale = false
 vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turb2.attachPtVec.Value = [0.200820744835959;5;0.174497483512505]
+vhcl.turb2.attachPtVec.Value = [0.133880496557306;3.33333333333333;0.116331655675003]
 vhcl.turb2.attachPtVec.Unit = 'm'
 vhcl.turb2.attachPtVec.NoScale = false
 vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
@@ -702,7 +702,7 @@ vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and roto
 vhcl.turb2.dragCoeff.Value = 7.5000e-01
 vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb2.dragCoeff.NoScale = false
-vhcl.turb2.momentArm.Value = [0.200820744835959;5;0.174497483512505]
+vhcl.turb2.momentArm.Value = [0.133880496557306;3.33333333333333;0.116331655675003]
 vhcl.turb2.momentArm.Unit = 'm'
 vhcl.turb2.momentArm.NoScale = false
 vhcl.turb2.momentOfInertia.Value = 4.7040e-01

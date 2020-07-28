@@ -20,8 +20,8 @@ con = p.Results.plotS;
 %%  Determine Single Lap Indices
 if lap
     lapNum = squeeze(obj.lapNumS.Data);
-    Idx1 = find(lapNum > 0,1,'first');
-    Idx2 = find(lapNum > 1,1,'first');
+    Idx1 = find(lapNum > 4,1,'first');
+    Idx2 = find(lapNum > 5,1,'first');
     if isempty(Idx1) || isempty(Idx2)
         error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
     end
@@ -61,7 +61,8 @@ FLiftBdyP3 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,3,:).^2,1)));
 FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
 totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
-vPotential = LiftDrag.*env.water.speed.Value;
+vLoyd = LiftDrag.*env.water.speed.Value;
+PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2;
 figure();
 %%  Plot Turbine Power Output
 subplot(R,C,1); 
@@ -69,7 +70,8 @@ hold on; grid on
 yyaxis left
 if lap
     if con
-        plot(data(ran),power(ran),'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1])
+        plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
+        plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','AutoUpdate','off');
     else
         plot(time(ran),power(ran),'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim)
     end
@@ -102,14 +104,14 @@ subplot(R,C,3); hold on; grid on
 if lap
     if con
         plot(data(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');
-        plot(data(ran),vPotential(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
     else
         plot(time(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
-        plot(time(ran),vPotential(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
     end
 else
     plot(time,squeeze(obj.vAppLclBdy.Data(1,1,:)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
-    plot(time,vPotential,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+    plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
 end
 %%  Plot Angle of attack
 subplot(R,C,4); hold on; grid on
@@ -166,10 +168,10 @@ if lap
 else
     plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);  
 end
-figure; hold on; grid on
-plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
-plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
-legend('CD','CL') 
+% figure; hold on; grid on
+% plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
+% plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
+% legend('CD','CL') 
 %%  Assess wing tips
 if p.Results.Vapp
     figure;
