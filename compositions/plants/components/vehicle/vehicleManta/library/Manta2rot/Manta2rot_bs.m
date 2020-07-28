@@ -7,7 +7,7 @@ PLANT                 = "plantManta";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
 
 %% Essential Values
-vhcl = OCT.vehicle;
+vhcl = OCT.vehicleM;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
@@ -16,12 +16,12 @@ vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
 
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD
-Ixx=1.094057613168724e+04;
-Iyy=1.247604938271605e+04;
-Izz=2.467555555555556e+04;
-Ixy=0;
-Ixz=5.293827160493829e+02;
-Iyz=0;
+Ixx = 1.094057613168724e+04;
+Iyy = 1.247604938271605e+04;
+Izz = 2.467555555555556e+04;
+Ixy = 0;
+Ixz = 5.293827160493829e+02;
+Iyz = 0;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixy Iyy -Iyz;...
