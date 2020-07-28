@@ -1,4 +1,4 @@
-function [exitflag, Mw_out] = wingDes_opti2(AR, S, Vol,Fz, Df, Lf)
+function [exitflag, Mw_out] = structuralOpt(AR, S, Vol,Fz, Df, Lf)
     %% Main Wing Structure Optimization Function
     % u(1) = A
     % u(2) = B
