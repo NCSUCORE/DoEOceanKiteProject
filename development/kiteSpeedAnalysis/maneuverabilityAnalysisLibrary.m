@@ -14,9 +14,9 @@ classdef maneuverabilityAnalysisLibrary
         function [eqx,eqy,eqK] = derive_2D_Equations(obj)
             % symbolic
             syms t
-            % x equation
             r = obj.tetherLength;
             a = obj.aBooth;
+            % x equation
             x = r*(a*(2^0.5)*cos(t))/((sin(t))^2 + 1);
             % y equation
             y = r*(a*(2^0.5)*cos(t)*sin(t))/((sin(t))^2 + 1);
@@ -26,16 +26,39 @@ classdef maneuverabilityAnalysisLibrary
             % d^2x/dt^2 and d^y/dt^2
             ddx = diff(dx,t);
             ddy = diff(dy,t);
-            
             % curvature numerator
             Knum = abs(dx*ddy - dy*ddx);
             % curvature denominator
-            Kden = (dx^2 + dy^2)^1.5;
-            
+            Kden = (dx^2 + dy^2)^1.5;            
             % curvature
             eqK = matlabFunction(Knum/Kden);
             eqx = matlabFunction(x);
             eqy = matlabFunction(y);
+        end
+        
+        function [eqX,eqY,eqK] = testWithCircle(obj)
+            % symbolic
+            syms t
+            % radius
+            r = obj.tetherLength;
+            % x equation
+            x = r*cos(t);
+            % y equation
+            y = r*sin(t);
+            % dx/dt and dy/dt
+            dx = diff(x,t);
+            dy = diff(y,t);
+            % d^2x/dt^2 and d^y/dt^2
+            ddx = diff(dx,t);
+            ddy = diff(dy,t);
+            % curvature numerator
+            Knum = abs(dx*ddy - dy*ddx);
+            % curvature denominator
+            Kden = (dx^2 + dy^2)^1.5;
+            % curvature
+            eqK = matlabFunction(Knum/Kden);
+            eqX = matlabFunction(x);
+            eqY = matlabFunction(y);
         end
         
         function [eqLong,eqLat,eqK] = derive_3D_Equations(obj)
@@ -75,10 +98,10 @@ classdef maneuverabilityAnalysisLibrary
             syms azimuth(pathParm) elevation(pathParm) ...
                 tetLength aBooth bBooth pathParm
             
-            % logitutude equation
+            % logitutude/azimuth equation
             azimuth = (a*sin(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
-            % latitude equation equation
+            % latitude/elevation equation
             elevation = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
 %             elevation = elevation + obj.meanElevationInRadians;
@@ -131,7 +154,7 @@ classdef maneuverabilityAnalysisLibrary
         
         function val = analyseFlatEarthRes(obj,pathParamRange)
             % local variables
-            pathParam = linspace(-pi,pi,300);
+            pathParam = linspace(0,2*pi,300);
             avgEl = obj.meanElevationInRadians;
             % preallocate arrays
             xLoc = NaN*pathParam;
