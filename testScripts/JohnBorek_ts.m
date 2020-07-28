@@ -39,11 +39,12 @@ loadComponent('idealSensorProcessing')                      %   Sensor processin
 if mod(simScenario,1) == 0
     loadComponent('Manta1thr1rot');                         %   Vehicle with 1 rotor 
 else
-    loadComponent('Manta1thr2rot');                         %   Vehicle with 2 rotors
+%     loadComponent('Manta1thr2rot');                         %   Vehicle with 2 rotors
+    loadComponent('Manta2rot');                         %   Vehicle with 2 rotors
 end
 loadComponent('ConstXYZT');                                 %   Environment
 %%  Scale everything to Manta Ray, except environment and sim params
-vhcl.scale(lengthScaleFactors,1);
+% vhcl.scale(lengthScaleFactors,1);
 %%  Environment Properties 
 env.water.setflowVec([flwSpd 0 0],'m/s')
 ENVIRONMENT = 'environmentManta';
@@ -140,7 +141,7 @@ switch simScenario
         filename = sprintf(strcat('Turb_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
     case 1.1
-        filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd,el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+        filename = sprintf(strcat('Turb2a_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd,el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
     case 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
@@ -173,6 +174,6 @@ end
 % elseif simScenario == 0
 %     plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',true);   
 % end
-tsc.turbEnrg.Data(1,1,end)
-load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-10.0_D-0.56_w-40.0_h-15.0_07-28_12-14.mat')
-tsc.turbEnrg.Data(1,1,end)
+% tsc.turbEnrg.Data(1,1,end)
+% load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-10.0_D-0.56_w-40.0_h-15.0_07-28_12-14.mat')
+% tsc.turbEnrg.Data(1,1,end)
