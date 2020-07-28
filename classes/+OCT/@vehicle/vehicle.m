@@ -61,7 +61,7 @@ classdef vehicle < dynamicprops
         fluidMomentArms
         fuseMomentArm
         buoyMomentArm
-%         turbMomentArms
+        turbMomentArms
         rCM_B
         wingTipPositions
         
@@ -380,10 +380,16 @@ classdef vehicle < dynamicprops
         function val = get.buoyMomentArm(obj)
             val = SIM.parameter('Value',-obj.rB_LE.Value + obj.rCentOfBuoy_LE.Value,'Unit','m');
         end
-%         function val = get.turbMomentArms(obj)
-%             arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
-%             val = SIM.parameter('Value',arms,'Unit','m');
-%         end
+        function val = get.turbMomentArms(obj)
+            N = obj.numTurbines.Value;
+            if N == 1
+                arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
+            else
+                arms(:,1) = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
+                arms(:,2) = -obj.rB_LE.Value + obj.turb2.attachPtVec.Value;
+            end
+            val = SIM.parameter('Value',arms,'Unit','m');
+        end
         function val = get.wingTipPositions(obj)
             arms=zeros(3,4);
             arms(:,1)=-obj.rB_LE.Value + obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rTipLE.Value);

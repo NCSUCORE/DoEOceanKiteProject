@@ -8,8 +8,9 @@ env.water.frequency.setValue(0.001,'1/s')
 env.water.phase.setValue(0,'rad')
 env.water.azimuth.setValue(0,'rad')
 env.water.elevation.setValue(0,'rad')
-environment_bc
+environmentDOE_bc
 
 FLOWCALCULATION = 'constXYZ_varT_SineWave';
+ENVIRONMENT     = 'environmentDOE';
 
-saveBuildFile('env',mfilename,'variant','FLOWCALCULATION');
+saveBuildFile('env',mfilename,'variant',["FLOWCALCULATION","ENVIRONMENT"]);

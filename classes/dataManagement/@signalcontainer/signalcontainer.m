@@ -10,7 +10,7 @@ classdef signalcontainer < dynamicprops
         function obj = signalcontainer(objToParse,varargin)
             % Parse inputs
             p = inputParser;
-%             addOptional(p,'logsout',[],@(x) isa(x,'Simulink.SimulationData.Dataset'))
+            %             addOptional(p,'logsout',[],@(x) isa(x,'Simulink.SimulationData.Dataset'))
             addOptional(p,'structBlockPath',[],@(x) isa(x,'Simulink.SimulationData.BlockPath')||isempty(x))
             addParameter(p,'Verbose',true,@islogical);
             parse(p,varargin{:});
@@ -117,6 +117,185 @@ classdef signalcontainer < dynamicprops
                     end
                 otherwise
                     error('Unknown data type to parse')
+            end
+        end
+        function plotEuler(obj,vhcl,env,varargin)
+            p = inputParser;
+            addOptional(p,'plot1Lap',false,@islogical);
+            addOptional(p,'plotS',false,@islogical);
+            addOptional(p,'Vapp',false,@islogical);
+            addOptional(p,'plotBeta',false,@islogical);
+            addOptional(p,'LiftDrag',false,@islogical);
+            addOptional(p,'Color',[0 0 1],@isnumeric);
+            parse(p,varargin{:})
+            color = p.Results.Color;
+            data = squeeze(obj.currentPathVar.Data);
+            time = obj.lapNumS.Time;
+            lap = p.Results.plot1Lap;
+            con = p.Results.plotS;
+            %  Determine Single Lap Indices
+            if lap
+                lapNum = squeeze(obj.lapNumS.Data);
+                Idx1 = find(lapNum > 0,1,'first');
+                Idx2 = find(lapNum > 1,1,'first');
+                if isempty(Idx1) || isempty(Idx2)
+                    error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
+                end
+                ran = Idx1:Idx2-1;
+                lim = [time(Idx1) time(Idx2)];
+            else
+                lim = [time(1) time(end)];
+            end
+            roll = squeeze(obj.eulerAngles.Data(1,1,:))*180/pi;
+            pitch = squeeze(obj.eulerAngles.Data(2,1,:))*180/pi;
+            yaw = squeeze(obj.eulerAngles.Data(3,1,:))*180/pi;
+            hold on; grid on
+            if lap
+                if con
+                    plot(data(ran),roll(ran),'b-');  ylabel('Euler [deg]');
+                    plot(data(ran),pitch(ran),'r-');  ylabel('Euler [deg]');
+                    plot(data(ran),yaw(ran),'g-');  ylabel('Euler [deg]');  legend('roll','pitch','yaw')
+                else
+                    plot(time(ran),energy(ran)-energy(Idx1),'-','color',color);  ylabel('Energy [kWh]');  xlim(lim)
+                end
+            else
+                plot(time,energy,'-','color',color);  ylabel('Energy [kWh]');  xlim(lim)
+            end
+        end
+        function plotLift(obj,vhcl,env,varargin)
+            p = inputParser;
+            addOptional(p,'plot1Lap',false,@islogical);
+            addOptional(p,'plotS',false,@islogical);
+            addOptional(p,'Vapp',false,@islogical);
+            addOptional(p,'plotBeta',false,@islogical);
+            addOptional(p,'LiftDrag',false,@islogical);
+            addOptional(p,'Color',[0 0 1],@isnumeric);
+            parse(p,varargin{:})
+            color = p.Results.Color;
+            data = squeeze(obj.currentPathVar.Data);
+            time = obj.lapNumS.Time;
+            lap = p.Results.plot1Lap;
+            con = p.Results.plotS;
+            %  Determine Single Lap Indices
+            if lap
+                lapNum = squeeze(obj.lapNumS.Data);
+                Idx1 = find(lapNum > 0,1,'first');
+                Idx2 = find(lapNum > 1,1,'first');
+                if isempty(Idx1) || isempty(Idx2)
+                    error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
+                end
+                ran = Idx1:Idx2-1;
+                lim = [time(Idx1) time(Idx2)];
+            else
+                lim = [time(1) time(end)];
+            end
+            FLiftBdyX = squeeze(obj.FLiftBdy.Data(1,1,:));
+            FLiftBdyY = squeeze(obj.FLiftBdy.Data(2,1,:));
+            FLiftBdyZ = squeeze(obj.FLiftBdy.Data(3,1,:));
+            hold on; grid on
+            if lap
+                if con
+                    plot(data(ran),FLiftBdyX(ran),'b-');
+                    plot(data(ran),FLiftBdyY(ran),'r-');
+                    plot(data(ran),FLiftBdyZ(ran),'g-');  ylabel('Lift [N]');  legend('X','Y','Z')
+                else
+                    plot(time(ran),energy(ran)-energy(Idx1),'-','color',color);  ylabel('Energy [kWh]');  xlim(lim)
+                end
+            else
+                plot(time,energy,'-','color',color);  ylabel('Energy [kWh]');  xlim(lim)
+            end
+        end
+        function plotDrag(obj,vhcl,env,varargin)
+            p = inputParser;
+            addOptional(p,'plot1Lap',false,@islogical);
+            addOptional(p,'plotS',false,@islogical);
+            addOptional(p,'Vapp',false,@islogical);
+            addOptional(p,'plotBeta',false,@islogical);
+            addOptional(p,'LiftDrag',false,@islogical);
+            addOptional(p,'Color',[0 0 1],@isnumeric);
+            parse(p,varargin{:})
+            color = p.Results.Color;
+            data = squeeze(obj.currentPathVar.Data);
+            time = obj.lapNumS.Time;
+            lap = p.Results.plot1Lap;
+            con = p.Results.plotS;
+            %  Determine Single Lap Indices
+            if lap
+                lapNum = squeeze(obj.lapNumS.Data);
+                Idx1 = find(lapNum > 0,1,'first');
+                Idx2 = find(lapNum > 1,1,'first');
+                if isempty(Idx1) || isempty(Idx2)
+                    error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
+                end
+                ran = Idx1:Idx2-1;
+                lim = [time(Idx1) time(Idx2)];
+            else
+                lim = [time(1) time(end)];
+            end
+            FDragBdyX = squeeze(obj.FDragBdy.Data(1,1,:));
+            FDragBdyY = squeeze(obj.FDragBdy.Data(2,1,:));
+            FDragBdyZ = squeeze(obj.FDragBdy.Data(3,1,:));
+            hold on; grid on
+            if lap
+                if con
+                    plot(data(ran),FDragBdyX(ran),'b-');
+                    plot(data(ran),FDragBdyY(ran),'r-');
+                    plot(data(ran),FDragBdyZ(ran),'g-');  ylabel('Drag [N]');  legend('X','Y','Z')
+                else
+                    plot(time(ran),energy(ran)-energy(Idx1),'-','color',color);  ylabel('Energy [kWh]');  xlim(lim)
+                end
+            else
+                plot(time,energy,'-','color',color);  ylabel('Energy [kWh]');  xlim(lim)
+            end
+        end
+        function plotLiftDrag(obj,vhcl,env,varargin)
+            p = inputParser;
+            addOptional(p,'plot1Lap',false,@islogical);
+            addOptional(p,'plotS',false,@islogical);
+            addOptional(p,'Vapp',false,@islogical);
+            addOptional(p,'plotBeta',false,@islogical);
+            addOptional(p,'LiftDrag',false,@islogical);
+            addOptional(p,'Color',[0 0 1],@isnumeric);
+            parse(p,varargin{:})
+            color = p.Results.Color;
+            data = squeeze(obj.currentPathVar.Data);
+            time = obj.lapNumS.Time;
+            lap = p.Results.plot1Lap;
+            con = p.Results.plotS;
+            %  Determine Single Lap Indices
+            if lap
+                lapNum = squeeze(obj.lapNumS.Data);
+                Idx1 = find(lapNum > 0,1,'first');
+                Idx2 = find(lapNum > 1,1,'first');
+                if isempty(Idx1) || isempty(Idx2)
+                    error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
+                end
+                ran = Idx1:Idx2-1;
+                lim = [time(Idx1) time(Idx2)];
+            else
+                lim = [time(1) time(end)];
+            end
+            FLiftBdyX = sqrt(squeeze(obj.FLiftBdy.Data(1,1,:).^2));
+            FLiftBdyY = sqrt(squeeze(obj.FLiftBdy.Data(2,1,:).^2));
+            FLiftBdyZ = sqrt(squeeze(obj.FLiftBdy.Data(3,1,:).^2));
+            FDragBdyX = sqrt(squeeze(obj.FDragBdy.Data(1,1,:).^2));
+            FDragBdyY = sqrt(squeeze(obj.FDragBdy.Data(2,1,:).^2));
+            FDragBdyZ = sqrt(squeeze(obj.FDragBdy.Data(3,1,:).^2));
+            hold on; grid on
+            if lap
+                if con
+                    plot(data(ran),FLiftBdyX(ran)./FDragBdyX(ran),'b-');
+                    plot(data(ran),FLiftBdyY(ran)./FDragBdyY(ran),'r:');
+                    plot(data(ran),FLiftBdyZ(ran)./FDragBdyZ(ran),'g-');  ylim([0 50]);  ylabel('L/D');  legend('X','Y','Z')
+                else
+                    plot(time(ran),FLiftBdyX(ran)./FDragBdyX(ran),'b-');
+                    plot(time(ran),FLiftBdyY(ran)./FDragBdyY(ran),'r:');
+                    plot(time(ran),FLiftBdyZ(ran)./FDragBdyZ(ran),'g-');  ylim([0 50]);  ylabel('L/D');  legend('X','Y','Z')
+                end
+            else
+                plot(time(ran),FLiftBdyX(ran)./FDragBdyX(ran),'b-');
+                plot(time(ran),FLiftBdyY(ran)./FDragBdyY(ran),'r:');
+                plot(time(ran),FLiftBdyZ(ran)./FDragBdyZ(ran),'g-');  ylim([0 50]);  ylabel('L/D');  legend('X','Y','Z')
             end
         end
     end
