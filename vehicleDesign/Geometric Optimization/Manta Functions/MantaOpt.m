@@ -34,11 +34,11 @@ for iDf= 1:length(Df_vec)                           %   Loop over all diameters
     for iLf = 1:length(Lf_vec)                      %   Loop over all lengths 
         Lf =  Lf_vec(iLf);                          %   m - Current length value
         % find Aspect Ratio, Span, Wings Volume, and Wing Force based on the diameter and length
-        [AR, Span, Vol,Fz,exitflag1] = Loadcalc_opt1(Df,Lf);                                            
+        [AR, Span, Vol,Fz,exitflag1] = steadyFlightOpt(Df,Lf);                                            
         exitflag1_mat(iDf,iLf) = exitflag1;         %   Optimization 1 exit flag
         if exitflag1 == 1                           %   Optimization 1 converged
             % find the mass of the kite based on aspect ratio, span, volume, fing force, diameter, and length
-            [exitflag2,Mw_out] = wingDes_opti2(AR, Span, Vol,Fz,Df,Lf);
+            [exitflag2,Mw_out] = structuralOpt(AR, Span, Vol,Fz,Df,Lf);
             exitflag2_mat(iDf,iLf) = exitflag2;     %   Optimization 2 exit flag
             if exitflag2 == 1                       %   Optimization 2 converged
                 Mw(iDf,iLf) = Mw_out;               %   kg - Assign found mass value 
