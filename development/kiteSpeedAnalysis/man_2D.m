@@ -13,7 +13,7 @@ pathParam = linspace(0,2*pi,200);
 pathRange = [1 2];
 
 %% get equations
-[x,y,K] = cIn.derive_2D_Equations();
+[x,y,K] = cIn.derive_3D_Equations();
 % find coordinates
 for ii = 1:numel(pathParam)
     R(ii) = min(1/max(eps,K(pathParam(ii))),cIn.tetherLength);
