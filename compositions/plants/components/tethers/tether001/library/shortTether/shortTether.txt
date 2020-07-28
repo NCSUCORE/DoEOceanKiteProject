@@ -14,10 +14,10 @@ thr.maxAppFlowMultiplier.NoScale = false
 thr.tether1.numNodes.Value = 5.0000e+00
 thr.tether1.numNodes.Unit is unitless or has no unit specified
 thr.tether1.numNodes.NoScale = true
-thr.tether1.diameter.Value = 1.4400e-02
+thr.tether1.diameter.Value = 1.1500e-02
 thr.tether1.diameter.Unit = 'm'
 thr.tether1.diameter.NoScale = false
-thr.tether1.youngsMod.Value = 5.0000e+10
+thr.tether1.youngsMod.Value = 4.0000e+10
 thr.tether1.youngsMod.Unit = 'Pa'
 thr.tether1.youngsMod.NoScale = false
 thr.tether1.vehicleMass.Unit = 'kg'
