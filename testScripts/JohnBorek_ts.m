@@ -43,7 +43,6 @@ else
 end
 loadComponent('ConstXYZT');                                 %   Environment
 %%  Scale everything to Manta Ray, except environment and sim params
-fltCtrl.scale(lengthScaleFactors,1);
 vhcl.scale(lengthScaleFactors,1);
 %%  Environment Properties 
 env.water.setflowVec([flwSpd 0 0],'m/s')
@@ -166,11 +165,14 @@ end
 %         'SaveGif',true,'GifFile',strrep(filename,'.mat','.gif'));
 % end
 %%  Plot Results
-if simScenario == 1 || simScenario == 1.1
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',true,'Vapp',false,'plotBeta',false)
-elseif simScenario >=3
-    hh = plotFlightResults(tsc,vhcl);   
-    set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
-elseif simScenario == 0
-    plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',true);   
-end
+% if simScenario == 1 || simScenario == 1.1
+%     tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',true,'Vapp',false,'plotBeta',false)
+% elseif simScenario >=3
+%     hh = plotFlightResults(tsc,vhcl);   
+%     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
+% elseif simScenario == 0
+%     plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',true);   
+% end
+tsc.turbEnrg.Data(1,1,end)
+load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-10.0_D-0.56_w-40.0_h-15.0_07-28_12-14.mat')
+tsc.turbEnrg.Data(1,1,end)
