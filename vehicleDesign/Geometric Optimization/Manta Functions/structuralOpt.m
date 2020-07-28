@@ -15,8 +15,8 @@ function [exitflag, Mw_out] = structuralOpt(AR, S, Vol,Fz, Df, Lf)
     tar_buoy = 1.0; %Number for Bryant Boyancy inequality condition (1)
     wmassrat = 0.3; %Ratio for Vermillion Boyancy inequality condition (0.3)
     rho = 1000.0;   %Density of water
-    E = 69*(10^9);  %Aluminium modulus of elasticity
-    rhow = 2710;    %Aluminium density
+    E = 69*(10^9);  %Aluminium modulus of elasticity    %   228e9 -> carbon fiber 
+    rhow = 2710;    %Aluminium density  %   1800 -> carbon fiber 
     Span = S/2;     %Length of beam (beam is  half length of span)
     defper = 5;     %Percentage Deflection at centroid (Note:5.0 == 5%)
     delx = defper*Span/100; %Magnitude of deflection
