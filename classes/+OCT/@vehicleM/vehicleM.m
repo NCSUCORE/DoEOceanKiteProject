@@ -10,7 +10,6 @@ classdef vehicleM < dynamicprops
         oldFluidMomentArms
         
         numTurbines
-%         turbDiam
         
         volume
         inertia_CM
@@ -45,7 +44,6 @@ classdef vehicleM < dynamicprops
         portWing
         stbdWing
         fuse
-%         turb
         
         initPosVecGnd
         initVelVecBdy
@@ -56,7 +54,6 @@ classdef vehicleM < dynamicprops
     properties (Dependent)
         mass
         thrAttchPts_B %Used for moment arms
-%         turb
         
         fluidMomentArms
         fuseMomentArm
@@ -68,7 +65,6 @@ classdef vehicleM < dynamicprops
         fluidRefArea
         M6x6_B
         Ma6x6_LE
-        
         
         staticMargin
         
@@ -83,12 +79,11 @@ classdef vehicleM < dynamicprops
             obj.numTethers          = SIM.parameter('Description','Number of tethers','NoScale',true);
             obj.buoyFactor          = SIM.parameter('Description','Buoyancy Factor = (Kite Density)/(Water Density)','NoScale',true);
             obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data','NoScale',true);
-            obj.flowGradientDist    = SIM.parameter('Value',0.1,'Unit','m','Description','Distance to space points used for estimating gradient of the flow field');
+            obj.flowGradientDist    = SIM.parameter('Value',0.08,'Unit','m','Description','Distance to space points used for estimating gradient of the flow field');
             obj.oldFluidMomentArms  = SIM.parameter('Value',0,'Description','Turns on the old (incorrect) calculation for fluid moment arms');
             
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
-%             obj.turbDiam    = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
             
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
@@ -98,7 +93,7 @@ classdef vehicleM < dynamicprops
             obj.Ma6x6_LEUL        = SIM.parameter('Value',zeros(3),'Unit','kg','Description','Upper left quadrant 6x6 Added Mass Matrix');
             obj.Ma6x6_LEUR        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Upper right quadrant 6x6 Added Mass Matrix');
             obj.Ma6x6_LELL        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
-            obj.Ma6x6_LELR       = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LELR        = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
             obj.D6x6_LE           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
             
             %Control Surface Deflections
@@ -205,20 +200,7 @@ classdef vehicleM < dynamicprops
 
         function setNumTurbines(obj,val,units)
             obj.numTurbines.setValue(val,units);
-%             for ii = 1:obj.numTurbines.Value
-%                 obj.turb(ii,1) = OCT.turb;
-%             end
-%             if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
-%                 warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
-%             end
         end
-
-%         function setTurbDiam(obj,val,units)
-%             obj.turbDiam.setValue(val,units);
-%             if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
-%                 warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
-%             end
-%         end
 
         function setOldFluidMomentArms(obj,val,units)
             obj.oldFluidMomentArms.setValue(val,units);
@@ -428,35 +410,6 @@ classdef vehicleM < dynamicprops
                     error('No get method programmed for %d tether attachment points',obj.numTethers.Value);
             end
         end
-        
-        % turbines
-%         function val = get.turbines(obj)
-%             for ii = 1:obj.numTurbines.Value
-%                 val(ii,1) = OCT.turb;
-%                 val(ii,1).setDiameter(obj.turbDiam.Value,'m');
-%                 val(ii,1).setPowerCoeff(0.5,'');
-%                 val(ii,1).setDragCoeff(.75,'');
-%                 % http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/introvisc/node11.html
-%             end
-%             switch obj.numTurbines.Value
-%                 case 2
-% %                     port_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;-15e-3;9.14e-3];
-% %                     stbd_turb = obj.vStab.rSurfLE_WingLEBdy.Value + [0;15e-3;9.14e-3];
-%                     val(1).setAxisUnitVec([1;0;0],'');
-%                     val(2).setAxisUnitVec([-1;0;0],'');
-%                     port_turb = [0;-obj.portWing.halfSpan.Value;0];
-%                     stbd_turb = [0;obj.portWing.halfSpan.Value;0];
-%                     val(1).setAttachPtVec(port_turb,'m');
-%                     val(2).setAttachPtVec(stbd_turb,'m');
-%                 case 1
-%                     val(ii,1).setAxisUnitVec([1;0;0],'');
-%                     noseTurb = obj.fuse.rNose_LE.Value;
-%                     val.setAttachPtVec(noseTurb,'m');
-%                     val.setDragCoeff(.75,'');
-%                 otherwise
-%                     fprintf('get method not programmed for %d turbines',obj.numTurbines.Value) 
-%             end            
-%         end
                 
         % aerodynamic reference area
         function val = get.fluidRefArea(obj)
