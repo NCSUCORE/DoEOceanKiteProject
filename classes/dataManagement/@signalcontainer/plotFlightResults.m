@@ -160,18 +160,18 @@ subplot(R,C,6); hold on; grid on
 if lap
     if con
 %         plot(data(ran),LiftDrag(ran),'b-');  xlabel('Path Position');  ylabel('L/D');   
-        plot(data(ran),totDrag(ran),'r-');    xlabel('Path Position');  ylabel('Force [N]');   
-        plot(data(ran),FLiftBdy(ran),'b-');   xlabel('Path Position');  ylabel('Force [N]');  legend('Drag','Lift') 
+        plot(data(ran),totDrag(ran)*1e-3,'r-');    xlabel('Path Position');  ylabel('Force [kN]');   
+        plot(data(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Path Position');  ylabel('Force [kN]');  legend('Drag','Lift') 
     else
         plot(time(ran),LiftDrag(ran),'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);    
     end
 else
     plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);  
 end
-% figure; hold on; grid on
-% plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
-% plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
-% legend('CD','CL') 
+figure; hold on; grid on
+plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
+plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
+legend('CD','CL') 
 %%  Assess wing tips
 if p.Results.Vapp
     figure;

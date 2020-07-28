@@ -1,4 +1,4 @@
-function [AR, Span, Jopt, Fz_out,exitflag] = Loadcalc_opt1(Df_in,Lf_in)
+function [AR, Span, Jopt, Fz_out,exitflag] = steadyFlightOpt(Df_in,Lf_in)
 %%  Main SS Hydro Optimization Function
 %u(1) = Aspect ratio
 %u(2) = Span (Total Wingspan)
