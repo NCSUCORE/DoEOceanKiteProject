@@ -52,6 +52,7 @@ thr.scale(lengthScaleFactors,1);
 env.scale(lengthScaleFactors,1);
 %%  Environment Properties 
 env.water.setflowVec([flwSpd 0 0],'m/s')
+ENVIRONMENT = 'environmentManta';
 %%  Set basis parameters for high level controller
 if strcmpi(PATHGEOMETRY,'ellipse')
     hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Ellipse
@@ -128,11 +129,11 @@ if simScenario >= 3
 end
 tRef = [0 5000 10000];     
 pSP = [20 30 30];
-% thr.tether1.dragEnable.setValue(0,'')
+thr.tether1.dragEnable.setValue(0,'')
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -145,7 +146,7 @@ switch simScenario
         filename = sprintf(strcat('Turb_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
     case 1.1
-        filename = sprintf(strcat('Turb2_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+        filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd,el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
     case 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
@@ -161,9 +162,9 @@ save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 % save(strcat(fpath,filename),'tsc','-v7.3')
 %%  Animate Simulation 
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
+        'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',false,...
@@ -171,10 +172,7 @@ save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 % end
 %%  Plot Results
 if simScenario == 1 || simScenario == 1.1
-%     plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',false);   
-    plotAeroResults(tsc,vhcl,'plot1Lap',true','plotS',false,'Vapp',false)
-%     plotTurbResults(tsc,vhcl,'plotS',true,'lap2',false);   
-%     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',true,'Vapp',false,'plotBeta',false)
 elseif simScenario >=3
     hh = plotFlightResults(tsc,vhcl);   
     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);

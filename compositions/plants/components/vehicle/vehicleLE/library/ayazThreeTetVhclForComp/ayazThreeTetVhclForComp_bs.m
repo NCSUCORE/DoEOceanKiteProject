@@ -3,6 +3,7 @@
 % format compact
 
 VEHICLE               = "vehicleLE";
+PLANT                 = "plantDOE";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
 
 %% Essential Values
@@ -13,10 +14,6 @@ vhcl.setNumTethers(3,'');
 vhcl.setBuoyFactor(1.1,'');
 vhcl.oldFluidMomentArms.setValue(1,'');
 vhcl.setFluidCoeffsFileName('ScaledModelCoeffAtFS8','');
-
-%% Turbines
-vhcl.setNumTurbines(2,'');
-vhcl.setTurbDiam(0.0,'m');
 
 %% Scaling Parameters
 Lscale = 0.015;
@@ -143,12 +140,30 @@ vhcl.stbdWing.alpha.setValue(AoA2412,'deg')
 vhcl.hStab.alpha.setValue(AoA0015,'deg')
 vhcl.vStab.alpha.setValue(AoA0015,'deg')
 
+%% Turbines
+vhcl.setNumTurbines(2,'');
+vhcl.build('TurbClass','turb');
+% port rotor
+vhcl.turb1.setMass(6,'kg')
+vhcl.turb1.setDiameter(0,'m')
+vhcl.turb1.setAxisUnitVec([1;0;0],'')
+vhcl.turb1.setAttachPtVec(vhcl.vStab.rSurfLE_WingLEBdy.Value + [0;-15e-3;9.14e-3],'m')
+vhcl.turb1.setPowerCoeff(.5,'')
+vhcl.turb1.setAxalInductionFactor(1.5,'')
+vhcl.turb1.setTipSpeedRatio(6,'')
+% starboard rotor
+vhcl.turb2.setMass(6,'kg')
+vhcl.turb2.setDiameter(0,'m')
+vhcl.turb2.setAxisUnitVec([-1;0;0],'')
+vhcl.turb2.setAttachPtVec(vhcl.vStab.rSurfLE_WingLEBdy.Value + [0;15e-3;9.14e-3],'m')
+vhcl.turb2.setPowerCoeff(.5,'')
+vhcl.turb2.setAxalInductionFactor(1.5,'')
+vhcl.turb2.setTipSpeedRatio(6,'')
 % % % scale it back down to lab scale before saving
 vhcl.scale(Lscale,1);
 
-
 %% save file in its respective directory
-saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
+saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS"]);
 
 
 

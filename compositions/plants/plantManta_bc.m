@@ -1,4 +1,4 @@
-function plant_bc
+function plantManta_bc
 sz = getBusDims;
 
 elems(1) = Simulink.BusElement;
@@ -92,7 +92,7 @@ elems(10).Complexity = 'real';
 
 elems(11) = Simulink.BusElement;
 elems(11).Name = 'vhclFlowPollPos';
-elems(11).Dimensions = [3 11]; %Note this assumes 5 fluid dynamic surfaces + fuselage + 6 gradient points
+elems(11).Dimensions = [3 13]; %Note this assumes 5 fluid dynamic surfaces + fuselage + 2 turbines + 6 gradient points
 elems(11).DimensionsMode = 'Fixed';
 elems(11).DataType = 'double';
 elems(11).SampleTime = -1;

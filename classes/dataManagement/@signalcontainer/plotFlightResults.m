@@ -5,16 +5,23 @@ addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'Vapp',false,@islogical);
 addOptional(p,'plotBeta',false,@islogical);
+addOptional(p,'LiftDrag',false,@islogical);
 parse(p,varargin{:})
 
+if p.Results.LiftDrag
+    R = 3;  C = 3;
+else
+    R = 3;  C = 2;
+end
+data = squeeze(obj.currentPathVar.Data);
 time = obj.lapNumS.Time;
 lap = p.Results.plot1Lap;
 con = p.Results.plotS;
 %%  Determine Single Lap Indices
 if lap
     lapNum = squeeze(obj.lapNumS.Data);
-    Idx1 = find(lapNum > 0,1,'first');
-    Idx2 = find(lapNum > 1,1,'first');
+    Idx1 = find(lapNum > 4,1,'first');
+    Idx2 = find(lapNum > 5,1,'first');
     if isempty(Idx1) || isempty(Idx2)
         error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
     end
@@ -25,8 +32,13 @@ else
 end
 %%  Compute Plotting Variables
 N = vhcl.numTurbines.Value;
-power = squeeze(obj.turbPow.Data(1,1,:))*N;
-energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600*N;
+if N == 1
+    power = squeeze(obj.turbPow.Data(1,1,:));
+    energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600;
+else
+    power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
+    energy = squeeze((obj.turbEnrg.Data(1,1,:)))/1000/3600+squeeze((obj.turbEnrg.Data(1,2,:)))/1000/3600;
+end
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
 Aref = vhcl.fluidRefArea.Value;
@@ -47,15 +59,19 @@ FLiftBdyP1 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,1,:).^2,1)));
 FLiftBdyP2 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,2,:).^2,1)));
 FLiftBdyP3 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,3,:).^2,1)));
 FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
+totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
-vPotential = LiftDrag.*env.water.speed.Value;
+vLoyd = LiftDrag.*env.water.speed.Value;
+PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2;
 figure();
 %%  Plot Turbine Power Output
-subplot(3,2,1); hold on; grid on
+subplot(R,C,1); 
+hold on; grid on
 yyaxis left
 if lap
     if con
-        plot(data(ran),power(ran),'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1])
+        plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
+        plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','AutoUpdate','off');
     else
         plot(time(ran),power(ran),'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim)
     end
@@ -73,7 +89,7 @@ else
     plot(time,energy,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
 end
 %%  Plot Tether Tension
-subplot(3,2,2); hold on; grid on
+subplot(R,C,2); hold on; grid on
 if lap
     if con
         plot(data(ran),airNode(ran),'b-');  plot(data(ran),gndNode(ran),'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Gnd')
@@ -84,21 +100,21 @@ else
     plot(time,airNode,'b-');  plot(time,gndNode,'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Gnd');  xlim(lim)
 end
 %%  Plot Turbine Flow Speed
-subplot(3,2,3); hold on; grid on
+subplot(R,C,3); hold on; grid on
 if lap
     if con
         plot(data(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');
-        plot(data(ran),vPotential(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
     else
         plot(time(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
-        plot(time(ran),vPotential(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
     end
 else
     plot(time,squeeze(obj.vAppLclBdy.Data(1,1,:)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
-    plot(time,vPotential,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+    plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
 end
 %%  Plot Angle of attack
-subplot(3,2,4); hold on; grid on
+subplot(R,C,4); hold on; grid on
 if lap
     if con
         plot(data(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('AoA [deg]');
@@ -118,7 +134,7 @@ else
     end
 end
 %%  Plot CL^3/CD^2
-subplot(3,2,5); hold on; grid on
+subplot(R,C,5); hold on; grid on
 yyaxis left
 if lap
     if con
@@ -140,16 +156,22 @@ else
     plot(time,CLsurf./CDtot,'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[1 0 0]);  xlim(lim)
 end
 %%  Plot Lift-Drag ratio
-subplot(3,2,6); hold on; grid on
+subplot(R,C,6); hold on; grid on
 if lap
     if con
-        plot(data(ran),LiftDrag(ran),'b-');  xlabel('Path Position');  ylabel('L/D');
+%         plot(data(ran),LiftDrag(ran),'b-');  xlabel('Path Position');  ylabel('L/D');   
+        plot(data(ran),totDrag(ran)*1e-3,'r-');    xlabel('Path Position');  ylabel('Force [kN]');   
+        plot(data(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Path Position');  ylabel('Force [kN]');  legend('Drag','Lift') 
     else
-        plot(time(ran),LiftDrag(ran),'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim)
+        plot(time(ran),LiftDrag(ran),'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);    
     end
 else
-    plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim)
+    plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);  
 end
+figure; hold on; grid on
+plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
+plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
+legend('CD','CL') 
 %%  Assess wing tips
 if p.Results.Vapp
     figure;

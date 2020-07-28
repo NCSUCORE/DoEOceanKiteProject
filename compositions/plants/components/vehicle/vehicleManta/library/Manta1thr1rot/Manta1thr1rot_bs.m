@@ -3,6 +3,7 @@
 % format compact
 
 VEHICLE               = "vehicleManta";
+PLANT                 = "plantManta";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
 
 %% Essential Values
@@ -67,7 +68,7 @@ vhcl.hStab.setRootChord(.5,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(4/.45,''); %Span 4, hspan 2
 vhcl.hStab.setSweep(2.8624,'deg');
-vhcl.hStab.setIncidence(-1.5,'deg');
+vhcl.hStab.setIncidence(-13.5,'deg');
 vhcl.hStab.setNACA('0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
@@ -104,7 +105,7 @@ vhcl.turb1.setTipSpeedRatio(6,'')
 vhcl.calcFluidDynamicCoefffs
 
 %% save file in its respective directory
-saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","SIXDOFDYNAMICS"]);
+saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS"]);
 
 
 
