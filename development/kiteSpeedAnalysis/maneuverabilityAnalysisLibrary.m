@@ -61,11 +61,12 @@ classdef maneuverabilityAnalysisLibrary
             eqY = matlabFunction(y);
         end
         
-        function [eqLong,eqLat,eqK] = derive_3D_Equations(obj)
+        function [eqX,eqY,eqK] = derive_3D_Equations(obj)
             % symbolic
             syms pathParm
             a = obj.aBooth;
             b = obj.bBooth;
+            r = obj.tetherLength;
             % logitutude equation
             pathLong = (a*sin(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
@@ -73,20 +74,27 @@ classdef maneuverabilityAnalysisLibrary
             pathLat = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
             pathLat = pathLat + obj.meanElevationInRadians;
+            % azimuth and elevation
+            azimuth = pathLong;
+            elevation = obj.meanElevationInRadians;
+            % get lemniscate coordinates
+            lemX = r*cos(azimuth).*cos(elevation);
+            lemY = r*sin(azimuth).*cos(elevation);
+            lemZ = r*sin(elevation);
             % first derivative
-            dLong = diff(pathLong,pathParm);
-            dLat = diff(pathLat,pathParm);
+            dx = diff(lemX,pathParm);
+            dy = diff(lemY,pathParm);
             % second derivative
-            ddLong = diff(dLong,pathParm);
-            ddLat = diff(dLat,pathParm);
+            ddx = diff(dx,pathParm);
+            ddy = diff(dy,pathParm);
             % curvature numerator
-            Knum = abs(dLong*ddLat - dLat*ddLong);
+            Knum = abs(dx*ddy - dy*ddx);
             % curvature denominator
-            Kden = (dLong^2 + dLat^2)^1.5;
+            Kden = (dx^2 + dy^2)^1.5;
             % curvature
             eqK = matlabFunction(Knum/Kden);
-            eqLong = matlabFunction(pathLong);
-            eqLat = matlabFunction(pathLat);
+            eqX = matlabFunction(lemX);
+            eqY = matlabFunction(lemY);
         end
         
         function [eqX,eqY,eqK] = radiusOfCurvatureFlatEarthApprox(obj)
@@ -104,7 +112,7 @@ classdef maneuverabilityAnalysisLibrary
             % latitude/elevation equation
             elevation = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
-%             elevation = elevation + obj.meanElevationInRadians;
+%             elevation = obj.meanElevationInRadians;
             % using flat earth approximation
             y = r*elevation;
             x = r*azimuth*cos(elevation);
