@@ -1,7 +1,7 @@
 FLIGHTCONTROLLER = 'pathFollowingControllerManta';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
-fltCtrl = CTR.pthFlwCtrl;
+fltCtrl = CTR.pthFlwCtrlM;
 
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
