@@ -1,4 +1,4 @@
-function plotEuler(obj,vhcl,env,varargin)
+function plotEuler(obj,varargin)
 p = inputParser;
 addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'plotS',false,@islogical);
@@ -7,7 +7,6 @@ addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'Color',[0 0 1],@isnumeric);
 parse(p,varargin{:})
-color = p.Results.Color;
 data = squeeze(obj.currentPathVar.Data);
 time = obj.lapNumS.Time;
 lap = p.Results.plot1Lap;
@@ -33,15 +32,15 @@ if lap
     if con
         plot(data(ran),roll(ran),'b-');  ylabel('Euler [deg]');
         plot(data(ran),pitch(ran),'r-');  ylabel('Euler [deg]');
-        plot(data(ran),yaw(ran),'g-');  ylabel('Euler [deg]');  legend('roll','pitch','yaw')
+        plot(data(ran),yaw(ran),'g-');  xlabel('Path Position');  ylabel('Euler [deg]');  legend('roll','pitch','yaw')
     else
         plot(time(ran),roll(ran),'b-');  ylabel('Euler [deg]');
         plot(time(ran),pitch(ran),'r-');  ylabel('Euler [deg]');
-        plot(time(ran),yaw(ran),'g-');  ylabel('Euler [deg]');  legend('roll','pitch','yaw');  xlim(lim)
+        plot(time(ran),yaw(ran),'g-');  xlabel('Time [s]');  ylabel('Euler [deg]');  legend('roll','pitch','yaw');  xlim(lim)
     end
 else
     plot(time,roll,'b-');  ylabel('Euler [deg]');
     plot(time,pitch,'r-');  ylabel('Euler [deg]');
-    plot(time,yaw,'g-');  ylabel('Euler [deg]');  legend('roll','pitch','yaw');  xlim(lim)
+    plot(time,yaw,'g-');  xlabel('Time [s]');  ylabel('Euler [deg]');  legend('roll','pitch','yaw');  xlim(lim)
 end
 end

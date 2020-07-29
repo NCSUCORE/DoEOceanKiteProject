@@ -111,7 +111,7 @@ env.scale(LFactor,DFactor);
 vhcl.scale(LFactor,DFactor);
 gndStn.scale(LFactor,DFactor);
 thr.scale(LFactor,DFactor);
-wnch.scale(LFactor,DFactor);
+% wnch.scale(LFactor,DFactor);
 ctrl.scale(LFactor,DFactor);
 fltCtrl.scale(LFactor,DFactor);
 hiLvlCtrl.scale(LFactor,DFactor);
