@@ -1,4 +1,4 @@
-function plotEuler(obj,vhcl,env,varargin)
+function plotEuler(obj,varargin)
 p = inputParser;
 addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'plotS',false,@islogical);
@@ -7,7 +7,6 @@ addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'Color',[0 0 1],@isnumeric);
 parse(p,varargin{:})
-color = p.Results.Color;
 data = squeeze(obj.currentPathVar.Data);
 time = obj.lapNumS.Time;
 lap = p.Results.plot1Lap;
