@@ -119,6 +119,46 @@ classdef signalcontainer < dynamicprops
                     error('Unknown data type to parse')
             end
         end
+        function plotCLCD(obj,vhcl,varargin)
+            p = inputParser;
+            addOptional(p,'plot1Lap',false,@islogical);
+            addOptional(p,'plotS',false,@islogical);
+            addOptional(p,'Lap1',1,@isnumeric);
+            parse(p,varargin{:})
+            data = squeeze(obj.currentPathVar.Data);
+            time = obj.lapNumS.Time;
+            lap = p.Results.plot1Lap;
+            con = p.Results.plotS;
+            L1 = p.Results.Lap1;
+            %  Determine Single Lap Indices
+            if lap
+                lapNum = squeeze(obj.lapNumS.Data);
+                Idx1 = find(lapNum > L1,1,'first');
+                Idx2 = find(lapNum > L1+1,1,'first');
+                if isempty(Idx1) || isempty(Idx2)
+                    error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
+                end
+                ran = Idx1:Idx2-1;
+                lim = [time(Idx1) time(Idx2)];
+            else
+                lim = [time(1) time(end)];
+            end
+            %  Compute Plotting Variables
+            [CL,CD] = getCLCD(obj,vhcl);
+            hold on; grid on
+            if lap
+                if con
+                    plot(data(ran),CL(ran),'b-');  xlabel('Path Position');
+                    plot(data(ran),CD(ran),'r-');  xlabel('Path Position');  legend('CL','CD','location','east');
+                else
+                    plot(time(ran),CL(ran),'b-');  xlabel('Path Position');
+                    plot(time(ran),CD(ran),'r-');  xlabel('Path Position');  xlim(lim);  legend('CL','CD','location','east');
+                end
+            else
+                plot(time,CL,'b-');  xlabel('Path Position');
+                plot(time,CD,'r-');  xlabel('Path Position');  xlim(lim);  legend('CL','CD','location','east');
+            end
+        end
         function [CLsurf,CDtot] = getCLCD(obj,vhcl)
             Aref = vhcl.fluidRefArea.Value;
             Afuse = squeeze(obj.Afuse.Data);

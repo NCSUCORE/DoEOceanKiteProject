@@ -34,24 +34,24 @@ else
 end
 [CLsurf,CDtot] = getCLCD(obj,vhcl);
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
-PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*C1.*C2;
+PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
 hold on; grid on
 if lap
     if con
-        plot(data(ran),power(ran)*1e-3,'-','color',color);  xlabel('Path Position');  ylabel('Power [kW]');
+        plot(data(ran),power(ran)*1e-3,'-','color',color);  xlabel('Path Position');  ylabel('Power [kW]');  ylim([0 inf]);  
         if p.Results.plotLoyd
-            plot(data(ran),PLoyd(ran)*1e-3,'--','color',color);  ylabel('Power [kW]');  legend('Kite','Loyd');
+            plot(data(ran),PLoyd(ran)*1e-3,'--','color',color);  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast');
         end
     else
-        plot(time(ran),power(ran),'-','color',color);  ylabel('Power [W]');  xlim(lim);
+        plot(time(ran),power(ran),'-','color',color);  xlabel('Time [s]');  ylabel('Power [W]');  xlim(lim);  ylim([0 inf]);  
         if p.Results.plotLoyd
-            plot(time(ran),PLoyd(ran),'--','color',color);  ylabel('Power [W]');  xlim(lim);  legend('Kite','Loyd');
+            plot(time(ran),PLoyd(ran),'--','color',color);  ylabel('Power [W]');  xlim(lim);  legend('Kite','Loyd','location','southeast');
         end
     end
 else
-    plot(time,power,'-','color',color);  ylabel('Power [W]');  xlim(lim);
+    plot(time,power,'-','color',color);  xlabel('Time [s]');  ylabel('Power [W]');  xlim(lim);  ylim([0 inf]);  
     if p.Results.plotLoyd
-        plot(time,PLoyd,'--','color',color);  ylabel('Power [W]');  xlim(lim);  legend('Kite','Loyd');
+        plot(time,PLoyd,'--','color',color);  ylabel('Power [W]');  xlim(lim);  legend('Kite','Loyd','location','southeast');
     end
 end
 end

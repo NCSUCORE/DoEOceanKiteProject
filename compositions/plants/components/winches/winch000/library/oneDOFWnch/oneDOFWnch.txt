@@ -24,3 +24,9 @@ wnch.winch1.generatorEfficiency.NoScale = false
 wnch.winch1.generatorEfficiency.Min = 0.0000e+00
 wnch.winch1.generatorEfficiency.Max = 1.0000e+00
 wnch.winch1.generatorEfficiency.Description = 'Electromechanical regenerative efficiency of winches during spool out, default = 0.90'
+wnch.winch1.LaRspeed.Unit = 'm/s'
+wnch.winch1.LaRspeed.NoScale = false
+wnch.winch1.LaRspeed.Description = 'Nominal speed at which the tether is reeled ib/out for launch and recovery.'
+wnch.winch1.elevError.Unit = 'deg'
+wnch.winch1.elevError.NoScale = false
+wnch.winch1.elevError.Description = 'Maximum elevator error at which spooling is allowed'
