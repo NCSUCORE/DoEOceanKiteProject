@@ -43,13 +43,13 @@ if lap
             plot(data(ran),PLoyd(ran)*1e-3,'--','color',color);  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast');
         end
     else
-        plot(time(ran),power(ran),'-','color',color);  ylabel('Power [W]');  xlim(lim);  ylim([0 inf]);  
+        plot(time(ran),power(ran),'-','color',color);  xlabel('Time [s]');  ylabel('Power [W]');  xlim(lim);  ylim([0 inf]);  
         if p.Results.plotLoyd
             plot(time(ran),PLoyd(ran),'--','color',color);  ylabel('Power [W]');  xlim(lim);  legend('Kite','Loyd','location','southeast');
         end
     end
 else
-    plot(time,power,'-','color',color);  ylabel('Power [W]');  xlim(lim);  ylim([0 inf]);  
+    plot(time,power,'-','color',color);  xlabel('Time [s]');  ylabel('Power [W]');  xlim(lim);  ylim([0 inf]);  
     if p.Results.plotLoyd
         plot(time,PLoyd,'--','color',color);  ylabel('Power [W]');  xlim(lim);  legend('Kite','Loyd','location','southeast');
     end
