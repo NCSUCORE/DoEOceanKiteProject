@@ -12,9 +12,9 @@ thr.setNumNodes(5,'');
 thr.build('TetherClass','tether001');
 
 % Set parameter values
-thrDia = 0.0144;
+thrDia = 0.0115;
 
-thr.tether1.setYoungsMod(50e9,'Pa');
+thr.tether1.setYoungsMod(40e9,'Pa');
 thr.tether1.setDampingRatio(.75,'');
 thr.tether1.setDragCoeff(0.5,'');
 thr.tether1.setDensity(1300,'kg/m^3');
