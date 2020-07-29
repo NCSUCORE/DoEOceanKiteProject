@@ -12,7 +12,7 @@ vhcl = OCT.vehicleM;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('Manta00','');
+vhcl.setFluidCoeffsFileName('Manta01','');
 
 %% Volumes and Inertia
 vhcl.setVolume(1.4628,'m^3');
@@ -50,8 +50,8 @@ vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 vhcl.setWingRootChord(.8,'m');
 vhcl.setWingAR(100/9,'');
 vhcl.setWingTR(0.8,'');
-vhcl.setWingSweep(2.3,'deg');
-vhcl.setWingDihedral(2,'deg');
+vhcl.setWingSweep(0,'deg');
+vhcl.setWingDihedral(0,'deg');
 vhcl.setWingIncidence(0,'deg');
 vhcl.setWingNACA('2412','');
 vhcl.setWingClMin(-1.7,'');
