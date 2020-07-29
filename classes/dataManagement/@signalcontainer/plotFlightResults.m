@@ -38,6 +38,7 @@ if N == 1
 else
     power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
     energy = squeeze((obj.turbEnrg.Data(1,1,:)))/1000/3600+squeeze((obj.turbEnrg.Data(1,2,:)))/1000/3600;
+    speed = (squeeze(obj.turbVel.Data(1,1,:))+squeeze(obj.turbVel.Data(1,2,:)))/2;
 end
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
@@ -61,8 +62,8 @@ FLiftBdyP3 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,3,:).^2,1)));
 FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
 totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
-vLoyd = LiftDrag.*env.water.speed.Value;
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
 PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
 figure();
 %%  Plot Turbine Power Output
@@ -93,18 +94,19 @@ end
 subplot(R,C,2); hold on; grid on
 if lap
     if con
-        plot(data(ran),airNode(ran),'b-');  plot(data(ran),gndNode(ran),'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Gnd')
+        plot(data(ran),airNode(ran),'b-');  plot(data(ran),gndNode(ran),'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Glider')
     else
-        plot(time(ran),airNode(ran),'b-');  plot(time(ran),gndNode(ran),'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Gnd');  xlim(lim)
+        plot(time(ran),airNode(ran),'b-');  plot(time(ran),gndNode(ran),'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Glider');  xlim(lim)
     end
 else
-    plot(time,airNode,'b-');  plot(time,gndNode,'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Gnd');  xlim(lim)
+    plot(time,airNode,'b-');  plot(time,gndNode,'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Glider');  xlim(lim)
 end
 %%  Plot Turbine Flow Speed
 subplot(R,C,3); hold on; grid on
 if lap
     if con
-        plot(data(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');
+%         plot(data(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');
+        plot(data(ran),speed(ran),'b-');  ylabel('Speed [m/s]');
         plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
     else
         plot(time(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
