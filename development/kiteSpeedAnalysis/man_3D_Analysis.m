@@ -8,8 +8,8 @@ set(groot, 'defaultLegendInterpreter','latex');
 %% make instance of class to use its methods
 cIn = maneuverabilityAnalysisLibrary;
 
-cIn.aBooth = 0.6;
-cIn.bBooth = 2;
+cIn.aBooth = 0.8;
+cIn.bBooth = 1.6;
 cIn.tetherLength = 50;
 cIn.meanElevationInRadians = 30*pi/180;
 

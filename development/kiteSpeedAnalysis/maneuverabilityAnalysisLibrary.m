@@ -7,6 +7,8 @@ classdef maneuverabilityAnalysisLibrary
         bBooth
         tetherLength
         meanElevationInRadians
+        EllipticalWidth = 2*pi/4;
+        EllipticalHeight = 0.6*2*pi/4;
     end
     
     methods
@@ -36,7 +38,7 @@ classdef maneuverabilityAnalysisLibrary
             eqy = matlabFunction(y);
         end
         
-        function [eqX,eqY,eqK] = testWithCircle(obj)
+        function [eqX,eqY,eqK] = circular_2D_Path(obj)
             % symbolic
             syms t
             % radius
@@ -61,11 +63,12 @@ classdef maneuverabilityAnalysisLibrary
             eqY = matlabFunction(y);
         end
         
-        function [eqLong,eqLat,eqK] = derive_3D_Equations(obj)
+        function [eqX,eqY,eqZ,eqK] = derive_3D_Equations(obj)
             % symbolic
             syms pathParm
             a = obj.aBooth;
             b = obj.bBooth;
+            r = obj.tetherLength;
             % logitutude equation
             pathLong = (a*sin(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
@@ -73,30 +76,116 @@ classdef maneuverabilityAnalysisLibrary
             pathLat = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
             pathLat = pathLat + obj.meanElevationInRadians;
+            % get lemniscate coordinates
+            lemX = r*cos(pathLong).*cos(pathLat);
+            lemY = r*sin(pathLong).*cos(pathLat);
+            lemZ = r*sin(pathLat);
             % first derivative
-            dLong = diff(pathLong,pathParm);
-            dLat = diff(pathLat,pathParm);
+            dx = diff(lemX,pathParm);
+            dy = diff(lemY,pathParm);
+            dz = diff(lemZ,pathParm);
             % second derivative
-            ddLong = diff(dLong,pathParm);
-            ddLat = diff(dLat,pathParm);
+            ddx = diff(dx,pathParm);
+            ddy = diff(dy,pathParm);
+            ddz = diff(dz,pathParm);
             % curvature numerator
-            Knum = abs(dLong*ddLat - dLat*ddLong);
+            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + (ddy*dx - ddx*dy)^2);
             % curvature denominator
-            Kden = (dLong^2 + dLat^2)^1.5;
+            Kden = (dx^2 + dy^2 + dz^2)^1.5;
             % curvature
             eqK = matlabFunction(Knum/Kden);
-            eqLong = matlabFunction(pathLong);
-            eqLat = matlabFunction(pathLat);
+            eqX = matlabFunction(lemX);
+            eqY = matlabFunction(lemY);
+            eqZ = matlabFunction(lemZ);
+
         end
         
-        function [eqX,eqY,eqK] = radiusOfCurvatureFlatEarthApprox(obj)
+        function [eqX,eqY,eqZ,eqK] = ellipticalPath(obj)
+            % symbolics
+            syms pathParam
+            % get path width and height
+            a = obj.EllipticalWidth/2;
+            b = obj.EllipticalHeight/2;
+            r = obj.tetherLength;
+            % path longitude
+            pathLong = a*cos(pathParam);
+            % path latitude
+            pathLat = obj.meanElevationInRadians + b*sin(pathParam);
+            % path cartesian cordinates
+            pathX = r*cos(pathLong).*cos(pathLat);
+            pathY = r*sin(pathLong).*cos(pathLat);
+            pathZ = r*sin(pathLat);
+            % first derivative
+            dx = diff(pathX,pathParam);
+            dy = diff(pathY,pathParam);
+            dz = diff(pathZ,pathParam);
+            % second derivative
+            ddx = diff(dx,pathParam);
+            ddy = diff(dy,pathParam);
+            ddz = diff(dz,pathParam);
+            % curvature numerator
+            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + (ddy*dx - ddx*dy)^2);
+            % curvature denominator
+            Kden = (dx^2 + dy^2 + dz^2)^1.5;
+            % curvature
+            eqK = matlabFunction(Knum/Kden);
+            eqX = matlabFunction(pathX);
+            eqY = matlabFunction(pathY);
+            eqZ = matlabFunction(pathZ);
+        end
+        
+        function [eqX,eqY,eqZ,eqK] = circular_3D_Path(obj)            
+            % symbolics
+            syms pathParam
+            % get tether length
+            R = obj.tetherLength;
+            mE = obj.meanElevationInRadians;
+            % set radius for intersecting plane
+            rP = 0.9*R;
+            % radius of great circle
+            rG = sqrt(R^2 - rP^2);
+            % make rotation matrix for tangent plane
+            TcO = [cos(mE) 0 sin(mE);0 1 0;-sin(mE) 0 cos(mE)] ;
+            % plane vector in tangent plane
+            rP_T = [rP;0;0];
+            % rotation matrix for rotating frame
+            BcT = [1 0 0;0 cos(pathParam) sin(pathParam);...
+                0 -sin(pathParam) cos(pathParam)];
+            % rotate vector into tangent frame
+            rG_T = transpose(BcT)*[0;0;-rG];
+            % get great circle in the inertial frame
+            rCM_O = transpose(TcO)*(rP_T + rG_T);
+            % path cartesian cordinates
+            pathX = rCM_O(1);
+            pathY = rCM_O(2);
+            pathZ = rCM_O(3);
+            % first derivative
+            dx = diff(pathX,pathParam);
+            dy = diff(pathY,pathParam);
+            dz = diff(pathZ,pathParam);
+            % second derivative
+            ddx = diff(dx,pathParam);
+            ddy = diff(dy,pathParam);
+            ddz = diff(dz,pathParam);
+            % curvature numerator
+            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + (ddy*dx - ddx*dy)^2);
+            % curvature denominator
+            Kden = (dx^2 + dy^2 + dz^2)^1.5;
+            % curvature
+            eqK = matlabFunction(Knum/Kden);
+            eqX = matlabFunction(pathX);
+            eqY = matlabFunction(pathY);
+            eqZ = matlabFunction(pathZ);
+        end
+        
+        function [eqZ,eqY,eqK] = radiusOfCurvatureFlatEarthApprox(obj)
             
             a = obj.aBooth;
             b = obj.bBooth;
             r = obj.tetherLength;
+            meanElev = obj.meanElevationInRadians;
             % % % initialize symbolics
-            syms azimuth(pathParm) elevation(pathParm) ...
-                tetLength aBooth bBooth pathParm
+            syms azimuth elevation pathParm
             
             % logitutude/azimuth equation
             azimuth = (a*sin(pathParm))./...
@@ -104,29 +193,33 @@ classdef maneuverabilityAnalysisLibrary
             % latitude/elevation equation
             elevation = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
                 (1 + ((a/b)^2).*(cos(pathParm).^2));
-%             elevation = elevation + obj.meanElevationInRadians;
-            % using flat earth approximation
-            y = r*elevation;
-            x = r*azimuth*cos(elevation);
+            elevation = elevation + meanElev;
             
-            % get first derivative
-            dx = diff(x,pathParm);
-            dy = diff(y,pathParm);
-            
+            % make rotation matrix parallel to the sphere at mean elevation
+            Ry = [cos(meanElev) 0 sin(meanElev);
+                0 1 0;
+                -sin(meanElev) 0 cos(meanElev)];
+            % roate rCM from inertial to tangent frame
+            rCM = Ry*[r*cos(azimuth).*cos(elevation);
+                r*sin(azimuth).*cos(elevation);
+                r*sin(elevation)];
+            % get rid of the x component to get the projected path
+            yProj = rCM(2);
+            zProj = rCM(3);
+            % get first derivatives of the simplified x and y equations
+            dy = diff(yProj,pathParm);
+            dz = diff(zProj,pathParm);
             % get second derivative
-            ddx = diff(dx,pathParm);
-            ddy = diff(dx,pathParm);
-            
+            ddy = diff(dy,pathParm);
+            ddz = diff(dz,pathParm);
             % curvature numerator
-            Knum = abs(dx*ddy - dy*ddx);
+            Knum = abs(dz*ddy - dy*ddz);
             % curvature denominator
-            Kden = (dx^2 + dy^2)^1.5;
-            
+            Kden = (dz^2 + dy^2)^1.5;
             % curvature
             eqK = matlabFunction(Knum/Kden);
-            eqX = matlabFunction(x);
-            eqY = matlabFunction(y+r*obj.meanElevationInRadians);
-            
+            eqY = matlabFunction(yProj);
+            eqZ = matlabFunction(zProj);
         end
         
         function [lemniscate,polarCoord] = getLemniScateCoordinates(...
@@ -156,20 +249,21 @@ classdef maneuverabilityAnalysisLibrary
             % local variables
             pathParam = linspace(0,2*pi,300);
             avgEl = obj.meanElevationInRadians;
+            tetLen = obj.tetherLength;
             % preallocate arrays
-            xLoc = NaN*pathParam;
+            zLoc = NaN*pathParam;
             yLoc = NaN*pathParam;
             RFE = NaN*pathParam;
             % get equations for x,y and K using flat earth function
-            [eqX,eqY,eqK] = obj.radiusOfCurvatureFlatEarthApprox();
+            [eqZ,eqY,eqK] = obj.radiusOfCurvatureFlatEarthApprox();
             for ii = 1:numel(pathParam)
-                xLoc(ii) = eqX(pathParam(ii));
+                zLoc(ii) = eqZ(pathParam(ii));
                 yLoc(ii) = eqY(pathParam(ii));
-                RFE(ii) = 1/max(eps,eqK(pathParam(ii)));
+                RFE(ii) = min(tetLen,1/max(eps,eqK(pathParam(ii))));
             end
             % outputs
             val.radiusOfCircle = RFE;
-            val.xPosProjection = xLoc;
+            val.zPosProjection = zLoc;
             val.yPosProjection = yLoc;
             % get lemniscate cordinates and polar coordinates
             [lemVal,polVal] = obj.getLemniScateCoordinates(pathParam);
@@ -211,21 +305,21 @@ classdef maneuverabilityAnalysisLibrary
                 elevLine(3,maxElevIdx)+txtOffset,sprintf('%.2f',maxElev*180/pi));
             text(elevLine(1,minElevIdx),elevLine(2,minElevIdx),...
                 elevLine(3,minElevIdx)-txtOffset,sprintf('%.2f',minElev*180/pi));
+            obj.plotDome
             % 2D plot of the flat earth path
             subplot(3,1,2)
-            plot(xLoc,yLoc,'k-')
+            plot(yLoc,zLoc,'k-')
             grid on;hold on;
+            axis equal
             xlabel('Y (m)');ylabel('Z (m)');
             title('Projection of path');
             % radius of curvature
             subplot(3,1,3)
             maxPercRad = 1;
-            temp = RFE;
-            temp(RFE>=maxPercRad*obj.tetherLength) = NaN;
-            plot(pathParam,temp,'k-');
+            plot(pathParam,RFE,'k-');
             grid on;hold on;
             xlabel('Path parameter');ylabel('$R_{\mathrm{osc}}$ (m)');
-            title('Radius of osculating circle');
+            title('Radius of curvature');
             
             % analyse section
             switch nargin
@@ -236,7 +330,7 @@ classdef maneuverabilityAnalysisLibrary
                     plot3(lemVal.lemX(nIdx),lemVal.lemY(nIdx),lemVal.lemZ(nIdx),...
                         'r-','linewidth',1);
                     subplot(3,1,2)
-                    plot(xLoc(nIdx),yLoc(nIdx),...
+                    plot(yLoc(nIdx),zLoc(nIdx),...
                         'r-','linewidth',1);
                     subplot(3,1,3)
                     nPathParm = pathParam(nIdx);
@@ -257,6 +351,36 @@ classdef maneuverabilityAnalysisLibrary
             else
                 figure(val);
             end
+        end
+        
+        function plotDome(obj)
+            % get constants
+            r = obj.tetherLength;
+            lwd = 0.5;
+            lnType = ':';
+            grayRGB = 128/255.*[1 1 1];
+            % make longitude and latitude fine grids
+            longFine = -90:1:90;
+            latFine = -0:1:90;
+            stepSize = 30;
+            % make longitude and latitude coarse grids
+            longCoarse = longFine(1):stepSize:longFine(end);
+            latCoarse = latFine(1):stepSize:latFine(end);
+            % plot longitude lines
+            for ii = 1:numel(longCoarse)
+            X = r*cosd(longCoarse(ii)).*cosd(latFine);
+            Y = r*sind(longCoarse(ii)).*cosd(latFine);
+            Z = r*sind(latFine);
+            plot3(X,Y,Z,lnType,'linewidth',lwd,'color',grayRGB);
+            end
+            % plot latitude lines
+            for ii = 1:numel(latCoarse)
+            X = r*cosd(longFine).*cosd(latCoarse(ii));
+            Y = r*sind(longFine).*cosd(latCoarse(ii));
+            Z = r*sind(latCoarse(ii))*ones(size(longFine));
+            plot3(X,Y,Z,lnType,'linewidth',lwd,'color',grayRGB);
+            end
+            
         end
             
     end
