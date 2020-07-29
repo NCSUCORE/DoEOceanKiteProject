@@ -362,12 +362,12 @@ classdef maneuverabilityAnalysisLibrary
             % make longitude and latitude fine grids
             longFine = -90:1:90;
             latFine = -0:1:90;
+            stepSize = 30;
             % make longitude and latitude coarse grids
-            longCoarse = longFine(1):30:longFine(end);
-            latCoarse = latFine(1):30:latFine(end);
+            longCoarse = longFine(1):stepSize:longFine(end);
+            latCoarse = latFine(1):stepSize:latFine(end);
             % plot longitude lines
             for ii = 1:numel(longCoarse)
-            % get coordinate locations
             X = r*cosd(longCoarse(ii)).*cosd(latFine);
             Y = r*sind(longCoarse(ii)).*cosd(latFine);
             Z = r*sind(latFine);
@@ -375,13 +375,11 @@ classdef maneuverabilityAnalysisLibrary
             end
             % plot latitude lines
             for ii = 1:numel(latCoarse)
-            % get coordinate locations
             X = r*cosd(longFine).*cosd(latCoarse(ii));
             Y = r*sind(longFine).*cosd(latCoarse(ii));
             Z = r*sind(latCoarse(ii))*ones(size(longFine));
             plot3(X,Y,Z,lnType,'linewidth',lwd,'color',grayRGB);
             end
-            % make mesh
             
         end
             
