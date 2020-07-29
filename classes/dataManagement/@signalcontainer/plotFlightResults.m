@@ -20,8 +20,8 @@ con = p.Results.plotS;
 %%  Determine Single Lap Indices
 if lap
     lapNum = squeeze(obj.lapNumS.Data);
-    Idx1 = find(lapNum > 4,1,'first');
-    Idx2 = find(lapNum > 5,1,'first');
+    Idx1 = find(lapNum > 1,1,'first');
+    Idx2 = find(lapNum > 2,1,'first');
     if isempty(Idx1) || isempty(Idx2)
         error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
     end
@@ -62,7 +62,8 @@ FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
 totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 vLoyd = LiftDrag.*env.water.speed.Value;
-PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2;
+C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
 figure();
 %%  Plot Turbine Power Output
 subplot(R,C,1); 
@@ -71,12 +72,12 @@ yyaxis left
 if lap
     if con
         plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
-        plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','AutoUpdate','off');
+        plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
     else
-        plot(time(ran),power(ran),'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim)
+        plot(time(ran),power(ran),'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
     end
 else
-    plot(time,power,'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim)
+    plot(time,power,'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
 end
 yyaxis right
 if lap
