@@ -8,7 +8,7 @@ simScenario = 1.1;
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
-el = 10*pi/180;                                             %   rad - Mean elevation angle 
+el = 30*pi/180;                                             %   rad - Mean elevation angle 
 h = 15*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
@@ -126,7 +126,7 @@ thr.tether1.dragEnable.setValue(0,'')
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -139,8 +139,10 @@ switch simScenario
         filename = sprintf(strcat('Turb_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
     case 1.1
-        filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd,el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
-        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
+%         filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd,el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+%         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
+        filename = sprintf(strcat('Turb2_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f.mat'),flwSpd,el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor','EL30\');
     case 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Winch\');
@@ -164,14 +166,15 @@ save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBR
 %         'SaveGif',true,'GifFile',strrep(filename,'.mat','.gif'));
 % end
 %%  Plot Results
-% if simScenario == 1 || simScenario == 1.1
+if simScenario == 1 || simScenario == 1.1
 %     tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',true,'Vapp',false,'plotBeta',false)
-% elseif simScenario >=3
-%     hh = plotFlightResults(tsc,vhcl);   
-%     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
-% elseif simScenario == 0
-%     plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',true);   
-% end
+    tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
+elseif simScenario >= 3
+    hh = plotFlightResults(tsc,vhcl);   
+    set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
+elseif simScenario == 0
+    plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',true);   
+end
 %%  Compare to old results 
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2a_V-0.25_EL-10.0_D-0.56_w-40.0_h-15.0_07-28_17-00.mat')
