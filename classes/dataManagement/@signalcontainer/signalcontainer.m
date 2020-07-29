@@ -298,6 +298,14 @@ classdef signalcontainer < dynamicprops
                 plot(time(ran),FLiftBdyZ(ran)./FDragBdyZ(ran),'g-');  ylim([0 50]);  ylabel('L/D');  legend('X','Y','Z')
             end
         end
+        function [CLsurf,CDtot] = getCLCD(obj,vhcl)
+            Aref = vhcl.fluidRefArea.Value;
+            Afuse = squeeze(obj.Afuse.Data);
+            CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
+            CDsurf = squeeze(sum(obj.CD.Data(1,1:3,:),2));
+            CDtot = CDfuse+CDsurf;
+            CLsurf = squeeze(sum(obj.CL.Data(1,1:3,:),2));
+        end
     end
 end
 
