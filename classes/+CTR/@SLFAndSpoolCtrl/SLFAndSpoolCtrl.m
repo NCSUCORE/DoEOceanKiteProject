@@ -38,6 +38,7 @@ classdef SLFAndSpoolCtrl < handle
         nonXCurrentSpoolInGain
         spoolCtrlTimeConstant
         nomSpoolSpeed
+        leashLength
     end
     
     methods
@@ -78,6 +79,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.nonXCurrentSpoolInGain  = SIM.parameter('Unit','','Description','Flow speed multiplier to get glide-in winch speed');
             obj.spoolCtrlTimeConstant   = SIM.parameter('Unit','s','Description','Time constant for spooling command');
             obj.nomSpoolSpeed           = SIM.parameter('Unit','m/s','Description','Nominal spooling speed');
+            obj.leashLength             = SIM.parameter('Unit','m','Description','Length of the short leash');
         end
         
         function setTanRoll(obj,val,units)
@@ -178,6 +180,10 @@ classdef SLFAndSpoolCtrl < handle
         
         function setNomSpoolSpeed(obj,val,units)
             obj.nomSpoolSpeed.setValue(val,units)
+        end
+        
+        function setLeashLength(obj,val,units)
+            obj.leashLength.setValue(val,units)
         end
         
         function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec) %#ok<INUSD>
