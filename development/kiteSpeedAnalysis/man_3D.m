@@ -1,17 +1,17 @@
 clear
 clc
-close all
+% close all
 
 %% initailize
 cIn = maneuverabilityAnalysisLibrary;
-cIn.aBooth = 0.6;
-cIn.bBooth = 2;
-cIn.tetherLength = 50;
+cIn.aBooth = 0.3491;
+cIn.bBooth = 0.6391;
+cIn.tetherLength = 400;
 cIn.meanElevationInRadians = 30*pi/180;
 
 % path parameter
 pathParam = linspace(0,2*pi,200);
-pathRange = [ 1 2];
+pathRange = pi*[0.5 1.5];
 
 %% get equations
 [x,y,z,K] = cIn.derive_3D_Equations();
@@ -24,7 +24,8 @@ for ii = 1:numel(pathParam)
 end
 
 %% plots
-fig = cIn.findFigureObject('Results');
+% fig = cIn.findFigureObject('Results');
+figure
 set(gcf,'Position',[100 0.1 560 2*420]);
 
 subplot(2,1,1);

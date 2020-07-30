@@ -8,12 +8,12 @@ set(groot, 'defaultLegendInterpreter','latex');
 %% make instance of class to use its methods
 cIn = maneuverabilityAnalysisLibrary;
 
-cIn.aBooth = 0.8;
-cIn.bBooth = 1.6;
-cIn.tetherLength = 50;
-cIn.meanElevationInRadians = 30*pi/180;
+cIn.aBooth = 0.3491;
+cIn.bBooth = 0.6391;
+cIn.tetherLength = 400;
+cIn.meanElevationInRadians = 1*30*pi/180;
 
-res = cIn.analyseFlatEarthRes([1 2]);
+res = cIn.analyseFlatEarthRes(pi*[0.5 1.5]);
 
 subplot(3,1,1)
 
