@@ -3,12 +3,12 @@ Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario 
 %   0 = fig8;   1 = fig8-rotor;   1.1 = fig8-2rotor;   2 = fig8-winch;   3 = steady;  4 = reel-in/out
-simScenario = 1.1;
+simScenario = 4;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
-el = 30*pi/180;                                             %   rad - Mean elevation angle 
+el = 40*pi/180;                                             %   rad - Mean elevation angle 
 h = 15*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
@@ -36,7 +36,7 @@ switch simScenario                                          %   Tether
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
-if mod(simScenario,1) == 0
+if simScenario == 0
     loadComponent('Manta1thr1rot');                         %   Vehicle with 1 rotor 
 else
 %     loadComponent('Manta2rot');                             %   Vehicle with 2 rotors
@@ -112,7 +112,7 @@ if simScenario >= 3
     fltCtrl.pitchSP.ki.setValue(.5,'(deg)/(deg*s)');
     fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)');
     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');
-    fltCtrl.RelevationSP.setValue(35,'deg');
+    fltCtrl.RelevationSP.setValue(30,'deg');
     fltCtrl.pitchAngleMax.upperLimit.setValue(10,'');
 %     fltCtrl.pitchAngleMax.lowerLimit.setValue(-60,'');
     fltCtrl.setNomSpoolSpeed(.5,'m/s');
@@ -126,7 +126,7 @@ thr.tether1.dragEnable.setValue(0,'')
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(400,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -171,7 +171,7 @@ if simScenario == 1 || simScenario == 1.1
 %     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
 elseif simScenario >= 3
     hh = plotFlightResults(tsc,vhcl);   
-    set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
+%     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
 elseif simScenario == 0
     plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',true);   
 end
