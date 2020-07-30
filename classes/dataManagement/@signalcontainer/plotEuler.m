@@ -7,12 +7,12 @@ addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'Color',[0 0 1],@isnumeric);
 parse(p,varargin{:})
-data = squeeze(obj.currentPathVar.Data);
-time = obj.lapNumS.Time;
+time = obj.MNetBdy.Time;
 lap = p.Results.plot1Lap;
 con = p.Results.plotS;
 %  Determine Single Lap Indices
 if lap
+    data = squeeze(obj.currentPathVar.Data);
     lapNum = squeeze(obj.lapNumS.Data);
     Idx1 = find(lapNum > 0,1,'first');
     Idx2 = find(lapNum > 1,1,'first');

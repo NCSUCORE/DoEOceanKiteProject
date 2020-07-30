@@ -184,3 +184,7 @@ fltCtrl.nomSpoolSpeed.Value = 5.0000e-01
 fltCtrl.nomSpoolSpeed.Unit = 'm/s'
 fltCtrl.nomSpoolSpeed.NoScale = false
 fltCtrl.nomSpoolSpeed.Description = 'Nominal spooling speed'
+fltCtrl.leashLength.Value = 2.0000e+01
+fltCtrl.leashLength.Unit = 'm'
+fltCtrl.leashLength.NoScale = false
+fltCtrl.leashLength.Description = 'Length of the short leash'

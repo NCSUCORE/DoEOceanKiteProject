@@ -53,6 +53,7 @@ fltCtrl.setSwitchFilterDuration(10,'s')
 fltCtrl.setNonXCurrentSpoolInGain(1.5,'')
 fltCtrl.setSpoolCtrlTimeConstant(2,'s')
 fltCtrl.setNomSpoolSpeed(.5,'m/s')
+fltCtrl.setLeashLength(20,'m')
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 save(saveFile,'SPOOLINGCONTROLLER','-append')
