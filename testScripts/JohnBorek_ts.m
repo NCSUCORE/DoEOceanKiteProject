@@ -112,7 +112,7 @@ if simScenario >= 3
     fltCtrl.pitchSP.ki.setValue(.5,'(deg)/(deg*s)');
     fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)');
     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');
-    fltCtrl.RelevationSP.setValue(30,'deg');
+    fltCtrl.RelevationSP.setValue(35,'deg');
     fltCtrl.pitchAngleMax.upperLimit.setValue(10,'');
 %     fltCtrl.pitchAngleMax.lowerLimit.setValue(-60,'');
     fltCtrl.setNomSpoolSpeed(.5,'m/s');
@@ -126,7 +126,7 @@ thr.tether1.dragEnable.setValue(0,'')
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(400,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(1300,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -166,15 +166,12 @@ end
 %         'SaveGif',true,'GifFile',strrep(filename,'.mat','.gif'));
 % end
 %%  Plot Results
-if simScenario == 1 || simScenario == 1.1
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',true,'Vapp',false,'plotBeta',false)
-%     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
-elseif simScenario >= 3
-    hh = plotFlightResults(tsc,vhcl);   
-%     set(gcf,'OuterPosition',[-6.2 33.8 1550.4 838.4]);
-elseif simScenario == 0
-    plotLapResults(tsc,vhcl,'plotS',true,'lap2',false,'Vapp',true);   
-end
+% if simScenario < 3
+%     tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',true,'Vapp',false,'plotBeta',false)
+% %     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
+% else
+%     plotFlightResults(tsc,vhcl);   
+% end
 %%  Compare to old results 
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2a_V-0.25_EL-10.0_D-0.56_w-40.0_h-15.0_07-28_17-00.mat')

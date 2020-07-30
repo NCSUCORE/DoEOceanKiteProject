@@ -105,7 +105,6 @@ end
 subplot(R,C,3); hold on; grid on
 if lap
     if con
-%         plot(data(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');
         plot(data(ran),speed(ran),'b-');  ylabel('Speed [m/s]');
         plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
     else
