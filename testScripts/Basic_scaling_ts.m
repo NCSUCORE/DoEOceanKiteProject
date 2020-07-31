@@ -32,8 +32,8 @@ loadComponent('fullScale1thr');
 % Environment
 loadComponent('constXYZT');
 % Sensors
-loadComponent('realisticSensors')
-% loadComponent('idealSensors')
+% loadComponent('realisticSensors')
+loadComponent('idealSensors')
 % Sensor processing
 loadComponent('idealSensorProcessing')
 
