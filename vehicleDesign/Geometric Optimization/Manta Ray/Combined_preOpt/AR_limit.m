@@ -1,7 +1,7 @@
 function [AR, Span, Ixx_lim, Ixx_flag] = AR_limit(Df_in,Lf_in,Preq,v_in)
 
 
-global Fz Df Lf gammaw eLw Clw0 xg h Cdw_visc Cdw_ind Cfe ClHStall Prated vf eta netaV Cdh_ovrall Cd0h rho
+% global Fz Df Lf gammaw eLw Clw0 xg h Cdw_visc Cdw_ind Cfe ClHStall Prated vf eta netaV Cdh_ovrall Cd0h rho
 Lscale = 1;
 gammaw = 0.9512;
 eLw = 0.7019;
@@ -47,11 +47,13 @@ while ~Ixx_flag && AR_ul > AR_ll
         'iter','Algorithm','sqp','MaxIterations',1e6,...
         'MaxFunctionEvaluations',1e6);
     J = @(U_0)wingVolumeCost(U_0,Lscale);
-    C = @(U_0)powRatedConst(U_0,Lscale);
+    C = @(U_0)powRatedConst(U_0,Lscale,Df,Lf,gammaw,eLw,Clw0,xg,h,Cdw_ind,Cfe,ClHStall,Prated,vf,eta,Cdh_ovrall,Cd0h);
     lb = [AR_ll 7]';
     ub = [AR_ul 10]'; %Get u(2) upper bound from examining min value of Lamda
     [uopt,~,conv_flag] = fmincon(J,U,[],[],[],[],lb,ub,C,options);
     [Ixx] = airfoil_grid_func(uopt(1),uopt(2));
+    
+    [~,~,Fz] = powRatedConst(uopt,Lscale,Df,Lf,gammaw,eLw,Clw0,xg,h,Cdw_ind,Cfe,ClHStall,Prated,vf,eta,Cdh_ovrall,Cd0h);
     
     S = uopt(2)/2.0;
     delx = defper*S/100.0;

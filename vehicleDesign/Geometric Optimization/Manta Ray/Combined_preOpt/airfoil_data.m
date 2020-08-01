@@ -1,6 +1,6 @@
-function [x,us_eq, ls_eq] = airfoil_data(Lscale)
+function [x,us_eq, ls_eq] = airfoil_data()
 % clc; clear all;
-
+Lscale = 1;
 % AirfoilData = readtable('seligdatfile.txt'); 
 AirfoilData = readtable('aftools2412_12per.txt'); 
 Airfoil = table2array(AirfoilData);
@@ -34,14 +34,14 @@ ls_eq = fitls.p1.*x.^9 + fitls.p2.*x.^8 + fitls.p3.*x.^7 + fitls.p4.*x.^6 + fitl
     + fitls.p6.*x.^4 + fitls.p7.*x.^3 + fitls.p8.*x.^2 + fitls.p9.*x + fitls.p10 ; 
 
 % Plot (sanity check) 
-figure(1); 
-plot(x,us_eq); hold on; 
-plot(x,ls_eq);
-plot(x*Lscale,us_eq*Lscale); 
-plot(x*Lscale,ls_eq*Lscale);
-
-ylim([-0.5 0.5]) ;
-xlim([-0.1 2.1]) ;
+% figure(1); 
+% plot(x,us_eq); hold on; 
+% plot(x,ls_eq);
+% plot(x*Lscale,us_eq*Lscale); 
+% plot(x*Lscale,ls_eq*Lscale);
+% 
+% ylim([-0.5 0.5]) ;
+% xlim([-0.1 2.1]) ;
 
 
 
