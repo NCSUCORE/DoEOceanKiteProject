@@ -1,7 +1,7 @@
-function [c_ineq, c_eq] = powRatedConst(u,Lscale)
+function [c_ineq,c_eq,Fz] = powRatedConst(u,Lscale,Df,Lf,gammaw,eLw,Clw0,xg,h,Cdw_ind,Cfe,ClHStall,Prated,vf,eta,Cdh_ovrall,Cd0h)
 
-global Fz Df Lf gammaw eLw Clw0 xg h Cdw_visc Cdw_ind Cfe ClHStall Prated vf eta Cdh_ovrall Cd0h rho netaV
-Cd0w = 0.00015.*u(1) + 0.0053;
+% global Fz Df Lf gammaw eLw Clw0 xg h Cdw_ind Cfe ClHStall Prated vf eta Cdh_ovrall Cd0h
+% Cd0w = 0.00015.*u(1) + 0.0053;
 
 Len = Lf*Lscale; 
 Dia = Df*Lscale; 
@@ -23,7 +23,7 @@ Swet = pi*Len*Dia*((1 - (2/lamda))^(2/3))*(1 + 1/(lamda^2));
 
 % Wing 
 slopeW = ((2*pi*gammaw)./(1+((2.*pi.*gammaw)./(pi.*eLw.*u(1)))));
-Clw = Clw0 + slopeW.*AoA ; 
+Clw = Clw0 + slopeW.*AoA; 
 
 ClwD0 = 0.0026.*u(1); 
 Cd0w = (0.00015.*u(1) + 0.0053);
