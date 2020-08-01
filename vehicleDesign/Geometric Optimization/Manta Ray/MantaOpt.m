@@ -11,12 +11,12 @@ Wing.Cdw_visc = 0.0297;             %   Wing viscous drag coefficient
 Wing.Cdw_ind = 0.2697;              %   Wing induced drag coefficient
 hStab.Cd0h = 1.7e-4;                %   Horizontal stabilizer drag coefficient at zero angle of attack 
 hStab.Cdh_ovrall =  0.03917;        %
-Wing.Cfe = 0.003;                   %skin-friction drag coefficient
-Wing.Prated = 100;                  %rated power (kW) 
-Wing.vf = 1;                        %flow speed (m/s) 
-Wing.eta = 0.3;                     %flight efficiency (can be a function of vf) 
+Wing.Cfe = 0.003;                   %   skin-friction drag coefficient
+Wing.ratedP = 100;                  %   kW - System rated power  
+Wing.vFlow = .25;                   %   m/s - Flow speed 
+Wing.eta = 0.3;                     %   flight efficiency (can be a function of vf) 
 Wing.netaV = 0.6;                   %
-Wing.rho = 1000.0;                  %density of seawater
+Wing.rho = 1000.0;                  %   kg/m^3 - density of seawater
 %%  Setup Optimization 
 Df_vec = linspace(0.5,1.3,20);                      %   m - Grid of fuselage diameter values
 Lf_vec = linspace(3,20,20);                         %   m - Grid of fusaloge length values
