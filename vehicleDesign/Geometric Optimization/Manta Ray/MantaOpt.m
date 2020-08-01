@@ -2,31 +2,24 @@
 clc;clear;clear;
 
 %%  User Defined Inputs
-Lscale = 1;             %scaling factor
-gammaw = 0.9512;        %
-eLw = 0.7019;           %
-Clw0 = 0.16;            %
-xg = 0.2*Lscale;        %
-h = -0.2*Lscale;        %stability margin                                                   
-Cd0h = 1.7e-4;          %
-Cdw_visc = 0.0297;      %viscous drag coefficient
-Cdw_ind = 0.2697;       %induced drag coefficient
-Cdh_ovrall =  0.03917;  %
-Cfe = 0.003;            %skin-friction drag coefficient
-Prated = 100;           %rated power (kW) 
-vf = 1;                 %flow speed (m/s) 
-eta = 0.3;              %flight efficiency (can be a function of vf) 
-netaV = 0.6;            %
-rho = 1000.0;           %density of seawater
-Df = Df_in;             %loops diameter
-Lf = Lf_in;             %loops length
-ChrdT = 0.12;           %chord thickness (m)
+Wing.gammaw = 0.9512;               %   Wing airfoil lift curve slope multiplicative constant
+Wing.eLw = 0.7019;                  %   Lift efficiency factor of wing
+Wing.Clw0 = 0.16;                   %   Wing lift at zero alpha
+Wing.xg = 0.2*Lscale;               %   Wing center of gravity 
+Wing.h = -0.2*Lscale;               %   stability margin                                                   
+Wing.Cdw_visc = 0.0297;             %   Wing viscous drag coefficient
+Wing.Cdw_ind = 0.2697;              %   Wing induced drag coefficient
+hStab.Cd0h = 1.7e-4;                %   Horizontal stabilizer drag coefficient at zero angle of attack 
+hStab.Cdh_ovrall =  0.03917;        %
+Wing.Cfe = 0.003;                   %skin-friction drag coefficient
+Wing.Prated = 100;                  %rated power (kW) 
+Wing.vf = 1;                        %flow speed (m/s) 
+Wing.eta = 0.3;                     %flight efficiency (can be a function of vf) 
+Wing.netaV = 0.6;                   %
+Wing.rho = 1000.0;                  %density of seawater
 %%  Setup Optimization 
 Df_vec = linspace(0.5,1.3,20);                      %   m - Grid of fuselage diameter values
 Lf_vec = linspace(3,20,20);                         %   m - Grid of fusaloge length values
-Mw = zeros(20,20);                                  %   kg - Initialize mass grid (0 if no converge)
-exitflag1_mat = zeros(20,20);                       %   set initial exit flags 1 to 0 
-exitflag2_mat = zeros(20,20);                       %   set initial exit flags 2 to 0 
 
 %%  Perform Optimization 
 for iDf= 1:length(Df_vec)                           %   Loop over all diameters
