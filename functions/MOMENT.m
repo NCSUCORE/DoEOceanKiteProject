@@ -1,4 +1,10 @@
 function M = MOMENT(polygon,m,n)
+% Area = MOMENT(polygon,0,0)
+% Cx = MOMENT(polygon,1,0)/Area
+% Cy = MOMENT(polygon,0,1)/Area
+% Ixx = MOMENT(polygon,2,0)
+% Iyy = MOMENT(polygon,0,2)
+% Ixy = MOMENT(polygon,1,1)
 
 M = 0;
 N = length(polygon.x);
