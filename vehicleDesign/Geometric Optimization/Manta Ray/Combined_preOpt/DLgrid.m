@@ -13,8 +13,8 @@ AR_mat = zeros(length(Df_vec),length(Lf_vec));          %   Initialize aspect ra
 Span_mat = zeros(length(Df_vec),length(Lf_vec));        %   Initialize aspect ratio matrix 
 Ixx_lim_mat = zeros(length(Df_vec),length(Lf_vec));     %   Initialize aspect ratio matrix 
 
-for iDf = 1:1%length(Df_vec)
-    for iLf = 1:1%length(Lf_vec)
+for iDf = 1:length(Df_vec)
+    for iLf = 1:length(Lf_vec)
        [AR, Span, Ixx_lim] = AR_limit(Df_vec(iDf),Lf_vec(iLf),ratedPow,vFlow);
        AR_mat(iDf,iLf) = AR;
        Span_mat(iDf,iLf) = Span;
@@ -40,7 +40,7 @@ figure(3)
 surf(Lf_vec,Df_vec,Ixx_lim_mat)
 xlabel('Length [m]','interpreter','latex')
 ylabel('Diameter [m]','interpreter','latex')
-zlabel('Area Moment of Inertia[in^4]','interpreter','latex')
+zlabel('Area Moment of Inertia[in$^4$]','interpreter','latex')
 
 
 

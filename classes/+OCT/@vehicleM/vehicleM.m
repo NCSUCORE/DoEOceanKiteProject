@@ -600,6 +600,23 @@ classdef vehicleM < dynamicprops
         end
         
         % plotting functions
+        function plotVehiclePolars(obj,varargin)
+            p = inputParser;
+            addParameter(p,'xLim',[-inf inf],@isnumeric);
+            parse(p,varargin{:})
+            alpha = obj.portWing.alpha.Value;
+            Aref = obj.fluidRefArea.Value;
+            Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
+                (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
+            CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
+                obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref;
+            CLsurf = obj.portWing.CL.Value+obj.stbdWing.CL.Value+obj.hStab.CL.Value;
+            CDtot = obj.portWing.CD.Value+obj.stbdWing.CD.Value+obj.hStab.CD.Value+obj.vStab.CD.Value+CDfuse;
+            figure;subplot(2,1,1);hold on;grid on;
+            plot(alpha,CLsurf.^3./CDtot.^2,'b-');  xlabel('alpha [deg]');  ylabel('$\mathrm{CL^3/CD^2}$');  xlim(p.Results.xLim);
+            subplot(2,1,2);hold on;grid on;
+            plot(alpha,CLsurf./CDtot,'b-');  xlabel('alpha [deg]');  ylabel('$\mathrm{CL/CD}$');  xlim(p.Results.xLim);
+        end
         function h = plot(obj,varargin)
             
             p = inputParser;
