@@ -604,6 +604,7 @@ classdef vehicleM < dynamicprops
             p = inputParser;
             addParameter(p,'xLim',[-inf inf],@isnumeric);
             parse(p,varargin{:})
+            
             alpha = obj.portWing.alpha.Value;
             Aref = obj.fluidRefArea.Value;
             Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...

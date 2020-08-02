@@ -63,21 +63,21 @@ for ii = 1:1%length(fuse.D)
         options = optimoptions('fmincon',...            %   Optimization options
             'Algorithm','sqp','MaxIterations',1e6,...
             'MaxFunctionEvaluations',1e6);
-%         J = @(U_0)wingPowerCost1(U_0,wing,hStab,vStab,fuse,Env);
-        J = @(U_0)wingPowerCost2(U_0,wing,hStab,vStab,fuse,Env);
+        J = @(U_0)wingPowerCost1(U_0,wing,hStab,vStab,fuse,Env);
+%         J = @(U_0)wingPowerCost2(U_0,wing,hStab,vStab,fuse,Env);
         C = [];
         lb = [5 0];                                     %   Optimization lower bound
         ub = [12 20*pi/180];                            %   Optimization upper bound
         U = [AR0,alpha0];                               %   Optimization initial guess
         [uopt,pow,conv_flag] = fmincon(J,U,[],[],[],... %   Perform optimization 
             [],lb,ub,[],options);
-        [Ixx] = airfoil_grid_func(uopt(1),wing.bw);     %   Obtain current wing moment of inertia 
+        [Ixx] = airfoil_grid(uopt(1),wing.bw);          %   Obtain current wing moment of inertia 
         [~,Flift] = wingPowerCost1(uopt,wing,hStab,vStab,fuse,Env);
         delX = percDef*wing.bw/2/100.0;
         Ixx_req = 5*Flift*(wing.aeroCent^3)/(48*wing.E*delX)*(39.37^4);
     end
 end
-uopt(2)*180/pi
+% uopt(2)*180/pi
 %%  Surface ploting  
 % surf(Lf_vec,Df_vec,Mw)
 % figure(1)
