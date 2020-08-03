@@ -58,7 +58,7 @@ fileID = fopen(fullfile(fileparts(which('avl.exe')),'wing'),'w');
 % open file
 printName(fileID,'Wing');
 
-% Mach
+% Mach number
 Mach = 0.0;
 setMachNumber(fileID,Mach);
 
@@ -264,7 +264,6 @@ end
 
 %% local functions
 
-% check the airfoil name, look for dat file and set in the input file
 function setAirfoil(fileID,airfoilName)
 
 if startsWith(airfoilName,'NACA')
