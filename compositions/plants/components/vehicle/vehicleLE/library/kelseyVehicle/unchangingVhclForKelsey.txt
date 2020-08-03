@@ -106,7 +106,7 @@ vhcl.wingIncidence.Value = 0.0000e+00
 vhcl.wingIncidence.Unit = 'deg'
 vhcl.wingIncidence.NoScale = false
 vhcl.wingIncidence.Description = 'Wing flow incidence angle'
-vhcl.wingAirfoil.Value = 'NACA2412'
+vhcl.wingAirfoil.Value = 'Eppler552.dat'
 vhcl.wingAirfoil.Unit is unitless or has no unit specified
 vhcl.wingAirfoil.NoScale = true
 vhcl.wingAirfoil.Description = 'Wing airfoil'
@@ -360,7 +360,7 @@ vhcl.portWing.incidence.Value = -0.0000e+00
 vhcl.portWing.incidence.Unit = 'deg'
 vhcl.portWing.incidence.NoScale = false
 vhcl.portWing.incidence.Description = 'Flow incidence angle'
-vhcl.portWing.Airfoil.Value = 'NACA2412'
+vhcl.portWing.Airfoil.Value = 'Eppler552.dat'
 vhcl.portWing.Airfoil.Unit is unitless or has no unit specified
 vhcl.portWing.Airfoil.NoScale = true
 vhcl.portWing.Airfoil.Description = 'airfoil'
@@ -467,7 +467,7 @@ vhcl.stbdWing.incidence.Value = 0.0000e+00
 vhcl.stbdWing.incidence.Unit = 'deg'
 vhcl.stbdWing.incidence.NoScale = false
 vhcl.stbdWing.incidence.Description = 'Flow incidence angle'
-vhcl.stbdWing.Airfoil.Value = 'NACA2412'
+vhcl.stbdWing.Airfoil.Value = 'Eppler552.dat'
 vhcl.stbdWing.Airfoil.Unit is unitless or has no unit specified
 vhcl.stbdWing.Airfoil.NoScale = true
 vhcl.stbdWing.Airfoil.Description = 'airfoil'

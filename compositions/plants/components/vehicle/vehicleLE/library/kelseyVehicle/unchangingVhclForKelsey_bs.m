@@ -12,7 +12,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4','');
+vhcl.setFluidCoeffsFileName('fullScale1thrCoeffsQ4_v2','');
 
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD
@@ -57,7 +57,7 @@ vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(2.3,'deg');
 vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
-vhcl.setWingAirfoil('NACA2412','');
+vhcl.setWingAirfoil('Eppler552.dat','');
 vhcl.setWingClMin(-1.7,'');
 vhcl.setWingClMax(1.7,'');
 
