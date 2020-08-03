@@ -7,7 +7,7 @@ sw_w =  obj.wingSweep.Value;
 di_w = obj.wingDihedral.Value;
 tr_w = obj.wingTR.Value;
 w_inc_angle = obj.wingIncidence.Value;
-w_afile =  obj.wingNACA.Value;
+w_afile =  obj.wingAirfoil.Value;
 b_w = 2 * obj.portWing.halfSpan.Value;
 S_w = 2* obj.portWing.planformArea.Value;
 c_t_w = c_r_w*tr_w; % tip chord
@@ -19,7 +19,7 @@ sw_hs = obj.hStab.sweep.Value;
 di_hs = obj.hStab.dihedral.Value;
 tr_hs = obj.hStab.TR.Value;
 hs_inc_angle = obj.hStab.incidence.Value;
-hs_afile =  obj.hStab.NACA.Value;
+hs_afile =  obj.hStab.Airfoil.Value;
 b_hs = 2 * obj.hStab.halfSpan.Value;
 c_t_hs = c_r_hs*tr_hs; % tip chord
 
@@ -27,7 +27,7 @@ c_r_vs = obj.vStab.rootChord.Value;
 b_vs = obj.vStab.halfSpan.Value;
 sw_vs = obj.vStab.sweep.Value;
 tr_vs = obj.vStab.TR.Value;
-vs_afile =  obj.vStab.NACA.Value;
+vs_afile =  obj.vStab.Airfoil.Value;
 c_t_vs = c_r_vs*tr_vs; % tip chord
 
 % cm cordinates
@@ -161,8 +161,7 @@ fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t %d\n',...
     Sspace_w_s1);
 
 % airfoil name
-fprintf(fileID,'\nNACA\n'); % AFILE
-fprintf(fileID,'%s\n\n',w_afile); % filename
+setAirfoil(fileID,w_afile)
 
 % flap and aileron
 fprintf(fileID,'#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -204,8 +203,7 @@ fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t %d\n',...
     Sspace_w_s2);
 
 % airfoil name
-fprintf(fileID,'\nNACA\n'); % AFILE
-fprintf(fileID,'%s\n',w_afile); % filename
+setAirfoil(fileID,w_afile)
 
 % flap and aileron
 fprintf(fileID,'\n#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -289,8 +287,7 @@ fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Sspace_hs_s1);
 
 % horizontal stabilizer airfoil
-fprintf(fileID,'\nNACA\n'); % AFILE
-fprintf(fileID,'%s\n\n',hs_afile); % filename
+setAirfoil(fileID,hs_afile);
 
 % flap and aileron
 fprintf(fileID,'#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -324,8 +321,7 @@ fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Sspace_hs_s2);
 
 % horizontal stabilizer airfoil
-fprintf(fileID,'\nNACA\n'); % AFILE
-fprintf(fileID,'%s\n\n',hs_afile); % filename
+setAirfoil(fileID,hs_afile);
 
 % aileron
 fprintf(fileID,'\n#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -403,8 +399,7 @@ fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Sspace_vs_s1);
 
 % vertical stabilizer airfoil
-fprintf(fileID,'\nNACA\n'); % AFILE
-fprintf(fileID,'%s\n\n',vs_afile); % filename
+setAirfoil(fileID,vs_afile);
 
 % aileron
 fprintf(fileID,'#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -438,8 +433,7 @@ fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
     Sspace_vs_s2);
 
 % vertical stabilizer airfoil
-fprintf(fileID,'\nNACA\n'); % AFILE
-fprintf(fileID,'%s\n\n',vs_afile); % filename
+setAirfoil(fileID,vs_afile);
 
 % aileron
 fprintf(fileID,'\n#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
@@ -455,5 +449,28 @@ fprintf(fileID,'#===============================================================
 
 
 fclose(fileID);
+
+end
+
+%% local functions
+
+% check the airfoil name, look for dat file and set in the input file
+function setAirfoil(fileID,airfoilName)
+
+if startsWith(airfoilName,'NACA')
+    fprintf(fileID,'\nNACA\n'); % AFILE
+    fprintf(fileID,'%s\n\n',strtrim(erase(airfoilName,'NACA'))); % filename
+elseif endsWith(airfoilName,'.dat')
+    if isfile(strcat(fileparts(which('avl.exe')),'\',airfoilName))
+        fprintf(fileID,'\nAFIL\n'); % AFILE
+        fprintf(fileID,'%s\n\n',airfoilName); % filename
+    else
+        error([airfoilName,' not found in ',fileparts(which('avl.exe'))]);
+    end
+else
+    error(['Please provide airfoil name property that either starts with ',...
+        '"NACA" for NACA airfoils or ends with ".dat" to load airfoil ',...
+        'from a dat file. eg. NACA0015 or afoil.dat']);
+end
 
 end
