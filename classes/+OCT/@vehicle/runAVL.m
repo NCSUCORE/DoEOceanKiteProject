@@ -132,7 +132,7 @@ function varargout = runAVL(obj)
     delete('wing');
     delete('H_stab');
     delete('V_stab');
-    delete('dsgnMassFile.mass')
+%     delete('dsgnMassFile.mass');
     
     filepath = fileparts(which('avl.exe'));
 

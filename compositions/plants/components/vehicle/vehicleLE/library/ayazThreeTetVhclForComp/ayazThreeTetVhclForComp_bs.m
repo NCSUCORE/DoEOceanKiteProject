@@ -63,7 +63,7 @@ vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(2.3,'deg');
 vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
-vhcl.setWingNACA('2412','');
+vhcl.setWingAirfoil('NACA2412','');
 vhcl.setWingClMin(-Clmax,'');
 vhcl.setWingClMax(Clmax,'');
 
@@ -75,7 +75,7 @@ vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(8,'');
 vhcl.hStab.setSweep(2.8624,'deg');
 vhcl.hStab.setIncidence(0,'deg');
-vhcl.hStab.setNACA('0015','');
+vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-Clmax,'');
 vhcl.hStab.setClMax(Clmax,'');
 
@@ -84,7 +84,7 @@ vhcl.vStab.setRootChord(9.75e-3*(1/Lscale),'m');
 vhcl.vStab.setHalfSpan(36.5625e-3*(1/Lscale),'m');
 vhcl.vStab.setTR(.8,'');
 vhcl.vStab.setSweep(3.44,'deg');
-vhcl.vStab.setNACA('0015','');
+vhcl.vStab.setAirfoil('NACA0015','');
 vhcl.vStab.setClMin(-Clmax,'');
 vhcl.vStab.setClMax(Clmax,'');
 

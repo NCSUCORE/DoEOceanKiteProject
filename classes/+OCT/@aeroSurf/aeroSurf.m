@@ -10,7 +10,7 @@ classdef aeroSurf < handle
         sweep
         dihedral
         incidence
-        NACA
+        Airfoil
         ClMin
         ClMax
         maxCtrlDef
@@ -46,7 +46,7 @@ classdef aeroSurf < handle
             obj.sweep               = SIM.parameter('Value',0,'Unit','deg','Description','Sweep angle');
             obj.dihedral            = SIM.parameter('Value',0,'Unit','deg','Description','Dihedral angle');
             obj.incidence           = SIM.parameter('Value',0,'Unit','deg','Description','Flow incidence angle');
-            obj.NACA                = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
+            obj.Airfoil                = SIM.parameter('Description','airfoil','NoScale',true);
             obj.ClMin               = SIM.parameter('Description','Minimum section lift coef','NoScale',true);
             obj.ClMax               = SIM.parameter('Description','Maximum section lift coef','NoScale',true);
             obj.spanUnitVec         = SIM.parameter('Description','Body frame unit vector for the span before dihedral/incidence');
@@ -110,8 +110,8 @@ classdef aeroSurf < handle
             obj.incidence.setValue(val,units)
         end
 
-        function setNACA(obj,val,units)
-            obj.NACA.setValue(val,units)
+        function setAirfoil(obj,val,units)
+            obj.Airfoil.setValue(val,units)
         end
         
         function setClMin(obj,val,units)

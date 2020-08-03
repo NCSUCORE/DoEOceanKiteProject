@@ -36,7 +36,7 @@ classdef vehicle < dynamicprops
         wingSweep
         wingDihedral
         wingIncidence
-        wingNACA
+        wingAirfoil
         wingClMin
         wingClMax
 
@@ -119,7 +119,7 @@ classdef vehicle < dynamicprops
             obj.wingSweep      = SIM.parameter('Unit','deg','Description','Wing sweep angle');
             obj.wingDihedral   = SIM.parameter('Unit','deg','Description','Wing dihedral angle');
             obj.wingIncidence  = SIM.parameter('Unit','deg','Description','Wing flow incidence angle');
-            obj.wingNACA       = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
+            obj.wingAirfoil       = SIM.parameter('Description','Wing airfoil','NoScale',true);
             obj.wingClMin      = SIM.parameter('Description','minimum section Lift Coef','NoScale',true);
             obj.wingClMax      = SIM.parameter('Description','maximum section Lift Coef','NoScale',true);
             
@@ -305,8 +305,8 @@ classdef vehicle < dynamicprops
             obj.updateWings
         end
 
-        function setWingNACA(obj,val,units)
-            obj.wingNACA.setValue(val,units);
+        function setWingAirfoil(obj,val,units)
+            obj.wingAirfoil.setValue(val,units);
             obj.updateWings
         end
         
@@ -558,7 +558,7 @@ classdef vehicle < dynamicprops
             %are flipped if they match the stbd wing
                 obj.portWing.setDihedral(-obj.wingDihedral.Value,'deg');
                 obj.portWing.setIncidence(-obj.wingIncidence.Value,'deg');
-            obj.portWing.setNACA(obj.wingNACA.Value,'');
+            obj.portWing.setAirfoil(obj.wingAirfoil.Value,'');
             obj.portWing.setClMin(obj.wingClMin.Value,'');
             obj.portWing.setClMax(obj.wingClMax.Value,'');
             obj.portWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
@@ -580,7 +580,7 @@ classdef vehicle < dynamicprops
             obj.stbdWing.setSweep(obj.wingSweep.Value,'deg');
             obj.stbdWing.setDihedral(obj.wingDihedral.Value,'deg');
             obj.stbdWing.setIncidence(obj.wingIncidence.Value,'deg');
-            obj.stbdWing.setNACA(obj.wingNACA.Value,'');
+            obj.stbdWing.setAirfoil(obj.wingAirfoil.Value,'');
             obj.stbdWing.setClMin(obj.wingClMin.Value,'');
             obj.stbdWing.setClMax(obj.wingClMax.Value,'');
             obj.stbdWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')

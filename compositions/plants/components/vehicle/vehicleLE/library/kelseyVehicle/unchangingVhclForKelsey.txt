@@ -106,10 +106,10 @@ vhcl.wingIncidence.Value = 0.0000e+00
 vhcl.wingIncidence.Unit = 'deg'
 vhcl.wingIncidence.NoScale = false
 vhcl.wingIncidence.Description = 'Wing flow incidence angle'
-vhcl.wingNACA.Value = '2412'
-vhcl.wingNACA.Unit is unitless or has no unit specified
-vhcl.wingNACA.NoScale = true
-vhcl.wingNACA.Description = 'Wing NACA airfoil'
+vhcl.wingAirfoil.Value = 'NACA2412'
+vhcl.wingAirfoil.Unit is unitless or has no unit specified
+vhcl.wingAirfoil.NoScale = true
+vhcl.wingAirfoil.Description = 'Wing airfoil'
 vhcl.wingClMin.Value = -1.7000e+00
 vhcl.wingClMin.Unit is unitless or has no unit specified
 vhcl.wingClMin.NoScale = true
@@ -146,10 +146,10 @@ vhcl.hStab.incidence.Value = -1.3500e+01
 vhcl.hStab.incidence.Unit = 'deg'
 vhcl.hStab.incidence.NoScale = false
 vhcl.hStab.incidence.Description = 'Flow incidence angle'
-vhcl.hStab.NACA.Value = '0015'
-vhcl.hStab.NACA.Unit is unitless or has no unit specified
-vhcl.hStab.NACA.NoScale = true
-vhcl.hStab.NACA.Description = 'Wing NACA airfoil'
+vhcl.hStab.Airfoil.Value = 'NACA0015'
+vhcl.hStab.Airfoil.Unit is unitless or has no unit specified
+vhcl.hStab.Airfoil.NoScale = true
+vhcl.hStab.Airfoil.Description = 'airfoil'
 vhcl.hStab.ClMin.Value = -1.7000e+00
 vhcl.hStab.ClMin.Unit is unitless or has no unit specified
 vhcl.hStab.ClMin.NoScale = true
@@ -253,10 +253,10 @@ vhcl.vStab.incidence.Value = 0.0000e+00
 vhcl.vStab.incidence.Unit = 'deg'
 vhcl.vStab.incidence.NoScale = false
 vhcl.vStab.incidence.Description = 'Flow incidence angle'
-vhcl.vStab.NACA.Value = '0015'
-vhcl.vStab.NACA.Unit is unitless or has no unit specified
-vhcl.vStab.NACA.NoScale = true
-vhcl.vStab.NACA.Description = 'Wing NACA airfoil'
+vhcl.vStab.Airfoil.Value = 'NACA0015'
+vhcl.vStab.Airfoil.Unit is unitless or has no unit specified
+vhcl.vStab.Airfoil.NoScale = true
+vhcl.vStab.Airfoil.Description = 'airfoil'
 vhcl.vStab.ClMin.Value = -1.7000e+00
 vhcl.vStab.ClMin.Unit is unitless or has no unit specified
 vhcl.vStab.ClMin.NoScale = true
@@ -360,10 +360,10 @@ vhcl.portWing.incidence.Value = -0.0000e+00
 vhcl.portWing.incidence.Unit = 'deg'
 vhcl.portWing.incidence.NoScale = false
 vhcl.portWing.incidence.Description = 'Flow incidence angle'
-vhcl.portWing.NACA.Value = '2412'
-vhcl.portWing.NACA.Unit is unitless or has no unit specified
-vhcl.portWing.NACA.NoScale = true
-vhcl.portWing.NACA.Description = 'Wing NACA airfoil'
+vhcl.portWing.Airfoil.Value = 'NACA2412'
+vhcl.portWing.Airfoil.Unit is unitless or has no unit specified
+vhcl.portWing.Airfoil.NoScale = true
+vhcl.portWing.Airfoil.Description = 'airfoil'
 vhcl.portWing.ClMin.Value = -1.7000e+00
 vhcl.portWing.ClMin.Unit is unitless or has no unit specified
 vhcl.portWing.ClMin.NoScale = true
@@ -467,10 +467,10 @@ vhcl.stbdWing.incidence.Value = 0.0000e+00
 vhcl.stbdWing.incidence.Unit = 'deg'
 vhcl.stbdWing.incidence.NoScale = false
 vhcl.stbdWing.incidence.Description = 'Flow incidence angle'
-vhcl.stbdWing.NACA.Value = '2412'
-vhcl.stbdWing.NACA.Unit is unitless or has no unit specified
-vhcl.stbdWing.NACA.NoScale = true
-vhcl.stbdWing.NACA.Description = 'Wing NACA airfoil'
+vhcl.stbdWing.Airfoil.Value = 'NACA2412'
+vhcl.stbdWing.Airfoil.Unit is unitless or has no unit specified
+vhcl.stbdWing.Airfoil.NoScale = true
+vhcl.stbdWing.Airfoil.Description = 'airfoil'
 vhcl.stbdWing.ClMin.Value = -1.7000e+00
 vhcl.stbdWing.ClMin.Unit is unitless or has no unit specified
 vhcl.stbdWing.ClMin.NoScale = true
