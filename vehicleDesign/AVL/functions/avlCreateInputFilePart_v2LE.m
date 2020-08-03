@@ -40,35 +40,11 @@ x_t_w = (b_w/2)*tand(sw_w);
 y_t_w = (b_w/2);
 z_t_w = (b_w/2)*tand(di_w);
 
-% spacing parameters
-N_b_w = w_Ns;
-N_c_w = w_Nc;
-
-% error messages
-if mod(N_c_w,1) ~= 0 || N_c_w <= 0
-    error('The calculated values of number of chordwise elements of wing will lead to errors in AVL')
-end
-if mod(N_b_w,1) ~= 0 || N_b_w <= 0
-    error('The calculated values of number of span elements of wing will lead to errors in AVL')
-end
-
 % horizonatal stbilizer calculations %%%%%%%%%%%%%
 % HS tip cordinates
 x_t_hs = (b_hs/2)*tand(sw_hs);
 y_t_hs = (b_hs/2);
 z_t_hs = (b_hs/2)*tand(di_hs);
-
-% spacing parameters
-N_b_hs = w_Ns;
-N_c_hs = w_Nc;
-
-% error messages
-if mod(N_c_hs,1) ~= 0 || N_c_hs <= 0
-    error('The calculated values of number of chordwise elements in HS will lead to errors in AVL')
-end
-if mod(N_b_hs,1) ~= 0 || N_b_hs <= 0
-    error('The calculated values of number of span elements in HS will lead to errors in AVL')
-end
 
 % vertical stabilizer calculations
 % HS tip cordinates
@@ -76,377 +52,211 @@ x_t_vs = b_vs*tand(sw_vs);
 y_t_vs = 0;
 z_t_vs = b_vs;
 
-% spacing parameters
-N_b_vs = w_Ns;
-N_c_vs = w_Nc;
-
-% error messages
-if mod(N_c_vs,1) ~= 0 || N_c_vs <= 0
-    error('The calculated values of number of chordwise elements in VS will lead to errors in AVL')
-end
-if mod(N_b_vs,1) ~= 0 || N_b_vs <= 0
-    error('The calculated values of number of span elements in VS will lead to errors in AVL')
-end
-
-
 %% AVL input file WING
 fileID = fopen(fullfile(fileparts(which('avl.exe')),'wing'),'w');
 
-% design name % Plane Vanilla
-% des_Name = 'Plane Vanilla test';
-fprintf(fileID,'%s\n','wing');
+% open file
+printName(fileID,'Wing');
 
 % Mach
 Mach = 0.0;
-fprintf(fileID,'#Mach\n');
-fprintf(fileID,'%0.2f\n',Mach);
+setMachNumber(fileID,Mach);
 
-% IYsym   IZsym   Zsym
-m_IYsym = 0;
-m_IZsym = 0;
-m_IXsym = 0;
-fprintf(fileID,'#IYsym   IZsym   Zsym\n');
-fprintf(fileID,'%d \t\t %d\t\t %d\n',m_IYsym,m_IZsym,m_IXsym);
+% IYsym, IZsym, Zsym
+setSymmetryProperties(fileID,0,0,0);
 
-%  Sref    Cref    Bref
+% Sref, Cref, Bref
 Sref =  S_w;
 Cref = (c_r_w + c_t_w)/2;
 Bref = b_w;
-fprintf(fileID,'#Sref    Cref    Bref\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',Sref,Cref,Bref);
 
-% Xref    Yref    Zref
-Xref = R_ref(1);
-Yref = R_ref(2);
-Zref = R_ref(3);
+setReferenceProperties(fileID,Sref,Cref,Bref,...
+    R_ref(1),R_ref(2),R_ref(3))
 
-fprintf(fileID,'#Xref    Yref    Zref\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',Xref,Yref,Zref);
-
-fprintf(fileID,'#\n#\n#====================================================================\n');
+sectionBreak(fileID);
 
 %% define wing: contains one section
 fprintf(fileID,'SURFACE\n');    % initialize surface
 fprintf(fileID,'Wing\n');       % initialize surface wing
 
-% Nchordwise  Cspace   Nspanwise   Sspace
-Nchordwise_w = N_c_w;
-Cspace_w = 1;
-Nspanwise_w = N_b_w;
-Sspace_w = 1;
-fprintf(fileID,'#Nchordwise  Cspace   Nspanwise   Sspace\n');
-fprintf(fileID,'%d \t\t\t %0.2f \t\t %d \t\t %0.2f\n',...
-    Nchordwise_w,Cspace_w,Nspanwise_w,Sspace_w);
+% Nchordwise, Cspace, Nspanwise, Sspace
+setAvlAnalysisParameters(fileID,w_Nc,1,w_Ns,1);
 
-% ANGLE
-fprintf(fileID,'ANGLE\n'); % permanent incident angle
-angle_w = w_inc_angle;
+% permanent incident angle
+setIncidenceAngle(fileID,w_inc_angle);
+sectionBreak(fileID);
 
-fprintf(fileID,'%0.1f\n',angle_w);
-fprintf(fileID,'#-------------------------------------------------------------\n');
 % SECTION 1
-fprintf(fileID,'SECTION\n'); % SECTION
+fprintf(fileID,'SECTION\n'); 
 
-% Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
-Xle_w_s1 = 0;
-Yle_w_s1 = 0;
-Zle_w_s1 = 0;
-chord_w_s1 = c_r_w;
-Ainc_w_s1 = 0;
-Nspanwise_w_s1 = 0;
-Sspace_w_s1 = 0;
-fprintf(fileID,'#Xle \t Yle \t Zle \t Chord \t Ainc \t Nspanwise \t Sspace\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t %d\n',...
-    Xle_w_s1, Yle_w_s1, Zle_w_s1, chord_w_s1, Ainc_w_s1, Nspanwise_w_s1,...
-    Sspace_w_s1);
+% Xle, Yle, Zle, Chord, Ainc, Nspanwise, Sspace
+defineSection(fileID,0,0,0,c_r_w,0,0,0);
 
 % airfoil name
 setAirfoil(fileID,w_afile)
 
-% flap and aileron
-fprintf(fileID,'#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
-fprintf(fileID,'CONTROL\n'); % CONTROL Section
-
-% Cname   Cgain  Xhinge  HingeVec     SgnDup
+% Cname, Cgain, Xhinge, HingeVec, SgnDup
 Cgain_ail = 1;
 Xhinge_ail = 0.75;
-HingeVec_x_ail = 0;
-HingeVec_y_ail = 0;
-HingeVec_z_ail = 0;
+HingeVecAil = [0;0;0];
 SgnDup_ail = 1;
+claf_w = 1;
 
-fprintf(fileID,'aileron %0.2f %0.2f %0.1f %0.1f %0.1f %0.1f\n\n',...
-    Cgain_ail, Xhinge_ail, HingeVec_x_ail, HingeVec_y_ail, HingeVec_z_ail,...
-    SgnDup_ail);
+% aileron
+defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_ail,...
+    HingeVecAil,SgnDup_ail);
 
 % CLAF
-fprintf(fileID,'CLAF\n');
-claf_w = 1;
-fprintf(fileID,'%0.2f\n',claf_w);
-fprintf(fileID,'#-------------------------------------------------------------\n');
-
+setClaf(fileID,claf_w);
+sectionBreak(fileID);
 
 % SECTION 2
-fprintf(fileID,'SECTION\n'); % SECTION
+fprintf(fileID,'SECTION\n'); 
 
-% Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
-Xle_w_s2 = x_t_w;
-Yle_w_s2 = y_t_w;
-Zle_w_s2 = z_t_w;
-chord_w_s2 = c_t_w;
-Ainc_w_s2 = 0;
-Nspanwise_w_s2 = 0;
-Sspace_w_s2 = 0;
-fprintf(fileID,'#Xle \t Yle \t Zle \t Chord \t Ainc \t Nspanwise \t Sspace\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t %d\n',...
-    Xle_w_s2, Yle_w_s2, Zle_w_s2, chord_w_s2, Ainc_w_s2, Nspanwise_w_s2,...
-    Sspace_w_s2);
+% Xle, Yle, Zle, Chord, Ainc, Nspanwise, Sspace
+defineSection(fileID,x_t_w,y_t_w,z_t_w,c_t_w,0,0,0);
 
 % airfoil name
 setAirfoil(fileID,w_afile)
 
-% flap and aileron
-fprintf(fileID,'\n#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
-fprintf(fileID,'CONTROL\n'); % CONTROL Section
-fprintf(fileID,'aileron %0.2f %0.2f %0.1f %0.1f %0.1f %0.1f\n\n',...
-    Cgain_ail, Xhinge_ail, HingeVec_x_ail, HingeVec_y_ail, HingeVec_z_ail,...
-    SgnDup_ail);
+% aileron
+defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_ail,...
+    HingeVecAil,SgnDup_ail);
 
 % CLAF
-fprintf(fileID,'CLAF\n');
-fprintf(fileID,'%0.2f\n',claf_w);
-fprintf(fileID,'#====================================================================\n');
+setClaf(fileID,claf_w);
+sectionBreak(fileID);
 
 fclose(fileID);
-
 
 %% AVL input file HS
 fileID = fopen(fullfile(fileparts(which('avl.exe')),'H_stab'),'w');
 
-% design name % Plane Vanilla
-% des_Name = 'Plane Vanilla test';
-fprintf(fileID,'%s\n','H_stab');
+% name
+printName(fileID,'H_stab');
 
 % Mach
-fprintf(fileID,'#Mach\n');
-fprintf(fileID,'%0.2f\n',Mach);
+setMachNumber(fileID,Mach);
 
-% IYsym   IZsym   Zsym
-fprintf(fileID,'#IYsym   IZsym   Zsym\n');
-fprintf(fileID,'%d \t\t %d\t\t %d\n',m_IYsym,m_IZsym,m_IXsym);
+% IYsym, IZsym, Zsym
+setSymmetryProperties(fileID,0,0,0);
 
-%  Sref    Cref    Bref
-fprintf(fileID,'#Sref    Cref    Bref\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',Sref,Cref,Bref);
+%  Sref, Cref, Bref, Xref, Yref, Zref
+setReferenceProperties(fileID,Sref,Cref,Bref,R_ref(1),R_ref(2),R_ref(3));
+sectionBreak(fileID);
 
-% Xref    Yref    Zref
-fprintf(fileID,'#Xref    Yref    Zref\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',Xref,Yref,Zref);
+% initialize surface: H-stab
+fprintf(fileID,'SURFACE\n');    
+fprintf(fileID,'H-stab\n');    
 
-fprintf(fileID,'#\n#\n#====================================================================\n');
+% Nchordwise, Cspace, Nspanwise, Sspace
+setAvlAnalysisParameters(fileID,w_Nc,1,w_Ns,1);
 
-% define HS: contains one section
-fprintf(fileID,'SURFACE\n');    % initialize surface
-fprintf(fileID,'H-stab\n');       % initialize surface wing
+% toggle Y-duplicate
+fprintf(fileID,'YDUPLICATE\n');
+fprintf(fileID,'%0.1f\n',0);
 
-% Nchordwise  Cspace   Nspanwise   Sspace
-Nchordwise_hs = N_c_hs;
-Cspace_hs = 1;
-Nspanwise_hs = N_b_hs;
-Sspace_hs = 1;
-fprintf(fileID,'#Nchordwise  Cspace   Nspanwise   Sspace\n');
-fprintf(fileID,'%d \t %0.2f \t %d \t %0.2f\n',...
-    Nchordwise_hs, Cspace_hs, Nspanwise_hs, Sspace_hs);
-
-%
-fprintf(fileID,'YDUPLICATE\n'); % toggle Y-duplicate
-
-% YDUPLICATE
-y_dup_hs = 0;
-fprintf(fileID,'%0.1f\n',y_dup_hs);
-
-% ANGLE
-fprintf(fileID,'ANGLE\n'); % permanent incident angle
-fprintf(fileID,'%0.1f\n',hs_inc_angle);
-fprintf(fileID,'#-------------------------------------------------------------\n');
+% permanent incident angle
+setIncidenceAngle(fileID,hs_inc_angle);
+sectionBreak(fileID);
 
 % SECTION 1
-fprintf(fileID,'SECTION\n'); % SECTION
+fprintf(fileID,'SECTION\n'); 
 
-% Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
-Xle_hs_s1 = 0;
-Yle_hs_s1 = 0;
-Zle_hs_s1 = 0;
-chord_hs_s1 = c_r_hs;
-Ainc_hs_s1 = 0;
-Nspanwise_hs_s1 = 0;
-Sspace_hs_s1 = 0;
-fprintf(fileID,'#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace\n');
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
-    Xle_hs_s1, Yle_hs_s1, Zle_hs_s1, chord_hs_s1, Ainc_hs_s1, Nspanwise_hs_s1,...
-    Sspace_hs_s1);
+% Xle, Yle, Zle, Chord, Ainc, Nspanwise, Sspace
+defineSection(fileID,0,0,0,c_r_hs,0,0,0);
 
 % horizontal stabilizer airfoil
 setAirfoil(fileID,hs_afile);
 
-% flap and aileron
-fprintf(fileID,'#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
-fprintf(fileID,'CONTROL\n'); % CONTROL Section
-
-% Cname   Cgain  Xhinge  HingeVec     SgnDup
-fprintf(fileID,'aileron %0.2f %0.2f %0.1f %0.1f %0.1f %0.1f\n\n',...
-    Cgain_ail, Xhinge_ail, HingeVec_x_ail, HingeVec_y_ail, HingeVec_z_ail,...
-    SgnDup_ail);
+% elevator (defined as aileron)
+defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_ail,...
+    HingeVecAil,SgnDup_ail);
 
 % CLAF
-fprintf(fileID,'CLAF\n');
-fprintf(fileID,'%0.2f\n',claf_w);
-fprintf(fileID,'#-------------------------------------------------------------\n');
-
+setClaf(fileID,claf_w);
+sectionBreak(fileID);
 
 % SECTION 2
-fprintf(fileID,'SECTION\n'); % SECTION
-fprintf(fileID,'#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace\n');
-% Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
-Xle_hs_s2 = x_t_hs;
-Yle_hs_s2 = y_t_hs;
-Zle_hs_s2 = z_t_hs;
-chord_hs_s2 = c_t_hs;
-Ainc_hs_s2 = 0;
-Nspanwise_hs_s2 = 0;
-Sspace_hs_s2 = 0;
+fprintf(fileID,'SECTION\n');
 
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
-    Xle_hs_s2, Yle_hs_s2, Zle_hs_s2, chord_hs_s2, Ainc_hs_s2, Nspanwise_hs_s2,...
-    Sspace_hs_s2);
+% Xle, Yle, Zle, Chord, Ainc, Nspanwise, Sspace
+defineSection(fileID,x_t_hs,y_t_hs,z_t_hs,c_t_hs,0,0,0);
 
 % horizontal stabilizer airfoil
 setAirfoil(fileID,hs_afile);
 
-% aileron
-fprintf(fileID,'\n#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
-fprintf(fileID,'CONTROL\n'); % CONTROL Section
-fprintf(fileID,'aileron %0.2f %0.2f %0.1f %0.1f %0.1f %0.1f\n\n',...
-    Cgain_ail, Xhinge_ail, HingeVec_x_ail, HingeVec_y_ail, HingeVec_z_ail,...
-    SgnDup_ail);
+% elevator (defined as aileron)
+defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_ail,...
+    HingeVecAil,SgnDup_ail);
 
 % CLAF
-fprintf(fileID,'CLAF\n');
-fprintf(fileID,'%0.2f\n',claf_w);
-fprintf(fileID,'#====================================================================\n');
+setClaf(fileID,claf_w);
+sectionBreak(fileID);
 
+% close file
 fclose(fileID);
 
 
 %% AVL input file VS
 fileID = fopen(fullfile(fileparts(which('avl.exe')),'V_stab'),'w');
 
-% design name % Plane Vanilla
-% des_Name = 'Plane Vanilla test';
-fprintf(fileID,'%s\n','V_stab');
+% name
+printName(fileID,'V_stab');
 
 % Mach
-fprintf(fileID,'#Mach\n');
-fprintf(fileID,'%0.2f\n',Mach);
+setMachNumber(fileID,Mach);
 
-% IYsym   IZsym   Zsym
-fprintf(fileID,'#IYsym   IZsym   Zsym\n');
-fprintf(fileID,'%d \t\t %d\t\t %d\n',m_IYsym,m_IZsym,m_IXsym);
+% IYsym, IZsym, Zsym
+setSymmetryProperties(fileID,0,0,0);
 
-%  Sref    Cref    Bref
-fprintf(fileID,'#Sref    Cref    Bref\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',Sref,Cref,Bref);
+%  Sref, Cref, Bref, Xref, Yref, Zref
+setReferenceProperties(fileID,Sref,Cref,Bref,R_ref(1),R_ref(2),R_ref(3));
+sectionBreak(fileID);
 
-% Xref    Yref    Zref
-fprintf(fileID,'#Xref    Yref    Zref\n');
-fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',Xref,Yref,Zref);
+% define surface: V-stab
+fprintf(fileID,'SURFACE\n');    
+fprintf(fileID,'V-stab\n');       
 
-fprintf(fileID,'#\n#\n#====================================================================\n');
+% Nchordwise, Cspace, Nspanwise, Sspace
+setAvlAnalysisParameters(fileID,w_Nc,1,w_Ns,1);
 
-%% define HS: contains one section
-fprintf(fileID,'SURFACE\n');    % initialize surface
-fprintf(fileID,'V-stab\n');       % initialize surface wing
-
-% Nchordwise  Cspace   Nspanwise   Sspace
-Nchordwise_vs = N_c_vs;
-Cspace_vs = 1;
-Nspanwise_vs = N_b_vs;
-Sspace_vs = 1;
-
-fprintf(fileID,'%d %0.2f %d %0.2f\n',...
-    Nchordwise_vs, Cspace_vs, Nspanwise_vs, Sspace_vs);
-
-% ANGLE
-fprintf(fileID,'ANGLE\n'); % permanent incident angle
-fprintf(fileID,'%0.1f\n',angle_w);
-fprintf(fileID,'#-------------------------------------------------------------\n');
+% permanent incident angle
+setIncidenceAngle(fileID,w_inc_angle);
+sectionBreak(fileID);
 
 % SECTION 1
+fprintf(fileID,'SECTION\n');
 
-fprintf(fileID,'SECTION\n'); % SECTION
-fprintf(fileID,'#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace\n');
-% Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
-Xle_vs_s1 = 0;
-Yle_vs_s1 = 0;
-Zle_vs_s1 = 0;
-chord_vs_s1 = c_r_vs;
-Ainc_vs_s1 = 0;
-Nspanwise_vs_s1 = 0;
-Sspace_vs_s1 = 0;
-
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
-    Xle_vs_s1, Yle_vs_s1, Zle_vs_s1, chord_vs_s1, Ainc_vs_s1, Nspanwise_vs_s1,...
-    Sspace_vs_s1);
+% Xle, Yle, Zle, Chord, Ainc, Nspanwise, Sspace
+defineSection(fileID,0,0,0,c_r_vs,0,0,0);
 
 % vertical stabilizer airfoil
 setAirfoil(fileID,vs_afile);
 
-% aileron
-fprintf(fileID,'#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
-fprintf(fileID,'CONTROL\n'); % CONTROL Section
-
-% Cname   Cgain  Xhinge  HingeVec     SgnDup
-fprintf(fileID,'aileron %0.2f %0.2f %0.1f %0.1f %0.1f %0.1f\n\n',...
-    Cgain_ail, Xhinge_ail, HingeVec_x_ail, HingeVec_y_ail, HingeVec_z_ail,...
-    SgnDup_ail);
+% rudder (defined as aileron)
+defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_ail,...
+    HingeVecAil,SgnDup_ail);
 
 % CLAF
-fprintf(fileID,'CLAF\n');
-fprintf(fileID,'%0.2f\n',claf_w);
-fprintf(fileID,'#-------------------------------------------------------------\n');
-
+setClaf(fileID,claf_w);
+sectionBreak(fileID);
 
 % SECTION 2
 fprintf(fileID,'SECTION\n'); % SECTION
-fprintf(fileID,'#Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace\n');
-% Xle    Yle    Zle     Chord   Ainc  Nspanwise  Sspace
-Xle_vs_s2 = x_t_vs;
-Yle_vs_s2 = z_t_vs;
-Zle_vs_s2 = y_t_vs;
-chord_vs_s2 = c_t_vs;
-Ainc_vs_s2 = 0;
-Nspanwise_vs_s2 = 0;
-Sspace_vs_s2 = 0;
-
-fprintf(fileID,'%0.2f %0.2f %0.2f %0.2f %0.2f %d %d\n',...
-    Xle_vs_s2, Yle_vs_s2, Zle_vs_s2, chord_vs_s2, Ainc_vs_s2, Nspanwise_vs_s2,...
-    Sspace_vs_s2);
+% Xle, Yle, Zle, Chord, Ainc, Nspanwise, Sspace
+defineSection(fileID,x_t_vs,z_t_vs,y_t_vs,c_t_vs,0,0,0);
 
 % vertical stabilizer airfoil
 setAirfoil(fileID,vs_afile);
 
-% aileron
-fprintf(fileID,'\n#Cname \t Cgain \t Xhinge \t HingeVec \t SgnDup\n');
-fprintf(fileID,'CONTROL\n'); % CONTROL Section
-fprintf(fileID,'aileron %0.2f %0.2f %0.1f %0.1f %0.1f %0.1f\n\n',...
-    Cgain_ail, Xhinge_ail, HingeVec_x_ail, HingeVec_y_ail, HingeVec_z_ail,...
-    SgnDup_ail);
+% rudder (defined as aileron)
+defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_ail,...
+    HingeVecAil,SgnDup_ail);
 
 % CLAF
-fprintf(fileID,'CLAF\n');
-fprintf(fileID,'%0.2f\n',claf_w);
-fprintf(fileID,'#====================================================================\n');
-
+setClaf(fileID,claf_w);
+sectionBreak(fileID)
 
 fclose(fileID);
 
@@ -473,4 +283,106 @@ else
         'from a dat file. eg. NACA0015 or afoil.dat']);
 end
 
+end
+
+function defineSection(fileID,xLeadingEdge,yLeadingEdge,zLeadingEdge,...
+    chord,incidenceAngle,spanwiseSections,sSpace)
+fprintf(fileID,'#Xle \t Yle \t Zle \t Chord \t Ainc \t Nspanwise \t Sspace\n');
+fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t\t\t %d\n',...
+    xLeadingEdge, yLeadingEdge, zLeadingEdge, chord, incidenceAngle,...
+    spanwiseSections,sSpace);
+end
+
+function setSymmetryProperties(fileID,xSymmetry,ySymmetry,zSymmetry)
+
+fprintf(fileID,'#IYsym   IZsym   Zsym\n');
+fprintf(fileID,'%d \t\t %d\t\t %d\n',ySymmetry,zSymmetry,xSymmetry);
+end
+
+function setReferenceProperties(fileID,refArea,refChord,refSpan,...
+    xRef,yRef,zRef)
+
+% Sref, Cref, Bref
+fprintf(fileID,'#Sref    Cref    Bref\n');
+fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',refArea,refChord,refSpan);
+% Xref, Yref, Zref
+fprintf(fileID,'#Xref    Yref    Zref\n');
+fprintf(fileID,'%0.2f \t %0.2f \t %0.2f\n',xRef,yRef,zRef);
+
+end
+
+function defineCtrlSurface(fileID,typeOfSurface,ctrlGain,normalizedHingeLoc,...
+    hingeVec,signDuplication)
+%  typeOfSurface   name of control variable. 
+% eg. aileron, flap, elevator, rudder
+% ctrlGain     control deflection gain, units:  degrees deflection / control variable
+% normalizedHingeLoc   x/c location of hinge.  
+%                      If positive, control surface extent is Xhinge..1  (TE surface)
+%                      If negative, control surface extent is 0..-Xhinge (LE surface)
+% hingeVec  vector giving hinge axis about which surface rotates 
+%           + deflection is + rotation about hinge vector by righthand rule
+%           Specifying XYZhvec = 0. 0. 0. puts the hinge vector along the hinge
+% signDuplication   sign of deflection for duplicated surface
+%                   An elevator would have SgnDup = +1
+%                   An aileron  would have SgnDup = -1         
+fprintf(fileID,'CONTROL\n'); % CONTROL Section
+fprintf(fileID,'#Cname \t\tCgain \tx/c \txHinge \tyHinge \tzHinge \tSgnDup\n');
+fprintf(fileID,'%s \t%0.2f \t%0.2f \t%0.1f \t%0.1f \t%0.1f \t%0.1f\n\n',...
+    typeOfSurface,ctrlGain,normalizedHingeLoc,hingeVec(1),hingeVec(2),...
+    hingeVec(3),signDuplication);
+end
+
+function setClaf(fileID,claf)
+% This scales the effective dcl/da of the section airfoil as follows:
+%  dcl/da  =  2 pi CLaf
+% The implementation is simply a chordwise shift of the control point
+% relative to the bound vortex on each vortex element.
+% 
+% The intent is to better represent the lift characteristics 
+% of thick airfoils, which typically have greater dcl/da values
+% than thin airfoils.  A good estimate for CLaf from 2D potential
+% flow theory is
+% 
+%   CLaf  =  1 + 0.77 t/c
+% 
+% where t/c is the airfoil's thickness/chord ratio.  In practice,
+% viscous effects will reduce the 0.77 factor to something less.
+% Wind tunnel airfoil data or viscous airfoil calculations should
+% be consulted before choosing a suitable CLaf value.
+% 
+% If the CLAF keyword is absent for a section, CLaf defaults to 1.0, 
+% giving the usual thin-airfoil lift slope  dcl/da = 2 pi.  
+fprintf(fileID,'CLAF\n');
+fprintf(fileID,'%0.2f\n',claf);
+end
+
+function setAvlAnalysisParameters(fileID,nChord,cSpace,nSpan,sSpace)
+% Nchord =  number of chordwise horseshoe vortices placed on the surface
+% Cspace =  chordwise vortex spacing parameter (described later)
+% 
+% Nspan  =  number of spanwise horseshoe vortices placed on the surface [optional]
+% Sspace =  spanwise vortex spacing parameter (described later)         [optional]
+
+fprintf(fileID,'#Nchord \tCspace \tNspan \tSspace\n');
+fprintf(fileID,'%d \t\t\t%0.2f \t%d \t\t%0.2f\n',...
+    nChord,cSpace,nSpan,sSpace);
+
+end
+
+function setIncidenceAngle(fileID,incidenceAngle)
+fprintf(fileID,'\nANGLE\n');
+fprintf(fileID,'%0.1f\n',incidenceAngle);
+end
+
+function setMachNumber(fileID,machNumber)
+fprintf(fileID,'#Mach\n');
+fprintf(fileID,'%0.2f\n',machNumber);
+end
+
+function printName(fileID,name)
+fprintf(fileID,'%s\n',name);
+end
+
+function sectionBreak(fileID)
+fprintf(fileID,'#-------------------------------------------------------------\n');
 end
