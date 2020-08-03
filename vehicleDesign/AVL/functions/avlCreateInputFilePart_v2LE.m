@@ -287,20 +287,43 @@ end
 
 function defineSection(fileID,xLeadingEdge,yLeadingEdge,zLeadingEdge,...
     chord,incidenceAngle,spanwiseSections,sSpace)
+
+% Xle,Yle,Zle =  airfoil's leading edge location
+%   Chord       =  the airfoil's chord  (trailing edge is at Xle+Chord,Yle,Zle)
+%   Ainc        =  incidence angle, taken as a rotation (+ by RH rule) about 
+%                  the surface's spanwise axis projected onto the Y-Z plane.  
+%   Nspan       =  number of spanwise vortices until the next section 
+%   Sspace      =  controls the spanwise spacing of the vortices      
+  
 fprintf(fileID,'#Xle \t Yle \t Zle \t Chord \t Ainc \t Nspanwise \t Sspace\n');
 fprintf(fileID,'%0.2f \t %0.2f \t %0.2f \t %0.2f \t %0.2f \t %d \t\t\t %d\n',...
     xLeadingEdge, yLeadingEdge, zLeadingEdge, chord, incidenceAngle,...
     spanwiseSections,sSpace);
 end
 
-function setSymmetryProperties(fileID,xSymmetry,ySymmetry,zSymmetry)
+function setSymmetryProperties(fileID,iYsym,iZsym,Zsym)
+% iYsym =  1  case is symmetric about Y=0    , (X-Z plane is a solid wall)
+%       = -1  case is antisymmetric about Y=0, (X-Z plane is at const. Cp)
+%       =  0  no Y-symmetry is assumed
+% 
+% iZsym =  1  case is symmetric about Z=Zsym    , (X-Y plane is a solid wall)
+%       = -1  case is antisymmetric about Z=Zsym, (X-Y plane is at const. Cp)
+%       =  0  no Z-symmetry is assumed (Zsym ignored)
 
 fprintf(fileID,'#IYsym   IZsym   Zsym\n');
-fprintf(fileID,'%d \t\t %d\t\t %d\n',ySymmetry,zSymmetry,xSymmetry);
+fprintf(fileID,'%d \t\t %d\t\t %d\n',iYsym,iZsym,Zsym);
 end
 
 function setReferenceProperties(fileID,refArea,refChord,refSpan,...
     xRef,yRef,zRef)
+
+% Sref  = reference area  used to define all coefficients (CL, CD, Cm, etc)
+% Cref  = reference chord used to define pitching moment (Cm)
+% Bref  = reference span  used to define roll,yaw moments (Cl,Cn)
+% 
+% X,Y,Zref = default location about which moments and rotation rates are defined
+%              (if doing trim calculations, XYZref must be the CG location,
+%               which can be imposed with the MSET command described later)
 
 % Sref, Cref, Bref
 fprintf(fileID,'#Sref    Cref    Bref\n');
@@ -313,18 +336,24 @@ end
 
 function defineCtrlSurface(fileID,typeOfSurface,ctrlGain,normalizedHingeLoc,...
     hingeVec,signDuplication)
-%  typeOfSurface   name of control variable. 
-% eg. aileron, flap, elevator, rudder
-% ctrlGain     control deflection gain, units:  degrees deflection / control variable
-% normalizedHingeLoc   x/c location of hinge.  
-%                      If positive, control surface extent is Xhinge..1  (TE surface)
-%                      If negative, control surface extent is 0..-Xhinge (LE surface)
-% hingeVec  vector giving hinge axis about which surface rotates 
-%           + deflection is + rotation about hinge vector by righthand rule
-%           Specifying XYZhvec = 0. 0. 0. puts the hinge vector along the hinge
-% signDuplication   sign of deflection for duplicated surface
-%                   An elevator would have SgnDup = +1
-%                   An aileron  would have SgnDup = -1         
+% The CONTROL keyword declares that a hinge deflection at this section
+% is to be governed by one or more control variables.  An arbitrary number 
+% of control variables can be used, limited only by the array limit NDMAX.
+% 
+% The data line quantities are...
+% 
+%  name     name of control variable
+%  gain     control deflection gain, units:  degrees deflection / control variable
+%  Xhinge   x/c location of hinge.  
+%            If positive, control surface extent is Xhinge..1  (TE surface)
+%            If negative, control surface extent is 0..-Xhinge (LE surface)
+%  XYZhvec  vector giving hinge axis about which surface rotates 
+%            + deflection is + rotation about hinge vector by righthand rule
+%            Specifying XYZhvec = 0. 0. 0. puts the hinge vector along the hinge
+%  SgnDup   sign of deflection for duplicated surface
+%            An elevator would have SgnDup = +1
+%            An aileron  would have SgnDup = -1       
+
 fprintf(fileID,'CONTROL\n'); % CONTROL Section
 fprintf(fileID,'#Cname \t\tCgain \tx/c \txHinge \tyHinge \tzHinge \tSgnDup\n');
 fprintf(fileID,'%s \t%0.2f \t%0.2f \t%0.1f \t%0.1f \t%0.1f \t%0.1f\n\n',...
@@ -375,6 +404,7 @@ fprintf(fileID,'%0.1f\n',incidenceAngle);
 end
 
 function setMachNumber(fileID,machNumber)
+%   Mach  = default freestream Mach number for Prandtl-Glauert correction
 fprintf(fileID,'#Mach\n');
 fprintf(fileID,'%0.2f\n',machNumber);
 end
