@@ -1,4 +1,4 @@
-function [Ixx_lim] = airfoil_grid_func(AR,S)
+function [Ixx_lim] = airfoil_grid(AR,S)
 % I beam airfoil grid code
 
 % Airfoil characteristics

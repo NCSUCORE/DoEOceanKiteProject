@@ -9,7 +9,7 @@ T1Brat = 0.0001;     % 30% - Max ratio of T1 and Max value of B
 T2Arat = 0.2;     % 10% - Max ratio of T2 and Max value of A
 
 % Importing airfoil
-[x_af,us_af,ls_af] = airfoil_data();
+[x_af,us_af,ls_af] = airfoil_data1();
 
 % Grid specifications
 % x_ind = [7 15 25 35 45 55 65 75 82 90];
@@ -97,7 +97,7 @@ for k = 1:(length(x_ind)-1)
         k >= x_w3_ll && k <= x_w3_ul)
        rectangle('Position',[xori yori B_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
    else
-       %    rectangle('Position',[xori+(0.5*B_arr(k)- 0.5*T1_arr(k)) yori T1_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
+%           rectangle('Position',[xori+(0.5*B_arr(k)- 0.5*T1_arr(k)) yori T1_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
        rectangle('Position',[xori yori B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
        rectangle('Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
     
