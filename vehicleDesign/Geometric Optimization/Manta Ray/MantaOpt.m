@@ -72,6 +72,7 @@ for ii = 1:1%length(fuse.D)
         [uopt,pow,conv_flag] = fmincon(J,U,[],[],[],... %   Perform optimization 
             [],lb,ub,[],options);
         [Ixx] = airfoil_grid(uopt(1),wing.bw);          %   Obtain current wing moment of inertia 
+        [Ixx_lim] = airfoil_grid_func_skin_web(uopt(1),wing.bw);
         [~,Flift] = wingPowerCost1(uopt,wing,hStab,vStab,fuse,Env);
         delX = percDef*wing.bw/2/100.0;
         Ixx_req = 5*Flift*(wing.aeroCent^3)/(48*wing.E*delX)*(39.37^4);

@@ -62,14 +62,14 @@ end
 Ixx_lim = (sum(Ixx_arr))*(39.37^4);
 
 % Plotting I beams
-% for k = 1:(length(x_ind)-1)
-%    xori = x_af(x_ind(k));
-%    yori = ls_af(x_ind(k));
-%    rectangle('Position',[xori+(0.5*B_arr(k)- 0.5*T1_arr(k)) yori T1_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-%    rectangle('Position',[xori yori B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-%    rectangle('Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-%     
-% end
+for k = 1:(length(x_ind)-1)
+   xori = x_af(x_ind(k));
+   yori = ls_af(x_ind(k));
+   rectangle('Position',[xori+(0.5*B_arr(k)- 0.5*T1_arr(k)) yori T1_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
+   rectangle('Position',[xori yori B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
+   rectangle('Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
+    
+end
 end
 
 function [Ixx,Iyy] = AMoICalc(A,B,T1,T2)
