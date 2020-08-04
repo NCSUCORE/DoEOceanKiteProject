@@ -35,7 +35,7 @@ classdef vehicleM < dynamicprops
         wingSweep
         wingDihedral
         wingIncidence
-        wingNACA
+        wingAirfoil
         wingClMin
         wingClMax
 
@@ -114,7 +114,7 @@ classdef vehicleM < dynamicprops
             obj.wingSweep      = SIM.parameter('Unit','deg','Description','Wing sweep angle');
             obj.wingDihedral   = SIM.parameter('Unit','deg','Description','Wing dihedral angle');
             obj.wingIncidence  = SIM.parameter('Unit','deg','Description','Wing flow incidence angle');
-            obj.wingNACA       = SIM.parameter('Description','Wing NACA airfoil','NoScale',true);
+            obj.wingAirfoil    = SIM.parameter('Description','Wing airfoil','NoScale',true);
             obj.wingClMin      = SIM.parameter('Description','minimum section Lift Coef','NoScale',true);
             obj.wingClMax      = SIM.parameter('Description','maximum section Lift Coef','NoScale',true);
             
@@ -287,8 +287,8 @@ classdef vehicleM < dynamicprops
             obj.updateWings
         end
 
-        function setWingNACA(obj,val,units)
-            obj.wingNACA.setValue(val,units);
+        function setWingAirfoil(obj,val,units)
+            obj.wingAirfoil.setValue(val,units);
             obj.updateWings
         end
         
@@ -511,7 +511,7 @@ classdef vehicleM < dynamicprops
             %are flipped if they match the stbd wing
                 obj.portWing.setDihedral(-obj.wingDihedral.Value,'deg');
                 obj.portWing.setIncidence(-obj.wingIncidence.Value,'deg');
-            obj.portWing.setNACA(obj.wingNACA.Value,'');
+            obj.portWing.setAirfoil(obj.wingAirfoil.Value,'');
             obj.portWing.setClMin(obj.wingClMin.Value,'');
             obj.portWing.setClMax(obj.wingClMax.Value,'');
             obj.portWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
@@ -533,7 +533,7 @@ classdef vehicleM < dynamicprops
             obj.stbdWing.setSweep(obj.wingSweep.Value,'deg');
             obj.stbdWing.setDihedral(obj.wingDihedral.Value,'deg');
             obj.stbdWing.setIncidence(obj.wingIncidence.Value,'deg');
-            obj.stbdWing.setNACA(obj.wingNACA.Value,'');
+            obj.stbdWing.setAirfoil(obj.wingAirfoil.Value,'');
             obj.stbdWing.setClMin(obj.wingClMin.Value,'');
             obj.stbdWing.setClMax(obj.wingClMax.Value,'');
             obj.stbdWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
@@ -607,10 +607,6 @@ classdef vehicleM < dynamicprops
             
             alpha = obj.portWing.alpha.Value;
             Aref = obj.fluidRefArea.Value;
-%             Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
-%                 (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
-%             CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
-%                 obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref;
             Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
                 (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
             CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
@@ -618,9 +614,14 @@ classdef vehicleM < dynamicprops
             CLsurf = obj.portWing.CL.Value+obj.stbdWing.CL.Value+obj.hStab.CL.Value;
             CDtot = obj.portWing.CD.Value+obj.stbdWing.CD.Value+obj.hStab.CD.Value+obj.vStab.CD.Value+CDfuse;
             figure;subplot(2,1,1);hold on;grid on;
-            plot(alpha,CLsurf.^3./CDtot.^2,'b-');  xlabel('alpha [deg]');  ylabel('$\mathrm{CL^3/CD^2}$');  xlim(p.Results.xLim);
+            plot(alpha,CLsurf.^3./CDtot.^2,'b-');  
+            plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value).^3./(obj.portWing.CD.Value+obj.stbdWing.CD.Value).^2,'r-')
+            xlabel('alpha [deg]');  ylabel('$\mathrm{CL^3/CD^2}$');  xlim(p.Results.xLim);
             subplot(2,1,2);hold on;grid on;
-            plot(alpha,CLsurf./CDtot,'b-');  xlabel('alpha [deg]');  ylabel('$\mathrm{CL/CD}$');  xlim(p.Results.xLim);
+            plot(alpha,CLsurf./CDtot,'b-');  
+            plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value)./(obj.portWing.CD.Value+obj.stbdWing.CD.Value),'r-')
+            xlabel('alpha [deg]');  ylabel('$\mathrm{CL/CD}$');  xlim(p.Results.xLim);
+            legend('kite','wing')
         end
         function h = plot(obj,varargin)
             
