@@ -109,6 +109,14 @@ B_mTether = cross(B_rBridle,B_fTether);
 % sum of moments in body frame
 B_mSum = B_mBuoy + B_mWing + B_mHstab + B_mTether;
 
+% output
+val.sumPitchMoments = B_mSum(2);
+val.buoyPitchMoment = B_mBuoy(2);
+val.wingPitchMoment = B_mWing(2);
+val.hstabPitchMoment = B_mHstab(2);
+val.tetherPitchMoment = B_mTether(2);
+
+
 end
 
 %% local functions
