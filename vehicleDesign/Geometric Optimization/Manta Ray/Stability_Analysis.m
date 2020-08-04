@@ -2,7 +2,7 @@
 % clc;clear;
 
 %%  Input definitions 
-loadComponent('Manta2rot0WingGeom');                %   Load vehicle 
+loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
 wing.alphaw = vhcl.portWing.alpha.Value;            %   Wing alpha vec
 wing.ARw = vhcl.portWing.AR.Value;                  %   Wing alpha vec
 wing.bw = 8;                                        %   Wing span
@@ -39,7 +39,7 @@ fuse.CD9f = vhcl.fuse.sideDragCoeff.Value;          %   Fuselage drag coefficien
 
 Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.B = 1;                                          %   Buoyancy factor
-Sys.xg = [0 0 0]';                                  %   m - Center of gravity 
+Sys.xg = [0 0 0]';                               %   m - Center of gravity w/ respect to nose
 Sys.xb = Sys.xg+[.0171 0 .0546]';                   %   m - Center of buoyancy
 Sys.xbr = Sys.xg+[0 0 0]';                          %   m - Bridle location 
 Sys.xW = Sys.xg+[0 0 0]'+wing.aeroCent;             %   m - Wing aerodynamic center 
@@ -59,7 +59,7 @@ Rz = @(x) [cosd(x) sind(x) 0;-sind(x) cosd(x) 0;0 0 1];
 %%  Euler Angles 
 Theta = 40;                                         %   deg - Elevation angle
 phi = 0;                                            %   deg - roll
-theta = (-20:.5:20)*pi/180;                         %   deg - pitch
+theta = -(-20:.5:20)*pi/180;                         %   deg - pitch
 psi = 0;                                            %   deg - yaw
 M.tot = zeros(3,numel(theta));
 for i = 1:numel(theta)
@@ -73,12 +73,12 @@ for i = 1:numel(theta)
     F.buoyG = -F.gravG*Sys.B;                               %   N - Buoyancy force
     F.buoyB = Ry(theta(i))*F.buoyG;                         %   N - Buoyancy force (body)
     %   Lift Forces
-    CLw =         interp1(wing.alphaw*pi/180,wing.CLw,alpha,'linear','extrap');
+    CLw =         2*interp1(wing.alphaw*pi/180,wing.CLw,alpha,'linear','extrap');
     CLh = (hStab.Sh/wing.Sw)*interp1(hStab.alphah*pi/180,hStab.CLh,alpha,'linear','extrap');
     F.liftBw = 1/2*Env.rho*CLw*wing.Sw*norm(vApp)^2*cross(uApp,[0;1;0]);
     F.liftBh = 1/2*Env.rho*CLh*hStab.Sh*norm(vApp)^2*cross(uApp,[0;1;0]);
     %   Drag Forces
-    CDw =         interp1(wing.alphaw*pi/180,wing.CDw,alpha,'linear','extrap');
+    CDw =         2*interp1(wing.alphaw*pi/180,wing.CDw,alpha,'linear','extrap');
     CDh = (hStab.Sh/wing.Sw)*interp1(hStab.alphah*pi/180,hStab.CDh,alpha,'linear','extrap');
     CDv = (vStab.Sv/wing.Sw)*interp1(vStab.alphav*pi/180,vStab.CDv,alpha,'linear','extrap');
     F.dragBw = 1/2*Env.rho*CDw*wing.Sw*norm(vApp)^2*uApp;
