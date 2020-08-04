@@ -36,24 +36,25 @@ density = 1e3;
 buoyFactor = 1;
 
 % wing
-wing.span = 10;
-wing.aspectRatio = 10;
-wing.oswaldEff = 0.8;
-wing.ZeroAoALift = 0.1;
-wing.ZeroAoADrag = 0.01;
+wing.span = 10;                 % span
+wing.aspectRatio = 10;          % aspect ratio
+wing.oswaldEff = 0.8;           % oswald efficient < 1
+wing.ZeroAoALift = 0.1;         % zero angle of attack lift
+wing.ZeroAoADrag = 0.01;        % zero angle of attack drag
 
 % horizontal stabilizer
-hstab.span = 5;
-hstab.aspectRatio = 10;
-hstab.oswaldEff = 0.8;
-hstab.ZeroAoALift = 0.0;
-hstab.ZeroAoADrag = 0.01;
-hstab.dcLbydElevator = 0.08;
+hstab.span = 5;                 % span
+hstab.aspectRatio = 10;         % aspect ratio
+hstab.oswaldEff = 0.8;          % oswald efficient < 1
+hstab.ZeroAoALift = 0.0;        % zero angle of attack lift
+hstab.ZeroAoADrag = 0.01;       % zero angle of attack drag
+hstab.dcLbydElevator = 0.08;    % change in hstab CL per deg deflection of elevator
 
 % elevator deflection in degrees
 elevatorDeflection = 10;
 
-pitchStatibilityAnalysis(flowSpeed,kiteSpeedInX,...
+% test the function
+op = pitchStatibilityAnalysis(flowSpeed,kiteSpeedInX,...
     centerOfBuoyXLoc,wingAeroCenterXLoc,hstabAeroCenterXLoc,...
     bridleZLoc,elevation,azimuth,tangentPitch,heading,...
-    mass,gravAcc,density,buoyFactor,wing,hstab,elevatorDeflection)
+    mass,gravAcc,density,buoyFactor,wing,hstab,elevatorDeflection);
