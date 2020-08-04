@@ -5,7 +5,7 @@
 %       e = oswaldfactor(AR,0,'shevell',CD0,df_b,u);
 %       plot(ARx,e); axis([0 12 .6 1]); grid on
 %       xlabel('Aspect Ratio'); ylabel('Oswald efficiency factor, e')
-%       legend('.0076', 'C_{D,0} = 0.01','0.015','0.02','0.025')
+%       legend('.0076', '$C_{D,0}$ = 0.01','0.015','0.02','0.025')
 %       text(8.5,.63,'u = 0.99    s = 0.975')
 % 
 %       sweepx = linspace(0,40,41);
@@ -14,7 +14,7 @@
 %           oswaldfactor(AR,  0  ,'shevell',0,df_b,u);
 %       axes('pos',[0.25 0.25 0.3 0.25]);
 %       plot(sweepx,e); axis([0 40 .9 1.02]); grid on
-%       xlabel('Sweep, \Lambda (deg)'); ylabel('e_\Lambda/e_{\Lambda=0}')
+%       xlabel('Sweep, $\Lambda$ (deg)'); ylabel('e$_\Lambda$/e$_\Lambda=0$')
 %       legend('AR = 4','8','12','Location','SouthWest')
 %%
 
