@@ -4,7 +4,7 @@ clear; clc
 VEHICLE               = "vehicleManta";
 PLANT                 = "plantManta";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
-LIBRARY               = "Manta2R0Sw0Di8Ta";
+LIBRARY               = "Manta2RotNACA2412";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -12,7 +12,7 @@ vhcl = OCT.vehicleM;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('Manta01','');
+vhcl.setFluidCoeffsFileName('Manta02','');
 
 %% Volumes and Inertia
 vhcl.setVolume(1.4628,'m^3');
@@ -53,7 +53,7 @@ vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(0,'deg');
 vhcl.setWingDihedral(0,'deg');
 vhcl.setWingIncidence(0,'deg');
-vhcl.setWingNACA('2412','');
+vhcl.setWingAirfoil('NACA2412','');
 vhcl.setWingClMin(-1.7,'');
 vhcl.setWingClMax(1.7,'');
 
@@ -65,7 +65,7 @@ vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(4/.45,''); %Span 4, hspan 2
 vhcl.hStab.setSweep(2.8624,'deg');
 vhcl.hStab.setIncidence(-13.5,'deg');
-vhcl.hStab.setNACA('0015','');
+vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
 
@@ -74,7 +74,7 @@ vhcl.vStab.setRootChord(.52,'m');
 vhcl.vStab.setHalfSpan(1.95,'m');
 vhcl.vStab.setTR(.8,'');
 vhcl.vStab.setSweep(3.44,'deg');
-vhcl.vStab.setNACA('0015','');
+vhcl.vStab.setAirfoil('NACA0015','');
 vhcl.vStab.setClMin(-1.7,'');
 vhcl.vStab.setClMax(1.7,'');
 
@@ -83,9 +83,9 @@ vhcl.fuse.setDiameter(0.3556,'m');
 vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-1.6;0;0],'m');
-vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
-% vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootChord.Value,...
-%                           vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
+% vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
+vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootChord.Value,...
+                          vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
 
 %% Turbines
 vhcl.setNumTurbines(2,'');
