@@ -27,4 +27,5 @@ sl_refresh_customizations
 
 % Clear the variables created by this script
 clearvars props fnames ii propName
+format compact;
 fprintf('Done\n')
