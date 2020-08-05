@@ -59,7 +59,7 @@ Rz = @(x) [cosd(x) sind(x) 0;-sind(x) cosd(x) 0;0 0 1];
 %%  Euler Angles 
 Theta = 40;                                         %   deg - Elevation angle
 phi = 0;                                            %   deg - roll
-theta = -(-20:.5:20)*pi/180;                         %   deg - pitch
+theta = (-20:.5:20);                                %   deg - pitch
 psi = 0;                                            %   deg - yaw
 M.tot = zeros(3,numel(theta));
 for i = 1:numel(theta)
@@ -83,7 +83,7 @@ for i = 1:numel(theta)
     CDv = (vStab.Sv/wing.Sw)*interp1(vStab.alphav*pi/180,vStab.CDv,alpha,'linear','extrap');
     F.dragBw = 1/2*Env.rho*CDw*wing.Sw*norm(vApp)^2*uApp;
     F.dragBh = 1/2*Env.rho*CDh*hStab.Sh*norm(vApp)^2*uApp;
-    F.dragBv = 1/2*Env.rho*CDv*vStab.Sv*norm(vApp)^2*uApp;
+    F.dragBv = 1/2*Env.rho*CDv*vStab.Sv*norm(vApp)^2*uApp;  
     %   Tether Force
     
     %%  Moment Calculations
@@ -92,17 +92,12 @@ for i = 1:numel(theta)
     M.liftBh = cross(Sys.xH,F.liftBh);                  %   Nm - Horizontal stabilizer lift moment
     M.dragBw = cross(Sys.xW,F.dragBw);                  %   Nm - Wing drag moment
     M.dragBh = cross(Sys.xH,F.dragBh);                  %   Nm - Horizontal stabilizer drag moment
-    M.dragBv = cross(Sys.xV,F.dragBv);                  %   Nm - Vertical stabilizer drag moment
-%     M.buoyB = cross(F.buoyB,Sys.xb);                    %   Nm - Buoyancy moment
-%     M.liftBw = cross(F.liftBw,Sys.xW);                  %   Nm - Wing lift moment
-%     M.liftBh = cross(F.liftBh,Sys.xH);                  %   Nm - Horizontal stabilizer lift moment
-%     M.dragBw = cross(F.dragBw,Sys.xW);                  %   Nm - Wing drag moment
-%     M.dragBh = cross(F.dragBh,Sys.xH);                  %   Nm - Horizontal stabilizer drag moment
-%     M.dragBv = cross(F.dragBv,Sys.xV);                  %   Nm - Vertical stabilizer drag moment
-    M.tot(:,i) = M.buoyB+M.liftBw+M.liftBh+M.dragBw...  %   Nm - Total moment
-        +M.dragBh+M.dragBv;
+    M.W = cross(Sys.xW,F.liftBw+F.dragBw);              %   Nm - Wing moment
+    M.H = cross(Sys.xH,F.liftBh+F.dragBh);              %   Nm - Horizontal stabilizer moment
+    M.V = cross(Sys.xV,F.dragBv);                       %   Nm - Vertical stabilizer moment
+    M.tot(:,i) = M.buoyB+M.W+M.H+M.V;                   %   Nm - Total moment
 end
 
 %%  Plotting 
 figure; hold on; grid on
-plot(theta*180/pi,M.tot(2,:),'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment')
+plot(theta,M.tot(2,:),'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment')
