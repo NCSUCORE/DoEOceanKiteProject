@@ -1,5 +1,5 @@
 %%  Kite Design optimization
-clc;clear;clear;
+clc;%clear;clear;
 
 %%  Input definitions 
 loadComponent('Manta2rot0WingGeom');                %   Load vehicle 
@@ -60,11 +60,11 @@ for ii = 1:1%length(fuse.D)
     for jj = 1:1%length(fuse.L)
         fuse.D = Df_vec(ii);                            %   m - Grid of fuselage diameter values
         fuse.L = Lf_vec(jj);                            %   m - Grid of fusaloge length values
-        options = optimoptions('fmincon',...            %   Optimization options
+        options = optimoptions('fmincon','display','iter',...            %   Optimization options
             'Algorithm','sqp','MaxIterations',1e6,...
             'MaxFunctionEvaluations',1e6);
         J = @(U_0)wingPowerCost1(U_0,wing,hStab,vStab,fuse,Env);
-%         J = @(U_0)wingPowerCost2(U_0,wing,hStab,vStab,fuse,Env);
+        J = @(U_0)wingPowerCost2(U_0,wing,hStab,vStab,fuse,Env);
         C = [];
         lb = [5 0];                                     %   Optimization lower bound
         ub = [12 20*pi/180];                            %   Optimization upper bound
