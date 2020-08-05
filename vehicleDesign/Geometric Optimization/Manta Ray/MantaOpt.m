@@ -1,5 +1,5 @@
 %%  Kite Design optimization
-clc;clear;clear;
+clc;%clear;clear;
 
 %%  Input definitions 
 loadComponent('Manta2rot0WingGeom');                %   Load vehicle 
