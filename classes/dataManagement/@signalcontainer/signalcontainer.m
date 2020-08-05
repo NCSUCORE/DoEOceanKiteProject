@@ -159,6 +159,47 @@ classdef signalcontainer < dynamicprops
                 plot(time,CD,'r-');  xlabel('Path Position');  xlim(lim);  legend('CL','CD','location','east');
             end
         end
+        function plotTanAngles(obj,varargin)
+            p = inputParser;
+            addOptional(p,'plot1Lap',false,@islogical);
+            addOptional(p,'plotS',false,@islogical);
+            addOptional(p,'Lap1',1,@isnumeric);
+            parse(p,varargin{:})
+            data = squeeze(obj.currentPathVar.Data);
+            time = obj.lapNumS.Time;
+            lap = p.Results.plot1Lap;
+            con = p.Results.plotS;
+            L1 = p.Results.Lap1;
+            %  Determine Single Lap Indices
+            if lap
+                lapNum = squeeze(obj.lapNumS.Data);
+                Idx1 = find(lapNum > L1,1,'first');
+                Idx2 = find(lapNum > L1+1,1,'first');
+                if isempty(Idx1) || isempty(Idx2)
+                    error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
+                end
+                ran = Idx1:Idx2-1;
+                lim = [time(Idx1) time(Idx2)];
+            else
+                lim = [time(1) time(end)];
+            end
+            %  Compute Plotting Variables
+            tanRoll = squeeze(obj.tanRoll.Data)*180/pi;
+            tanPitch = squeeze(obj.tanPitch.Data)*180/pi;
+            hold on; grid on
+            if lap
+                if con
+                    plot(data(ran),tanRoll(ran),'b-');  xlabel('Path Position');  ylabel('Angle [deg]');
+                    plot(data(ran),tanPitch(ran),'r-'); xlabel('Path Position');  legend('$\mathrm{\phi_{tan}}$','$\theta_{tan}$','location','northeast');
+                else
+                    plot(time(ran),tanRoll(ran),'b-');  xlabel('Path Position');  ylabel('Angle [deg]');
+                    plot(time(ran),tanPitch(ran),'r-'); xlabel('Path Position');  legend('$\mathrm{\phi_{tan}}$','$\theta_{tan}$','location','northeast');  xlim(lim);
+                end
+            else
+                plot(time,tanRoll,'b-');  xlabel('Path Position');  ylabel('Angle [deg]');
+                plot(time,tanPitch,'r-'); xlabel('Path Position');  legend('$\mathrm{\phi_{tan}}$','$\theta_{tan}$','location','northeast');  xlim(lim);
+            end
+        end
         function [CLsurf,CDtot] = getCLCD(obj,vhcl)
             Aref = vhcl.fluidRefArea.Value;
             Afuse = squeeze(obj.Afuse.Data);
