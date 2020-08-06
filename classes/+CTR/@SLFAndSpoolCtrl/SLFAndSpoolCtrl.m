@@ -22,7 +22,6 @@ classdef SLFAndSpoolCtrl < handle
         elevatorReelInDef
         firstSpoolLap
         rudderGain
-        RelevationSP
         % Spooling
         ctrlVecUpdateFcn
         tetherLengthSetpointFcn
@@ -38,7 +37,9 @@ classdef SLFAndSpoolCtrl < handle
         nonXCurrentSpoolInGain
         spoolCtrlTimeConstant
         nomSpoolSpeed
-        leashLength
+        shortLeashLength
+        LaRelevationSP
+        LaRelevationSPErr
     end
     
     methods
@@ -62,7 +63,6 @@ classdef SLFAndSpoolCtrl < handle
             obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
             obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
             obj.fcnName             = SIM.parameter('Unit','','Description','Path Style');
-            obj.RelevationSP         = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
             
             obj.ctrlVecUpdateFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
             obj.tetherLengthSetpointFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
@@ -79,7 +79,9 @@ classdef SLFAndSpoolCtrl < handle
             obj.nonXCurrentSpoolInGain  = SIM.parameter('Unit','','Description','Flow speed multiplier to get glide-in winch speed');
             obj.spoolCtrlTimeConstant   = SIM.parameter('Unit','s','Description','Time constant for spooling command');
             obj.nomSpoolSpeed           = SIM.parameter('Unit','m/s','Description','Nominal spooling speed');
-            obj.leashLength             = SIM.parameter('Unit','m','Description','Length of the short leash');
+            obj.shortLeashLength        = SIM.parameter('Unit','m','Description','Length of the short leash');
+            obj.LaRelevationSP          = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
+            obj.LaRelevationSPErr       = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint error where spooling is allowed');
         end
         
         function setTanRoll(obj,val,units)
@@ -122,8 +124,12 @@ classdef SLFAndSpoolCtrl < handle
             obj.rudderGain.setValue(val,units)
         end
 
-        function setRelevationSP(obj,val,units)
-            obj.RelevationSP.setValue(val,units)
+        function setLaRelevationSP(obj,val,units)
+            obj.LaRelevationSP.setValue(val,units)
+        end
+
+        function setLaRelevationSPErr(obj,val,units)
+            obj.LaRelevationSPErr.setValue(val,units)
         end
 
         function setCtrlVecUpdateFcn(obj,val,units)
@@ -182,8 +188,8 @@ classdef SLFAndSpoolCtrl < handle
             obj.nomSpoolSpeed.setValue(val,units)
         end
         
-        function setLeashLength(obj,val,units)
-            obj.leashLength.setValue(val,units)
+        function setShortLeashLength(obj,val,units)
+            obj.shortLeashLength.setValue(val,units)
         end
         
         function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec) %#ok<INUSD>

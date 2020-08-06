@@ -38,7 +38,6 @@ fltCtrl.pitchAngleMax.lowerLimit.setValue(-40,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
-fltCtrl.RelevationSP.setValue(30,'deg');
 %% Spooling
 fltCtrl.setCtrlVecUpdateFcn('combinedCmd','')
 fltCtrl.setTetherLengthSetpointFcn('combinedTLSP','')
@@ -53,7 +52,9 @@ fltCtrl.setSwitchFilterDuration(10,'s')
 fltCtrl.setNonXCurrentSpoolInGain(1.5,'')
 fltCtrl.setSpoolCtrlTimeConstant(2,'s')
 fltCtrl.setNomSpoolSpeed(.5,'m/s')
-fltCtrl.setLeashLength(20,'m')
+fltCtrl.setShortLeashLength(20,'m')
+fltCtrl.LaRelevationSP.setValue(45,'deg');
+fltCtrl.LaRelevationSPErr.setValue(2,'deg');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 save(saveFile,'SPOOLINGCONTROLLER','-append')
