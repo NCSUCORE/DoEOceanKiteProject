@@ -28,6 +28,6 @@ subplot(3,2,5); hold on; grid on;
 plot(obj.ctrlSurfDeflCmd.Time,squeeze(obj.ctrlSurfDeflCmd.Data(3,:,:)),'b-');  xlabel('Time [s]');  ylabel('Elevator [deg]');
 %%  Plot Tether Tension
 subplot(3,2,6); hold on; grid on;
-plot(time,airNode,'b-');  plot(time,gndNode,'r--');  
+plot(time,airNode,'b-');  plot(time,gndNode,'r--');  %ylim([0 .5]);
 xlabel('Time [s]');  ylabel('Tension [kN]');  legend('Kite','Glider');
 end

@@ -20,13 +20,15 @@ fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 
-fltCtrl.pitchSP.kp.setValue(3,'(deg)/(deg)');
-fltCtrl.pitchSP.ki.setValue(.1,'(deg)/(deg*s)');
+fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');
+fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');
 fltCtrl.pitchSP.kd.setValue(0,'(deg)/(deg/s)');
 fltCtrl.pitchSP.tau.setValue(.01,'s');
+fltCtrl.pitchSPkpSlope.setValue(.02368,'');
+fltCtrl.pitchSPkpInt.setValue(.5263,'');
 
-fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)');
-fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');
+fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');
 fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCmd.tau.setValue(.01,'s');
 

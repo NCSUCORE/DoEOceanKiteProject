@@ -8,7 +8,7 @@ simScenario = 4;
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
-el = 40*pi/180;                                             %   rad - Mean elevation angle 
+el = 50*pi/180;                                             %   rad - Mean elevation angle 
 h = 15*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
@@ -31,7 +31,7 @@ switch simScenario                                          %   Tether
         minSoftLength = 0;                                  
         minLinkLength = 1;                                  %   Length at which tether rediscretizes
         loadComponent('shortTether');                       %   Tether for reeling
-        loadComponent('MantaTether');                       %   Single link tether
+%         loadComponent('MantaTether');                       %   Single link tether
     otherwise 
         loadComponent('MantaTether');                       %   Single link tether
 end
@@ -107,21 +107,21 @@ fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
 if simScenario >= 3
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad');
     fltCtrl.LaRelevationSP.setValue(45,'deg');          fltCtrl.LaRelevationSPErr.setValue(2,'deg');        %   Elevation setpoints
-    fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');       fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller 
+    fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller 
     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller 
 %     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
     fltCtrl.pitchAngleMax.upperLimit.setValue(20,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-40,'');
-    fltCtrl.setNomSpoolSpeed(.00,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
+    fltCtrl.setNomSpoolSpeed(.25,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
     wnch.winch1.elevError.setValue(2,'deg');
     vhcl.turb1.setPowerCoeff(0,'');
 end
-tRef = [0 750 1500];   tRef = [0 2000 4000];   
-pSP =  [45 50 45];    
+tRef = [0 750 1500];  % tRef = [0 2000 4000];   
+pSP =  [0 -20 -20];    
 thr.tether1.dragEnable.setValue(0,'');
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(6000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -146,8 +146,8 @@ switch simScenario
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Steady\');
     case 4
 %         filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
-%         filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.2f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
-        filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
+        filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.2f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
+%         filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
 %         filename = sprintf(strcat('Pitch_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 end
