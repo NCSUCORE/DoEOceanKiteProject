@@ -8,6 +8,8 @@ classdef SLFAndSpoolCtrl < handle
         yawMoment
         rollMoment
         pitchSP
+        pitchSPkpSlope
+        pitchSPkpInt
         elevCmd
         % Saturations
         maxBank
@@ -49,6 +51,8 @@ classdef SLFAndSpoolCtrl < handle
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
             obj.pitchSP             = CTR.FPID('deg','deg');
+            obj.pitchSPkpSlope      = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
+            obj.pitchSPkpInt        = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
             obj.elevCmd             = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
