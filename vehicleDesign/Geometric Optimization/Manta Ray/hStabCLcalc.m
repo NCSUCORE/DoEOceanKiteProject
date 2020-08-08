@@ -1,4 +1,4 @@
-function [M,F] = staticMoment(Sys,Env,wing,hStab,vStab,~,Ang)
+function [M,F] = hStabCLcalc(Sys,Env,wing,hStab,vStab,~,Ang)
 %%  Rotation Matrices 
 % Rx = @(x) [1 0 0;0 cosd(x) sind(x);0 -sind(x) cosd(x)]; %   Rotation matrix for rotations about the x-axis 
 Ry = @(x) [cosd(x) 0 -sind(x);0 1 0;sind(x) 0 cosd(x)]; %   Rotation matrix for rotations about the y-axis 
