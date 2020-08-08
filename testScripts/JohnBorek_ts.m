@@ -3,7 +3,7 @@ Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario 
 %   0 = fig8;   1 = fig8-rotor;   1.1 = fig8-2rotor;   2 = fig8-winch;   3 = steady;  4 = reel-in/out
-simScenario = 1.1;
+simScenario = 0;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
@@ -122,7 +122,7 @@ thr.tether1.dragEnable.setValue(0,'');
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -153,21 +153,21 @@ switch simScenario
 %         filename = sprintf(strcat('Pitch_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 end
-save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY')
+% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY')
 % save(strcat(fpath,filename),'tsc','-v7.3')
 %%  Animate Simulation 
-% if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
-% else
-%     vhcl.animateSim(tsc,2,'View',[0,0],...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','0.gif'));
-% end
+if simScenario <= 2
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
+        'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
+else
+    vhcl.animateSim(tsc,2,'View',[0,0],...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
+        'SaveGif',1==0,'GifFile',strrep(filename,'.mat','0.gif'));
+end
 %%  Plot Results
 if simScenario < 3
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',1==0,'Vapp',false,'plotBeta',false)
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'Vapp',false,'plotBeta',false)
 %     tsc.plotTanAngles('plot1Lap',true,'plotS',true)
 %     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
 else
