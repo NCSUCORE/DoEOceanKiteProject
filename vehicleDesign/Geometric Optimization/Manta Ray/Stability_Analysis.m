@@ -29,7 +29,8 @@ hStab.eDh = 0.9;                                    %   Horizontal stabilizer dr
 hStab.aeroCent = vhcl.hStab.rAeroCent_SurfLE.Value; %   Horizontal stabilizer aero center
 
 vStab.alphav = vhcl.vStab.alpha.Value;              %   Find index corresponding to 0 AoA
-vStab.CDv = vhcl.vStab.CD.Value;                    %   Horizontal stabilizer drag coefficient at zero alpha
+vStab.CDv = vhcl.vStab.CD.Value;                    %   Vertical stabilizer drag coefficient
+vStab.CLv = vhcl.vStab.CL.Value;                    %   Vertical stabilizer liftcoefficient
 vStab.Sv = vhcl.fluidRefArea.Value;                 %   Reference area for horizontal stabilizer
 vStab.eDv = 0.9;                                    %   Vertical stabilizer drag Oswald efficiency factor
 vStab.aeroCent = [.1739 0 .9389]';                  %   Vertical stabilizer aero center
@@ -42,21 +43,16 @@ Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.B = 1;                                          %   Buoyancy factor
 Sys.xg = [1.6 0 0]';                                %   m - Center of gravity w/ respect to nose
 Sys.xb = Sys.xg+[.0171 0 .0546]';                   %   m - Center of buoyancy location 
-Sys.xbr = Sys.xg+[0 0 -2]';                         %   m - Bridle location 
+Sys.xbr = Sys.xg+[0 0 0]';                         %   m - Bridle location 
 Sys.xW = [1.6 0 0]'+wing.aeroCent;                  %   m - Wing aerodynamic center location 
 Sys.xH = [6 0 0]'+hStab.aeroCent;                   %   m - Horizontal stabilizer aerodynamic center location 
 Sys.xV = [5.88 0 0]'+vStab.aeroCent;                %   m - Vertical stabilizer aerodynamic center location 
 
 Sys.vKite = [0 0 0]';                               %   m/s - Kite velocity 
 
-Env.vFlow = [1 0 0]';                             %   m/s - Flow speed 
+Env.vFlow = [.25 0 0]';                             %   m/s - Flow speed 
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
-
-%%  Rotation Matrices 
-Rx = @(x) [1 0 0;0 cosd(x) sind(x);0 -sind(x) cosd(x)];
-Ry = @(x) [cosd(x) 0 -sind(x);0 1 0;sind(x) 0 cosd(x)];
-Rz = @(x) [cosd(x) sind(x) 0;-sind(x) cosd(x) 0;0 0 1];
 
 %%  Position and Orientation Angles 
 Ang.elevation = 40;                                     %   deg - Elevation angle
@@ -65,16 +61,23 @@ Ang.azimuth = 0;                                        %   deg - Azimuth angle
 Ang.roll = 0;                                           %   deg - Roll angle 
 Ang.pitch = 0;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
-Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = north; 90 = west; etc.
+Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
 %%  Analyze Stability 
 pitchMoment = zeros(3,numel(Ang.pitch));
 for i = 1:numel(Ang.pitch)
     Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;              %   deg - Tangent pitch angle
-    [M,F] = staticMoment(Sys,Env,wing,hStab,vStab,fuse,Ang);
+    [M,F,CLh,CLhReq] = hStabCLcalc(Sys,Env,wing,hStab,vStab,fuse,Ang);
     pitchMoment(:,i) = M.tot;
 end
 
 %%  Plotting 
-figure; hold on; grid on
-plot(Ang.pitch,pitchMoment(2,:),'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment')
+if numel(Ang.pitch) > 1
+    figure; hold on; grid on
+    plot(Ang.pitch,pitchMoment(2,:),'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment')
+end
+% figure; hold on; grid on
+% plot(hStab.alphah-13.5,hStab.CLh,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
+
+    
+    
