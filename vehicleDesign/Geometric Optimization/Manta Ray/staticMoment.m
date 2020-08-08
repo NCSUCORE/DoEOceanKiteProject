@@ -33,15 +33,9 @@ F.dragBv = 1/2*Env.rho*CDv*vStab.Sv*norm(vApp)^2*uApp;
 Fnet = F.buoyB+F.gravB+F.liftBw+F.liftBh ...
         +F.dragBw+F.dragBh+F.dragBv;
 thrForce = -dot(TcB*Fnet,[0;0;1]);
-thrForce1 = -TcB*(F.buoyB+F.gravB+F.liftBw+F.liftBh ...
-                +F.dragBw+F.dragBh+F.dragBv);
 F.thrB = BcT*[0;0;thrForce];                                %   N - Tether force in the body frame
 %%  Moment Calculations
 M.buoyB = cross(Sys.xb-Sys.xg,F.buoyB);                     %   Nm - Buoyancy moment
-M.liftBw = cross(Sys.xW-Sys.xg,F.liftBw);                   %   Nm - Wing lift moment
-M.liftBh = cross(Sys.xH-Sys.xg,F.liftBh);                   %   Nm - Horizontal stabilizer lift moment
-M.dragBw = cross(Sys.xW-Sys.xg,F.dragBw);                   %   Nm - Wing drag moment
-M.dragBh = cross(Sys.xH-Sys.xg,F.dragBh);                   %   Nm - Horizontal stabilizer drag moment
 M.W = cross(Sys.xW-Sys.xg,F.liftBw+F.dragBw);               %   Nm - Wing moment
 M.H = cross(Sys.xH-Sys.xg,F.liftBh+F.dragBh);               %   Nm - Horizontal stabilizer moment
 M.V = cross(Sys.xV-Sys.xg,F.dragBv);                        %   Nm - Vertical stabilizer moment
