@@ -46,7 +46,7 @@ sz = getBusDims;
 % Create bus for the entire environment
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'vhclFlowVecs';
-elems(1).Dimensions = [3 12]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
+elems(1).Dimensions = [3 13]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;
@@ -57,7 +57,7 @@ elems(1).Description = 'Flow velocity vector in the ground coordinate system at 
 
 elems(2) = Simulink.BusElement;
 elems(2).Name = 'oceanHeightAtVhcl';
-elems(2).Dimensions = [12,1]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
+elems(2).Dimensions = [13,1]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
 elems(2).DimensionsMode = 'Fixed';
 elems(2).DataType = 'double';
 elems(2).SampleTime = -1;

@@ -21,8 +21,6 @@ switch simScenario                                          %   Flight Controlle
         loadComponent('pathFollowingCtrlForManta');
 end
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-% loadComponent('constEllipse');                             %   High level controller
-loadComponent('constBoothLem');                             %   High level controller
 loadComponent('pathFollowingGndStn');                       %   Ground station
 loadComponent('winchManta');                                %   Winches
 switch simScenario                                          %   Tether
@@ -37,20 +35,24 @@ switch simScenario                                          %   Tether
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
-if simScenario == 0
-%     loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor 
-    loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
+if simScenario == 0  || simScenario == 1 || simScenario == 2 
+    loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor 
 else
-%     loadComponent('Manta2rot');                             %   Vehicle with 2 rotors
-%     loadComponent('Manta2rot0WingGeom');                    %   Vehicle with 2 rotors
     loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
 %     loadComponent('Manta2RotEPP552');                       %   Vehicle with 2 rotors
 end
-loadComponent('ConstXYZT');                                 %   Environment
 %%  Environment Properties 
-env.water.setflowVec([flwSpd 0 0],'m/s')
-ENVIRONMENT = 'environmentManta';
+loadComponent('ConstXYZT');                                 %   Environment
+env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector 
+if simScenario == 0 || simScenario == 1 || simScenario == 2 
+    ENVIRONMENT = 'environmentManta';                       %   Single turbine 
+else
+    ENVIRONMENT = 'environmentManta2Rot';                   %   Two turbines 
+%     ENVIRONMENT = 'environmentManta4Rot';                   %   Four turbines
+end
 %%  Set basis parameters for high level controller
+% loadComponent('constEllipse');                              %   High level controller
+loadComponent('constBoothLem');                             %   High level controller
 if strcmpi(PATHGEOMETRY,'ellipse')
     hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Ellipse
 else
@@ -67,9 +69,8 @@ if simScenario == 3 || simScenario == 4
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
-if simScenario == 0
+if simScenario == 0 || simScenario == 2 
     vhcl.turb1.setDiameter(0,'m')
-    vhcl.turb2.setDiameter(0,'m')
 end
 %%  Tethers Properties
 if simScenario == 4

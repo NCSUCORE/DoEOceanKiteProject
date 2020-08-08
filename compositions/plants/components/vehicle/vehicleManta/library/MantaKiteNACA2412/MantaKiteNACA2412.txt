@@ -634,11 +634,11 @@ vhcl.contactPoints.Value = [0 0 4.79999985369458 4.79999985369458 -1.6 4.8;-4 4 
 vhcl.contactPoints.Unit = 'm'
 vhcl.contactPoints.NoScale = false
 vhcl.contactPoints.Description = 'Points where contact forces are modeled'
-vhcl.turb1.mass.Value = 0.0000e+00
+vhcl.turb1.mass.Value = 1.7550e+01
 vhcl.turb1.mass.Unit = 'kg'
 vhcl.turb1.mass.NoScale = false
 vhcl.turb1.mass.Description = 'Rotor mass'
-vhcl.turb1.diameter.Value = 0.0000e+00
+vhcl.turb1.diameter.Value = 8.0000e-01
 vhcl.turb1.diameter.Unit = 'm'
 vhcl.turb1.diameter.NoScale = false
 vhcl.turb1.diameter.Description = 'Diameter of the rotor'
@@ -650,7 +650,7 @@ vhcl.turb1.attachPtVec.Value = [-1.6;0;0]
 vhcl.turb1.attachPtVec.Unit = 'm'
 vhcl.turb1.attachPtVec.NoScale = false
 vhcl.turb1.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
-vhcl.turb1.powerCoeff.Value = 0.0000e+00
+vhcl.turb1.powerCoeff.Value = 5.0000e-01
 vhcl.turb1.powerCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.powerCoeff.NoScale = false
 vhcl.turb1.powerCoeff.Description = 'Coefficient used in power calculation'
@@ -662,12 +662,12 @@ vhcl.turb1.tipSpeepRatio.Value = 6.0000e+00
 vhcl.turb1.tipSpeepRatio.Unit is unitless or has no unit specified
 vhcl.turb1.tipSpeepRatio.NoScale = false
 vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
-vhcl.turb1.dragCoeff.Value = 0.0000e+00
+vhcl.turb1.dragCoeff.Value = 7.5000e-01
 vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoeff.NoScale = false
 vhcl.turb1.momentArm.Value = [-1.6;0;0]
 vhcl.turb1.momentArm.Unit = 'm'
 vhcl.turb1.momentArm.NoScale = false
-vhcl.turb1.momentOfInertia.Value = 0.0000e+00
+vhcl.turb1.momentOfInertia.Value = 2.8080e+00
 vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb1.momentOfInertia.NoScale = false

@@ -1,10 +1,10 @@
-%%  Manta Ray Vehicle Build Script for 2 Rotors 
+%%  Manta Ray Vehicle Build Script for 4 Rotors 
 clear; clc
 
-VEHICLE               = "vehicleManta";
-PLANT                 = "plantManta";
+VEHICLE               = "vehicleManta4Rot";
+PLANT                 = "plantManta4Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
-LIBRARY               = "Manta2rot0WingGeom";
+LIBRARY               = "Manta4RotNACA2412";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -12,7 +12,7 @@ vhcl = OCT.vehicleM;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('Manta01','');
+vhcl.setFluidCoeffsFileName('Manta02','');
 
 %% Volumes and Inertia
 vhcl.setVolume(1.4628,'m^3');
@@ -53,7 +53,7 @@ vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(0,'deg');
 vhcl.setWingDihedral(0,'deg');
 vhcl.setWingIncidence(0,'deg');
-vhcl.setWingNACA('2412','');
+vhcl.setWingAirfoil('NACA2412','');
 vhcl.setWingClMin(-1.7,'');
 vhcl.setWingClMax(1.7,'');
 
@@ -65,7 +65,7 @@ vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(4/.45,''); %Span 4, hspan 2
 vhcl.hStab.setSweep(2.8624,'deg');
 vhcl.hStab.setIncidence(-13.5,'deg');
-vhcl.hStab.setNACA('0015','');
+vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
 
@@ -74,7 +74,7 @@ vhcl.vStab.setRootChord(.52,'m');
 vhcl.vStab.setHalfSpan(1.95,'m');
 vhcl.vStab.setTR(.8,'');
 vhcl.vStab.setSweep(3.44,'deg');
-vhcl.vStab.setNACA('0015','');
+vhcl.vStab.setAirfoil('NACA0015','');
 vhcl.vStab.setClMin(-1.7,'');
 vhcl.vStab.setClMax(1.7,'');
 
@@ -83,29 +83,45 @@ vhcl.fuse.setDiameter(0.3556,'m');
 vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-1.6;0;0],'m');
-vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
-% vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootChord.Value,...
-%                           vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
+% vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
+vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootChord.Value,...
+                          vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
 
 %% Turbines
-vhcl.setNumTurbines(2,'');
+vhcl.setNumTurbines(4,'');
 vhcl.build('TurbClass','turb');
-% port rotor
-vhcl.turb1.setMass(6,'kg')
-vhcl.turb1.setDiameter(.56,'m')
+% port rotor 1 (top)
+vhcl.turb1.setMass(2.128,'kg')
+vhcl.turb1.setDiameter(.396,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
-vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*2/3,'m')
+vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/2+[0;0;.5],'m')
 vhcl.turb1.setPowerCoeff(.5,'')
 vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
-% starboard rotor
-vhcl.turb2.setMass(6,'kg')
-vhcl.turb2.setDiameter(.56,'m')
+% port rotor 2 (bottom)
+vhcl.turb2.setMass(2.128,'kg')
+vhcl.turb2.setDiameter(.396,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
-vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*2/3,'m')
+vhcl.turb2.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/2-[0;0;.5],'m')
 vhcl.turb2.setPowerCoeff(.5,'')
 vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
+% starboard rotor 1 (top)
+vhcl.turb3.setMass(2.128,'kg')
+vhcl.turb3.setDiameter(.396,'m')
+vhcl.turb3.setAxisUnitVec([-1;0;0],'')
+vhcl.turb3.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/2+[0;0;.5],'m')
+vhcl.turb3.setPowerCoeff(.5,'')
+vhcl.turb3.setAxalInductionFactor(1.5,'')
+vhcl.turb3.setTipSpeedRatio(6,'')
+% starboard rotor 2 (bottom)
+vhcl.turb4.setMass(2.128,'kg')
+vhcl.turb4.setDiameter(.396,'m')
+vhcl.turb4.setAxisUnitVec([1;0;0],'')
+vhcl.turb4.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/2-[0;0;.5],'m')
+vhcl.turb4.setPowerCoeff(.5,'')
+vhcl.turb4.setAxalInductionFactor(1.5,'')
+vhcl.turb4.setTipSpeedRatio(6,'')
 
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
