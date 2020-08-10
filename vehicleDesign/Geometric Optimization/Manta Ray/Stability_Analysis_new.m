@@ -61,7 +61,7 @@ Ang.elevation = 40;                                     %   deg - Elevation angl
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = -10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
@@ -75,8 +75,8 @@ end
 alphaRef = -10:.01:10;
 CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
 idx = find(abs(CLh-CL.hReq) <= .0005);
-alphaRef(idx);
-CLh(idx);
+alphaRef(idx)
+CLh(idx)
 %%  Plotting 
 if numel(Ang.pitch) > 1
     figure; hold on; grid on
