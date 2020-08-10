@@ -1,7 +1,9 @@
-%loadComponent('Manta2RotNACA2412');   
-%path = uigetdir;
-files = dir(path);
+loadComponent('newManta2RotNACA2412');  %Load Vehicle Model
+path = uigetdir; %Define output path for solidworks CAD driving files
+files = dir(path); %query file path
 
+% The following link the parameters between the MATLAB model and the 
+% SW CAD driving dimensions
 wingParaSW = ["rootChord","NACACamberedAirfoil","incidenceAngle",...
     "aspectRatio","taperRatio","sweepAngle","dihedral"];
 wingParaMAT = {vhcl.wingRootChord.Value,...
@@ -21,6 +23,7 @@ vStabParaMAT = {vhcl.vStab.rootChord.Value,...
     vhcl.vStab.incidence.Value,vhcl.vStab.AR.Value,vhcl.vStab.TR.Value,...
     vhcl.vStab.sweep.Value}
 
+%Put the queried file names into an easier to access data structure
 j=1;
 for k = 1 : length(files)
     if endsWith(files(k).name,".txt")
@@ -29,7 +32,9 @@ for k = 1 : length(files)
     end
 end
 
+%Update the SW driving files
 for j = 1 : length(cntrFiles)
+    %Read file in question
     fullName = strcat(path,"\",cntrFiles(j).name);
     fid = fopen(fullName,'r');
     i = 1;
@@ -41,7 +46,8 @@ for j = 1 : length(cntrFiles)
         A{i} = tline;
     end
     fclose(fid);
-
+%Update model parameters. Specific loop per geometry type. Probably a
+%better way to write this section in the future.
     if contains(cntrFiles(j).name,"wing") == 1
     k=1
     for i = 1:numel(A)
@@ -77,7 +83,7 @@ for j = 1 : length(cntrFiles)
         end
     end
     end
-    
+    %Write updated model parameters to the file.
     fid = fopen(fullName, 'w');
     for i = 1:numel(A)
         if A{i+1} == -1
@@ -85,7 +91,7 @@ for j = 1 : length(cntrFiles)
             break
         else
             fprintf(fid,'%s\n', A{i});
-            A{i}
+            A{i};
         end
     end
     fclose(fid)

@@ -1,6 +1,6 @@
-﻿"rootChord"= 0.52'length of root chord
-"NACAairfoil"= 0015'NACA airfoil number
-"incidentAngle"= 0'V-stab incidence angle
-"aspectRatio"= 7.5'V-stab aspect ratio
-"taperRatio"= 0.8'V-stab taper ratio
+﻿"rootChord"= 0.52
+"NACAairfoil"= 0015
+"incidentAngle"= 0
+"aspectRatio"= 4.1667
+"taperRatio"= 0.8
 "sweepAngle"= 0'V-stab sweep angle
