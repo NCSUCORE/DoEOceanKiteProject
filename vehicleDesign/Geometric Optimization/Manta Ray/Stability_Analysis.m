@@ -58,7 +58,7 @@ pitch = -20:.1:20;
 xb = -.1:.01:.1;
 xbr = 0:.1:2;
 %%  Position and Orientation Angles 
-Ang.elevation = 40;                                     %   deg - Elevation angle
+Ang.elevation = 90;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
