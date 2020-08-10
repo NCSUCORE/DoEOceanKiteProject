@@ -1,8 +1,8 @@
-rootChord= 0.4
+rootChord= 0.52
 
 NACAairfoil= 0015
 
-incidentAngle= -13.5
+incidentAngle= 1.44
 
 aspectRatio= 8.8889
 

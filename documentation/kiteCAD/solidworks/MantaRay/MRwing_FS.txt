@@ -1,8 +1,8 @@
-﻿"rootChord"= 0.8'length of root chord
-"NACACamberedAirfoil"= 2415'NACA Cambered airfoil number
-"incidenceAngle"= 0'Wing incidence angle
-"aspectRatio"= 10'Wing aspect ratio
-"taperRatio"= 0.8'Wing taper ratio
-"sweepAngle"= 0'Wing sweep angle
-"dihedral"= 0'Wing dihedral
+﻿"rootChord"= 0.8
+"NACACamberedAirfoil"= 2412
+"incidenceAngle"= 0
+"aspectRatio"= 11.1111
+"taperRatio"= 0.8
+"sweepAngle"= 0
+"dihedral"= 0
 "rootIncidenceAngle@rootSketch" =  ( "incidenceAngle" + "incidenceAngle" )  / 2
