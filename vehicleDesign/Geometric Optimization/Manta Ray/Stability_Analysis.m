@@ -58,7 +58,7 @@ pitch = -20:.1:20;
 xb = -.1:.01:.1;
 xbr = 0:.1:2;
 %%  Position and Orientation Angles 
-Ang.elevation = 90;                                     %   deg - Elevation angle
+Ang.elevation = 40;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
@@ -69,8 +69,10 @@ Ang.heading = 0;                                        %   deg - Heading on the
 %%  Analyze Stability 
 pitchMomentXb = zeros(numel(xb),numel(Ang.pitch));
 pitchMomentXbr = zeros(numel(xbr),numel(Ang.pitch));
-pitchXb = zeros(numel(xb),0);
-pitchXbr = zeros(numel(xbr),0);
+pitchMomentXbrXb = zeros(numel(xbr),numel(xb),numel(Ang.pitch));
+pitchXb = zeros(numel(xb),1);
+pitchXbr = zeros(numel(xbr),1);
+pitchXbrXb = zeros(numel(xbr),numel(xb));
 for j = 1:numel(xb)
     Sys.xb = Sys.xg+[xb(j) 0 .0546]';
     for i = 1:numel(Ang.pitch)
@@ -100,6 +102,23 @@ for j = 1:numel(xbr)
         pitchXbr(j) = Ang.pitch(round(median(idx)));
     end
 end
+for k = 1:numel(xbr)
+    for j = 1:numel(xb)
+        Sys.xb = Sys.xg+[xb(j) 0 .0546]';
+        Sys.xbr = Sys.xg+[0 0 -xbr(j)]';
+        for i = 1:numel(Ang.pitch)
+            Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;
+            [M,F,CL,CD] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang);
+            pitchMomentXbrXb(k,j,i) = M.tot(2);
+        end
+        idx = find(abs(pitchMomentXbrXb(k,j,:)) <= 5);
+        if isempty(idx)
+            pitchXbrXb(k,j) = NaN;
+        else
+            pitchXbrXb(k,j) = Ang.pitch(round(median(idx)));
+        end
+    end
+end
 %%  Plotting 
 % if numel(Ang.pitch) > 1
 %     figure; hold on; grid on
@@ -110,7 +129,9 @@ end
 figure; subplot(2,1,1); hold on; grid on
 plot(xb,pitchXb,'b-');  xlabel('CB$_x$ [m]');  ylabel('$\theta_0$ [deg]')
 subplot(2,1,2); hold on; grid on
-plot(xbr,pitchXbr,'b-');  xlabel('CBr$_z$ [m]');  ylabel('$\theta_0$ [deg]')
+plot(xbr,pitchXbr,'b-');  xlabel('Br$_z$ [m]');  ylabel('$\theta_0$ [deg]')
 
-    
+figure; 
+surf(xbr,xb,pitchXbrXb)
+xlabel('Br$_z$ [m]');  ylabel('CB$_x$ [m]');  zlabel('$\theta_0$ [deg]')
     
