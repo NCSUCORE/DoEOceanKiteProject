@@ -44,6 +44,7 @@ fuse.D = vhcl.fuse.diameter.Value;                  %   m - Fuselage diameter
 Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.B = 1;                                          %   Buoyancy factor
 Sys.xg = vhcl.rCM_LE.Value-vhcl.fuse.rNose_LE.Value;%   m - Center of gravity w/ respect to nose
+Sys.LE = -[.84;0;.04153];                           %   m - wing leading edge 
 Sys.xb = Sys.xg+[0 0 0]';                           %   m - Center of buoyancy location 
 Sys.xbr = Sys.xg+[0 0 0]';                          %   m - Bridle location 
 Sys.xW = -vhcl.fuse.rNose_LE.Value+wing.aeroCent;   %   m - Wing aerodynamic center location 
@@ -80,10 +81,10 @@ CLh(idx)
 %%  Plotting 
 if numel(Ang.pitch) > 1
     figure; hold on; grid on
-    plot(Ang.pitch,pitchMoment,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment')
+    plot(Ang.pitch,pitchMoment,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
 end
-% figure; hold on; grid on
-% plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
+figure; hold on; grid on
+plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
 
     
     
