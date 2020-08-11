@@ -8,7 +8,7 @@ simScenario = 4;
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
-el = 50*pi/180;                                             %   rad - Mean elevation angle 
+el = 40*pi/180;                                             %   rad - Mean elevation angle 
 h = 15*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
@@ -21,8 +21,6 @@ switch simScenario                                          %   Flight Controlle
         loadComponent('pathFollowingCtrlForManta');
 end
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-% loadComponent('constEllipse');                             %   High level controller
-loadComponent('constBoothLem');                             %   High level controller
 loadComponent('pathFollowingGndStn');                       %   Ground station
 loadComponent('winchManta');                                %   Winches
 switch simScenario                                          %   Tether
@@ -37,20 +35,25 @@ switch simScenario                                          %   Tether
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
-if simScenario == 0
-%     loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor 
-    loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
+if simScenario == 0  || simScenario == 1 || simScenario == 2 
+    loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor 
 else
-%     loadComponent('Manta2rot');                             %   Vehicle with 2 rotors
-%     loadComponent('Manta2rot0WingGeom');                    %   Vehicle with 2 rotors
-    loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
+%     loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
+    loadComponent('newManta2RotNACA2412');                     %   Vehicle with 2 rotors
 %     loadComponent('Manta2RotEPP552');                       %   Vehicle with 2 rotors
 end
-loadComponent('ConstXYZT');                                 %   Environment
 %%  Environment Properties 
-env.water.setflowVec([flwSpd 0 0],'m/s')
-ENVIRONMENT = 'environmentManta';
+loadComponent('ConstXYZT');                                 %   Environment
+env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector 
+if simScenario == 0 || simScenario == 1 || simScenario == 2 
+    ENVIRONMENT = 'environmentManta';                       %   Single turbine 
+else
+    ENVIRONMENT = 'environmentManta2Rot';                   %   Two turbines 
+%     ENVIRONMENT = 'environmentManta4Rot';                   %   Four turbines
+end
 %%  Set basis parameters for high level controller
+% loadComponent('constEllipse');                              %   High level controller
+loadComponent('constBoothLem');                             %   High level controller
 if strcmpi(PATHGEOMETRY,'ellipse')
     hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Ellipse
 else
@@ -67,9 +70,8 @@ if simScenario == 3 || simScenario == 4
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
-if simScenario == 0
+if simScenario == 0 || simScenario == 2 
     vhcl.turb1.setDiameter(0,'m')
-    vhcl.turb2.setDiameter(0,'m')
 end
 %%  Tethers Properties
 if simScenario == 4
@@ -111,17 +113,17 @@ if simScenario >= 3
     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller 
 %     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
     fltCtrl.pitchAngleMax.upperLimit.setValue(20,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-40,'');
-    fltCtrl.setNomSpoolSpeed(.25,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
+    fltCtrl.setNomSpoolSpeed(.00,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
     wnch.winch1.elevError.setValue(2,'deg');
     vhcl.turb1.setPowerCoeff(0,'');
 end
 tRef = [0 750 1500];  % tRef = [0 2000 4000];   
-pSP =  [0 -20 -20];    
+pSP =  [0 0 0];    
 thr.tether1.dragEnable.setValue(0,'');
 % pSP = linspace(1,1,numel(tRef))*5;
 % vhcl.rBridle_LE.setValue([0,0,0]','m');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(20,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -151,22 +153,22 @@ switch simScenario
 %         filename = sprintf(strcat('Pitch_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 end
-save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY')
+% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 % save(strcat(fpath,filename),'tsc','-v7.3')
 %%  Animate Simulation 
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',false,'SaveGif',false,'GifFile',strrep(filename,'.mat','.gif'));
+%         'ZoomIn',false,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
 %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','0.gif'));
 % end
 %%  Plot Results
 if simScenario < 3
-%     tsc.plotFlightResults(vhcl,env,'plot1Lap',true,'plotS',true,'Vapp',false,'plotBeta',false)
-    tsc.plotTanAngles('plot1Lap',true,'plotS',true)
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'Vapp',false,'plotBeta',false)
+%     tsc.plotTanAngles('plot1Lap',true,'plotS',true)
 %     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
 else
     tsc.plotLaR;
@@ -176,4 +178,14 @@ end
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
 % tsc.turbEnrg.Data(1,1,end)
-% tsc.MNetBdy.Data(:,:,1)
+M1.buoyB = tsc.MBuoyBdy.Data(:,:,1);
+M1.W = tsc.MFluidPartBdy.Data(:,1,1)+tsc.MFluidPartBdy.Data(:,2,1);
+M1.H = tsc.MFluidPartBdy.Data(:,3,1);
+M1.V = tsc.MFluidPartBdy.Data(:,4,1);
+M1.thr = tsc.MThrNetBdy.Data(:,:,1);
+M1.tot = tsc.MNetBdy.Data(:,:,1);
+
+
+
+
+
