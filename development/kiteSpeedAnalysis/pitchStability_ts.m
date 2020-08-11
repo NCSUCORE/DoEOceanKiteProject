@@ -19,13 +19,13 @@ hstabAeroCenterXLoc = 6;
 % bridle location
 bridleZLoc = -1;
 % elevation angle
-elevation = 90*(pi/180);
+elevation = 40*(pi/180);
 % azimuth angle
 azimuth = 0*(pi/180);
 % tangent pitch angle
-tangentPitch = 30*(pi/180);
+tangentPitch = -50*(pi/180);
 % heading angle
-heading = 180*(pi/180);
+heading = 0*(pi/180);
 % mass
 mass = 3e3;
 % gravity
