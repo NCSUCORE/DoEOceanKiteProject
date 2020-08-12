@@ -130,7 +130,7 @@ if lap
         end
     end
 else
-    plot(time,squeeze(obj.alphaLocal.Data(1,1,:)),'b-');  ylabel('AoA [deg]');  xlim(lim)
+    plot(time,squeeze(obj.alphaLocal.Data(1,1,:)),'b-');  ylabel('Port AoA [deg]');  xlim(lim)
     if p.Results.plotBeta
         plot(time,squeeze(obj.betaErr.Data(1,1,:)),'r--');  ylabel('Angle [deg]');  legend('Alpha','Beta');  xlim(lim)
     end

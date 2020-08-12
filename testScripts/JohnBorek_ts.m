@@ -9,8 +9,8 @@ simScenario = 4.2;
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
-el = 40*pi/180;                                             %   rad - Mean elevation angle 
-h = 15*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
+el = 10*pi/180;                                             %   rad - Mean elevation angle 
+h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
 if simScenario == 3
@@ -93,26 +93,30 @@ if simScenario ~= 2
     fltCtrl.setFirstSpoolLap(1000,'');
 end
 fltCtrl.rudderGain.setValue(0,'')
-fltCtrl.setElevatorReelInDef(0,'deg')
+if simScenario == 1.2
+    fltCtrl.setElevatorReelInDef(-20,'deg')
+else 
+    fltCtrl.setElevatorReelInDef(0,'deg')
+end
 fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
 %%  Steady-flight controller parameters 
 if simScenario >= 3
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad');
     fltCtrl.LaRelevationSP.setValue(45,'deg');          fltCtrl.LaRelevationSPErr.setValue(2,'deg');        %   Elevation setpoints
     fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller 
-    fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller 
+    fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller 
 %     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
     fltCtrl.pitchAngleMax.upperLimit.setValue(20,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-40,'');
     fltCtrl.setNomSpoolSpeed(.00,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
     wnch.winch1.elevError.setValue(2,'deg');
     vhcl.turb1.setPowerCoeff(0,'');
 end
-tRef = [0 750 1500];  % tRef = [0 2000 4000];   
-pSP =  [0 0 0];    
+tRef = [0 250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000];
+pSP =  [0 0   0   0   0   15   10   5    0    -5   -10  -15  -20];    
 thr.tether1.dragEnable.setValue(0,'');
 % vhcl.rBridle_LE.setValue([0,0,0]','m');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -138,21 +142,20 @@ elseif simScenario == 3
 elseif simScenario == 4
 %     filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
 %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
-    filename = sprintf(strcat('Pitch_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
+    filename = sprintf(strcat('PitchStep_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','LaR\');
 elseif simScenario == 4.2
 %     filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
 %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
-    filename = sprintf(strcat('Pitch_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
+    filename = sprintf(strcat('PitchStep_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
 end
-save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
-% save(strcat(fpath,filename),'tsc','-v7.3')
+% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 %%  Animate Simulation 
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',false,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
+%         'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
@@ -160,7 +163,7 @@ save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBR
 % end
 %%  Plot Results
 if simScenario < 3
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'Vapp',false,'plotBeta',false)
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'Vapp',false,'plotBeta',false)
 %     tsc.plotTanAngles('plot1Lap',true,'plotS',true)
 %     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
 else
@@ -171,7 +174,7 @@ end
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
 % tsc.turbEnrg.Data(1,1,end)
-% simStabilityCheck
+simStabilityCheck
 
 
 
