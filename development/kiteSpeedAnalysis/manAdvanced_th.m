@@ -1,6 +1,6 @@
 clear
 clc
-close all
+% close all
 
 %% initailize
 cIn = maneuverabilityAdvanced;
@@ -16,10 +16,10 @@ G_rCM = cIn.calcInertialPosition(azimuth,elevation);
 
 %% test apparent velocity calculation
 heading = 0*pi/180;
-tgtPitch = 30*pi/180;
+tgtPitch = 0*pi/180;
 roll = 0*pi/180;
 
-G_vFlow = [1;0;0];      % flow vel in ground frame
+G_vFlow = [3;0;0];      % flow vel in ground frame
 T_vKite = [2;0;0];      % kite vel in tangent (North-East-Down) frame
 
 B_vApp = cIn.calcApparentVelInBodyFrame(G_vFlow,T_vKite,...
@@ -77,15 +77,29 @@ thrLoads = cIn.calcTetherLoads(G_vFlow,T_vKite,azimuth,elevation,...
     heading,tgtPitch,roll,elevatorDeflection);
 
 %% test path tangent calculation
-pathParam = linspace(0,2*pi,100);
+pathParam = linspace(0,2*pi,101);
 pathAzimAndElev = cIn.pathAndTangentEqs.AzimAndElev(pathParam);
 pathCoords      = cIn.pathAndTangentEqs.PathCoords(pathParam);
 pathTangents    = cIn.pathAndTangentEqs.PathTangents(pathParam);
+reqHeadingAngle = cIn.pathAndTangentEqs.reqHeading(pathParam);
 
-%% test required heading angle calculation
+%% test calculation of required roll over the path
+H_vKite = 8*G_vFlow;
+reqRoll = cIn.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
+
+%% test pitch stability calculation
+% elevator deflection required to trim
+reqDe = cIn.calcElevatorDefForTrim(G_vFlow,T_vKite,...
+    azimuth,elevation,heading,tgtPitch,roll);
+
+% test pitch stability ananlysis function
+tgtPitchSweep = linspace(-20,20,41)*pi/180;
+% res = cIn.pitchStabilityAnalysis(G_vFlow,T_vKite,azimuth,elevation,...
+%     heading,tgtPitchSweep,roll,elevatorDeflection);
 
 
 %% test plotting functions
+fIdx = 1;
 % figure(2);
 % set(gcf,'Position',[18 417 560 420]);
 % cIn.plotDome;
@@ -93,22 +107,32 @@ pathTangents    = cIn.pathAndTangentEqs.PathTangents(pathParam);
 % grid on;
 % view(100,35);
 % axis equal;
-% 
+%
 % pAxes = cIn.plotBodyFrameAxes(azimuth,elevation,...
 %     heading,tgtPitch,roll);
-% 
+%
 % pVels = cIn.plotVelocities(G_vFlow,T_vKite,azimuth,elevation);
 % pLem = cIn.plotLemniscate;
 % pTanVec = cIn.plotTangentVec(pi/6);
-% 
+%
 % figure(3);
-% cIn.plotRadiusOfCurvature;
-% 
+% cIn.plotPathRadiusOfCurvature;
+%
 % figure(4);
-% cIn.plotRequiredHeadingAngle;
+% cIn.plotPathHeadingAngle;
+
+fIdx = fIdx+1;
+figure(fIdx);
+set(gcf,'Position',[20 60 560*3 420*2]);
+pTgt = cIn.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite,azimuth,...
+    elevation,heading,tgtPitchSweep,roll,elevatorDeflection);
+
 
 %% test animation functions
-figure(5);
+fIdx = fIdx+1;
+figure(fIdx);
 set(gcf,'Position',[20 60 560*2 420*2]);
-cIn.makeFancyAnimation(true,pathParam);
+cIn.makeFancyAnimation(pathParam,'animate',false,...
+    'addKiteTrajectory',true,...
+    'rollInRad',reqRoll);
 

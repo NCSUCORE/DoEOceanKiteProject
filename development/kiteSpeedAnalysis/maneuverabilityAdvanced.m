@@ -39,6 +39,7 @@ classdef maneuverabilityAdvanced
     end
     
     properties % vstab
+        vStabOn = true;
         vstabAeroCenter;
         vstabChord;
         vstabAspectRatio;
@@ -46,6 +47,7 @@ classdef maneuverabilityAdvanced
         vstabZeroAoALift = 0.0;
         vstabZerAoADrag = 0.01;
         vstabControlSensitivity = 0;
+        vstabMaxDef = 30;
     end
     
     properties (Dependent = true)
@@ -64,7 +66,14 @@ classdef maneuverabilityAdvanced
         gravAcceleration = 9.81;
     end
     
-    
+    properties (SetAccess = private) % plot properties
+        lwd = 1.0;
+        linStyleOrder = {'-','--',':o',};
+        colorOrder = [228,26,28
+            55,126,184
+            77,175,74
+            152,78,16]./255;
+    end
     
     %% getters
     methods
@@ -81,6 +90,74 @@ classdef maneuverabilityAdvanced
         % v-stab area
         function val = get.vstabArea(obj)
             val = obj.vstabChord^2*obj.vstabAspectRatio/2;
+        end
+        
+        % parameterized eqn for path co-ordinates & path tangent vectors
+        function val = get.pathAndTangentEqs(obj)
+            % local variables
+            r    = obj.tetherLength;
+            elev = obj.meanElevationInRadians;
+            a    = obj.aBooth;
+            b    = obj.bBooth;
+            % make symbolic path parameter
+            syms s
+            % equations for path longitude and latitude
+            pathAzimuth = (a*sin(s))./...
+                (1 + ((a/b)^2).*(cos(s).^2));
+            pathElevation = (((a/b)^2)*sin(s).*cos(s))./...
+                (1 + ((a/b)^2).*(cos(s).^2));
+            pathElevation = pathElevation + elev;
+            % x,y,and z coordinates in inertial frame
+            G_path = r*[cos(pathAzimuth).*cos(pathElevation);
+                sin(pathAzimuth).*cos(pathElevation);
+                sin(pathElevation)];
+            % differentiate wrt s to get path tangent vector
+            G_pathTgt = diff(G_path,s);
+            % rotate path tangent vector to tangent frame
+            TcG = obj.makeGroundToTangentialFrameRotMat(pathAzimuth,...
+                pathElevation);
+            T_pathTgt = TcG*G_pathTgt;
+            % calculate heading angle required in the tangent frame
+            reqHeading = atan2(T_pathTgt(2),T_pathTgt(1));
+            % output
+            val.AzimAndElev  = matlabFunction([pathAzimuth;pathElevation]);
+            val.PathCoords   = matlabFunction(G_path);
+            val.PathTangents = matlabFunction(G_pathTgt);
+            val.reqHeading   = matlabFunction(reqHeading);
+        end
+        
+        % parameterized eqn for radius of curvate over the path
+        function val = get.radiusOfCurvatureEq(obj)
+            % symbolic
+            syms pathParm
+            a = obj.aBooth;
+            b = obj.bBooth;
+            r = obj.tetherLength;
+            % logitutude equation
+            pathLong = (a*sin(pathParm))./...
+                (1 + ((a/b)^2).*(cos(pathParm).^2));
+            % latitude equation equation
+            pathLat = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
+                (1 + ((a/b)^2).*(cos(pathParm).^2));
+            pathLat = pathLat + obj.meanElevationInRadians;
+            % get lemniscate coordinates
+            lemX = r*cos(pathLong).*cos(pathLat);
+            lemY = r*sin(pathLong).*cos(pathLat);
+            lemZ = r*sin(pathLat);
+            % first derivative
+            dx = diff(lemX,pathParm);
+            dy = diff(lemY,pathParm);
+            dz = diff(lemZ,pathParm);
+            % second derivative
+            ddx = diff(dx,pathParm);
+            ddy = diff(dy,pathParm);
+            ddz = diff(dz,pathParm);
+            % curvature numerator
+            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + (ddy*dx - ddx*dy)^2);
+            % curvature denominator
+            Kden = (dx^2 + dy^2 + dz^2)^1.5;
+            % radius of curvature = 1/curvate
+            val = matlabFunction(Kden/Knum);
         end
     end
     
@@ -106,9 +183,20 @@ classdef maneuverabilityAdvanced
             TcG = obj.Ry(-elevation)*obj.Rx(azimuth)*obj.Ry(-pi/2);
         end
         
+        % tangent to heading frame rotation
+        function HcT = makeTangentToHeadingFrameRotMat(obj,heading)
+            HcT = obj.Rz(heading);
+        end
+        
+        % heading to body frame rotation
+        function BcH = makeHeadingToBodyFrameRotMat(obj,tgtPitch,roll)
+            BcH = obj.Rx(roll)*obj.Ry(tgtPitch);
+        end
+        
         % tangent to body frame rotation matrix
         function BcT = makeTangentToBodyFrameRotMat(obj,heading,tgtPitch,roll)
-            BcT = obj.Rx(roll)*obj.Ry(tgtPitch)*obj.Rz(heading);
+            BcT = obj.makeHeadingToBodyFrameRotMat(tgtPitch,roll)*...
+                obj.makeTangentToHeadingFrameRotMat(heading);
         end
         
         % ground to body frame totation matrix
@@ -121,9 +209,17 @@ classdef maneuverabilityAdvanced
             BcG = BcT*TcG;
         end
         
+        function val =  plot2D(obj,x,y,varargin)
+            val = plot(x,y,varargin{:});
+            hold on;
+            % set color order and line style order
+            set(gca,'ColorOrder', obj.colorOrder);
+            set(gca,'LineStyleOrder',obj.linStyleOrder);
+        end
+        
     end
     
-    %% methods for position, buoyancy loads, etc. calculation
+    %% methods for position, buoyancy loads, tether loads, etc. calculation
     methods
         % calculate inertial position given polar co-ordinates
         function val = calcInertialPosition(obj,azimuth,elevation)
@@ -166,8 +262,8 @@ classdef maneuverabilityAdvanced
         end
         
         % calculate tether force and moment
-        function val = calcTetherLoads(obj,G_vFlow,T_vKite,azimuth,elevation,...
-                heading,tgtPitch,roll,elevatorDef)
+        function [val,allLoads] = calcTetherLoads(obj,G_vFlow,T_vKite,...
+                azimuth,elevation,heading,tgtPitch,roll,elevatorDef)
             % local variable
             rThr = obj.bridleLocation;
             % calculate buoyancy loads
@@ -202,13 +298,14 @@ classdef maneuverabilityAdvanced
             % rotate to body frame and output
             val.force = BcT*T_Fthr;
             val.moment = cross(rThr,val.force);
+            % output all loads
+            allLoads.wingLoads  = wingLoads;
+            allLoads.hstabLoads = hstabLoads;
+            allLoads.vstabLoads = vstabLoads;
+            allLoads.buoyLoads  = buoyLoads;
+            allLoads.B_Fgrav    = B_Fgrav;
         end
         
-        % derivation
-        function val = testDeriv(~)
-            val = 0;
-            
-        end
         
     end
     
@@ -357,7 +454,7 @@ classdef maneuverabilityAdvanced
                     [CL,CD] = obj.calcFluidCoeffs(SSA,eVstab,AR,CL0,CD0);
             end
             % dynamic pressure
-            dynPressure = 0.5*rho*norm(B_vApp)^2;
+            dynPressure = obj.vStabOn*0.5*rho*norm(B_vApp)^2;
             % loads
             val.drag = dynPressure*CD*sVstab*uDrag;
             val.lift = dynPressure*CL*sVstab*uLift;
@@ -366,78 +463,253 @@ classdef maneuverabilityAdvanced
         end
     end
     
-    %% methods related to the path
+    %% control methods
     methods
-        % get parameterized eqn for path co-ordinates & path tangent vectors
-        function val = get.pathAndTangentEqs(obj)
-            % local variables
-            r    = obj.tetherLength;
-            elev = obj.meanElevationInRadians;
-            a    = obj.aBooth;
-            b    = obj.bBooth;
-            % make symbolic path parameter
-            syms s
-            % equations for path longitude and latitude
-            pathAzimuth = (a*sin(s))./...
-                (1 + ((a/b)^2).*(cos(s).^2));
-            pathElevation = (((a/b)^2)*sin(s).*cos(s))./...
-                (1 + ((a/b)^2).*(cos(s).^2));
-            pathElevation = pathElevation + elev;
-            % x,y,and z coordinates in inertial frame
-            G_path = r*[cos(pathAzimuth).*cos(pathElevation);
-                sin(pathAzimuth).*cos(pathElevation);
-                sin(pathElevation)];
-            % differentiate wrt s to get path tangent vector
-            G_pathTgt = diff(G_path,s);
-            % rotate path tangent vector to tangent frame
-            TcG = obj.makeGroundToTangentialFrameRotMat(pathAzimuth,...
-                pathElevation);
-            T_pathTgt = TcG*G_pathTgt;
-            % calculate heading angle required in the tangent frame
-            reqHeading = atan2(T_pathTgt(2),T_pathTgt(1));
+        
+        % calculate kite velocity in tangent frame given heading speed
+        function T_vKite = calcKiteVelInTangentFrame(obj,H_vKite,heading)
             % output
-            val.AzimAndElev  = matlabFunction([pathAzimuth;pathElevation]);
-            val.PathCoords   = matlabFunction(G_path);
-            val.PathTangents = matlabFunction(G_pathTgt);
-            val.reqHeading   = matlabFunction(reqHeading);
+            T_vKite = NaN(3,numel(heading));
+            for ii = 1:numel(heading)
+                HcT = obj.makeTangentToHeadingFrameRotMat(heading(ii));
+                T_vKite(:,ii) = transpose(HcT)*H_vKite;
+            end
         end
         
-        % get parameterized eqn for radius of curvate over the path
-        function val = get.radiusOfCurvatureEq(obj)
-            % symbolic
-            syms pathParm
-            a = obj.aBooth;
-            b = obj.bBooth;
-            r = obj.tetherLength;
-            % logitutude equation
-            pathLong = (a*sin(pathParm))./...
-                (1 + ((a/b)^2).*(cos(pathParm).^2));
-            % latitude equation equation
-            pathLat = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
-                (1 + ((a/b)^2).*(cos(pathParm).^2));
-            pathLat = pathLat + obj.meanElevationInRadians;
-            % get lemniscate coordinates
-            lemX = r*cos(pathLong).*cos(pathLat);
-            lemY = r*sin(pathLong).*cos(pathLat);
-            lemZ = r*sin(pathLat);
-            % first derivative
-            dx = diff(lemX,pathParm);
-            dy = diff(lemY,pathParm);
-            dz = diff(lemZ,pathParm);
-            % second derivative
-            ddx = diff(dx,pathParm);
-            ddy = diff(dy,pathParm);
-            ddz = diff(dz,pathParm);
-            % curvature numerator
-            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + (ddy*dx - ddx*dy)^2);
-            % curvature denominator
-            Kden = (dx^2 + dy^2 + dz^2)^1.5;
-            % radius of curvature = 1/curvate
-            val = matlabFunction(Kden/Knum);
+        % calculate required centripetal force over the path
+        function val = calcRequiredCentripetalForce(obj,H_vKite,pathParam)
+            % get radius of curvature over the path
+            pathRcurve = obj.radiusOfCurvatureEq(pathParam);
+            % calculate centripetal force required
+            val = obj.mass*H_vKite(1)^2./pathRcurve;
+            % correct direction
+            val(pathParam>=pi) = -1*val(pathParam>=pi);
         end
         
+        function val = calcRequiredRoll(obj,G_vFlow,H_vKite,pathParam,varargin)
+            % number of points on path
+            nPoints = numel(pathParam);
+            % parse input
+            pp = inputParser;
+            addParameter(pp,'tgtPitch',0*pathParam,@isnumeric);
+            addParameter(pp,'elevatorDef',0*pathParam,@isnumeric);
+            parse(pp,varargin{:});
+            % local variables
+            tgtPitch = pp.Results.tgtPitch;
+            % % dElevator = pp.Results.elevatorDef;
+            % get path azimuth and elevation
+            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
+            azim = pathAzimElev(1,:);
+            elev = pathAzimElev(2,:);
+            % get path heading angle
+            pathHeading = obj.pathAndTangentEqs.reqHeading(pathParam);
+            % calculate required centripetal force to stay on path
+            reqFcentripetal = obj.calcRequiredCentripetalForce(H_vKite,...
+                pathParam);
+            % preallocation
+            val = pathParam*nan;
+            % kite velocity in tangent frame along the path
+            T_vKite = obj.calcKiteVelInTangentFrame(H_vKite,pathHeading);
+            % find wing roll angle that cancels the centripetal force
+            for ii = 1:nPoints
+                if ii == 1
+                    x0 = 0;         % initial roll angle guess
+                else
+                    x0 = val(ii-1);
+                end
+                val(ii) = fzero(@(roll) ...
+                    obj.calcDifferenceInCentripetalForces(reqFcentripetal(ii),...
+                    G_vFlow,T_vKite(:,ii),azim(ii),elev(ii),...
+                    pathHeading(ii),tgtPitch(ii),roll),x0);
+            end
+        end
+        
+        function val = calcDifferenceInCentripetalForces(obj,Fcent,...
+                G_vFlow,T_vKite,azimuth,elevation,heading,tgtPitch,roll)
+            % calculate wing loads
+            B_vApp = obj.calcApparentVelInBodyFrame(...
+                G_vFlow,T_vKite,azimuth,elevation,heading,tgtPitch,roll);
+            wingLoads = obj.calcWingLoads(B_vApp);
+            % rotate wing lift to the heading frame
+            BcH = obj.makeHeadingToBodyFrameRotMat(tgtPitch,roll);
+            H_wingLift = transpose(BcH)*wingLoads.lift;
+            % get the differnce between its y component and centripetal
+            % force
+            val = Fcent - H_wingLift(2);
+        end
     end
     
+    %% pitch stability methods
+    methods
+        % calculate elevator deflection to trim
+        function [val,allMoments] = calcElevatorDefForTrim(obj,G_vFlow,T_vKite,...
+                azimuth,elevation,heading,tgtPitch,roll)
+            % define symbolic
+            syms de
+            % calculate all loads
+            [thrLoads,allLoads] = obj.calcTetherLoads(G_vFlow,T_vKite,...
+                azimuth,elevation,heading,tgtPitch,roll,de);
+            % extract moments
+            B_Mwing  = allLoads.wingLoads.moment;
+            B_Mhstab = allLoads.hstabLoads.moment;
+            B_Mvstab = allLoads.vstabLoads.moment;
+            B_Mbuoy  = allLoads.buoyLoads.moment;
+            B_Mthr   = thrLoads.moment;
+            % get sum of moments
+            B_Msum = B_Mwing + B_Mhstab + B_Mvstab + B_Mbuoy + B_Mthr;
+            % solve
+            val = solve(B_Msum(2) == 0,de,'Real',true);
+            val = min(abs(val));
+            % output all moments
+            allMoments.B_Mwing  = B_Mwing;
+            allMoments.B_Mhstab = B_Mhstab;
+            allMoments.B_Mvstab = B_Mvstab;
+            allMoments.B_Mbuoy  = B_Mbuoy;
+            allMoments.B_Mthr   = B_Mthr;
+            allMoments.B_Msum   = B_Msum;
+            
+        end
+        
+        % loop throught tangent pitch angles and get moments and other
+        % things
+        function val = pitchStabilityAnalysis(obj,G_vFlow,T_vKite,...
+                azimuth,elevation,heading,tgtPitch,roll,dElev)
+            % number of points
+            nPoints = numel(tgtPitch);
+            % preallocate matrices
+            AoA      = NaN(1,nPoints);
+            SSA      = NaN(1,nPoints);
+            de       = NaN(1,nPoints);
+            B_Mwing  = NaN(3,nPoints);
+            B_Mhstab = NaN(3,nPoints);
+            B_Mvstab = NaN(3,nPoints);
+            B_Mbuoy  = NaN(3,nPoints);
+            B_Mthr   = NaN(3,nPoints);
+            B_Msum   = NaN(3,nPoints);
+            % run the loop
+            for ii = 1:nPoints
+                % apparent wind velocity
+                B_vApp = obj.calcApparentVelInBodyFrame(G_vFlow,T_vKite,...
+                    azimuth,elevation,heading,tgtPitch(ii),roll);
+                % angle of attack and sideslip angle
+                AoA(ii) = obj.calcAngleOfAttackInRadians(B_vApp)*180/pi;
+                SSA(ii) = obj.calcSideSlipAngleInRadians(B_vApp)*180/pi;
+                % calculate required elevator deflection
+                [de(ii),allMoments] = obj.calcElevatorDefForTrim(G_vFlow,...
+                    T_vKite,azimuth,elevation,heading,tgtPitch(ii),roll);
+                % store all moments
+                B_Mwing(:,ii)  = allMoments.B_Mwing;
+                B_Mhstab(:,ii) = subs(allMoments.B_Mhstab,dElev);
+                B_Mvstab(:,ii) = allMoments.B_Mvstab;
+                B_Mbuoy(:,ii)  = allMoments.B_Mbuoy;
+                B_Mthr(:,ii)   = subs(allMoments.B_Mthr,dElev);
+                B_Msum(:,ii)   = subs(allMoments.B_Msum,dElev);
+            end
+            % output
+            val.AoA         = AoA;
+            val.SSA         = SSA;
+            val.elevatorDef = de;
+            val.B_Mwing     = B_Mwing;
+            val.B_Mhstab    = B_Mhstab;
+            val.B_Mvstab    = B_Mvstab;
+            val.B_Mbuoy     = B_Mbuoy;
+            val.B_Mthr      = B_Mthr;
+            val.B_Msum      = B_Msum;
+        end
+        
+        function val = plotPitchStabilityAnalysisResults(obj,G_vFlow,T_vKite,...
+                azimuth,elevation,heading,tgtPitch,roll,dElev)
+            % initialize graphics object matrix
+            val = gobjects;
+            spAxes = gobjects;
+            % results from the analysis
+            res = obj.pitchStabilityAnalysis(G_vFlow,T_vKite,...
+                azimuth,elevation,heading,tgtPitch,roll,dElev);
+            fprintf('Done calculating.\n');
+            % normalizing Moment
+            normM = 1e3;
+            % local variables
+            noSp = [2,5]; % number of subplots
+            pIdx = 1;    % plot index
+            spIdx = 1;   % subplot index
+            tgtPitch = tgtPitch*180/pi;
+            % plot buoyancy pitching moments
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mbuoy(2,:)./normM);
+            grid on; hold on;
+            xlabel('Tangent pitch (deg)');
+            ylabel('Buoyancy moment (kN-m)');
+            % plot wing pitching moments
+            pIdx = pIdx+1; spIdx = spIdx + 1;
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mwing(2,:)./normM);
+            grid on; hold on;
+            xlabel('Tangent pitch (deg)');
+            ylabel('Wing moment (kN-m)');
+            % plot H-stab pitching moments
+            pIdx = pIdx+1; spIdx = spIdx + 1;
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mhstab(2,:)./normM);
+            grid on; hold on;
+            xlabel('Tangent pitch (deg)');
+            ylabel('H-stab moment (kN-m)');
+            % plot tether pitching moments
+            pIdx = pIdx+1; spIdx = spIdx + 1;
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mthr(2,:)./normM);
+            grid on; hold on;
+            xlabel('Tangent pitch (deg)');
+            ylabel('Tether moment (kN-m)');
+            % plot sum of pitching moments
+            pIdx = pIdx+1; spIdx = spIdx + 1;
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(tgtPitch,res.B_Msum(2,:)./normM);
+            grid on; hold on;
+            xlabel('Tangent pitch (deg)');
+            ylabel('Sum of moments (kN-m)');
+            % plot angle of attack
+            pIdx = pIdx+1; spIdx = spIdx + 1;
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(tgtPitch,res.AoA);
+            grid on; hold on;
+            xlabel('Tangent pitch (deg)');
+            ylabel('AoA (deg)');
+            % plot elevator deflection to trim
+            pIdx = pIdx+1; spIdx = spIdx + 1;
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(tgtPitch,res.elevatorDef);
+            grid on; hold on;
+            xlabel('Tangent pitch (deg)');
+            ylabel('Elevator deflection to trim (deg)');
+            pIdx = pIdx+1;
+            val(pIdx) = yline(obj.vstabMaxDef,'r-','linewidth',obj.lwd);
+            pIdx = pIdx+1;
+            val(pIdx) = yline(-obj.vstabMaxDef,'r-','linewidth',obj.lwd);
+            % plot AoA of attack vs sum of moments
+            pIdx = pIdx+1; spIdx = spIdx + 1;
+            spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
+            val(pIdx) = obj.plot2D(res.AoA,res.B_Msum(2,:)./normM);
+            grid on; hold on;
+            xlabel('AoA (deg)');
+            ylabel('Sum of moments (kN-m)');
+            % link the axes of the first row
+            linkaxes(spAxes(1:5),'y');
+            % main title
+            sgtitle(sprintf(['Azimuth = %.1f, Elevation = %.1f, Heading = %.1f, ',...
+                'Roll = %.1f'],[azimuth,elevation,...
+                heading,roll]*180/pi));
+            % plot the dome and shit
+            spIdx = spIdx + 1;
+            subplot(noSp(1),noSp(2),[spIdx, spIdx+1]);
+            cla;
+            obj.plotDome;
+            obj.plotLemniscate;
+            obj.plotBodyFrameAxes(azimuth,elevation,heading,0,roll);
+            view(100,35);
+            axis equal;
+        end
+    end
+      
     %% plotting methods
     methods
         % plot body frame axes
@@ -456,7 +728,7 @@ classdef maneuverabilityAdvanced
                 77,175,74                       % green
                 55,126,184];                    % blue
             lineWidth = 0.8;
-            scale = obj.tetherLength/10;
+            scale = obj.tetherLength*0.1;
             % plot
             val = gobjects(3);
             for ii = 1:3
@@ -482,7 +754,7 @@ classdef maneuverabilityAdvanced
             rCM = obj.calcInertialPosition(azimuth,elevation);
             % plot options
             lineWidth = 0.8;
-            scale = obj.tetherLength/10;
+            scale = obj.tetherLength*0.1;
             % plot flow velocity
             val = gobjects(2);
             for ii = 1:2
@@ -499,7 +771,7 @@ classdef maneuverabilityAdvanced
         function plotDome(obj)
             % get constants
             r = obj.tetherLength;
-            lwd = 0.5;
+            linWidth = 0.5;
             lnType = ':';
             grayRGB = 128/255.*[1 1 1];
             % make longitude and latitude fine grids
@@ -514,7 +786,7 @@ classdef maneuverabilityAdvanced
                 X = r*cosd(longCoarse(ii)).*cosd(latFine);
                 Y = r*sind(longCoarse(ii)).*cosd(latFine);
                 Z = r*sind(latFine);
-                plot3(X,Y,Z,lnType,'linewidth',lwd,'color',grayRGB);
+                plot3(X,Y,Z,lnType,'linewidth',linWidth,'color',grayRGB);
                 hold on;
             end
             % plot latitude lines
@@ -522,7 +794,7 @@ classdef maneuverabilityAdvanced
                 X = r*cosd(longFine).*cosd(latCoarse(ii));
                 Y = r*sind(longFine).*cosd(latCoarse(ii));
                 Z = r*sind(latCoarse(ii))*ones(size(longFine));
-                plot3(X,Y,Z,lnType,'linewidth',lwd,'color',grayRGB);
+                plot3(X,Y,Z,lnType,'linewidth',linWidth,'color',grayRGB);
             end
         end
         
@@ -559,13 +831,13 @@ classdef maneuverabilityAdvanced
                     plotCL(AoA,CL);
             end
             
-            function plotCL(AoA,CL)
-                plot(AoA,CL,'k-','linewidth',1);
+            function plotCL(obj,AoA,CL)
+                obj.plot2D(AoA,CL,'linewidth',obj.lwd);
                 grid on; hold on;
                 xlabel('$\alpha$ (deg)'); xlabel('$C_{L,wing}$ (deg)');
             end
-            function plotCD(AoA,CD)
-                plot(AoA,CD,'k-','linewidth',1);
+            function plotCD(obj,AoA,CD)
+                obj.plot2D(AoA,CD,'linewidth',obj.lwd);
                 grid on; hold on;
                 xlabel('$\alpha$ (deg)'); xlabel('$C_{D,wing}$ (deg)');
             end
@@ -593,7 +865,7 @@ classdef maneuverabilityAdvanced
             tanVec = tanVec./max(norm(tanVec),eps);
             % plot options
             lineWidth = 0.8;
-            scale = obj.tetherLength/10;
+            scale = obj.tetherLength*0.15;
             % quiver plot it
             val = quiver3(pointLoc(1),pointLoc(2),pointLoc(3),...
                 tanVec(1),tanVec(2),tanVec(3),scale,...
@@ -603,14 +875,14 @@ classdef maneuverabilityAdvanced
         end
         
         % plot radius of curvature
-        function val = plotRadiusOfCurvature(obj)
+        function val = plotPathRadiusOfCurvature(obj)
             % local variable
             pathParam = linspace(0,2*pi,300);
             % calculate radius of curvature
             R = obj.radiusOfCurvatureEq(pathParam);
             % plot
             pathParam = pathParam./(2*pi);
-            val = plot(pathParam,R,'k-','linewidth',1);
+            val = obj.plot2D(pathParam,R,'linewidth',obj.lwd);
             xlabel('Path parameter');
             ylabel('R (m)');
             grid on;
@@ -619,7 +891,7 @@ classdef maneuverabilityAdvanced
         end
         
         % plot heading angle over the path
-        function val = plotRequiredHeadingAngle(obj)
+        function val = plotPathHeadingAngle(obj)
             % local variable
             pathParam = linspace(0,2*pi,300);
             % calculate radius of curvature
@@ -627,19 +899,40 @@ classdef maneuverabilityAdvanced
             headingAng = wrapTo2Pi(headingAng);
             % plot
             pathParam = pathParam./(2*pi);
-            val = plot(pathParam,headingAng*180/pi,'k-','linewidth',1);
+            val = obj.plot2D(pathParam,headingAng*180/pi,'linewidth',obj.lwd);
             xlabel('Path parameter');
             ylabel('Heading angle (deg)');
             grid on;
             hold on;
             xticks(0:.25:1);
             yticks(0:60:360);
-        end            
+        end
+        
+        function val = plotRollAngle(obj,pathParam,rollAng)
+            % plot
+            pathParam = pathParam./(2*pi);
+            val = obj.plot2D(pathParam,rollAng*180/pi,'linewidth',obj.lwd);
+            xlabel('Path parameter');
+            ylabel('Roll angle (deg)');
+            grid on;
+            hold on;
+            xticks(0:.25:1);
+        end
     end
     
     %% animation methods
     methods
-        function makeFancyAnimation(obj,doAnimate,pathParam)
+        function makeFancyAnimation(obj,pathParam,varargin)
+            % parse input
+            pp = inputParser;
+            addParameter(pp,'animate',true,@islogical);
+            addParameter(pp,'addKiteTrajectory',false,@islogical);
+            addParameter(pp,'tgtPitch',0*pathParam,@isnumeric);
+            addParameter(pp,'rollInRad',0*pathParam,@isnumeric);
+            parse(pp,varargin{:});
+            % local variables
+            tgtPitch = pp.Results.tgtPitch;
+            roll = pp.Results.rollInRad;
             % make a 3x4 subplot grid and get plot indices
             plotIdx = NaN(4,3);
             for ii = 1:numel(plotIdx)
@@ -663,15 +956,20 @@ classdef maneuverabilityAdvanced
             pTanVec = obj.plotTangentVec(0);
             % make the static radius of curvature plot
             subplot(3,4,rcIdx);
-            obj.plotRadiusOfCurvature;
+            obj.plotPathRadiusOfCurvature;
             rC = obj.radiusOfCurvatureEq(pathParam);
             % make the static heading angle plot
             subplot(3,4,haIdx);
-            obj.plotRequiredHeadingAngle;
+            obj.plotPathHeadingAngle;
+            % make required roll angle plot
+            subplot(3,4,tgIdx);
+            obj.plotRollAngle(pathParam,roll);
+            % calculate values for azimuth,elevation, and heading
             hAng = obj.pathAndTangentEqs.reqHeading(pathParam);
             hAng = wrapTo2Pi(hAng);
+            azimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
             % check if animation is wanted
-            if doAnimate
+            if pp.Results.animate
                 delete(pTanVec);
                 pathParam = pathParam./(2*pi);
                 for ii = 1:numel(pathParam)
@@ -681,21 +979,59 @@ classdef maneuverabilityAdvanced
                         delete(pTanVec);
                         delete(pRadCur);
                         delete(pHeadAng);
+                        delete(pAxes);
+                        delete(pRollAng);
                     end
                     pTanVec = obj.plotTangentVec(pathParam(ii)*2*pi);
-                    title(sprintf('$s = %0.2f$',pathParam(ii)));
+                    title(sprintf('s = %0.2f',pathParam(ii)));
+                    % kite axes
+                    if pp.Results.addKiteTrajectory
+                        pAxes = obj.plotBodyFrameAxes(azimElev(1,ii),...
+                            azimElev(2,ii),hAng(ii),tgtPitch(ii),roll(ii));
+                    end
                     % radius of curvature
                     subplot(3,4,rcIdx);
                     pRadCur = plot(pathParam(ii),rC(ii),'mo');
                     % heading angle
                     subplot(3,4,haIdx);
                     pHeadAng = plot(pathParam(ii),hAng(ii)*180/pi,'mo');
+                    % roll angle
+                    subplot(3,4,tgIdx);
+                    pRollAng = plot(pathParam(ii),roll(ii)*180/pi,'mo');
                     % wait
                     waitforbuttonpress;
                 end
                 
             end
         end
+        
+        function pitchStabAnalysisAnim(obj,G_vFlow,H_vKite,...
+                tgtPitch,dElev,pathParam)
+            % local varibales hopefully
+            obj.linStyleOrder = {'-'};
+            obj.colorOrder = [0 0 0];
+            % get path azimuth and elevation
+            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
+            pathHeading  = obj.pathAndTangentEqs.reqHeading(pathParam);
+            reqRoll      = obj.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
+            % kite vel in tangent frame
+            T_vKite = obj.calcKiteVelInTangentFrame(H_vKite,pathHeading);
+            % make the plots
+            for ii = 1:numel(pathParam)
+                if ii > 1
+                    delete(plotArray)
+                end
+                plotArray = obj.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite(:,ii),...
+                    pathAzimElev(1,ii),pathAzimElev(2,ii),pathHeading(ii),...
+                    tgtPitch,reqRoll(ii),dElev);
+                subplot(2,5,9:10);
+                title(sprintf('s = %.2f',pathParam(ii)));
+                set(findobj('-property','FontSize'),'FontSize',11);
+                waitforbuttonpress;
+            end
+            
+        end
+        
         
     end
     
