@@ -682,9 +682,9 @@ classdef maneuverabilityAdvanced
             xlabel('Tangent pitch (deg)');
             ylabel('Elevator deflection to trim (deg)');
             pIdx = pIdx+1;
-            val(pIdx) = yline(obj.vstabMaxDef,'r-','linewidth',obj.lwd);
+            val(pIdx) = yline(obj.vstabMaxDef,'m--','linewidth',obj.lwd);
             pIdx = pIdx+1;
-            val(pIdx) = yline(-obj.vstabMaxDef,'r-','linewidth',obj.lwd);
+            val(pIdx) = yline(-obj.vstabMaxDef,'m--','linewidth',obj.lwd);
             % plot AoA of attack vs sum of moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
@@ -975,6 +975,7 @@ classdef maneuverabilityAdvanced
                 for ii = 1:numel(pathParam)
                     % tangent vector
                     subplot(3,4,mainPlot);
+                    xlabel('');
                     if ii > 1
                         delete(pTanVec);
                         delete(pRadCur);
@@ -998,15 +999,19 @@ classdef maneuverabilityAdvanced
                     % roll angle
                     subplot(3,4,tgIdx);
                     pRollAng = plot(pathParam(ii),roll(ii)*180/pi,'mo');
+                    set(findobj('-property','FontSize'),'FontSize',11);
                     % wait
-                    waitforbuttonpress;
+%                     waitforbuttonpress;
+                    drawnow
                 end
                 
             end
         end
         
-        function pitchStabAnalysisAnim(obj,G_vFlow,H_vKite,...
+        function val = pitchStabAnalysisAnim(obj,G_vFlow,H_vKite,...
                 tgtPitch,dElev,pathParam)
+            % output captured frames
+            val = struct('cdata',uint8(zeros(840,1680,3)),'colormap',[]);
             % local varibales hopefully
             obj.linStyleOrder = {'-'};
             obj.colorOrder = [0 0 0];
@@ -1025,9 +1030,11 @@ classdef maneuverabilityAdvanced
                     pathAzimElev(1,ii),pathAzimElev(2,ii),pathHeading(ii),...
                     tgtPitch,reqRoll(ii),dElev);
                 subplot(2,5,9:10);
-                title(sprintf('s = %.2f',pathParam(ii)));
+                title(sprintf('s = %.2f',pathParam(ii)/(2*pi)));
                 set(findobj('-property','FontSize'),'FontSize',11);
-                waitforbuttonpress;
+                % get the frame
+                ff = getframe(gcf);
+                val(ii).cdata = ff.cdata;
             end
             
         end

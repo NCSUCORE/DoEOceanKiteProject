@@ -77,7 +77,7 @@ thrLoads = cIn.calcTetherLoads(G_vFlow,T_vKite,azimuth,elevation,...
     heading,tgtPitch,roll,elevatorDeflection);
 
 %% test path tangent calculation
-pathParam = linspace(0,2*pi,101);
+pathParam = linspace(0,2*pi,51);
 pathAzimAndElev = cIn.pathAndTangentEqs.AzimAndElev(pathParam);
 pathCoords      = cIn.pathAndTangentEqs.PathCoords(pathParam);
 pathTangents    = cIn.pathAndTangentEqs.PathTangents(pathParam);
@@ -121,18 +121,18 @@ fIdx = 1;
 % figure(4);
 % cIn.plotPathHeadingAngle;
 
-fIdx = fIdx+1;
-figure(fIdx);
-set(gcf,'Position',[20 60 560*3 420*2]);
-pTgt = cIn.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite,azimuth,...
-    elevation,heading,tgtPitchSweep,roll,elevatorDeflection);
+% fIdx = fIdx+1;
+% figure(fIdx);
+% set(gcf,'Position',[20 60 560*3 420*2]);
+% pTgt = cIn.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite,azimuth,...
+%     elevation,heading,tgtPitchSweep,roll,elevatorDeflection);
 
 
 %% test animation functions
-fIdx = fIdx+1;
+fIdx = fIdx+10;
 figure(fIdx);
 set(gcf,'Position',[20 60 560*2 420*2]);
-cIn.makeFancyAnimation(pathParam,'animate',false,...
+cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
     'rollInRad',reqRoll);
 

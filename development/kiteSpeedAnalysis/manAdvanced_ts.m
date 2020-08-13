@@ -17,7 +17,7 @@ cIn.centerOfBuoy = [1;0;0];
 cIn.mass = 3e3;
 
 % tether
-cIn.bridleLocation = [0;0;1];
+cIn.bridleLocation = [0;0;8];
 
 % wing
 cIn.wingChord = 1;
@@ -68,12 +68,6 @@ elevatorDeflection = 0;
 % sweep path param
 sweepPathParm = linspace(0,2*pi,51);
 
-fIdx = fIdx + 1;
-figure(fIdx);
-set(gcf,'Position',[20 60 560*3 420*2]);
-
-cIn.pitchStabAnalysisAnim(G_vFlow,H_vKite,...
-                tgtPitchSweep,elevatorDeflection,sweepPathParm)
 
 %% tangent analysis
 fIdx = fIdx + 1;
@@ -84,4 +78,27 @@ pTgt = cIn.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite,azimuth,...
     elevation,heading,tgtPitchSweep,roll,elevatorDeflection);
 
 set(findobj('-property','FontSize'),'FontSize',11);
+
+
+%% animated plot
+% keyboard
+% fIdx = fIdx + 1;
+% figure(fIdx);
+% set(gcf,'Position',[20 60 560*3 420*2]);
+% F = cIn.pitchStabAnalysisAnim(G_vFlow,H_vKite,...
+%     tgtPitchSweep,elevatorDeflection,sweepPathParm);
+% 
+% %% video
+% [status, msg, msgID] = mkdir(pwd,'outputs');
+% fName = [pwd,'\outputs\',strrep(datestr(datetime),':','_')];
+% % % % video settings
+% video = VideoWriter(strcat(fName,'_pitchAnalysis'),'Motion JPEG AVI');
+% video.FrameRate = 1;
+% set(gca,'nextplot','replacechildren');
+% 
+% open(video)
+% for ii = 1:length(F)
+%     writeVideo(video, F(ii));
+% end
+% close(video)
 
