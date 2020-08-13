@@ -38,11 +38,25 @@ M.H = cross(Sys.xH-Sys.xg,F.liftBh+F.dragBh);               %   Nm - Horizontal 
 M.V = cross(Sys.xV-Sys.xg,F.dragBv);                        %   Nm - Vertical stabilizer moment
 M.thr = cross(Sys.xbr-Sys.xg,F.thrB);                       %   Nm - Tether moment
 M.tot = M.buoyB+M.W+M.H+M.V+M.thr;                          %   Nm - Total moment
+M.buoyBLE = cross(Sys.xb-Sys.xg-Sys.LE,F.buoyB);                   %   Nm - Buoyancy moment
+M.gravBLE = cross(Sys.xb-Sys.xg-Sys.LE,F.gravB);                   %   Nm - Buoyancy moment
+M.dragBhLE = cross(Sys.xH-Sys.xg-Sys.LE,F.dragBh);                 %   Nm - Horizontal stabilizer drag moment
+M.WLE = cross(Sys.xW-Sys.xg-Sys.LE,F.liftBw+F.dragBw);             %   Nm - Wing moment
+M.HLE = cross(Sys.xH-Sys.xg-Sys.LE,F.liftBh+F.dragBh);             %   Nm - Horizontal stabilizer moment
+M.VLE = cross(Sys.xV-Sys.xg-Sys.LE,F.dragBv);                      %   Nm - Vertical stabilizer moment
+M.thrLE = cross(Sys.xbr-Sys.xg-Sys.LE,F.thrB);                     %   Nm - Tether moment
+M.totLE = M.buoyBLE + M.gravBLE + M.WLE + M.HLE + M.VLE + M.thrLE;                        %   Nm - Total moment
+%%  Find required horizontal stabilizer CL for trim
 CL.hReq = 2*dot(M.buoyB+M.W+M.V+M.thr+M.dragBh,[0;1;0])...
             /(Env.rho*hStab.S*norm(vApp)^2*norm(Sys.xH-Sys.xg));
 F.liftBhReq = 1/2*Env.rho*CL.hReq*hStab.S*norm(vApp)^2*cross(uApp,[0;1;0]);
 M.HReq = cross(Sys.xH-Sys.xg,F.liftBhReq+F.dragBh);               %   Nm - Horizontal stabilizer moment
 M.totReq = M.buoyB+M.W+M.HReq+M.V+M.thr;                          %   Nm - Total moment
+CL.hReqLE = 2*dot(M.buoyBLE+M.WLE+M.VLE+M.thrLE+M.dragBhLE,[0;1;0])...
+            /(Env.rho*hStab.S*norm(vApp)^2*norm(Sys.xH-Sys.xg-Sys.LE));
+F.liftBhReqLE = 1/2*Env.rho*CL.hReqLE*hStab.S*norm(vApp)^2*cross(uApp,[0;1;0]);
+M.HReqLE = cross(Sys.xH-Sys.xg-Sys.LE,F.liftBhReqLE+F.dragBh);               %   Nm - Horizontal stabilizer moment
+M.totReq = M.buoyBLE+M.gravBLE+M.WLE+M.HReqLE+M.VLE+M.thrLE;                          %   Nm - Total moment
 end
 %%  Local functions 
 function C = Rx(x)

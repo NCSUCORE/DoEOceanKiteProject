@@ -12,7 +12,7 @@ vhcl = OCT.vehicleM;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('Manta04','');
+vhcl.setFluidCoeffsFileName('Manta04a','');
 
 %% Volumes and Inertia
 vhcl.setVolume(1.050865,'m^3');
@@ -29,10 +29,9 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                 
 %% Important Points
 vhcl.setRCM_LE([.84;0;.04153],'m')
-% vhcl.setRB_LE(vhcl.rCM_LE.Value,'m');
 vhcl.setRB_LE([0;0;0],'m');
-vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
-vhcl.setRCentOfBuoy_LE([0;0;0],'m');
+vhcl.setRBridle_LE([0;0;0],'m');
+vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
 %% Added Mass/Damping (defaults to zeros)
 vhcl.setMa6x6_LE([68.608         0           0           0        5.73           0;...
@@ -64,9 +63,8 @@ vhcl.hStab.setNumTraps(2,'');
 vhcl.hStab.setRootChord(.52,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(3.2/((.52+.52*.8)*.5),''); %Span 4, hspan 2
-% vhcl.vStab.setHalfSpan(1.6,'m');
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(2,'deg');
+vhcl.hStab.setIncidence(-.5,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
@@ -111,7 +109,7 @@ vhcl.turb2.setTipSpeedRatio(6,'')
 
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
-vhcl.plot
+% vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 
