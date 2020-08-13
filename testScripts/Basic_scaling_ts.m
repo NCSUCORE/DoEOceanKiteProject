@@ -16,6 +16,7 @@ runBaseline = true;
 
 % Flight Controller
 loadComponent('pathFollowingCtrlForILC');
+fltCtrl.rudderGain.setValue(0,'')
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
