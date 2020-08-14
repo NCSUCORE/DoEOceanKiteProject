@@ -1,12 +1,17 @@
-function plotLaR(obj)
+function plotLaR(obj,ctrl)
 time = obj.MNetBdy.Time;
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
+coneWidth = ctrl.LaRelevationSPErr.Value;
 figure();
 %%  Plot Elevation Angle 
 subplot(3,2,1); hold on; grid on;
 if numel(obj.elevationSP.Data) == 1
     plot(obj.elevationAngle.Time,obj.elevationSP.Data*ones(length(obj.elevationAngle.Time),1),'r-');
+    plot(obj.elevationAngle.Time,(obj.elevationSP.Data+coneWidth)*ones(length(obj.elevationAngle.Time),1),'c--');
+    plot(obj.elevationAngle.Time,(obj.elevationSP.Data-coneWidth)*ones(length(obj.elevationAngle.Time),1),'c--');
+    plot(obj.elevationAngle.Time,(obj.elevationSP.Data+coneWidth/4)*ones(length(obj.elevationAngle.Time),1),'r--');
+    plot(obj.elevationAngle.Time,(obj.elevationSP.Data-coneWidth/4)*ones(length(obj.elevationAngle.Time),1),'r--');
 else
     plot(obj.elevationSP.Time,squeeze(obj.elevationSP.Data),'r-');
 end
