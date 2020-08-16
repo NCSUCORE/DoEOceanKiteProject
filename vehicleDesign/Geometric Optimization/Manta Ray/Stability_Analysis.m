@@ -67,41 +67,8 @@ Ang.yaw = 0;                                            %   deg - Yaw angle
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
 %%  Analyze Stability 
-pitchMomentXb = zeros(numel(xb),numel(Ang.pitch));
-pitchMomentXbr = zeros(numel(xbr),numel(Ang.pitch));
 pitchMomentXbrXb = zeros(numel(xbr),numel(xb),numel(Ang.pitch));
-pitchXb = zeros(numel(xb),1);
-pitchXbr = zeros(numel(xbr),1);
 pitchXbrXb = zeros(numel(xbr),numel(xb));
-for j = 1:numel(xb)
-    Sys.xb = Sys.xg+[xb(j) 0 .0546]';
-    for i = 1:numel(Ang.pitch)
-        Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;
-        [M,F,CL,CD] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang);
-        pitchMomentXb(j,i) = M.tot(2);
-    end
-    idx = find(abs(pitchMomentXb(j,:)) <= 5);
-    if isempty(idx)
-        pitchXb(j) = NaN;
-    else
-        pitchXb(j) = Ang.pitch(round(median(idx)));
-    end
-end
-for j = 1:numel(xbr)
-    Sys.xb = Sys.xg+[0 0 .0546]';
-    Sys.xbr = Sys.xg+[0 0 -xbr(j)]';
-    for i = 1:numel(Ang.pitch)
-        Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;
-        [M,F,CL,CD] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang);
-        pitchMomentXbr(j,i) = M.tot(2);
-    end
-    idx = find(abs(pitchMomentXbr(j,:)) <= 5);
-    if isempty(idx)
-        pitchXbr(j) = NaN;
-    else
-        pitchXbr(j) = Ang.pitch(round(median(idx)));
-    end
-end
 for k = 1:numel(xbr)
     for j = 1:numel(xb)
         Sys.xb = Sys.xg+[xb(j) 0 .0546]';
@@ -126,12 +93,34 @@ end
 % end
 % figure; hold on; grid on
 % plot(hStab.alpha-13.5,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
-figure; subplot(2,1,1); hold on; grid on
-plot(xb,pitchXb,'b-');  xlabel('CB$_x$ [m]');  ylabel('$\theta_0$ [deg]')
-subplot(2,1,2); hold on; grid on
-plot(xbr,pitchXbr,'b-');  xlabel('Br$_z$ [m]');  ylabel('$\theta_0$ [deg]')
 
 figure; 
 surf(xbr,xb,pitchXbrXb)
 xlabel('Br$_z$ [m]');  ylabel('CB$_x$ [m]');  zlabel('$\theta_0$ [deg]')
-    
+
+plotVehPolars(vhcl)
+%%
+function plotVehPolars(obj,varargin)
+p = inputParser;
+addParameter(p,'xLim',[-inf inf],@isnumeric);
+parse(p,varargin{:})
+
+alpha = obj.portWing.alpha.Value;
+Aref = obj.fluidRefArea.Value;
+Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
+    (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
+CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
+    obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref;
+CLsurf = obj.portWing.CL.Value+obj.stbdWing.CL.Value+obj.hStab.CL.Value;
+CDtot = obj.portWing.CD.Value+obj.stbdWing.CD.Value+obj.hStab.CD.Value+obj.vStab.CD.Value+CDfuse;
+
+figure;subplot(2,1,1);hold on;grid on;
+plot(alpha,CLsurf.^3./CDtot.^2,'b-');
+plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value).^3./(obj.portWing.CD.Value+obj.stbdWing.CD.Value).^2,'r-')
+xlabel('alpha [deg]');  ylabel('$\mathrm{CL^3/CD^2}$');  xlim(p.Results.xLim);
+subplot(2,1,2);hold on;grid on;
+plot(alpha,CLsurf./CDtot,'b-');
+plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value)./(obj.portWing.CD.Value+obj.stbdWing.CD.Value),'r-')
+xlabel('alpha [deg]');  ylabel('$\mathrm{CL/CD}$');  xlim(p.Results.xLim);
+legend('kite','wing')
+end
