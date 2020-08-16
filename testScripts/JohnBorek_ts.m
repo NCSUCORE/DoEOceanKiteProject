@@ -102,7 +102,7 @@ fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
 %%  Steady-flight controller parameters 
 if simScenario >= 3
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad');
-    fltCtrl.LaRelevationSP.setValue(30,'deg');          fltCtrl.LaRelevationSPErr.setValue(2,'deg');        %   Elevation setpoints
+    fltCtrl.LaRelevationSP.setValue(45,'deg');          fltCtrl.LaRelevationSPErr.setValue(2,'deg');        %   Elevation setpoints
     fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller 
     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller 
 %     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
@@ -152,15 +152,15 @@ elseif simScenario == 4.2
 end
 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 %%  Animate Simulation 
-% if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
-% else
-%     vhcl.animateSim(tsc,2,'View',[0,0],...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
-%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','0.gif'));
-% end
+if simScenario <= 2
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
+        'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+else
+    vhcl.animateSim(tsc,2,'View',[0,0],...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+        'SaveGif',1==0,'GifFile',strrep(filename,'.mat','0.gif'));
+end
 %%  Plot Results
 if simScenario < 3
     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'Vapp',false,'plotBeta',1==1)
