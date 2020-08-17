@@ -200,6 +200,18 @@ classdef signalcontainer < dynamicprops
                 plot(time,tanPitch,'r-'); xlabel('Path Position');  legend('$\mathrm{\phi_{tan}}$','$\theta_{tan}$','location','northeast');  xlim(lim);
             end
         end
+        function plotPitch(obj)
+            figure();
+            %  Plot Pitch Angle
+            subplot(2,1,1); hold on; grid on;
+            plot(obj.pitchSP.Time,squeeze(obj.pitchSP.Data),'r-');
+            plot(obj.pitch.Time,squeeze(obj.pitch.Data)*180/pi,'b-');  xlabel('Time [s]');  ylabel('Pitch [deg]');
+            legend('Setpoint','AutoUpdate','off','location','northwest')
+            %  Plot Elevator Command
+            subplot(2,1,2); hold on; grid on;
+            plot(obj.ctrlSurfDeflCmd.Time,squeeze(obj.ctrlSurfDeflCmd.Data(3,:,:)),'b-');  
+            xlabel('Time [s]');  ylabel('Elevator [deg]');
+        end
         function [CLsurf,CDtot] = getCLCD(obj,vhcl)
             Aref = vhcl.fluidRefArea.Value;
             Afuse = squeeze(obj.Afuse.Data);

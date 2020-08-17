@@ -3,6 +3,8 @@ clc;clear;
 
 %%  Input definitions 
 loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
+% loadComponent('newManta2RotNACA2412');              %   Load vehicle 
+% loadComponent('Manta2RotTest');                     %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -27,13 +29,16 @@ hStab.gamma = 1;                                    %   Horizontal stabilizer ai
 hStab.eL = 0.9;                                     %   Horizontal stabilizer lift Oswald efficiency factor
 hStab.eD = 0.9;                                     %   Horizontal stabilizer drag Oswald efficiency factor
 hStab.aeroCent = vhcl.hStab.rAeroCent_SurfLE.Value; %   Horizontal stabilizer aero center
-hstab.dCLElevator = 0.08;                           %   change in hstab CL per deg deflection of elevator
+hStab.LE = vhcl.hStab.rSurfLE_WingLEBdy.Value;
+hStab.gainCL = vhcl.hStab.gainCL;                   %   change in hstab CL per deg deflection of elevator
+hStab.gainCD = vhcl.hStab.gainCD;                   %   change in hstab CD per deg deflection of elevator
 
 vStab.alpha = vhcl.vStab.alpha.Value;               %   Find index corresponding to 0 AoA
 vStab.CD = vhcl.vStab.CD.Value;                     %   Horizontal stabilizer drag coefficient at zero alpha
 vStab.S = vhcl.fluidRefArea.Value;                  %   Reference area for horizontal stabilizer
 vStab.eD = 0.9;                                     %   Vertical stabilizer drag Oswald efficiency factor
 vStab.aeroCent = [.1739 0 .9389]';                  %   Vertical stabilizer aero center
+vStab.LE = vhcl.vStab.rSurfLE_WingLEBdy.Value;
 
 fuse.CD0 = vhcl.fuse.endDragCoeff.Value;            %   Fuselage drag coefficient at 0° AoA
 fuse.CDs = vhcl.fuse.sideDragCoeff.Value;           %   Fuselage drag coefficient at 90° AoA
@@ -42,23 +47,26 @@ fuse.D = vhcl.fuse.diameter.Value;                  %   m - Fuselage diameter
 
 Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.B = 1;                                          %   Buoyancy factor
-Sys.xg = [1.6 0 0]';                                %   m - Center of gravity w/ respect to nose
-Sys.xb = Sys.xg+[.0171 0 .0546]';                   %   m - Center of buoyancy location 
+Sys.xg = vhcl.rCM_LE.Value-vhcl.fuse.rNose_LE.Value;%   m - Center of gravity w/ respect to nose
+Sys.LE = -vhcl.fuse.rNose_LE.Value;                 %   m - wing leading edge 
+Sys.xb = Sys.xg+vhcl.rCentOfBuoy_LE.Value-...       %   m - Center of buoyancy location 
+    vhcl.rCM_LE.Value;
 Sys.xbr = Sys.xg+[0 0 0]';                          %   m - Bridle location 
-Sys.xW = [1.6 0 0]'+wing.aeroCent;                  %   m - Wing aerodynamic center location 
-Sys.xH = [6 0 0]'+hStab.aeroCent;                   %   m - Horizontal stabilizer aerodynamic center location 
-Sys.xV = [5.88 0 0]'+vStab.aeroCent;                %   m - Vertical stabilizer aerodynamic center location 
+Sys.xW = Sys.LE+wing.aeroCent;                      %   m - Wing aerodynamic center location 
+Sys.xH = Sys.LE+hStab.LE+hStab.aeroCent;            %   m - Horizontal stabilizer aerodynamic center location 
+Sys.xV = Sys.LE+vStab.LE+vStab.aeroCent;            %   m - Vertical stabilizer aerodynamic center location 
 Sys.vKite = [0 0 0]';                               %   m/s - Kite velocity 
 
 Env.vFlow = [.25 0 0]';                             %   m/s - Flow speed 
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%  Experimental Variables 
+elevator = -30:.5:30;
 pitch = -20:.1:20;
 xb = -.1:.01:.1;
 xbr = 0:.1:2;
 %%  Position and Orientation Angles 
-Ang.elevation = 90;                                     %   deg - Elevation angle
+Ang.elevation = 30;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
@@ -98,7 +106,7 @@ figure;
 surf(xbr,xb,pitchXbrXb)
 xlabel('Br$_z$ [m]');  ylabel('CB$_x$ [m]');  zlabel('$\theta_0$ [deg]')
 
-plotVehPolars(vhcl)
+% plotVehPolars(vhcl)
 %%
 function plotVehPolars(obj,varargin)
 p = inputParser;
