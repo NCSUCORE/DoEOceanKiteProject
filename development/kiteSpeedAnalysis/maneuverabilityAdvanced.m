@@ -1053,7 +1053,7 @@ classdef maneuverabilityAdvanced
             pathParam = pathParam./(2*pi);
             val = obj.plot2D(pathParam,R,'linewidth',obj.lwd);
             xlabel('Path parameter');
-            ylabel('R (m)');
+            ylabel('Radius of curvature (m)');
             grid on;
             hold on;
             xticks(0:.25:1);
@@ -1102,7 +1102,9 @@ classdef maneuverabilityAdvanced
     
     %% animation methods
     methods
-        function makeFancyAnimation(obj,pathParam,varargin)
+        function val = makeFancyAnimation(obj,pathParam,varargin)
+            %
+            val = struct('cdata',uint8(zeros(840,1680,3)),'colormap',[]);
             % parse input
             pp = inputParser;
             addParameter(pp,'animate',true,@islogical);
@@ -1149,6 +1151,8 @@ classdef maneuverabilityAdvanced
             hAng = obj.pathAndTangentEqs.reqHeading(pathParam);
             hAng = wrapTo2Pi(hAng);
             azimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
+            azSweep = (max(azimElev(1,:)) - min(azimElev(1,:)))*180/pi;
+            elSweep = (max(azimElev(2,:)) - min(azimElev(2,:)))*180/pi;
             % check if animation is wanted
             if pp.Results.animate
                 delete(pTanVec);
@@ -1166,7 +1170,9 @@ classdef maneuverabilityAdvanced
                         delete(pHeadVel);
                     end
                     pTanVec = obj.plotTangentVec(pathParam(ii)*2*pi);
-                    title(sprintf('s = %0.2f',pathParam(ii)));
+                    title(sprintf(['Path width = %d deg, ',...
+                        'Path height = %d deg, s = %0.2f'],...
+                        [round(azSweep),round(elSweep),pathParam(ii)]));
                     % kite axes
                     if pp.Results.addKiteTrajectory
                         pAxes = obj.plotBodyFrameAxes(azimElev(1,ii),...
@@ -1191,6 +1197,9 @@ classdef maneuverabilityAdvanced
                         waitforbuttonpress;
                         fprintf('Waiting for button press.\n');
                     end
+                    % get the frame
+                    ff = getframe(gcf);
+                    val(ii).cdata = ff.cdata;
                 end
                 
             end

@@ -110,9 +110,19 @@ cIn.plotAeroCoefficients;
 fIdx = fIdx+1;
 figure(fIdx);
 set(gcf,'Position',[0 0 560*2.5 420*2]);
-cIn.makeFancyAnimation(pathParam,'animate',true,...
+F = cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
     'rollInRad',pathAnalysisRes(maxIdx).rollAng,...
     'headingVel',pathAnalysisRes(maxIdx).pathSpeed,...
-    'waitForButton',true);
+    'waitForButton',false);
 
+% % % video settings
+video = VideoWriter(strcat(fName,'_video'),'Motion JPEG AVI');
+video.FrameRate = 1;
+set(gca,'nextplot','replacechildren');
+
+open(video)
+for ii = 1:length(F)
+    writeVideo(video, F(ii));
+end
+close(video)
