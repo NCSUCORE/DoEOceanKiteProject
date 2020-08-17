@@ -2,8 +2,9 @@
 % clc;clear;
 
 %%  Input definitions 
-% loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
-loadComponent('newManta2RotNACA2412');              %   Load vehicle 
+loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
+% loadComponent('newManta2RotNACA2412');              %   Load vehicle 
+loadComponent('Manta2RotTest');                     %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -44,11 +45,11 @@ fuse.D = vhcl.fuse.diameter.Value;                  %   m - Fuselage diameter
 Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.B = 1;                                          %   Buoyancy factor
 Sys.xg = vhcl.rCM_LE.Value-vhcl.fuse.rNose_LE.Value;%   m - Center of gravity w/ respect to nose
-Sys.LE = -[.84;0;.04153];                           %   m - wing leading edge 
+Sys.LE = vhcl.fuse.rNose_LE.Value;                  %   m - wing leading edge 
 Sys.xb = Sys.xg+[0 0 0]';                           %   m - Center of buoyancy location 
 Sys.xbr = Sys.xg+[0 0 0]';                          %   m - Bridle location 
 Sys.xW = -vhcl.fuse.rNose_LE.Value+wing.aeroCent;   %   m - Wing aerodynamic center location 
-Sys.xH = [5.95 0 0]'+hStab.aeroCent;                   %   m - Horizontal stabilizer aerodynamic center location 
+Sys.xH = [5.95 0 0]'+hStab.aeroCent;                %   m - Horizontal stabilizer aerodynamic center location 
 Sys.xV = [5.95 0 0]'+vStab.aeroCent;                %   m - Vertical stabilizer aerodynamic center location 
 
 Sys.vKite = [0 0 0]';                               %   m/s - Kite velocity 
@@ -62,29 +63,30 @@ Ang.elevation = 40;                                     %   deg - Elevation angl
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = 0-10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
 %%  Analyze Stability 
 pitchMoment = zeros(numel(Ang.pitch),1);
+alphaRef = -10:.01:10;
+CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
 for i = 1:numel(Ang.pitch)
     Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;              %   deg - Tangent pitch angle
     [M,F,CL,CD] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang);
     pitchMoment(i) = M.tot(2);
+    if Ang.pitch(i) == 0
+        idx = find(abs(CLh-CL.hReq) <= .0005);
+        incidence = alphaRef(idx);  CLhN = CLh(idx);
+    end
 end
-alphaRef = -10:.01:10;
-CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
-idx = find(abs(CLh-CL.hReq) <= .0005);
-alphaRef(idx)
-CLh(idx)
 %%  Plotting 
 if numel(Ang.pitch) > 1
     figure; hold on; grid on
     plot(Ang.pitch,pitchMoment,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
 end
-figure; hold on; grid on
-plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
+% figure; hold on; grid on
+% plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
 
     
     
