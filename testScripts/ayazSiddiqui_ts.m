@@ -23,7 +23,7 @@ loadComponent('constBoothLem');
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
-loadComponent('oneDOFWnch');
+loadComponent('ayazFullScaleOneThrWinch');
 % Tether
 loadComponent('pathFollowingTether');
 % Sensors
@@ -82,7 +82,7 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 % fltCtrl.setFirstSpoolLap(1000,'');
-fltCtrl.elevatorReelInDef.setValue(20,'deg');
+fltCtrl.elevatorReelInDef.setValue(0,'deg');
 
 %% Run Simulation
 simWithMonitor('OCTModel')
@@ -97,6 +97,7 @@ fpath = fullfile(fileparts(which('OCTProject.prj')),'outputs\');
 filename = sprintf(strcat('FS-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 
-tsc.plotSpeedAndTangentAngles;
+figure
+tsc.plotLapSpeedAndTangentAngles;
 % vhcl.animateSim(tsc,0.5,...
 %     'PathFunc',fltCtrl.fcnName.Value);
