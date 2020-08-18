@@ -37,7 +37,6 @@ classdef maneuverabilityAdvanced
         hstabZerAoADrag = 0.05;
         hstabControlSensitivity;
         hstabMaxDef = 30;
-
     end
     
     properties % vstab
@@ -48,7 +47,6 @@ classdef maneuverabilityAdvanced
         vstabOswaldEff = 0.75;
         vstabZeroAoALift = 0.0;
         vstabZerAoADrag = 0.05;
-        vstabControlSensitivity = 0;
     end
     
     properties (Dependent = true)
