@@ -1052,9 +1052,11 @@ classdef maneuverabilityAdvanced
         end
         
         % plot lemniscate
-        function val = plotLemniscate(obj)
+        function val = plotLemniscate(obj,pathParam)
             % local variable
+            if nargin == 1
             pathParam = linspace(0,2*pi,300);
+            end
             % get equations
             path = obj.pathAndTangentEqs.PathCoords(pathParam);
             % plot
@@ -1083,9 +1085,11 @@ classdef maneuverabilityAdvanced
         end
         
         % plot radius of curvature
-        function val = plotPathRadiusOfCurvature(obj)
+        function val = plotPathRadiusOfCurvature(obj,pathParam)
             % local variable
+            if nargin == 1
             pathParam = linspace(0,2*pi,300);
+            end
             % calculate radius of curvature
             R = obj.radiusOfCurvatureEq(pathParam);
             % plot
@@ -1099,9 +1103,11 @@ classdef maneuverabilityAdvanced
         end
         
         % plot heading angle over the path
-        function val = plotPathHeadingAngle(obj)
+        function val = plotPathHeadingAngle(obj,pathParam)
             % local variable
+            if nargin == 1
             pathParam = linspace(0,2*pi,300);
+            end
             % calculate radius of curvature
             headingAng = obj.pathAndTangentEqs.reqHeading(pathParam);
             headingAng = wrapTo2Pi(headingAng);
@@ -1186,7 +1192,7 @@ classdef maneuverabilityAdvanced
             obj.plotLemniscate;
             view(100,35);
             axis equal;
-            pTanVec = obj.plotTangentVec(0);
+            pTanVec = obj.plotTangentVec(pathParam(1));
             % make the static radius of curvature plot
             subplot(spSz(1),spSz(2),rcIdx);
             obj.plotPathRadiusOfCurvature;

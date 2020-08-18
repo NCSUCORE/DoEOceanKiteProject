@@ -73,7 +73,7 @@ cIn.mass = vhcl.mass.Value;
 cIn.bridleLocation = [0;0;0];
 
 %% path param
-pathParam = linspace(0,2*pi,51);
+pathParam = linspace(pi,3*pi,51);
 
 %% radius of curvature analysis
 pRc = gobjects;
