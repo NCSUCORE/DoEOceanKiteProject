@@ -5,7 +5,7 @@ dynamicCalc = '';
 
 thrLength = 60;
 el = 30*pi/180;                         % rad - Mean elevation angle
-h = 15*pi/180;  w = 40*pi/180;          % rad - Path width/height
+h = 10*pi/180;  w = 40*pi/180;          % rad - Path width/height
 [a,b] = boothParamConversion(w,h);      % Path basis parameters
 
 %% Load components
@@ -42,7 +42,7 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([2 0 0],'m/s')
+env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % Lemniscate of Booth
@@ -98,5 +98,6 @@ filename = sprintf(strcat('FS-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi
 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 
 tsc.plotTanAngles('plot1Lap',true,'plotS',true);
+tsc.plotLapSpeed('plot1Lap',true,'plotS',true);
 % vhcl.animateSim(tsc,0.5,...
 %     'PathFunc',fltCtrl.fcnName.Value);

@@ -19,27 +19,30 @@ G_vFlow = [1;0;0];
 % tangent pitch angle
 tgtPitch = 0*pi/180;
 
+% load vehicle
+load('ayazFullScaleOneThrVhcl.mat');
+
 % wing parameters
 cIn.wingChord = 1;
-cIn.wingAspectRatio = 10;
-cIn.wingAeroCenter = [0.25;0;0];
+cIn.wingAspectRatio = 9;
+cIn.wingAeroCenter = -[0.31;0;0];
 
 % h-stab parameters
 cIn.hstabChord = 0.5;
-cIn.hstabAspectRatio = 10;
-cIn.hstabAeroCenter = [-5;0;0];
+cIn.hstabAspectRatio = 8;
+cIn.hstabAeroCenter = [-5.5;0;0] + [-0.16;0;0];
 cIn.hstabControlSensitivity = 0.08;
 elevatorDeflection = 0;
 
 % v-stab parameters
 cIn.vstabChord = 0.5;
 cIn.vstabAspectRatio = 10;
-cIn.vstabAeroCenter = [-5;0;-0.5];
+cIn.vstabAeroCenter = [-5.35;0;-0.5];
 
 % geometry parameters
 cIn.buoyFactor = 1.0;
-cIn.centerOfBuoy = [0.0;0;0];
-cIn.mass = 3e3;
+cIn.centerOfBuoy = [-0.02;0;0];
+cIn.mass = 2857;
 
 % test tether force and moment calculation
 cIn.bridleLocation = [0;0;0];
