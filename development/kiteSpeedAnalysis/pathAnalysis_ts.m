@@ -8,9 +8,13 @@ fIdx = 1;
 widths = [40,50,60]*pi/180;
 heights = [15,12.5,10]*pi/180;
 
+widths = 40*pi/180;
+heights = 10*pi/180;
+
+
 % initialize class
 cIn = maneuverabilityAdvanced;
-cIn.tetherLength = 60;
+cIn.tetherLength = 200;
 cIn.meanElevationInRadians = 30*pi/180;
 
 % flow vel in ground frame
@@ -22,27 +26,48 @@ tgtPitch = 0*pi/180;
 % load vehicle
 load('ayazFullScaleOneThrVhcl.mat');
 
+% chnages is cordinate system
+BcB = [cosd(180) 0 -sind(180);0 1 0;sind(180) 0 cosd(180)];
+
 % wing parameters
-cIn.wingChord = 1;
-cIn.wingAspectRatio = 9;
-cIn.wingAeroCenter = -[0.31;0;0];
+cIn.wingChord = vhcl.wingRootChord.Value;
+cIn.wingAspectRatio = vhcl.wingAR.Value;
+cIn.wingAeroCenter = BcB*vhcl.stbdWing.rAeroCent_SurfLE.Value.*[1;0;1];
+cIn.wingZerAoADrag = 2*vhcl.portWing.CD.Value(vhcl.portWing.alpha.Value == 0);
+cIn.wingZeroAoALift = 2*vhcl.portWing.CL.Value(vhcl.portWing.alpha.Value == 0);
+cIn.wingOswaldEff = 0.6;
 
 % h-stab parameters
-cIn.hstabChord = 0.5;
-cIn.hstabAspectRatio = 8;
-cIn.hstabAeroCenter = [-5.5;0;0] + [-0.16;0;0];
-cIn.hstabControlSensitivity = 0.08;
+cIn.hstabChord = vhcl.hStab.rootChord.Value;
+cIn.hstabAspectRatio = vhcl.hStab.AR.Value;
+cIn.hstabAeroCenter = BcB*(vhcl.hStab.rSurfLE_WingLEBdy.Value + ...
+    vhcl.hStab.rAeroCent_SurfLE.Value);
+cIn.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2);
+cIn.hstabZeroAoALift = vhcl.hStab.CL.Value(vhcl.hStab.alpha.Value == 0)*...
+    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+cIn.hstabZerAoADrag = vhcl.hStab.CD.Value(vhcl.hStab.alpha.Value == 0)*...
+    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+cIn.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2)*...
+    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+cIn.hstabOswaldEff = 0.6;
+
 elevatorDeflection = 0;
 
+
 % v-stab parameters
-cIn.vstabChord = 0.5;
-cIn.vstabAspectRatio = 10;
-cIn.vstabAeroCenter = [-5.35;0;-0.5];
+cIn.vstabChord = vhcl.vStab.rootChord.Value;
+cIn.vstabAspectRatio = 2*vhcl.vStab.AR.Value;
+cIn.vstabAeroCenter = BcB*(vhcl.vStab.rSurfLE_WingLEBdy.Value + ...
+    [vhcl.vStab.rAeroCent_SurfLE.Value(1);0;vhcl.vStab.rAeroCent_SurfLE.Value(2)]);
+cIn.vstabZeroAoALift = vhcl.vStab.CL.Value(vhcl.vStab.alpha.Value == 0)*...
+    vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
+cIn.vstabZerAoADrag = vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0)*...
+    vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
 
 % geometry parameters
-cIn.buoyFactor = 1.0;
-cIn.centerOfBuoy = [-0.02;0;0];
-cIn.mass = 2857;
+cIn.buoyFactor = vhcl.buoyFactor.Value;
+cIn.centerOfBuoy = BcB*vhcl.rCentOfBuoy_LE.Value;
+cIn.mass = vhcl.mass.Value;
 
 % test tether force and moment calculation
 cIn.bridleLocation = [0;0;0];
@@ -81,12 +106,13 @@ for ii = 1:numel(widths)
         
     end
 end
-legend(pRc,legs,'location','bestoutside')
+legend(pRc,legs,'location','bestoutside');
 
 %% save res
 [status, msg, msgID] = mkdir(pwd,'pathAnalysisOutputs');
 fName = ['pathAnalysisResults ',strrep(datestr(datetime),':','.'),'.mat'];
 fName = [pwd,'\pathAnalysisOutputs\',fName];
+save(fName);
 
 %% acheivable velocity calcualtion
 % find max of average speed
@@ -113,13 +139,13 @@ cIn.plotAeroCoefficients;
 fIdx = fIdx+1;
 figure(fIdx);
 set(gcf,'Position',[0 0 560*2.5 420*2]);
-F = cIn.makeFancyAnimation(pathParam,'animate',true,...
+F = cIn.makeFancyAnimation(pathParam,'animate',false,...
     'addKiteTrajectory',true,...
     'rollInRad',pathAnalysisRes(maxIdx).rollAng,...
     'headingVel',pathAnalysisRes(maxIdx).pathSpeed,...
     'waitForButton',false);
 
-% % % video settings
+%% % video settings
 video = VideoWriter(strcat(fName,'_video'),'Motion JPEG AVI');
 video.FrameRate = 1;
 set(gca,'nextplot','replacechildren');

@@ -220,45 +220,41 @@ classdef signalcontainer < dynamicprops
             CDtot = CDfuse+CDsurf;
             CLsurf = squeeze(sum(obj.CL.Data(1,1:3,:),2));
         end
-        function plotLapSpeed(obj,varargin)
-            p = inputParser;
-            addOptional(p,'plot1Lap',false,@islogical);
-            addOptional(p,'plotS',false,@islogical);
-            addOptional(p,'Lap1',1,@isnumeric);
-            parse(p,varargin{:})
+        
+        function plotLapSpeedAndTangentAngles(obj)
             data = squeeze(obj.currentPathVar.Data);
-            time = obj.lapNumS.Time;
-            lap = p.Results.plot1Lap;
-            con = p.Results.plotS;
-            L1 = p.Results.Lap1;
+            lapsStarted = unique(obj.lapNumS.Data);
             %  Determine Single Lap Indices
-            if lap
-                lapNum = squeeze(obj.lapNumS.Data);
-                Idx1 = find(lapNum > L1,1,'first');
-                Idx2 = find(lapNum > L1+1,1,'first');
-                if isempty(Idx1) || isempty(Idx2)
-                    error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
-                end
-                ran = Idx1:Idx2-1;
-                lim = [time(Idx1) time(Idx2)];
-            else
-                lim = [time(1) time(end)];
+            lapNum = squeeze(obj.lapNumS.Data);
+            Idx1 = find(lapNum == max(lapsStarted)-1,1,'first');
+            Idx2 = find(lapNum == max(lapsStarted)-1,1,'last');
+            if isempty(Idx1) || isempty(Idx2)
+                error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
             end
+            ran = Idx1:Idx2;
             %  Compute Plotting Variables
             vhclSpeed = squeeze(obj.velocityVec.Data);
             vhclSpeed = vecnorm(vhclSpeed);
+            tanRoll = squeeze(obj.tanRoll.Data)*180/pi;
+            tanPitch = squeeze(obj.tanPitch.Data)*180/pi;
+            subplot(3,1,1);
+            plot(data(ran),vhclSpeed(ran));  xlabel('Path Position');  
+            ylabel('Speed [m/s]');
             hold on; grid on
-            if lap
-                if con
-                    plot(data(ran),vhclSpeed(ran),'r-');  xlabel('Path Position');  ylabel('Speed [m/s]');
-                else
-                    plot(time(ran),vhclSpeed(ran),'r-');  xlabel('Path Position');  ylabel('Speed [m/s]');
-                end
-            else
-                plot(time,vhclSpeed,'r-');  xlabel('Path Position');  ylabel('Speed [m/s]');
-            end 
+            subplot(3,1,2);
+            plot(data(ran),tanRoll(ran));  xlabel('Path Position');
+            ylabel('Tan roll angle [deg]');
+            hold on; grid on
+            subplot(3,1,3);
+            plot(data(ran),tanPitch(ran)); xlabel('Path Position');
+            ylabel('Tan pitch angle [deg]');
+            hold on; grid on;
+            % title
+            sgtitle(sprintf('Lap number = %d',max(lapsStarted)-1));
+            x = gcf;
+            set(gcf,'Position',x.Position.*[1 0.25 1 1.75]);
         end
-            
+        
     end
 end
 
