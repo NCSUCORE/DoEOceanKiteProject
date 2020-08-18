@@ -645,7 +645,8 @@ classdef maneuverabilityAdvanced
             B_Msum = B_Mwing + B_Mhstab + B_Mvstab + B_Mbuoy + B_Mthr;
             % solve
             val = solve(B_Msum(2) == 0,de,'Real',true);
-            val = min(abs(val));
+            [~,idx] = min(abs(val));
+            val = val(idx);
             % output all moments
             allMoments.B_Mwing  = B_Mwing;
             allMoments.B_Mhstab = B_Mhstab;
