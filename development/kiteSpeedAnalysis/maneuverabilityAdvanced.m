@@ -36,6 +36,8 @@ classdef maneuverabilityAdvanced
         hstabZeroAoALift = 0.0;
         hstabZerAoADrag = 0.05;
         hstabControlSensitivity;
+        hstabMaxDef = 30;
+
     end
     
     properties % vstab
@@ -47,7 +49,6 @@ classdef maneuverabilityAdvanced
         vstabZeroAoALift = 0.0;
         vstabZerAoADrag = 0.05;
         vstabControlSensitivity = 0;
-        vstabMaxDef = 30;
     end
     
     properties (Dependent = true)
@@ -655,9 +656,9 @@ classdef maneuverabilityAdvanced
             
         end
         
-        % loop throught tangent pitch angles and get moments and other
+        % loop through tangent pitch angles and get moments and other
         % things
-        function val = pitchStabilityAnalysis(obj,G_vFlow,T_vKite,...
+        function [val,ips] = pitchStabilityAnalysis(obj,G_vFlow,H_vKite,...
                 azimuth,elevation,heading,tgtPitch,roll,dElev)
             % number of points
             nPoints = numel(tgtPitch);
@@ -671,6 +672,8 @@ classdef maneuverabilityAdvanced
             B_Mbuoy  = NaN(3,nPoints);
             B_Mthr   = NaN(3,nPoints);
             B_Msum   = NaN(3,nPoints);
+            % kite speed in heading direction
+            T_vKite = obj.calcKiteVelInTangentFrame(H_vKite,heading);
             % run the loop
             for ii = 1:nPoints
                 % apparent wind velocity
@@ -690,6 +693,9 @@ classdef maneuverabilityAdvanced
                 B_Mthr(:,ii)   = subs(allMoments.B_Mthr,dElev);
                 B_Msum(:,ii)   = subs(allMoments.B_Msum,dElev);
             end
+            % find tangent angles out of range of de
+            tgtRange = tgtPitch(abs(de)<=obj.hstabMaxDef);
+            tgtRange = [min(tgtRange); max(tgtRange)];
             % output
             val.AoA         = AoA;
             val.SSA         = SSA;
@@ -700,80 +706,110 @@ classdef maneuverabilityAdvanced
             val.B_Mbuoy     = B_Mbuoy;
             val.B_Mthr      = B_Mthr;
             val.B_Msum      = B_Msum;
+            val.tgtRange    = tgtRange;
+            % inputs
+            ips.azimuth = azimuth;
+            ips.elevation = elevation;
+            ips.heading = heading;
+            ips.roll = roll;
+            ips.tgtPitch = tgtPitch;
+            
         end
         
-        function val = plotPitchStabilityAnalysisResults(obj,G_vFlow,T_vKite,...
-                azimuth,elevation,heading,tgtPitch,roll,dElev)
+        % pitch stability over the path
+        function [val,ips,tgtAngleRange] = pathPitchStability(obj,G_vFlow,...
+                H_vKite,roll,pathParam,tgtPitch,dElev)
+            % path parameters
+            nPoints = numel(pathParam);
+            % get path azimuth, elevation, and heading
+            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
+            pathAzimuth = pathAzimElev(1,:);
+            pathElevation = pathAzimElev(2,:);
+            pathHeading  = obj.pathAndTangentEqs.reqHeading(pathParam);
+            tgtAngleRange = [nan;nan]*pathParam;
+            % calculate for each path parameter
+            parfor ii = 1:nPoints
+            [val(ii),ips(ii)] = obj.pitchStabilityAnalysis(G_vFlow,H_vKite(:,ii),...
+                pathAzimuth(ii),pathElevation(ii),pathHeading(ii),tgtPitch,...
+                roll(ii),dElev);
+            tgtAngleRange(:,ii) = val(ii).tgtRange;
+            end
+            
+        end
+        
+        function val = plotPitchStabilityAnalysisResults(obj,results,...
+                inputs)
             % initialize graphics object matrix
             val = gobjects;
             spAxes = gobjects;
-            % results from the analysis
-            res = obj.pitchStabilityAnalysis(G_vFlow,T_vKite,...
-                azimuth,elevation,heading,tgtPitch,roll,dElev);
-            fprintf('Done calculating.\n');
             % normalizing Moment
             normM = 1e3;
             % local variables
             noSp = [2,5]; % number of subplots
             pIdx = 1;    % plot index
             spIdx = 1;   % subplot index
-            tgtPitch = tgtPitch*180/pi;
+            % inputs
+            tgtPitch = inputs.tgtPitch*180/pi;
+            azimuth = inputs.azimuth;
+            elevation = inputs.elevation;
+            heading = inputs.heading;
+            roll = inputs.roll;
             % plot buoyancy pitching moments
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mbuoy(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mbuoy(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Buoyancy moment (kN-m)');
             % plot wing pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mwing(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mwing(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Wing moment (kN-m)');
             % plot H-stab pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mhstab(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mhstab(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('H-stab moment (kN-m)');
             % plot tether pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mthr(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mthr(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Tether moment (kN-m)');
             % plot sum of pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Msum(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Msum(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Sum of moments (kN-m)');
             % plot angle of attack
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.AoA);
+            val(pIdx) = obj.plot2D(tgtPitch,results.AoA);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('AoA (deg)');
             % plot elevator deflection to trim
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.elevatorDef);
+            val(pIdx) = obj.plot2D(tgtPitch,results.elevatorDef);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Elevator deflection to trim (deg)');
             pIdx = pIdx+1;
-            val(pIdx) = yline(obj.vstabMaxDef,'m--','linewidth',obj.lwd);
+            val(pIdx) = yline(obj.hstabMaxDef,'m--','linewidth',obj.lwd);
             pIdx = pIdx+1;
-            val(pIdx) = yline(-obj.vstabMaxDef,'m--','linewidth',obj.lwd);
+            val(pIdx) = yline(-obj.hstabMaxDef,'m--','linewidth',obj.lwd);
             % plot AoA of attack vs sum of moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(res.AoA,res.B_Msum(2,:)./normM);
+            val(pIdx) = obj.plot2D(results.AoA,results.B_Msum(2,:)./normM);
             grid on; hold on;
             xlabel('AoA (deg)');
             ylabel('Sum of moments (kN-m)');
@@ -1098,6 +1134,18 @@ classdef maneuverabilityAdvanced
             hold on;
             xticks(0:.25:1);
         end
+        
+        function val = plotTangentPitchRange(obj,pathParam,tgtPitch)
+            % plot
+            pathParam = pathParam./(2*pi);
+            val = obj.plot2D([pathParam nan fliplr(pathParam)],...
+                [tgtPitch(1,:) nan tgtPitch(2,:)]);
+            xlabel('Path parameter');
+            ylabel('Tangent pitch range (deg)');
+            grid on;
+            hold on;
+            xticks(0:.25:1);
+        end
     end
     
     %% animation methods
@@ -1113,11 +1161,13 @@ classdef maneuverabilityAdvanced
             addParameter(pp,'tgtPitch',0*pathParam,@isnumeric);
             addParameter(pp,'rollInRad',0*pathParam,@isnumeric);
             addParameter(pp,'headingVel',0*pathParam,@isnumeric);
+            addParameter(pp,'tangentPitchRange',[0;0]*pathParam,@isnumeric);            
             parse(pp,varargin{:});
             % local variables
             tgtPitch = pp.Results.tgtPitch;
             roll = pp.Results.rollInRad;
             vH = pp.Results.headingVel;
+            tgtPitchRange = pp.Results.tangentPitchRange;
             % make a subplot grid and get plot indices
             spSz = [3,5]; % grid size
             spIdx = reshape(1:15,spSz(2),[])';
@@ -1126,6 +1176,7 @@ classdef maneuverabilityAdvanced
             haIdx = spIdx(11);
             tgIdx = spIdx(12);
             vHIdx = spIdx(13);
+            tgtRangeIdx = spIdx(14);
             % make the static 3D plot
             subplot(spSz(1),spSz(2),mainPlot);
             obj.plotDome;
@@ -1146,6 +1197,10 @@ classdef maneuverabilityAdvanced
             % make path velocity plot
             subplot(spSz(1),spSz(2),vHIdx);
             obj.plotHeadingVel(pathParam,vH);
+            % make tangent pitch plots
+            subplot(spSz(1),spSz(2),tgtRangeIdx);
+            obj.plotTangentPitchRange(pathParam,tgtPitchRange*180/pi);
+            % font size
             obj.setFontSize;
             % calculate values for azimuth,elevation, and heading
             hAng = obj.pathAndTangentEqs.reqHeading(pathParam);
@@ -1168,6 +1223,7 @@ classdef maneuverabilityAdvanced
                         delete(pAxes);
                         delete(pRollAng);
                         delete(pHeadVel);
+                        delete(pTgtRange);
                     end
                     pTanVec = obj.plotTangentVec(pathParam(ii)*2*pi);
                     title(sprintf(['Path width = %d deg, ',...
@@ -1190,6 +1246,9 @@ classdef maneuverabilityAdvanced
                     % heading velocity
                     subplot(spSz(1),spSz(2),vHIdx);
                     pHeadVel = plot(pathParam(ii),vH(ii),'mo');
+                    % tangent pitch range
+                    subplot(spSz(1),spSz(2),tgtRangeIdx);
+                    pTgtRange = xline(pathParam(ii),'m');
                     % draw
                     drawnow;
                     % wait
