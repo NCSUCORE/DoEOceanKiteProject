@@ -976,6 +976,7 @@ classdef maneuverabilityAdvanced
             % CL
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             val(pIdx) = plotCL(obj,AoA,CLWing);
+            title('Wing');
             % CD
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
@@ -989,6 +990,7 @@ classdef maneuverabilityAdvanced
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             val(pIdx) = plotCL(obj,AoA,CLHstab);
+            title('H-stab');
             % CD
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
@@ -1002,6 +1004,7 @@ classdef maneuverabilityAdvanced
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             val(pIdx) = plotCL(obj,AoA,CLVstab);
+            title('V-stab');
             % CD
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
@@ -1015,6 +1018,7 @@ classdef maneuverabilityAdvanced
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             val(pIdx) = plotCL(obj,AoA,CLWing + CLHstab);
+            title('Wing + H-stab');
             % CD
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
@@ -1265,37 +1269,39 @@ classdef maneuverabilityAdvanced
             end
         end
         
-        function val = pitchStabAnalysisAnim(obj,G_vFlow,H_vKite,...
-                tgtPitch,dElev,pathParam)
+        function val = pitchStabAnalysisAnim(obj,results,inputs,...
+                pathParam,varargin)
+            % parse input
+            pp = inputParser;
+            addParameter(pp,'animate',true,@islogical);
+            addParameter(pp,'waitForButton',true,@islogical);
+            parse(pp,varargin{:});
             % output captured frames
             val = struct('cdata',uint8(zeros(840,1680,3)),'colormap',[]);
             % local varibales hopefully
             obj.linStyleOrder = {'-'};
             obj.colorOrder = [0 0 0];
-            % get path azimuth and elevation
-            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
-            pathHeading  = obj.pathAndTangentEqs.reqHeading(pathParam);
-            reqRoll      = obj.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
-            % kite vel in tangent frame
-            T_vKite = obj.calcKiteVelInTangentFrame(H_vKite,pathHeading);
             % make the plots
             for ii = 1:numel(pathParam)
                 if ii > 1
                     delete(plotArray)
                 end
-                plotArray = obj.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite(:,ii),...
-                    pathAzimElev(1,ii),pathAzimElev(2,ii),pathHeading(ii),...
-                    tgtPitch,reqRoll(ii),dElev);
+                
+                plotArray = ...
+                    obj.plotPitchStabilityAnalysisResults(results(ii),inputs(ii));
                 subplot(2,5,9:10);
                 title(sprintf('s = %.2f',pathParam(ii)/(2*pi)));
                 obj.setFontSize;
                 % get the frame
                 ff = getframe(gcf);
                 val(ii).cdata = ff.cdata;
+                % wait for button press
+                if pp.Results.waitForButton
+                    fprintf('Waiting for button press.\n');
+                    waitforbuttonpress;
+                end
             end
-            
         end
-        
         
     end
     

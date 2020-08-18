@@ -27,10 +27,18 @@ dElev = 0;
 cIn.plotPitchStabilityAnalysisResults(results(1),inputs(1));
 
 %% animation
+fIdx = fIdx+1;
+figure(fIdx);
+set(gcf,'Position',[1922 42 560*2.5 420*2]);
+val = cIn.pitchStabAnalysisAnim(results,inputs,...
+                pathParam);
+
+%%
+
 % fIdx = fIdx+1;
 fIdx = fIdx+1;
 figure(fIdx);
-set(gcf,'Position',[0 0 560*2.5 420*2]);
+set(gcf,'Position',[1922 42 560*2.5 420*2]);
 F = cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
     'rollInRad',pathAnalysisRes(maxIdx).rollAng,...
