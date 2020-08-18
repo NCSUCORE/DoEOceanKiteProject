@@ -117,7 +117,7 @@ pSP =  [30 30  30  30  30   40   40   40   40   40   40   40   40];
 thr.tether1.dragEnable.setValue(0,'');
 % vhcl.rBridle_LE.setValue([0,0,0]','m');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(30,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
