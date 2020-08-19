@@ -96,7 +96,7 @@
             for varind = 1:(length(varNamesSFDT))
                 % Creating labels for inputs boxes
                 app.Labels.(varNamesSFDT{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesSFDT{varind}).Text = varSFDT.(varNamesSFDT{varind}).symbol;
+                app.Labels.(varNamesSFDT{varind}).Text = join([varSFDT.(varNamesSFDT{varind}).symbol,' (',varSFDT.(varNamesSFDT{varind}).unit,')']);
                 app.Labels.(varNamesSFDT{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesSFDT{varind}).FontSize = fontSize;
                 

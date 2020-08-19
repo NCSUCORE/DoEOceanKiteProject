@@ -1,5 +1,6 @@
 function createTabOutputSFDT(app)
-            createOutputVarsSFDT;
+
+            listOutputVarsSFDT;
             
             T = 'SFDT';  
             
@@ -15,22 +16,24 @@ function createTabOutputSFDT(app)
             y = y-40;
             
             for varind = 1:(length(varNamesSFDToutputs))
-                % Creating labels for inputs boxes
+                % Creating labels for output boxes
                 fontSize = 14;
                 app.Labels.(varNamesSFDToutputs{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesSFDToutputs{varind}).Text = varSFDToutputs.(varNamesSFDToutputs{varind}).symbol;
+                app.Labels.(varNamesSFDToutputs{varind}).Text = join([varSFDToutputs.(varNamesSFDToutputs{varind}).symbol,' (',varSFDToutputs.(varNamesSFDToutputs{varind}).unit,')']);
                 app.Labels.(varNamesSFDToutputs{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesSFDToutputs{varind}).FontSize = fontSize;
                 
                 
                 x = x-5; y = y-25;
-                % Creating input boxes
+                % Creating output boxes
                 app.InputBoxs.(varNamesSFDToutputs{varind}) = uieditfield(app.UITabs.(T),'numeric');
                 app.InputBoxs.(varNamesSFDToutputs{varind}).Position = [x y width height];
                 app.InputBoxs.(varNamesSFDToutputs{varind}).Limits = [varSFDToutputs.(varNamesSFDToutputs{varind}).min varSFDToutputs.(varNamesSFDToutputs{varind}).max];
                 app.InputBoxs.(varNamesSFDToutputs{varind}).Value = varSFDToutputs.(varNamesSFDToutputs{varind}).default;
                 app.InputBoxs.(varNamesSFDToutputs{varind}).FontSize = fontSize;
-                
+                app.InputBoxs.(varNamesSFDToutputs{varind}).Editable = varSFDToutputs.(varNamesSFDToutputs{varind}).Editable;
+                app.InputBoxs.(varNamesSFDToutputs{varind}).BackgroundColor = varSFDToutputs.(varNamesSFDToutputs{varind}).BackgroundColor;
+                           
                 x = x+5; y = y- 40;
 
             end

@@ -18,7 +18,7 @@ function createTabOutputSFOT(app)
                 % Creating labels for inputs boxes
                 fontSize = 14;
                 app.Labels.(varNamesSFOToutputs{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesSFOToutputs{varind}).Text = varSFOToutputs.(varNamesSFOToutputs{varind}).symbol;
+                app.Labels.(varNamesSFOToutputs{varind}).Text = join([varSFOToutputs.(varNamesSFOToutputs{varind}).symbol,' (',varSFOToutputs.(varNamesSFOToutputs{varind}).unit,')']);
                 app.Labels.(varNamesSFOToutputs{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesSFOToutputs{varind}).FontSize = fontSize;
                 
@@ -30,6 +30,8 @@ function createTabOutputSFOT(app)
                 app.InputBoxs.(varNamesSFOToutputs{varind}).Limits = [varSFOToutputs.(varNamesSFOToutputs{varind}).min varSFOToutputs.(varNamesSFOToutputs{varind}).max];
                 app.InputBoxs.(varNamesSFOToutputs{varind}).Value = varSFOToutputs.(varNamesSFOToutputs{varind}).default;
                 app.InputBoxs.(varNamesSFOToutputs{varind}).FontSize = fontSize;
+                app.InputBoxs.(varNamesSFOToutputs{varind}).Editable = varSFOToutputs.(varNamesSFOToutputs{varind}).Editable;
+                app.InputBoxs.(varNamesSFOToutputs{varind}).BackgroundColor = varSFOToutputs.(varNamesSFOToutputs{varind}).BackgroundColor;              
                 
                 x = x+5; y = y- 40;
 

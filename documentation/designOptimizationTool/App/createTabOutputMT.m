@@ -15,21 +15,23 @@ function createTabOutputMT(app)
             y = y-40;
             
             for varind = 1:(length(varNamesMToutputs))
-                % Creating labels for inputs boxes
+                % Creating labels for outbox boxes
                 fontSize = 14;
                 app.Labels.(varNamesMToutputs{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesMToutputs{varind}).Text = varMToutputs.(varNamesMToutputs{varind}).symbol;
+                app.Labels.(varNamesMToutputs{varind}).Text = join([varMToutputs.(varNamesMToutputs{varind}).symbol,' (',varMToutputs.(varNamesMToutputs{varind}).unit,')']);
                 app.Labels.(varNamesMToutputs{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesMToutputs{varind}).FontSize = fontSize;
                 
                 
                 x = x-5; y = y-25;
-                % Creating input boxes
+                % Creating output boxes and initilize
                 app.InputBoxs.(varNamesMToutputs{varind}) = uieditfield(app.UITabs.(T),'numeric');
                 app.InputBoxs.(varNamesMToutputs{varind}).Position = [x y width height];
                 app.InputBoxs.(varNamesMToutputs{varind}).Limits = [varMToutputs.(varNamesMToutputs{varind}).min varMToutputs.(varNamesMToutputs{varind}).max];
                 app.InputBoxs.(varNamesMToutputs{varind}).Value = varMToutputs.(varNamesMToutputs{varind}).default;
                 app.InputBoxs.(varNamesMToutputs{varind}).FontSize = fontSize;
+                app.InputBoxs.(varNamesMToutputs{varind}).Editable = varMToutputs.(varNamesMToutputs{varind}).Editable;
+                app.InputBoxs.(varNamesMToutputs{varind}).BackgroundColor = varMToutputs.(varNamesMToutputs{varind}).BackgroundColor;
                 
                 x = x+5; y = y- 40;
 
