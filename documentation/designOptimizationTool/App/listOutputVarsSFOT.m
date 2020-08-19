@@ -10,7 +10,9 @@ varSFOToutputs.AoAOpt.max = 13.0;
 varSFOToutputs.AoAOpt.default = 5;
 varSFOToutputs.AoAOpt.symbol = 'Optimal Angle of Attack';
 varSFOToutputs.AoAOpt.description = 'Optimal Angle of Attack';
-varSFOToutputs.AoAOpt.unit = '';
+varSFOToutputs.AoAOpt.unit = 'degree';
+varSFOToutputs.AoAOpt.Editable = 'off';
+varSFOToutputs.AoAOpt.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 
 % varSDT.ChrdL.min = 0;

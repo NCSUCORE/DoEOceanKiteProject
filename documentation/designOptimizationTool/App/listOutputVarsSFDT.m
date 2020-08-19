@@ -8,9 +8,11 @@ end
 varSFDToutputs.FThick.min = 0.0;
 varSFDToutputs.FThick.max = 10.0;
 varSFDToutputs.FThick.default = 0.1;
-varSFDToutputs.FThick.symbol = 'Fuselage Thickness'
+varSFDToutputs.FThick.symbol = 'Fuselage Thickness';
 varSFDToutputs.FThick.description = 'Fuselage Thickness';
 varSFDToutputs.FThick.unit = '';
+varSFDToutputs.FThick.Editable = 'off';
+varSFDToutputs.FThick.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 
 % varSDT.ChrdL.min = 0;

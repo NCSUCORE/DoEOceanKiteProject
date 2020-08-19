@@ -10,7 +10,7 @@ varMTinputs.ARll.max = 8;
 varMTinputs.ARll.default = 5;
 varMTinputs.ARll.symbol = 'AR Lower Limit';
 varMTinputs.ARll.description = 'AR Lower Limit';
-varMTinputs.ARul.unit = '';
+varMTinputs.ARll.unit = '';
 
 varMTinputs.ARul.min = 8;
 varMTinputs.ARul.max = 25;
@@ -24,7 +24,7 @@ varMTinputs.Spanll.max = 10;
 varMTinputs.Spanll.default = 8;
 varMTinputs.Spanll.symbol = 'Span Lower Limit';
 varMTinputs.Spanll.description = 'Span Lower Limit';
-varMTinputs.Spanul.unit = 'm';
+varMTinputs.Spanll.unit = 'm';
 
 varMTinputs.Spanul.min = 6;
 varMTinputs.Spanul.max = 15;

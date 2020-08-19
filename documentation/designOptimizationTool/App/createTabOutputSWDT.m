@@ -18,7 +18,7 @@ function createTabOutputSWDT(app)
                 % Creating labels for inputs boxes
                 fontSize = 14;
                 app.Labels.(varNamesSWDToutputs{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesSWDToutputs{varind}).Text = varSWDToutputs.(varNamesSWDToutputs{varind}).symbol;
+                app.Labels.(varNamesSWDToutputs{varind}).Text = join([varSWDToutputs.(varNamesSWDToutputs{varind}).symbol,' (',varSWDToutputs.(varNamesSWDToutputs{varind}).unit,')']);
                 app.Labels.(varNamesSWDToutputs{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesSWDToutputs{varind}).FontSize = fontSize;
                 
@@ -30,6 +30,9 @@ function createTabOutputSWDT(app)
                 app.InputBoxs.(varNamesSWDToutputs{varind}).Limits = [varSWDToutputs.(varNamesSWDToutputs{varind}).min varSWDToutputs.(varNamesSWDToutputs{varind}).max];
                 app.InputBoxs.(varNamesSWDToutputs{varind}).Value = varSWDToutputs.(varNamesSWDToutputs{varind}).default;
                 app.InputBoxs.(varNamesSWDToutputs{varind}).FontSize = fontSize;
+                app.InputBoxs.(varNamesSWDToutputs{varind}).Editable = varSWDToutputs.(varNamesSWDToutputs{varind}).Editable;
+                app.InputBoxs.(varNamesSWDToutputs{varind}).BackgroundColor = varSWDToutputs.(varNamesSWDToutputs{varind}).BackgroundColor;
+             
                 
                 x = x+5; y = y- 40;
 
