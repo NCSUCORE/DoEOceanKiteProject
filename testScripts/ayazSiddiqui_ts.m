@@ -1,9 +1,14 @@
-% clear;clc;close all
+clear;
+clc;
+close all;
+
+cd(fileparts(mfilename('fullpath')));
+
 simParams = SIM.simParams;
 simParams.setDuration(900,'s');
 dynamicCalc = '';
 
-thrLength = 200;
+thrLength = 60;
 el = 30*pi/180;                         % rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;          % rad - Path width/height
 [a,b] = boothParamConversion(w,h);      % Path basis parameters
@@ -25,7 +30,7 @@ loadComponent('pathFollowingGndStn');
 % Winches
 loadComponent('ayazFullScaleOneThrWinch');
 % Tether
-loadComponent('pathFollowingTether');
+loadComponent('ayazFullScaleOneThrTether');
 % Sensors
 loadComponent('idealSensors');
 % Sensor processing
@@ -81,7 +86,7 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
-% fltCtrl.setFirstSpoolLap(1000,'');
+
 fltCtrl.elevatorReelInDef.setValue(0,'deg');
 
 %% Run Simulation

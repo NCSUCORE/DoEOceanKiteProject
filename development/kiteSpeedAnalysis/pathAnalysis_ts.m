@@ -11,10 +11,9 @@ heights = [15,12.5,10]*pi/180;
 widths = 40*pi/180;
 heights = 10*pi/180;
 
-
 % initialize class
 cIn = maneuverabilityAdvanced;
-cIn.tetherLength = 200;
+cIn.tetherLength = 60;
 cIn.meanElevationInRadians = 30*pi/180;
 
 % flow vel in ground frame
@@ -35,7 +34,7 @@ cIn.wingAspectRatio = vhcl.wingAR.Value;
 cIn.wingAeroCenter = BcB*vhcl.stbdWing.rAeroCent_SurfLE.Value.*[1;0;1];
 cIn.wingZerAoADrag = 2*vhcl.portWing.CD.Value(vhcl.portWing.alpha.Value == 0);
 cIn.wingZeroAoALift = 2*vhcl.portWing.CL.Value(vhcl.portWing.alpha.Value == 0);
-cIn.wingOswaldEff = 0.6;
+cIn.wingOswaldEff = 0.9;
 
 % h-stab parameters
 cIn.hstabChord = vhcl.hStab.rootChord.Value;
@@ -49,7 +48,7 @@ cIn.hstabZerAoADrag = vhcl.hStab.CD.Value(vhcl.hStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
 cIn.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2)*...
     vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
-cIn.hstabOswaldEff = 0.6;
+cIn.hstabOswaldEff = 0.9;
 
 elevatorDeflection = 0;
 
@@ -63,6 +62,7 @@ cIn.vstabZeroAoALift = vhcl.vStab.CL.Value(vhcl.vStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
 cIn.vstabZerAoADrag = vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
+cIn.vstabOswaldEff = 0.9;
 
 % geometry parameters
 cIn.buoyFactor = vhcl.buoyFactor.Value;
@@ -73,7 +73,7 @@ cIn.mass = vhcl.mass.Value;
 cIn.bridleLocation = [0;0;0];
 
 %% path param
-pathParam = linspace(pi,3*pi,51);
+pathParam = linspace(0,2*pi,41);
 
 %% radius of curvature analysis
 pRc = gobjects;
