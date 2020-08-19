@@ -58,14 +58,25 @@
             
             Slid = varNamesSWDT{1}; 
             y = y -35;
+            %Create slider label
             app.Labels.(varNamesSWDT{1}) = uilabel(app.UITabs.(T));
             app.Labels.(varNamesSWDT{1}).Text = 'Maximum % Wing Deflection';
             app.Labels.(varNamesSWDT{1}).Position = [x  y 320 25];
             app.Labels.(varNamesSWDT{1}).FontSize = fontSize;
             
-            y = y -20;
+            x = x+200;
+            %Create number next to sliders
+            app.Labels.(varNamesSWDT{1}) = uilabel(app.UITabs.(T));
+            app.Labels.(varNamesSWDT{1}).Text = '5';
+            app.Labels.(varNamesSWDT{1}).Position = [x  y 320 25];
+            app.Labels.(varNamesSWDT{1}).FontSize = fontSize;
+            
+            y = y -20; x = x-200;
+            
+            %Create Slider
             ticks = linspace(0,20,9);
-            app.Sliders.(varNamesSWDT{1}) = uislider(app.UITabs.(T));
+            app.Sliders.(varNamesSWDT{1}) = uislider(app.UITabs.(T),...
+                    'ValueChangedFcn',@(~,event) updateSliderNumLabels(app,event,1,varNamesSWDT,T));
             app.Sliders.(varNamesSWDT{1}).Position = [x y width+50 height+5];
             app.Sliders.(varNamesSWDT{1}).Limits = [0 20];
             app.Sliders.(varNamesSWDT{1}).Value = 5;
@@ -89,7 +100,7 @@
             for varind = 2:(length(varNamesSWDT))
                 % Creating labels for inputs boxes
                 app.Labels.(varNamesSWDT{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesSWDT{varind}).Text = varSWDT.(varNamesSWDT{varind}).symbol;
+                app.Labels.(varNamesSWDT{varind}).Text = join([varSWDT.(varNamesSWDT{varind}).symbol,' (',varSWDT.(varNamesSWDT{varind}).unit,')']);
                 app.Labels.(varNamesSWDT{varind}).Position = [x y width height];
                 app.Labels.(varNamesSWDT{varind}).FontSize = fontSize;
                 
