@@ -16,9 +16,10 @@ function createTabInputMT(app)
             x = x-80;y = y -30;
             for varind = 1:2
                 fontSize = 14;
+                %Create input box labels
                 app.Labels.(varNamesMTinputs{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesMTinputs{varind}).Parent = app.UITabs.(T);
-                app.Labels.(varNamesMTinputs{varind}).Text = varMTinputs.(varNamesMTinputs{varind}).symbol;
+                app.Labels.(varNamesMTinputs{varind}).Parent = app.UITabs.(T);              
+                app.Labels.(varNamesMTinputs{varind}).Text = join([varMTinputs.(varNamesMTinputs{varind}).symbol,' (',varMTinputs.(varNamesMTinputs{varind}).unit,')']);
                 app.Labels.(varNamesMTinputs{varind}).Position = [x y width height];
                 app.Labels.(varNamesMTinputs{varind}).FontSize = fontSize;
                 
@@ -48,9 +49,10 @@ function createTabInputMT(app)
             x = x-100;y = y -30;
             for varind = 3:4
                 fontSize = 14;
+                %Create input box labels
                 app.Labels.(varNamesMTinputs{varind}) = uilabel(app.UITabs.(T));
                 app.Labels.(varNamesMTinputs{varind}).Parent = app.UITabs.(T);
-                app.Labels.(varNamesMTinputs{varind}).Text = varMTinputs.(varNamesMTinputs{varind}).symbol;
+                app.Labels.(varNamesMTinputs{varind}).Text = join([varMTinputs.(varNamesMTinputs{varind}).symbol,' (',varMTinputs.(varNamesMTinputs{varind}).unit,')']);
                 app.Labels.(varNamesMTinputs{varind}).Position = [x y width height];
                 app.Labels.(varNamesMTinputs{varind}).FontSize = fontSize;
                 
@@ -93,7 +95,7 @@ function createTabInputMT(app)
                 fontSize = 14;
                 app.Labels.(varNamesMTinputs{varind}) = uilabel(app.UITabs.(T));
                 app.Labels.(varNamesMTinputs{varind}).Parent = app.UITabs.(T);
-                app.Labels.(varNamesMTinputs{varind}).Text = varMTinputs.(varNamesMTinputs{varind}).symbol;
+                app.Labels.(varNamesMTinputs{varind}).Text = join([varMTinputs.(varNamesMTinputs{varind}).symbol,' (',varMTinputs.(varNamesMTinputs{varind}).unit,')']);;
                 app.Labels.(varNamesMTinputs{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesMTinputs{varind}).FontSize = fontSize;
                 

@@ -57,7 +57,7 @@
             for varind = 1:7
                 % Creating labels for inputs boxes
                 app.Labels.(varNamesSFOT{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesSFOT{varind}).Text = varSFOT.(varNamesSFOT{varind}).symbol;
+                app.Labels.(varNamesSFOT{varind}).Text = join([varSFOT.(varNamesSFOT{varind}).symbol,' (',varSFOT.(varNamesSFOT{varind}).unit,')']);
                 app.Labels.(varNamesSFOT{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesSFOT{varind}).FontSize = fontSize;
                 
@@ -76,15 +76,24 @@
             for varind = 8:length(varNamesSFOT)
                 %Create labels for sliders
                 app.Labels.(varNamesSFOT{varind}) = uilabel(app.UITabs.(T));
-                app.Labels.(varNamesSFOT{varind}).Text = varSFOT.(varNamesSFOT{varind}).symbol;
+                app.Labels.(varNamesSFOT{varind}).Text = join([varSFOT.(varNamesSFOT{varind}).symbol,' (',varSFOT.(varNamesSFOT{varind}).unit,')']);
                 app.Labels.(varNamesSFOT{varind}).Position = [x y width+50 height];
                 app.Labels.(varNamesSFOT{varind}).FontSize = fontSize;
                 
-                x = x-5; y = y-10;
+                x = x+150; y = y-0;
+                
+                %Create number next to sliders
+                app.Labels.(varNamesSFOT{varind}) = uilabel(app.UITabs.(T));
+                app.Labels.(varNamesSFOT{varind}).Text = num2str(varSFOT.(varNamesSFOT{varind}).default);
+                app.Labels.(varNamesSFOT{varind}).Position = [x y width+50 height];
+                app.Labels.(varNamesSFOT{varind}).FontSize = fontSize;
+                
+                x = x-155; y = y-10;
                 
                 %Create sliders
                 ticks = linspace(varSFOT.(varNamesSFOT{varind}).min,varSFOT.(varNamesSFOT{varind}).max,9);
-                app.Sliders.(varNamesSFOT{varind}) = uislider(app.UITabs.(T));
+                app.Sliders.(varNamesSFOT{varind}) = uislider(app.UITabs.(T),...
+                    'ValueChangedFcn',@(~,event) updateSliderNumLabels(app,event,varind,varNamesSFOT,T));
                 app.Sliders.(varNamesSFOT{varind}).Position = [x y width+50 height] ;
                 app.Sliders.(varNamesSFOT{varind}).Limits = [varSFOT.(varNamesSFOT{varind}).min varSFOT.(varNamesSFOT{varind}).max];
                 app.Sliders.(varNamesSFOT{varind}).Value = varSFOT.(varNamesSFOT{varind}).default;

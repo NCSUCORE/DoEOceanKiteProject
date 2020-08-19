@@ -11,6 +11,8 @@ varMToutputs.Pow.default = 0;
 varMToutputs.Pow.symbol = 'Maximum Power Generated';
 varMToutputs.Pow.description = 'Maximum Power Generated';
 varMToutputs.Pow.unit = 'kW';
+varMToutputs.Pow.Editable = 'off';
+varMToutputs.Pow.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 varMToutputs.Perf.min = 0;
 varMToutputs.Perf.max = 10^10;
@@ -18,6 +20,8 @@ varMToutputs.Perf.default = 0;
 varMToutputs.Perf.symbol = 'Maximum Performance';
 varMToutputs.Perf.description = 'Maximum Performance';
 varMToutputs.Perf.unit = '';
+varMToutputs.Perf.Editable = 'off';
+varMToutputs.Perf.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 varMToutputs.AR.min = 0;
 varMToutputs.AR.max = 20;
@@ -25,6 +29,8 @@ varMToutputs.AR.default = 6;
 varMToutputs.AR.symbol = 'Aspect Ratio';
 varMToutputs.AR.description = 'Aspect Ratio of Wing Airfoil';
 varMToutputs.AR.unit = '';
+varMToutputs.AR.Editable = 'off';
+varMToutputs.AR.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 varMToutputs.Span.min = 0;
 varMToutputs.Span.max = 20;
@@ -32,7 +38,8 @@ varMToutputs.Span.default = 7;
 varMToutputs.Span.symbol = 'Wing Span';
 varMToutputs.Span.description = 'Span of Wing Airfoil';
 varMToutputs.Span.unit = 'm';
-
+varMToutputs.Span.Editable = 'off';
+varMToutputs.Span.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 varMToutputs.D.min = 0.001;
 varMToutputs.D.max = 20;
@@ -40,6 +47,8 @@ varMToutputs.D.default = 12;
 varMToutputs.D.symbol = 'Diameter of Fuselage';
 varMToutputs.D.description = 'Diameter of Fuselage';
 varMToutputs.D.unit = 'm';
+varMToutputs.D.Editable = 'off';
+varMToutputs.D.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 varMToutputs.L.min = 0.001;
 varMToutputs.L.max = 20;
@@ -47,6 +56,8 @@ varMToutputs.L.default = 12;
 varMToutputs.L.symbol = 'Length of Fuselage';
 varMToutputs.L.description = 'Length of Fuselage';
 varMToutputs.L.unit = 'm';
+varMToutputs.L.Editable = 'off';
+varMToutputs.L.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 varMToutputs.KiteM.min = 5;
 varMToutputs.KiteM.max = 10^10;
@@ -54,6 +65,8 @@ varMToutputs.KiteM.default = 1000;
 varMToutputs.KiteM.symbol = 'Mass of Kite';
 varMToutputs.KiteM.description = 'Mass of Kite';
 varMToutputs.KiteM.unit = 'kg';
+varMToutputs.KiteM.Editable = 'off';
+varMToutputs.KiteM.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 varMToutputs.AoA.min =-13.0;
 varMToutputs.AoA.max = 13.0;
@@ -61,6 +74,8 @@ varMToutputs.AoA.default = 5;
 varMToutputs.AoA.symbol = 'Angle of Attack';
 varMToutputs.AoA.description = 'Angle of Attack';
 varMToutputs.AoA.unit = 'degrees';
+varMToutputs.AoA.Editable = 'off';
+varMToutputs.AoA.BackgroundColor = sscanf('CDCDCD','%2x%2x%2x',[1 3])/255; %grey
 
 % varSDT.ChrdL.min = 0;
 % varSDT.ChrdL.max = 20;

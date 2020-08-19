@@ -1,5 +1,4 @@
 classdef SSDesignTool < matlab.apps.AppBase
-    
     %These properties correspond to app components
     %Kartik: Add components here
     properties (Access = public)
@@ -44,7 +43,7 @@ classdef SSDesignTool < matlab.apps.AppBase
             
           
             app.UITabGroup = uitabgroup(app.UIFigure);
-            app.UITabGroup.Position = [20 20 1480 770]
+            app.UITabGroup.Position = [20 20 1480 770];
             
             app.UITabs.('MT') = uitab(app.UITabGroup);
             app.UITabs.('MT').Title = 'Main Tab';
@@ -71,17 +70,17 @@ classdef SSDesignTool < matlab.apps.AppBase
             createTabOutputMT(app);
             createTabOutputSFOT(app);
             createTabOutputSWDT(app);
-%             createTabOutputSFDT(app);
+            createTabOutputSFDT(app);
             
             App_SetGlobVar(app)
             
             % Create Plots
             createTabPlots(app);
-
-
             
             app.UIFigure.Visible = 'on';
+
             drawnow
+
         end
     end
         
@@ -94,7 +93,7 @@ classdef SSDesignTool < matlab.apps.AppBase
             listOutputVarsMT;
             listOutputVarsSFOT;
             listOutputVarsSWDT;
-%             createOutputVarsSFDT;
+            listOutputVarsSFDT;
             
 
             % Set input fields as global variables
