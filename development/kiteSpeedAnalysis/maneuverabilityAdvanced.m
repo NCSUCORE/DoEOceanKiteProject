@@ -374,6 +374,22 @@ classdef maneuverabilityAdvanced
             CD = ZeroAoADrag + CL^2/(pi*oswaldEff*aspectRatio);
         end
         
+        % calculate aerodynamic coefficeints
+        function [CL,CD] = EmpericallyCalcFluidCoeffs(~,AoA,oswaldEff,aspectRatio,...
+                ZeroAoALift,ZeroAoADrag,dCL_dCS,csDeflection)
+            % lift curve slope
+            liftSlope = 2*pi/(1 + (2*pi/(pi*oswaldEff*aspectRatio)));
+            % lift coeff
+            switch nargin
+                case 8
+                    CL = liftSlope*AoA + ZeroAoALift + dCL_dCS*csDeflection;
+                case 6
+                    CL = liftSlope*AoA + ZeroAoALift;
+            end
+            % drag coeff
+            CD = ZeroAoADrag + CL^2/(pi*oswaldEff*aspectRatio);
+        end
+        
         % calcualte wing forces and moment
         function val = calcWingLoads(obj,B_vApp)
             % local variables
