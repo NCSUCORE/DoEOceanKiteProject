@@ -1,10 +1,11 @@
 clc;
+clear;
 
 %% load file
-load('pathAnalysisOutputs\pathAnalysisResults 17-Aug-2020 18.02.09.mat');
+load('pathAnalysisOutputs\pathAnalysisResults_19-Aug-2020_13-03-53.mat');
 
 % adjust buoyancy center location
-cIn.centerOfBuoy = [0.5;0;0];
+% cIn.centerOfBuoy = [0.5;0;0];
 % adjust bridle location
 cIn.bridleLocation = [1;0;0];
 
@@ -14,7 +15,7 @@ H_vKite(2:3,:) = 0;
 pathRoll = pathAnalysisRes(maxIdx).rollAng;
 
 % tangent pitch sweep
-tgtPitchSweep = linspace(-20,20,41)*pi/180;
+tgtPitchSweep = linspace(-15,15,31)*pi/180;
 
 % elevator deflection to be held for analysis
 dElev = 0;
@@ -23,19 +24,21 @@ dElev = 0;
 [results,inputs,tgtRange] = cIn.pathPitchStability(G_vFlow,H_vKite,pathRoll,pathParam,...
     tgtPitchSweep,dElev);
 
-% 
-cIn.plotPitchStabilityAnalysisResults(results(1),inputs(1));
+%% save res
+[status, msg, msgID] = mkdir(pwd,'pitchAnalysisOutputs');
+fName = ['pitchAnalysisResults_',strrep(strrep(datestr(datetime),':','-'),' ','_')...
+    ,'.mat'];
+fName = [pwd,'\pitchAnalysisOutputs\',fName];
+save(fName);
 
 %% animation
 fIdx = fIdx+1;
 figure(fIdx);
 set(gcf,'Position',[1922 42 560*2.5 420*2]);
 val = cIn.pitchStabAnalysisAnim(results,inputs,...
-                pathParam);
+                pathParam,'animate',false);
 
 %%
-
-% fIdx = fIdx+1;
 fIdx = fIdx+1;
 figure(fIdx);
 set(gcf,'Position',[1922 42 560*2.5 420*2]);

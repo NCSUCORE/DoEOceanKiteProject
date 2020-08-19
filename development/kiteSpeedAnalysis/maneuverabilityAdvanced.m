@@ -49,7 +49,7 @@ classdef maneuverabilityAdvanced
         vstabZerAoADrag = 0.05;
     end
     
-    properties (Dependent = true)
+    properties 
         wingArea;
         hstabArea;
         vstabArea;
@@ -78,19 +78,19 @@ classdef maneuverabilityAdvanced
     %% getters
     methods
         % wing area
-        function val = get.wingArea(obj)
-            val = obj.wingChord^2*obj.wingAspectRatio;
-        end
-        
-        % h-stab area
-        function val = get.hstabArea(obj)
-            val = obj.hstabChord^2*obj.hstabAspectRatio;
-        end
-        
-        % v-stab area
-        function val = get.vstabArea(obj)
-            val = obj.vstabChord^2*obj.vstabAspectRatio/2;
-        end
+%         function val = get.wingArea(obj)
+%             val = obj.wingChord^2*obj.wingAspectRatio;
+%         end
+%         
+%         % h-stab area
+%         function val = get.hstabArea(obj)
+%             val = obj.hstabChord^2*obj.hstabAspectRatio;
+%         end
+%         
+%         % v-stab area
+%         function val = get.vstabArea(obj)
+%             val = obj.vstabChord^2*obj.vstabAspectRatio/2;
+%         end
         
         % parameterized eqn for path co-ordinates & path tangent vectors
         function val = get.pathAndTangentEqs(obj)
@@ -814,6 +814,9 @@ classdef maneuverabilityAdvanced
             ylabel('Sum of moments (kN-m)');
             % link the axes of the first row
             linkaxes(spAxes(1:5),'y');
+            set(spAxes(1:7),'XLim',[tgtPitch(1),tgtPitch(end)]);
+            set(spAxes(1:7),'XTick',linspace(tgtPitch(1),tgtPitch(end),5));
+            
             % main title
             sgtitle(sprintf(['Azimuth = %.1f, Elevation = %.1f, Heading = %.1f, ',...
                 'Roll = %.1f'],[azimuth,elevation,...
