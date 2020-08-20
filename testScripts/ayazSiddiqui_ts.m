@@ -36,7 +36,7 @@ loadComponent('idealSensors');
 % Sensor processing
 loadComponent('idealSensorProcessing');
 % Vehicle
-loadComponent('ayazFullScaleOneThrVhcl.mat');
+loadComponent('ayazFullScaleOneThrVhcl');
 % loadComponent('pathFollowingVhclForComp')
 % loadComponent('JohnfullScale1thr');
 

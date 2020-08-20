@@ -11,8 +11,8 @@ vhcl = OCT.vehicle;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
-vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('ayazFullScaleOneThrFluidCoeffs_v1','');
+vhcl.setBuoyFactor(1.0,'');
+vhcl.setFluidCoeffsFileName('ayazFullScaleOneThrFluidCoeffs_v2','');
 
 %% Volumes and Inertia
 vhcl.setVolume(2.85698,'m^3') %From CAD
@@ -25,7 +25,7 @@ Iyz=0;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixy Iyy -Iyz;...
-                    -Ixz -Iyz Izz],'kg*m^2')
+                    -Ixz -Iyz Izz],'kg*m^2');
                 
 %% Important Points
 vhcl.setRCM_LE([0 0 0],'m')
@@ -48,6 +48,9 @@ vhcl.setAllMaxCtrlDef(30,'deg');
 vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(60,'deg/s');
 
+% super high clMax so that none of the surfaces stall
+clMax = 5;
+
 %% Wing
 vhcl.setWingRootChord(1,'m');
 vhcl.setWingAR(10,''); %Span 10, hspan 5
@@ -56,8 +59,8 @@ vhcl.setWingSweep(2.3,'deg');
 vhcl.setWingDihedral(2,'deg');
 vhcl.setWingIncidence(0,'deg');
 vhcl.setWingAirfoil('NACA2412','');
-vhcl.setWingClMin(-1.7,'');
-vhcl.setWingClMax(1.7,'');
+vhcl.setWingClMin(-clMax,'');
+vhcl.setWingClMax(clMax,'');
 
 %% H-stab and V-stab
 vhcl.hStab.setRSurfLE_WingLEBdy([5.5;0;0],'m');
@@ -68,8 +71,8 @@ vhcl.hStab.setHalfSpanGivenAR(4/.45,''); %Span 4, hspan 2
 vhcl.hStab.setSweep(2.8624,'deg');
 vhcl.hStab.setIncidence(-13.5,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
-vhcl.hStab.setClMin(-1.7,'');
-vhcl.hStab.setClMax(1.7,'');
+vhcl.hStab.setClMin(-clMax,'');
+vhcl.hStab.setClMax(clMax,'');
 
 vhcl.vStab.setRSurfLE_WingLEBdy([5.35;0;0],'m');
 vhcl.vStab.setRootChord(.65,'m');
@@ -77,8 +80,8 @@ vhcl.vStab.setHalfSpan(2.4375,'m');
 vhcl.vStab.setTR(.8,'');
 vhcl.vStab.setSweep(3.44,'deg');
 vhcl.vStab.setAirfoil('NACA0015','');
-vhcl.vStab.setClMin(-1.7,'');
-vhcl.vStab.setClMax(1.7,'');
+vhcl.vStab.setClMin(-clMax,'');
+vhcl.vStab.setClMax(clMax,'');
 
 %% Fuselage (could use more realistic numbers)
 vhcl.fuse.setDiameter(0.4445,'m');

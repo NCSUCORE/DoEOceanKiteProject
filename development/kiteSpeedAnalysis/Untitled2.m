@@ -2,12 +2,12 @@ clc;
 clear;
 
 %% load file
-load('pathAnalysisOutputs\pathAnalysisResults_19-Aug-2020_13-03-53.mat');
+load('pathAnalysisOutputs\pathAnalysisResults_19-Aug-2020_20-05-44');
 
 % adjust buoyancy center location
 % cIn.centerOfBuoy = [0.5;0;0];
 % adjust bridle location
-cIn.bridleLocation = [1;0;0];
+cIn.bridleLocation = [4;0;0];
 
 % path speed and roll from speed analysis
 H_vKite = pathAnalysisRes(maxIdx).pathSpeed;
@@ -31,11 +31,17 @@ fName = ['pitchAnalysisResults_',strrep(strrep(datestr(datetime),':','-'),' ','_
 fName = [pwd,'\pitchAnalysisOutputs\',fName];
 save(fName);
 
+%%
+fIdx = fIdx+1;
+figure(fIdx);
+set(gcf,'Position',[1922 42 560*2.5 420*2]);
+cIn.plotPitchStabilityAnalysisResults(results(1),inputs(1));
+
 %% animation
 fIdx = fIdx+1;
 figure(fIdx);
 set(gcf,'Position',[1922 42 560*2.5 420*2]);
-val = cIn.pitchStabAnalysisAnim(results,inputs,...
+F = cIn.pitchStabAnalysisAnim(results,inputs,...
                 pathParam,'animate',false);
 
 %%

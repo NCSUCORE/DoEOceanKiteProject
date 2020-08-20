@@ -13,6 +13,7 @@ heights = 10*pi/180;
 
 % initialize class
 cIn = maneuverabilityAdvanced;
+cIn.fluidCoeffCalcMethod = 'fromTable';
 cIn.tetherLength = 60;
 cIn.meanElevationInRadians = 30*pi/180;
 
@@ -35,6 +36,10 @@ cIn.wingArea = vhcl.fluidRefArea.Value;
 cIn.wingAeroCenter = BcB*vhcl.stbdWing.rAeroCent_SurfLE.Value.*[1;0;1];
 cIn.wingZerAoADrag = 2*vhcl.portWing.CD.Value(vhcl.portWing.alpha.Value == 0);
 cIn.wingZeroAoALift = 2*vhcl.portWing.CL.Value(vhcl.portWing.alpha.Value == 0);
+cIn.wingCL_Data = 2*vhcl.portWing.CL.Value;
+cIn.wingCD_Data = 2*vhcl.portWing.CD.Value;
+cIn.wingAoA_Data = vhcl.portWing.alpha.Value;
+
 
 cIn.wingOswaldEff = 0.3;
 
@@ -51,10 +56,14 @@ cIn.hstabZerAoADrag = vhcl.hStab.CD.Value(vhcl.hStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
 cIn.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2)*...
     vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+cIn.hstabCL_Data = vhcl.hStab.CL.Value;
+cIn.hstabCD_Data = vhcl.hStab.CD.Value;
+cIn.hstabAoA_Data = vhcl.hStab.alpha.Value;
 
-cIn.hstabOswaldEff = 0.9;
+
+cIn.hstabOswaldEff = 0.6;
 elevatorDeflection = 0;
-
+cIn.hstabZerAoADrag = 0.1*cIn.hstabZerAoADrag;
 
 % v-stab parameters
 cIn.vstabChord = vhcl.vStab.rootChord.Value;
@@ -66,6 +75,10 @@ cIn.vstabZeroAoALift = vhcl.vStab.CL.Value(vhcl.vStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
 cIn.vstabZerAoADrag = vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
+cIn.vstabCL_Data = vhcl.vStab.CL.Value;
+cIn.vstabCD_Data = vhcl.vStab.CD.Value;
+cIn.vstabAoA_Data = vhcl.vStab.alpha.Value;
+
 cIn.vstabOswaldEff = 0.3;
 
 % geometry parameters
@@ -80,10 +93,10 @@ cIn.bridleLocation = BcB*vhcl.rBridle_LE.Value;
 pathParam = linspace(0,2*pi,41);
 
 %% radius of curvature analysis
-pRc = gobjects;
+% pRc = gobjects;
+% fIdx = fIdx+1;
+% figure(fIdx);
 kk = 1;
-fIdx = fIdx+1;
-figure(fIdx);
 
 
 for ii = 1:numel(widths)
@@ -92,7 +105,7 @@ for ii = 1:numel(widths)
         [a,b] = boothParamConversion(widths(ii),heights(jj));
         cIn.aBooth = a;
         cIn.bBooth = b;
-        pRc(kk) = cIn.plotPathRadiusOfCurvature;
+%         pRc(kk) = cIn.plotPathRadiusOfCurvature;
         legs{kk} = sprintf('w = %.1f, h =%.1f',widths(ii)*180/pi,...
             heights(jj)*180/pi);
         
@@ -110,7 +123,7 @@ for ii = 1:numel(widths)
         
     end
 end
-legend(pRc,legs,'location','bestoutside');
+% legend(pRc,legs,'location','bestoutside');
 
 %% acheivable velocity calcualtion
 % find max of average speed
