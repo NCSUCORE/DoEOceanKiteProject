@@ -1,9 +1,6 @@
 function     [ActiveNodes, ActiveLengths,FirstLink] = numberOfActiveNodes(OriginalLengths, ReeledOutLength, ... 
     TetherLength,airNodePos, midNodePos, gndNodePos,ReelInVel,FirstLinkPrev,minLinkLength,minLinkDeviation)
 
-%minLinkLength = .1;
-%minLinkDeviation = .01;
-
 % For position divergence vector
 position = [gndNodePos,midNodePos,airNodePos];
 
