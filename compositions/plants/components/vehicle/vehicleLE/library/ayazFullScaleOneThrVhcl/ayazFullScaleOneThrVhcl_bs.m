@@ -28,9 +28,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2');
                 
 %% Important Points
-vhcl.setRCM_LE([0 0 0],'m')
-% vhcl.setRCM_LE([.47064 0 0],'m');
-vhcl.setRB_LE(vhcl.rCM_LE.Value,'m');
+vhcl.setRCM_LE([0 0 0],'m');
 vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0.02136;0;0.0682],'m');% [.492,0,.0682] from CAD
 
