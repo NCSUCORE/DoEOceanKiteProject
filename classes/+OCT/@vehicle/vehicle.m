@@ -55,7 +55,6 @@ classdef vehicle < dynamicprops
     properties (Dependent)
         mass
         thrAttchPts_B %Used for moment arms
-%         turb
         
         fluidMomentArms
         fuseMomentArm
@@ -66,7 +65,6 @@ classdef vehicle < dynamicprops
         fluidRefArea
         M6x6_B
         Ma6x6_LE
-        
         
         staticMargin
         
