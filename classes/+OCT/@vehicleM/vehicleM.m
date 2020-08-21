@@ -153,7 +153,7 @@ classdef vehicleM < dynamicprops
             obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
             
 
-            obj.hydroChracterization    = SIM.parameter('Unit','','Description','1 = AVL; 0 = XFoil');
+            obj.hydroChracterization    = SIM.parameter('Value',1,'Unit','','Description','1 = AVL; 0 = XFoil');
             %Legacy Properties
 
         end
@@ -549,7 +549,7 @@ classdef vehicleM < dynamicprops
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
             
-            if obj.hydroChracterization == 1
+            if obj.hydroChracterization.Value == 1
                 fileLoc = which(obj.fluidCoeffsFileName.Value);
                 
                 if ~isfile(fileLoc)
