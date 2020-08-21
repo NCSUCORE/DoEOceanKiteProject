@@ -38,6 +38,7 @@ if simScenario == 0  || simScenario == 1 || simScenario == 2
     loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor 
 elseif simScenario == 1.2 || simScenario == 4.2
     loadComponent('newManta2RotNACA2412');                  %   Vehicle with 2 rotors
+    loadComponent('Manta2RotTest');                     %   Load vehicle 
 else
     loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
 %     loadComponent('Manta2RotEPP552');                       %   Vehicle with 2 rotors
