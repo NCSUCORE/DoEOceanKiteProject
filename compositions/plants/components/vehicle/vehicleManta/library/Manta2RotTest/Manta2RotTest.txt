@@ -74,7 +74,7 @@ vhcl.rCM_LE.Value = [0.84;0;0.04153]
 vhcl.rCM_LE.Unit = 'm'
 vhcl.rCM_LE.NoScale = false
 vhcl.rCM_LE.Description = 'Vector going from the Wing LE to the Center of Mass'
-vhcl.rBridle_LE.Value = [0;0;0]
+vhcl.rBridle_LE.Value = [0.84;0;0.04153]
 vhcl.rBridle_LE.Unit = 'm'
 vhcl.rBridle_LE.NoScale = false
 vhcl.rBridle_LE.Description = 'Vector going from the Wing LE to bridle point'
@@ -592,7 +592,7 @@ vhcl.mass.Value = 1.0509e+03
 vhcl.mass.Unit = 'kg'
 vhcl.mass.NoScale = false
 vhcl.mass.Description = 'Vehicle mass'
-vhcl.thrAttchPts_B.posVec.Value = [0;0;0]
+vhcl.thrAttchPts_B.posVec.Value = [0.84;0;0.04153]
 vhcl.thrAttchPts_B.posVec.Unit = 'm'
 vhcl.thrAttchPts_B.posVec.NoScale = false
 vhcl.thrAttchPts_B.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
@@ -605,7 +605,7 @@ vhcl.fuseMomentArm.NoScale = false
 vhcl.buoyMomentArm.Value = [0.84;0;0.04153]
 vhcl.buoyMomentArm.Unit = 'm'
 vhcl.buoyMomentArm.NoScale = false
-vhcl.turbMomentArms.Value = [0 0;-2 2;0 0]
+vhcl.turbMomentArms.Value = [0 0;-1.33333333333333 1.33333333333333;0 0]
 vhcl.turbMomentArms.Unit = 'm'
 vhcl.turbMomentArms.NoScale = false
 vhcl.rCM_B.Value = [0.84;0;0.04153]
@@ -634,43 +634,6 @@ vhcl.contactPoints.Value = [0 0 3.866 3.866 -2.5 3.97;-4 4 1.6 -1.6 0 0;0 0 0 0 
 vhcl.contactPoints.Unit = 'm'
 vhcl.contactPoints.NoScale = false
 vhcl.contactPoints.Description = 'Points where contact forces are modeled'
-vhcl.turb2.mass.Value = 6.0000e+00
-vhcl.turb2.mass.Unit = 'kg'
-vhcl.turb2.mass.NoScale = false
-vhcl.turb2.mass.Description = 'Rotor mass'
-vhcl.turb2.diameter.Value = 5.6000e-01
-vhcl.turb2.diameter.Unit = 'm'
-vhcl.turb2.diameter.NoScale = false
-vhcl.turb2.diameter.Description = 'Diameter of the rotor'
-vhcl.turb2.axisUnitVec.Value = [-1;0;0]
-vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
-vhcl.turb2.axisUnitVec.NoScale = false
-vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turb2.attachPtVec.Value = [0;2;0]
-vhcl.turb2.attachPtVec.Unit = 'm'
-vhcl.turb2.attachPtVec.NoScale = false
-vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
-vhcl.turb2.powerCoeff.Value = 5.0000e-01
-vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
-vhcl.turb2.powerCoeff.NoScale = false
-vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
-vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
-vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
-vhcl.turb2.axialInductionFactor.NoScale = false
-vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
-vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
-vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
-vhcl.turb2.tipSpeepRatio.NoScale = false
-vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
-vhcl.turb2.dragCoeff.Value = 7.5000e-01
-vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
-vhcl.turb2.dragCoeff.NoScale = false
-vhcl.turb2.momentArm.Value = [0;2;0]
-vhcl.turb2.momentArm.Unit = 'm'
-vhcl.turb2.momentArm.NoScale = false
-vhcl.turb2.momentOfInertia.Value = 4.7040e-01
-vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
-vhcl.turb2.momentOfInertia.NoScale = false
 vhcl.turb1.mass.Value = 6.0000e+00
 vhcl.turb1.mass.Unit = 'kg'
 vhcl.turb1.mass.NoScale = false
@@ -683,7 +646,7 @@ vhcl.turb1.axisUnitVec.Value = [1;0;0]
 vhcl.turb1.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turb1.axisUnitVec.NoScale = false
 vhcl.turb1.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turb1.attachPtVec.Value = [0;-2;0]
+vhcl.turb1.attachPtVec.Value = [0;-1.33333333333333;0]
 vhcl.turb1.attachPtVec.Unit = 'm'
 vhcl.turb1.attachPtVec.NoScale = false
 vhcl.turb1.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
@@ -702,9 +665,46 @@ vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and roto
 vhcl.turb1.dragCoeff.Value = 7.5000e-01
 vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoeff.NoScale = false
-vhcl.turb1.momentArm.Value = [0;-2;0]
+vhcl.turb1.momentArm.Value = [0;-1.33333333333333;0]
 vhcl.turb1.momentArm.Unit = 'm'
 vhcl.turb1.momentArm.NoScale = false
 vhcl.turb1.momentOfInertia.Value = 4.7040e-01
 vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb1.momentOfInertia.NoScale = false
+vhcl.turb2.mass.Value = 6.0000e+00
+vhcl.turb2.mass.Unit = 'kg'
+vhcl.turb2.mass.NoScale = false
+vhcl.turb2.mass.Description = 'Rotor mass'
+vhcl.turb2.diameter.Value = 5.6000e-01
+vhcl.turb2.diameter.Unit = 'm'
+vhcl.turb2.diameter.NoScale = false
+vhcl.turb2.diameter.Description = 'Diameter of the rotor'
+vhcl.turb2.axisUnitVec.Value = [-1;0;0]
+vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
+vhcl.turb2.axisUnitVec.NoScale = false
+vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
+vhcl.turb2.attachPtVec.Value = [0;1.33333333333333;0]
+vhcl.turb2.attachPtVec.Unit = 'm'
+vhcl.turb2.attachPtVec.NoScale = false
+vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
+vhcl.turb2.powerCoeff.Value = 5.0000e-01
+vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.powerCoeff.NoScale = false
+vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
+vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
+vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
+vhcl.turb2.axialInductionFactor.NoScale = false
+vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
+vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
+vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
+vhcl.turb2.tipSpeepRatio.NoScale = false
+vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
+vhcl.turb2.dragCoeff.Value = 7.5000e-01
+vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.dragCoeff.NoScale = false
+vhcl.turb2.momentArm.Value = [0;1.33333333333333;0]
+vhcl.turb2.momentArm.Unit = 'm'
+vhcl.turb2.momentArm.NoScale = false
+vhcl.turb2.momentOfInertia.Value = 4.7040e-01
+vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
+vhcl.turb2.momentOfInertia.NoScale = false

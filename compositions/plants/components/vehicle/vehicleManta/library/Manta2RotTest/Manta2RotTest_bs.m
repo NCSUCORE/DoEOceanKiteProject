@@ -30,7 +30,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
 %% Important Points
 vhcl.setRCM_LE([.84;0;.04153],'m')
 vhcl.setRB_LE([0;0;0],'m');
-vhcl.setRBridle_LE([0;0;0],'m');
+vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
 %% Added Mass/Damping (defaults to zeros)
