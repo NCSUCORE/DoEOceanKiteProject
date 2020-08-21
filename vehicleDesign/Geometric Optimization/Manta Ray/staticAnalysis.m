@@ -1,4 +1,4 @@
-function [M,F,CL,CD] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang)
+function [M,F,CL,CD] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE)
 %%  Rotation Matrices 
 % Rx = @(x) [1 0 0;0 cosd(x) sind(x);0 -sind(x) cosd(x)]; %   Rotation matrix for rotations about the x-axis 
 % Ry = @(x) [cosd(x) 0 -sind(x);0 1 0;sind(x) 0 cosd(x)]; %   Rotation matrix for rotations about the y-axis 
@@ -30,29 +30,32 @@ F.dragBf = 1/2*Env.rho*CD.F*fuse.S*norm(vApp)^2*uApp;
 Fnet = F.buoyB+F.gravB+F.liftBw+F.liftBh+F.dragBw+F.dragBh+F.dragBv+F.dragBf;
 thrForce = -dot(TcB*Fnet,[0;0;1]);
 F.thrB = BcT*[0;0;thrForce];                                %   N - Tether force in the body frame
+F.thrB = -Fnet;                                %   N - Tether force in the body frame
 %%  Moment Calculations
-M.buoyB = cross(Sys.xb-Sys.xg,F.buoyB);                     %   Nm - Buoyancy moment
-M.dragBh = cross(Sys.xH-Sys.xg,F.dragBh);                   %   Nm - Horizontal stabilizer drag moment
-M.W = cross(Sys.xW-Sys.xg,F.liftBw+F.dragBw);               %   Nm - Wing moment
-M.H = cross(Sys.xH-Sys.xg,F.liftBh+F.dragBh);               %   Nm - Horizontal stabilizer moment
-M.V = cross(Sys.xV-Sys.xg,F.dragBv);                        %   Nm - Vertical stabilizer moment
-M.thr = cross(Sys.xbr-Sys.xg,F.thrB);                       %   Nm - Tether moment
-M.tot = M.buoyB+M.W+M.H+M.V+M.thr;                          %   Nm - Total moment
-M.buoyBLE = cross(Sys.xb-Sys.xg-Sys.LE,F.buoyB);                   %   Nm - Buoyancy moment
-M.gravBLE = cross(Sys.xb-Sys.xg-Sys.LE,F.gravB);                   %   Nm - Buoyancy moment
-M.dragBhLE = cross(Sys.xH-Sys.xg-Sys.LE,F.dragBh);                 %   Nm - Horizontal stabilizer drag moment
-M.WLE = cross(Sys.xW-Sys.xg-Sys.LE,F.liftBw+F.dragBw);             %   Nm - Wing moment
-M.HLE = cross(Sys.xH-Sys.xg-Sys.LE,F.liftBh+F.dragBh);             %   Nm - Horizontal stabilizer moment
-M.VLE = cross(Sys.xV-Sys.xg-Sys.LE,F.dragBv);                      %   Nm - Vertical stabilizer moment
-M.thrLE = cross(Sys.xbr-Sys.xg-Sys.LE,F.thrB);                     %   Nm - Tether moment
-M.totLE = M.buoyBLE + M.gravBLE + M.WLE + M.HLE + M.VLE + M.thrLE;                        %   Nm - Total moment
+M.buoyB = cross(CM.xb,F.buoyB);                     %   Nm - Buoyancy moment
+M.dragBh = cross(CM.xH,F.dragBh);                   %   Nm - Horizontal stabilizer drag moment
+M.W = cross(CM.xW,F.liftBw+F.dragBw);               %   Nm - Wing moment
+M.H = cross(CM.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabilizer moment
+M.V = cross(CM.xV,F.dragBv);                        %   Nm - Vertical stabilizer moment
+M.F = cross(CM.xf,F.dragBf);                        %   Nm - Fuselage moment
+M.thr = cross(CM.xbr,F.thrB);                       %   Nm - Tether moment
+M.tot = M.buoyB+M.W+M.H+M.V+M.F+M.thr;                          %   Nm - Total moment
+M.buoyBLE = cross(LE.xb,F.buoyB);                   %   Nm - Buoyancy moment
+M.gravBLE = cross(LE.xg,F.gravB);                   %   Nm - Buoyancy moment
+M.dragBhLE = cross(LE.xH,F.dragBh);                 %   Nm - Horizontal stabilizer drag moment
+M.WLE = cross(LE.xW,F.liftBw+F.dragBw);             %   Nm - Wing moment
+M.HLE = cross(LE.xH,F.liftBh+F.dragBh);             %   Nm - Horizontal stabilizer moment
+M.VLE = cross(LE.xV,F.dragBv);                      %   Nm - Vertical stabilizer moment
+M.FLE = cross(LE.xf,F.dragBf);                        %   Nm - Fuselage moment
+M.thrLE = cross(LE.xbr,F.thrB);                     %   Nm - Tether moment
+M.totLE = M.buoyBLE + M.gravBLE + M.WLE + M.HLE + M.VLE + M.FLE + M.thrLE;                        %   Nm - Total moment
 %%  Find required horizontal stabilizer CL for trim
-CL.hReq = 2*dot(M.buoyB+M.W+M.V+M.thr+M.dragBh,[0;1;0])...
+CL.hReq = 2*dot(M.buoyB+M.W+M.V+M.F+M.thr+M.dragBh,[0;1;0])...
             /(Env.rho*hStab.S*norm(vApp)^2*norm(Sys.xH-Sys.xg));
 F.liftBhReq = 1/2*Env.rho*CL.hReq*hStab.S*norm(vApp)^2*cross(uApp,[0;1;0]);
 M.HReq = cross(Sys.xH-Sys.xg,F.liftBhReq+F.dragBh);               %   Nm - Horizontal stabilizer moment
 M.totReq = M.buoyB+M.W+M.HReq+M.V+M.thr;                          %   Nm - Total moment
-CL.hReqLE = 2*dot(M.buoyBLE+M.WLE+M.VLE+M.thrLE+M.dragBhLE,[0;1;0])...
+CL.hReqLE = 2*dot(M.buoyBLE+M.WLE+M.VLE+M.FLE+M.thrLE+M.dragBhLE,[0;1;0])...
             /(Env.rho*hStab.S*norm(vApp)^2*norm(Sys.xH-Sys.xg-Sys.LE));
 F.liftBhReqLE = 1/2*Env.rho*CL.hReqLE*hStab.S*norm(vApp)^2*cross(uApp,[0;1;0]);
 M.HReqLE = cross(Sys.xH-Sys.xg-Sys.LE,F.liftBhReqLE+F.dragBh);               %   Nm - Horizontal stabilizer moment

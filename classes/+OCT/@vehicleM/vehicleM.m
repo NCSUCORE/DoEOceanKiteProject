@@ -49,6 +49,8 @@ classdef vehicleM < dynamicprops
         initVelVecBdy
         initEulAng
         initAngVelVec
+        
+        hydroChracterization
     end
     
     properties (Dependent)
@@ -144,12 +146,14 @@ classdef vehicleM < dynamicprops
             
 %             obj.updateTurb;
             
-            % initial conditions
+            % initial conditions 
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
             obj.initVelVecBdy           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the body frame ');
             obj.initEulAng              = SIM.parameter('Unit','rad','Description','Initial Euler angles');
             obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
             
+
+            obj.hydroChracterization    = SIM.parameter('Unit','','Description','1 = AVL; 0 = XFoil');
             %Legacy Properties
 
         end
@@ -544,22 +548,25 @@ classdef vehicleM < dynamicprops
         
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
-            fileLoc = which(obj.fluidCoeffsFileName.Value);
-                                  
-            if ~isfile(fileLoc)
-                fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                    ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                str = input('(Y/N): \n','s');
-                if isempty(str)
-                    str = 'Y';
-                end
-                if strcmpi(str,'Y')
-                    aeroStruct=runAVL(obj);
+            
+            if obj.hydroChracterization == 1
+                fileLoc = which(obj.fluidCoeffsFileName.Value);
+                
+                if ~isfile(fileLoc)
+                    fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                        ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                    str = input('(Y/N): \n','s');
+                    if isempty(str)
+                        str = 'Y';
+                    end
+                    if strcmpi(str,'Y')
+                        aeroStruct = runAVL(obj);
+                    else
+                        warning('Simulation won''t run without valid aero coefficient values')
+                    end
                 else
-                    warning('Simulation won''t run without valid aero coefficient values')
+                    load(fileLoc,'aeroStruct');
                 end
-            else 
-                load(fileLoc,'aeroStruct');
             end
                 
             obj.portWing.setCL(aeroStruct(1).CL,'');
