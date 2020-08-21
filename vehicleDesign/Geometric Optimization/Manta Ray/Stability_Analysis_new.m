@@ -93,7 +93,8 @@ for i = 1:numel(Ang.pitch)
     pitchMoment(i) = M.tot(2);
     if Ang.pitch(i) == 0
         idx = find(abs(CLh-CL.hReq) <= .0005);
-        incidence = alphaRef(idx);  CLhN = CLh(idx);
+        incidence = alphaRef(idx)  
+        CLhN = CLh(idx)
     end
 end
 %%  Plotting 
