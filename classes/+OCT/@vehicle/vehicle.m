@@ -25,7 +25,6 @@ classdef vehicle < dynamicprops
         allMinCtrlDef
         allMaxCtrlDefSpeed
         
-        rB_LE
         rCM_LE
         rBridle_LE
         rCentOfBuoy_LE
@@ -56,19 +55,16 @@ classdef vehicle < dynamicprops
     properties (Dependent)
         mass
         thrAttchPts_B %Used for moment arms
-%         turb
         
         fluidMomentArms
         fuseMomentArm
         buoyMomentArm
         turbMomentArms
-        rCM_B
         wingTipPositions
         
         fluidRefArea
         M6x6_B
         Ma6x6_LE
-        
         
         staticMargin
         
@@ -107,7 +103,6 @@ classdef vehicle < dynamicprops
             obj.allMaxCtrlDefSpeed= SIM.parameter('Value',60,'Unit','deg/s','Description','Fastest rate of control surface deflection for all surfaces in either direction');
             
             %Important Point Locations
-            obj.rB_LE          = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the body frame');
             obj.rCM_LE         = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the Center of Mass');
             obj.rBridle_LE     = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to bridle point');
             obj.rCentOfBuoy_LE = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
@@ -259,10 +254,6 @@ classdef vehicle < dynamicprops
             obj.allMaxCtrlDefSpeed.setValue(val,units);
         end
 
-        function setRB_LE(obj,val,units)
-            obj.rB_LE.setValue(val(:),units);
-        end
-
         function setRCM_LE(obj,val,units)
             obj.rCM_LE.setValue(val(:),units);
         end
@@ -358,48 +349,45 @@ classdef vehicle < dynamicprops
             arms=zeros(3,4);
             if obj.oldFluidMomentArms.Value
                 hspan = obj.wingRootChord.Value * obj.wingAR.Value * .5;
-                arms(:,1)=-obj.rB_LE.Value + [hspan*tand(obj.wingSweep.Value)/2 + obj.wingRootChord.Value*(1+obj.wingTR.Value)/8;
+                arms(:,1)=[hspan*tand(obj.wingSweep.Value)/2 + obj.wingRootChord.Value*(1+obj.wingTR.Value)/8;
                                               -hspan/2;
                                               hspan*tand(obj.wingDihedral.Value)/2];
                 arms(:,2)=arms(:,1).*[1;-1;1];
-                arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + [obj.hStab.rootChord.Value/4;0;0];
-                arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + ...
+                arms(:,3)=obj.hStab.rSurfLE_WingLEBdy.Value + [obj.hStab.rootChord.Value/4;0;0];
+                arms(:,4)=obj.vStab.rSurfLE_WingLEBdy.Value + ...
                     [obj.vStab.halfSpan.Value*tand(obj.vStab.sweep.Value)/2 + obj.vStab.rootChord.Value * (1+obj.vStab.TR.Value)/8;0;obj.vStab.halfSpan.Value*.5];
             else
                 %Updated Calculations    
-                arms(:,1)=-obj.rB_LE.Value + obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rAeroCent_SurfLE.Value);
-                arms(:,2)=-obj.rB_LE.Value + obj.stbdWing.rSurfLE_WingLEBdy.Value + (obj.stbdWing.RSurf2Bdy.Value * obj.stbdWing.rAeroCent_SurfLE.Value);
-                arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + (obj.hStab.RSurf2Bdy.Value * obj.hStab.rAeroCent_SurfLE.Value);
-                arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + (obj.vStab.RSurf2Bdy.Value * obj.vStab.rAeroCent_SurfLE.Value);
+                arms(:,1)= obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rAeroCent_SurfLE.Value);
+                arms(:,2)= obj.stbdWing.rSurfLE_WingLEBdy.Value + (obj.stbdWing.RSurf2Bdy.Value * obj.stbdWing.rAeroCent_SurfLE.Value);
+                arms(:,3)= obj.hStab.rSurfLE_WingLEBdy.Value + (obj.hStab.RSurf2Bdy.Value * obj.hStab.rAeroCent_SurfLE.Value);
+                arms(:,4)= obj.vStab.rSurfLE_WingLEBdy.Value + (obj.vStab.RSurf2Bdy.Value * obj.vStab.rAeroCent_SurfLE.Value);
             end
             val = SIM.parameter('Value',arms,'Unit','m');
         end
         function val = get.fuseMomentArm(obj)
-            val = SIM.parameter('Value',-obj.rB_LE.Value + obj.fuse.rAeroCent_LE.Value,'Unit','m');
+            val = SIM.parameter('Value',obj.fuse.rAeroCent_LE.Value,'Unit','m');
         end
         function val = get.buoyMomentArm(obj)
-            val = SIM.parameter('Value',-obj.rB_LE.Value + obj.rCentOfBuoy_LE.Value,'Unit','m');
+            val = SIM.parameter('Value',obj.rCentOfBuoy_LE.Value,'Unit','m');
         end
         function val = get.turbMomentArms(obj)
             N = obj.numTurbines.Value;
             if N == 1
-                arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
+                arms = obj.turb1.attachPtVec.Value;
             else
-                arms(:,1) = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
-                arms(:,2) = -obj.rB_LE.Value + obj.turb2.attachPtVec.Value;
+                arms(:,1) = obj.turb1.attachPtVec.Value;
+                arms(:,2) = obj.turb2.attachPtVec.Value;
             end
             val = SIM.parameter('Value',arms,'Unit','m');
         end
         function val = get.wingTipPositions(obj)
             arms=zeros(3,4);
-            arms(:,1)=-obj.rB_LE.Value + obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rTipLE.Value);
-            arms(:,2)=-obj.rB_LE.Value + obj.stbdWing.rSurfLE_WingLEBdy.Value + (obj.stbdWing.RSurf2Bdy.Value * obj.stbdWing.rTipLE.Value);
-            arms(:,3)=-obj.rB_LE.Value + obj.hStab.rSurfLE_WingLEBdy.Value + (obj.hStab.RSurf2Bdy.Value * obj.hStab.rTipLE.Value);
-            arms(:,4)=-obj.rB_LE.Value + obj.vStab.rSurfLE_WingLEBdy.Value + (obj.vStab.RSurf2Bdy.Value * obj.vStab.rTipLE.Value);
+            arms(:,1)= obj.portWing.rSurfLE_WingLEBdy.Value + (obj.portWing.RSurf2Bdy.Value * obj.portWing.rTipLE.Value);
+            arms(:,2)= obj.stbdWing.rSurfLE_WingLEBdy.Value + (obj.stbdWing.RSurf2Bdy.Value * obj.stbdWing.rTipLE.Value);
+            arms(:,3)= obj.hStab.rSurfLE_WingLEBdy.Value + (obj.hStab.RSurf2Bdy.Value * obj.hStab.rTipLE.Value);
+            arms(:,4)= obj.vStab.rSurfLE_WingLEBdy.Value + (obj.vStab.RSurf2Bdy.Value * obj.vStab.rTipLE.Value);
             val = SIM.parameter('Value',arms,'Unit','m');
-        end
-        function val = get.rCM_B(obj)
-            val = SIM.parameter('Value',-obj.rB_LE.Value + obj.rCM_LE.Value,'Unit','m');
         end
         
         % Tether attachment points
@@ -410,12 +398,12 @@ classdef vehicle < dynamicprops
             end
             switch obj.numTethers.Value
                 case 1
-                    val(1).setPosVec(-obj.rB_LE.Value + obj.rBridle_LE.Value,'m');              
+                    val(1).setPosVec(obj.rBridle_LE.Value,'m');              
                 case 3
-                    port_thr = -obj.rB_LE.Value +  obj.portWing.outlinePtsBdy.Value(:,2)-...%outside leading edge
+                    port_thr = obj.portWing.outlinePtsBdy.Value(:,2)-...%outside leading edge
                         1.2*[obj.wingRootChord.Value;0;0];
                     %                        + [obj.wingRootChord.Value*obj.wingTR.Value/2;0;0];
-                    aft_thr = -obj.rB_LE.Value + -obj.rCM_LE.Value + ...
+                    aft_thr = -obj.rCM_LE.Value + ...
                         [min(obj.hStab.rSurfLE_WingLEBdy.Value(1),obj.vStab.rSurfLE_WingLEBdy.Value(1));0;0];...
 %                         + [max(obj.hsChord.Value,obj.vsChord.Value);0;0] ...
 %                         -[obj.hsChord];
@@ -466,20 +454,30 @@ classdef vehicle < dynamicprops
         end
         
         function val = get.M6x6_B(obj)
-            S=@(v) [0 -v(3) v(2);v(3) 0 -v(1);-v(2) v(1) 0];
-            M=zeros(6,6);
-            M(1,1)=obj.mass.Value;
-            M(2,2)=obj.mass.Value;
-            M(3,3)=obj.mass.Value;
-            M(1:3,4:6)=-obj.mass.Value*S(obj.rCM_B.Value);
-            M(4:6,1:3)=obj.mass.Value*S(obj.rCM_B.Value);
-            x=obj.rCM_B.Value(1);
-            y=obj.rCM_B.Value(2);
-            z=obj.rCM_B.Value(3);
-            M(4:6,4:6)=obj.inertia_CM.Value+ (obj.mass.Value * ...
-                        [y^2 + z^2, -x*y     , -x*z;...
-                         -x*y     , x^2 + z^2, -y*z;...
-                         -x*z     , -y*z     , x^2 + y^2]);
+            % function to make rx matrix
+            rCross = @(x) [0 -x(3) x(2);x(3) 0 -x(1);-x(2) x(1) 0];
+            % parallel axis theorem
+            IB = @(IA,rBA,m) IA + ...
+                m*[rBA(2)^2 + rBA(3)^2, -rBA(1)*rBA(2), -rBA(1)*rBA(3);
+                -rBA(2)*rBA(1), rBA(1)^2 + rBA(3)^2, -rBA(2)*rBA(3);
+                -rBA(3)*rBA(1), -rBA(3)*rBA(2), rBA(1)^2 + rBA(2)^2] ;
+            % preallocate
+            M = zeros(6,6);
+            % local variables
+            m = obj.mass.Value;
+            Rcm_le = obj.rCM_LE.Value;
+            ICM = obj.inertia_CM.Value;
+            % fill rows 1:3 and colums 1:3 with m*I3
+            M(1:3,1:3) = eye(3)*m;
+            % fill rows 1:3, and columns 4:6 with -m*r
+            M(1:3,4:6) = -m*rCross(Rcm_le);
+            % fill rows 4:6 and comumns 1:3 with m*r
+            M(4:6,1:3) =  m*rCross(Rcm_le);
+            % calculate inertia about leading edge
+            I_LE = IB(ICM,Rcm_le,m);
+            % fill rows 4:6 and columns 4:6 with I_LE;
+            M(4:6,4:6)= I_LE;
+            % set value
             val = SIM.parameter('Value',M,'Unit','','Description',...
                 '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span');
         end
