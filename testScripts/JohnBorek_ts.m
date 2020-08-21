@@ -9,7 +9,7 @@ simScenario = 4.2;
 thrLength = 400;                                            %   m - Initial tether length 
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
-el = 30*pi/180;                                             %   rad - Mean elevation angle 
+el = 50*pi/180;                                             %   rad - Mean elevation angle 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
@@ -38,6 +38,7 @@ if simScenario == 0  || simScenario == 1 || simScenario == 2
     loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor 
 elseif simScenario == 1.2 || simScenario == 4.2
     loadComponent('newManta2RotNACA2412');                  %   Vehicle with 2 rotors
+    loadComponent('Manta2RotTest');                     %   Load vehicle 
 else
     loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
 %     loadComponent('Manta2RotEPP552');                       %   Vehicle with 2 rotors
@@ -106,9 +107,9 @@ if simScenario >= 3
     fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
     fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.001,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller 
     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller 
-%     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+    fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
     fltCtrl.pitchAngleMax.upperLimit.setValue(45,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-45,'');
-    fltCtrl.setNomSpoolSpeed(.25,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
+    fltCtrl.setNomSpoolSpeed(.0,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
     wnch.winch1.elevError.setValue(2,'deg');
     vhcl.turb1.setPowerCoeff(0,'');
 end
@@ -117,7 +118,7 @@ pSP =  [30 30  30  30  30   40   40   40   40   40   40   40   40];
 thr.tether1.dragEnable.setValue(0,'');
 % vhcl.rBridle_LE.setValue([0,0,0]','m');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(30,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);

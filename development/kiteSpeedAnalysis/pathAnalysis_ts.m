@@ -13,6 +13,7 @@ heights = 10*pi/180;
 
 % initialize class
 cIn = maneuverabilityAdvanced;
+cIn.fluidCoeffCalcMethod = 'fromTable';
 cIn.tetherLength = 60;
 cIn.meanElevationInRadians = 30*pi/180;
 
@@ -31,14 +32,21 @@ BcB = [cosd(180) 0 -sind(180);0 1 0;sind(180) 0 cosd(180)];
 % wing parameters
 cIn.wingChord = vhcl.wingRootChord.Value;
 cIn.wingAspectRatio = vhcl.wingAR.Value;
+cIn.wingArea = vhcl.fluidRefArea.Value;
 cIn.wingAeroCenter = BcB*vhcl.stbdWing.rAeroCent_SurfLE.Value.*[1;0;1];
 cIn.wingZerAoADrag = 2*vhcl.portWing.CD.Value(vhcl.portWing.alpha.Value == 0);
 cIn.wingZeroAoALift = 2*vhcl.portWing.CL.Value(vhcl.portWing.alpha.Value == 0);
-cIn.wingOswaldEff = 0.9;
+cIn.wingCL_Data = 2*vhcl.portWing.CL.Value;
+cIn.wingCD_Data = 2*vhcl.portWing.CD.Value;
+cIn.wingAoA_Data = vhcl.portWing.alpha.Value;
+
+
+cIn.wingOswaldEff = 0.3;
 
 % h-stab parameters
 cIn.hstabChord = vhcl.hStab.rootChord.Value;
 cIn.hstabAspectRatio = vhcl.hStab.AR.Value;
+cIn.hstabArea = vhcl.hStab.planformArea.Value;
 cIn.hstabAeroCenter = BcB*(vhcl.hStab.rSurfLE_WingLEBdy.Value + ...
     vhcl.hStab.rAeroCent_SurfLE.Value);
 cIn.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2);
@@ -48,21 +56,30 @@ cIn.hstabZerAoADrag = vhcl.hStab.CD.Value(vhcl.hStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
 cIn.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2)*...
     vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
-cIn.hstabOswaldEff = 0.9;
+cIn.hstabCL_Data = vhcl.hStab.CL.Value;
+cIn.hstabCD_Data = vhcl.hStab.CD.Value;
+cIn.hstabAoA_Data = vhcl.hStab.alpha.Value;
 
+
+cIn.hstabOswaldEff = 0.6;
 elevatorDeflection = 0;
-
+cIn.hstabZerAoADrag = 0.1*cIn.hstabZerAoADrag;
 
 % v-stab parameters
 cIn.vstabChord = vhcl.vStab.rootChord.Value;
 cIn.vstabAspectRatio = 2*vhcl.vStab.AR.Value;
+cIn.vstabArea = vhcl.vStab.planformArea.Value;
 cIn.vstabAeroCenter = BcB*(vhcl.vStab.rSurfLE_WingLEBdy.Value + ...
     [vhcl.vStab.rAeroCent_SurfLE.Value(1);0;vhcl.vStab.rAeroCent_SurfLE.Value(2)]);
 cIn.vstabZeroAoALift = vhcl.vStab.CL.Value(vhcl.vStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
 cIn.vstabZerAoADrag = vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0)*...
     vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
-cIn.vstabOswaldEff = 0.9;
+cIn.vstabCL_Data = vhcl.vStab.CL.Value;
+cIn.vstabCD_Data = vhcl.vStab.CD.Value;
+cIn.vstabAoA_Data = vhcl.vStab.alpha.Value;
+
+cIn.vstabOswaldEff = 0.3;
 
 % geometry parameters
 cIn.buoyFactor = vhcl.buoyFactor.Value;
@@ -70,16 +87,16 @@ cIn.centerOfBuoy = BcB*vhcl.rCentOfBuoy_LE.Value;
 cIn.mass = vhcl.mass.Value;
 
 % test tether force and moment calculation
-cIn.bridleLocation = [0;0;0];
+cIn.bridleLocation = BcB*vhcl.rBridle_LE.Value;
 
 %% path param
 pathParam = linspace(0,2*pi,41);
 
 %% radius of curvature analysis
-pRc = gobjects;
+% pRc = gobjects;
+% fIdx = fIdx+1;
+% figure(fIdx);
 kk = 1;
-fIdx = fIdx+1;
-figure(fIdx);
 
 
 for ii = 1:numel(widths)
@@ -88,7 +105,7 @@ for ii = 1:numel(widths)
         [a,b] = boothParamConversion(widths(ii),heights(jj));
         cIn.aBooth = a;
         cIn.bBooth = b;
-        pRc(kk) = cIn.plotPathRadiusOfCurvature;
+%         pRc(kk) = cIn.plotPathRadiusOfCurvature;
         legs{kk} = sprintf('w = %.1f, h =%.1f',widths(ii)*180/pi,...
             heights(jj)*180/pi);
         
@@ -106,13 +123,7 @@ for ii = 1:numel(widths)
         
     end
 end
-legend(pRc,legs,'location','bestoutside');
-
-%% save res
-[status, msg, msgID] = mkdir(pwd,'pathAnalysisOutputs');
-fName = ['pathAnalysisResults ',strrep(datestr(datetime),':','.'),'.mat'];
-fName = [pwd,'\pathAnalysisOutputs\',fName];
-save(fName);
+% legend(pRc,legs,'location','bestoutside');
 
 %% acheivable velocity calcualtion
 % find max of average speed
@@ -124,6 +135,14 @@ save(fName);
 
 cIn.aBooth = aOpt;
 cIn.bBooth = bOpt;
+
+%% save res
+[status, msg, msgID] = mkdir(pwd,'pathAnalysisOutputs');
+fName = ['pathAnalysisResults_',strrep(strrep(datestr(datetime),':','-'),' ','_')...
+    ,'.mat'];
+fName = [pwd,'\pathAnalysisOutputs\',fName];
+save(fName);
+
 % 
 % solVals = cIn.getAttainableVelocityOverPath(G_vFlow,...
 %     tgtPitch,pathParam);
@@ -146,12 +165,12 @@ F = cIn.makeFancyAnimation(pathParam,'animate',false,...
     'waitForButton',false);
 
 %% % video settings
-video = VideoWriter(strcat(fName,'_video'),'Motion JPEG AVI');
-video.FrameRate = 1;
-set(gca,'nextplot','replacechildren');
-
-open(video)
-for ii = 1:length(F)
-    writeVideo(video, F(ii));
-end
-close(video)
+% video = VideoWriter(strcat(fName,'_video'),'Motion JPEG AVI');
+% video.FrameRate = 1;
+% set(gca,'nextplot','replacechildren');
+% 
+% open(video)
+% for ii = 1:length(F)
+%     writeVideo(video, F(ii));
+% end
+% close(video)
