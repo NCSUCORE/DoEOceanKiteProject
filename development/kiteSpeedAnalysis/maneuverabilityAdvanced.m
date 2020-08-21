@@ -19,6 +19,10 @@ classdef maneuverabilityAdvanced
         bridleLocation;
     end
     
+    properties % fluid coefficient calculation method
+        fluidCoeffCalcMethod = 'empirical';
+    end
+    
     properties %wing
         wingAeroCenter;
         wingChord;
@@ -26,6 +30,9 @@ classdef maneuverabilityAdvanced
         wingOswaldEff = 0.75;
         wingZeroAoALift = 0.1;
         wingZerAoADrag = 0.05;
+        wingCL_Data;
+        wingCD_Data;
+        wingAoA_Data;
     end
     
     properties % hstab
@@ -35,6 +42,9 @@ classdef maneuverabilityAdvanced
         hstabOswaldEff = 0.75;
         hstabZeroAoALift = 0.0;
         hstabZerAoADrag = 0.05;
+        hstabCL_Data;
+        hstabCD_Data;
+        hstabAoA_Data;
         hstabControlSensitivity;
         hstabMaxDef = 30;
     end
@@ -47,9 +57,12 @@ classdef maneuverabilityAdvanced
         vstabOswaldEff = 0.75;
         vstabZeroAoALift = 0.0;
         vstabZerAoADrag = 0.05;
+        vstabCL_Data;
+        vstabCD_Data;
+        vstabAoA_Data;
     end
     
-    properties (Dependent = true)
+    properties
         wingArea;
         hstabArea;
         vstabArea;
@@ -75,22 +88,36 @@ classdef maneuverabilityAdvanced
             152,78,16]./255;
     end
     
+    %% setter
+    methods
+        function obj = set.fluidCoeffCalcMethod(obj,value)
+            calcMethodChoice = {'empirical','fromTable'};
+            if ismember(value,calcMethodChoice)
+                obj.fluidCoeffCalcMethod = value;
+            else
+                error(['Only ',repmat('"%s", ',1,numel(calcMethodChoice)-1),...
+                    'and "%s" are valid entries for fluidCoeffCalcMethod.',...
+                    ' You entered "%s".'],calcMethodChoice{:},value);
+            end
+        end
+    end
+    
     %% getters
     methods
         % wing area
-        function val = get.wingArea(obj)
-            val = obj.wingChord^2*obj.wingAspectRatio;
-        end
-        
-        % h-stab area
-        function val = get.hstabArea(obj)
-            val = obj.hstabChord^2*obj.hstabAspectRatio;
-        end
-        
-        % v-stab area
-        function val = get.vstabArea(obj)
-            val = obj.vstabChord^2*obj.vstabAspectRatio/2;
-        end
+        %         function val = get.wingArea(obj)
+        %             val = obj.wingChord^2*obj.wingAspectRatio;
+        %         end
+        %
+        %         % h-stab area
+        %         function val = get.hstabArea(obj)
+        %             val = obj.hstabChord^2*obj.hstabAspectRatio;
+        %         end
+        %
+        %         % v-stab area
+        %         function val = get.vstabArea(obj)
+        %             val = obj.vstabChord^2*obj.vstabAspectRatio/2;
+        %         end
         
         % parameterized eqn for path co-ordinates & path tangent vectors
         function val = get.pathAndTangentEqs(obj)
@@ -359,43 +386,88 @@ classdef maneuverabilityAdvanced
         end
         
         % calculate aerodynamic coefficeints
-        function [CL,CD] = calcFluidCoeffs(~,AoA,oswaldEff,aspectRatio,...
-                ZeroAoALift,ZeroAoADrag,dCL_dCS,csDeflection)
-            % lift curve slope
-            liftSlope = 2*pi/(1 + (2*pi/(pi*oswaldEff*aspectRatio)));
-            % lift coeff
-            switch nargin
-                case 8
-                    CL = liftSlope*AoA + ZeroAoALift + dCL_dCS*csDeflection;
-                case 6
-                    CL = liftSlope*AoA + ZeroAoALift;
+        function [CL,CD] = calcFluidCoeffs(obj,AoA,surface,elevatorDef)
+            
+            switch lower(surface)
+                case 'wing'
+                    oswaldEff = obj.wingOswaldEff;
+                    AR = obj.wingAspectRatio;
+                    CL0 = obj.wingZeroAoALift;
+                    CD0 = obj.wingZerAoADrag;
+                    CL_data = obj.wingCL_Data;
+                    CD_data = obj.wingCD_Data;
+                    AoA_data = obj.wingAoA_Data;
+                    scale = 1;
+                case 'hstab'
+                    oswaldEff = obj.hstabOswaldEff;
+                    AR = obj.hstabAspectRatio;
+                    CL0 = obj.hstabZeroAoALift;
+                    CD0 = obj.hstabZerAoADrag;
+                    CL_data = obj.hstabCL_Data;
+                    CD_data = obj.hstabCD_Data;
+                    AoA_data = obj.hstabAoA_Data;
+                    dCL_dCS = obj.hstabControlSensitivity;
+                    scale = obj.hstabArea/obj.wingArea;
+                case 'vstab'
+                    oswaldEff = obj.vstabOswaldEff;
+                    AR = obj.vstabAspectRatio;
+                    CL0 = obj.vstabZeroAoALift;
+                    CD0 = obj.vstabZerAoADrag;
+                    CL_data = obj.vstabCL_Data;
+                    CD_data = obj.vstabCD_Data;
+                    AoA_data = obj.vstabAoA_Data;
+                    scale = obj.vstabArea/obj.wingArea;
             end
-            % drag coeff
-            CD = ZeroAoADrag + CL^2/(pi*oswaldEff*aspectRatio);
+            
+            switch obj.fluidCoeffCalcMethod
+                case 'empirical'
+                    % lift curve slope
+                    liftSlope = 2*pi/(1 + (2*pi/(pi*oswaldEff*AR)));
+                    % lift coeff
+                    if strcmpi(surface,'hstab') && nargin==4
+                        CL = liftSlope*AoA + CL0 + dCL_dCS*elevatorDef;
+                    else
+                        CL = liftSlope*AoA + CL0;
+                    end
+                    % drag coeff
+                    CD = CD0 + CL^2/(pi*oswaldEff*AR);
+                    % scale coeff
+                    CL = CL*scale;
+                    CD = CD*scale;
+                    
+                case 'fromTable'
+                    % lift interpolation
+                    CL = interp1(AoA_data,CL_data,AoA*180/pi,'linear','extrap');
+                    % drag interpolation
+                    CD = interp1(AoA_data,CD_data,AoA*180/pi,'linear','extrap');
+                    if strcmpi(surface,'hstab') && nargin==4
+                        dCL = dCL_dCS*elevatorDef;
+                        dCD = dCL^2/(pi*oswaldEff*AR);
+                        CL = CL + dCL;
+                        CD = CD + dCD;
+                    end
+            end
+            
         end
-        
+              
         % calcualte wing forces and moment
         function val = calcWingLoads(obj,B_vApp)
             % local variables
             rWing = obj.wingAeroCenter;
-            sWing = obj.wingArea;
+            sRef = obj.wingArea;
             rho   = obj.fluidDensity;
-            eWing = obj.wingOswaldEff;
-            AR    = obj.wingAspectRatio;
-            CL0   = obj.wingZeroAoALift;
-            CD0   = obj.wingZerAoADrag;
             % lift and drag directions
             uDrag = obj.calcDragDirection(B_vApp);
             uLift = obj.calcHsurfLiftDirection(B_vApp);
             % angle of attack
             AoA = obj.calcAngleOfAttackInRadians(B_vApp);
             % get coefficients
-            [CL,CD] = obj.calcFluidCoeffs(AoA,eWing,AR,CL0,CD0);
+            [CL,CD] = obj.calcFluidCoeffs(AoA,'wing');
             % dynamic pressure
             dynPressure = 0.5*rho*norm(B_vApp)^2;
             % loads
-            val.drag = dynPressure*CD*sWing*uDrag;
-            val.lift = dynPressure*CL*sWing*uLift;
+            val.drag = dynPressure*CD*sRef*uDrag;
+            val.lift = dynPressure*CL*sRef*uLift;
             val.force = val.drag + val.lift;
             val.moment = cross(rWing,val.force);
         end
@@ -404,13 +476,8 @@ classdef maneuverabilityAdvanced
         function val = calchStabLoads(obj,B_vApp,elevatorDef)
             % local variables
             rHstab = obj.hstabAeroCenter;
-            sHstab = obj.hstabArea;
+            sRef = obj.wingArea;
             rho    = obj.fluidDensity;
-            eHstab = obj.hstabOswaldEff;
-            AR     = obj.hstabAspectRatio;
-            CL0    = obj.hstabZeroAoALift;
-            CD0    = obj.hstabZerAoADrag;
-            dCL_dCS = obj.hstabControlSensitivity;
             dCS = elevatorDef;
             % lift and drag directions
             uDrag = obj.calcDragDirection(B_vApp);
@@ -418,46 +485,34 @@ classdef maneuverabilityAdvanced
             % angle of attack
             AoA = obj.calcAngleOfAttackInRadians(B_vApp);
             % get coefficients
-            [CL,CD] = obj.calcFluidCoeffs(AoA,eHstab,AR,CL0,CD0,dCL_dCS,dCS);
+            [CL,CD] = obj.calcFluidCoeffs(AoA,'hstab',dCS);
             % dynamic pressure
             dynPressure = 0.5*rho*norm(B_vApp)^2;
             % loads
-            val.drag = dynPressure*CD*sHstab*uDrag;
-            val.lift = dynPressure*CL*sHstab*uLift;
+            val.drag = dynPressure*CD*sRef*uDrag;
+            val.lift = dynPressure*CL*sRef*uLift;
             val.force = val.drag + val.lift;
             val.moment = cross(rHstab,val.force);
         end
         
         % calcualte vstab forces and moment (some code reuse, not proud of it)
-        function val = calcvStabLoads(obj,B_vApp,rudderDef)
+        function val = calcvStabLoads(obj,B_vApp)
             % local variables
             rho     = obj.fluidDensity;
             rVstab  = obj.vstabAeroCenter;
-            sVstab  = obj.vstabArea;
-            eVstab  = obj.vstabOswaldEff;
-            AR      = obj.vstabAspectRatio;
-            CL0     = obj.vstabZeroAoALift;
-            CD0     = obj.vstabZerAoADrag;
+            sRef  = obj.wingArea;
             % lift and drag directions
             uDrag = obj.calcDragDirection(B_vApp);
             uLift = obj.calcVstabLiftDirection(B_vApp);
             % angle of attack
             SSA = obj.calcSideSlipAngleInRadians(B_vApp);
             % get coefficients
-            switch nargin
-                case 3
-                    dCL_dCS = obj.vstabControlSensitivity;
-                    dCS = rudderDef;
-                    [CL,CD] = obj.calcFluidCoeffs(SSA,eVstab,AR,CL0,CD0,...
-                        dCL_dCS,dCS);
-                case 2
-                    [CL,CD] = obj.calcFluidCoeffs(SSA,eVstab,AR,CL0,CD0);
-            end
+            [CL,CD] = obj.calcFluidCoeffs(SSA,'vstab');
             % dynamic pressure
             dynPressure = obj.vStabOn*0.5*rho*norm(B_vApp)^2;
             % loads
-            val.drag = dynPressure*CD*sVstab*uDrag;
-            val.lift = dynPressure*CL*sVstab*uLift;
+            val.drag = dynPressure*CD*sRef*uDrag;
+            val.lift = dynPressure*CL*sRef*uLift;
             val.force = val.drag + val.lift;
             val.moment = cross(rVstab,val.force);
         end
@@ -548,13 +603,13 @@ classdef maneuverabilityAdvanced
             vH_path = nan*pathParam;
             % roll angle over path
             roll_path = nan*pathParam;
-            parfor ii = 1:numel(pathParam)
+            for ii = 1:numel(pathParam)
                 fprintf('Iteration %d of %d.\n',ii,numel(pathParam));
-%                 if ii == 1
-                    intGuess = G_vFlow(1);
-%                 else
-%                     intGuess = vH_path(ii-1);
-%                 end
+                if ii == 1
+                    intGuess = 3*G_vFlow(1);
+                else
+                    intGuess = vH_path(ii-1);
+                end
                 % solve equations at each path parameter
                 sol = fzero(@(vH) obj.getAttainableVelocityEqn(G_vFlow,...
                     tgtPitch,pathParam(ii),vH),intGuess);
@@ -619,7 +674,10 @@ classdef maneuverabilityAdvanced
             H_Fsum = H_Fwing + H_Fhstab + H_Fvstab + H_Fbuoy + H_Fgrav + ...
                 H_Fthr;
             % output
-            val = H_Fsum(1);            
+            val = H_Fsum(1);
+            %
+            fprintf('s = %.2f, vH = %0.2f, roll = %.2f, val = %.2f.\n',...
+                [pathParam/(2*pi),vH,roll*180/pi,val]);
         end
     end
     
@@ -728,10 +786,10 @@ classdef maneuverabilityAdvanced
             tgtAngleRange = [nan;nan]*pathParam;
             % calculate for each path parameter
             parfor ii = 1:nPoints
-            [val(ii),ips(ii)] = obj.pitchStabilityAnalysis(G_vFlow,H_vKite(:,ii),...
-                pathAzimuth(ii),pathElevation(ii),pathHeading(ii),tgtPitch,...
-                roll(ii),dElev);
-            tgtAngleRange(:,ii) = val(ii).tgtRange;
+                [val(ii),ips(ii)] = obj.pitchStabilityAnalysis(G_vFlow,H_vKite(:,ii),...
+                    pathAzimuth(ii),pathElevation(ii),pathHeading(ii),tgtPitch,...
+                    roll(ii),dElev);
+                tgtAngleRange(:,ii) = val(ii).tgtRange;
             end
             
         end
@@ -814,6 +872,9 @@ classdef maneuverabilityAdvanced
             ylabel('Sum of moments (kN-m)');
             % link the axes of the first row
             linkaxes(spAxes(1:5),'y');
+            set(spAxes(1:7),'XLim',[tgtPitch(1),tgtPitch(end)]);
+            set(spAxes(1:7),'XTick',linspace(tgtPitch(1),tgtPitch(end),5));
+            
             % main title
             sgtitle(sprintf(['Azimuth = %.1f, Elevation = %.1f, Heading = %.1f, ',...
                 'Roll = %.1f'],[azimuth,elevation,...
@@ -923,9 +984,116 @@ classdef maneuverabilityAdvanced
             end
         end
         
-        % plot wing lift and drag curves
+        % plot lift and drag curves from data
         function val = plotAeroCoefficients(obj)
-            % 
+            % graphic objects
+            val = gobjects;
+            spAxes = gobjects;           
+            % angle of attack
+            AoA = linspace(-20,20,100)*pi/180;
+            % get coefficients
+            CLWing = AoA*nan;
+            CDWing = AoA*nan;
+            CLHstab = AoA*nan;
+            CDHstab = AoA*nan;
+            CLVstab = AoA*nan;
+            CDVstab = AoA*nan;
+            for ii = 1:numel(AoA)
+                [CLWing(ii),CDWing(ii)] = obj.calcFluidCoeffs(AoA(ii),'wing');
+                [CLHstab(ii),CDHstab(ii)] = obj.calcFluidCoeffs(AoA(ii),'hstab',0);
+                [CLVstab(ii),CDVstab(ii)] = obj.calcFluidCoeffs(AoA(ii),'vstab');
+            end
+            % plotIdx and subplotIdx
+            pIdx = 1;
+            spIdx = 1;
+            spSz = [3,4];   % grid size
+            spGrid = reshape(1:12,4,[])'; % grid indices
+            
+            AoA = AoA*180/pi;
+            % wing plots %%%%%%%%
+            % CL
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLWing);
+            title('Wing');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDWing);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLWing,CDWing);
+            % H-stab %%%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLHstab);
+            title('H-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDHstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLHstab,CDHstab);
+            % V-stab %%%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLVstab);
+            title('V-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDVstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLVstab,CDVstab);
+            % Wing + H-stab %%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLWing + CLHstab);
+            title('Wing + H-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDWing + CDHstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,(CLWing + CLHstab),...
+                (CDWing + CDHstab));
+            % link axes
+            for ii = 1:3:12
+                linkaxes(spAxes(ii:ii+2),'x');
+            end
+            for ii = 1:3
+                offset = ii + 3*(1:3);
+                linkaxes(spAxes([ii,offset]),'y');
+            end
+            function val = plotCL(obj,AoA,CL)
+                val = obj.plot2D(AoA,CL,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{L}$');
+            end
+            function val = plotCD(obj,AoA,CD)
+                val = obj.plot2D(AoA,CD,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{D}$');
+            end
+            function val = plotCLbyCD(obj,AoA,CL,CD)
+                val = obj.plot2D(AoA,CL./CD,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{L}/C_{D}$');
+            end
+        end
+        
+        % plot lift and drag curves from emperical relations
+        function val = plotEmpiricalAeroCoefficients(obj)
+            %
             val = gobjects;
             spAxes = gobjects;
             % local variables
@@ -936,11 +1104,11 @@ classdef maneuverabilityAdvanced
             eHstab   = obj.hstabOswaldEff;
             ARHstab  = obj.hstabAspectRatio;
             CL0Hstab = obj.hstabZeroAoALift;
-            CD0Hstab = obj.hstabZerAoADrag;            
+            CD0Hstab = obj.hstabZerAoADrag;
             eVstab   = obj.vstabOswaldEff;
             ARVstab  = obj.vstabAspectRatio;
             CL0Vstab = obj.vstabZeroAoALift;
-            CD0Vstab = obj.vstabZerAoADrag;            
+            CD0Vstab = obj.vstabZerAoADrag;
             
             % angle of attack
             AoA = linspace(-20,20,100);
@@ -1010,7 +1178,7 @@ classdef maneuverabilityAdvanced
             % CL by CD
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            val(pIdx) = plotCLbyCD(obj,AoA,CLVstab,CDVstab); 
+            val(pIdx) = plotCLbyCD(obj,AoA,CLVstab,CDVstab);
             % Wing + H-stab %%%%
             % CL
             spIdx = spIdx + 1; pIdx = pIdx + 1;
@@ -1055,7 +1223,7 @@ classdef maneuverabilityAdvanced
         function val = plotLemniscate(obj,pathParam)
             % local variable
             if nargin == 1
-            pathParam = linspace(0,2*pi,300);
+                pathParam = linspace(0,2*pi,300);
             end
             % get equations
             path = obj.pathAndTangentEqs.PathCoords(pathParam);
@@ -1088,7 +1256,7 @@ classdef maneuverabilityAdvanced
         function val = plotPathRadiusOfCurvature(obj,pathParam)
             % local variable
             if nargin == 1
-            pathParam = linspace(0,2*pi,300);
+                pathParam = linspace(0,2*pi,300);
             end
             % calculate radius of curvature
             R = obj.radiusOfCurvatureEq(pathParam);
@@ -1106,7 +1274,7 @@ classdef maneuverabilityAdvanced
         function val = plotPathHeadingAngle(obj,pathParam)
             % local variable
             if nargin == 1
-            pathParam = linspace(0,2*pi,300);
+                pathParam = linspace(0,2*pi,300);
             end
             % calculate radius of curvature
             headingAng = obj.pathAndTangentEqs.reqHeading(pathParam);
@@ -1170,7 +1338,7 @@ classdef maneuverabilityAdvanced
             addParameter(pp,'tgtPitch',0*pathParam,@isnumeric);
             addParameter(pp,'rollInRad',0*pathParam,@isnumeric);
             addParameter(pp,'headingVel',0*pathParam,@isnumeric);
-            addParameter(pp,'tangentPitchRange',[0;0]*pathParam,@isnumeric);            
+            addParameter(pp,'tangentPitchRange',[0;0]*pathParam,@isnumeric);
             parse(pp,varargin{:});
             % local variables
             tgtPitch = pp.Results.tgtPitch;
