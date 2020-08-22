@@ -222,7 +222,7 @@ classdef signalcontainer < dynamicprops
         end
         
         function plotLapSpeedAndTangentAngles(obj)
-            data = squeeze(obj.currentPathVar.Data);
+            pathParam = squeeze(obj.currentPathVar.Data);
             lapsStarted = unique(obj.lapNumS.Data);
             %  Determine Single Lap Indices
             lapNum = squeeze(obj.lapNumS.Data);
@@ -232,28 +232,90 @@ classdef signalcontainer < dynamicprops
                 error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
             end
             ran = Idx1:Idx2;
-            %  Compute Plotting Variables
-            vhclSpeed = squeeze(obj.velocityVec.Data);
-            vhclSpeed = vecnorm(vhclSpeed);
+            % make subplot grid
+            spSz = [3,5]; % grid size
+            spGrid = reshape(1:15,spSz(1),[]);
+            pIdx = 1;
+            spIdx = 1;
+            % assign graphic objects
+            spAxes = gobjects;
+            pObj   = gobjects;
+            % plot vx
+            G_vCM = squeeze(obj.velocityVec.Data);
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),G_vCM(1,ran));
+            ylabel('$\mathrm{v_{x,cm}}$ (m/s)');
+            % plot vy
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),G_vCM(2,ran));
+            ylabel('$\mathrm{v_{y,cm}}$ (m/s)');
+            % plot vz
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),G_vCM(3,ran));
+            ylabel('$\mathrm{v_{z,cm}}$ (m/s)');            
+            % plot Euler
+            euler = squeeze(obj.eulerAngles.Data)*180/pi;
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),euler(1,ran));
+            ylabel('$\mathrm{\phi}$ (deg)');
+            % plot vy
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),euler(2,ran));
+            ylabel('$\mathrm{\theta}$ (deg)');
+            % plot vz
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),euler(3,ran));
+            ylabel('$\mathrm{\psi}$ (deg)');
+            % plot tangent roll
             tanRoll = squeeze(obj.tanRoll.Data)*180/pi;
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),tanRoll(ran));
+            ylabel('$\mathrm{\phi_{tan}}$ (deg)');
+            % plot tangent pitch
             tanPitch = squeeze(obj.tanPitch.Data)*180/pi;
-            subplot(3,1,1);
-            plot(data(ran),vhclSpeed(ran));  xlabel('Path Position');  
-            ylabel('Speed [m/s]');
-            hold on; grid on
-            subplot(3,1,2);
-            plot(data(ran),tanRoll(ran));  xlabel('Path Position');
-            ylabel('Tan roll angle [deg]');
-            hold on; grid on
-            subplot(3,1,3);
-            plot(data(ran),tanPitch(ran)); xlabel('Path Position');
-            ylabel('Tan pitch angle [deg]');
-            hold on; grid on;
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),tanPitch(ran));
+            ylabel('$\mathrm{\theta_{tan}}$ (deg)');
+            % plot speed
+           vhclSpeed = squeeze(obj.velocityVec.Data);
+            vhclSpeed = vecnorm(vhclSpeed);
+             spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),vhclSpeed(ran));
+            ylabel('Speed (m/s)');
+            % plot angle of attack
+            AoA = squeeze(obj.vhclAngleOfAttack.Data);
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),AoA(ran));
+            ylabel('AoA (deg)');
+            % plot side slip angle
+            SSA = squeeze(obj.vhclSideSlipAngle.Data);
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),SSA(ran));
+            ylabel('SSA (deg)');
+            % plot elevator deflection
+            csDef = squeeze(obj.ctrlSurfDeflCmd.Data);
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),csDef(ran,4));
+            ylabel('$\mathrm{\delta e}$ (deg)');
+            
+            % set all axis labels and stuff
+            
             % title
             sgtitle(sprintf('Lap number = %d',max(lapsStarted)-1));
-            x = gcf;
-            set(gcf,'Position',x.Position.*[1 0.25 1 1.75]);
         end
+        
+
         
     end
 end
