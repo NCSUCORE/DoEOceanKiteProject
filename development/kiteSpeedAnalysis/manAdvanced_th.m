@@ -40,6 +40,7 @@ uVsLift = cIn.calcVstabLiftDirection(B_vApp);
 cIn.wingChord = 1;
 cIn.wingAspectRatio = 10;
 cIn.wingAeroCenter = [0.25;0;0];
+cIn.wingArea = 10;
 
 % wing loads
 wingLoads = cIn.calcWingLoads(B_vApp);
@@ -48,6 +49,7 @@ wingLoads = cIn.calcWingLoads(B_vApp);
 cIn.hstabChord = 0.5;
 cIn.hstabAspectRatio = 10;
 cIn.hstabAeroCenter = [-5;0;0];
+cIn.hstabArea = cIn.hstabChord^2*cIn.hstabAspectRatio;
 cIn.hstabControlSensitivity = 0.08;
 elevatorDeflection = 0;
 
@@ -58,6 +60,7 @@ hstabLoads = cIn.calchStabLoads(B_vApp,elevatorDeflection);
 cIn.vstabChord = 0.5;
 cIn.vstabAspectRatio = 10;
 cIn.vstabAeroCenter = [-5;0;-0.5];
+cIn.vstabArea = cIn.vstabChord^2*cIn.vstabAspectRatio/2;
 
 % v-stab loads
 vstabLoads = cIn.calcvStabLoads(B_vApp);
@@ -90,8 +93,8 @@ H_vKite = 8*G_vFlow;
 reqRoll = cIn.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
 
 %% test acheivable velocity calcualtion
-solVals = cIn.getAttainableVelocityOverPath(G_vFlow,...
-    tgtPitch,pathParam);
+% solVals = cIn.getAttainableVelocityOverPath(G_vFlow,...
+%     tgtPitch,pathParam);
 
 %% test pitch stability calculation
 % % elevator deflection required to trim
@@ -146,15 +149,11 @@ cIn.plotAeroCoefficients;
 
 
 %% test animation functions
-
-
-
 fIdx = fIdx+10;
 figure(fIdx);
 set(gcf,'Position',[0 0 560*2.5 420*2]);
 cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
-    'rollInRad',solVals.roll_path,...
-    'headingVel',solVals.vH_path,...
+    'rollInRad',reqRoll,...
     'waitForButton',true);
 

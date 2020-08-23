@@ -105,7 +105,7 @@ classdef vehicle < dynamicprops
             %Important Point Locations
             obj.rCM_LE         = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the Center of Mass');
             obj.rBridle_LE     = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to bridle point');
-            obj.rCentOfBuoy_LE = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
+            obj.rCentOfBuoy_LE = SIM.parameter('Unit','m','Description','Vector going from Wing LE to center of buoyancy');
             
             % Overall Wing Properties (Used to create portWing and stbdWing
             obj.wingRootChord  = SIM.parameter('Unit','m','Description','Wing root chord');
