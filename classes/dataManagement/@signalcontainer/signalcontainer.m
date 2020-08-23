@@ -160,6 +160,7 @@ classdef signalcontainer < dynamicprops
             end
         end
         function plotTanAngles(obj,varargin)
+            
             p = inputParser;
             addOptional(p,'plot1Lap',false,@islogical);
             addOptional(p,'plotS',false,@islogical);
@@ -222,19 +223,22 @@ classdef signalcontainer < dynamicprops
         end
         
         function plotLapSpeedAndTangentAngles(obj)
+            % local functions
+            uVec = @(x,y)['$\hat{',x,'}_{\bar{',y,'}}$'];
             pathParam = squeeze(obj.currentPathVar.Data);
             lapsStarted = unique(obj.lapNumS.Data);
+            plotLap = max(lapsStarted)-1;
             %  Determine Single Lap Indices
             lapNum = squeeze(obj.lapNumS.Data);
-            Idx1 = find(lapNum == max(lapsStarted)-1,1,'first');
-            Idx2 = find(lapNum == max(lapsStarted)-1,1,'last');
+            Idx1 = find(lapNum == plotLap,1,'first');
+            Idx2 = find(lapNum == plotLap,1,'last');
             if isempty(Idx1) || isempty(Idx2)
                 error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
             end
             ran = Idx1:Idx2;
             % make subplot grid
             spSz = [3,5]; % grid size
-            spGrid = reshape(1:15,spSz(1),[]);
+            spGrid = reshape(1:15,spSz(2),[])';
             pIdx = 1;
             spIdx = 1;
             % assign graphic objects
@@ -244,17 +248,33 @@ classdef signalcontainer < dynamicprops
             G_vCM = squeeze(obj.velocityVec.Data);
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             pObj(pIdx) = plot(pathParam(ran),G_vCM(1,ran));
-            ylabel('$\mathrm{v_{x,cm}}$ (m/s)');
+            ylabel(['$v_{\mathrm{cm}}$.',uVec('i','O'),' (m/s)']);
             % plot vy
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             pObj(pIdx) = plot(pathParam(ran),G_vCM(2,ran));
-            ylabel('$\mathrm{v_{y,cm}}$ (m/s)');
+            ylabel(['$v_{\mathrm{cm}}$.',uVec('j','O'),' (m/s)']);
             % plot vz
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             pObj(pIdx) = plot(pathParam(ran),G_vCM(3,ran));
-            ylabel('$\mathrm{v_{z,cm}}$ (m/s)');            
+            ylabel(['$v_{\mathrm{cm}}$.',uVec('k','O'),' (m/s)']);
+            % plot v_Appx
+            B_vApp = squeeze(obj.vhclVapp.Data);
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),B_vApp(1,ran));
+            ylabel(['$v_{\mathrm{app}}$.',uVec('i','B'),' (m/s)']);
+            % plot v_Appy
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),B_vApp(2,ran));
+            ylabel(['$v_{\mathrm{app}}$.',uVec('j','B'),' (m/s)']);
+            % plot v_Appz
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            pObj(pIdx) = plot(pathParam(ran),B_vApp(3,ran));
+            ylabel(['$v_{\mathrm{app}}$.',uVec('k','B'),' (m/s)']);
             % plot Euler
             euler = squeeze(obj.eulerAngles.Data)*180/pi;
             spIdx = spIdx + 1; pIdx = pIdx + 1;
@@ -310,9 +330,46 @@ classdef signalcontainer < dynamicprops
             ylabel('$\mathrm{\delta e}$ (deg)');
             
             % set all axis labels and stuff
+            linStyleOrder = {'-','--',':o',};
+            colorOrder = [228,26,28
+                55,126,184
+                77,175,74
+                152,78,16]./255;
             
+            xlabel(spAxes(1:spIdx),'Path parameter');
+            grid(spAxes(1:spIdx),'on');
+            hold(spAxes(1:spIdx),'on');
+            set(spAxes(1:spIdx),'FontSize',11, ...
+                'XTick',0:0.25:1,...
+                'ColorOrder', colorOrder,...
+                'LineStyleOrder', linStyleOrder);
+            
+            % set line properties
+            set(pObj(1:pIdx),'LineWidth',1);
+            
+            % link axes
+            linkaxes(spAxes(1:spIdx),'x');
+            
+            % compute some base statics
+            % lap time
+            lapTime = squeeze(obj.currentPathVar.Time(ran));
+            lapTime = lapTime(end)-lapTime(1);
+            % average apparent velocity in x direction cubed
+            meanVappxCubed = mean(max(0,B_vApp(1,:)).^3);
+            % distance traveled
+            rCM = squeeze(obj.positionVec.Data);
+            rCM = rCM(:,ran);
+            disTraveled = sum(vecnorm(rCM(:,2:end) - rCM(:,1:end-1)));
+            % avereage speed
+            avgSpeed = disTraveled/lapTime;
             % title
-            sgtitle(sprintf('Lap number = %d',max(lapsStarted)-1));
+            sgtitle(sprintf(['Lap number = %d',', Lap time = %.2f sec',...
+                ', Avg $v_{app,x}^3$ = %.2f',', Distace covered = %.2f m',...
+                ', Avg speed = %.2f m/s'],...
+                [plotLap,lapTime,meanVappxCubed,disTraveled,avgSpeed]),...
+                'FontSize',11);
+
+            
         end
         
 

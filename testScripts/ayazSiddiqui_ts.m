@@ -102,7 +102,8 @@ fpath = fullfile(fileparts(which('OCTProject.prj')),'outputs\');
 filename = sprintf(strcat('FS-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 
-figure
+figure;
+set(gcf, 'Position', get(0, 'Screensize'));
 tsc.plotLapSpeedAndTangentAngles;
 % vhcl.animateSim(tsc,0.5,...
 %     'PathFunc',fltCtrl.fcnName.Value);

@@ -21,7 +21,7 @@ cIn.meanElevationInRadians = 30*pi/180;
 G_vFlow = [1;0;0];      
 
 % tangent pitch angle
-tgtPitch = 0*pi/180;
+tgtPitch = 7*pi/180;
 
 % load vehicle
 load('ayazFullScaleOneThrVhcl.mat');
@@ -158,9 +158,9 @@ cIn.plotAeroCoefficients;
 fIdx = fIdx+1;
 figure(fIdx);
 set(gcf,'Position',[0 0 560*2.5 420*2]);
-F = cIn.makeFancyAnimation(pathParam,'animate',false,...
+F = cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
-    'rollInRad',pathAnalysisRes(maxIdx).rollAng,...
+    'rollInRad',-pathAnalysisRes(maxIdx).rollAng,...
     'headingVel',pathAnalysisRes(maxIdx).pathSpeed,...
     'waitForButton',false);
 

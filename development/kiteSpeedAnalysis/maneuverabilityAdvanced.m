@@ -68,9 +68,10 @@ classdef maneuverabilityAdvanced
         vstabArea;
     end
     
-    properties (Dependent = true) % path related equations
+    properties (Dependent = true) % path related properties
         pathAndTangentEqs;
-        radiusOfCurvatureEq;
+        radiusOfCurvatureAndPathEq;
+        pathLength;
     end
     
     properties (Constant = true)
@@ -154,7 +155,7 @@ classdef maneuverabilityAdvanced
         end
         
         % parameterized eqn for radius of curvate over the path
-        function val = get.radiusOfCurvatureEq(obj)
+        function val = get.radiusOfCurvatureAndPathEq(obj)
             % symbolic
             syms pathParm
             a = obj.aBooth;
@@ -180,12 +181,23 @@ classdef maneuverabilityAdvanced
             ddy = diff(dy,pathParm);
             ddz = diff(dz,pathParm);
             % curvature numerator
-            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + (ddy*dx - ddx*dy)^2);
+            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + ...
+                (ddy*dx - ddx*dy)^2);
             % curvature denominator
             Kden = (dx^2 + dy^2 + dz^2)^1.5;
+            % path length calculation
+            pathLength = (dx^2 + dy^2 + dz^2)^0.5;
             % radius of curvature = 1/curvate
-            val = matlabFunction(Kden/Knum);
+            val.rCurve = matlabFunction(Kden/Knum);
+            val.pLength = matlabFunction(pathLength);
         end
+        
+        % full path length
+        function val = get.pathLength(obj)
+            val = integral(obj.radiusOfCurvatureAndPathEq.pLength,0,...
+            2*pi);
+        end
+        
     end
     
     %% private methods. Rotations and such
@@ -244,6 +256,14 @@ classdef maneuverabilityAdvanced
             set(gca,'LineStyleOrder',obj.linStyleOrder);
         end
         
+    end
+    
+    %% path related methods
+    methods
+        function val = calcPathLength(obj,pathParam)
+            val = integral(obj.radiusOfCurvatureAndPathEq.pLength,pathParam(1),...
+                pathParam(end));
+        end
     end
     
     %% methods for position, buoyancy loads, tether loads, etc. calculation
@@ -534,7 +554,7 @@ classdef maneuverabilityAdvanced
         % calculate required centripetal force over the path
         function val = calcRequiredCentripetalForce(obj,H_vKite,pathParam)
             % get radius of curvature over the path
-            pathRcurve = obj.radiusOfCurvatureEq(pathParam);
+            pathRcurve = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
             % calculate centripetal force required
             val = obj.mass*H_vKite(1)^2./pathRcurve;
             % correct direction
@@ -1259,7 +1279,7 @@ classdef maneuverabilityAdvanced
                 pathParam = linspace(0,2*pi,300);
             end
             % calculate radius of curvature
-            R = obj.radiusOfCurvatureEq(pathParam);
+            R = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
             % plot
             pathParam = pathParam./(2*pi);
             val = obj.plot2D(pathParam,R,'linewidth',obj.lwd);
@@ -1364,7 +1384,7 @@ classdef maneuverabilityAdvanced
             % make the static radius of curvature plot
             subplot(spSz(1),spSz(2),rcIdx);
             obj.plotPathRadiusOfCurvature;
-            rC = obj.radiusOfCurvatureEq(pathParam);
+            rC = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
             % make the static heading angle plot
             subplot(spSz(1),spSz(2),haIdx);
             obj.plotPathHeadingAngle;
