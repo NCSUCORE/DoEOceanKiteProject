@@ -19,23 +19,34 @@ classdef maneuverabilityAdvanced
         bridleLocation;
     end
     
+    properties % fluid coefficient calculation method
+        fluidCoeffCalcMethod = 'empirical';
+    end
+    
     properties %wing
         wingAeroCenter;
         wingChord;
         wingAspectRatio;
-        wingOswaldEff = 0.8;
+        wingOswaldEff = 0.75;
         wingZeroAoALift = 0.1;
-        wingZerAoADrag = 0.01;
+        wingZerAoADrag = 0.05;
+        wingCL_Data;
+        wingCD_Data;
+        wingAoA_Data;
     end
     
     properties % hstab
         hstabAeroCenter;
         hstabChord;
         hstabAspectRatio;
-        hstabOswaldEff = 0.8;
+        hstabOswaldEff = 0.75;
         hstabZeroAoALift = 0.0;
-        hstabZerAoADrag = 0.01;
+        hstabZerAoADrag = 0.05;
+        hstabCL_Data;
+        hstabCD_Data;
+        hstabAoA_Data;
         hstabControlSensitivity;
+        hstabMaxDef = 30;
     end
     
     properties % vstab
@@ -43,22 +54,24 @@ classdef maneuverabilityAdvanced
         vstabAeroCenter;
         vstabChord;
         vstabAspectRatio;
-        vstabOswaldEff = 0.8;
+        vstabOswaldEff = 0.75;
         vstabZeroAoALift = 0.0;
-        vstabZerAoADrag = 0.01;
-        vstabControlSensitivity = 0;
-        vstabMaxDef = 30;
+        vstabZerAoADrag = 0.05;
+        vstabCL_Data;
+        vstabCD_Data;
+        vstabAoA_Data;
     end
     
-    properties (Dependent = true)
+    properties
         wingArea;
         hstabArea;
         vstabArea;
     end
     
-    properties (Dependent = true) % path related equations
+    properties (Dependent = true) % path related properties
         pathAndTangentEqs;
-        radiusOfCurvatureEq;
+        radiusOfCurvatureAndPathEq;
+        pathLength;
     end
     
     properties (Constant = true)
@@ -68,6 +81,7 @@ classdef maneuverabilityAdvanced
     
     properties (SetAccess = private) % plot properties
         lwd = 1.0;
+        fSize = 11;     % font size
         linStyleOrder = {'-','--',':o',};
         colorOrder = [228,26,28
             55,126,184
@@ -75,22 +89,36 @@ classdef maneuverabilityAdvanced
             152,78,16]./255;
     end
     
+    %% setter
+    methods
+        function obj = set.fluidCoeffCalcMethod(obj,value)
+            calcMethodChoice = {'empirical','fromTable'};
+            if ismember(value,calcMethodChoice)
+                obj.fluidCoeffCalcMethod = value;
+            else
+                error(['Only ',repmat('"%s", ',1,numel(calcMethodChoice)-1),...
+                    'and "%s" are valid entries for fluidCoeffCalcMethod.',...
+                    ' You entered "%s".'],calcMethodChoice{:},value);
+            end
+        end
+    end
+    
     %% getters
     methods
         % wing area
-        function val = get.wingArea(obj)
-            val = obj.wingChord^2*obj.wingAspectRatio;
-        end
-        
-        % h-stab area
-        function val = get.hstabArea(obj)
-            val = obj.hstabChord^2*obj.hstabAspectRatio;
-        end
-        
-        % v-stab area
-        function val = get.vstabArea(obj)
-            val = obj.vstabChord^2*obj.vstabAspectRatio/2;
-        end
+        %         function val = get.wingArea(obj)
+        %             val = obj.wingChord^2*obj.wingAspectRatio;
+        %         end
+        %
+        %         % h-stab area
+        %         function val = get.hstabArea(obj)
+        %             val = obj.hstabChord^2*obj.hstabAspectRatio;
+        %         end
+        %
+        %         % v-stab area
+        %         function val = get.vstabArea(obj)
+        %             val = obj.vstabChord^2*obj.vstabAspectRatio/2;
+        %         end
         
         % parameterized eqn for path co-ordinates & path tangent vectors
         function val = get.pathAndTangentEqs(obj)
@@ -127,7 +155,7 @@ classdef maneuverabilityAdvanced
         end
         
         % parameterized eqn for radius of curvate over the path
-        function val = get.radiusOfCurvatureEq(obj)
+        function val = get.radiusOfCurvatureAndPathEq(obj)
             % symbolic
             syms pathParm
             a = obj.aBooth;
@@ -153,12 +181,23 @@ classdef maneuverabilityAdvanced
             ddy = diff(dy,pathParm);
             ddz = diff(dz,pathParm);
             % curvature numerator
-            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + (ddy*dx - ddx*dy)^2);
+            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + ...
+                (ddy*dx - ddx*dy)^2);
             % curvature denominator
             Kden = (dx^2 + dy^2 + dz^2)^1.5;
+            % path length calculation
+            pathLength = (dx^2 + dy^2 + dz^2)^0.5;
             % radius of curvature = 1/curvate
-            val = matlabFunction(Kden/Knum);
+            val.rCurve = matlabFunction(Kden/Knum);
+            val.pLength = matlabFunction(pathLength);
         end
+        
+        % full path length
+        function val = get.pathLength(obj)
+            val = integral(obj.radiusOfCurvatureAndPathEq.pLength,0,...
+            2*pi);
+        end
+        
     end
     
     %% private methods. Rotations and such
@@ -217,6 +256,14 @@ classdef maneuverabilityAdvanced
             set(gca,'LineStyleOrder',obj.linStyleOrder);
         end
         
+    end
+    
+    %% path related methods
+    methods
+        function val = calcPathLength(obj,pathParam)
+            val = integral(obj.radiusOfCurvatureAndPathEq.pLength,pathParam(1),...
+                pathParam(end));
+        end
     end
     
     %% methods for position, buoyancy loads, tether loads, etc. calculation
@@ -359,43 +406,88 @@ classdef maneuverabilityAdvanced
         end
         
         % calculate aerodynamic coefficeints
-        function [CL,CD] = calcFluidCoeffs(~,AoA,oswaldEff,aspectRatio,...
-                ZeroAoALift,ZeroAoADrag,dCL_dCS,csDeflection)
-            % lift curve slope
-            liftSlope = 2*pi/(1 + (2*pi/(pi*oswaldEff*aspectRatio)));
-            % lift coeff
-            switch nargin
-                case 8
-                    CL = liftSlope*AoA + ZeroAoALift + dCL_dCS*csDeflection;
-                case 6
-                    CL = liftSlope*AoA + ZeroAoALift;
+        function [CL,CD] = calcFluidCoeffs(obj,AoA,surface,elevatorDef)
+            
+            switch lower(surface)
+                case 'wing'
+                    oswaldEff = obj.wingOswaldEff;
+                    AR = obj.wingAspectRatio;
+                    CL0 = obj.wingZeroAoALift;
+                    CD0 = obj.wingZerAoADrag;
+                    CL_data = obj.wingCL_Data;
+                    CD_data = obj.wingCD_Data;
+                    AoA_data = obj.wingAoA_Data;
+                    scale = 1;
+                case 'hstab'
+                    oswaldEff = obj.hstabOswaldEff;
+                    AR = obj.hstabAspectRatio;
+                    CL0 = obj.hstabZeroAoALift;
+                    CD0 = obj.hstabZerAoADrag;
+                    CL_data = obj.hstabCL_Data;
+                    CD_data = obj.hstabCD_Data;
+                    AoA_data = obj.hstabAoA_Data;
+                    dCL_dCS = obj.hstabControlSensitivity;
+                    scale = obj.hstabArea/obj.wingArea;
+                case 'vstab'
+                    oswaldEff = obj.vstabOswaldEff;
+                    AR = obj.vstabAspectRatio;
+                    CL0 = obj.vstabZeroAoALift;
+                    CD0 = obj.vstabZerAoADrag;
+                    CL_data = obj.vstabCL_Data;
+                    CD_data = obj.vstabCD_Data;
+                    AoA_data = obj.vstabAoA_Data;
+                    scale = obj.vstabArea/obj.wingArea;
             end
-            % drag coeff
-            CD = ZeroAoADrag + CL^2/(pi*oswaldEff*aspectRatio);
+            
+            switch obj.fluidCoeffCalcMethod
+                case 'empirical'
+                    % lift curve slope
+                    liftSlope = 2*pi/(1 + (2*pi/(pi*oswaldEff*AR)));
+                    % lift coeff
+                    if strcmpi(surface,'hstab') && nargin==4
+                        CL = liftSlope*AoA + CL0 + dCL_dCS*elevatorDef;
+                    else
+                        CL = liftSlope*AoA + CL0;
+                    end
+                    % drag coeff
+                    CD = CD0 + CL^2/(pi*oswaldEff*AR);
+                    % scale coeff
+                    CL = CL*scale;
+                    CD = CD*scale;
+                    
+                case 'fromTable'
+                    % lift interpolation
+                    CL = interp1(AoA_data,CL_data,AoA*180/pi,'linear','extrap');
+                    % drag interpolation
+                    CD = interp1(AoA_data,CD_data,AoA*180/pi,'linear','extrap');
+                    if strcmpi(surface,'hstab') && nargin==4
+                        dCL = dCL_dCS*elevatorDef;
+                        dCD = dCL^2/(pi*oswaldEff*AR);
+                        CL = CL + dCL;
+                        CD = CD + dCD;
+                    end
+            end
+            
         end
-        
+              
         % calcualte wing forces and moment
         function val = calcWingLoads(obj,B_vApp)
             % local variables
             rWing = obj.wingAeroCenter;
-            sWing = obj.wingArea;
+            sRef = obj.wingArea;
             rho   = obj.fluidDensity;
-            eWing = obj.wingOswaldEff;
-            AR    = obj.wingAspectRatio;
-            CL0   = obj.wingZeroAoALift;
-            CD0   = obj.wingZerAoADrag;
             % lift and drag directions
             uDrag = obj.calcDragDirection(B_vApp);
             uLift = obj.calcHsurfLiftDirection(B_vApp);
             % angle of attack
             AoA = obj.calcAngleOfAttackInRadians(B_vApp);
             % get coefficients
-            [CL,CD] = obj.calcFluidCoeffs(AoA,eWing,AR,CL0,CD0);
+            [CL,CD] = obj.calcFluidCoeffs(AoA,'wing');
             % dynamic pressure
             dynPressure = 0.5*rho*norm(B_vApp)^2;
             % loads
-            val.drag = dynPressure*CD*sWing*uDrag;
-            val.lift = dynPressure*CL*sWing*uLift;
+            val.drag = dynPressure*CD*sRef*uDrag;
+            val.lift = dynPressure*CL*sRef*uLift;
             val.force = val.drag + val.lift;
             val.moment = cross(rWing,val.force);
         end
@@ -404,13 +496,8 @@ classdef maneuverabilityAdvanced
         function val = calchStabLoads(obj,B_vApp,elevatorDef)
             % local variables
             rHstab = obj.hstabAeroCenter;
-            sHstab = obj.hstabArea;
+            sRef = obj.wingArea;
             rho    = obj.fluidDensity;
-            eHstab = obj.hstabOswaldEff;
-            AR     = obj.hstabAspectRatio;
-            CL0    = obj.hstabZeroAoALift;
-            CD0    = obj.hstabZerAoADrag;
-            dCL_dCS = obj.hstabControlSensitivity;
             dCS = elevatorDef;
             % lift and drag directions
             uDrag = obj.calcDragDirection(B_vApp);
@@ -418,46 +505,34 @@ classdef maneuverabilityAdvanced
             % angle of attack
             AoA = obj.calcAngleOfAttackInRadians(B_vApp);
             % get coefficients
-            [CL,CD] = obj.calcFluidCoeffs(AoA,eHstab,AR,CL0,CD0,dCL_dCS,dCS);
+            [CL,CD] = obj.calcFluidCoeffs(AoA,'hstab',dCS);
             % dynamic pressure
             dynPressure = 0.5*rho*norm(B_vApp)^2;
             % loads
-            val.drag = dynPressure*CD*sHstab*uDrag;
-            val.lift = dynPressure*CL*sHstab*uLift;
+            val.drag = dynPressure*CD*sRef*uDrag;
+            val.lift = dynPressure*CL*sRef*uLift;
             val.force = val.drag + val.lift;
             val.moment = cross(rHstab,val.force);
         end
         
         % calcualte vstab forces and moment (some code reuse, not proud of it)
-        function val = calcvStabLoads(obj,B_vApp,rudderDef)
+        function val = calcvStabLoads(obj,B_vApp)
             % local variables
             rho     = obj.fluidDensity;
             rVstab  = obj.vstabAeroCenter;
-            sVstab  = obj.vstabArea;
-            eVstab  = obj.vstabOswaldEff;
-            AR      = obj.vstabAspectRatio;
-            CL0     = obj.vstabZeroAoALift;
-            CD0     = obj.vstabZerAoADrag;
+            sRef  = obj.wingArea;
             % lift and drag directions
             uDrag = obj.calcDragDirection(B_vApp);
             uLift = obj.calcVstabLiftDirection(B_vApp);
             % angle of attack
             SSA = obj.calcSideSlipAngleInRadians(B_vApp);
             % get coefficients
-            switch nargin
-                case 3
-                    dCL_dCS = obj.vstabControlSensitivity;
-                    dCS = rudderDef;
-                    [CL,CD] = obj.calcFluidCoeffs(SSA,eVstab,AR,CL0,CD0,...
-                        dCL_dCS,dCS);
-                case 2
-                    [CL,CD] = obj.calcFluidCoeffs(SSA,eVstab,AR,CL0,CD0);
-            end
+            [CL,CD] = obj.calcFluidCoeffs(SSA,'vstab');
             % dynamic pressure
             dynPressure = obj.vStabOn*0.5*rho*norm(B_vApp)^2;
             % loads
-            val.drag = dynPressure*CD*sVstab*uDrag;
-            val.lift = dynPressure*CL*sVstab*uLift;
+            val.drag = dynPressure*CD*sRef*uDrag;
+            val.lift = dynPressure*CL*sRef*uLift;
             val.force = val.drag + val.lift;
             val.moment = cross(rVstab,val.force);
         end
@@ -479,7 +554,7 @@ classdef maneuverabilityAdvanced
         % calculate required centripetal force over the path
         function val = calcRequiredCentripetalForce(obj,H_vKite,pathParam)
             % get radius of curvature over the path
-            pathRcurve = obj.radiusOfCurvatureEq(pathParam);
+            pathRcurve = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
             % calculate centripetal force required
             val = obj.mass*H_vKite(1)^2./pathRcurve;
             % correct direction
@@ -539,6 +614,93 @@ classdef maneuverabilityAdvanced
         end
     end
     
+    %% generalized velocity over the path
+    methods
+        
+        function val = getAttainableVelocityOverPath(obj,G_vFlow,...
+                tgtPitch,pathParam)
+            % heading velocity over the path
+            vH_path = nan*pathParam;
+            % roll angle over path
+            roll_path = nan*pathParam;
+            for ii = 1:numel(pathParam)
+                fprintf('Iteration %d of %d.\n',ii,numel(pathParam));
+                if ii == 1
+                    intGuess = 3*G_vFlow(1);
+                else
+                    intGuess = vH_path(ii-1);
+                end
+                % solve equations at each path parameter
+                sol = fzero(@(vH) obj.getAttainableVelocityEqn(G_vFlow,...
+                    tgtPitch,pathParam(ii),vH),intGuess);
+                % roll
+                vH_path(ii) = sol;
+                [~,roll_path(ii)] = obj.getAttainableVelocityEqn(G_vFlow,...
+                    tgtPitch,pathParam(ii),sol);
+            end
+            val.vH_path = vH_path;
+            val.roll_path = roll_path;
+            
+        end
+        
+        function [val,roll] = getAttainableVelocityEqn(obj,G_vFlow,...
+                tgtPitch,pathParam,vH)
+            % get azimuth, elevation, heading, and radius of curvature
+            AzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
+            azimuth = AzimElev(1);
+            elevation = AzimElev(2);
+            heading = obj.pathAndTangentEqs.reqHeading(pathParam);
+            % extract values
+            H_vKite = [vH;0;0];
+            % calculate kite vel in tangent frame
+            HcT = obj.makeTangentToHeadingFrameRotMat(heading);
+            T_vKite = transpose(HcT)*H_vKite;
+            % centripetal force
+            Fcent = obj.calcRequiredCentripetalForce(H_vKite,pathParam);
+            % calculate required roll
+            roll = fzero(@(roll) ...
+                obj.calcDifferenceInCentripetalForces(Fcent,...
+                G_vFlow,T_vKite,azimuth,elevation,...
+                heading,tgtPitch,roll),0);
+            % calculate all loads in generalized form
+            [thrLoads,allLoads] = obj.calcTetherLoads(G_vFlow,T_vKite,...
+                azimuth,elevation,heading,tgtPitch,roll,0);
+            % extract wing force
+            wingLoads  = allLoads.wingLoads;
+            B_Fwing = wingLoads.force;
+            % extract H-stab force
+            hstabLoads = allLoads.hstabLoads;
+            B_Fhstab = hstabLoads.force;
+            % extract V-stab loads
+            vstabLoads = allLoads.vstabLoads;
+            B_Fvstab = vstabLoads.force;
+            % extract buoy froce
+            buoyLoads  = allLoads.buoyLoads;
+            B_Fbuoy = buoyLoads.force;
+            % grav force
+            B_Fgrav    = allLoads.B_Fgrav;
+            % tether force
+            B_Fthr = thrLoads.force;
+            % rotate them all to heading frame
+            BcH = obj.makeHeadingToBodyFrameRotMat(tgtPitch,roll);
+            HcB = transpose(BcH);
+            H_Fwing = HcB*B_Fwing;
+            H_Fhstab = HcB*B_Fhstab;
+            H_Fvstab = HcB*B_Fvstab;
+            H_Fbuoy = HcB*B_Fbuoy;
+            H_Fgrav = HcB*B_Fgrav;
+            H_Fthr = HcB*B_Fthr;
+            % sum it up
+            H_Fsum = H_Fwing + H_Fhstab + H_Fvstab + H_Fbuoy + H_Fgrav + ...
+                H_Fthr;
+            % output
+            val = H_Fsum(1);
+            %
+            fprintf('s = %.2f, vH = %0.2f, roll = %.2f, val = %.2f.\n',...
+                [pathParam/(2*pi),vH,roll*180/pi,val]);
+        end
+    end
+    
     %% pitch stability methods
     methods
         % calculate elevator deflection to trim
@@ -559,7 +721,8 @@ classdef maneuverabilityAdvanced
             B_Msum = B_Mwing + B_Mhstab + B_Mvstab + B_Mbuoy + B_Mthr;
             % solve
             val = solve(B_Msum(2) == 0,de,'Real',true);
-            val = min(abs(val));
+            [~,idx] = min(abs(val));
+            val = val(idx);
             % output all moments
             allMoments.B_Mwing  = B_Mwing;
             allMoments.B_Mhstab = B_Mhstab;
@@ -570,9 +733,9 @@ classdef maneuverabilityAdvanced
             
         end
         
-        % loop throught tangent pitch angles and get moments and other
+        % loop through tangent pitch angles and get moments and other
         % things
-        function val = pitchStabilityAnalysis(obj,G_vFlow,T_vKite,...
+        function [val,ips] = pitchStabilityAnalysis(obj,G_vFlow,H_vKite,...
                 azimuth,elevation,heading,tgtPitch,roll,dElev)
             % number of points
             nPoints = numel(tgtPitch);
@@ -586,6 +749,8 @@ classdef maneuverabilityAdvanced
             B_Mbuoy  = NaN(3,nPoints);
             B_Mthr   = NaN(3,nPoints);
             B_Msum   = NaN(3,nPoints);
+            % kite speed in heading direction
+            T_vKite = obj.calcKiteVelInTangentFrame(H_vKite,heading);
             % run the loop
             for ii = 1:nPoints
                 % apparent wind velocity
@@ -605,6 +770,9 @@ classdef maneuverabilityAdvanced
                 B_Mthr(:,ii)   = subs(allMoments.B_Mthr,dElev);
                 B_Msum(:,ii)   = subs(allMoments.B_Msum,dElev);
             end
+            % find tangent angles out of range of de
+            tgtRange = tgtPitch(abs(de)<=obj.hstabMaxDef);
+            tgtRange = [min(tgtRange); max(tgtRange)];
             % output
             val.AoA         = AoA;
             val.SSA         = SSA;
@@ -615,85 +783,118 @@ classdef maneuverabilityAdvanced
             val.B_Mbuoy     = B_Mbuoy;
             val.B_Mthr      = B_Mthr;
             val.B_Msum      = B_Msum;
+            val.tgtRange    = tgtRange;
+            % inputs
+            ips.azimuth = azimuth;
+            ips.elevation = elevation;
+            ips.heading = heading;
+            ips.roll = roll;
+            ips.tgtPitch = tgtPitch;
+            
         end
         
-        function val = plotPitchStabilityAnalysisResults(obj,G_vFlow,T_vKite,...
-                azimuth,elevation,heading,tgtPitch,roll,dElev)
+        % pitch stability over the path
+        function [val,ips,tgtAngleRange] = pathPitchStability(obj,G_vFlow,...
+                H_vKite,roll,pathParam,tgtPitch,dElev)
+            % path parameters
+            nPoints = numel(pathParam);
+            % get path azimuth, elevation, and heading
+            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
+            pathAzimuth = pathAzimElev(1,:);
+            pathElevation = pathAzimElev(2,:);
+            pathHeading  = obj.pathAndTangentEqs.reqHeading(pathParam);
+            tgtAngleRange = [nan;nan]*pathParam;
+            % calculate for each path parameter
+            parfor ii = 1:nPoints
+                [val(ii),ips(ii)] = obj.pitchStabilityAnalysis(G_vFlow,H_vKite(:,ii),...
+                    pathAzimuth(ii),pathElevation(ii),pathHeading(ii),tgtPitch,...
+                    roll(ii),dElev);
+                tgtAngleRange(:,ii) = val(ii).tgtRange;
+            end
+            
+        end
+        
+        function val = plotPitchStabilityAnalysisResults(obj,results,...
+                inputs)
             % initialize graphics object matrix
             val = gobjects;
             spAxes = gobjects;
-            % results from the analysis
-            res = obj.pitchStabilityAnalysis(G_vFlow,T_vKite,...
-                azimuth,elevation,heading,tgtPitch,roll,dElev);
-            fprintf('Done calculating.\n');
             % normalizing Moment
             normM = 1e3;
             % local variables
             noSp = [2,5]; % number of subplots
             pIdx = 1;    % plot index
             spIdx = 1;   % subplot index
-            tgtPitch = tgtPitch*180/pi;
+            % inputs
+            tgtPitch = inputs.tgtPitch*180/pi;
+            azimuth = inputs.azimuth;
+            elevation = inputs.elevation;
+            heading = inputs.heading;
+            roll = inputs.roll;
             % plot buoyancy pitching moments
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mbuoy(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mbuoy(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Buoyancy moment (kN-m)');
             % plot wing pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mwing(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mwing(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Wing moment (kN-m)');
             % plot H-stab pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mhstab(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mhstab(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('H-stab moment (kN-m)');
             % plot tether pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Mthr(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Mthr(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Tether moment (kN-m)');
             % plot sum of pitching moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.B_Msum(2,:)./normM);
+            val(pIdx) = obj.plot2D(tgtPitch,results.B_Msum(2,:)./normM);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Sum of moments (kN-m)');
             % plot angle of attack
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.AoA);
+            val(pIdx) = obj.plot2D(tgtPitch,results.AoA);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('AoA (deg)');
             % plot elevator deflection to trim
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(tgtPitch,res.elevatorDef);
+            val(pIdx) = obj.plot2D(tgtPitch,results.elevatorDef);
             grid on; hold on;
             xlabel('Tangent pitch (deg)');
             ylabel('Elevator deflection to trim (deg)');
             pIdx = pIdx+1;
-            val(pIdx) = yline(obj.vstabMaxDef,'m--','linewidth',obj.lwd);
+            val(pIdx) = yline(obj.hstabMaxDef,'m--','linewidth',obj.lwd);
             pIdx = pIdx+1;
-            val(pIdx) = yline(-obj.vstabMaxDef,'m--','linewidth',obj.lwd);
+            val(pIdx) = yline(-obj.hstabMaxDef,'m--','linewidth',obj.lwd);
             % plot AoA of attack vs sum of moments
             pIdx = pIdx+1; spIdx = spIdx + 1;
             spAxes(spIdx) = subplot(noSp(1),noSp(2),spIdx);
-            val(pIdx) = obj.plot2D(res.AoA,res.B_Msum(2,:)./normM);
+            val(pIdx) = obj.plot2D(results.AoA,results.B_Msum(2,:)./normM);
             grid on; hold on;
             xlabel('AoA (deg)');
             ylabel('Sum of moments (kN-m)');
             % link the axes of the first row
             linkaxes(spAxes(1:5),'y');
+            set(spAxes(1:7),'XLim',[tgtPitch(1),tgtPitch(end)]);
+            set(spAxes(1:7),'XTick',linspace(tgtPitch(1),tgtPitch(end),5));
+            
             % main title
             sgtitle(sprintf(['Azimuth = %.1f, Elevation = %.1f, Heading = %.1f, ',...
                 'Roll = %.1f'],[azimuth,elevation,...
@@ -709,9 +910,14 @@ classdef maneuverabilityAdvanced
             axis equal;
         end
     end
-      
+    
     %% plotting methods
     methods
+        % set font size for all plots
+        function setFontSize(obj)
+            set(findobj('-property','FontSize'),'FontSize',obj.fSize);
+        end
+        
         % plot body frame axes
         function val =  plotBodyFrameAxes(obj,azimuth,elevation,...
                 heading,tgtPitch,roll)
@@ -798,55 +1004,247 @@ classdef maneuverabilityAdvanced
             end
         end
         
-        % plot wing lift and drag curves
-        function plotWingCoefficients(obj,subPlotIdx)
+        % plot lift and drag curves from data
+        function val = plotAeroCoefficients(obj)
+            % graphic objects
+            val = gobjects;
+            spAxes = gobjects;           
+            % angle of attack
+            AoA = linspace(-20,20,100)*pi/180;
+            % get coefficients
+            CLWing = AoA*nan;
+            CDWing = AoA*nan;
+            CLHstab = AoA*nan;
+            CDHstab = AoA*nan;
+            CLVstab = AoA*nan;
+            CDVstab = AoA*nan;
+            for ii = 1:numel(AoA)
+                [CLWing(ii),CDWing(ii)] = obj.calcFluidCoeffs(AoA(ii),'wing');
+                [CLHstab(ii),CDHstab(ii)] = obj.calcFluidCoeffs(AoA(ii),'hstab',0);
+                [CLVstab(ii),CDVstab(ii)] = obj.calcFluidCoeffs(AoA(ii),'vstab');
+            end
+            % plotIdx and subplotIdx
+            pIdx = 1;
+            spIdx = 1;
+            spSz = [3,4];   % grid size
+            spGrid = reshape(1:12,4,[])'; % grid indices
+            
+            AoA = AoA*180/pi;
+            % wing plots %%%%%%%%
+            % CL
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLWing);
+            title('Wing');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDWing);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLWing,CDWing);
+            % H-stab %%%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLHstab);
+            title('H-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDHstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLHstab,CDHstab);
+            % V-stab %%%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLVstab);
+            title('V-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDVstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLVstab,CDVstab);
+            % Wing + H-stab %%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLWing + CLHstab);
+            title('Wing + H-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDWing + CDHstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,(CLWing + CLHstab),...
+                (CDWing + CDHstab));
+            % link axes
+            for ii = 1:3:12
+                linkaxes(spAxes(ii:ii+2),'x');
+            end
+            for ii = 1:3
+                offset = ii + 3*(1:3);
+                linkaxes(spAxes([ii,offset]),'y');
+            end
+            function val = plotCL(obj,AoA,CL)
+                val = obj.plot2D(AoA,CL,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{L}$');
+            end
+            function val = plotCD(obj,AoA,CD)
+                val = obj.plot2D(AoA,CD,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{D}$');
+            end
+            function val = plotCLbyCD(obj,AoA,CL,CD)
+                val = obj.plot2D(AoA,CL./CD,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{L}/C_{D}$');
+            end
+        end
+        
+        % plot lift and drag curves from emperical relations
+        function val = plotEmpiricalAeroCoefficients(obj)
+            %
+            val = gobjects;
+            spAxes = gobjects;
             % local variables
-            eWing = obj.wingOswaldEff;
-            AR    = obj.wingAspectRatio;
-            CL0   = obj.wingZeroAoALift;
-            CD0   = obj.wingZerAoADrag;
+            eWing   = obj.wingOswaldEff;
+            ARWing  = obj.wingAspectRatio;
+            CL0Wing = obj.wingZeroAoALift;
+            CD0Wing = obj.wingZerAoADrag;
+            eHstab   = obj.hstabOswaldEff;
+            ARHstab  = obj.hstabAspectRatio;
+            CL0Hstab = obj.hstabZeroAoALift;
+            CD0Hstab = obj.hstabZerAoADrag;
+            eVstab   = obj.vstabOswaldEff;
+            ARVstab  = obj.vstabAspectRatio;
+            CL0Vstab = obj.vstabZeroAoALift;
+            CD0Vstab = obj.vstabZerAoADrag;
+            
             % angle of attack
             AoA = linspace(-20,20,100);
             % get coefficients
-            CL = AoA*nan;
-            CD = AoA*nan;
+            CLWing = AoA*nan;
+            CDWing = AoA*nan;
+            CLHstab = AoA*nan;
+            CDHstab = AoA*nan;
+            CLVstab = AoA*nan;
+            CDVstab = AoA*nan;
             for ii = 1:numel(AoA)
-                [CL(ii),CD(ii)] = obj.calcFluidCoeffs(AoA(ii)*pi/180,eWing,...
-                    AR,CL0,CD0,0,0);
+                [CLWing(ii),CDWing(ii)] = obj.calcFluidCoeffs(AoA(ii)*pi/180,eWing,...
+                    ARWing,CL0Wing,CD0Wing,0,0);
+                [CLHstab(ii),CDHstab(ii)] = obj.calcFluidCoeffs(AoA(ii)*pi/180,eHstab,...
+                    ARHstab,CL0Hstab,CD0Hstab,0,0);
+                [CLVstab(ii),CDVstab(ii)] = obj.calcFluidCoeffs(AoA(ii)*pi/180,eVstab,...
+                    ARVstab,CL0Vstab,CD0Vstab,0,0);
             end
+            % normalize
+            CLHstab = CLHstab.*(obj.hstabArea/obj.wingArea);
+            CDHstab = CDHstab.*(obj.hstabArea/obj.wingArea);
+            CLVstab = CLVstab.*(obj.vstabArea/obj.wingArea);
+            CDVstab = CDVstab.*(obj.vstabArea/obj.wingArea);
+            % plotIdx and subplotIdx
+            pIdx = 1;
+            spIdx = 1;
+            spSz = [3,4];   % grid size
+            spGrid = reshape(1:12,4,[])'; % grid indices
             
-            switch nargin
-                case 1
-                    % CL
-                    subplot(2,1,1);
-                    plotCL(AoA,CL);
-                    % CD
-                    subplot(2,1,2)
-                    plotCD(AoA,CD);
-                case 2
-                    subplot(subPlotIdx(1,1),subPlotIdx(1,2),subPlotIdx(1,3));
-                    plotCL(AoA,CL);
-                    % CD
-                    subplot(subPlotIdx(2,1),subPlotIdx(2,2),subPlotIdx(2,3));
-                    plotCL(AoA,CL);
+            % wing plots %%%%%%%%
+            % CL
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLWing);
+            title('Wing');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDWing);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLWing,CDWing);
+            % H-stab %%%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLHstab);
+            title('H-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDHstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLHstab,CDHstab);
+            % V-stab %%%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLVstab);
+            title('V-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDVstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,CLVstab,CDVstab);
+            % Wing + H-stab %%%%
+            % CL
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCL(obj,AoA,CLWing + CLHstab);
+            title('Wing + H-stab');
+            % CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCD(obj,AoA,CDWing + CDHstab);
+            % CL by CD
+            spIdx = spIdx + 1; pIdx = pIdx + 1;
+            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
+            val(pIdx) = plotCLbyCD(obj,AoA,(CLWing + CLHstab),...
+                (CDWing + CDHstab));
+            % link axes
+            for ii = 1:3:12
+                linkaxes(spAxes(ii:ii+2),'x');
             end
-            
-            function plotCL(obj,AoA,CL)
-                obj.plot2D(AoA,CL,'linewidth',obj.lwd);
-                grid on; hold on;
-                xlabel('$\alpha$ (deg)'); xlabel('$C_{L,wing}$ (deg)');
+            for ii = 1:3
+                offset = ii + 3*(1:3);
+                linkaxes(spAxes([ii,offset]),'y');
             end
-            function plotCD(obj,AoA,CD)
-                obj.plot2D(AoA,CD,'linewidth',obj.lwd);
+            function val = plotCL(obj,AoA,CL)
+                val = obj.plot2D(AoA,CL,'linewidth',obj.lwd);
                 grid on; hold on;
-                xlabel('$\alpha$ (deg)'); xlabel('$C_{D,wing}$ (deg)');
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{L}$');
+            end
+            function val = plotCD(obj,AoA,CD)
+                val = obj.plot2D(AoA,CD,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{D}$');
+            end
+            function val = plotCLbyCD(obj,AoA,CL,CD)
+                val = obj.plot2D(AoA,CL./CD,'linewidth',obj.lwd);
+                grid on; hold on;
+                xlabel('$\alpha$ (deg)'); ylabel('$C_{L}/C_{D}$');
             end
         end
         
         % plot lemniscate
-        function val = plotLemniscate(obj)
+        function val = plotLemniscate(obj,pathParam)
             % local variable
-            pathParam = linspace(0,2*pi,300);
+            if nargin == 1
+                pathParam = linspace(0,2*pi,300);
+            end
             % get equations
             path = obj.pathAndTangentEqs.PathCoords(pathParam);
             % plot
@@ -875,25 +1273,29 @@ classdef maneuverabilityAdvanced
         end
         
         % plot radius of curvature
-        function val = plotPathRadiusOfCurvature(obj)
+        function val = plotPathRadiusOfCurvature(obj,pathParam)
             % local variable
-            pathParam = linspace(0,2*pi,300);
+            if nargin == 1
+                pathParam = linspace(0,2*pi,300);
+            end
             % calculate radius of curvature
-            R = obj.radiusOfCurvatureEq(pathParam);
+            R = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
             % plot
             pathParam = pathParam./(2*pi);
             val = obj.plot2D(pathParam,R,'linewidth',obj.lwd);
             xlabel('Path parameter');
-            ylabel('R (m)');
+            ylabel('Radius of curvature (m)');
             grid on;
             hold on;
             xticks(0:.25:1);
         end
         
         % plot heading angle over the path
-        function val = plotPathHeadingAngle(obj)
+        function val = plotPathHeadingAngle(obj,pathParam)
             % local variable
-            pathParam = linspace(0,2*pi,300);
+            if nargin == 1
+                pathParam = linspace(0,2*pi,300);
+            end
             % calculate radius of curvature
             headingAng = obj.pathAndTangentEqs.reqHeading(pathParam);
             headingAng = wrapTo2Pi(headingAng);
@@ -918,63 +1320,98 @@ classdef maneuverabilityAdvanced
             hold on;
             xticks(0:.25:1);
         end
+        
+        function val = plotHeadingVel(obj,pathParam,headingVel)
+            % plot
+            pathParam = pathParam./(2*pi);
+            val = obj.plot2D(pathParam,headingVel,'linewidth',obj.lwd);
+            xlabel('Path parameter');
+            ylabel('Heading speed (m/s)');
+            grid on;
+            hold on;
+            xticks(0:.25:1);
+        end
+        
+        function val = plotTangentPitchRange(obj,pathParam,tgtPitch)
+            % plot
+            pathParam = pathParam./(2*pi);
+            val = obj.plot2D([pathParam nan fliplr(pathParam)],...
+                [tgtPitch(1,:) nan tgtPitch(2,:)]);
+            xlabel('Path parameter');
+            ylabel('Tangent pitch range (deg)');
+            grid on;
+            hold on;
+            xticks(0:.25:1);
+        end
     end
     
     %% animation methods
     methods
-        function makeFancyAnimation(obj,pathParam,varargin)
+        function val = makeFancyAnimation(obj,pathParam,varargin)
+            %
+            val = struct('cdata',uint8(zeros(840,1680,3)),'colormap',[]);
             % parse input
             pp = inputParser;
             addParameter(pp,'animate',true,@islogical);
+            addParameter(pp,'waitForButton',true,@islogical);
             addParameter(pp,'addKiteTrajectory',false,@islogical);
             addParameter(pp,'tgtPitch',0*pathParam,@isnumeric);
             addParameter(pp,'rollInRad',0*pathParam,@isnumeric);
+            addParameter(pp,'headingVel',0*pathParam,@isnumeric);
+            addParameter(pp,'tangentPitchRange',[0;0]*pathParam,@isnumeric);
             parse(pp,varargin{:});
             % local variables
             tgtPitch = pp.Results.tgtPitch;
             roll = pp.Results.rollInRad;
-            % make a 3x4 subplot grid and get plot indices
-            plotIdx = NaN(4,3);
-            for ii = 1:numel(plotIdx)
-                plotIdx(ii) = ii;
-            end
-            plotIdx = plotIdx';
-            % the big plot indices
-            mainPlot = reshape(plotIdx(:,1:3),1,[]);
-            % the radius of curvature idx
-            rcIdx = plotIdx(1,4);
-            % heading angle idx
-            haIdx = plotIdx(2,4);
-            % tangent roll angle idx
-            tgIdx = plotIdx(3,4);
+            vH = pp.Results.headingVel;
+            tgtPitchRange = pp.Results.tangentPitchRange;
+            % make a subplot grid and get plot indices
+            spSz = [3,5]; % grid size
+            spIdx = reshape(1:15,spSz(2),[])';
+            mainPlot = spIdx(1:9);
+            rcIdx = spIdx(10);
+            haIdx = spIdx(11);
+            tgIdx = spIdx(12);
+            vHIdx = spIdx(13);
+            tgtRangeIdx = spIdx(14);
             % make the static 3D plot
-            subplot(3,4,mainPlot);
+            subplot(spSz(1),spSz(2),mainPlot);
             obj.plotDome;
             obj.plotLemniscate;
             view(100,35);
             axis equal;
-            pTanVec = obj.plotTangentVec(0);
+            pTanVec = obj.plotTangentVec(pathParam(1));
             % make the static radius of curvature plot
-            subplot(3,4,rcIdx);
+            subplot(spSz(1),spSz(2),rcIdx);
             obj.plotPathRadiusOfCurvature;
-            rC = obj.radiusOfCurvatureEq(pathParam);
+            rC = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
             % make the static heading angle plot
-            subplot(3,4,haIdx);
+            subplot(spSz(1),spSz(2),haIdx);
             obj.plotPathHeadingAngle;
             % make required roll angle plot
-            subplot(3,4,tgIdx);
+            subplot(spSz(1),spSz(2),tgIdx);
             obj.plotRollAngle(pathParam,roll);
+            % make path velocity plot
+            subplot(spSz(1),spSz(2),vHIdx);
+            obj.plotHeadingVel(pathParam,vH);
+            % make tangent pitch plots
+            subplot(spSz(1),spSz(2),tgtRangeIdx);
+            obj.plotTangentPitchRange(pathParam,tgtPitchRange*180/pi);
+            % font size
+            obj.setFontSize;
             % calculate values for azimuth,elevation, and heading
             hAng = obj.pathAndTangentEqs.reqHeading(pathParam);
             hAng = wrapTo2Pi(hAng);
             azimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
+            azSweep = (max(azimElev(1,:)) - min(azimElev(1,:)))*180/pi;
+            elSweep = (max(azimElev(2,:)) - min(azimElev(2,:)))*180/pi;
             % check if animation is wanted
             if pp.Results.animate
                 delete(pTanVec);
                 pathParam = pathParam./(2*pi);
                 for ii = 1:numel(pathParam)
                     % tangent vector
-                    subplot(3,4,mainPlot);
+                    subplot(spSz(1),spSz(2),mainPlot);
                     xlabel('');
                     if ii > 1
                         delete(pTanVec);
@@ -982,63 +1419,81 @@ classdef maneuverabilityAdvanced
                         delete(pHeadAng);
                         delete(pAxes);
                         delete(pRollAng);
+                        delete(pHeadVel);
+                        delete(pTgtRange);
                     end
                     pTanVec = obj.plotTangentVec(pathParam(ii)*2*pi);
-                    title(sprintf('s = %0.2f',pathParam(ii)));
+                    title(sprintf(['Path width = %d deg, ',...
+                        'Path height = %d deg, s = %0.2f'],...
+                        [round(azSweep),round(elSweep),pathParam(ii)]));
                     % kite axes
                     if pp.Results.addKiteTrajectory
                         pAxes = obj.plotBodyFrameAxes(azimElev(1,ii),...
                             azimElev(2,ii),hAng(ii),tgtPitch(ii),roll(ii));
                     end
                     % radius of curvature
-                    subplot(3,4,rcIdx);
+                    subplot(spSz(1),spSz(2),rcIdx);
                     pRadCur = plot(pathParam(ii),rC(ii),'mo');
                     % heading angle
-                    subplot(3,4,haIdx);
+                    subplot(spSz(1),spSz(2),haIdx);
                     pHeadAng = plot(pathParam(ii),hAng(ii)*180/pi,'mo');
                     % roll angle
-                    subplot(3,4,tgIdx);
+                    subplot(spSz(1),spSz(2),tgIdx);
                     pRollAng = plot(pathParam(ii),roll(ii)*180/pi,'mo');
-                    set(findobj('-property','FontSize'),'FontSize',11);
+                    % heading velocity
+                    subplot(spSz(1),spSz(2),vHIdx);
+                    pHeadVel = plot(pathParam(ii),vH(ii),'mo');
+                    % tangent pitch range
+                    subplot(spSz(1),spSz(2),tgtRangeIdx);
+                    pTgtRange = xline(pathParam(ii),'m');
+                    % draw
+                    drawnow;
                     % wait
-%                     waitforbuttonpress;
-                    drawnow
+                    if pp.Results.waitForButton
+                        waitforbuttonpress;
+                        fprintf('Waiting for button press.\n');
+                    end
+                    % get the frame
+                    ff = getframe(gcf);
+                    val(ii).cdata = ff.cdata;
                 end
                 
             end
         end
         
-        function val = pitchStabAnalysisAnim(obj,G_vFlow,H_vKite,...
-                tgtPitch,dElev,pathParam)
+        function val = pitchStabAnalysisAnim(obj,results,inputs,...
+                pathParam,varargin)
+            % parse input
+            pp = inputParser;
+            addParameter(pp,'animate',true,@islogical);
+            addParameter(pp,'waitForButton',true,@islogical);
+            parse(pp,varargin{:});
             % output captured frames
             val = struct('cdata',uint8(zeros(840,1680,3)),'colormap',[]);
             % local varibales hopefully
             obj.linStyleOrder = {'-'};
             obj.colorOrder = [0 0 0];
-            % get path azimuth and elevation
-            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
-            pathHeading  = obj.pathAndTangentEqs.reqHeading(pathParam);
-            reqRoll      = obj.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
-            % kite vel in tangent frame
-            T_vKite = obj.calcKiteVelInTangentFrame(H_vKite,pathHeading);
             % make the plots
             for ii = 1:numel(pathParam)
                 if ii > 1
                     delete(plotArray)
                 end
-                plotArray = obj.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite(:,ii),...
-                    pathAzimElev(1,ii),pathAzimElev(2,ii),pathHeading(ii),...
-                    tgtPitch,reqRoll(ii),dElev);
+                
+                plotArray = ...
+                    obj.plotPitchStabilityAnalysisResults(results(ii),inputs(ii));
                 subplot(2,5,9:10);
                 title(sprintf('s = %.2f',pathParam(ii)/(2*pi)));
-                set(findobj('-property','FontSize'),'FontSize',11);
+                obj.setFontSize;
                 % get the frame
                 ff = getframe(gcf);
                 val(ii).cdata = ff.cdata;
+                % wait for button press
+                if pp.Results.waitForButton
+                    fprintf('Waiting for button press.\n');
+                    waitforbuttonpress;
+                end
             end
-            
         end
-        
         
     end
     

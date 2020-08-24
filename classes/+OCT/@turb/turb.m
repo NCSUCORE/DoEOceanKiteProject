@@ -60,7 +60,7 @@ classdef turb < handle
         end
         
         function val = get.momentArm(obj)
-            veh = OCT.vehicle;
+            veh = OCT.vehicleM;
             val = SIM.parameter('Value',-veh.rB_LE.Value + obj.attachPtVec.Value,'Unit','m');
         end        
         

@@ -49,7 +49,7 @@ loadComponent('fullScale1thr');
 % loadComponent('CNAPsTurbJames');
 % loadComponent('CNAPsTurbMitchell');
 loadComponent('ConstXYZT');
-
+% SIXDOFDYNAMICS        = "sixDoFDynamicsEuler";
 %% Environment IC's and dependant properties
 env.water.setflowVec([2 0 0],'m/s')
 

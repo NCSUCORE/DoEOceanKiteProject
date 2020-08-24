@@ -1,11 +1,16 @@
-% clear;clc;close all
+clear;
+clc;
+close all;
+
+cd(fileparts(mfilename('fullpath')));
+
 simParams = SIM.simParams;
-simParams.setDuration(500,'s');
+simParams.setDuration(900,'s');
 dynamicCalc = '';
 
-thrLength = 400;
-el = 40*pi/180;                         % rad - Mean elevation angle
-h = 15*pi/180;  w = 40*pi/180;          % rad - Path width/height
+thrLength = 60;
+el = 30*pi/180;                         % rad - Mean elevation angle
+h = 10*pi/180;  w = 40*pi/180;          % rad - Path width/height
 [a,b] = boothParamConversion(w,h);      % Path basis parameters
 
 %% Load components
@@ -23,15 +28,15 @@ loadComponent('constBoothLem');
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
-loadComponent('oneDOFWnch');
+loadComponent('ayazFullScaleOneThrWinch');
 % Tether
-loadComponent('pathFollowingTether');
+loadComponent('ayazFullScaleOneThrTether');
 % Sensors
-loadComponent('idealSensors')
+loadComponent('idealSensors');
 % Sensor processing
-loadComponent('idealSensorProcessing')
+loadComponent('idealSensorProcessing');
 % Vehicle
-loadComponent('fullScale1thr');
+loadComponent('ayazFullScaleOneThrVhcl');
 % loadComponent('pathFollowingVhclForComp')
 % loadComponent('JohnfullScale1thr');
 
@@ -42,7 +47,7 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([2 0 0],'m/s')
+env.water.setflowVec([1 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % Lemniscate of Booth
@@ -81,8 +86,8 @@ fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
-% fltCtrl.setFirstSpoolLap(1000,'');
-fltCtrl.elevatorReelInDef.setValue(20,'deg');
+
+fltCtrl.elevatorReelInDef.setValue(0,'deg');
 
 %% Run Simulation
 simWithMonitor('OCTModel')
@@ -97,6 +102,8 @@ fpath = fullfile(fileparts(which('OCTProject.prj')),'outputs\');
 filename = sprintf(strcat('FS-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 
-tsc.plotTanAngles('plot1Lap',true,'plotS',true);
+figure;
+set(gcf, 'Position', get(0, 'Screensize'));
+tsc.plotLapSpeedAndTangentAngles;
 % vhcl.animateSim(tsc,0.5,...
 %     'PathFunc',fltCtrl.fcnName.Value);

@@ -1,12 +1,14 @@
 clear
 clc
 % close all
+fIdx = 1;
 
 %% initailize
+[a,b] = boothParamConversion(40*pi/180,15*pi/180);      % Path basis parameters
 cIn = maneuverabilityAdvanced;
-cIn.aBooth = 0.3491;
-cIn.bBooth = 0.6391;
-cIn.tetherLength = 50;
+cIn.aBooth = a;
+cIn.bBooth = b;
+cIn.tetherLength = 60;
 cIn.meanElevationInRadians = 30*pi/180;
 
 %% test inertial position calculation
@@ -19,7 +21,7 @@ heading = 0*pi/180;
 tgtPitch = 0*pi/180;
 roll = 0*pi/180;
 
-G_vFlow = [3;0;0];      % flow vel in ground frame
+G_vFlow = [1;0;0];      % flow vel in ground frame
 T_vKite = [2;0;0];      % kite vel in tangent (North-East-Down) frame
 
 B_vApp = cIn.calcApparentVelInBodyFrame(G_vFlow,T_vKite,...
@@ -37,7 +39,8 @@ uVsLift = cIn.calcVstabLiftDirection(B_vApp);
 %% test wing force and moment calculation
 cIn.wingChord = 1;
 cIn.wingAspectRatio = 10;
-cIn.wingAeroCenter = [1;0;0];
+cIn.wingAeroCenter = [0.25;0;0];
+cIn.wingArea = 10;
 
 % wing loads
 wingLoads = cIn.calcWingLoads(B_vApp);
@@ -46,6 +49,7 @@ wingLoads = cIn.calcWingLoads(B_vApp);
 cIn.hstabChord = 0.5;
 cIn.hstabAspectRatio = 10;
 cIn.hstabAeroCenter = [-5;0;0];
+cIn.hstabArea = cIn.hstabChord^2*cIn.hstabAspectRatio;
 cIn.hstabControlSensitivity = 0.08;
 elevatorDeflection = 0;
 
@@ -56,13 +60,14 @@ hstabLoads = cIn.calchStabLoads(B_vApp,elevatorDeflection);
 cIn.vstabChord = 0.5;
 cIn.vstabAspectRatio = 10;
 cIn.vstabAeroCenter = [-5;0;-0.5];
+cIn.vstabArea = cIn.vstabChord^2*cIn.vstabAspectRatio/2;
 
 % v-stab loads
 vstabLoads = cIn.calcvStabLoads(B_vApp);
 
 %% test buoyancy force and moment calculation
 cIn.buoyFactor = 1.0;
-cIn.centerOfBuoy = [0.5;0;0];
+cIn.centerOfBuoy = [0.0;0;0];
 cIn.mass = 3e3;
 
 buoyLoads = cIn.calcBuoyLoads(azimuth,elevation,heading,tgtPitch,roll);
@@ -72,7 +77,7 @@ B_Fgrav = cIn.calcGravForce(azimuth,elevation,heading,tgtPitch,roll);
 netWeight = buoyLoads.force + B_Fgrav;
 
 %% test tether force and moment calculation
-cIn.bridleLocation = [0;0;1];
+cIn.bridleLocation = [0;0;0];
 thrLoads = cIn.calcTetherLoads(G_vFlow,T_vKite,azimuth,elevation,...
     heading,tgtPitch,roll,elevatorDeflection);
 
@@ -87,20 +92,29 @@ reqHeadingAngle = cIn.pathAndTangentEqs.reqHeading(pathParam);
 H_vKite = 8*G_vFlow;
 reqRoll = cIn.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
 
+%% test acheivable velocity calcualtion
+% solVals = cIn.getAttainableVelocityOverPath(G_vFlow,...
+%     tgtPitch,pathParam);
+
 %% test pitch stability calculation
-% elevator deflection required to trim
-reqDe = cIn.calcElevatorDefForTrim(G_vFlow,T_vKite,...
-    azimuth,elevation,heading,tgtPitch,roll);
+% % elevator deflection required to trim
+% reqDe = cIn.calcElevatorDefForTrim(G_vFlow,T_vKite,...
+%     azimuth,elevation,heading,tgtPitch,roll);
 
 % test pitch stability ananlysis function
 tgtPitchSweep = linspace(-20,20,41)*pi/180;
 % res = cIn.pitchStabilityAnalysis(G_vFlow,T_vKite,azimuth,elevation,...
 %     heading,tgtPitchSweep,roll,elevatorDeflection);
 
-
 %% test plotting functions
-fIdx = 1;
-% figure(2);
+fIdx = fIdx+1;
+figure(fIdx);
+set(gcf,'Position',[0 0 2*560 2*420]);
+cIn.plotAeroCoefficients;
+
+
+% fIdx = fIdx+1;
+% figure(fIdx);
 % set(gcf,'Position',[18 417 560 420]);
 % cIn.plotDome;
 % hold on;
@@ -115,10 +129,12 @@ fIdx = 1;
 % pLem = cIn.plotLemniscate;
 % pTanVec = cIn.plotTangentVec(pi/6);
 %
-% figure(3);
+% fIdx = fIdx+1;
+% figure(fIdx);
 % cIn.plotPathRadiusOfCurvature;
 %
-% figure(4);
+% fIdx = fIdx+1;
+% figure(fIdx);
 % cIn.plotPathHeadingAngle;
 
 % fIdx = fIdx+1;
@@ -127,12 +143,17 @@ fIdx = 1;
 % pTgt = cIn.plotPitchStabilityAnalysisResults(G_vFlow,T_vKite,azimuth,...
 %     elevation,heading,tgtPitchSweep,roll,elevatorDeflection);
 
+% fIdx = fIdx+1;
+% figure(fIdx);
+% cIn.plotRollAngle(pathParam,reqRoll);
+
 
 %% test animation functions
 fIdx = fIdx+10;
 figure(fIdx);
-set(gcf,'Position',[20 60 560*2 420*2]);
+set(gcf,'Position',[0 0 560*2.5 420*2]);
 cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
-    'rollInRad',reqRoll);
+    'rollInRad',reqRoll,...
+    'waitForButton',true);
 
