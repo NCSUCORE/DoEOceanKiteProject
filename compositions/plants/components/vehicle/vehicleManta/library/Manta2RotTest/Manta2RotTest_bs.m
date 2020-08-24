@@ -34,7 +34,7 @@ vhcl.setRB_LE([0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
 %% Added Mass/Damping (defaults to zeros)
-vhcl.setMa6x6_LE([68.608         0           0           0        5.73           0;...
+vhcl.setMa6x6_LE(-[68.608        0           0           0        5.73           0;...
                        0   814.592           0     -403.87           0     2115.99;...
                        0         0     4743.68           0    -3359.54           0;...
                        0   -403.87           0    22089.56           0    -1509.95;...
@@ -64,7 +64,7 @@ vhcl.hStab.setRootChord(.52,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(3.2/((.52+.52*.8)*.5),''); %Span 4, hspan 2
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(1.99,'deg');
+vhcl.hStab.setIncidence(1.5,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
