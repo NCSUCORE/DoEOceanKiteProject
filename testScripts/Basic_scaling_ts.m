@@ -28,8 +28,7 @@ loadComponent('oneDOFWnch');
 % Tether
 loadComponent('fiveNodeSingleTether');
 % Vehicle
-loadComponent('sensitivityAnalysis');
-vhcl.inertia_CM.Value
+loadComponent('fullScale1thr');
 %loadComponent('pathFollowingVhclForComp');
 % Environment
 loadComponent('constXYZT');
@@ -134,18 +133,12 @@ simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 %% 
 
+
 %this animates the simulation
 vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
     'PlotTracer',true,'FontSize',18)
-
 %% 
-figure; 
-tsc.winchPower.plot
 
-% find required time interval
-tstart = find(tsc.winchPower.Time==200);
-tend = find(tsc.winchPower.Time==450);
-% required max  
-PowMax = max(tsc.winchPower.Data(tstart:tend))/1e3  
-
-
+% tsc.thrReleaseSpeeds.plot
+% figure; 
+% tsc.gndNodeTenVecs.plotMag

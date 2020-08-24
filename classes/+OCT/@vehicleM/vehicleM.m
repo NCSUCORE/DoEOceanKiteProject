@@ -49,6 +49,8 @@ classdef vehicleM < dynamicprops
         initVelVecBdy
         initEulAng
         initAngVelVec
+        
+        hydroChracterization
     end
     
     properties (Dependent)
@@ -144,12 +146,14 @@ classdef vehicleM < dynamicprops
             
 %             obj.updateTurb;
             
-            % initial conditions
+            % initial conditions 
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
             obj.initVelVecBdy           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the body frame ');
             obj.initEulAng              = SIM.parameter('Unit','rad','Description','Initial Euler angles');
             obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
             
+
+            obj.hydroChracterization    = SIM.parameter('Value',1,'Unit','','Description','1 = AVL; 0 = XFoil');
             %Legacy Properties
 
         end
@@ -544,22 +548,25 @@ classdef vehicleM < dynamicprops
         
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
-            fileLoc = which(obj.fluidCoeffsFileName.Value);
-                                  
-            if ~isfile(fileLoc)
-                fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                    ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                str = input('(Y/N): \n','s');
-                if isempty(str)
-                    str = 'Y';
-                end
-                if strcmpi(str,'Y')
-                    aeroStruct=runAVL(obj);
+            
+            if obj.hydroChracterization.Value == 1
+                fileLoc = which(obj.fluidCoeffsFileName.Value);
+                
+                if ~isfile(fileLoc)
+                    fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                        ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                    str = input('(Y/N): \n','s');
+                    if isempty(str)
+                        str = 'Y';
+                    end
+                    if strcmpi(str,'Y')
+                        aeroStruct = runAVL(obj);
+                    else
+                        warning('Simulation won''t run without valid aero coefficient values')
+                    end
                 else
-                    warning('Simulation won''t run without valid aero coefficient values')
+                    load(fileLoc,'aeroStruct');
                 end
-            else 
-                load(fileLoc,'aeroStruct');
             end
                 
             obj.portWing.setCL(aeroStruct(1).CL,'');
@@ -600,10 +607,23 @@ classdef vehicleM < dynamicprops
         end
         
         % plotting functions
-        function plotVehiclePolars(obj,varargin)
+        function plotVehiclePolars(obj,env,varargin)
             p = inputParser;
             addParameter(p,'xLim',[-inf inf],@isnumeric);
+            addParameter(p,'vBdy',[0;0;0],@isnumeric);
+            addParameter(p,'vFlow',[.25;0;0],@isnumeric);
+            addParameter(p,'theta',-20:.5:20,@isnumeric);
+            addParameter(p,'elevation',30,@isnumeric);
+            addParameter(p,'azimuth',0,@isnumeric);
+            addParameter(p,'heading',0,@isnumeric);
             parse(p,varargin{:})
+            
+            theta = p.Results.theta;
+            elevation = p.Results.elevation;
+            thetaTan = theta-90+elevation;
+            
+            Ry = @(x) [cosd(x) 0 -sind(x);0 1 0;sind(x) 0 cosd(x)]; %   Rotation matrix for rotations about the y-axis 
+            Rz = @(x) [cosd(x) sind(x) 0;-sind(x) cosd(x) 0;0 0 1]; %   Rotation matrix for rotations about the z-axis
             
             alpha = obj.portWing.alpha.Value;
             Aref = obj.fluidRefArea.Value;
@@ -611,17 +631,82 @@ classdef vehicleM < dynamicprops
                 (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
             CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
                 obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref;
-            CLsurf = obj.portWing.CL.Value+obj.stbdWing.CL.Value+obj.hStab.CL.Value;
-            CDtot = obj.portWing.CD.Value+obj.stbdWing.CD.Value+obj.hStab.CD.Value+obj.vStab.CD.Value+CDfuse;
+            CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
+            CLstab = obj.hStab.CL.Value;
+            CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
+            CDstab = obj.hStab.CD.Value;
+            CDstab1 = interp1(alpha*pi/180,CDstab,0,'linear','extrap')+CLstab.^2./(pi*0.9*obj.hStab.AR.Value);
+            CDvert = obj.vStab.CD.Value;
+            
+            alph = zeros(numel(theta),1);
+            CLstabR = zeros(numel(theta),1);
+            CDstabR = zeros(numel(theta),1);
+            
+            for i = 1:numel(theta)
+                TcG = Ry(90-elevation)*Rz(p.Results.azimuth);
+                BcT = Ry(thetaTan(i))*Rz(p.Results.heading);
+                TcB = transpose(BcT);
+                BcG = BcT*TcG;
+                
+                vApp = BcG*p.Results.vFlow-p.Results.vBdy;    vApp2 = norm(vApp)^2;
+                uApp = vApp./norm(vApp);            uAppL = cross(uApp,[0;1;0]);
+                alph(i) = atan2(vApp(3),vApp(1));
+                
+                FgravG = [0;0;-env.gravAccel.Value*obj.mass.Value];
+                Fgrav = BcG*FgravG;
+                Fbuoy = BcG*-FgravG;
+                FLwing = 1/2*env.water.density.Value*obj.fluidRefArea.Value*vApp2*uAppL*...
+                    interp1(alpha*pi/180,CLwing,alph(i),'linear','extrap');
+                FLstab = 1/2*env.water.density.Value*obj.fluidRefArea.Value*vApp2*uAppL*...
+                    interp1(alpha*pi/180,CLstab,alph(i),'linear','extrap');
+                FDwing = 1/2*env.water.density.Value*obj.fluidRefArea.Value*vApp2*uApp*...
+                    interp1(alpha*pi/180,CDwing,alph(i),'linear','extrap');
+                FDstab = 1/2*env.water.density.Value*obj.fluidRefArea.Value*vApp2*uApp*...
+                    interp1(alpha*pi/180,CDstab,alph(i),'linear','extrap');
+                FDvert = 1/2*env.water.density.Value*obj.fluidRefArea.Value*vApp2*uApp*...
+                    interp1(alpha*pi/180,CDvert,alph(i),'linear','extrap');
+                Fnet = Fgrav+Fbuoy+FLwing+FLstab+FDwing+FDstab+FDvert;
+                thrF = -dot(TcB*Fnet,[0;0;1]);
+                Fthr = BcT*[0;0;thrF];
+                
+                Mbuoy = cross(obj.rCentOfBuoy_LE.Value-obj.rCM_LE.Value,Fbuoy);
+                Mgrav = cross(obj.rCM_LE.Value-obj.rCM_LE.Value,Fgrav);
+                Mwing = cross([obj.portWing.rAeroCent_SurfLE.Value(1);0;0]-obj.rCM_LE.Value,FLwing+FDwing);
+                Mstab = cross((obj.hStab.rAeroCent_SurfLE.Value+obj.hStab.rSurfLE_WingLEBdy.Value)-obj.rCM_LE.Value,FLstab+FDstab);
+                Mvert = cross(([obj.vStab.rAeroCent_SurfLE.Value(1);0;obj.vStab.rAeroCent_SurfLE.Value(2)]+obj.vStab.rSurfLE_WingLEBdy.Value)-obj.rCM_LE.Value,FDvert);
+                Mthr = cross(-obj.rBridle_LE.Value,Fthr);
+                Mnet = Mbuoy+Mgrav+Mwing+Mstab+Mvert+Mthr;
+                MDstab = cross((obj.hStab.rAeroCent_SurfLE.Value+obj.hStab.rSurfLE_WingLEBdy.Value)-obj.rCM_LE.Value,FDstab);
+                
+                CLhReq = 2*dot(Mbuoy+Mwing+Mvert+Mthr+MDstab,[0;1;0])...
+                    /(env.water.density.Value*obj.fluidRefArea.Value*...
+                    vApp2*norm((obj.hStab.rAeroCent_SurfLE.Value+obj.hStab.rSurfLE_WingLEBdy.Value)-obj.rCM_LE.Value));
+%                 CLstabR(i) = interp1(alpha*pi/180,CLstab,alph(i),'linear','extrap')+CLhReq;
+                CLstabR(i) = CLhReq;
+                CDstabR(i) = interp1(alpha*pi/180,CDstab,0,'linear','extrap')+CLstabR(i)^2/(pi*0.9*obj.hStab.AR.Value);
+                FLstabR = 1/2*env.water.density.Value*obj.fluidRefArea.Value*vApp2*uAppL*CLstabR(i);
+                FDstabR = 1/2*env.water.density.Value*obj.fluidRefArea.Value*vApp2*uApp*CDstabR(i);
+                MstabR = cross((obj.hStab.rAeroCent_SurfLE.Value+obj.hStab.rSurfLE_WingLEBdy.Value)-obj.rCM_LE.Value,FLstabR+FDstabR);
+                MnetR = Mbuoy+Mgrav+Mwing+MstabR+Mvert+Mthr;
+            end
+            
+            CLtot = interp1(alpha*pi/180,CLwing,alph,'linear','extrap')+CLstabR;
+            CDtot = interp1(alpha*pi/180,CDwing,alph,'linear','extrap')+interp1(alpha*pi/180,CDvert,alph,'linear','extrap')...
+                +interp1(alpha*pi/180,CDfuse,alph,'linear','extrap')+CDstabR;
+            CLtot1 = CLwing+CLstab;
+            CDtot1 = CDwing+CDstab+CDvert+CDfuse;
+            
             figure;subplot(2,1,1);hold on;grid on;
-            plot(alpha,CLsurf.^3./CDtot.^2,'b-');  
-            plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value).^3./(obj.portWing.CD.Value+obj.stbdWing.CD.Value).^2,'r-')
+            plot(alpha,CLtot1.^3./CDtot1.^2,'b-');  
+            plot(alph*180/pi,CLtot.^3./CDtot.^2,'r--');  
+%             plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value).^3./(obj.portWing.CD.Value+obj.stbdWing.CD.Value).^2,'r-')
             xlabel('alpha [deg]');  ylabel('$\mathrm{CL^3/CD^2}$');  xlim(p.Results.xLim);
+            
             subplot(2,1,2);hold on;grid on;
-            plot(alpha,CLsurf./CDtot,'b-');  
-            plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value)./(obj.portWing.CD.Value+obj.stbdWing.CD.Value),'r-')
+            plot(alpha,CLtot1./CDtot1,'b-');
+            plot(alph*180/pi,CLtot./CDtot,'r--');  legend('kite','kite w/ CL correct','location','northwest')
+%             plot(alpha,(obj.portWing.CL.Value+obj.stbdWing.CL.Value)./(obj.portWing.CD.Value+obj.stbdWing.CD.Value),'r-'); legend('kite','wing')
             xlabel('alpha [deg]');  ylabel('$\mathrm{CL/CD}$');  xlim(p.Results.xLim);
-            legend('kite','wing')
         end
         function h = plot(obj,varargin)
             

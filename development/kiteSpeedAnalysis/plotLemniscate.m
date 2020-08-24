@@ -6,10 +6,10 @@ set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 
 %% test variables
-radius = 100;
+radius = 60;
 meanElevation = 30*pi/180;
-aBooth = 0.6;
-bBooth = 1.4;
+aBooth = 0.3491;
+bBooth = 0.6391;
 
 % function to get lemniscate co-ordinates
 [lemniscate,polarCoord] = getLemniScateCoordinates(radius,...

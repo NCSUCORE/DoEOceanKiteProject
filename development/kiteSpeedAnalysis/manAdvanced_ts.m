@@ -7,7 +7,7 @@ fIdx = 1;
 cIn = maneuverabilityAdvanced;
 cIn.aBooth = 0.3491;
 cIn.bBooth = 0.6391;
-cIn.tetherLength = 50;
+cIn.tetherLength = 60;
 cIn.meanElevationInRadians = 30*pi/180;
 
 %% define kite
@@ -42,7 +42,7 @@ G_vFlow = [1;0;0];      % flow vel in ground frame
 H_vKite = 2*G_vFlow;    % flow vel in heading frame
 
 % pathParameter
-pathParam = 0*2*pi;
+pathParam = 0.6*2*pi;
 % get azimuth,elevation, and head at path location
 pathAzimElev = cIn.pathAndTangentEqs.AzimAndElev(pathParam);
 pathHeading  = cIn.pathAndTangentEqs.reqHeading(pathParam);
@@ -90,7 +90,7 @@ set(findobj('-property','FontSize'),'FontSize',11);
 % 
 % %% video
 % [status, msg, msgID] = mkdir(pwd,'outputs');
-% fName = [pwd,'\outputs\',strrep(datestr(datetime),':','_')];
+fName = [pwd,'\outputs\',strrep(datestr(datetime),':','_')];
 % % % % video settings
 % video = VideoWriter(strcat(fName,'_pitchAnalysis'),'Motion JPEG AVI');
 % video.FrameRate = 1;
