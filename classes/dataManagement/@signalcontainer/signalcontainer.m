@@ -329,6 +329,19 @@ classdef signalcontainer < dynamicprops
             pObj(pIdx) = plot(pathParam(ran),csDef(ran,4));
             ylabel('$\mathrm{\delta e}$ (deg)');
             
+            % calculate derivative
+            dv = diff(vhclSpeed(ran));
+            dTanPitch = diff(tanPitch(ran));
+            dTanRoll = diff(tanRoll(ran));
+            dPath = diff(pathParam(ran));
+            dvdp = dv(:)./dPath(:);
+            dTpdp = dTanPitch(:)./dPath(:);
+            dTanRoll = dTanRoll(:)./dPath(:);
+            
+            if any(abs([dvdp dTpdp dTanRoll])>1e3)
+               warning('The simulations may have produced garbage results.');
+            end
+           
             % set all axis labels and stuff
             linStyleOrder = {'-','--',':o',};
             colorOrder = [228,26,28
@@ -363,6 +376,8 @@ classdef signalcontainer < dynamicprops
             % avereage speed
             avgSpeed = disTraveled/lapTime;
             % title
+            testVal = computeSimStats(obj);
+            
             sgtitle(sprintf(['Lap number = %d',', Lap time = %.2f sec',...
                 ', Avg $v_{app,x}^3$ = %.2f',', Distace covered = %.2f m',...
                 ', Avg speed = %.2f m/s'],...
