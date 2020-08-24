@@ -1,29 +1,28 @@
 clear;
 clc;
-close all;
+% close all;
 
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(900,'s');
+simParams.setDuration(600,'s');
 dynamicCalc = '';
-
-thrLength = 60;
-el = 30*pi/180;                         % rad - Mean elevation angle
-h = 10*pi/180;  w = 40*pi/180;          % rad - Path width/height
+flowSpeed = 1;
+thrLength = 100;
+el = 20*pi/180;                         % rad - Mean elevation angle
+w = 15*pi/180;          % rad - Path width/height
+h = 10*pi/180;  
 [a,b] = boothParamConversion(w,h);      % Path basis parameters
 
 %% Load components
 % Flight Controller
-% loadComponent('pathFollowingCtrlAddedMass');
 loadComponent('pathFollowingCtrlForILC');
 fltCtrl.rudderGain.setValue(0,'')
-% SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
+% Spooling controller
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-% loadComponent('constEllipse');
 loadComponent('constBoothLem');
 % Ground station
 loadComponent('pathFollowingGndStn');
@@ -37,17 +36,12 @@ loadComponent('idealSensors');
 loadComponent('idealSensorProcessing');
 % Vehicle
 loadComponent('ayazFullScaleOneThrVhcl');
-% loadComponent('pathFollowingVhclForComp')
-% loadComponent('JohnfullScale1thr');
 
 % Environment
-% loadComponent('CNAPsNoTurbJosh');
-% loadComponent('CNAPsTurbJames');
-% loadComponent('CNAPsTurbMitchell');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([1 0 0],'m/s')
+env.water.setflowVec([flowSpeed 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % Lemniscate of Booth
@@ -65,7 +59,6 @@ vhcl.setICsOnPath(...
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
     (11/2)*norm(env.water.flowVec.Value))   % Initial speed
-% vhcl.setTurbDiam(turbDiameter,'m');
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...

@@ -4,12 +4,12 @@ clc
 fIdx = 1;
 
 %% initailize
-[a,b] = boothParamConversion(40*pi/180,15*pi/180);      % Path basis parameters
+[a,b] = boothParamConversion(8*pi/180,2*pi/180);      % Path basis parameters
 cIn = maneuverabilityAdvanced;
 cIn.aBooth = a;
 cIn.bBooth = b;
-cIn.tetherLength = 60;
-cIn.meanElevationInRadians = 30*pi/180;
+cIn.tetherLength = 100;
+cIn.meanElevationInRadians = 20*pi/180;
 
 %% test inertial position calculation
 azimuth = 0*pi/180;
@@ -90,7 +90,7 @@ reqHeadingAngle = cIn.pathAndTangentEqs.reqHeading(pathParam);
 
 %% test calculation of required roll over the path
 H_vKite = 8*G_vFlow;
-reqRoll = cIn.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
+% reqRoll = cIn.calcRequiredRoll(G_vFlow,H_vKite,pathParam);
 
 %% test acheivable velocity calcualtion
 % solVals = cIn.getAttainableVelocityOverPath(G_vFlow,...
@@ -113,22 +113,22 @@ set(gcf,'Position',[0 0 2*560 2*420]);
 cIn.plotAeroCoefficients;
 
 
-% fIdx = fIdx+1;
-% figure(fIdx);
-% set(gcf,'Position',[18 417 560 420]);
-% cIn.plotDome;
-% hold on;
-% grid on;
-% view(100,35);
-% axis equal;
-%
-% pAxes = cIn.plotBodyFrameAxes(azimuth,elevation,...
-%     heading,tgtPitch,roll);
-%
-% pVels = cIn.plotVelocities(G_vFlow,T_vKite,azimuth,elevation);
-% pLem = cIn.plotLemniscate;
-% pTanVec = cIn.plotTangentVec(pi/6);
-%
+fIdx = fIdx+1;
+figure(fIdx);
+set(gcf,'Position',[18 417 560 420]);
+cIn.plotDome;
+hold on;
+grid on;
+view(100,35);
+axis equal;
+
+pAxes = cIn.plotBodyFrameAxes(azimuth,elevation,...
+    heading,tgtPitch,roll);
+
+pVels = cIn.plotVelocities(G_vFlow,T_vKite,azimuth,elevation);
+pLem = cIn.plotLemniscate;
+pTanVec = cIn.plotTangentVec(pi/6);
+
 % fIdx = fIdx+1;
 % figure(fIdx);
 % cIn.plotPathRadiusOfCurvature;
