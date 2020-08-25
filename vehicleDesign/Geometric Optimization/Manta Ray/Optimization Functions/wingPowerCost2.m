@@ -1,4 +1,4 @@
-function [J,Flift] = wingPowerCost2(u,wing,hStab,vStab,fuse,Env)
+function [J,Flift,CL,CD] = wingPowerCost2(u,wing,hStab,vStab,fuse,Env)
 
 ARw = u(1); 
 alpha = u(2)*pi/180;

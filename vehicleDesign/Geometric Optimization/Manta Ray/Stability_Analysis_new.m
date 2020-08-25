@@ -4,7 +4,7 @@ clc;clear;
 %%  Input definitions 
 loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
 % loadComponent('newManta2RotNACA2412');              %   Load vehicle 
-loadComponent('Manta2RotTest');                     %   Load vehicle 
+loadComponent('Manta2RotNew');                     %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
