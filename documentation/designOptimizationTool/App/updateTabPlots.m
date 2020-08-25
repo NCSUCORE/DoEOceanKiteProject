@@ -1,17 +1,23 @@
-function updateTabPlots(app,AR_ini,Span_ini,D_ini,L_ini,WingDim)
+function updateTabPlots(app,AR,Span,D,L,Wingdim, NSp)
             T = 'MT';
             
             DrawPlot = 'KiteDes';
-            A_kitePlot(app,AR_ini,Span_ini,D_ini,L_ini);
+            A_kitePlot(app,AR,Span,D,L);
 
             
             DrawPlot2 = 'SFlight';
-            A_optAoAplot(app,AR_ini,Span_ini,D_ini,L_ini)
-
+            A_optAoAplot(app,AR,Span,D,L)
 
             DrawPlot3 = 'WingDes';
-            A_wingDesignPlot(app,AR_ini,Span_ini,...
-                WingDim(1),WingDim(2),WingDim(3),WingDim(4));
-            
+            if NSp == 0
+                A_wingDesignPlot(app,AR,Span,Wingdim(1), 0, 0, 0);            
+            elseif NSp == 1
+                A_wingDesignPlot(app,AR,Span,Wingdim(1), Wingdim(2), 0, 0);
+            elseif NSp == 2
+                A_wingDesignPlot(app,AR,Span,Wingdim(1), Wingdim(2), Wingdim(2), 0);
+            elseif NSp == 3
+                A_wingDesignPlot(app,AR,Span,Wingdim(1), Wingdim(2), Wingdim(2), Wingdim(2));
+            end
+
             drawnow;
 end

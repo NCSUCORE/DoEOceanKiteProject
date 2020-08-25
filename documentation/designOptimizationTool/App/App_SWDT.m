@@ -1,10 +1,13 @@
-function [Ixx_opt,Mw_out,exitflag,Wopt] = SWDT(AR_opt, S_opt, Volwing, Ixx_req,Df, Lf)
+function [Ixx_opt,Mw_opt,exitflagW,Wopt,NSp_opt] = App_SWDT(AR_opt, S_opt, Volwing, Ixx_req,Df, Lf)
 % DoE Project
 % I beam dimensions optimization
 % Author: Sumedh Beknalkar
 
 global SpanW ChrdL rhow Ixx 
 global Volw Voltot eff_fuse Volfuse
+global NSparmax NSp
+global Skmax Sp1max Sp2max Sp3max
+
 
 %Length of beam
 SpanW = S_opt/2;
@@ -13,7 +16,7 @@ SpanW = S_opt/2;
 ChrdL = S_opt/AR_opt; %Chord Length
 
 % Ixx calculation
-Ixx = Ixx_req/(39.37^4);
+
 
 
 % Total Volume and Volume of wing
@@ -22,62 +25,83 @@ eff_fuse = 0.8;
 Volfuse = (0.25*pi*Df*Df*Lf*eff_fuse);
 Voltot = Volfuse + Volw;
 
-% Optimization
-u0 = [0.18 0.01 0.01 0.01]';
-lb = [0.001 0 0 0]'; % Lower limits
-ub = 1.0*ones(4,1);   % upper limits
-options = optimoptions('fmincon','Display','iter','Algorithm','sqp','MaxFunctionEvaluations',10000000);
-[uopt Jopt exitflag] = fmincon(@costfunc,u0,[],[],[],[],lb,ub,@constraintfunc,options);
+% Loop through skin and spar thickness
+NSk_vec = 10;
+Sk_vec = linspace(0.01,Skmax,NSk_vec);
+NSp_vec = 10;
+Spmax = [Sp1max,Sp2max,Sp3max];
 
-%Wt_opt = rhow*Span*(2*(uopt(4)*uopt(2))+(uopt(3)*(uopt(1)-(2*(uopt(4))))));
-[Ixx_opt, area_skin,area_spar1,area_spar2,area_spar3] = App_Wing_MoICalc(ChrdL, uopt(1), uopt(2), uopt(3),uopt(4));
 
-Ixx_opt = Ixx_opt*(39.37^4);
+NSp = -1;
 
-area_opt = area_skin+area_spar1+area_spar2+area_spar3;
-Mw_out = area_opt*S_opt*rhow;
-Wopt = uopt
+Mwing_min = 10^10;
+Mskin = 0;Mspars = 0;
 
+u0 = 0.01;
+lb = 0.0001;
+ub = 2.0;
+
+SpT_opt = 0;
+SkT_opt = 0;
+NSp_min = 0;
+
+NSp_opt = 0;
+
+exitflagW = 0;
+
+for i = 1:NSk_vec
+    Ixx = Ixx_req;
+    [Ixx_skin, area_skin,NA] = App_Wing_MoICalc(ChrdL, Sk_vec(i), 0,NSp);
+    Mskin = area_skin*S_opt*rhow;
+    Ixx = Ixx - Ixx_skin;
+    if Ixx > 0
+        for j = 1:NSparmax
+            NSp = j;
+            Sp_vec = linspace(0.01,Spmax(j),NSp_vec);
+            for k = 1:NSp_vec
+                [Ixx_spars, NA,area_spars] = App_Wing_MoICalc(ChrdL, 0, Sp_vec(k),NSp);
+                Ixx_ss = Ixx_spars + Ixx_skin;
+                if Ixx_ss - Ixx_req >0.0 && Ixx_ss - Ixx_req <= 20.0
+                    Mspars = area_spars*S_opt*rhow;
+                    Mwing = Mskin + Mspars;
+                    if Mwing_min > Mwing 
+                        Mwing_min  = Mwing;
+                        NSp_opt = NSp;
+                        SpT_opt = Sp_vec(k);
+                        SkT_opt = Sk_vec(i);
+                        Ixx_tot(1) = Ixx_spars+Ixx_skin;
+                        Ixx_tot(2) = Ixx_spars;
+                        Ixx_tot(3) = Ixx_skin;
+                        exitflagW = 1;
+                    end
+                    break;
+                end
+            end
+        end
+    elseif Ixx_skin - Ixx_req >0.0 && Ixx_skin - Ixx_req <= 20.0
+        Mwing = Mskin;
+        if Mwing_min > Mwing
+            Mwing_min  = Mwing;
+            NSp_opt = 0;
+            SpT_opt = 0;
+            SkT_opt = Sk_vec(i);
+            Ixx_tot(1) = Ixx_skin;
+            Ixx_tot(2) = 0;
+            Ixx_tot(3) = Ixx_skin;
+            exitflagW = 1;
+        end
+    end
+    
 end
 
-function [J] =costfunc(u)
-global ChrdL
-global Wskin Wsp1 Wsp2 Wsp3
+NSp_opt
+SpT_opt
+SkT_opt
+Ixx_tot
 
-
-% Cost = Weight of beam
-[Ixx_calc, area_skin,area_spar1,area_spar2,area_spar3] =...
-    App_Wing_MoICalc(ChrdL, u(1), u(2), u(3),u(4));
-% vol = area*Span;
-
-% J = area + 5*u(1) + 10*u(2)+ 15*u(3) + 20*u(4);
-J = Wskin*area_skin + Wsp1*area_spar1 + Wsp2*area_spar2+ Wsp3*area_spar3;
-
+Wopt(1) = SkT_opt;
+Wopt(2) = SpT_opt;
+Mw_opt = Mwing_min;
+Ixx_opt = Ixx_tot(1);
 end
 
-function [c_ineq, c_eq] = constraintfunc(u)
-global ChrdL Ixx rho rhow Volw Voltot wmassrat
-global Skmax Sp1max Sp2max Sp3max
-
-% Constraints
-ineq1 = u(1) - Skmax;
-ineq2 = u(2) - Sp1max;
-ineq3 = u(3) - Sp2max;
-ineq4 = u(4) - Sp3max;
-ineq5 = -eye(4)*u;
-
-[Ixx_calc, area_skin,area_spar1,area_spar2,area_spar3] = ...
-    App_Wing_MoICalc(ChrdL, u(1), u(2), u(3),u(4));
-
-
-% Constraint type 1 (Dr. Bryant)
-% ineq6 = (((rho*Volw/(vol*rhow)) - tar_buoy)^2.0) - 0.1;
-
-% Constraint type 2 (Dr. Vermillion)
-ineq6 = wmassrat - ((Volw*rhow)/rho*(Voltot));
-
-eq1 = Ixx_calc - Ixx;
-
-c_ineq=[ineq1;ineq2;ineq3;ineq4;ineq5;ineq6];
-c_eq= eq1;
-end

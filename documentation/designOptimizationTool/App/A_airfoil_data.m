@@ -33,21 +33,6 @@ fitls = fit(ls_x,ls_y,'poly9',options);
 ls_eq = fitls.p1.*x.^9 + fitls.p2.*x.^8 + fitls.p3.*x.^7 + fitls.p4.*x.^6 + fitls.p5.*x.^5 ...
     + fitls.p6.*x.^4 + fitls.p7.*x.^3 + fitls.p8.*x.^2 + fitls.p9.*x + fitls.p10 ; 
 
-% Plot (sanity check) 
-% figure(1); 
-% plot(x,us_eq); hold on; 
-% plot(x,ls_eq);
-% %plot(Airfoil(:,1),Airfoil(:,2),'o')
-% ylim([-0.5 0.5]) ;
-% xlim([-0.1 1.1]) ;
 
-
-% %Forming the grid on the airfoil
-% size_x = size(x);
-% plot(0.3*ones(1,size_x(2)),linspace(-0.2,0.2,size_x(2)));
-% 
-% % %plotting thickness of airfoil as function of x
-%  figure(1);
-%  plot(x,(us_eq-ls_eq));
 end
 
