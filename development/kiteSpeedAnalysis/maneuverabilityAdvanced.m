@@ -186,15 +186,15 @@ classdef maneuverabilityAdvanced
             % curvature denominator
             Kden = (dx^2 + dy^2 + dz^2)^1.5;
             % path length calculation
-            pathLength = (dx^2 + dy^2 + dz^2)^0.5;
+            pathLengthEq = (dx^2 + dy^2 + dz^2)^0.5;
             % radius of curvature = 1/curvate
             val.rCurve = matlabFunction(Kden/Knum);
-            val.pLength = matlabFunction(pathLength);
+            val.pLengthEq = matlabFunction(pathLengthEq);
         end
         
         % full path length
         function val = get.pathLength(obj)
-            val = integral(obj.radiusOfCurvatureAndPathEq.pLength,0,...
+            val = integral(obj.radiusOfCurvatureAndPathEq.pLengthEq,0,...
             2*pi);
         end
         
