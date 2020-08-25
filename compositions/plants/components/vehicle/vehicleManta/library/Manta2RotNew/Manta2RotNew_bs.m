@@ -30,16 +30,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
 %% Important Points
 vhcl.setRCM_LE([.84;0;.04153],'m')
 vhcl.setRB_LE([0;0;0],'m');
-% vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
-
-%% Added Mass/Damping (defaults to zeros)
-vhcl.setMa6x6_LE(-[68.608        0           0           0        5.73           0;...
-                       0   814.592           0     -403.87           0     2115.99;...
-                       0         0     4743.68           0    -3359.54           0;...
-                       0   -403.87           0    22089.56           0    -1509.95;...
-                       5.73      0    -3359.54           0     6622.09           0;...
-                       0   2115.99           0    -1509.95           0      7641.5;],'');
 
 %% Control Surfaces
 vhcl.setAllMaxCtrlDef(30,'deg');
@@ -83,7 +74,6 @@ vhcl.fuse.setDiameter(0.3556,'m');
 vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
-% vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
 vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootChord.Value,...
                           vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
 
@@ -110,7 +100,15 @@ vhcl.turb2.setTipSpeedRatio(6,'')
 
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
-% vhcl.plot
+
+%% Added Mass/Damping (defaults to zeros)
+Input.wing.Thickness = 12;  Input.wing.Sections = 20; 
+Input.hStab.Thickness = 15; Input.hStab.Sections = 20; 
+Input.vStab.Thickness = 15; Input.vStab.Sections = 10; 
+Input.fuse.Sections = 10; 
+[MA] = getAddedMass(Input,vhcl);
+vhcl.setMa6x6_LE(-MA,'');
+
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 
