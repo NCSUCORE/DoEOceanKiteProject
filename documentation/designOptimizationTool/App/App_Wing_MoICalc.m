@@ -1,4 +1,4 @@
-function [Ixx_lim, Area_skin, Area_spar1,Area_spar2,Area_spar3]= App_Wing_MoICalc(ChrdL, Skmax, Sp1max, Sp2max, Sp3max)
+function [Ixx_lim, Area_skin, Area_spars]= App_Wing_MoICalc(ChrdL, Skmax, Spmax,Nspars)
 % I beam airfoil grid code
 
 %I beam dimension
@@ -11,9 +11,9 @@ T1Brat = 0.00001;     % 30% - Max ratio of T1 and Max value of B
 % Grid Resolution
 x_ind = 2:1:200;
 
-Sp1T = Sp1max*200;
-Sp2T = Sp2max*200;
-Sp3T = Sp3max*200;
+Sp1T = Spmax*200;
+Sp2T = Spmax*200;
+Sp3T = Spmax*200;
 
 x_w1_ori = 60; x_w2_ori = 90; x_w3_ori = 35;
 
@@ -21,29 +21,6 @@ x_w1_ori = 60; x_w2_ori = 90; x_w3_ori = 35;
 x_w1_ll = x_w1_ori - (Sp1T/2);x_w1_ul = x_w1_ori + (Sp1T/2);
 x_w2_ll = x_w2_ori - (Sp2T/2);x_w2_ul = x_w2_ori + (Sp2T/2);
 x_w3_ll = x_w3_ori - (Sp3T/2);x_w3_ul = x_w3_ori + (Sp3T/2);
-
-
-% figure(1); 
-% plot(x_af,us_af,'b'); hold on; 
-% plot(x_af,ls_af,'b');
-% ylim([-0.3 0.3]) ;
-% xlim([-0.1 1.1]) ;
-% 
-% y_lim = linspace(-0.1,0.1);
-% x_lim = linspace(-0.1,1.1);
-% for i = 1:length(x_ind)
-%     x_elem = x_af(x_ind(i));
-%     
-%     y_elem_us = us_af(x_ind(i));
-%     y_elem_ls = ls_af(x_ind(i));
-%     
-%     x_grid = x_elem*ones(length(y_lim));
-%     y_grid_us = y_elem_us*ones(length(x_lim));
-%     y_grid_ls = y_elem_ls*ones(length(x_lim));
-% %     plot(x_grid,y_lim,'k');
-% %     plot(x_lim, y_grid_us,'k');
-% %     plot(x_lim, y_grid_ls,'k');
-% end
 
 Area_skin = 0;
 Area_spar1 = 0;
@@ -71,54 +48,51 @@ for j = 1:(length(x_ind)-1)
    
   [Ixx,Iyy] = AMoICalc(A_arr(j)*ChrdL,B_arr(j)*ChrdL,T1_arr(j)*ChrdL,...
         T2_arr(j)*ChrdL);
-   Area = 2*B_arr(j)*T2_arr(j)*(ChrdL^2);
-%    T2_arr(j) = 0.002;
-   
-%     if (j >= x_w1_ll && j <= x_w1_ul)
-%     if (j >= x_w1_ll && j <= x_w1_ul || j >= x_w2_ll && j <= x_w2_ul)
-    if (j >= x_w1_ll && j <= x_w1_ul || j >= x_w2_ll && j <= x_w2_ul ||...
-            j >= x_w3_ll && j <= x_w3_ul)
+   Area_skin = Area_skin + 2*B_arr(j)*T2_arr(j)*(ChrdL^2);
+
+   if Nspars == 1
+       if (j >= x_w1_ll && j <= x_w1_ul)
         SparH = A_arr(j) - (2*T2_arr(j));
         Ixx = Ixx + (B_arr(j)*(SparH^3)*(ChrdL^4)/12);
-        Area = Area + (B_arr(j)*SparH*(ChrdL^2));
-    end
-    
-   Ixx_skin_arr(j) = Ixx;
-
-   if j >= x_w1_ll && j <= x_w1_ul
-       Area_spar1 = Area_spar1 + Area;
-   elseif j >= x_w2_ll && j <= x_w2_ul
-       Area_spar2 = Area_spar2 + Area;
-   elseif j >= x_w3_ll && j <= x_w3_ul
-       Area_spar3 = Area_spar3 + Area;
-   else
-       Area_skin = Area_skin + Area;
+        Area_spar1 = Area_spar1 + (B_arr(j)*SparH*(ChrdL^2));
+       end
    end
+   
+   
+   if Nspars == 2
+       if (j >= x_w1_ll && j <= x_w1_ul || j >= x_w2_ll && j <= x_w2_ul)
+           SparH = A_arr(j) - (2*T2_arr(j));
+           Ixx = Ixx + (B_arr(j)*(SparH^3)*(ChrdL^4)/12);
+       end
+       
+       if j >= x_w1_ll && j <= x_w1_ul
+         Area_spar1 = Area_spar1 + (B_arr(j)*SparH*(ChrdL^2));
+       elseif j >= x_w2_ll && j <= x_w2_ul
+         Area_spar2 = Area_spar2 + (B_arr(j)*SparH*(ChrdL^2));
+       end
+   end
+   
+   if Nspars == 3
+       if (j >= x_w1_ll && j <= x_w1_ul || j >= x_w2_ll && j <= x_w2_ul ||...
+            j >= x_w3_ll && j <= x_w3_ul)
+           SparH = A_arr(j) - (2*T2_arr(j));
+           Ixx = Ixx + (B_arr(j)*(SparH^3)*(ChrdL^4)/12);
+       end
+       
+       if j >= x_w1_ll && j <= x_w1_ul
+         Area_spar1 = Area_spar1 + (B_arr(j)*SparH*(ChrdL^2));
+       elseif j >= x_w2_ll && j <= x_w2_ul
+         Area_spar2 = Area_spar2 + (B_arr(j)*SparH*(ChrdL^2));
+       elseif j >= x_w3_ll && j <= x_w3_ul
+         Area_spar3 = Area_spar3 + (B_arr(j)*SparH*(ChrdL^2));
+       end
+       
+   end
+   Ixx_skin_arr(j) = Ixx;
 end
 
-
-
-Ixx_lim = sum(Ixx_skin_arr);
-
-% Plotting I beams
-% for k = 1:(length(x_ind)-1)
-%    xori = x_af(x_ind(k));
-%    yori = ls_af(x_ind(k));
-%    
-%    
-% %    if (k >= x_w1_ll && k <= x_w1_ul) 
-% %    if (k >= x_w1_ll && k <= x_w1_ul || k >= x_w2_ll && k <= x_w2_ul)
-%    if (k >= x_w1_ll && k <= x_w1_ul || k >= x_w2_ll && k <= x_w2_ul ||...
-%         k >= x_w3_ll && k <= x_w3_ul)
-%        rectangle('Position',[xori yori B_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-%    else
-%        %    rectangle('Position',[xori+(0.5*B_arr(k)- 0.5*T1_arr(k)) yori T1_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-%        rectangle('Position',[xori yori B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-%        rectangle('Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-%     
-%    end
-% 
-% end
+Area_spars = Area_spar1 + Area_spar2+ Area_spar3;
+Ixx_lim = sum(Ixx_skin_arr)*(39.37^4);
 
 end
 

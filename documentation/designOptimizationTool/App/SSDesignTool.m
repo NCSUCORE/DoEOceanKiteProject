@@ -101,7 +101,7 @@ classdef SSDesignTool < matlab.apps.AppBase
             
             % Run optimization
             [Mtot, Mwing_opt,Mfuse_opt, AR_opt,Span_opt, D_opt,L_opt,...
-                Wingdim,Power_out] = App_OverallKiteDesign()
+                Wingdim,Power_out, NSp] = App_OverallKiteDesign()
             
             % Calculate optimal angle of attack
             [AoA_opt] = App_AoA_opt_calc(AR_opt,Span_opt,D_opt,L_opt);
@@ -118,17 +118,35 @@ classdef SSDesignTool < matlab.apps.AppBase
             % Update output fields on SFOT
             app.InputBoxs.(varNamesSFOToutputs{1}).Value = AoA_opt;
             
-            % Update output fields on SFDT
+            % Update output fields on SWDT
             app.InputBoxs.(varNamesSWDToutputs{1}).Value = Wingdim(1);
+            
+            if NSp == 0
+            app.InputBoxs.(varNamesSWDToutputs{2}).Value = 0;
+            app.InputBoxs.(varNamesSWDToutputs{3}).Value = 0;
+            app.InputBoxs.(varNamesSWDToutputs{4}).Value = 0;
+            
+            elseif NSp == 1
             app.InputBoxs.(varNamesSWDToutputs{2}).Value = Wingdim(2);
-            app.InputBoxs.(varNamesSWDToutputs{3}).Value = Wingdim(3);
-            app.InputBoxs.(varNamesSWDToutputs{4}).Value = Wingdim(4);
+            app.InputBoxs.(varNamesSWDToutputs{3}).Value = 0;
+            app.InputBoxs.(varNamesSWDToutputs{4}).Value = 0;            
+            
+            elseif NSp == 2
+            app.InputBoxs.(varNamesSWDToutputs{2}).Value = Wingdim(2);
+            app.InputBoxs.(varNamesSWDToutputs{3}).Value = Wingdim(2);
+            app.InputBoxs.(varNamesSWDToutputs{4}).Value = 0;
+            
+            elseif NSp == 3
+            app.InputBoxs.(varNamesSWDToutputs{2}).Value = Wingdim(2);
+            app.InputBoxs.(varNamesSWDToutputs{3}).Value = Wingdim(2);
+            app.InputBoxs.(varNamesSWDToutputs{4}).Value = Wingdim(2);
+            end
             
 
             
             % Updating plots on all tabs
             clearTabPlots(app);
-            updateTabPlots(app,AR_opt,Span_opt,D_opt,L_opt,Wingdim);
+            updateTabPlots(app,AR_opt,Span_opt,D_opt,L_opt,Wingdim, NSp);
 
             
             
