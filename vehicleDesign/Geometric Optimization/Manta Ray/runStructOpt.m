@@ -8,8 +8,10 @@ Df = vhcl.fuse.diameter.Value;
 Lf = vhcl.fuse.length.Value;
 alph = -20:.5:20;
 Flift = NaN*ones(numel(alph),1);
+CL = NaN*ones(numel(alph),1);
+CD = NaN*ones(numel(alph),1);
 for i = 1:numel(alph)
-    [~,Flift(i)] = wingPowerCost2([AR,alph(i)],wing,hStab,vStab,fuse,Env);
+    [~,Flift(i),CL(i),CD(i)] = wingPowerCost2([AR,alph(i)],wing,hStab,vStab,fuse,Env);
 end
 Fmax = max(Flift);
 delx = span/4*.05;
