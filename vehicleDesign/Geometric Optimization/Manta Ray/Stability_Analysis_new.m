@@ -1,10 +1,10 @@
 %%  Kite Design optimization
-% clc;clear;
+clc;clear;
 
 %%  Input definitions 
 loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
 % loadComponent('newManta2RotNACA2412');              %   Load vehicle 
-loadComponent('Manta2RotTest');                     %   Load vehicle 
+loadComponent('Manta2RotNew');                     %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -73,7 +73,8 @@ Sys.vKite = [0 0 0]';                               %   m/s - Kite velocity
 Env.vFlow = [.25 0 0]';                             %   m/s - Flow speed 
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
-
+%%
+[Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
 %%  Position and Orientation Angles 
 Ang.elevation = 40;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
