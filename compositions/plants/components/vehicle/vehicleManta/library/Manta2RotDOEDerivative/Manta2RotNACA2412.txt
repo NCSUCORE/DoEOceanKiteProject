@@ -34,19 +34,19 @@ vhcl.inertia_CM.Value = [3585.00798683128 0 -173.468128395062;0 4088.1518617284 
 vhcl.inertia_CM.Unit = 'kg*m^2'
 vhcl.inertia_CM.NoScale = false
 vhcl.inertia_CM.Description = 'Inertia Matrix'
-vhcl.Ma6x6_LEUL.Value = [68.608 0 0;0 814.592 0;0 0 4743.68]
+vhcl.Ma6x6_LEUL.Value = [-68.608 0 0;0 -814.592 0;0 0 -4743.68]
 vhcl.Ma6x6_LEUL.Unit = 'kg'
 vhcl.Ma6x6_LEUL.NoScale = false
 vhcl.Ma6x6_LEUL.Description = 'Upper left quadrant 6x6 Added Mass Matrix'
-vhcl.Ma6x6_LEUR.Value = [0 5.73 0;-403.87 0 2115.99;0 -3359.54 0]
+vhcl.Ma6x6_LEUR.Value = [0 -5.73 0;403.87 0 -2115.99;0 3359.54 0]
 vhcl.Ma6x6_LEUR.Unit = 'kg*m'
 vhcl.Ma6x6_LEUR.NoScale = false
 vhcl.Ma6x6_LEUR.Description = 'Upper right quadrant 6x6 Added Mass Matrix'
-vhcl.Ma6x6_LELL.Value = [0 -403.87 0;5.73 0 -3359.54;0 2115.99 0]
+vhcl.Ma6x6_LELL.Value = [0 403.87 0;-5.73 0 3359.54;0 -2115.99 0]
 vhcl.Ma6x6_LELL.Unit = 'kg*m'
 vhcl.Ma6x6_LELL.NoScale = false
 vhcl.Ma6x6_LELL.Description = 'Lower left quadrant 6x6 Added Mass Matrix'
-vhcl.Ma6x6_LELR.Value = [22089.56 0 -1509.95;0 6622.09 0;-1509.95 0 7641.5]
+vhcl.Ma6x6_LELR.Value = [-22089.56 0 1509.95;0 -6622.09 0;1509.95 0 -7641.5]
 vhcl.Ma6x6_LELR.Unit = 'kg*m^2'
 vhcl.Ma6x6_LELR.NoScale = false
 vhcl.Ma6x6_LELR.Description = 'Lower right quadrant 6x6 Added Mass Matrix'
@@ -588,6 +588,10 @@ vhcl.initEulAng.Description = 'Initial Euler angles'
 vhcl.initAngVelVec.Unit = 'rad/s'
 vhcl.initAngVelVec.NoScale = false
 vhcl.initAngVelVec.Description = 'Initial angular velocity vector'
+vhcl.hydroChracterization.Value = 1.0000e+00
+vhcl.hydroChracterization.Unit is unitless or has no unit specified
+vhcl.hydroChracterization.NoScale = false
+vhcl.hydroChracterization.Description = '1 = AVL; 0 = XFoil'
 vhcl.mass.Value = 1.4628e+03
 vhcl.mass.Unit = 'kg'
 vhcl.mass.NoScale = false
@@ -622,7 +626,7 @@ vhcl.M6x6_B.Value = [1462.8 0 0 0 0 0;0 1462.8 0 0 0 0;0 0 1462.8 0 0 0;0 0 0 35
 vhcl.M6x6_B.Unit is unitless or has no unit specified
 vhcl.M6x6_B.NoScale = false
 vhcl.M6x6_B.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'
-vhcl.Ma6x6_LE.Value = [68.608 0 0 0 5.73 0;0 814.592 0 -403.87 0 2115.99;0 0 4743.68 0 -3359.54 0;0 -403.87 0 22089.56 0 -1509.95;5.73 0 -3359.54 0 6622.09 0;0 2115.99 0 -1509.95 0 7641.5]
+vhcl.Ma6x6_LE.Value = [-68.608 0 0 0 -5.73 0;0 -814.592 0 403.87 0 -2115.99;0 0 -4743.68 0 3359.54 0;0 403.87 0 -22089.56 0 1509.95;-5.73 0 3359.54 0 -6622.09 0;0 -2115.99 0 1509.95 0 -7641.5]
 vhcl.Ma6x6_LE.Unit is unitless or has no unit specified
 vhcl.Ma6x6_LE.NoScale = false
 vhcl.Ma6x6_LE.Description = '6x6 Added Mass Matrix. Created from scaled quadrant matrices'

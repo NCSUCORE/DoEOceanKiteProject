@@ -10,7 +10,7 @@ vhcl.buoyFactor.Value = 1.0000e+00
 vhcl.buoyFactor.Unit is unitless or has no unit specified
 vhcl.buoyFactor.NoScale = true
 vhcl.buoyFactor.Description = 'Buoyancy Factor = (Kite Density)/(Water Density)'
-vhcl.fluidCoeffsFileName.Value = 'MantaEPP552.mat'
+vhcl.fluidCoeffsFileName.Value = 'Manta02.mat'
 vhcl.fluidCoeffsFileName.Unit is unitless or has no unit specified
 vhcl.fluidCoeffsFileName.NoScale = true
 vhcl.fluidCoeffsFileName.Description = 'File that contains fluid dynamics coefficient data'
@@ -22,7 +22,7 @@ vhcl.oldFluidMomentArms.Value = 0.0000e+00
 vhcl.oldFluidMomentArms.Unit is unitless or has no unit specified
 vhcl.oldFluidMomentArms.NoScale = false
 vhcl.oldFluidMomentArms.Description = 'Turns on the old (incorrect) calculation for fluid moment arms'
-vhcl.numTurbines.Value = 2.0000e+00
+vhcl.numTurbines.Value = 1.0000e+00
 vhcl.numTurbines.Unit is unitless or has no unit specified
 vhcl.numTurbines.NoScale = true
 vhcl.numTurbines.Description = 'Number of turbines'
@@ -34,19 +34,19 @@ vhcl.inertia_CM.Value = [3585.00798683128 0 -173.468128395062;0 4088.1518617284 
 vhcl.inertia_CM.Unit = 'kg*m^2'
 vhcl.inertia_CM.NoScale = false
 vhcl.inertia_CM.Description = 'Inertia Matrix'
-vhcl.Ma6x6_LEUL.Value = [68.608 0 0;0 814.592 0;0 0 4743.68]
+vhcl.Ma6x6_LEUL.Value = [-68.608 0 0;0 -814.592 0;0 0 -4743.68]
 vhcl.Ma6x6_LEUL.Unit = 'kg'
 vhcl.Ma6x6_LEUL.NoScale = false
 vhcl.Ma6x6_LEUL.Description = 'Upper left quadrant 6x6 Added Mass Matrix'
-vhcl.Ma6x6_LEUR.Value = [0 5.73 0;-403.87 0 2115.99;0 -3359.54 0]
+vhcl.Ma6x6_LEUR.Value = [0 -5.73 0;403.87 0 -2115.99;0 3359.54 0]
 vhcl.Ma6x6_LEUR.Unit = 'kg*m'
 vhcl.Ma6x6_LEUR.NoScale = false
 vhcl.Ma6x6_LEUR.Description = 'Upper right quadrant 6x6 Added Mass Matrix'
-vhcl.Ma6x6_LELL.Value = [0 -403.87 0;5.73 0 -3359.54;0 2115.99 0]
+vhcl.Ma6x6_LELL.Value = [0 403.87 0;-5.73 0 3359.54;0 -2115.99 0]
 vhcl.Ma6x6_LELL.Unit = 'kg*m'
 vhcl.Ma6x6_LELL.NoScale = false
 vhcl.Ma6x6_LELL.Description = 'Lower left quadrant 6x6 Added Mass Matrix'
-vhcl.Ma6x6_LELR.Value = [22089.56 0 -1509.95;0 6622.09 0;-1509.95 0 7641.5]
+vhcl.Ma6x6_LELR.Value = [-22089.56 0 1509.95;0 -6622.09 0;1509.95 0 -7641.5]
 vhcl.Ma6x6_LELR.Unit = 'kg*m^2'
 vhcl.Ma6x6_LELR.NoScale = false
 vhcl.Ma6x6_LELR.Description = 'Lower right quadrant 6x6 Added Mass Matrix'
@@ -106,7 +106,7 @@ vhcl.wingIncidence.Value = 0.0000e+00
 vhcl.wingIncidence.Unit = 'deg'
 vhcl.wingIncidence.NoScale = false
 vhcl.wingIncidence.Description = 'Wing flow incidence angle'
-vhcl.wingAirfoil.Value = 'Eppler552.dat'
+vhcl.wingAirfoil.Value = 'NACA2412'
 vhcl.wingAirfoil.Unit is unitless or has no unit specified
 vhcl.wingAirfoil.NoScale = true
 vhcl.wingAirfoil.Description = 'Wing airfoil'
@@ -360,7 +360,7 @@ vhcl.portWing.incidence.Value = -0.0000e+00
 vhcl.portWing.incidence.Unit = 'deg'
 vhcl.portWing.incidence.NoScale = false
 vhcl.portWing.incidence.Description = 'Flow incidence angle'
-vhcl.portWing.Airfoil.Value = 'Eppler552.dat'
+vhcl.portWing.Airfoil.Value = 'NACA2412'
 vhcl.portWing.Airfoil.Unit is unitless or has no unit specified
 vhcl.portWing.Airfoil.NoScale = true
 vhcl.portWing.Airfoil.Description = 'airfoil'
@@ -397,19 +397,19 @@ vhcl.portWing.numTraps.Value = 1.0000e+00
 vhcl.portWing.numTraps.Unit is unitless or has no unit specified
 vhcl.portWing.numTraps.NoScale = false
 vhcl.portWing.numTraps.Description = '1 for one trapazoid, 2 for 2 trapazoids symmetric about root chord'
-vhcl.portWing.CL.Value = [-0.276444063452431;-0.29636376360434;-0.317488452378212;-0.339484722839062;-0.362602317061458;-0.386613505433333;-0.411773267634722;-0.437828867712153;-0.464703159828993;-0.49244831284592;-0.521017841946528;-0.549655480144792;-0.578931504509201;-0.60728998564375;-0.634771046057118;-0.660860354004861;-0.684672557299132;-0.703672876956771;-0.714259447036198;-0.705634668205469;-0.659647236599219;-0.610581667398438;-0.560432498123872;-0.509283465601997;-0.457205599250087;-0.404279959299479;-0.350592877715972;-0.296227328553733;-0.241285384184809;-0.185861290805903;-0.130044337207292;-0.0739363386724826;-0.0176485941846354;0.0387309262739583;0.095091940633507;0.151331298515104;0.207346800273524;0.263037593445573;0.318310545789149;0.373056962254948;0.427189698004427;0.480608139384722;0.533228644390365;0.584956213223438;0.635722812316493;0.685435568650608;0.721534558651563;0.719387433424566;0.703069911917361;0.679627610741667;0.652699788878993;0.623653846973177;0.593539322698264;0.562529556663889;0.531723880258854;0.501397578686285;0.471657998876042;0.442554921526563;0.414517394769965;0.387667186103733;0.361776986695486;0.336904404816667;0.313158675715365;0.290736297394097;0.269613893579774;0.251633142282378;0.237703711469705;0.227459567152257;0.219594915196094;0.212528725155382;0.20604740999809]
+vhcl.portWing.CL.Value = [-0.252794398336719;-0.26828223165599;-0.287900389821181;-0.30872505954783;-0.330755109000955;-0.353618376921267;-0.377646231443403;-0.40258282131059;-0.428752825114844;-0.45557407598342;-0.483446200391493;-0.511863008659115;-0.540908008540191;-0.570439707233681;-0.599362394561979;-0.627973576264931;-0.655059042573872;-0.679764985118316;-0.700860936168229;-0.714526443224653;-0.713670851152691;-0.675063632247917;-0.626188950236979;-0.57622875198342;-0.525256744058854;-0.473355513834635;-0.420597396523785;-0.367074641206597;-0.312870177355816;-0.258081831924132;-0.202811655354514;-0.147132719675;-0.0911653847918403;-0.0350061872012153;0.0212428230348958;0.0774789880697049;0.133611010542969;0.189522770022743;0.245116672886979;0.300293780335764;0.354957537474479;0.409016239098785;0.462366914805295;0.514935237340712;0.566621770673004;0.617353373576649;0.667047959026736;0.713300214844271;0.720017288503646;0.707615044241233;0.687069520268056;0.661837036232118;0.634096174784983;0.604549578846007;0.574602177190365;0.54436089836033;0.514225445314149;0.484773471601302;0.456168990762934;0.428076295992187;0.401187963626042;0.375426905236979;0.350678152461719;0.326921372470486;0.30427223996875;0.282913411626562;0.26286961759158;0.247533909176215;0.235149633256337;0.226155643275174;0.2189187662625]
 vhcl.portWing.CL.Unit is unitless or has no unit specified
 vhcl.portWing.CL.NoScale = true
-vhcl.portWing.CD.Value = [0.17784;0.17649;0.17437;0.17152;0.16796;0.16374;0.1589;0.1535;0.14759;0.14122;0.13445;0.12734;0.11997;0.11238;0.10465;0.09684;0.08902;0.08125;0.0736;0.06614;0.05892;0.05201;0.04546;0.03933;0.03366;0.02852;0.02393;0.01994;0.01658;0.01388;0.01188;0.01058;0.01;0.01015;0.01103;0.01265;0.01499;0.01804;0.02178;0.0262;0.03125;0.0369;0.04313;0.04988;0.0571;0.06476;0.07278;0.08112;0.08972;0.09851;0.10743;0.11642;0.1254;0.13431;0.14309;0.15166;0.15996;0.16793;0.1755;0.18262;0.18922;0.19525;0.20067;0.20541;0.20943;0.21271;0.2152;0.21687;0.21769;0.21766;0.21675]
+vhcl.portWing.CD.Value = [0.18704;0.18621;0.18457;0.18216;0.17902;0.17517;0.17066;0.16554;0.15986;0.15366;0.14702;0.13997;0.1326;0.12495;0.1171;0.1091;0.10104;0.09296;0.08495;0.07705;0.06934;0.06188;0.05473;0.04794;0.04158;0.03568;0.03029;0.02547;0.02125;0.01766;0.01473;0.01248;0.01095;0.01013;0.01004;0.01068;0.01205;0.01414;0.01693;0.02042;0.02456;0.02935;0.03473;0.04067;0.04714;0.05408;0.06144;0.06917;0.07721;0.0855;0.09397;0.10258;0.11125;0.1199;0.12849;0.13694;0.14518;0.15316;0.1608;0.16804;0.17483;0.1811;0.18681;0.1919;0.19632;0.20004;0.203;0.20519;0.20657;0.20711;0.2068]
 vhcl.portWing.CD.Unit is unitless or has no unit specified
 vhcl.portWing.CD.NoScale = true
 vhcl.portWing.alpha.Value = [-55;-53.42857;-51.85714;-50.28571;-48.71429;-47.14286;-45.57143;-44;-42.42857;-40.85714;-39.28571;-37.71429;-36.14286;-34.57143;-33;-31.42857;-29.85714;-28.28571;-26.71429;-25.14286;-23.57143;-22;-20.42857;-18.85714;-17.28571;-15.71429;-14.14286;-12.57143;-11;-9.42857;-7.85714;-6.28571;-4.71429;-3.14286;-1.57143;0;1.57143;3.14286;4.71429;6.28571;7.85714;9.42857;11;12.57143;14.14286;15.71429;17.28571;18.85714;20.42857;22;23.57143;25.14286;26.71429;28.28571;29.85714;31.42857;33;34.57143;36.14286;37.71429;39.28571;40.85714;42.42857;44;45.57143;47.14286;48.71429;50.28571;51.85714;53.42857;55]
 vhcl.portWing.alpha.Unit = 'deg'
 vhcl.portWing.alpha.NoScale = false
-vhcl.portWing.gainCL.Value = [-2.81045587881419e-09 0.0211209429728438 0]
+vhcl.portWing.gainCL.Value = [-8.70792389920753e-08 0.0211206004133092 0]
 vhcl.portWing.gainCL.Unit = '1/deg'
 vhcl.portWing.gainCL.NoScale = false
-vhcl.portWing.gainCD.Value = [5.16375e-05 0.000741872727272727 0]
+vhcl.portWing.gainCD.Value = [5.16068181818182e-05 0.000375763636363636 0]
 vhcl.portWing.gainCD.Unit = '1/deg'
 vhcl.portWing.gainCD.NoScale = false
 vhcl.portWing.AR.Value = 5.5556e+00
@@ -467,7 +467,7 @@ vhcl.stbdWing.incidence.Value = 0.0000e+00
 vhcl.stbdWing.incidence.Unit = 'deg'
 vhcl.stbdWing.incidence.NoScale = false
 vhcl.stbdWing.incidence.Description = 'Flow incidence angle'
-vhcl.stbdWing.Airfoil.Value = 'Eppler552.dat'
+vhcl.stbdWing.Airfoil.Value = 'NACA2412'
 vhcl.stbdWing.Airfoil.Unit is unitless or has no unit specified
 vhcl.stbdWing.Airfoil.NoScale = true
 vhcl.stbdWing.Airfoil.Description = 'airfoil'
@@ -504,19 +504,19 @@ vhcl.stbdWing.numTraps.Value = 1.0000e+00
 vhcl.stbdWing.numTraps.Unit is unitless or has no unit specified
 vhcl.stbdWing.numTraps.NoScale = false
 vhcl.stbdWing.numTraps.Description = '1 for one trapazoid, 2 for 2 trapazoids symmetric about root chord'
-vhcl.stbdWing.CL.Value = [-0.276444063452431;-0.29636376360434;-0.317488452378212;-0.339484722839062;-0.362602317061458;-0.386613505433333;-0.411773267634722;-0.437828867712153;-0.464703159828993;-0.49244831284592;-0.521017841946528;-0.549655480144792;-0.578931504509201;-0.60728998564375;-0.634771046057118;-0.660860354004861;-0.684672557299132;-0.703672876956771;-0.714259447036198;-0.705634668205469;-0.659647236599219;-0.610581667398438;-0.560432498123872;-0.509283465601997;-0.457205599250087;-0.404279959299479;-0.350592877715972;-0.296227328553733;-0.241285384184809;-0.185861290805903;-0.130044337207292;-0.0739363386724826;-0.0176485941846354;0.0387309262739583;0.095091940633507;0.151331298515104;0.207346800273524;0.263037593445573;0.318310545789149;0.373056962254948;0.427189698004427;0.480608139384722;0.533228644390365;0.584956213223438;0.635722812316493;0.685435568650608;0.721534558651563;0.719387433424566;0.703069911917361;0.679627610741667;0.652699788878993;0.623653846973177;0.593539322698264;0.562529556663889;0.531723880258854;0.501397578686285;0.471657998876042;0.442554921526563;0.414517394769965;0.387667186103733;0.361776986695486;0.336904404816667;0.313158675715365;0.290736297394097;0.269613893579774;0.251633142282378;0.237703711469705;0.227459567152257;0.219594915196094;0.212528725155382;0.20604740999809]
+vhcl.stbdWing.CL.Value = [-0.252794398336719;-0.26828223165599;-0.287900389821181;-0.30872505954783;-0.330755109000955;-0.353618376921267;-0.377646231443403;-0.40258282131059;-0.428752825114844;-0.45557407598342;-0.483446200391493;-0.511863008659115;-0.540908008540191;-0.570439707233681;-0.599362394561979;-0.627973576264931;-0.655059042573872;-0.679764985118316;-0.700860936168229;-0.714526443224653;-0.713670851152691;-0.675063632247917;-0.626188950236979;-0.57622875198342;-0.525256744058854;-0.473355513834635;-0.420597396523785;-0.367074641206597;-0.312870177355816;-0.258081831924132;-0.202811655354514;-0.147132719675;-0.0911653847918403;-0.0350061872012153;0.0212428230348958;0.0774789880697049;0.133611010542969;0.189522770022743;0.245116672886979;0.300293780335764;0.354957537474479;0.409016239098785;0.462366914805295;0.514935237340712;0.566621770673004;0.617353373576649;0.667047959026736;0.713300214844271;0.720017288503646;0.707615044241233;0.687069520268056;0.661837036232118;0.634096174784983;0.604549578846007;0.574602177190365;0.54436089836033;0.514225445314149;0.484773471601302;0.456168990762934;0.428076295992187;0.401187963626042;0.375426905236979;0.350678152461719;0.326921372470486;0.30427223996875;0.282913411626562;0.26286961759158;0.247533909176215;0.235149633256337;0.226155643275174;0.2189187662625]
 vhcl.stbdWing.CL.Unit is unitless or has no unit specified
 vhcl.stbdWing.CL.NoScale = true
-vhcl.stbdWing.CD.Value = [0.17784;0.17649;0.17437;0.17152;0.16796;0.16374;0.1589;0.1535;0.14759;0.14122;0.13445;0.12734;0.11997;0.11238;0.10465;0.09684;0.08902;0.08125;0.0736;0.06614;0.05892;0.05201;0.04546;0.03933;0.03366;0.02852;0.02393;0.01994;0.01658;0.01388;0.01188;0.01058;0.01;0.01015;0.01103;0.01265;0.01499;0.01804;0.02178;0.0262;0.03125;0.0369;0.04313;0.04988;0.0571;0.06476;0.07278;0.08112;0.08972;0.09851;0.10743;0.11642;0.1254;0.13431;0.14309;0.15166;0.15996;0.16793;0.1755;0.18262;0.18922;0.19525;0.20067;0.20541;0.20943;0.21271;0.2152;0.21687;0.21769;0.21766;0.21675]
+vhcl.stbdWing.CD.Value = [0.18704;0.18621;0.18457;0.18216;0.17902;0.17517;0.17066;0.16554;0.15986;0.15366;0.14702;0.13997;0.1326;0.12495;0.1171;0.1091;0.10104;0.09296;0.08495;0.07705;0.06934;0.06188;0.05473;0.04794;0.04158;0.03568;0.03029;0.02547;0.02125;0.01766;0.01473;0.01248;0.01095;0.01013;0.01004;0.01068;0.01205;0.01414;0.01693;0.02042;0.02456;0.02935;0.03473;0.04067;0.04714;0.05408;0.06144;0.06917;0.07721;0.0855;0.09397;0.10258;0.11125;0.1199;0.12849;0.13694;0.14518;0.15316;0.1608;0.16804;0.17483;0.1811;0.18681;0.1919;0.19632;0.20004;0.203;0.20519;0.20657;0.20711;0.2068]
 vhcl.stbdWing.CD.Unit is unitless or has no unit specified
 vhcl.stbdWing.CD.NoScale = true
 vhcl.stbdWing.alpha.Value = [-55;-53.42857;-51.85714;-50.28571;-48.71429;-47.14286;-45.57143;-44;-42.42857;-40.85714;-39.28571;-37.71429;-36.14286;-34.57143;-33;-31.42857;-29.85714;-28.28571;-26.71429;-25.14286;-23.57143;-22;-20.42857;-18.85714;-17.28571;-15.71429;-14.14286;-12.57143;-11;-9.42857;-7.85714;-6.28571;-4.71429;-3.14286;-1.57143;0;1.57143;3.14286;4.71429;6.28571;7.85714;9.42857;11;12.57143;14.14286;15.71429;17.28571;18.85714;20.42857;22;23.57143;25.14286;26.71429;28.28571;29.85714;31.42857;33;34.57143;36.14286;37.71429;39.28571;40.85714;42.42857;44;45.57143;47.14286;48.71429;50.28571;51.85714;53.42857;55]
 vhcl.stbdWing.alpha.Unit = 'deg'
 vhcl.stbdWing.alpha.NoScale = false
-vhcl.stbdWing.gainCL.Value = [-2.81045587881419e-09 0.0211209429728438 0]
+vhcl.stbdWing.gainCL.Value = [-8.70792389920753e-08 0.0211206004133092 0]
 vhcl.stbdWing.gainCL.Unit = '1/deg'
 vhcl.stbdWing.gainCL.NoScale = false
-vhcl.stbdWing.gainCD.Value = [5.16375e-05 0.000741872727272727 0]
+vhcl.stbdWing.gainCD.Value = [5.16068181818182e-05 0.000375763636363636 0]
 vhcl.stbdWing.gainCD.Unit = '1/deg'
 vhcl.stbdWing.gainCD.NoScale = false
 vhcl.stbdWing.AR.Value = 5.5556e+00
@@ -588,6 +588,10 @@ vhcl.initEulAng.Description = 'Initial Euler angles'
 vhcl.initAngVelVec.Unit = 'rad/s'
 vhcl.initAngVelVec.NoScale = false
 vhcl.initAngVelVec.Description = 'Initial angular velocity vector'
+vhcl.hydroChracterization.Value = 1.0000e+00
+vhcl.hydroChracterization.Unit is unitless or has no unit specified
+vhcl.hydroChracterization.NoScale = false
+vhcl.hydroChracterization.Description = '1 = AVL; 0 = XFoil'
 vhcl.mass.Value = 1.4628e+03
 vhcl.mass.Unit = 'kg'
 vhcl.mass.NoScale = false
@@ -605,7 +609,7 @@ vhcl.fuseMomentArm.NoScale = false
 vhcl.buoyMomentArm.Value = [0.017088;0;0.05456]
 vhcl.buoyMomentArm.Unit = 'm'
 vhcl.buoyMomentArm.NoScale = false
-vhcl.turbMomentArms.Value = [0 0;-2.66666666666667 2.66666666666667;0 0]
+vhcl.turbMomentArms.Value = [-1.6;0;0]
 vhcl.turbMomentArms.Unit = 'm'
 vhcl.turbMomentArms.NoScale = false
 vhcl.rCM_B.Value = [0;0;0]
@@ -622,11 +626,11 @@ vhcl.M6x6_B.Value = [1462.8 0 0 0 0 0;0 1462.8 0 0 0 0;0 0 1462.8 0 0 0;0 0 0 35
 vhcl.M6x6_B.Unit is unitless or has no unit specified
 vhcl.M6x6_B.NoScale = false
 vhcl.M6x6_B.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'
-vhcl.Ma6x6_LE.Value = [68.608 0 0 0 5.73 0;0 814.592 0 -403.87 0 2115.99;0 0 4743.68 0 -3359.54 0;0 -403.87 0 22089.56 0 -1509.95;5.73 0 -3359.54 0 6622.09 0;0 2115.99 0 -1509.95 0 7641.5]
+vhcl.Ma6x6_LE.Value = [-68.608 0 0 0 -5.73 0;0 -814.592 0 403.87 0 -2115.99;0 0 -4743.68 0 3359.54 0;0 403.87 0 -22089.56 0 1509.95;-5.73 0 3359.54 0 -6622.09 0;0 -2115.99 0 1509.95 0 -7641.5]
 vhcl.Ma6x6_LE.Unit is unitless or has no unit specified
 vhcl.Ma6x6_LE.NoScale = false
 vhcl.Ma6x6_LE.Description = '6x6 Added Mass Matrix. Created from scaled quadrant matrices'
-vhcl.staticMargin.Value = 3.8730e-01
+vhcl.staticMargin.Value = 3.8716e-01
 vhcl.staticMargin.Unit = 'm'
 vhcl.staticMargin.NoScale = false
 vhcl.staticMargin.Description = 'Static Margin of Stability'
@@ -634,48 +638,11 @@ vhcl.contactPoints.Value = [0 0 4.79999985369458 4.79999985369458 -1.6 4.8;-4 4 
 vhcl.contactPoints.Unit = 'm'
 vhcl.contactPoints.NoScale = false
 vhcl.contactPoints.Description = 'Points where contact forces are modeled'
-vhcl.turb2.mass.Value = 6.0000e+00
-vhcl.turb2.mass.Unit = 'kg'
-vhcl.turb2.mass.NoScale = false
-vhcl.turb2.mass.Description = 'Rotor mass'
-vhcl.turb2.diameter.Value = 5.6000e-01
-vhcl.turb2.diameter.Unit = 'm'
-vhcl.turb2.diameter.NoScale = false
-vhcl.turb2.diameter.Description = 'Diameter of the rotor'
-vhcl.turb2.axisUnitVec.Value = [-1;0;0]
-vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
-vhcl.turb2.axisUnitVec.NoScale = false
-vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turb2.attachPtVec.Value = [0;2.66666666666667;0]
-vhcl.turb2.attachPtVec.Unit = 'm'
-vhcl.turb2.attachPtVec.NoScale = false
-vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
-vhcl.turb2.powerCoeff.Value = 5.0000e-01
-vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
-vhcl.turb2.powerCoeff.NoScale = false
-vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
-vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
-vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
-vhcl.turb2.axialInductionFactor.NoScale = false
-vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
-vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
-vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
-vhcl.turb2.tipSpeepRatio.NoScale = false
-vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
-vhcl.turb2.dragCoeff.Value = 7.5000e-01
-vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
-vhcl.turb2.dragCoeff.NoScale = false
-vhcl.turb2.momentArm.Value = [0;2.66666666666667;0]
-vhcl.turb2.momentArm.Unit = 'm'
-vhcl.turb2.momentArm.NoScale = false
-vhcl.turb2.momentOfInertia.Value = 4.7040e-01
-vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
-vhcl.turb2.momentOfInertia.NoScale = false
-vhcl.turb1.mass.Value = 6.0000e+00
+vhcl.turb1.mass.Value = 1.7550e+01
 vhcl.turb1.mass.Unit = 'kg'
 vhcl.turb1.mass.NoScale = false
 vhcl.turb1.mass.Description = 'Rotor mass'
-vhcl.turb1.diameter.Value = 5.6000e-01
+vhcl.turb1.diameter.Value = 8.0000e-01
 vhcl.turb1.diameter.Unit = 'm'
 vhcl.turb1.diameter.NoScale = false
 vhcl.turb1.diameter.Description = 'Diameter of the rotor'
@@ -683,7 +650,7 @@ vhcl.turb1.axisUnitVec.Value = [1;0;0]
 vhcl.turb1.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turb1.axisUnitVec.NoScale = false
 vhcl.turb1.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turb1.attachPtVec.Value = [0;-2.66666666666667;0]
+vhcl.turb1.attachPtVec.Value = [-1.6;0;0]
 vhcl.turb1.attachPtVec.Unit = 'm'
 vhcl.turb1.attachPtVec.NoScale = false
 vhcl.turb1.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
@@ -702,9 +669,9 @@ vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and roto
 vhcl.turb1.dragCoeff.Value = 7.5000e-01
 vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoeff.NoScale = false
-vhcl.turb1.momentArm.Value = [0;-2.66666666666667;0]
+vhcl.turb1.momentArm.Value = [-1.6;0;0]
 vhcl.turb1.momentArm.Unit = 'm'
 vhcl.turb1.momentArm.NoScale = false
-vhcl.turb1.momentOfInertia.Value = 4.7040e-01
+vhcl.turb1.momentOfInertia.Value = 2.8080e+00
 vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb1.momentOfInertia.NoScale = false

@@ -6,7 +6,6 @@ ForcesTotal = Fz;
 Forces.FzW = 0.9*ForcesTotal; 
 Forces.FzH = 0.1*ForcesTotal; 
 
-
 %% Input parameters 
 
 Inp.HStab_c = .4699;          %HStab chord 

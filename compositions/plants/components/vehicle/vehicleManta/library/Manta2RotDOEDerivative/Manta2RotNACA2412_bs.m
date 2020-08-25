@@ -1,10 +1,10 @@
-%%  Manta Ray Vehicle Build Script for 4 Rotors 
+%%  Manta Ray Vehicle Build Script for 2 Rotors 
 clear; clc
 
-VEHICLE               = "vehicleManta4Rot";
-PLANT                 = "plantManta4Rot";
+VEHICLE               = "vehicleManta2Rot";
+PLANT                 = "plantManta2Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
-LIBRARY               = "Manta4RotNACA2412";
+LIBRARY               = "Manta2RotNACA2412";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -34,7 +34,7 @@ vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0.017088;0;0.05456],'m');
 
 %% Added Mass/Damping (defaults to zeros)
-vhcl.setMa6x6_LE([68.608         0           0           0        5.73           0;...
+vhcl.setMa6x6_LE(-[68.608         0           0           0        5.73           0;...
                        0   814.592           0     -403.87           0     2115.99;...
                        0         0     4743.68           0    -3359.54           0;...
                        0   -403.87           0    22089.56           0    -1509.95;...
@@ -88,40 +88,24 @@ vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootC
                           vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
 
 %% Turbines
-vhcl.setNumTurbines(4,'');
+vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
-% port rotor 1 (top)
-vhcl.turb1.setMass(2.128,'kg')
-vhcl.turb1.setDiameter(.396,'m')
+% port rotor
+vhcl.turb1.setMass(6,'kg')
+vhcl.turb1.setDiameter(.56,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
-vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/2+[0;0;.5],'m')
+vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/2,'m')
 vhcl.turb1.setPowerCoeff(.5,'')
 vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
-% port rotor 2 (bottom)
-vhcl.turb2.setMass(2.128,'kg')
-vhcl.turb2.setDiameter(.396,'m')
+% starboard rotor
+vhcl.turb2.setMass(6,'kg')
+vhcl.turb2.setDiameter(.56,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
-vhcl.turb2.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/2-[0;0;.5],'m')
+vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/2,'m')
 vhcl.turb2.setPowerCoeff(.5,'')
 vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
-% starboard rotor 1 (top)
-vhcl.turb3.setMass(2.128,'kg')
-vhcl.turb3.setDiameter(.396,'m')
-vhcl.turb3.setAxisUnitVec([-1;0;0],'')
-vhcl.turb3.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/2+[0;0;.5],'m')
-vhcl.turb3.setPowerCoeff(.5,'')
-vhcl.turb3.setAxalInductionFactor(1.5,'')
-vhcl.turb3.setTipSpeedRatio(6,'')
-% starboard rotor 2 (bottom)
-vhcl.turb4.setMass(2.128,'kg')
-vhcl.turb4.setDiameter(.396,'m')
-vhcl.turb4.setAxisUnitVec([1;0;0],'')
-vhcl.turb4.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/2-[0;0;.5],'m')
-vhcl.turb4.setPowerCoeff(.5,'')
-vhcl.turb4.setAxalInductionFactor(1.5,'')
-vhcl.turb4.setTipSpeedRatio(6,'')
 
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
