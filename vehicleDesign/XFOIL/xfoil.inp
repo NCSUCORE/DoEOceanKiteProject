@@ -1,0 +1,278 @@
+load xfoil.foil
+gdes
+flap
+0.75
+0
+1
+exec
+
+panels
+n
+200
+
+oper
+iter
+200
+
+oper
+vpar
+n
+5
+
+
+
+oper
+re 1e+06
+mach 0
+visc
+pacc
+
+
+alfa -20
+dump xfoil_a-20.000_dump.dat
+cpwr xfoil_a-20.000_cpwr.dat
+alfa -19.5
+dump xfoil_a-19.500_dump.dat
+cpwr xfoil_a-19.500_cpwr.dat
+alfa -19
+dump xfoil_a-19.000_dump.dat
+cpwr xfoil_a-19.000_cpwr.dat
+alfa -18.5
+dump xfoil_a-18.500_dump.dat
+cpwr xfoil_a-18.500_cpwr.dat
+alfa -18
+dump xfoil_a-18.000_dump.dat
+cpwr xfoil_a-18.000_cpwr.dat
+alfa -17.5
+dump xfoil_a-17.500_dump.dat
+cpwr xfoil_a-17.500_cpwr.dat
+alfa -17
+dump xfoil_a-17.000_dump.dat
+cpwr xfoil_a-17.000_cpwr.dat
+alfa -16.5
+dump xfoil_a-16.500_dump.dat
+cpwr xfoil_a-16.500_cpwr.dat
+alfa -16
+dump xfoil_a-16.000_dump.dat
+cpwr xfoil_a-16.000_cpwr.dat
+alfa -15.5
+dump xfoil_a-15.500_dump.dat
+cpwr xfoil_a-15.500_cpwr.dat
+alfa -15
+dump xfoil_a-15.000_dump.dat
+cpwr xfoil_a-15.000_cpwr.dat
+alfa -14.5
+dump xfoil_a-14.500_dump.dat
+cpwr xfoil_a-14.500_cpwr.dat
+alfa -14
+dump xfoil_a-14.000_dump.dat
+cpwr xfoil_a-14.000_cpwr.dat
+alfa -13.5
+dump xfoil_a-13.500_dump.dat
+cpwr xfoil_a-13.500_cpwr.dat
+alfa -13
+dump xfoil_a-13.000_dump.dat
+cpwr xfoil_a-13.000_cpwr.dat
+alfa -12.5
+dump xfoil_a-12.500_dump.dat
+cpwr xfoil_a-12.500_cpwr.dat
+alfa -12
+dump xfoil_a-12.000_dump.dat
+cpwr xfoil_a-12.000_cpwr.dat
+alfa -11.5
+dump xfoil_a-11.500_dump.dat
+cpwr xfoil_a-11.500_cpwr.dat
+alfa -11
+dump xfoil_a-11.000_dump.dat
+cpwr xfoil_a-11.000_cpwr.dat
+alfa -10.5
+dump xfoil_a-10.500_dump.dat
+cpwr xfoil_a-10.500_cpwr.dat
+alfa -10
+dump xfoil_a-10.000_dump.dat
+cpwr xfoil_a-10.000_cpwr.dat
+alfa -9.5
+dump xfoil_a-9.500_dump.dat
+cpwr xfoil_a-9.500_cpwr.dat
+alfa -9
+dump xfoil_a-9.000_dump.dat
+cpwr xfoil_a-9.000_cpwr.dat
+alfa -8.5
+dump xfoil_a-8.500_dump.dat
+cpwr xfoil_a-8.500_cpwr.dat
+alfa -8
+dump xfoil_a-8.000_dump.dat
+cpwr xfoil_a-8.000_cpwr.dat
+alfa -7.5
+dump xfoil_a-7.500_dump.dat
+cpwr xfoil_a-7.500_cpwr.dat
+alfa -7
+dump xfoil_a-7.000_dump.dat
+cpwr xfoil_a-7.000_cpwr.dat
+alfa -6.5
+dump xfoil_a-6.500_dump.dat
+cpwr xfoil_a-6.500_cpwr.dat
+alfa -6
+dump xfoil_a-6.000_dump.dat
+cpwr xfoil_a-6.000_cpwr.dat
+alfa -5.5
+dump xfoil_a-5.500_dump.dat
+cpwr xfoil_a-5.500_cpwr.dat
+alfa -5
+dump xfoil_a-5.000_dump.dat
+cpwr xfoil_a-5.000_cpwr.dat
+alfa -4.5
+dump xfoil_a-4.500_dump.dat
+cpwr xfoil_a-4.500_cpwr.dat
+alfa -4
+dump xfoil_a-4.000_dump.dat
+cpwr xfoil_a-4.000_cpwr.dat
+alfa -3.5
+dump xfoil_a-3.500_dump.dat
+cpwr xfoil_a-3.500_cpwr.dat
+alfa -3
+dump xfoil_a-3.000_dump.dat
+cpwr xfoil_a-3.000_cpwr.dat
+alfa -2.5
+dump xfoil_a-2.500_dump.dat
+cpwr xfoil_a-2.500_cpwr.dat
+alfa -2
+dump xfoil_a-2.000_dump.dat
+cpwr xfoil_a-2.000_cpwr.dat
+alfa -1.5
+dump xfoil_a-1.500_dump.dat
+cpwr xfoil_a-1.500_cpwr.dat
+alfa -1
+dump xfoil_a-1.000_dump.dat
+cpwr xfoil_a-1.000_cpwr.dat
+alfa -0.5
+dump xfoil_a-0.500_dump.dat
+cpwr xfoil_a-0.500_cpwr.dat
+alfa 0
+dump xfoil_a00.000_dump.dat
+cpwr xfoil_a00.000_cpwr.dat
+alfa 0.5
+dump xfoil_a00.500_dump.dat
+cpwr xfoil_a00.500_cpwr.dat
+alfa 1
+dump xfoil_a01.000_dump.dat
+cpwr xfoil_a01.000_cpwr.dat
+alfa 1.5
+dump xfoil_a01.500_dump.dat
+cpwr xfoil_a01.500_cpwr.dat
+alfa 2
+dump xfoil_a02.000_dump.dat
+cpwr xfoil_a02.000_cpwr.dat
+alfa 2.5
+dump xfoil_a02.500_dump.dat
+cpwr xfoil_a02.500_cpwr.dat
+alfa 3
+dump xfoil_a03.000_dump.dat
+cpwr xfoil_a03.000_cpwr.dat
+alfa 3.5
+dump xfoil_a03.500_dump.dat
+cpwr xfoil_a03.500_cpwr.dat
+alfa 4
+dump xfoil_a04.000_dump.dat
+cpwr xfoil_a04.000_cpwr.dat
+alfa 4.5
+dump xfoil_a04.500_dump.dat
+cpwr xfoil_a04.500_cpwr.dat
+alfa 5
+dump xfoil_a05.000_dump.dat
+cpwr xfoil_a05.000_cpwr.dat
+alfa 5.5
+dump xfoil_a05.500_dump.dat
+cpwr xfoil_a05.500_cpwr.dat
+alfa 6
+dump xfoil_a06.000_dump.dat
+cpwr xfoil_a06.000_cpwr.dat
+alfa 6.5
+dump xfoil_a06.500_dump.dat
+cpwr xfoil_a06.500_cpwr.dat
+alfa 7
+dump xfoil_a07.000_dump.dat
+cpwr xfoil_a07.000_cpwr.dat
+alfa 7.5
+dump xfoil_a07.500_dump.dat
+cpwr xfoil_a07.500_cpwr.dat
+alfa 8
+dump xfoil_a08.000_dump.dat
+cpwr xfoil_a08.000_cpwr.dat
+alfa 8.5
+dump xfoil_a08.500_dump.dat
+cpwr xfoil_a08.500_cpwr.dat
+alfa 9
+dump xfoil_a09.000_dump.dat
+cpwr xfoil_a09.000_cpwr.dat
+alfa 9.5
+dump xfoil_a09.500_dump.dat
+cpwr xfoil_a09.500_cpwr.dat
+alfa 10
+dump xfoil_a10.000_dump.dat
+cpwr xfoil_a10.000_cpwr.dat
+alfa 10.5
+dump xfoil_a10.500_dump.dat
+cpwr xfoil_a10.500_cpwr.dat
+alfa 11
+dump xfoil_a11.000_dump.dat
+cpwr xfoil_a11.000_cpwr.dat
+alfa 11.5
+dump xfoil_a11.500_dump.dat
+cpwr xfoil_a11.500_cpwr.dat
+alfa 12
+dump xfoil_a12.000_dump.dat
+cpwr xfoil_a12.000_cpwr.dat
+alfa 12.5
+dump xfoil_a12.500_dump.dat
+cpwr xfoil_a12.500_cpwr.dat
+alfa 13
+dump xfoil_a13.000_dump.dat
+cpwr xfoil_a13.000_cpwr.dat
+alfa 13.5
+dump xfoil_a13.500_dump.dat
+cpwr xfoil_a13.500_cpwr.dat
+alfa 14
+dump xfoil_a14.000_dump.dat
+cpwr xfoil_a14.000_cpwr.dat
+alfa 14.5
+dump xfoil_a14.500_dump.dat
+cpwr xfoil_a14.500_cpwr.dat
+alfa 15
+dump xfoil_a15.000_dump.dat
+cpwr xfoil_a15.000_cpwr.dat
+alfa 15.5
+dump xfoil_a15.500_dump.dat
+cpwr xfoil_a15.500_cpwr.dat
+alfa 16
+dump xfoil_a16.000_dump.dat
+cpwr xfoil_a16.000_cpwr.dat
+alfa 16.5
+dump xfoil_a16.500_dump.dat
+cpwr xfoil_a16.500_cpwr.dat
+alfa 17
+dump xfoil_a17.000_dump.dat
+cpwr xfoil_a17.000_cpwr.dat
+alfa 17.5
+dump xfoil_a17.500_dump.dat
+cpwr xfoil_a17.500_cpwr.dat
+alfa 18
+dump xfoil_a18.000_dump.dat
+cpwr xfoil_a18.000_cpwr.dat
+alfa 18.5
+dump xfoil_a18.500_dump.dat
+cpwr xfoil_a18.500_cpwr.dat
+alfa 19
+dump xfoil_a19.000_dump.dat
+cpwr xfoil_a19.000_cpwr.dat
+alfa 19.5
+dump xfoil_a19.500_dump.dat
+cpwr xfoil_a19.500_cpwr.dat
+alfa 20
+dump xfoil_a20.000_dump.dat
+cpwr xfoil_a20.000_cpwr.dat
+pwrt
+xfoil_pwrt.dat
+plis
+
+quit
