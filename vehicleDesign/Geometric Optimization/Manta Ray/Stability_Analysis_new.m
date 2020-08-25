@@ -1,5 +1,5 @@
 %%  Kite Design optimization
-% clc;clear;
+clc;clear;
 
 %%  Input definitions 
 loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
@@ -74,39 +74,7 @@ Env.vFlow = [.25 0 0]';                             %   m/s - Flow speed
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
-chord = vhcl.portWing.MACLength.Value;
-span = vhcl.portWing.halfSpan.Value*2;
-AR = vhcl.portWing.AR.Value*2;
-volume = chord*span^3/AR^2;
-Df = vhcl.fuse.diameter.Value;
-Lf = vhcl.fuse.length.Value;
-alph = -20:.5:20;
-for i = 1:numel(alph)
-    [J,Flift(i)] = wingPowerCost2([AR,alph(i)],wing,hStab,vStab,fuse,Env);
-end
-% plot(alph,Flift)
-Fmax = max(Flift);
-delx = span/4*.05;
-Ixx_req = (39.37^4)*5*(0.9)*Fmax*(span/4)^3/(48*69e9*delx);
-Skmax = 0.2; Sp1max = 0.1;  Sp2max = 0.1;  Sp3max = 0.1; 
-[Ixx_calc]= App_Wing_MoICalc(chord, Skmax, Sp1max, Sp2max, Sp3max);
-Ixx_calc = Ixx_calc*(39.37^4);
-
-[Ixx_opt,Mwing,exitflagW,Wopt] = App_SWDT2(AR,span,volume,Ixx_req,Df,Lf);
-exitflagW_mat(1,1) = exitflagW;
-Mwing_mat(1,1) = Mwing;
-if exitflagW == 1
-    [Mfuse,Fthk,exitflagF] = App_SFDT2(Df,Lf,Fmax);
-    Mfuse_mat(1,1) = Mfuse;
-    Fthk_mat(1,1) = Fthk;
-    exitflagF_mat(1,1) = exitflagF;
-    Mtot_mat(1,1)=Mfuse + Mwing;
-    if (Mtot > Mfuse+Mwing && exitflagF == 1)
-        Mtot = Mfuse+Mwing;
-        Wingdim = Wopt;
-    end
-    
-end
+[Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
 %%  Position and Orientation Angles 
 Ang.elevation = 40;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
