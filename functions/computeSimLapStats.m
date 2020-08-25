@@ -1,4 +1,4 @@
-function val = computeSimStats(obj)
+function val = computeSimLapStats(obj)
 
 pathParam = squeeze(obj.currentPathVar.Data);
 lapsStarted = unique(obj.lapNumS.Data);
