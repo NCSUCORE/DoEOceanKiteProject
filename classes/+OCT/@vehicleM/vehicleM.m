@@ -612,10 +612,11 @@ classdef vehicleM < dynamicprops
             addParameter(p,'xLim',[-inf inf],@isnumeric);
             addParameter(p,'vBdy',[0;0;0],@isnumeric);
             addParameter(p,'vFlow',[.25;0;0],@isnumeric);
-            addParameter(p,'theta',-20:.5:20,@isnumeric);
+            addParameter(p,'theta',90,@isnumeric);
+            addParameter(p,'phi',90,@isnumeric);
             addParameter(p,'elevation',30,@isnumeric);
             addParameter(p,'azimuth',0,@isnumeric);
-            addParameter(p,'heading',0,@isnumeric);
+            addParameter(p,'heading',90,@isnumeric);
             parse(p,varargin{:})
             
             theta = p.Results.theta;
