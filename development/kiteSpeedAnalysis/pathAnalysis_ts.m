@@ -5,11 +5,11 @@ fIdx = 1;
 
 %% initailize
 % path widths
-widths = [40,50,60]*pi/180;
-heights = [15,12.5,10]*pi/180;
+widths = [40,50,60];
+heights = [15,12.5,10];
 
-widths = 40*pi/180;
-heights = 10*pi/180;
+widths = 40;
+heights = 10;
 
 % initialize class
 cIn = maneuverabilityAdvanced;
@@ -90,7 +90,7 @@ cIn.mass = vhcl.mass.Value;
 cIn.bridleLocation = BcB*vhcl.rBridle_LE.Value;
 
 %% path param
-pathParam = linspace(0,2*pi,41);
+pathParam = linspace(0,2*pi,11);
 
 %% radius of curvature analysis
 % pRc = gobjects;
@@ -102,20 +102,19 @@ kk = 1;
 for ii = 1:numel(widths)
     for jj = 1:numel(heights)
         % Path basis parameters
-        [a,b] = boothParamConversion(widths(ii),heights(jj));
-        cIn.aBooth = a;
-        cIn.bBooth = b;
+        cIn.pathWidth = widths(ii);
+        cIn.pathHeight = heights(jj);
 %         pRc(kk) = cIn.plotPathRadiusOfCurvature;
-        legs{kk} = sprintf('w = %.1f, h =%.1f',widths(ii)*180/pi,...
-            heights(jj)*180/pi);
+        legs{kk} = sprintf('w = %.1f, h =%.1f',widths(ii),...
+            heights(jj));
         
         solVals = cIn.getAttainableVelocityOverPath(G_vFlow,...
             tgtPitch,pathParam);
         
         pathAnalysisRes(kk).pathSpeed  = solVals.vH_path;
         pathAnalysisRes(kk).rollAng    = solVals.roll_path;
-        pathAnalysisRes(kk).pathWidth  = widths(ii)*180/pi;
-        pathAnalysisRes(kk).pathHeight = heights(jj)*180/pi;
+        pathAnalysisRes(kk).pathWidth  = widths(ii);
+        pathAnalysisRes(kk).pathHeight = heights(jj);
         pathAnalysisRes(kk).avgSpeed = mean(solVals.vH_path);
         avgSpeed(kk) = mean(solVals.vH_path);
         % increment counter
@@ -129,12 +128,6 @@ end
 % find max of average speed
 [~,maxIdx] = max(avgSpeed);
 
-% best path parameters
-[aOpt,bOpt] = boothParamConversion(pathAnalysisRes(maxIdx).pathWidth*pi/180,...
-    pathAnalysisRes(maxIdx).pathHeight*pi/180);
-
-cIn.aBooth = aOpt;
-cIn.bBooth = bOpt;
 
 %% save res
 [status, msg, msgID] = mkdir(pwd,'pathAnalysisOutputs');
@@ -162,7 +155,7 @@ F = cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
     'rollInRad',-pathAnalysisRes(maxIdx).rollAng,...
     'headingVel',pathAnalysisRes(maxIdx).pathSpeed,...
-    'waitForButton',false);
+    'waitForButton',true);
 
 %% % video settings
 % video = VideoWriter(strcat(fName,'_video'),'Motion JPEG AVI');

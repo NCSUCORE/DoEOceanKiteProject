@@ -5,19 +5,16 @@ cd(fileparts(mfilename('fullpath')));
 
 
 %% flow speeds
-flowSpeeds = 1;
+flowSpeeds = 1.25;
 nFlows = numel(flowSpeeds);
 
 %% path parameters
 % path mean elevation
-meanElevs = 20;
-% :4:40;
+meanElevs = 20:4:40;
 % path widths
-pathWidths = 8;
-% :4:40;
+pathWidths = 8:4:40;
 % path heights
-pathHeights = 2:3;
-% :2:16;
+pathHeights = 2:2:16;
 % thr length
 thrLength = 100;
 % path length equation
@@ -124,6 +121,7 @@ loadComponent('ConstXYZT');
 %     load_system('OCTModel');
 % end
 
+failedSim = 0;
 for ii = 1:nFlows
     localFlowSpeed = flowSpeeds(ii);
     T = baseTable;
@@ -184,7 +182,7 @@ for ii = 1:nFlows
             stats = [presentSimCon, compStats(2,:)];
             T(jj,:) = stats;
         catch
-            stats = [presentSimCon, defaultStats];
+            failedSim = failedSim+1;
         end
         
     end
@@ -203,6 +201,7 @@ end
 % end
 
 %% compute basis statics with logouts data
-
+clc
+fprintf('Sim complete. Number of failed sims = %d.\n',failedSim);
 
 
