@@ -13,11 +13,11 @@ end
 %Main tab
 global Preq vin
 global AR_llim AR_ulim Span_llim Span_ulim
-Preq = Prated; vin = vf;
+Preq = 100.0; vin = 1.5;
 
 % Limits on Aspect Ratio
-AR_llim = ARll; AR_ulim = ARul;
-Span_llim = Spanll; Span_ulim = Spanul;
+AR_llim = 5; AR_ulim = 12;
+Span_llim = 8; Span_ulim = 10;
 
 %-------------------------------------------------------------------
 % SFOT variables
@@ -25,14 +25,14 @@ global Lscale gammaw eLw Clw0 x_g h_sm Cdw_visc Cdw_ind Cfuse ClHStall
 global eta netaV Cdh_ovrall Cd0_h rho 
 
 
-Lscale = 1; gammaw = yW; eLw = eW; Clw0 = CL0; x_g = xg*Lscale;
-h_sm = h*Lscale; Cd0_h = Cd0h; Cdw_visc = Kvisc; Cdw_ind = 1/(pi*eDW);
-Cdh_ovrall =  Cdh;  Cfuse = Cfe; 
+Lscale = 1; gammaw = 0.95; eLw = 0.71; Clw0 = 0.16; x_g = 0.2*Lscale;
+h_sm = -0.2*Lscale; Cd0_h = 1.7*(10^-4); Cdw_visc = 0.03; Cdw_ind = 1/(pi*0.98);
+Cdh_ovrall =  0.16;  Cfuse = 0.003; 
 
 eta = 0.3; netaV = 0.8; 
 rho = 1000.0;
 
-ClHStall = 0.0791.*(Hstall) + 0.1553;
+ClHStall = 0.0791.*(10) + 0.1553;
 
 
 
@@ -41,11 +41,12 @@ ClHStall = 0.0791.*(Hstall) + 0.1553;
 global E defper ChrdT rhow
 global tar_buoy wmassrat 
 global Skmax Sp1max Sp2max Sp3max
+global NSparmax
 global Wskin Wsp1 Wsp2 Wsp3
 
 
 ChrdT = 0.12;
-tar_buoy = TarB; wmassrat = MassF;
+tar_buoy = 0.99; wmassrat = 0.4;
 
 
 % Material properties
@@ -53,10 +54,11 @@ E = 69*(10^9); %Aluminium
 rhow = 2710.0; %Al
 
 % Percentage Deflection at centroid
-defper = WingDef;
+defper = 5.0;
 
+NSparmax = 3.0;
 
-Skmax = 0.2; Sp1max = 0.1;  Sp2max = 0.1;  Sp3max = 0.1; 
+Skmax = 0.2; Sp1max = 0.15;  Sp2max = 0.12;  Sp3max = 0.1; 
 
 %Weights on objective function entities
 Wskin = 20; Wsp1 = 1; Wsp2 = 5; Wsp3 = 10;
@@ -65,12 +67,12 @@ Wskin = 20; Wsp1 = 1; Wsp2 = 5; Wsp3 = 10;
 global Fthkmax
 global x_1 x_2 x_W C_Hstab FOS S_yield Int_P Dyn_P Ext_P
 Fthkmax = 0.5;
-x_1 = x1;x_2 = x2;x_W = xW;
-C_Hstab = Hstab_c;
-FOS = fos;
-S_yield = Syield;
-Int_P = IntP;
-Ext_P = ExtP;
-Dyn_P = DynP;
+x_1 = 0.4;x_2 = 0.3;x_W = 0.45;
+C_Hstab = 0.2;
+FOS = 1.5;
+S_yield = 270000000.0;
+Int_P = 100000.0;
+Ext_P = 220000.0;
+Dyn_P = 50000.0;
 
 end
