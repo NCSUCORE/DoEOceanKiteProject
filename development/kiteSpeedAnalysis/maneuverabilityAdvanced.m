@@ -4,8 +4,8 @@ classdef maneuverabilityAdvanced
     %   Detailed explanation goes here
     
     properties % generic
-        aBooth
-        bBooth
+        pathWidth
+        pathHeight
         tetherLength
         meanElevationInRadians
         EllipticalWidth = 2*pi/4;
@@ -69,6 +69,8 @@ classdef maneuverabilityAdvanced
     end
     
     properties (Dependent = true) % path related properties
+        aBooth;
+        bBooth;
         pathAndTangentEqs;
         radiusOfCurvatureAndPathEq;
         pathLength;
@@ -105,20 +107,18 @@ classdef maneuverabilityAdvanced
     
     %% getters
     methods
-        % wing area
-        %         function val = get.wingArea(obj)
-        %             val = obj.wingChord^2*obj.wingAspectRatio;
-        %         end
-        %
-        %         % h-stab area
-        %         function val = get.hstabArea(obj)
-        %             val = obj.hstabChord^2*obj.hstabAspectRatio;
-        %         end
-        %
-        %         % v-stab area
-        %         function val = get.vstabArea(obj)
-        %             val = obj.vstabChord^2*obj.vstabAspectRatio/2;
-        %         end
+        function val = get.aBooth(obj)
+            val = 0.5*obj.pathWidth*pi/180;
+
+        end
+        
+        function val = get.bBooth(obj)
+            % local variables
+            w = obj.pathWidth*pi/180;
+            h = obj.pathHeight*pi/180;
+            % output
+            val = (1/(2*sqrt(2)))*sqrt(-w^2+sqrt((h^2*(4+h^2)*w^4))/(h^2));
+        end
         
         % parameterized eqn for path co-ordinates & path tangent vectors
         function val = get.pathAndTangentEqs(obj)
@@ -129,11 +129,12 @@ classdef maneuverabilityAdvanced
             b    = obj.bBooth;
             % make symbolic path parameter
             syms s
+            pathParam = 2*pi-s;
             % equations for path longitude and latitude
-            pathAzimuth = (a*sin(s))./...
-                (1 + ((a/b)^2).*(cos(s).^2));
-            pathElevation = (((a/b)^2)*sin(s).*cos(s))./...
-                (1 + ((a/b)^2).*(cos(s).^2));
+            pathAzimuth = (a*sin(pathParam))./...
+                (1 + ((a/b)^2).*(cos(pathParam).^2));
+            pathElevation = (((a/b)^2)*sin(pathParam).*cos(pathParam))./...
+                (1 + ((a/b)^2).*(cos(pathParam).^2));
             pathElevation = pathElevation + elev;
             % x,y,and z coordinates in inertial frame
             G_path = r*[cos(pathAzimuth).*cos(pathElevation);
@@ -157,7 +158,8 @@ classdef maneuverabilityAdvanced
         % parameterized eqn for radius of curvate over the path
         function val = get.radiusOfCurvatureAndPathEq(obj)
             % symbolic
-            syms pathParm
+            syms s
+            pathParm = 2*pi-s;
             a = obj.aBooth;
             b = obj.bBooth;
             r = obj.tetherLength;
@@ -173,13 +175,13 @@ classdef maneuverabilityAdvanced
             lemY = r*sin(pathLong).*cos(pathLat);
             lemZ = r*sin(pathLat);
             % first derivative
-            dx = diff(lemX,pathParm);
-            dy = diff(lemY,pathParm);
-            dz = diff(lemZ,pathParm);
+            dx = diff(lemX,s);
+            dy = diff(lemY,s);
+            dz = diff(lemZ,s);
             % second derivative
-            ddx = diff(dx,pathParm);
-            ddy = diff(dy,pathParm);
-            ddz = diff(dz,pathParm);
+            ddx = diff(dx,s);
+            ddy = diff(dy,s);
+            ddz = diff(dz,s);
             % curvature numerator
             Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + ...
                 (ddy*dx - ddx*dy)^2);
@@ -1425,7 +1427,7 @@ classdef maneuverabilityAdvanced
                     pTanVec = obj.plotTangentVec(pathParam(ii)*2*pi);
                     title(sprintf(['Path width = %d deg, ',...
                         'Path height = %d deg, s = %0.2f'],...
-                        [round(azSweep),round(elSweep),pathParam(ii)]));
+                        [obj.pathWidth,obj.pathHeight,pathParam(ii)]));
                     % kite axes
                     if pp.Results.addKiteTrajectory
                         pAxes = obj.plotBodyFrameAxes(azimElev(1,ii),...

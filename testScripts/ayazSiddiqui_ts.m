@@ -10,7 +10,7 @@ dynamicCalc = '';
 flowSpeed = 1;
 thrLength = 100;
 el = 20*pi/180;                         % rad - Mean elevation angle
-w = 15*pi/180;          % rad - Path width/height
+w = 40*pi/180;          % rad - Path width/height
 h = 10*pi/180;  
 [a,b] = boothParamConversion(w,h);      % Path basis parameters
 
