@@ -121,18 +121,18 @@ if lap
     if con
         plot(data(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Port AoA [deg]');
         if p.Results.plotBeta
-            plot(data(ran),squeeze(obj.aeroSideSlipAngle.Data(1,1,ran))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta')
+            plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta')
         end
     else
         plot(time(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Port AoA [deg]');  xlim(lim)
         if p.Results.plotBeta
-            plot(time(ran),squeeze(obj.aeroSideSlipAngle.Data(1,1,ran))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta');  xlim(lim)
+            plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta');  xlim(lim)
         end
     end
 else
     plot(time,squeeze(obj.alphaLocal.Data(1,1,:)),'b-');  ylabel('Port AoA [deg]');  xlim(lim)
     if p.Results.plotBeta
-        plot(time,squeeze(obj.aeroSideSlipAngle.Data(1,1,:))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta');  xlim(lim)
+        plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta');  xlim(lim)
     end
 end
 %%  Plot CL^3/CD^2

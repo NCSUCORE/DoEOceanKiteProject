@@ -222,7 +222,7 @@ classdef signalcontainer < dynamicprops
             CLsurf = squeeze(sum(obj.CL.Data(1,1:3,:),2));
         end
         
-        function plotLapSpeedAndTangentAngles(obj)
+        function stats = plotAndComputeLapStats(obj)
             % local functions
             uVec = @(x,y)['$\hat{',x,'}_{\bar{',y,'}}$'];
             pathParam = squeeze(obj.currentPathVar.Data);
@@ -329,18 +329,7 @@ classdef signalcontainer < dynamicprops
             pObj(pIdx) = plot(pathParam(ran),csDef(ran,4));
             ylabel('$\mathrm{\delta e}$ (deg)');
             
-            % calculate derivative
-            dv = diff(vhclSpeed(ran));
-            dTanPitch = diff(tanPitch(ran));
-            dTanRoll = diff(tanRoll(ran));
-            dPath = diff(pathParam(ran));
-            dvdp = dv(:)./dPath(:);
-            dTpdp = dTanPitch(:)./dPath(:);
-            dTanRoll = dTanRoll(:)./dPath(:);
-            
-            if any(abs([dvdp dTpdp dTanRoll])>1e3)
-               warning('The simulations may have produced garbage results.');
-            end
+            stats = computeSimLapStats(obj);
            
             % set all axis labels and stuff
             linStyleOrder = {'-','--',':o',};
@@ -375,9 +364,7 @@ classdef signalcontainer < dynamicprops
             disTraveled = sum(vecnorm(rCM(:,2:end) - rCM(:,1:end-1)));
             % avereage speed
             avgSpeed = disTraveled/lapTime;
-            % title
-            testVal = computeSimStats(obj);
-            
+            % title            
             sgtitle(sprintf(['Lap number = %d',', Lap time = %.2f sec',...
                 ', Avg $v_{app,x}^3$ = %.2f',', Distace covered = %.2f m',...
                 ', Avg speed = %.2f m/s'],...

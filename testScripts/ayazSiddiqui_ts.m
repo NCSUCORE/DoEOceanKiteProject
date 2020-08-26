@@ -97,6 +97,6 @@ save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 
 figure;
 set(gcf, 'Position', get(0, 'Screensize'));
-tsc.plotLapSpeedAndTangentAngles;
+stats = tsc.plotAndComputeLapStats;
 % vhcl.animateSim(tsc,0.5,...
 %     'PathFunc',fltCtrl.fcnName.Value);

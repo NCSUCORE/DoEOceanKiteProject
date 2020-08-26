@@ -15,6 +15,7 @@ Sp1T = Sp1max*200;
 Sp2T = Sp2max*200;
 Sp3T = Sp3max*200;
 
+
 x_w1_ori = 60; x_w2_ori = 90; x_w3_ori = 35;
 
 %First Web (at 30% chord)
@@ -23,27 +24,6 @@ x_w2_ll = x_w2_ori - (Sp2T/2);x_w2_ul = x_w2_ori + (Sp2T/2);
 x_w3_ll = x_w3_ori - (Sp3T/2);x_w3_ul = x_w3_ori + (Sp3T/2);
 
 
-% figure(1); 
-% plot(x_af,us_af,'b'); hold on; 
-% plot(x_af,ls_af,'b');
-% ylim([-0.3 0.3]) ;
-% xlim([-0.1 1.1]) ;
-% 
-% y_lim = linspace(-0.1,0.1);
-% x_lim = linspace(-0.1,1.1);
-% for i = 1:length(x_ind)
-%     x_elem = x_af(x_ind(i));
-%     
-%     y_elem_us = us_af(x_ind(i));
-%     y_elem_ls = ls_af(x_ind(i));
-%     
-%     x_grid = x_elem*ones(length(y_lim));
-%     y_grid_us = y_elem_us*ones(length(x_lim));
-%     y_grid_ls = y_elem_ls*ones(length(x_lim));
-% %     plot(x_grid,y_lim,'k');
-% %     plot(x_lim, y_grid_us,'k');
-% %     plot(x_lim, y_grid_ls,'k');
-% end
 
 Area_skin = 0;
 Area_spar1 = 0;
@@ -102,15 +82,13 @@ for k = 1:(length(x_ind)-1)
    yori = ls_af(x_ind(k));
    
    
-%    if (k >= x_w1_ll && k <= x_w1_ul) 
-%    if (k >= x_w1_ll && k <= x_w1_ul || k >= x_w2_ll && k <= x_w2_ul)
-   if (k >= x_w1_ll && k <= x_w1_ul || k >= x_w2_ll && k <= x_w2_ul ||...
-        k >= x_w3_ll && k <= x_w3_ul)
-       app.Plots.DrawPlot3.Plot = rectangle(app.PlotAxes.DrawPlot3,'Position',[xori yori B_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
+   if (k >= x_w1_ll && k < x_w1_ul || k >= x_w2_ll && k < x_w2_ul ||...
+        k >= x_w3_ll && k < x_w3_ul)
+       rectangle(app.PlotAxes.DrawPlot3,'Position',[xori yori B_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
    else
        %    rectangle('Position',[xori+(0.5*B_arr(k)- 0.5*T1_arr(k)) yori T1_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-       app.Plots.DrawPlot3.Plot = rectangle(app.PlotAxes.DrawPlot3,'Position',[xori yori B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-       app.Plots.DrawPlot3.Plot = rectangle(app.PlotAxes.DrawPlot3,'Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
+       rectangle(app.PlotAxes.DrawPlot3,'Position',[xori yori B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
+       rectangle(app.PlotAxes.DrawPlot3,'Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
     
    end
 

@@ -22,6 +22,9 @@ Span_ul = AR_ulim;
 AR_opt = 0;Span_opt = 0; Ixx_lim = 0; Ixx_req1=0;
 Ixx_flag = false;
 
+% Wing MoI check 3 spars
+NSpars = 3;
+
 while ~Ixx_flag && AR_ul > AR_ll
     u0 = [(AR_ll+AR_ul)/2.0 (Span_ll+Span_ul)/2]';
     options = optimoptions('fmincon','Display','iter','Algorithm','sqp','MaxFunctionEvaluations',1e6,'MaxIterations',1e6);
@@ -29,10 +32,8 @@ while ~Ixx_flag && AR_ul > AR_ll
     lb = [AR_ll Span_ll]';
     ub = [AR_ul Span_ul]'; %Get u(2) upper bound from examining min value of Lamda
     [uopt Jopt conv_flag] = fmincon(@SFT_cost,u0,[],[],[],[],lb,ub,@SFT_constraint,options);
-%     [Ixx_calc] = airfoil_grid_func(uopt(1),uopt(2));
 
-    [Ixx_calc, A_skin, A_spar1,A_spar2,A_spar3]= App_Wing_MoICalc(uopt(2)/uopt(1), Skmax, Sp1max, Sp2max, Sp3max);
-    Ixx_calc = Ixx_calc*(39.37^4);
+    [Ixx_calc, A_skin, A_spars]= App_Wing_MoICalc(uopt(2)/uopt(1), Skmax, Sp3max,NSpars);
     
     % Required MoI calculation
     S = uopt(2)/2.0;
