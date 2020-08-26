@@ -27,9 +27,9 @@ classdef maneuverabilityAdvanced
         wingAeroCenter;
         wingChord;
         wingAspectRatio;
-        wingOswaldEff = 0.75;
-        wingZeroAoALift = 0.1;
-        wingZerAoADrag = 0.05;
+        wingOswaldEff;
+        wingZeroAoALift;
+        wingZerAoADrag;
         wingCL_Data;
         wingCD_Data;
         wingAoA_Data;
@@ -39,9 +39,9 @@ classdef maneuverabilityAdvanced
         hstabAeroCenter;
         hstabChord;
         hstabAspectRatio;
-        hstabOswaldEff = 0.75;
-        hstabZeroAoALift = 0.0;
-        hstabZerAoADrag = 0.05;
+        hstabOswaldEff;
+        hstabZeroAoALift;
+        hstabZerAoADrag;
         hstabCL_Data;
         hstabCD_Data;
         hstabAoA_Data;
@@ -54,9 +54,9 @@ classdef maneuverabilityAdvanced
         vstabAeroCenter;
         vstabChord;
         vstabAspectRatio;
-        vstabOswaldEff = 0.75;
-        vstabZeroAoALift = 0.0;
-        vstabZerAoADrag = 0.05;
+        vstabOswaldEff;
+        vstabZeroAoALift;
+        vstabZerAoADrag;
         vstabCL_Data;
         vstabCD_Data;
         vstabAoA_Data;
@@ -76,6 +76,15 @@ classdef maneuverabilityAdvanced
         pathLength;
     end
     
+    properties (SetAccess = immutable)
+       pathAzimuthEq
+       pathElevationEq
+       pathTangentEq
+       pathHeadingEq
+       pathCurvatureEq
+       pathLengthEq
+    end
+    
     properties (Constant = true)
         fluidDensity = 1e3;
         gravAcceleration = 9.81;
@@ -91,7 +100,72 @@ classdef maneuverabilityAdvanced
             152,78,16]./255;
     end
     
-    %% setter
+    %% constructor
+    methods
+        % make object given a vehicle class def
+        function obj = maneuverabilityAdvanced(vhcl)
+            if nargin ~= 0
+                % chnages is cordinate system
+                BcB = [cosd(180) 0 -sind(180);0 1 0;sind(180) 0 cosd(180)];
+                
+                % wing parameters
+                obj.wingChord = vhcl.wingRootChord.Value;
+                obj.wingAspectRatio = vhcl.wingAR.Value;
+                obj.wingArea = vhcl.fluidRefArea.Value;
+                obj.wingAeroCenter = BcB*(vhcl.stbdWing.rAeroCent_SurfLE.Value.*[1;0;1]...
+                    -vhcl.rCM_LE.Value);
+                obj.wingZerAoADrag = 2*vhcl.portWing.CD.Value(vhcl.portWing.alpha.Value == 0);
+                obj.wingZeroAoALift = 2*vhcl.portWing.CL.Value(vhcl.portWing.alpha.Value == 0);
+                obj.wingCL_Data = 2*vhcl.portWing.CL.Value;
+                obj.wingCD_Data = 2*vhcl.portWing.CD.Value;
+                obj.wingAoA_Data = vhcl.portWing.alpha.Value;
+                
+                % h-stab parameters
+                obj.hstabChord = vhcl.hStab.rootChord.Value;
+                obj.hstabAspectRatio = vhcl.hStab.AR.Value;
+                obj.hstabArea = vhcl.hStab.planformArea.Value;
+                obj.hstabAeroCenter = BcB*(vhcl.hStab.rSurfLE_WingLEBdy.Value + ...
+                    vhcl.hStab.rAeroCent_SurfLE.Value-vhcl.rCM_LE.Value);
+                obj.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2);
+                obj.hstabZeroAoALift = vhcl.hStab.CL.Value(vhcl.hStab.alpha.Value == 0)*...
+                    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+                obj.hstabZerAoADrag = vhcl.hStab.CD.Value(vhcl.hStab.alpha.Value == 0)*...
+                    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+                obj.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2)*...
+                    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+                obj.hstabCL_Data = vhcl.hStab.CL.Value;
+                obj.hstabCD_Data = vhcl.hStab.CD.Value;
+                obj.hstabAoA_Data = vhcl.hStab.alpha.Value;
+                
+                % v-stab parameters
+                obj.vstabChord = vhcl.vStab.rootChord.Value;
+                obj.vstabAspectRatio = 2*vhcl.vStab.AR.Value;
+                obj.vstabArea = vhcl.vStab.planformArea.Value;
+                obj.vstabAeroCenter = BcB*(vhcl.vStab.rSurfLE_WingLEBdy.Value + ...
+                    [vhcl.vStab.rAeroCent_SurfLE.Value(1);0;vhcl.vStab.rAeroCent_SurfLE.Value(2)]...
+                    -vhcl.rCM_LE.Value);
+                obj.vstabZeroAoALift = vhcl.vStab.CL.Value(vhcl.vStab.alpha.Value == 0)*...
+                    vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
+                obj.vstabZerAoADrag = vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0)*...
+                    vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
+                obj.vstabCL_Data = vhcl.vStab.CL.Value;
+                obj.vstabCD_Data = vhcl.vStab.CD.Value;
+                obj.vstabAoA_Data = vhcl.vStab.alpha.Value;
+                
+                % geometry parameters
+                obj.buoyFactor = vhcl.buoyFactor.Value;
+                obj.centerOfBuoy = BcB*(vhcl.rCentOfBuoy_LE.Value - vhcl.rCM_LE.Value);
+                obj.mass = vhcl.mass.Value;
+                obj.bridleLocation = BcB*(vhcl.rBridle_LE.Value - vhcl.rCM_LE.Value);
+                
+            end
+            
+        end
+        
+    end
+    
+    
+    %% setters
     methods
         function obj = set.fluidCoeffCalcMethod(obj,value)
             calcMethodChoice = {'empirical','fromTable'};
@@ -353,6 +427,8 @@ classdef maneuverabilityAdvanced
             allLoads.vstabLoads = vstabLoads;
             allLoads.buoyLoads  = buoyLoads;
             allLoads.B_Fgrav    = B_Fgrav;
+            allLoads.B_Vapp     = B_vApp;
+            
         end
         
         
@@ -619,33 +695,47 @@ classdef maneuverabilityAdvanced
     %% generalized velocity over the path
     methods
         
-        function val = getAttainableVelocityOverPath(obj,G_vFlow,...
+        function val = getAttainableVelocityOverPath(obj,flowSpeed,...
                 tgtPitch,pathParam)
+            if numel(tgtPitch) == 1
+                tgtPitch = ones(1,numel(pathParam))*tgtPitch;
+            end
+            if numel(flowSpeed) == 1
+                flowSpeed = ones(1,numel(pathParam))*flowSpeed;
+            end   
+            % flow velocity vector
+            G_flow = flowSpeed;
+            G_flow(2:3,:) = 0;
+
             % heading velocity over the path
             vH_path = nan*pathParam;
             % roll angle over path
             roll_path = nan*pathParam;
+            B_Vapp_path = NaN(3,numel(pathParam));
             for ii = 1:numel(pathParam)
                 fprintf('Iteration %d of %d.\n',ii,numel(pathParam));
                 if ii == 1
-                    intGuess = 3*G_vFlow(1);
+                    intGuess = 5*flowSpeed(1);
                 else
                     intGuess = vH_path(ii-1);
                 end
                 % solve equations at each path parameter
-                sol = fzero(@(vH) obj.getAttainableVelocityEqn(G_vFlow,...
-                    tgtPitch,pathParam(ii),vH),intGuess);
+                sol = fzero(@(vH) obj.getAttainableVelocityEqn(G_flow(:,ii),...
+                    tgtPitch(ii),pathParam(ii),vH),intGuess);
                 % roll
                 vH_path(ii) = sol;
-                [~,roll_path(ii)] = obj.getAttainableVelocityEqn(G_vFlow,...
-                    tgtPitch,pathParam(ii),sol);
+                [~,roll_path(ii),B_Vapp_path(:,ii)] = ...
+                    obj.getAttainableVelocityEqn(G_flow(:,ii),...
+                    tgtPitch(ii),pathParam(ii),sol);
             end
             val.vH_path = vH_path;
             val.roll_path = roll_path;
+            val.B_Vapp_path = B_Vapp_path;
+            
             
         end
         
-        function [val,roll] = getAttainableVelocityEqn(obj,G_vFlow,...
+        function [val,roll,B_Vapp,allLoads] = getAttainableVelocityEqn(obj,G_vFlow,...
                 tgtPitch,pathParam,vH)
             % get azimuth, elevation, heading, and radius of curvature
             AzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
@@ -667,6 +757,9 @@ classdef maneuverabilityAdvanced
             % calculate all loads in generalized form
             [thrLoads,allLoads] = obj.calcTetherLoads(G_vFlow,T_vKite,...
                 azimuth,elevation,heading,tgtPitch,roll,0);
+            B_Vapp = allLoads.B_Vapp;
+            % augment tether loads to allLoads
+            allLoads.thrLoads = thrLoads;
             % extract wing force
             wingLoads  = allLoads.wingLoads;
             B_Fwing = wingLoads.force;
@@ -697,7 +790,7 @@ classdef maneuverabilityAdvanced
                 H_Fthr;
             % output
             val = H_Fsum(1);
-            %
+            % print
             fprintf('s = %.2f, vH = %0.2f, roll = %.2f, val = %.2f.\n',...
                 [pathParam/(2*pi),vH,roll*180/pi,val]);
         end
