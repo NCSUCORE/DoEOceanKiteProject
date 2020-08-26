@@ -3,7 +3,8 @@ classdef maneuverabilityAdvanced
     %UNTITLED3 Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties % generic
+    % generic properties
+    properties
         pathWidth
         pathHeight
         tetherLength
@@ -12,18 +13,21 @@ classdef maneuverabilityAdvanced
         EllipticalHeight = 0.6*2*pi/4;
     end
     
-    properties % mass properties
+    % mass properties
+    properties
         buoyFactor;
         mass;
         centerOfBuoy;
         bridleLocation;
     end
     
-    properties % fluid coefficient calculation method
+    % fluid coefficient calculation method
+    properties
         fluidCoeffCalcMethod = 'empirical';
     end
     
-    properties %wing
+    % wing properties
+    properties
         wingAeroCenter;
         wingChord;
         wingAspectRatio;
@@ -35,7 +39,8 @@ classdef maneuverabilityAdvanced
         wingAoA_Data;
     end
     
-    properties % hstab
+    % hstab properties
+    properties
         hstabAeroCenter;
         hstabChord;
         hstabAspectRatio;
@@ -49,7 +54,8 @@ classdef maneuverabilityAdvanced
         hstabMaxDef = 30;
     end
     
-    properties % vstab
+    % vstab properties
+    properties
         vStabOn = true;
         vstabAeroCenter;
         vstabChord;
@@ -62,22 +68,22 @@ classdef maneuverabilityAdvanced
         vstabAoA_Data;
     end
     
+    % reference areas properties
     properties
         wingArea;
         hstabArea;
         vstabArea;
     end
     
-    properties (Dependent = true) % path related properties
+    % path related properties
+    properties (Dependent = true)
         aBooth;
         bBooth;
-        pathAndTangentEqs;
-        radiusOfCurvatureAndPathEq;
         pathLength;
     end
     
     % equations related to path
-    properties (SetAccess = immutable) 
+    properties (SetAccess = immutable)
         eqPathAzimuth
         eqPathElevation
         eqPathCoordinates
@@ -87,14 +93,16 @@ classdef maneuverabilityAdvanced
         eqPathLength
     end
     
+    % constants
     properties (Constant = true)
         fluidDensity = 1e3;
         gravAcceleration = 9.81;
     end
     
-    properties (SetAccess = private) % plot properties
-        lwd = 1.0;
-        fSize = 11;     % font size
+    % plot and presentation related properties
+    properties (SetAccess = private)
+        lwd = 1.0;          % line width
+        fontSize = 11;      % font size
         linStyleOrder = {'-','--',':o',};
         colorOrder = [228,26,28
             55,126,184
@@ -106,7 +114,7 @@ classdef maneuverabilityAdvanced
     methods
         % make object given a vehicle class def
         function obj = maneuverabilityAdvanced(vhcl)
-            % symbolics
+            % local symbolics
             syms a b el r s
             pParam = 2*pi-s;
             % equations for path longitude and latitude
@@ -144,7 +152,7 @@ classdef maneuverabilityAdvanced
             Kden = (dx^2 + dy^2 + dz^2)^1.5;
             % path length calculation
             pathLengthEq = (dx^2 + dy^2 + dz^2)^0.5;
-            % use more informative symbolics
+            % convert to more informative symbolics
             syms aBooth bBooth meanElevation thrLength pathParam
             oldSyms = [a,b,el,r,s];
             newSyms = [aBooth bBooth meanElevation thrLength pathParam];
@@ -168,9 +176,10 @@ classdef maneuverabilityAdvanced
             obj.eqPathHeading   = matlabFunction(reqHeading);
             
             switch nargin
-                case 0
+                case 1
                     % chnages is cordinate system
                     BcB = [cosd(180) 0 -sind(180);0 1 0;sind(180) 0 cosd(180)];
+                    obj.fluidCoeffCalcMethod = 'fromTable';
                     
                     % wing parameters
                     obj.wingChord = vhcl.wingRootChord.Value;
@@ -460,7 +469,7 @@ classdef maneuverabilityAdvanced
         
         % calculate angle of attack and side-slip angle
         function val = calcAngleOfAttackInRadians(~,B_vApp)
-            val = atan2(-B_vApp(3),-B_vApp(1));
+            val = atan2(-B_vApp(3,:),-B_vApp(1,:));
         end
         
         % calculate side slip angle
@@ -705,6 +714,7 @@ classdef maneuverabilityAdvanced
         
         function val = getAttainableVelocityOverPath(obj,flowSpeed,...
                 tgtPitch,pathParam)
+            nPoints = numel(pathParam);
             if numel(tgtPitch) == 1
                 tgtPitch = ones(1,numel(pathParam))*tgtPitch;
             end
@@ -716,10 +726,10 @@ classdef maneuverabilityAdvanced
             G_flow(2:3,:) = 0;
             
             % heading velocity over the path
-            vH_path = nan*pathParam;
+            vH_path = NaN(1,nPoints);
             % roll angle over path
-            roll_path = nan*pathParam;
-            B_Vapp_path = NaN(3,numel(pathParam));
+            roll_path = NaN(1,nPoints);
+            B_Vapp_path = NaN(3,nPoints);
             for ii = 1:numel(pathParam)
                 fprintf('Iteration %d of %d.\n',ii,numel(pathParam));
                 if ii == 1
@@ -739,7 +749,6 @@ classdef maneuverabilityAdvanced
             val.vH_path = vH_path;
             val.roll_path = roll_path;
             val.B_Vapp_path = B_Vapp_path;
-            
             
         end
         
@@ -1020,7 +1029,7 @@ classdef maneuverabilityAdvanced
     methods
         % set font size for all plots
         function setFontSize(obj)
-            set(findobj('-property','FontSize'),'FontSize',obj.fSize);
+            set(findobj('-property','FontSize'),'FontSize',obj.fontSize);
         end
         
         % plot body frame axes
@@ -1515,7 +1524,7 @@ classdef maneuverabilityAdvanced
             azim = obj.eqPathAzimuth(obj.aBooth,obj.bBooth,pathParam);
             elev = obj.eqPathElevation(obj.aBooth,obj.bBooth,...
                 obj.meanElevationInRadians,pathParam);
-
+            
             % check if animation is wanted
             if pp.Results.animate
                 delete(pTanVec);
