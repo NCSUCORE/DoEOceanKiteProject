@@ -16,8 +16,8 @@ end
 Fmax = max(Flift);
 delx = span/4*.05;
 Ixx_req = (39.37^4)*5*(0.9)*Fmax*(span/4)^3/(48*69e9*delx);
-Skmax = 0.2; Sp1max = 0.1;  Sp2max = 0.1;  Sp3max = 0.1; 
-[Ixx_calc]= App_Wing_MoICalc(chord, Skmax, Sp1max, Sp2max, Sp3max);
+Skmax = 0.2; Sp1max = 0.1; 
+[Ixx_calc] = App_Wing_MoICalc_old(chord, Skmax, Sp1max,Sp1max,Sp1max);
 Ixx_calc = Ixx_calc*(39.37^4);
 if Ixx_calc > Ixx_req
     [Ixx_opt,Mwing,exitflagW,Wopt] = App_SWDT2(AR,span,volume,Ixx_req,Df,Lf);

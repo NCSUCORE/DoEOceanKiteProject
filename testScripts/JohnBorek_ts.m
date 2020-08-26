@@ -7,7 +7,7 @@ clear;clc;%close all
 simScenario = 1.2;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length 
-flwSpd = 1;%.25;                                               %   m/s - Flow speed 
+flwSpd = .4;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
 el = 30*pi/180;                                             %   rad - Mean elevation angle 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
