@@ -33,7 +33,7 @@ options = optimoptions('fmincon','Display','iter','Algorithm','sqp','MaxFunction
 [uopt, ~, exitflag] = fmincon(J,u0,[],[],[],[],lb,ub,C,options);
 
 %Wt_opt = rhow*Span*(2*(uopt(4)*uopt(2))+(uopt(3)*(uopt(1)-(2*(uopt(4))))));
-[Ixx_opt, area_skin,area_spar1,area_spar2,area_spar3] = App_Wing_MoICalc(in.ChrdL, uopt(1), uopt(2), uopt(3),uopt(4));
+[Ixx_opt, area_skin,area_spar1,area_spar2,area_spar3] = App_Wing_MoICalc_old(in.ChrdL, uopt(1), uopt(2), uopt(3), uopt(4));
 
 Ixx_opt = Ixx_opt*(39.37^4);
 
@@ -47,11 +47,11 @@ function [J] = costfunc(u,in)
 
 % Cost = Weight of beam
 [~, area_skin,area_spar1,area_spar2,area_spar3] =...
-    App_Wing_MoICalc(in.ChrdL,u(1),u(2),u(3),u(4));
+    App_Wing_MoICalc_old(in.ChrdL,u(1),u(2),u(3),u(4));
 % vol = area*Span;
 
 % J = area + 5*u(1) + 10*u(2)+ 15*u(3) + 20*u(4);
-J = in.Wskin*area_skin + in.Wsp1*area_spar1 + in.Wsp2*area_spar2+ in.Wsp3*area_spar3;
+J = in.Wskin*area_skin + in.Wsp1*area_spar1+area_spar2+area_spar3;
 
 end
 
@@ -65,7 +65,7 @@ ineq4 = u(4) - in.Sp3max;
 ineq5 = -eye(4)*u;
 
 [Ixx_calc,~,~,~,~] = ...
-    App_Wing_MoICalc(in.ChrdL, u(1), u(2), u(3),u(4));
+    App_Wing_MoICalc_old(in.ChrdL, u(1), u(2),u(3),u(4));
 
 
 % Constraint type 1 (Dr. Bryant)

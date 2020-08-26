@@ -1,6 +1,6 @@
-% clear;clc;close all
+clear;%clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(500,'s');
+simParams.setDuration(1000,'s');
 dynamicCalc = '';
 
 % flwSpd = .5;
@@ -32,7 +32,7 @@ loadComponent('constBoothLem');
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
-loadComponent('oneDOFWnch');
+loadComponent('oneDOFWnchPTO');
 % Tether
 loadComponent('pathFollowingTether');
 % Sensors
@@ -43,6 +43,7 @@ loadComponent('idealSensorProcessing')
 loadComponent('fullScale1thr');
 % loadComponent('pathFollowingVhclForComp')
 % loadComponent('JohnfullScale1thr');
+% SIXDOFDYNAMICS = "sixDoFDynamicsCoupledOld";
 
 % Environment
 % loadComponent('CNAPsNoTurbJosh');
@@ -92,7 +93,12 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 % fltCtrl.setFirstSpoolLap(1000,'');  
 fltCtrl.elevatorReelInDef.setValue(20,'deg');
-
+% vhcl.setMa6x6_LE(-[0         0           0           0          0           0;...
+%                    0      0           0        0          0        0;...
+%                    0         0        0           0       0           0;...
+%                    0      0           0       0           0       0;...
+%                   0         0       0           0       0           0;...
+%                    0      0          0      0           0       0;],'');
 %% Run Simulation
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
