@@ -76,13 +76,15 @@ classdef maneuverabilityAdvanced
         pathLength;
     end
     
-    properties (SetAccess = immutable)
-       pathAzimuthEq
-       pathElevationEq
-       pathTangentEq
-       pathHeadingEq
-       pathCurvatureEq
-       pathLengthEq
+    % equations related to path
+    properties (SetAccess = immutable) 
+        eqPathAzimuth
+        eqPathElevation
+        eqPathCoordinates
+        eqPathTangentInGndFrame
+        eqPathHeading
+        eqPathCurvature
+        eqPathLength
     end
     
     properties (Constant = true)
@@ -104,60 +106,122 @@ classdef maneuverabilityAdvanced
     methods
         % make object given a vehicle class def
         function obj = maneuverabilityAdvanced(vhcl)
-            if nargin ~= 0
-                % chnages is cordinate system
-                BcB = [cosd(180) 0 -sind(180);0 1 0;sind(180) 0 cosd(180)];
-                
-                % wing parameters
-                obj.wingChord = vhcl.wingRootChord.Value;
-                obj.wingAspectRatio = vhcl.wingAR.Value;
-                obj.wingArea = vhcl.fluidRefArea.Value;
-                obj.wingAeroCenter = BcB*(vhcl.stbdWing.rAeroCent_SurfLE.Value.*[1;0;1]...
-                    -vhcl.rCM_LE.Value);
-                obj.wingZerAoADrag = 2*vhcl.portWing.CD.Value(vhcl.portWing.alpha.Value == 0);
-                obj.wingZeroAoALift = 2*vhcl.portWing.CL.Value(vhcl.portWing.alpha.Value == 0);
-                obj.wingCL_Data = 2*vhcl.portWing.CL.Value;
-                obj.wingCD_Data = 2*vhcl.portWing.CD.Value;
-                obj.wingAoA_Data = vhcl.portWing.alpha.Value;
-                
-                % h-stab parameters
-                obj.hstabChord = vhcl.hStab.rootChord.Value;
-                obj.hstabAspectRatio = vhcl.hStab.AR.Value;
-                obj.hstabArea = vhcl.hStab.planformArea.Value;
-                obj.hstabAeroCenter = BcB*(vhcl.hStab.rSurfLE_WingLEBdy.Value + ...
-                    vhcl.hStab.rAeroCent_SurfLE.Value-vhcl.rCM_LE.Value);
-                obj.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2);
-                obj.hstabZeroAoALift = vhcl.hStab.CL.Value(vhcl.hStab.alpha.Value == 0)*...
-                    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
-                obj.hstabZerAoADrag = vhcl.hStab.CD.Value(vhcl.hStab.alpha.Value == 0)*...
-                    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
-                obj.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2)*...
-                    vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
-                obj.hstabCL_Data = vhcl.hStab.CL.Value;
-                obj.hstabCD_Data = vhcl.hStab.CD.Value;
-                obj.hstabAoA_Data = vhcl.hStab.alpha.Value;
-                
-                % v-stab parameters
-                obj.vstabChord = vhcl.vStab.rootChord.Value;
-                obj.vstabAspectRatio = 2*vhcl.vStab.AR.Value;
-                obj.vstabArea = vhcl.vStab.planformArea.Value;
-                obj.vstabAeroCenter = BcB*(vhcl.vStab.rSurfLE_WingLEBdy.Value + ...
-                    [vhcl.vStab.rAeroCent_SurfLE.Value(1);0;vhcl.vStab.rAeroCent_SurfLE.Value(2)]...
-                    -vhcl.rCM_LE.Value);
-                obj.vstabZeroAoALift = vhcl.vStab.CL.Value(vhcl.vStab.alpha.Value == 0)*...
-                    vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
-                obj.vstabZerAoADrag = vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0)*...
-                    vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
-                obj.vstabCL_Data = vhcl.vStab.CL.Value;
-                obj.vstabCD_Data = vhcl.vStab.CD.Value;
-                obj.vstabAoA_Data = vhcl.vStab.alpha.Value;
-                
-                % geometry parameters
-                obj.buoyFactor = vhcl.buoyFactor.Value;
-                obj.centerOfBuoy = BcB*(vhcl.rCentOfBuoy_LE.Value - vhcl.rCM_LE.Value);
-                obj.mass = vhcl.mass.Value;
-                obj.bridleLocation = BcB*(vhcl.rBridle_LE.Value - vhcl.rCM_LE.Value);
-                
+            % symbolics
+            syms a b el r s
+            pParam = 2*pi-s;
+            % equations for path longitude and latitude
+            pathAzimuth = (a*sin(pParam))./...
+                (1 + ((a/b)^2).*(cos(pParam).^2));
+            pathElevation = (((a/b)^2)*sin(pParam).*cos(pParam))./...
+                (1 + ((a/b)^2).*(cos(pParam).^2));
+            pathElevation = pathElevation + el;
+            % get lemniscate coordinates
+            lemX = r*cos(pathAzimuth).*cos(pathElevation);
+            lemY = r*sin(pathAzimuth).*cos(pathElevation);
+            lemZ = r*sin(pathElevation);
+            % x,y,and z coordinates in inertial frame
+            G_path = [lemX; lemY; lemZ];
+            % differentiate wrt s to get path tangent vector
+            G_pathTgt = diff(G_path,s);
+            % rotate path tangent vector to tangent frame
+            TcG = obj.makeGroundToTangentialFrameRotMat(pathAzimuth,...
+                pathElevation);
+            T_pathTgt = TcG*G_pathTgt;
+            % calculate heading angle required in the tangent frame
+            reqHeading = atan2(T_pathTgt(2),T_pathTgt(1));
+            % first derivative
+            dx = diff(lemX,s);
+            dy = diff(lemY,s);
+            dz = diff(lemZ,s);
+            % second derivative
+            ddx = diff(dx,s);
+            ddy = diff(dy,s);
+            ddz = diff(dz,s);
+            % curvature numerator
+            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + ...
+                (ddy*dx - ddx*dy)^2);
+            % curvature denominator
+            Kden = (dx^2 + dy^2 + dz^2)^1.5;
+            % path length calculation
+            pathLengthEq = (dx^2 + dy^2 + dz^2)^0.5;
+            % use more informative symbolics
+            syms aBooth bBooth meanElevation thrLength pathParam
+            oldSyms = [a,b,el,r,s];
+            newSyms = [aBooth bBooth meanElevation thrLength pathParam];
+            % subs
+            Kden = subs(Kden,oldSyms,newSyms);
+            Knum = subs(Knum,oldSyms,newSyms);
+            pathLengthEq = subs(pathLengthEq,oldSyms,newSyms);
+            pathAzimuth = subs(pathAzimuth,oldSyms,newSyms);
+            pathElevation = subs(pathElevation,oldSyms,newSyms);
+            G_path = subs(G_path,oldSyms,newSyms);
+            G_pathTgt = subs(G_pathTgt,oldSyms,newSyms);
+            reqHeading = subs(reqHeading,oldSyms,newSyms);
+            % radius of curvature = 1/curvate
+            obj.eqPathCurvature = matlabFunction(Kden/Knum);
+            obj.eqPathLength = matlabFunction(pathLengthEq);
+            % outputs
+            obj.eqPathAzimuth  = matlabFunction(pathAzimuth);
+            obj.eqPathElevation   = matlabFunction(pathElevation);
+            obj.eqPathCoordinates = matlabFunction(G_path);
+            obj.eqPathTangentInGndFrame = matlabFunction(G_pathTgt);
+            obj.eqPathHeading   = matlabFunction(reqHeading);
+            
+            switch nargin
+                case 0
+                    % chnages is cordinate system
+                    BcB = [cosd(180) 0 -sind(180);0 1 0;sind(180) 0 cosd(180)];
+                    
+                    % wing parameters
+                    obj.wingChord = vhcl.wingRootChord.Value;
+                    obj.wingAspectRatio = vhcl.wingAR.Value;
+                    obj.wingArea = vhcl.fluidRefArea.Value;
+                    obj.wingAeroCenter = BcB*(vhcl.stbdWing.rAeroCent_SurfLE.Value.*[1;0;1]...
+                        -vhcl.rCM_LE.Value);
+                    obj.wingZerAoADrag = 2*vhcl.portWing.CD.Value(vhcl.portWing.alpha.Value == 0);
+                    obj.wingZeroAoALift = 2*vhcl.portWing.CL.Value(vhcl.portWing.alpha.Value == 0);
+                    obj.wingCL_Data = 2*vhcl.portWing.CL.Value;
+                    obj.wingCD_Data = 2*vhcl.portWing.CD.Value;
+                    obj.wingAoA_Data = vhcl.portWing.alpha.Value;
+                    
+                    % h-stab parameters
+                    obj.hstabChord = vhcl.hStab.rootChord.Value;
+                    obj.hstabAspectRatio = vhcl.hStab.AR.Value;
+                    obj.hstabArea = vhcl.hStab.planformArea.Value;
+                    obj.hstabAeroCenter = BcB*(vhcl.hStab.rSurfLE_WingLEBdy.Value + ...
+                        vhcl.hStab.rAeroCent_SurfLE.Value-vhcl.rCM_LE.Value);
+                    obj.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2);
+                    obj.hstabZeroAoALift = vhcl.hStab.CL.Value(vhcl.hStab.alpha.Value == 0)*...
+                        vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+                    obj.hstabZerAoADrag = vhcl.hStab.CD.Value(vhcl.hStab.alpha.Value == 0)*...
+                        vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+                    obj.hstabControlSensitivity = vhcl.hStab.gainCL.Value(2)*...
+                        vhcl.fluidRefArea.Value/vhcl.hStab.planformArea.Value;
+                    obj.hstabCL_Data = vhcl.hStab.CL.Value;
+                    obj.hstabCD_Data = vhcl.hStab.CD.Value;
+                    obj.hstabAoA_Data = vhcl.hStab.alpha.Value;
+                    
+                    % v-stab parameters
+                    obj.vstabChord = vhcl.vStab.rootChord.Value;
+                    obj.vstabAspectRatio = 2*vhcl.vStab.AR.Value;
+                    obj.vstabArea = vhcl.vStab.planformArea.Value;
+                    obj.vstabAeroCenter = BcB*(vhcl.vStab.rSurfLE_WingLEBdy.Value + ...
+                        [vhcl.vStab.rAeroCent_SurfLE.Value(1);0;vhcl.vStab.rAeroCent_SurfLE.Value(2)]...
+                        -vhcl.rCM_LE.Value);
+                    obj.vstabZeroAoALift = vhcl.vStab.CL.Value(vhcl.vStab.alpha.Value == 0)*...
+                        vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
+                    obj.vstabZerAoADrag = vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0)*...
+                        vhcl.fluidRefArea.Value/vhcl.vStab.planformArea.Value;
+                    obj.vstabCL_Data = vhcl.vStab.CL.Value;
+                    obj.vstabCD_Data = vhcl.vStab.CD.Value;
+                    obj.vstabAoA_Data = vhcl.vStab.alpha.Value;
+                    
+                    % geometry parameters
+                    obj.buoyFactor = vhcl.buoyFactor.Value;
+                    obj.centerOfBuoy = BcB*(vhcl.rCentOfBuoy_LE.Value - vhcl.rCM_LE.Value);
+                    obj.mass = vhcl.mass.Value;
+                    obj.bridleLocation = BcB*(vhcl.rBridle_LE.Value - vhcl.rCM_LE.Value);
+                    
             end
             
         end
@@ -181,11 +245,13 @@ classdef maneuverabilityAdvanced
     
     %% getters
     methods
+        % get aBooth
         function val = get.aBooth(obj)
             val = 0.5*obj.pathWidth*pi/180;
-
+            
         end
         
+        % get bBooth
         function val = get.bBooth(obj)
             % local variables
             w = obj.pathWidth*pi/180;
@@ -194,84 +260,17 @@ classdef maneuverabilityAdvanced
             val = (1/(2*sqrt(2)))*sqrt(-w^2+sqrt((h^2*(4+h^2)*w^4))/(h^2));
         end
         
-        % parameterized eqn for path co-ordinates & path tangent vectors
-        function val = get.pathAndTangentEqs(obj)
+        % full path length
+        function val = get.pathLength(obj)
             % local variables
-            r    = obj.tetherLength;
-            elev = obj.meanElevationInRadians;
-            a    = obj.aBooth;
-            b    = obj.bBooth;
-            % make symbolic path parameter
-            syms s
-            pathParam = 2*pi-s;
-            % equations for path longitude and latitude
-            pathAzimuth = (a*sin(pathParam))./...
-                (1 + ((a/b)^2).*(cos(pathParam).^2));
-            pathElevation = (((a/b)^2)*sin(pathParam).*cos(pathParam))./...
-                (1 + ((a/b)^2).*(cos(pathParam).^2));
-            pathElevation = pathElevation + elev;
-            % x,y,and z coordinates in inertial frame
-            G_path = r*[cos(pathAzimuth).*cos(pathElevation);
-                sin(pathAzimuth).*cos(pathElevation);
-                sin(pathElevation)];
-            % differentiate wrt s to get path tangent vector
-            G_pathTgt = diff(G_path,s);
-            % rotate path tangent vector to tangent frame
-            TcG = obj.makeGroundToTangentialFrameRotMat(pathAzimuth,...
-                pathElevation);
-            T_pathTgt = TcG*G_pathTgt;
-            % calculate heading angle required in the tangent frame
-            reqHeading = atan2(T_pathTgt(2),T_pathTgt(1));
-            % output
-            val.AzimAndElev  = matlabFunction([pathAzimuth;pathElevation]);
-            val.PathCoords   = matlabFunction(G_path);
-            val.PathTangents = matlabFunction(G_pathTgt);
-            val.reqHeading   = matlabFunction(reqHeading);
-        end
-        
-        % parameterized eqn for radius of curvate over the path
-        function val = get.radiusOfCurvatureAndPathEq(obj)
-            % symbolic
-            syms s
-            pathParm = 2*pi-s;
             a = obj.aBooth;
             b = obj.bBooth;
             r = obj.tetherLength;
-            % logitutude equation
-            pathLong = (a*sin(pathParm))./...
-                (1 + ((a/b)^2).*(cos(pathParm).^2));
-            % latitude equation equation
-            pathLat = (((a/b)^2)*sin(pathParm).*cos(pathParm))./...
-                (1 + ((a/b)^2).*(cos(pathParm).^2));
-            pathLat = pathLat + obj.meanElevationInRadians;
-            % get lemniscate coordinates
-            lemX = r*cos(pathLong).*cos(pathLat);
-            lemY = r*sin(pathLong).*cos(pathLat);
-            lemZ = r*sin(pathLat);
-            % first derivative
-            dx = diff(lemX,s);
-            dy = diff(lemY,s);
-            dz = diff(lemZ,s);
-            % second derivative
-            ddx = diff(dx,s);
-            ddy = diff(dy,s);
-            ddz = diff(dz,s);
-            % curvature numerator
-            Knum = sqrt((ddz*dy - ddy*dz)^2 + (ddx*dz - ddz*dx)^2 + ...
-                (ddy*dx - ddx*dy)^2);
-            % curvature denominator
-            Kden = (dx^2 + dy^2 + dz^2)^1.5;
-            % path length calculation
-            pathLengthEq = (dx^2 + dy^2 + dz^2)^0.5;
-            % radius of curvature = 1/curvate
-            val.rCurve = matlabFunction(Kden/Knum);
-            val.pLengthEq = matlabFunction(pathLengthEq);
-        end
-        
-        % full path length
-        function val = get.pathLength(obj)
-            val = integral(obj.radiusOfCurvatureAndPathEq.pLengthEq,0,...
-            2*pi);
+            el = obj.meanElevationInRadians;
+            % output
+            val = integral(@(pathParam)...
+                obj.eqPathLength(a,b,el,pathParam,r),0,...
+                2*pi);
         end
         
     end
@@ -337,8 +336,15 @@ classdef maneuverabilityAdvanced
     %% path related methods
     methods
         function val = calcPathLength(obj,pathParam)
-            val = integral(obj.radiusOfCurvatureAndPathEq.pLength,pathParam(1),...
-                pathParam(end));
+            % local variables
+            a = obj.aBooth;
+            b = obj.bBooth;
+            r = obj.tetherLength;
+            el = obj.meanElevationInRadians;
+            % output
+            val = integral(@(pathParam)...
+                obj.eqPathLength(a,b,el,pathParam,r),pathParam(1),...
+                pathParam(2));
         end
     end
     
@@ -547,7 +553,7 @@ classdef maneuverabilityAdvanced
             end
             
         end
-              
+        
         % calcualte wing forces and moment
         function val = calcWingLoads(obj,B_vApp)
             % local variables
@@ -632,7 +638,8 @@ classdef maneuverabilityAdvanced
         % calculate required centripetal force over the path
         function val = calcRequiredCentripetalForce(obj,H_vKite,pathParam)
             % get radius of curvature over the path
-            pathRcurve = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
+            pathRcurve = obj.eqPathCurvature(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % calculate centripetal force required
             val = obj.mass*H_vKite(1)^2./pathRcurve;
             % correct direction
@@ -651,11 +658,12 @@ classdef maneuverabilityAdvanced
             tgtPitch = pp.Results.tgtPitch;
             % % dElevator = pp.Results.elevatorDef;
             % get path azimuth and elevation
-            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
-            azim = pathAzimElev(1,:);
-            elev = pathAzimElev(2,:);
+            azim = obj.eqPathAzimuth(obj.aBooth,obj.bBooth,pathParam);
+            elev = obj.eqPathElevation(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam);
             % get path heading angle
-            pathHeading = obj.pathAndTangentEqs.reqHeading(pathParam);
+            pathHeading = obj.eqPathHeading(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % calculate required centripetal force to stay on path
             reqFcentripetal = obj.calcRequiredCentripetalForce(H_vKite,...
                 pathParam);
@@ -702,11 +710,11 @@ classdef maneuverabilityAdvanced
             end
             if numel(flowSpeed) == 1
                 flowSpeed = ones(1,numel(pathParam))*flowSpeed;
-            end   
+            end
             % flow velocity vector
             G_flow = flowSpeed;
             G_flow(2:3,:) = 0;
-
+            
             % heading velocity over the path
             vH_path = nan*pathParam;
             % roll angle over path
@@ -738,10 +746,11 @@ classdef maneuverabilityAdvanced
         function [val,roll,B_Vapp,allLoads] = getAttainableVelocityEqn(obj,G_vFlow,...
                 tgtPitch,pathParam,vH)
             % get azimuth, elevation, heading, and radius of curvature
-            AzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
-            azimuth = AzimElev(1);
-            elevation = AzimElev(2);
-            heading = obj.pathAndTangentEqs.reqHeading(pathParam);
+            azimuth = obj.eqPathAzimuth(obj.aBooth,obj.bBooth,pathParam);
+            elevation = obj.eqPathElevation(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam);
+            heading = obj.eqPathHeading(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % extract values
             H_vKite = [vH;0;0];
             % calculate kite vel in tangent frame
@@ -894,10 +903,11 @@ classdef maneuverabilityAdvanced
             % path parameters
             nPoints = numel(pathParam);
             % get path azimuth, elevation, and heading
-            pathAzimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
-            pathAzimuth = pathAzimElev(1,:);
-            pathElevation = pathAzimElev(2,:);
-            pathHeading  = obj.pathAndTangentEqs.reqHeading(pathParam);
+            pathAzimuth = obj.eqPathAzimuth(obj.aBooth,obj.bBooth,pathParam);
+            pathElevation = obj.eqPathElevation(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam);
+            pathHeading  = obj.eqPathHeading(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             tgtAngleRange = [nan;nan]*pathParam;
             % calculate for each path parameter
             parfor ii = 1:nPoints
@@ -1103,7 +1113,7 @@ classdef maneuverabilityAdvanced
         function val = plotAeroCoefficients(obj)
             % graphic objects
             val = gobjects;
-            spAxes = gobjects;           
+            spAxes = gobjects;
             % angle of attack
             AoA = linspace(-20,20,100)*pi/180;
             % get coefficients
@@ -1341,7 +1351,8 @@ classdef maneuverabilityAdvanced
                 pathParam = linspace(0,2*pi,300);
             end
             % get equations
-            path = obj.pathAndTangentEqs.PathCoords(pathParam);
+            path = obj.eqPathCoordinates(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % plot
             val = plot3(path(1,:),path(2,:),path(3,:),'k-',...
                 'linewidth',1);
@@ -1352,9 +1363,11 @@ classdef maneuverabilityAdvanced
         % plot tangent vetor
         function val = plotTangentVec(obj,pathParam)
             % get location of point on path
-            pointLoc = obj.pathAndTangentEqs.PathCoords(pathParam);
+            pointLoc = obj.eqPathCoordinates(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % get the tangent vector
-            tanVec = obj.pathAndTangentEqs.PathTangents(pathParam);
+            tanVec = obj.eqPathTangentInGndFrame(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             tanVec = tanVec./max(norm(tanVec),eps);
             % plot options
             lineWidth = 0.8;
@@ -1374,7 +1387,8 @@ classdef maneuverabilityAdvanced
                 pathParam = linspace(0,2*pi,300);
             end
             % calculate radius of curvature
-            R = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
+            R = obj.eqPathCurvature(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % plot
             pathParam = pathParam./(2*pi);
             val = obj.plot2D(pathParam,R,'linewidth',obj.lwd);
@@ -1391,9 +1405,9 @@ classdef maneuverabilityAdvanced
             if nargin == 1
                 pathParam = linspace(0,2*pi,300);
             end
-            % calculate radius of curvature
-            headingAng = obj.pathAndTangentEqs.reqHeading(pathParam);
-            headingAng = wrapTo2Pi(headingAng);
+            % calculate heading angle
+            headingAng = obj.eqPathHeading(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % plot
             pathParam = pathParam./(2*pi);
             val = obj.plot2D(pathParam,headingAng*180/pi,'linewidth',obj.lwd);
@@ -1479,7 +1493,8 @@ classdef maneuverabilityAdvanced
             % make the static radius of curvature plot
             subplot(spSz(1),spSz(2),rcIdx);
             obj.plotPathRadiusOfCurvature;
-            rC = obj.radiusOfCurvatureAndPathEq.rCurve(pathParam);
+            rC = obj.eqPathCurvature(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
             % make the static heading angle plot
             subplot(spSz(1),spSz(2),haIdx);
             obj.plotPathHeadingAngle;
@@ -1495,11 +1510,12 @@ classdef maneuverabilityAdvanced
             % font size
             obj.setFontSize;
             % calculate values for azimuth,elevation, and heading
-            hAng = obj.pathAndTangentEqs.reqHeading(pathParam);
-            hAng = wrapTo2Pi(hAng);
-            azimElev = obj.pathAndTangentEqs.AzimAndElev(pathParam);
-            azSweep = (max(azimElev(1,:)) - min(azimElev(1,:)))*180/pi;
-            elSweep = (max(azimElev(2,:)) - min(azimElev(2,:)))*180/pi;
+            hAng = obj.eqPathHeading(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam,obj.tetherLength);
+            azim = obj.eqPathAzimuth(obj.aBooth,obj.bBooth,pathParam);
+            elev = obj.eqPathElevation(obj.aBooth,obj.bBooth,...
+                obj.meanElevationInRadians,pathParam);
+
             % check if animation is wanted
             if pp.Results.animate
                 delete(pTanVec);
@@ -1523,8 +1539,8 @@ classdef maneuverabilityAdvanced
                         [obj.pathWidth,obj.pathHeight,pathParam(ii)]));
                     % kite axes
                     if pp.Results.addKiteTrajectory
-                        pAxes = obj.plotBodyFrameAxes(azimElev(1,ii),...
-                            azimElev(2,ii),hAng(ii),tgtPitch(ii),roll(ii));
+                        pAxes = obj.plotBodyFrameAxes(azim(ii),...
+                            elev(2,ii),hAng(ii),tgtPitch(ii),roll(ii));
                     end
                     % radius of curvature
                     subplot(spSz(1),spSz(2),rcIdx);
