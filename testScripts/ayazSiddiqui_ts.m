@@ -98,5 +98,15 @@ save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 figure;
 set(gcf, 'Position', get(0, 'Screensize'));
 stats = tsc.plotAndComputeLapStats;
-% vhcl.animateSim(tsc,0.5,...
-%     'PathFunc',fltCtrl.fcnName.Value);
+pLength = calculatePathLength(a,b,el,thrLength);
+
+G_vCM = squeeze(tsc.velocityVec.Data);
+avgSpeed = mean(vecnorm(G_vCM));
+
+B_Vapp = squeeze(tsc.vhclVapp.Data);
+vapp3 = mean(max(0,B_Vapp(1,:)).^3);
+
+
+%
+vhcl.animateSim(tsc,0.5,...
+    'PathFunc',fltCtrl.fcnName.Value);
