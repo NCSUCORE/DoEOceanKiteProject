@@ -201,6 +201,10 @@ classdef vehicleM < dynamicprops
         function setFlowGradientDist(obj,val,units)
             obj.flowGradientDist.setValue(val,units);
         end
+        
+        function setHydroCharacterization(obj,val,units)
+            obj.hydroChracterization.setValue(val,units);
+        end
 
         function setNumTurbines(obj,val,units)
             obj.numTurbines.setValue(val,units);
@@ -567,6 +571,8 @@ classdef vehicleM < dynamicprops
                 else
                     load(fileLoc,'aeroStruct');
                 end
+            else
+                
             end
                 
             obj.portWing.setCL(aeroStruct(1).CL,'');
