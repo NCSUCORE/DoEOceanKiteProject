@@ -39,7 +39,7 @@ pol_flap.CD = interp1(xxxxf,pol_flap.CD,vvvvf)';
 alfa = pol.alpha; cl = pol.CL/(1+2/AR); cd = pol.CD;
 CD_induced = cl.^2/(pi*e*AR);
 CD = cd+CD_induced;
-alfa_c =alfa;CD_c = CD;cl_c =cl;
+alfa_c = alfa;CD_c = CD;cl_c =cl;
 % foil with flap
 alfaf = pol_flap.alpha; clf = pol_flap.CL/(1+2/AR); cdf = pol_flap.CD;
 CD_inducedf = clf.^2/(pi*e*AR);
@@ -61,4 +61,4 @@ yy1_cd = CD_fc-CD_c;
 CL_gain = [P_cl,0];
 CD_gain = [P_cd,0];
 
-% save('NACA2412_corrected_TRUE.mat','alfa_c','cl_c','CD_c','CL_gain','CD_gain');%or Function output
+save('NACA2412_corrected_TRUE.mat','alfa_c','cl_c','CD_c','CL_gain','CD_gain');%or Function output
