@@ -60,11 +60,16 @@ FLiftBdyP1 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,1,:).^2,1)));
 FLiftBdyP2 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,2,:).^2,1)));
 FLiftBdyP3 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,3,:).^2,1)));
 FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
-totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
-LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
+% totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
+% LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
+totDrag = (FDragBdy + FTurbBdy + FDragFuse );
+LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse );
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
 vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
 PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
+figure();
+hold on; grid on
+plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
 figure();
 %%  Plot Turbine Power Output
 subplot(R,C,1); 
@@ -106,8 +111,7 @@ subplot(R,C,3); hold on; grid on
 if lap
     if con
         plot(data(ran),speed(ran),'b-');  ylabel('Speed [m/s]');
-        data1=data+.05;
-        plot(data1(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
     else
         plot(time(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
         plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');

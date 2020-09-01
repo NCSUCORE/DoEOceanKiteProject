@@ -74,6 +74,9 @@ for ii = 1:numel(flwSpd)
     if simScenario == 0 || simScenario == 2
         vhcl.turb1.setDiameter(0,'m')
     end
+%     D = .5;
+%     vhcl.turb1.setDiameter(D,'m')
+%     vhcl.turb2.setDiameter(D,'m')
     %%  Tethers Properties
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
     thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
@@ -133,10 +136,10 @@ for ii = 1:numel(flwSpd)
         filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
     elseif simScenario == 1.2
-%         filename = sprintf(strcat('NewTurb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
-        filename = sprintf(strcat('NewTurb2_V-%.3f.mat'),flwSpd(ii));
-    %     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
-        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','EL30a\');
+        filename = sprintf(strcat('NewTurb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+%         filename = sprintf(strcat('NewTurb2_V-%.3f.mat'),flwSpd(ii));
+        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
+%         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','EL30a\');
     elseif simScenario == 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Winch\');
@@ -154,7 +157,7 @@ for ii = 1:numel(flwSpd)
     %     filename = sprintf(strcat('Pitch_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
     end
-%     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Animate Simulation
 % if simScenario <= 2
