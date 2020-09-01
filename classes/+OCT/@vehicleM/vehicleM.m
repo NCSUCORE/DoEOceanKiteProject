@@ -153,7 +153,7 @@ classdef vehicleM < dynamicprops
             obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
             
 
-            obj.hydroChracterization    = SIM.parameter('Value',1,'Unit','','Description','1 = AVL; 0 = XFoil');
+            obj.hydroChracterization    = SIM.parameter('Value',1,'Unit','','Description','1 = AVL; 2 = XFoil; 3 = XFlr');
             %Legacy Properties
 
         end
