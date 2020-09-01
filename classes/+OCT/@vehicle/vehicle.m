@@ -605,8 +605,20 @@ classdef vehicle < dynamicprops
                 else
                     warning('Simulation won''t run without valid aero coefficient values')
                 end
-            else 
-                load(fileLoc,'aeroStruct');
+            else
+                fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                    'Would you like to create a new file?\n']);
+                str = input('(Y/N): \n','s');
+                if isempty(str)
+                    str = 'Y';
+                end
+                if strcmpi(str,'Y')
+                    newName = input('New filename (excluding ".mat"): \n','s');
+                    obj.setFluidCoeffsFileName(newName,'');
+                    aeroStruct = runAVL(obj);
+                else
+                    load(fileLoc,'aeroStruct');
+                end
             end
                 
             obj.portWing.setCL(aeroStruct(1).CL,'');

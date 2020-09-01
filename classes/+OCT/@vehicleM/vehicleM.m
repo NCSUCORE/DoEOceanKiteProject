@@ -555,10 +555,9 @@ classdef vehicleM < dynamicprops
             
             if obj.hydroChracterization.Value == 1
                 fileLoc = which(obj.fluidCoeffsFileName.Value);
-                
                 if ~isfile(fileLoc)
-                    fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                        ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                    fprintf(['The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                        'Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
                     str = input('(Y/N): \n','s');
                     if isempty(str)
                         str = 'Y';
@@ -569,7 +568,19 @@ classdef vehicleM < dynamicprops
                         warning('Simulation won''t run without valid aero coefficient values')
                     end
                 else
-                    load(fileLoc,'aeroStruct');
+                    fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                        'Would you like to create a new file?\n']);
+                    str = input('(Y/N): \n','s');
+                    if isempty(str)
+                        str = 'Y';
+                    end
+                    if strcmpi(str,'Y')
+                        newName = input('New filename (excluding ".mat"): \n','s');
+                        obj.setFluidCoeffsFileName(newName,'');
+                        aeroStruct = runAVL(obj);
+                    else 
+                        load(fileLoc,'aeroStruct');
+                    end
                 end
             else
                 

@@ -19,8 +19,8 @@ CDf = (Sf/Sw)*(fuse.CD0*cos(alpha)+(1-cos(alpha)*fuse.CDs));
 CL = CLw + CLh;
 CD = CDw + CDh + CDv + CDf;
 
-% vApp = (CL/CD*Env.vFlow(1));
-vApp = 4;
+vApp = (CL/CD*Env.vFlow(1));
+% vApp = 4;
 
 Flift = 1/2*Env.rho*vApp^2*CL*Sw;
 
