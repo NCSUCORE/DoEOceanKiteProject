@@ -1,4 +1,7 @@
 % clear;clc;close all
+cd(fileparts(mfilename('fullpath')));
+
+
 simParams = SIM.simParams;
 simParams.setDuration(1000,'s');
 dynamicCalc = '';

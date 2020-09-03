@@ -110,6 +110,7 @@ vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
     
 %% load/generate fluid dynamic datan
+vhcl.setHydroCharacterization(3,'');
 vhcl.calcFluidDynamicCoefffs
 
 %% save file in its respective directory
