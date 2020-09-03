@@ -74,13 +74,13 @@ Env.vFlow = [.25 0 0]';                             %   m/s - Flow speed
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
-[Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
+% [Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
 %%  Position and Orientation Angles 
 Ang.elevation = 40;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = 0-10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
