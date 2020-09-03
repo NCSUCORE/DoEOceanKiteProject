@@ -40,7 +40,7 @@ vhcl.setMa6x6_LE([134         0           0           0          14           0;
                    0         0        9265           0       -8202           0;...
                    0      -986           0       67412           0       -4608;...
                   14         0       -8202           0       20209           0;...
-                   0      5166           0       -4608           0       23320;],'');
+                   0      5166           0       -4608           0       23320;],'');           
 % vhcl.setD6x6_B([],'');
 
 %% Control Surfaces
@@ -108,6 +108,8 @@ vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
     
 %% load/generate fluid dynamic datan
+% HydroCharacterization = 1 is AVL, HydroCharacterization = 3 is XFLR
+vhcl.setHydroCharacterization(3,'');
 vhcl.calcFluidDynamicCoefffs
 
 %% save file in its respective directory
