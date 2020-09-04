@@ -2,7 +2,7 @@
 clc;clear;
 
 %%  Input definitions 
-loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
+% loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
 % loadComponent('newManta2RotNACA2412');              %   Load vehicle 
 loadComponent('Manta2RotNew');                     %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
@@ -47,7 +47,7 @@ Sys.B = 1;                                          %   Buoyancy factor
 Sys.LE = -vhcl.fuse.rNose_LE.Value;                 %   m - wing leading edge w/ respect to nose
 Sys.xg = Sys.LE+vhcl.rCM_LE.Value;                  %   m - Center of gravity w/ respect to nose
 Sys.xb = Sys.xg+[0 0 0]';                           %   m - Center of buoyancy location w/ respect to nose
-Sys.xbr = Sys.xg+[0 0 0]';                          %   m - Bridle location w/ respect to nose
+Sys.xbr = Sys.xg+[0 0 vhcl.thrAttchPts_B.posVec.Value(3)]';                          %   m - Bridle location w/ respect to nose
 Sys.xW = Sys.LE+wing.aeroCent;                      %   m - Wing aerodynamic center location w/ respect to nose
 Sys.xH = [5.95 0 0]'+hStab.aeroCent;                %   m - Horizontal stabilizer aerodynamic center location w/ respect to nose
 Sys.xV = [5.95 0 0]'+vStab.aeroCent;                %   m - Vertical stabilizer aerodynamic center location w/ respect to nose
