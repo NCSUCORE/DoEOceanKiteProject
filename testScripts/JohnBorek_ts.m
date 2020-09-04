@@ -9,7 +9,7 @@ simScenario = 1.2;
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .4;                                               %   m/s - Flow speed
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
-el = 30*pi/180;                                             %   rad - Mean elevation angle
+el = 60*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
@@ -39,7 +39,8 @@ for ii = 1:numel(flwSpd)
         loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor
     elseif simScenario == 1.2 || simScenario == 4.2
         loadComponent('Manta2RotNew');                          %   Load new vehicle with 2 rotors
-        %     SIXDOFDYNAMICS = "sixDoFDynamicsCoupledOld";
+        loadComponent('fullScale1thr');
+    %     SIXDOFDYNAMICS = "sixDoFDynamicsCoupledOld";
     else
         loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
     end
@@ -50,7 +51,8 @@ for ii = 1:numel(flwSpd)
         ENVIRONMENT = 'environmentManta';                       %   Single turbine
     else
         ENVIRONMENT = 'environmentManta2Rot';                   %   Two turbines
-        %     ENVIRONMENT = 'environmentManta4Rot';                   %   Four turbines
+        loadComponent('ConstXYZT');
+%     ENVIRONMENT = 'environmentManta4Rot';                   %   Four turbines
     end
     %%  Set basis parameters for high level controller
     % loadComponent('constEllipse');                              %   High level controller
@@ -110,9 +112,9 @@ for ii = 1:numel(flwSpd)
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
         fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
         fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller
-%         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.pitchAngleMax.upperLimit.setValue(45,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-45,'');
-        fltCtrl.setNomSpoolSpeed(.25,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
+        fltCtrl.setNomSpoolSpeed(.00,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
         wnch.winch1.elevError.setValue(2,'deg');
         vhcl.turb1.setPowerCoeff(0,'');
     end
@@ -120,6 +122,7 @@ for ii = 1:numel(flwSpd)
     pSP =  [30 30  30  30  30   40   40   40   40   40   40   40   40];
     thr.tether1.dragEnable.setValue(1,'');
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
+%     vhcl.setMa6x6_LE(vhcl.Ma6x6_LE.Value*-1,'')
     %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
@@ -157,7 +160,7 @@ for ii = 1:numel(flwSpd)
     %     filename = sprintf(strcat('Pitch_kp-%.1f_ki-%.1f_',dt,'.mat'),fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
     end
-    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+%     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Animate Simulation
 % if simScenario <= 2
@@ -167,7 +170,7 @@ end
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
-%         'SaveGif',1==1,'GifFile',strrep(filename,'.mat','zoom.gif'));
+%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
 % end
 %%  Plot Results
 if simScenario < 3
