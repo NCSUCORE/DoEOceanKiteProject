@@ -15,8 +15,8 @@ L1 = p.Results.Lap1;
 %  Determine Single Lap Indices
 if lap
     lapNum = squeeze(obj.lapNumS.Data);
-    Idx1 = find(lapNum > L1,1,'first');
-    Idx2 = find(lapNum > L1+1,1,'first');
+    Idx1 = find(lapNum == L1,1,'first');
+    Idx2 = find(lapNum == L1+1,1,'first');
     if isempty(Idx1) || isempty(Idx2)
         error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
     end
