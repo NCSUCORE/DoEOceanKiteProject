@@ -60,16 +60,15 @@ FLiftBdyP1 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,1,:).^2,1)));
 FLiftBdyP2 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,2,:).^2,1)));
 FLiftBdyP3 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,3,:).^2,1)));
 FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
-% totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
+totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
 % LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
-totDrag = (FDragBdy + FTurbBdy + FDragFuse );
 LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse );
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
 vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
-PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
-figure();
-hold on; grid on
-plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
+PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+% figure();
+% hold on; grid on
+% plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
 figure();
 %%  Plot Turbine Power Output
 subplot(R,C,1); 
@@ -80,10 +79,12 @@ if lap
         plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
         plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
     else
-        plot(time(ran),power(ran),'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
+        plot(time(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
+        plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
     end
 else
-    plot(time,power,'b-');  ylabel('Power [W]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
+    plot(time,power*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
+    plot(time,PLoyd*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
 end
 yyaxis right
 if lap
@@ -124,20 +125,23 @@ end
 subplot(R,C,4); hold on; grid on
 if lap
     if con
-        plot(data(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Port AoA [deg]');
+        plot(data(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Angle [deg]');
+        plot(data(ran),squeeze(obj.alphaLocal.Data(1,2,ran)),'r-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA')
         if p.Results.plotBeta
-            plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta')
+            plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta')
         end
     else
-        plot(time(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Port AoA [deg]');  xlim(lim)
+        plot(time(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Angle [deg]');  xlim(lim)
+        plot(time(ran),squeeze(obj.alphaLocal.Data(1,2,ran)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
         if p.Results.plotBeta
-            plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta');  xlim(lim)
+            plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
         end
     end
 else
-    plot(time,squeeze(obj.alphaLocal.Data(1,1,:)),'b-');  ylabel('Port AoA [deg]');  xlim(lim)
+    plot(time,squeeze(obj.alphaLocal.Data(1,1,:)),'b-');  ylabel('Angle [deg]');  xlim(lim)
+    plot(time,squeeze(obj.alphaLocal.Data(1,2,:)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
     if p.Results.plotBeta
-        plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'r--');  ylabel('Angle [deg]');  legend('Port Alpha','Beta');  xlim(lim)
+        plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
     end
 end
 %%  Plot CL^3/CD^2
@@ -164,16 +168,31 @@ else
 end
 %%  Plot Lift-Drag ratio
 subplot(R,C,6); hold on; grid on
+yyaxis left
 if lap
     if con
-%         plot(data(ran),LiftDrag(ran),'b-');  xlabel('Path Position');  ylabel('L/D');   
-        plot(data(ran),totDrag(ran)*1e-3,'r-');    xlabel('Path Position');  ylabel('Force [kN]');   
+        plot(data(ran),totDrag(ran)*1e-3,'r-');    xlabel('Path Position');  ylabel('Force [kN]');  set(gca,'YColor',[0 0 0])
         plot(data(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Path Position');  ylabel('Force [kN]');  legend('Drag','Lift') 
     else
-        plot(time(ran),LiftDrag(ran),'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);    
+        plot(time(ran),totDrag(ran)*1e-3,'r-');    xlabel('Time [s]');  ylabel('Force [kN]');  set(gca,'YColor',[0 0 0])
+        plot(time(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Time [s]');  ylabel('Force [kN]');  legend('Drag','Lift') ;  xlim(lim);
     end
 else
-    plot(time,LiftDrag,'b-');  xlabel('Time [s]');  ylabel('L/D');  xlim(lim);  
+    plot(time,totDrag*1e-3,'r-');    xlabel('Time [s]');  ylabel('Force [kN]');  set(gca,'YColor',[0 0 0])
+    plot(time,FLiftBdy*1e-3,'b-');   xlabel('Time [s]');  ylabel('Force [kN]');  legend('Drag','Lift') ;  xlim(lim);
+end
+yyaxis right
+if lap
+    if con
+        plot(data(ran),CDtot(ran),'r--');    xlabel('Path Position');  set(gca,'YColor',[0 0 0])
+        plot(data(ran),CLsurf(ran),'b--');   xlabel('Path Position');  ylabel('CD and CL');  legend('Drag','Lift','CD','CL')
+    else
+        plot(time(ran),CDtot(ran),'r--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
+        plot(time(ran),CLsurf(ran),'b--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CD','CL') ;  xlim(lim);
+    end
+else
+    plot(time,CDtot,'r--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
+    plot(time,CLsurf,'b--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CD','CL') ;  xlim(lim);
 end
 % figure; hold on; grid on
 % plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');

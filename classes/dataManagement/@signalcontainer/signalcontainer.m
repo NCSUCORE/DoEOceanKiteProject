@@ -221,7 +221,6 @@ classdef signalcontainer < dynamicprops
             CDtot = CDfuse+CDsurf;
             CLsurf = squeeze(sum(obj.CL.Data(1,1:3,:),2));
         end
-        
         function stats = plotAndComputeLapStats(obj)
             % local functions
             uVec = @(x,y)['$\hat{',x,'}_{\bar{',y,'}}$'];
@@ -373,7 +372,18 @@ classdef signalcontainer < dynamicprops
 
             
         end
-        
+        function Pow = rotPowerSummary(obj,vhcl,env)
+            [Idx1,Idx2] = obj.getLapIdxs(1);
+            ran = Idx1:Idx2-1;
+            [CLsurf,CDtot] = getCLCD(obj,vhcl);
+            C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+            Pow.loyd = mean(PLoyd)*1e-3;
+            Pow.avg = mean(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
+            Pow.max = max(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
+            Pow.min = min(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
+            fprintf('Lap average power output:\n Min\t\t Max\t\t Avg\t\t Loyd\n %.02f kW\t %.02f kW\t %.02f kW\t %.02f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
+        end
     end
 end
 
