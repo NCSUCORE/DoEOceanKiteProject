@@ -221,6 +221,7 @@ classdef signalcontainer < dynamicprops
             CDtot = CDfuse+CDsurf;
             CLsurf = squeeze(sum(obj.CL.Data(1,1:3,:),2));
         end
+        
         function stats = plotAndComputeLapStats(obj)
             % local functions
             uVec = @(x,y)['$\hat{',x,'}_{\bar{',y,'}}$'];

@@ -7,7 +7,7 @@ clear;clc;%close all
 simScenario = 1.2;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .5;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
+flwSpd = .4;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -39,7 +39,7 @@ for ii = 1:numel(flwSpd)
         loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor
     elseif simScenario == 1.2 || simScenario == 4.2
         loadComponent('Manta2RotNew');                          %   Load new vehicle with 2 rotors
-        loadComponent('Manta2RotNewXFoil');                          %   Load new vehicle with 2 rotors
+%         loadComponent('Manta2RotNewXFoil');                          %   Load new vehicle with 2 rotors
     %     SIXDOFDYNAMICS = "sixDoFDynamicsCoupledOld";
     else
         loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
@@ -96,7 +96,7 @@ for ii = 1:numel(flwSpd)
     end
     fltCtrl.rudderGain.setValue(0,'')
     if simScenario == 1.2
-        fltCtrl.setElevatorReelInDef(0,'deg')
+        fltCtrl.setElevatorReelInDef(-10,'deg')
     else
         fltCtrl.setElevatorReelInDef(0,'deg')
     end
@@ -170,7 +170,7 @@ end
 % end
 %%  Plot Results
 if simScenario < 3
-%     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'Vapp',false,'plotBeta',1==1)
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'Vapp',false,'plotBeta',1==1)
 %     tsc.plotTanAngles('plot1Lap',true,'plotS',true)
 %     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
 else
