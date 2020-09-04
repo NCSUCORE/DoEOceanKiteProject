@@ -5,19 +5,23 @@ cd(fileparts(mfilename('fullpath')));
 
 
 %% flow speeds
-flowSpeeds = 1;
+flowSpeeds = 1.25;
 nFlows = numel(flowSpeeds);
 
 %% path parameters
 % path mean elevation
-meanElevs = 20;
-% :4:40;
+meanElevs = 20:4:40;
 % path widths
-pathWidths = 8;
-% :4:40;
+pathWidths = 8:4:40;
 % path heights
-pathHeights = 2:3;
-% :2:16;
+pathHeights = 2:2:16;
+
+meanElevs = 20;
+% path widths
+pathWidths = 8:2:10;
+% path heights
+pathHeights = 10;
+
 % thr length
 thrLength = 100;
 % path length equation
@@ -61,13 +65,12 @@ allbBooth    = simConditions(:,7);
 headers = {'Sim no','Mean elevation','Path width','Path height','Tether length',...
     'aBooth','bBooth','Path length','Laps','Lap time','Distance travelled','Avg. (V_app,x)^3',...
     'Avg. V_cm','Avg. tangent pitch','Avg. AoA','Garbage results?',...
-    'Saturated tangent roll?','Max dv/dp','Max dtPitch/dp','Max dtRoll/dp'};
+    'Max tanRoll?','Max dv/dp','Max dtPitch/dp','Max dtRoll/dp'};
 nHeaders = numel(headers);
 % variable types
 varTypes = cell(1,nHeaders);
-varTypes(1:end-5) = {'double'};
-varTypes(end-4:end-3) = {'logical'};
-varTypes(end-2:end) = {'double'};
+varTypes(1:end) = {'double'};
+varTypes(end-4) = {'logical'};
 
 % default stats
 defaultStats = cell(1,nHeaders-4);
@@ -82,8 +85,8 @@ for ii = 1:size(simConditions,2)
 end
 
 % directory to save data
-[status, msg, msgID] = mkdir(pwd,'simSweepOutputs');
-folderName = [pwd,'\simSweepOutputs\'];
+folderName = [pwd,'\simSweepOutputs',strrep(datestr(datetime),':','-')];
+[status, msg, msgID] = mkdir(folderName);
 
 %% Load components
 simParams = SIM.simParams;
@@ -124,8 +127,12 @@ loadComponent('ConstXYZT');
 %     load_system('OCTModel');
 % end
 
+failedSim = 0;
 for ii = 1:nFlows
     localFlowSpeed = flowSpeeds(ii);
+    subfolderName = [folderName,sprintf('\\flowSpeed-%.2f',flowSpeeds(ii))];
+    [status, msg, msgID] = mkdir(subfolderName);
+
     T = baseTable;
     
     for jj = 1: numSims
@@ -180,17 +187,18 @@ for ii = 1:nFlows
 %             sim('OCTModel','SrcWorkspace','current');
             simWithMonitor('OCTModel');
             tsc = signalcontainer(logsout);
-            compStats = computeSimStats(tsc);
+            compStats = computeSimLapStats(tsc);
             stats = [presentSimCon, compStats(2,:)];
             T(jj,:) = stats;
+            save([subfolderName,sprintf('\\SimNo_%03d.mat',jj)],'tsc');
         catch
-            stats = [presentSimCon, defaultStats];
+            failedSim = failedSim+1;
         end
         
     end
     
-    filename = strcat(folderName,sprintf('flowSpeed-%.2f Date-',flowSpeeds(ii)),...
-        strrep(datestr(datetime),':','-'),'.xlsx');
+    filename = strcat(subfolderName,'\resExcel',...
+        sprintf(' flowSpeed-%.2f',flowSpeeds(ii)),'.xlsx');
     writetable(T,filename,'Sheet',1);
     
 end
@@ -203,6 +211,7 @@ end
 % end
 
 %% compute basis statics with logouts data
-
+clc
+fprintf('Sim complete. Number of failed sims = %d.\n',failedSim);
 
 

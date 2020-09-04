@@ -107,10 +107,10 @@ tgtPitchSweep = linspace(-20,20,41)*pi/180;
 %     heading,tgtPitchSweep,roll,elevatorDeflection);
 
 %% test plotting functions
-fIdx = fIdx+1;
-figure(fIdx);
-set(gcf,'Position',[0 0 2*560 2*420]);
-cIn.plotAeroCoefficients;
+% fIdx = fIdx+1;
+% figure(fIdx);
+% set(gcf,'Position',[0 0 2*560 2*420]);
+% cIn.plotAeroCoefficients;
 
 
 fIdx = fIdx+1;
@@ -154,6 +154,5 @@ figure(fIdx);
 set(gcf,'Position',[0 0 560*2.5 420*2]);
 cIn.makeFancyAnimation(pathParam,'animate',true,...
     'addKiteTrajectory',true,...
-    'rollInRad',reqRoll,...
     'waitForButton',true);
 

@@ -363,7 +363,7 @@ classdef signalcontainer < dynamicprops
             rCM = rCM(:,ran);
             disTraveled = sum(vecnorm(rCM(:,2:end) - rCM(:,1:end-1)));
             % avereage speed
-            avgSpeed = disTraveled/lapTime;
+            avgSpeed = mean(vhclSpeed);
             % title            
             sgtitle(sprintf(['Lap number = %d',', Lap time = %.2f sec',...
                 ', Avg $v_{app,x}^3$ = %.2f',', Distace covered = %.2f m',...
@@ -372,10 +372,7 @@ classdef signalcontainer < dynamicprops
                 'FontSize',11);
 
             
-        end
-        
-
-        
+        end      
     end
 end
 
