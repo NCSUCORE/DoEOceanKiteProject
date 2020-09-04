@@ -9,10 +9,13 @@ simParams.setDuration(600,'s');
 dynamicCalc = '';
 flowSpeed = 1;
 thrLength = 100;
-el = 20*pi/180;                         % rad - Mean elevation angle
-w = 15*pi/180;          % rad - Path width/height
-h = 10*pi/180;  
-[a,b] = boothParamConversion(w,h);      % Path basis parameters
+% rad - Mean elevation angle
+el = 10*pi/180;    
+% rad - Path width/height
+w = 25*pi/180;          
+h = 6*pi/180;  
+% Path basis parameters
+[a,b] = boothParamConversion(w,h);      
 
 %% Load components
 % Flight Controller
@@ -95,8 +98,20 @@ fpath = fullfile(fileparts(which('OCTProject.prj')),'outputs\');
 filename = sprintf(strcat('FS-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 
+%%
 figure;
 set(gcf, 'Position', get(0, 'Screensize'));
 stats = tsc.plotAndComputeLapStats;
-% vhcl.animateSim(tsc,0.5,...
-%     'PathFunc',fltCtrl.fcnName.Value);
+pLength = calculatePathLength(a,b,el,thrLength);
+percExtraDist = 100*(stats{2,3}-pLength)/pLength;
+
+G_vCM = squeeze(tsc.velocityVec.Data);
+avgSpeed = mean(vecnorm(G_vCM));
+
+B_Vapp = squeeze(tsc.vhclVapp.Data);
+vapp3 = mean(max(0,B_Vapp(1,:)).^3);
+
+
+%%
+vhcl.animateSim(tsc,0.5,...
+    'PathFunc',fltCtrl.fcnName.Value);
