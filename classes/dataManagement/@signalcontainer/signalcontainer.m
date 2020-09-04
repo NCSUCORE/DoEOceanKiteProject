@@ -372,7 +372,8 @@ classdef signalcontainer < dynamicprops
                 'FontSize',11);
 
             
-        end      
+        end
+        
     end
 end
 

@@ -9,7 +9,7 @@ simScenario = 1.2;
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .4;                                               %   m/s - Flow speed
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
-el = 60*pi/180;                                             %   rad - Mean elevation angle
+el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
@@ -39,7 +39,6 @@ for ii = 1:numel(flwSpd)
         loadComponent('MantaKiteNACA2412');                     %   Vehicle with 1 rotor
     elseif simScenario == 1.2 || simScenario == 4.2
         loadComponent('Manta2RotNew');                          %   Load new vehicle with 2 rotors
-        loadComponent('fullScale1thr');
     %     SIXDOFDYNAMICS = "sixDoFDynamicsCoupledOld";
     else
         loadComponent('Manta2RotNACA2412');                     %   Vehicle with 2 rotors
@@ -51,11 +50,8 @@ for ii = 1:numel(flwSpd)
         ENVIRONMENT = 'environmentManta';                       %   Single turbine
     else
         ENVIRONMENT = 'environmentManta2Rot';                   %   Two turbines
-        loadComponent('ConstXYZT');
-%     ENVIRONMENT = 'environmentManta4Rot';                   %   Four turbines
     end
     %%  Set basis parameters for high level controller
-    % loadComponent('constEllipse');                              %   High level controller
     loadComponent('constBoothLem');                             %   High level controller
     if strcmpi(PATHGEOMETRY,'ellipse')
         hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Ellipse
@@ -76,9 +72,6 @@ for ii = 1:numel(flwSpd)
     if simScenario == 0 || simScenario == 2
         vhcl.turb1.setDiameter(0,'m')
     end
-%     D = .5;
-%     vhcl.turb1.setDiameter(D,'m')
-%     vhcl.turb2.setDiameter(D,'m')
     %%  Tethers Properties
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
     thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
@@ -175,8 +168,12 @@ end
 %%  Plot Results
 if simScenario < 3
     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'Vapp',false,'plotBeta',1==1)
-%     tsc.plotTanAngles('plot1Lap',true,'plotS',true)
-%     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
+    %     tsc.plotTanAngles('plot1Lap',true,'plotS',true)
+    %     tsc.plotPower(vhcl,env,'plot1Lap',true,'plotS',true,'Lap1',1,'Color',[0 0 1],'plotLoyd',false)
+    [Idx1,Idx2] = tsc.getLapIdxs(1);
+    ran = Idx1:Idx2-1;
+    powAvg = mean(tsc.turbPow.Data(1,1,ran))+mean(tsc.turbPow.Data(1,2,ran));
+    fprintf('Average 1 lap power output: %.02f W\n',powAvg)
 else
     tsc.plotLaR(fltCtrl);
 %     simStabilityCheck
@@ -186,8 +183,6 @@ end
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
 % tsc.turbEnrg.Data(1,1,end)
-
-
 
 
 
