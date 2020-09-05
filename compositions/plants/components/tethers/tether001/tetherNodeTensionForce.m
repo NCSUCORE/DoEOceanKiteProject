@@ -67,4 +67,4 @@ if SpringConsts(1) == 0
     nodeForceVecs(:,No-Na+1) = [0;0;0];
 end
 
-Scope = [damperForces linkLengthDeriv];
+Scope = [SpringConsts linkLength ActiveLengths];
