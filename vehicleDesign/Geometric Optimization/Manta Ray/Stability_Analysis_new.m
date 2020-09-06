@@ -3,9 +3,9 @@ clc;clear;
 
 %%  Input definitions 
 % loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
-% loadComponent('newManta2RotNACA2412');              %   Load vehicle 
 % loadComponent('Manta2RotNew');                     %   Load vehicle 
 loadComponent('Manta2RotNewXFoil');                     %   Load vehicle 
+loadComponent('sensitivityAnalysis');              %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -47,7 +47,7 @@ Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.B = 1;                                          %   Buoyancy factor
 Sys.LE = -vhcl.fuse.rNose_LE.Value;                 %   m - wing leading edge w/ respect to nose
 Sys.xg = Sys.LE+vhcl.rCM_LE.Value;                  %   m - Center of gravity w/ respect to nose
-Sys.xb = Sys.xg+[0 0 0]';                           %   m - Center of buoyancy location w/ respect to nose
+Sys.xb = Sys.xg+[0;0;0];                           %   m - Center of buoyancy location w/ respect to nose
 Sys.xbr = Sys.xg+[0 0 vhcl.thrAttchPts_B.posVec.Value(3)]';                          %   m - Bridle location w/ respect to nose
 Sys.xW = Sys.LE+wing.aeroCent;                      %   m - Wing aerodynamic center location w/ respect to nose
 Sys.xH = [5.95 0 0]'+hStab.aeroCent;                %   m - Horizontal stabilizer aerodynamic center location w/ respect to nose
@@ -81,7 +81,7 @@ Ang.elevation = 40;                                     %   deg - Elevation angl
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = 0-10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle

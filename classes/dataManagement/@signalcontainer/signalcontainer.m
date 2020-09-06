@@ -217,9 +217,9 @@ classdef signalcontainer < dynamicprops
             Aref = vhcl.fluidRefArea.Value;
             Afuse = squeeze(obj.Afuse.Data);
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
-            CDsurf = squeeze(sum(obj.CD.Data(1,1:3,:),2));
+            CDsurf = obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data;
             CDtot = CDfuse+CDsurf;
-            CLsurf = squeeze(sum(obj.CL.Data(1,1:3,:),2));
+            CLsurf = obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data;
         end
         
         function stats = plotAndComputeLapStats(obj)

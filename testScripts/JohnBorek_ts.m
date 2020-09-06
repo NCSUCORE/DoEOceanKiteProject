@@ -9,7 +9,7 @@ clear;clc;%close all
 simScenario = 1.1;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = [0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
+flwSpd = 0.315;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -154,7 +154,13 @@ for ii = 1:numel(flwSpd)
     %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
     end
-    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+%     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+end
+%%  Plot Results
+if simScenario < 3 && simScenario ~= 2
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'plotBeta',1==0,'lapNum',max(tsc.lapNumS.Data)-1)
+else
+    tsc.plotLaR(fltCtrl);
 end
 %%  Animate Simulation
 % if simScenario <= 2
@@ -165,12 +171,6 @@ end
 %     vhcl.animateSim(tsc,2,'View',[0,0],...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
 %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
-% end
-%%  Plot Results
-% if simScenario < 3 && simScenario ~= 2
-%     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'Vapp',false,'plotBeta',1==0)
-% else
-%     tsc.plotLaR(fltCtrl);
 % end
 %%  Compare to old results
 % tsc.turbEnrg.Data(1,1,end)

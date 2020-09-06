@@ -2,67 +2,67 @@ function plotFlightResults(obj,vhcl,env,varargin)
 %%  Parse Inputs
 p = inputParser;
 addOptional(p,'plot1Lap',false,@islogical);
+addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'Vapp',false,@islogical);
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 parse(p,varargin{:})
 
-if p.Results.LiftDrag
-    R = 3;  C = 3;
-else
-    R = 3;  C = 2;
-end
+R = 3;  C = 2;
 data = squeeze(obj.currentPathVar.Data);
 time = obj.lapNumS.Time;
 lap = p.Results.plot1Lap;
 con = p.Results.plotS;
+turb = isprop(obj,'turbPow');
 %%  Determine Single Lap Indices
 if lap
-    lapNum = squeeze(obj.lapNumS.Data);
-    Idx1 = find(lapNum == 1,1,'first');
-    Idx2 = find(lapNum == 2,1,'first');
-    if isempty(Idx1) || isempty(Idx2)
-        error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
-    end
+    [Idx1,Idx2] = getLapIdxs(obj,1);
     ran = Idx1:Idx2-1;
     lim = [time(Idx1) time(Idx2)];
 else
     lim = [time(1) time(end)];
 end
 %%  Compute Plotting Variables
-N = vhcl.numTurbines.Value;
-if N == 1
-    power = squeeze(obj.turbPow.Data(1,1,:));
-    energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600;
+if turb
+    N = vhcl.numTurbines.Value;
+    if N == 1
+        power = squeeze(obj.turbPow.Data(1,1,:));
+        energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600;
+    else
+        power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
+        energy = squeeze((obj.turbEnrg.Data(1,1,:)))/1000/3600+squeeze((obj.turbEnrg.Data(1,2,:)))/1000/3600;
+        speed = (squeeze(obj.turbVel.Data(1,1,:))+squeeze(obj.turbVel.Data(1,2,:)))/2;
+    end
 else
-    power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
-    energy = squeeze((obj.turbEnrg.Data(1,1,:)))/1000/3600+squeeze((obj.turbEnrg.Data(1,2,:)))/1000/3600;
-    speed = (squeeze(obj.turbVel.Data(1,1,:))+squeeze(obj.turbVel.Data(1,2,:)))/2;
+    power = squeeze(obj.winchPower.Data(:,1));
+    energy = cumtrapz(time,power)/1000/3600;
 end
+vKite = -squeeze(obj.velCMvec.Data(1,:,:));
+%   Tether tension
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
-Aref = vhcl.fluidRefArea.Value;
-Afuse = squeeze(obj.Afuse.Data);
-CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
-CDsurf = squeeze(sum(obj.CD.Data(1,1:3,:),2));
-CDtot = CDfuse+CDsurf;
-CLsurf = squeeze(sum(obj.CL.Data(1,1:3,:),2));
-FDragBdyP1 = squeeze(sqrt(sum(obj.FDragBdyPart.Data(:,1,:).^2,1)));
-FDragBdyP2 = squeeze(sqrt(sum(obj.FDragBdyPart.Data(:,2,:).^2,1)));
-FDragBdyP3 = squeeze(sqrt(sum(obj.FDragBdyPart.Data(:,3,:).^2,1)));
-FDragBdyP4 = squeeze(sqrt(sum(obj.FDragBdyPart.Data(:,4,:).^2,1)));
+%   Hydrocharacteristics
+[CLsurf,CDtot] = getCLCD(obj,vhcl);
+FLiftBdyP1 = squeeze(sqrt(sum(obj.portWingLift.Data(:,1,:).^2,1)));
+FLiftBdyP2 = squeeze(sqrt(sum(obj.stbdWingLift.Data(:,1,:).^2,1)));
+FLiftBdyP3 = squeeze(sqrt(sum(obj.hStabLift.Data(:,1,:).^2,1)));
+FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
+FDragBdyP1 = squeeze(sqrt(sum(obj.portWingDrag.Data(:,1,:).^2,1)));
+FDragBdyP2 = squeeze(sqrt(sum(obj.stbdWingDrag.Data(:,1,:).^2,1)));
+FDragBdyP3 = squeeze(sqrt(sum(obj.hStabDrag.Data(:,1,:).^2,1)));
+FDragBdyP4 = squeeze(sqrt(sum(obj.vStabDrag.Data(:,1,:).^2,1)));
 FDragBdy = FDragBdyP1 + FDragBdyP2 + FDragBdyP3 + FDragBdyP4;
 FDragFuse = squeeze(sqrt(sum(obj.FFuseBdy.Data.^2,1)));
 FDragThr = squeeze(sqrt(sum(obj.thrDragVecs.Data.^2,1)));
-FTurbBdy = squeeze(sqrt(sum(obj.FTurbBdy.Data.^2,1)));
-FLiftBdyP1 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,1,:).^2,1)));
-FLiftBdyP2 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,2,:).^2,1)));
-FLiftBdyP3 = squeeze(sqrt(sum(obj.FLiftBdyPart.Data(:,3,:).^2,1)));
-FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
-totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
-% LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse + FDragThr);
-LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse );
+if turb
+    FTurbBdy = squeeze(sqrt(sum(obj.FTurbBdy.Data.^2,1)));
+    totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
+    LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse );
+else
+    totDrag = (FDragBdy + FDragFuse + FDragThr);
+    LiftDrag = FLiftBdy./(FDragBdy + FDragFuse);
+end
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
 vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
 PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
@@ -107,39 +107,57 @@ if lap
 else
     plot(time,airNode,'b-');  plot(time,gndNode,'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Glider');  xlim(lim)
 end
-%%  Plot Turbine Flow Speed
+%%  Plot Speed
 subplot(R,C,3); hold on; grid on
 if lap
     if con
-        plot(data(ran),speed(ran),'b-');  ylabel('Speed [m/s]');
-        plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        if turb
+            plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');
+            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
+            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+        else
+            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
+            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        end
     else
-        plot(time(ran),squeeze(obj.vAppLclBdy.Data(1,1,ran)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
-        plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        if turb
+            plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim)
+            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
+            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+        else
+            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
+            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        end
     end
 else
-    plot(time,squeeze(obj.vAppLclBdy.Data(1,1,:)),'b-');  ylabel('Speed [m/s]');  xlim(lim)
-    plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+    if turb
+        plot(time,speed,'g-');  ylabel('Speed [m/s]');  xlim(lim)
+        plot(time,vKite,'b-');  ylabel('Speed [m/s]');
+        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+    else
+        plot(time,vKite,'b-');  ylabel('Speed [m/s]');
+        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+    end
 end
 %%  Plot Angle of attack
 subplot(R,C,4); hold on; grid on
 if lap
     if con
-        plot(data(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Angle [deg]');
-        plot(data(ran),squeeze(obj.alphaLocal.Data(1,2,ran)),'r-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA')
+        plot(data(ran),squeeze(obj.portWingAoA.Data(1,1,ran)),'b-');
+        plot(data(ran),squeeze(obj.stbdWingAoA.Data(1,1,ran)),'r-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA')
         if p.Results.plotBeta
             plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta')
         end
     else
-        plot(time(ran),squeeze(obj.alphaLocal.Data(1,1,ran)),'b-');  ylabel('Angle [deg]');  xlim(lim)
-        plot(time(ran),squeeze(obj.alphaLocal.Data(1,2,ran)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
+        plot(time(ran),squeeze(obj.portWingAoA.Data(1,1,ran)),'b-');
+        plot(time(ran),squeeze(obj.stbdWingAoA.Data(1,1,ran)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
         if p.Results.plotBeta
             plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
         end
     end
 else
-    plot(time,squeeze(obj.alphaLocal.Data(1,1,:)),'b-');  ylabel('Angle [deg]');  xlim(lim)
-    plot(time,squeeze(obj.alphaLocal.Data(1,2,:)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
+    plot(time,squeeze(obj.portWingAoA.Data(1,1,:)),'b-');
+    plot(time,squeeze(obj.stbdWingAoA.Data(1,1,:)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
     if p.Results.plotBeta
         plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
     end

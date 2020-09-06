@@ -28,6 +28,7 @@ loadComponent('idealSensorProcessing')
 % Vehicle
 loadComponent('fullScale1thr');
 % loadComponent('pathFollowingVhclForComp')
+% loadComponent('sensitivityAnalysis');              %   Load vehicle 
 
 % Environment
 % loadComponent('CNAPsNoTurbJosh');
@@ -79,18 +80,20 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 % tsc = signalcontainer(logsout);
 
 
-    simWithMonitor('OCTModel')
-    tsc = signalcontainer(logsout);
-    tsc1 = tsc.resample(1);
-    
-    x =  squeeze(tsc1.tc.Data); 
-    y = squeeze(tsc1.wd.Data); 
-    hist2d(y,x)
-    title('2.0 M/S Flow Speed')
-    zlabel('Occurences')
-    xlabel('Drum Velocity (rad/s)')
-    ylabel('Torque (Nm)')
-    set(gca,'FontSize',15);
+simWithMonitor('OCTModel')
+tsc = signalcontainer(logsout);
+tsc1 = tsc.resample(1);
+%%
+tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)
+
+%     x =  squeeze(tsc1.tc.Data);
+%     y = squeeze(tsc1.wd.Data);
+%     hist2d(y,x)
+%     title('2.0 M/S Flow Speed')
+%     zlabel('Occurences')
+%     xlabel('Drum Velocity (rad/s)')
+%     ylabel('Torque (Nm)')
+%     set(gca,'FontSize',15);
 
 %     fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
 %     disp(hiLvlCtrl.basisParams.Value)
