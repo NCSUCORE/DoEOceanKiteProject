@@ -75,14 +75,14 @@ function [CL,CD,fuse] = getCLCD(alpha,wing,hStab,vStab,fuse)
 fuse.S = pi/4*fuse.D^2.*cosd(alpha)+(pi/4*fuse.D^2+fuse.D*fuse.L).*(1-cosd(alpha));
 %   Lift Coefficients 
 CL.W =         2*interp1(wing.alpha*pi/180,wing.CL,alpha,'linear','extrap');
-CL.H = (hStab.S/wing.S)*interp1(hStab.alpha*pi/180,hStab.CL,alpha,'linear','extrap');
+CL.H = (hStab.S/wing.S)*interp1((hStab.alpha)*pi/180,hStab.CL,alpha,'linear','extrap');
 CLwa = 2*pi/(1+(2*pi/pi*wing.eL*wing.AR));
 CLha = 2*pi/(1+(2*pi/pi*hStab.eL*hStab.AR));
 CL.Wa = CLwa*alpha*pi/180 + 2*interp1(wing.alpha*pi/180,wing.CL,0,'linear','extrap');
 CL.Ha = CLha*alpha*pi/180 + interp1(hStab.alpha*pi/180,hStab.CL,0,'linear','extrap');
 %   Drag Coefficients
 CD.W =                2*interp1(wing.alpha*pi/180,wing.CD,alpha,'linear','extrap');
-CD.H = (hStab.S/wing.S)*interp1(hStab.alpha*pi/180,hStab.CD,alpha,'linear','extrap');
+CD.H = (hStab.S/wing.S)*interp1((hStab.alpha)*pi/180,hStab.CD,alpha,'linear','extrap');
 CD.V = (vStab.S/wing.S)*interp1(vStab.alpha*pi/180,vStab.CD,alpha,'linear','extrap');
 CD.Fa = (fuse.S/wing.S)*(fuse.CD0.*cosd(alpha)+fuse.CDs.*(1-cosd(alpha)));
 CD.F =                 (fuse.CD0.*cosd(alpha)+fuse.CDs.*(1-cosd(alpha)));
