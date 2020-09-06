@@ -596,6 +596,21 @@ classdef vehicleM < dynamicprops
                     else
                         warning('Simulation won''t run without valid aero coefficient values')
                     end
+                    W = load('NACA2412_corrected.mat');
+                    H = load('NACA0015_corrected_hStab.mat');
+                    V = load('NACA0015_corrected_vStab.mat');
+                    aeroStruct(1).CL = W.cl_c/2;
+                    aeroStruct(1).CD = W.CD_c/2;
+                    aeroStruct(1).alpha = W.alfa_c;
+                    aeroStruct(2).CL = W.cl_c/2;
+                    aeroStruct(2).CD = W.CD_c/2;
+                    aeroStruct(2).alpha = W.alfa_c;
+                    aeroStruct(3).CL = H.cl_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
+                    aeroStruct(3).CD = H.CD_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
+                    aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
+                    aeroStruct(4).CL = V.cl_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
+                    aeroStruct(4).CD = V.CD_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
+                    aeroStruct(4).alpha = V.alfa_c;
                 else
                     fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
                         'Would you like to create a new file?\n']);
@@ -619,11 +634,11 @@ classdef vehicleM < dynamicprops
                     aeroStruct(2).CL = W.cl_c/2;
                     aeroStruct(2).CD = W.CD_c/2;
                     aeroStruct(2).alpha = W.alfa_c;
-                    aeroStruct(3).CL = H.cl_c;
-                    aeroStruct(3).CD = H.CD_c;
-                    aeroStruct(3).alpha = H.alfa_c;
-                    aeroStruct(4).CL = V.cl_c;
-                    aeroStruct(4).CD = V.CD_c;
+                    aeroStruct(3).CL = H.cl_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
+                    aeroStruct(3).CD = H.CD_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
+                    aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
+                    aeroStruct(4).CL = V.cl_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
+                    aeroStruct(4).CD = V.CD_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
                     aeroStruct(4).alpha = V.alfa_c;
                 end
             end
