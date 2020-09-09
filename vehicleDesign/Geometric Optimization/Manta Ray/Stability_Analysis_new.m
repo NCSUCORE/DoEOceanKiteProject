@@ -3,9 +3,9 @@ clc;clear;
 
 %%  Input definitions 
 % loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
-% loadComponent('Manta2RotNew');                     %   Load vehicle 
-loadComponent('Manta2RotNewXFoil');                     %   Load vehicle 
-loadComponent('sensitivityAnalysis');              %   Load vehicle 
+loadComponent('Manta2RotNew');                     %   Load vehicle 
+% loadComponent('Manta2RotNewXFoil');                     %   Load vehicle 
+% loadComponent('sensitivityAnalysis');              %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -47,20 +47,33 @@ Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.B = 1;                                          %   Buoyancy factor
 Sys.LE = -vhcl.fuse.rNose_LE.Value;                 %   m - wing leading edge w/ respect to nose
 Sys.xg = Sys.LE+vhcl.rCM_LE.Value;                  %   m - Center of gravity w/ respect to nose
-Sys.xb = Sys.xg+[0;0;0];                           %   m - Center of buoyancy location w/ respect to nose
-Sys.xbr = Sys.xg+[0 0 vhcl.thrAttchPts_B.posVec.Value(3)]';                          %   m - Bridle location w/ respect to nose
+Sys.xb = Sys.LE+vhcl.rCentOfBuoy_LE.Value;          %   m - Center of buoyancy location w/ respect to nose
+Sys.xbr = Sys.xg+...                                %   m - Bridle location w/ respect to nose
+    [0 0 vhcl.thrAttchPts_B.posVec.Value(3)]'; 
 Sys.xW = Sys.LE+wing.aeroCent;                      %   m - Wing aerodynamic center location w/ respect to nose
-Sys.xH = [5.95 0 0]'+hStab.aeroCent;                %   m - Horizontal stabilizer aerodynamic center location w/ respect to nose
-Sys.xV = [5.95 0 0]'+vStab.aeroCent;                %   m - Vertical stabilizer aerodynamic center location w/ respect to nose
+Sys.xH = Sys.LE+...                                 %   m - Horizontal stabilizer aerodynamic center location w/ respect to nose
+    vhcl.hStab.rSurfLE_WingLEBdy.Value+...
+    hStab.aeroCent;
+Sys.xV = Sys.LE+...                                 %   m - Vertical stabilizer aerodynamic center location w/ respect to nose
+    vhcl.vStab.rSurfLE_WingLEBdy.Value+...
+    vStab.aeroCent;
 Sys.f = Sys.LE+vhcl.fuseMomentArm.Value;            %   m - Fuselage aerodynamic center w/ respect to nose
 
-CM.xg = Sys.xg-Sys.xg;                              %   m - Center of gravity w/ respect to nose
+CM.xg = Sys.xg-Sys.xg;                              
 CM.xb = Sys.xb-Sys.xg;
 CM.xbr = Sys.xbr-Sys.xg;
 CM.xW = Sys.xW-Sys.xg;
 CM.xH = Sys.xH-Sys.xg;
 CM.xV = Sys.xV-Sys.xg;
 CM.xf = Sys.f-Sys.xg;
+
+BR.xg = Sys.xg-Sys.xbr;                              
+BR.xb = Sys.xb-Sys.xbr;
+BR.xbr = Sys.xbr-Sys.xbr;
+BR.xW = Sys.xW-Sys.xbr;
+BR.xH = Sys.xH-Sys.xbr;
+BR.xV = Sys.xV-Sys.xbr;
+BR.xf = Sys.f-Sys.xbr;
 
 LE.xg = Sys.xg-Sys.LE;
 LE.xb = Sys.xb-Sys.LE;
@@ -77,24 +90,25 @@ Env.g = 9.81;                                       %   m/s^2 - gravitational ac
 %%
 % [Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
 %%  Position and Orientation Angles 
-Ang.elevation = 40;                                     %   deg - Elevation angle
+Ang.elevation = 80;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = 0-10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
 %%  Analyze Stability 
-pitchMoment = zeros(numel(Ang.pitch),1);
+pitchM = zeros(numel(Ang.pitch),1);
 alphaRef = -10:.01:10;
 CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
 for i = 1:numel(Ang.pitch)
     Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;              %   deg - Tangent pitch angle
-    [M,F,CL,CD] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE);
-    pitchMoment(i) = M.tot(2);
-    if Ang.pitch(i) == 0
-        idx = find(abs(CLh-CL.hReq) <= .0005);
+    [MCM,MBR,MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR);
+    pitchM(i) = MCM.tot(2);
+    hReq = CLCM.hReq;
+    if numel(Ang.pitch) == 0 && Ang.pitch(i) == 0
+        idx = find(abs(CLh-hReq) <= .0005);
         incidence = alphaRef(idx)  
         CLhN = CLh(idx)
     end
@@ -102,7 +116,7 @@ end
 %%  Plotting 
 if numel(Ang.pitch) > 1
     figure; hold on; grid on
-    plot(Ang.pitch,pitchMoment,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
+    plot(Ang.pitch,pitchM,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
 end
 % figure; hold on; grid on
 % plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')

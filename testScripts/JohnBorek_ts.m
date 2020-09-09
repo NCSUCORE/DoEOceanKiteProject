@@ -6,12 +6,12 @@ clear;clc;%close all
 %   1 = fig8-2rotor Old;  1.1 = fig8-2rotor New;  1.2 = fig8-2rotor New XFoil;  2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady New;       3.2 = steady New XFoil 
 %   4 = LaR Old;          4.1 = LaR New;          4.2 = LaR New XFoil;
-simScenario = 1.1;
+simScenario = 3.1;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = 0.315;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
+flwSpd = 0.25;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
-el = 30*pi/180;                                             %   rad - Mean elevation angle
+el = 50*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
@@ -101,12 +101,12 @@ for ii = 1:numel(flwSpd)
     end
     fltCtrl.rudderGain.setValue(0,'')
     if simScenario == 1.1
-        fltCtrl.setElevatorReelInDef(-2,'deg')
+        fltCtrl.setElevatorReelInDef(-10,'deg')
     else
         fltCtrl.setElevatorReelInDef(0,'deg')
     end
     fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
-    if simScenario >= 3
+    if simScenario > 3
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
         fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
         fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller
@@ -116,20 +116,26 @@ for ii = 1:numel(flwSpd)
         vhcl.turb1.setPowerCoeff(0,'');
     end
     if simScenario >= 3 && simScenario < 4
+        fltCtrl.pitchSPkpSlope.setValue(0,'');         fltCtrl.pitchSPkpInt.setValue(0,'');
+        fltCtrl.pitchSP.kp.setValue(0,'(deg)/(deg)');       fltCtrl.pitchSP.ki.setValue(0,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
+        fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller
         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.setNomSpoolSpeed(0,'m/s');
+        vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
     end
     tRef = [0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000];
     pSP =  [30 30  30  30  30   40   40   40   40   40   40   40   40];
     thr.tether1.dragEnable.setValue(1,'');
+%     vhcl.setMa6x6_LE(zeros(6),'');
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
     %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+%     SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
+    simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);
-    if simScenario ~= 2
-        Pow = tsc.rotPowerSummary(vhcl,env);
+    if simScenario ~= 2 && simScenario < 3
+%         Pow = tsc.rotPowerSummary(vhcl,env);
     end
     dt = datestr(now,'mm-dd_HH-MM');
     if simScenario == 0
@@ -137,18 +143,19 @@ for ii = 1:numel(flwSpd)
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
     elseif simScenario > 0 && simScenario < 2
         if numel(flwSpd) == 1
-            filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
-            fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
+            filename = sprintf(strcat('Turb2_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+            fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
         else
-            filename = sprintf(strcat('NewTurb2_V-%.3f.mat'),flwSpd(ii));
+            filename = sprintf(strcat('Turb2_V-%.3f.mat'),flwSpd(ii));
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','400 m Tether 9-6\');
         end
     elseif simScenario == 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
-        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Winch\');
+        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Winch\');
     elseif simScenario >= 3 && simScenario < 4
-        filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f_',dt,'.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
-        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Steady\');
+        if vhcl.Ma6x6_LE.Value(1,1) ~= 0; AM = 1; else; AM = 0; end
+        filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f_AM-%d_',dt,'.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value,AM);
+        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Steady\');
     elseif simScenario >= 4
         filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
     %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
@@ -158,9 +165,9 @@ for ii = 1:numel(flwSpd)
 end
 %%  Plot Results
 if simScenario < 3 && simScenario ~= 2
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'plotBeta',1==0,'lapNum',max(tsc.lapNumS.Data)-1)
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==0,'plotBeta',1==0,'lapNum',max(tsc.lapNumS.Data)-1)
 else
-    tsc.plotLaR(fltCtrl);
+    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
 %%  Animate Simulation
 % if simScenario <= 2

@@ -3,7 +3,7 @@ clear; clc
 
 VEHICLE               = "vehicleManta2Rot";
 PLANT                 = "plantManta2Rot";
-SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
+SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
 LIBRARY               = "Manta2RotNACA2412";
 
 %% Essential Values
@@ -34,7 +34,7 @@ vhcl.setRBridle_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0.017088;0;0.05456],'m');
 
 %% Added Mass/Damping (defaults to zeros)
-vhcl.setMa6x6_LE(-[68.608         0           0           0        5.73           0;...
+vhcl.setMa6x6_LE([68.608         0           0           0        5.73           0;...
                        0   814.592           0     -403.87           0     2115.99;...
                        0         0     4743.68           0    -3359.54           0;...
                        0   -403.87           0    22089.56           0    -1509.95;...
