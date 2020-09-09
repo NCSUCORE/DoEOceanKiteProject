@@ -30,12 +30,12 @@ F.dragBf = 1/2*Env.rho*CD.F*fuse.S*norm(vApp)^2*uApp;
 Fnet = F.buoyB+F.gravB+F.liftBw+F.liftBh+F.dragBw+F.dragBh+F.dragBv+F.dragBf;
 thrForce = -dot(TcB*Fnet,[0;0;1]);
 F.thrB = BcT*[0;0;thrForce];                        %   N - Tether force in the body frame
-F.thrB = -Fnet;                                     %   N - Tether force during static equilibrium 
+% F.thrB = -Fnet;                                     %   N - Tether force during static equilibrium 
 Theta0 = atan2(-F.thrB(3),-F.thrB(1))*180/pi;         %   deg - Steady-state elevation angle 
 %%  Moment Calculations
 %%  About the CM
 M.B = cross(CM.xb,F.buoyB);                         %   Nm - Buoyancy moment
-M.G = cross(CM.xb,F.gravB);                         %   Nm - Gravitational moment
+M.G = cross(CM.xg,F.gravB);                         %   Nm - Gravitational moment
 M.dH = cross(CM.xH,F.dragBh);                       %   Nm - Horizontal stabilizer drag moment
 M.W = cross(CM.xW,F.liftBw+F.dragBw);               %   Nm - Wing moment
 M.H = cross(CM.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabilizer moment
@@ -46,7 +46,7 @@ M.tot = M.B + M.G + M.W + M.H + M.V + M.F + M.T;    %   Nm - Total moment
 MCM = M;
 %%  About the tether attachment point 
 M.B = cross(BR.xb,F.buoyB);                         %   Nm - Buoyancy moment
-M.G = cross(BR.xb,F.gravB);                         %   Nm - Gravitational moment
+M.G = cross(BR.xg,F.gravB);                         %   Nm - Gravitational moment
 M.dH = cross(BR.xH,F.dragBh);                       %   Nm - Horizontal stabilizer drag moment
 M.W = cross(BR.xW,F.liftBw+F.dragBw);               %   Nm - Wing moment
 M.H = cross(BR.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabilizer moment
@@ -57,7 +57,7 @@ M.tot = M.B + M.G + M.W + M.H + M.V + M.F + M.T;    %   Nm - Total moment
 MBR = M;
 %%  About the LE
 M.B = cross(LE.xb,F.buoyB);                         %   Nm - Buoyancy moment
-M.G = cross(LE.xb,F.gravB);                         %   Nm - Gravitational moment
+M.G = cross(LE.xg,F.gravB);                         %   Nm - Gravitational moment
 M.dH = cross(LE.xH,F.dragBh);                       %   Nm - Horizontal stabilizer drag moment
 M.W = cross(LE.xW,F.liftBw+F.dragBw);               %   Nm - Wing moment
 M.H = cross(LE.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabilizer moment
