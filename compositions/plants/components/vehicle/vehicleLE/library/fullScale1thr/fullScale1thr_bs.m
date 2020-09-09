@@ -4,7 +4,7 @@
 
 VEHICLE               = "vehicleLE";
 PLANT                 = "plantDOE";
-SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
+SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
 
 %% Essential Values
 vhcl = OCT.vehicle;

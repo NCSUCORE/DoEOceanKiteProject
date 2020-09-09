@@ -77,8 +77,8 @@ vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
 vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootChord.Value,...
                           vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
 
-% vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1);0;-vhcl.fuse.diameter.Value/2],'m');
-vhcl.setRBridle_LE(vhcl.rCM_LE.Value,'m');
+vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)*.75;0;-vhcl.fuse.diameter.Value/2],'m');
+% vhcl.setRBridle_LE(vhcl.rCM_LE.Value,'m');
 %% Turbines
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');

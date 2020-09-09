@@ -17,7 +17,7 @@ con = p.Results.plotS;
 turb = isprop(obj,'turbPow');
 %%  Determine Single Lap Indices
 if lap
-    [Idx1,Idx2] = getLapIdxs(obj,1);
+    [Idx1,Idx2] = getLapIdxs(obj,p.Results.lapNum);
     ran = Idx1:Idx2-1;
     lim = [time(Idx1) time(Idx2)];
 else
@@ -38,7 +38,7 @@ else
     power = squeeze(obj.winchPower.Data(:,1));
     energy = cumtrapz(time,power)/1000/3600;
 end
-vKite = -squeeze(obj.velCMvec.Data(1,:,:));
+% vKite = -squeeze(obj.velCMvec.Data(1,:,:));
 %   Tether tension
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
@@ -65,7 +65,11 @@ else
 end
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
 vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
-PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+if turb
+    PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+else
+    PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
+end
 % figure();
 % hold on; grid on
 % plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');

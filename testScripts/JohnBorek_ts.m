@@ -11,7 +11,7 @@ simScenario = 3.1;
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = 0.25;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
-el = 50*pi/180;                                             %   rad - Mean elevation angle
+el = 80*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
@@ -170,15 +170,15 @@ else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
 %%  Animate Simulation
-% if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
-% else
-%     vhcl.animateSim(tsc,2,'View',[0,0],...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
-%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
-% end
+if simScenario <= 2
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
+        'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+else
+    vhcl.animateSim(tsc,2,'View',[0,0],...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+        'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
+end
 %%  Compare to old results
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
