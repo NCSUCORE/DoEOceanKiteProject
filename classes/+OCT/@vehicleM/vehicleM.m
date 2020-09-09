@@ -568,7 +568,7 @@ classdef vehicleM < dynamicprops
                         warning('Simulation won''t run without valid aero coefficient values')
                     end
                 else
-                    fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                    fprintf(['The file conaining the fluid dynamic coefficient data already exists.\n',...
                         'Would you like to create a new file?\n']);
                     str = input('(Y/N): \n','s');
                     if isempty(str)
@@ -612,7 +612,7 @@ classdef vehicleM < dynamicprops
                     aeroStruct(4).CD = V.CD_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
                     aeroStruct(4).alpha = V.alfa_c;
                 else
-                    fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                    fprintf(['The file conaining the fluid dynamic coefficient data already exists.\n',...
                         'Would you like to create a new file?\n']);
                     str = input('(Y/N): \n','s');
                     if isempty(str)
