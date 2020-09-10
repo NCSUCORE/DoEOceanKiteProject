@@ -51,6 +51,8 @@ classdef vehicle < dynamicprops
         initVelVecBdy
         initEulAng
         initAngVelVec
+        
+        hydroCharacterization
     end
     
     properties (Dependent)
@@ -124,6 +126,7 @@ classdef vehicle < dynamicprops
             obj.wingClMax      = SIM.parameter('Description','maximum section Lift Coef','NoScale',true);
             
             % aerodynamic surfaces
+            obj.hydroCharacterization      = SIM.parameter('Description','which hydrodynamic characterization you want. 1 for AVL 3 for XFLIR','NoScale',true);
             obj.hStab = OCT.aeroSurf;
             obj.hStab.setSpanUnitVec([0;1;0],'');
             obj.hStab.setChordUnitVec([1;0;0],'');
@@ -343,7 +346,9 @@ classdef vehicle < dynamicprops
         function setInitAngVelVec(obj,val,units)
             obj.initAngVelVec.setValue(val(:),units);
         end
-        
+        function setHydroCharacterization(obj,val,units)
+            obj.hydroCharacterization.setValue(val(:),units);
+        end
         %% getters
        
         % mass
@@ -590,37 +595,113 @@ classdef vehicle < dynamicprops
         end
         
         % fluid dynamic coefficient data
-        function calcFluidDynamicCoefffs(obj)
+           function calcFluidDynamicCoefffs(obj)
             fileLoc = which(obj.fluidCoeffsFileName.Value);
-                                  
-            if ~isfile(fileLoc)
-                fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                    ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                str = input('(Y/N): \n','s');
-                if isempty(str)
-                    str = 'Y';
-                end
-                if strcmpi(str,'Y')
-                    aeroStruct=runAVL(obj);
-                else
-                    warning('Simulation won''t run without valid aero coefficient values')
-                end
-            else
-                fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
-                    'Would you like to create a new file?\n']);
-                str = input('(Y/N): \n','s');
-                if isempty(str)
-                    str = 'Y';
-                end
-                if strcmpi(str,'Y')
-                    newName = input('New filename (excluding ".mat"): \n','s');
-                    obj.setFluidCoeffsFileName(newName,'');
-                    aeroStruct = runAVL(obj);
-                else
-                    load(fileLoc,'aeroStruct');
-                end
+            
+            switch obj.hydroCharacterization.Value
+                case 1
+                    if ~isfile(fileLoc)
+                        fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                            ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                        str = input('(Y/N): \n','s');
+                        if isempty(str)
+                            str = 'Y';
+                        end
+                        if strcmpi(str,'Y')
+                            aeroStruct=runAVL(obj);
+                        else
+                            warning('Simulation won''t run without valid aero coefficient values')
+                        end
+                    else
+                        fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                            'Would you like to create a new file?\n']);
+                        str = input('(Y/N): \n','s');
+                        if isempty(str)
+                            str = 'Y';
+                        end
+                        if strcmpi(str,'Y')
+                            newName = input('New filename (excluding ".mat"): \n','s');
+                            obj.setFluidCoeffsFileName(newName,'');
+                            aeroStruct = runAVL(obj);
+                        else
+                            load(fileLoc,'aeroStruct');
+                        end
+                    end
+                    
+                case 2
+                    
+                case 3
+                    if ~isfile(fileLoc)
+                        fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                            ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                        str = input('(Y/N): \n','s');
+                        if isempty(str)
+                            str = 'Y';
+                        end
+                        if strcmpi(str,'Y')
+                            aeroStruct=runAVL(obj);
+                        else
+                            warning('Simulation won''t run without valid aero coefficient values')
+                        end
+                    else
+                        fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                            'Would you like to create a new file?\n']);
+                        str = input('(Y/N): \n','s');
+                        if isempty(str)
+                            str = 'Y';
+                        end
+                        if strcmpi(str,'Y')
+                            newName = input('Enter new filename (excluding ".mat"): \n','s');
+                            obj.setFluidCoeffsFileName(newName,'');
+                            aeroStruct = runAVL(obj);
+                        else
+                            load(fileLoc,'aeroStruct');
+                        end
+                    end
+                    AR = obj.wingAR.Value;
+                    % hard coded values corresponding to NACA 2412
+                    if ~strcmp(obj.wingAirfoil.Value,'NACA2412')
+                        warning('XFLR values are only applicable to wingAirfoil.Value=NACA2412');
+                    end
+                    gammaw = 0.9512;
+                    eLw = 0.7019;
+                    Clw0 = 0.16;
+                    Cdw_visc = 0.0297;
+                    Cdw_ind = 0.2697;
+                    AoA = linspace(-55,55,71)';
+                    
+                    [CLFullWing,CDFullWing] = ...
+                        XFLRWingCalc(AoA,AR,gammaw,eLw,Clw0,Cdw_visc,...
+                        Cdw_ind,obj.wingAirfoil.Value);
+                    
+                    
+                    [CLhStab,CDhStab] = XFLRHStabCalc(AoA,obj.fluidRefArea.Value,obj.hStab.planformArea.Value,obj.hStab.incidence.Value);
+                    
+                    [CLvStab,CDvStab] =  XFLRVStabCalc(AoA,obj.fluidRefArea.Value,obj.vStab.planformArea.Value);
+                    % overwrite values from AVL
+                    for ii = 1:2
+                        aeroStruct(ii).alpha = AoA;
+                        aeroStruct(ii).CL = CLFullWing./2;
+                        aeroStruct(ii).CD = CDFullWing./2;
+                    end
+                    aeroStruct(3).alpha = AoA;
+                    aeroStruct(3).CL    = CLhStab;
+                    aeroStruct(3).CD    = CDhStab;
+                    
+                    aeroStruct(4).alpha = AoA;
+                    aeroStruct(4).CL    = CLvStab;
+                    aeroStruct(4).CD    = CDvStab;
+                    
+%                      dataFile = dir(fullfile(fileparts(fullfile(which('OCTProject.prj'))),'classes','+OCT','@vehicle','vStabCoeff.mat'));
+%                      load(fullfile(dataFile.folder,dataFile.name));
+%                      vStabAlpha = vAlpha;
+%                     vStabCL = double(vCl*.5*(obj.vStab.planformArea.Value/obj.fluidRefArea.Value));
+%                     vStabCD = double(vCD*.5*(obj.vStab.planformArea.Value/obj.fluidRefArea.Value));
+%                     aeroStruct(4).alpha = vStabAlpha ;
+%                     aeroStruct(4).CL    = vStabCL ;
+%                     aeroStruct(4).CD    = vStabCD ;
             end
-                
+            
             obj.portWing.setCL(aeroStruct(1).CL,'');
             obj.portWing.setCD(aeroStruct(1).CD,'');
             obj.portWing.setAlpha(aeroStruct(1).alpha,'deg');
@@ -629,7 +710,7 @@ classdef vehicle < dynamicprops
             obj.portWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.portWing.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.portWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-
+            
             obj.stbdWing.setCL(aeroStruct(2).CL,'');
             obj.stbdWing.setCD(aeroStruct(2).CD,'');
             obj.stbdWing.setAlpha(aeroStruct(2).alpha,'deg');
@@ -638,7 +719,7 @@ classdef vehicle < dynamicprops
             obj.stbdWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.stbdWing.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.stbdWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-
+            
             obj.hStab.setCL(aeroStruct(3).CL,'');
             obj.hStab.setCD(aeroStruct(3).CD,'');
             obj.hStab.setAlpha(aeroStruct(3).alpha,'deg');
@@ -647,7 +728,7 @@ classdef vehicle < dynamicprops
             obj.hStab.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.hStab.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.hStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-
+            
             obj.vStab.setCL(aeroStruct(4).CL,'');
             obj.vStab.setCD(aeroStruct(4).CD,'');
             obj.vStab.setAlpha(aeroStruct(4).alpha,'deg');
@@ -655,7 +736,7 @@ classdef vehicle < dynamicprops
             obj.vStab.setGainCD(aeroStruct(4).GainCD,'1/deg');
             obj.vStab.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.vStab.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
-            obj.vStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')            
+            obj.vStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
         end
         
         % plotting functions
