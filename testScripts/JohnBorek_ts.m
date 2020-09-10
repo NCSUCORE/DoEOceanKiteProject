@@ -9,9 +9,9 @@ clear;clc;%close all
 simScenario = 3.1;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = 0.25;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
+flwSpd = .25;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
-el = 80*pi/180;                                             %   rad - Mean elevation angle
+el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
@@ -45,6 +45,7 @@ for ii = 1:numel(flwSpd)
         loadComponent('Manta2RotNACA2412');                                 %   Manta kite old with 2 rotors
     elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
         loadComponent('Manta2RotNew');                                      %   Manta kite new with 2 rotors
+        loadComponent('Manta2RotNew0Inc');                                      %   Manta kite new with 2 rotors
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
         loadComponent('Manta2RotNewXFoil');                                 %   Manta kite new with 2 rotors and XFoil
     end
@@ -101,7 +102,7 @@ for ii = 1:numel(flwSpd)
     end
     fltCtrl.rudderGain.setValue(0,'')
     if simScenario == 1.1
-        fltCtrl.setElevatorReelInDef(-10,'deg')
+        fltCtrl.setElevatorReelInDef(-2,'deg')
     else
         fltCtrl.setElevatorReelInDef(0,'deg')
     end
@@ -130,7 +131,7 @@ for ii = 1:numel(flwSpd)
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
     %%  Set up critical system parameters and run simulation
 %     SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
-    simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);
@@ -172,8 +173,8 @@ end
 %%  Animate Simulation
 if simScenario <= 2
     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-        'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
+        'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 else
     vhcl.animateSim(tsc,2,'View',[0,0],...
         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
