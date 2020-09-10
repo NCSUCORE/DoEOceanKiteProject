@@ -70,9 +70,16 @@ if turb
 else
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
 end
-% figure();
-% hold on; grid on
-% plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
+figure();
+hold on; grid on
+plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
+figure(); hold on; grid on
+plot(data(ran),FDragBdy(ran),'b-');  
+plot(data(ran),FDragFuse(ran),'r-');  
+plot(data(ran),FDragThr(ran),'g-');  
+plot(data(ran),FTurbBdy(ran),'c-');  
+plot(data(ran),totDrag(ran),'k-');  
+xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
 figure();
 %%  Plot Turbine Power Output
 subplot(R,C,1); 
@@ -171,22 +178,25 @@ subplot(R,C,5); hold on; grid on
 yyaxis left
 if lap
     if con
-        plot(data(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Path Position');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 1]);
+        plot(data(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Path Position');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);
     else
-        plot(time(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 1]);  xlim(lim)
+        plot(time(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
     end
 else
-    plot(time,CLsurf.^3./CDtot.^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 1]);  xlim(lim)
+    plot(time,CLsurf.^3./CDtot.^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
 end
 yyaxis right
 if lap
     if con
-        plot(data(ran),CLsurf(ran)./CDtot(ran),'r--');  xlabel('Path Position');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[1 0 0])
+        plot(data(ran),CLsurf(ran)./CDtot(ran),'r-');  xlabel('Path Position');  set(gca,'YColor',[0 0 0])
+        plot(data(ran),LiftDrag(ran),'k-');   xlabel('Path Position');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
     else
-        plot(time(ran),CLsurf(ran)./CDtot(ran),'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+        plot(time(ran),CLsurf(ran)./CDtot(ran),'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
+        plot(time(ran),LiftDrag(ran),'k-');   xlabel('Time [s]');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
     end
 else
-    plot(time,CLsurf./CDtot,'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+    plot(time,CLsurf./CDtot,'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
+    plot(time,LiftDrag,'k-');   xlabel('Time [s]');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
 end
 %%  Plot Lift-Drag ratio
 subplot(R,C,6); hold on; grid on
