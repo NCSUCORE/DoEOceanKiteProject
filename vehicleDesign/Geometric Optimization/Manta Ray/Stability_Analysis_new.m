@@ -4,6 +4,7 @@ clc;clear;
 %%  Input definitions 
 % loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
 loadComponent('Manta2RotNew');                     %   Load vehicle 
+loadComponent('Manta2RotNewThr075');                                      %   Manta kite new with 2 rotors
 % loadComponent('Manta2RotNew0Inc');                     %   Load vehicle 
 % loadComponent('Manta2RotNewXFoil');                     %   Load vehicle 
 % loadComponent('sensitivityAnalysis');              %   Load vehicle 
@@ -106,7 +107,7 @@ CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
 for i = 1:numel(Ang.pitch)
     Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;              %   deg - Tangent pitch angle
     [MCM,MBR(i),MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR);
-    pitchM(i) = MCM.tot(2);
+    pitchM(i) = MBR(i).tot(2);
     hReq = CLBR.hReq;
     if numel(Ang.pitch) == 1 && Ang.pitch(i) == 0
         idx = find(abs(CLh-hReq) <= .0005);
@@ -116,8 +117,9 @@ for i = 1:numel(Ang.pitch)
 end
 %%  Plotting 
 if numel(Ang.pitch) > 1
-    figure; hold on; grid on
-    plot(Ang.pitch,pitchM,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
+    figure; 
+    hold on; grid on
+    plot(Ang.pitch,pitchM,'r-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
 end
 % figure; hold on; grid on
 % plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
