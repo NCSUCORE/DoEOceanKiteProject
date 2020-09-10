@@ -4,6 +4,7 @@ clc;clear;
 %%  Input definitions 
 % loadComponent('Manta2RotNACA2412');                 %   Load vehicle 
 loadComponent('Manta2RotNew');                     %   Load vehicle 
+% loadComponent('Manta2RotNew0Inc');                     %   Load vehicle 
 % loadComponent('Manta2RotNewXFoil');                     %   Load vehicle 
 % loadComponent('sensitivityAnalysis');              %   Load vehicle 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
@@ -44,12 +45,12 @@ fuse.L = vhcl.fuse.length.Value;                    %   m - Length of fuselage
 fuse.D = vhcl.fuse.diameter.Value;                  %   m - Fuselage diameter 
 
 Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
+Sys.ma = vhcl.Ma6x6_LE.Value;                       %   kg - added mass matrix 
 Sys.B = 1;                                          %   Buoyancy factor
 Sys.LE = -vhcl.fuse.rNose_LE.Value;                 %   m - wing leading edge w/ respect to nose
 Sys.xg = Sys.LE+vhcl.rCM_LE.Value;                  %   m - Center of gravity w/ respect to nose
 Sys.xb = Sys.LE+vhcl.rCentOfBuoy_LE.Value;          %   m - Center of buoyancy location w/ respect to nose
-Sys.xbr = Sys.xg+...                                %   m - Bridle location w/ respect to nose
-    [0 0 vhcl.thrAttchPts_B.posVec.Value(3)]'; 
+Sys.xbr = Sys.LE+vhcl.thrAttchPts_B.posVec.Value;   %   m - Bridle location w/ respect to nose
 Sys.xW = Sys.LE+wing.aeroCent;                      %   m - Wing aerodynamic center location w/ respect to nose
 Sys.xH = Sys.LE+...                                 %   m - Horizontal stabilizer aerodynamic center location w/ respect to nose
     vhcl.hStab.rSurfLE_WingLEBdy.Value+...
@@ -104,10 +105,10 @@ alphaRef = -10:.01:10;
 CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
 for i = 1:numel(Ang.pitch)
     Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;              %   deg - Tangent pitch angle
-    [MCM,MBR,MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR);
+    [MCM,MBR(i),MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR);
     pitchM(i) = MCM.tot(2);
-    hReq = CLCM.hReq;
-    if numel(Ang.pitch) == 0 && Ang.pitch(i) == 0
+    hReq = CLBR.hReq;
+    if numel(Ang.pitch) == 1 && Ang.pitch(i) == 0
         idx = find(abs(CLh-hReq) <= .0005);
         incidence = alphaRef(idx)  
         CLhN = CLh(idx)

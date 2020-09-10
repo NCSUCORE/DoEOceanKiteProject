@@ -38,7 +38,7 @@ else
     power = squeeze(obj.winchPower.Data(:,1));
     energy = cumtrapz(time,power)/1000/3600;
 end
-% vKite = -squeeze(obj.velCMvec.Data(1,:,:));
+vKite = -squeeze(obj.velCMvec.Data(1,:,:));
 %   Tether tension
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
@@ -116,31 +116,31 @@ subplot(R,C,3); hold on; grid on
 if lap
     if con
         if turb
-            plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');
+            plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  ylim([0,inf])
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
         else
-            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     else
         if turb
-            plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim)
+            plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim);  ylim([0,inf])
             plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
         else
-            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     end
 else
     if turb
         plot(time,speed,'g-');  ylabel('Speed [m/s]');  xlim(lim)
-        plot(time,vKite,'b-');  ylabel('Speed [m/s]');
-        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+        plot(time,vKite,'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
     else
         plot(time,vKite,'b-');  ylabel('Speed [m/s]');
-        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
     end
 end
 %%  Plot Angle of attack

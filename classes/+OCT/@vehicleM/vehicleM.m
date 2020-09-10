@@ -568,8 +568,8 @@ classdef vehicleM < dynamicprops
                         warning('Simulation won''t run without valid aero coefficient values')
                     end
                 else
-                    fprintf(['The file conaining the fluid dynamic coefficient data already exists.\n',...
-                        'Would you like to create a new file?\n']);
+                    fprintf(['The file conaining the fluid dynamic coefficient data "%s" already exists.\n',...
+                        'Would you like to create a new file?\n'],obj.fluidCoeffsFileName.Value);
                     str = input('(Y/N): \n','s');
                     if isempty(str)
                         str = 'Y';
