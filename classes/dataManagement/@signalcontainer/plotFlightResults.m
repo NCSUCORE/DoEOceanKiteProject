@@ -7,6 +7,7 @@ addOptional(p,'plotS',false,@islogical);
 addOptional(p,'Vapp',false,@islogical);
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
+addOptional(p,'dragChar',false,@islogical);
 parse(p,varargin{:})
 
 R = 3;  C = 2;
@@ -31,7 +32,7 @@ if turb
         energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600;
     else
         power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
-        energy = squeeze((obj.turbEnrg.Data(1,1,:)))/1000/3600+squeeze((obj.turbEnrg.Data(1,2,:)))/1000/3600;
+        energy = cumtrapz(time,power)/1000/3600;
         speed = (squeeze(obj.turbVel.Data(1,1,:))+squeeze(obj.turbVel.Data(1,2,:)))/2;
     end
 else
@@ -70,20 +71,8 @@ if turb
 else
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
 end
-if turb
-    figure();
-    hold on; grid on
-    plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
-    figure(); hold on; grid on
-    plot(data(ran),FDragBdy(ran),'b-');
-    plot(data(ran),FDragFuse(ran),'r-');
-    plot(data(ran),FDragThr(ran),'g-');
-    plot(data(ran),FTurbBdy(ran),'c-');
-    plot(data(ran),totDrag(ran),'k-');
-    xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
-end
 figure();
-%%  Plot Turbine Power Output
+%%  Plot Power Output
 subplot(R,C,1);
 hold on; grid on
 yyaxis left
@@ -232,6 +221,20 @@ end
 % plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
 % plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
 % legend('CD','CL')
+%%  Plot Drag Characteristics 
+if turb && p.Results.dragChar && con
+    figure(); subplot(2,1,2); hold on; grid on
+    plot(data(ran),FTurbBdy(ran)./(totDrag(ran)-FTurbBdy(ran)),'b-');  
+    plot(data(ran),.5*ones(length(data(ran)),1),'r-');
+    xlabel('Path Position');  ylabel('$\mathrm{D_t/D_k}$');  
+    subplot(2,1,1); hold on; grid on
+    plot(data(ran),FDragBdy(ran),'b-');
+    plot(data(ran),FDragFuse(ran),'r-');
+    plot(data(ran),FDragThr(ran),'g-');
+    plot(data(ran),FTurbBdy(ran),'c-');
+    plot(data(ran),totDrag(ran),'k-');
+    xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
+end
 %%  Assess wing tips
 if p.Results.Vapp
     figure;
