@@ -70,19 +70,21 @@ if turb
 else
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
 end
-figure();
-hold on; grid on
-plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
-figure(); hold on; grid on
-plot(data(ran),FDragBdy(ran),'b-');  
-plot(data(ran),FDragFuse(ran),'r-');  
-plot(data(ran),FDragThr(ran),'g-');  
-plot(data(ran),FTurbBdy(ran),'c-');  
-plot(data(ran),totDrag(ran),'k-');  
-xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
+if turb
+    figure();
+    hold on; grid on
+    plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
+    figure(); hold on; grid on
+    plot(data(ran),FDragBdy(ran),'b-');
+    plot(data(ran),FDragFuse(ran),'r-');
+    plot(data(ran),FDragThr(ran),'g-');
+    plot(data(ran),FTurbBdy(ran),'c-');
+    plot(data(ran),totDrag(ran),'k-');
+    xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
+end
 figure();
 %%  Plot Turbine Power Output
-subplot(R,C,1); 
+subplot(R,C,1);
 hold on; grid on
 yyaxis left
 if lap
@@ -204,7 +206,7 @@ yyaxis left
 if lap
     if con
         plot(data(ran),totDrag(ran)*1e-3,'r-');    xlabel('Path Position');  ylabel('Force [kN]');  set(gca,'YColor',[0 0 0])
-        plot(data(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Path Position');  ylabel('Force [kN]');  legend('Drag','Lift') 
+        plot(data(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Path Position');  ylabel('Force [kN]');  legend('Drag','Lift')
     else
         plot(time(ran),totDrag(ran)*1e-3,'r-');    xlabel('Time [s]');  ylabel('Force [kN]');  set(gca,'YColor',[0 0 0])
         plot(time(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Time [s]');  ylabel('Force [kN]');  legend('Drag','Lift') ;  xlim(lim);
@@ -229,7 +231,7 @@ end
 % figure; hold on; grid on
 % plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
 % plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
-% legend('CD','CL') 
+% legend('CD','CL')
 %%  Assess wing tips
 if p.Results.Vapp
     figure;
