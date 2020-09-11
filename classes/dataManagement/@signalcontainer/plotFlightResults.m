@@ -17,7 +17,7 @@ con = p.Results.plotS;
 turb = isprop(obj,'turbPow');
 %%  Determine Single Lap Indices
 if lap
-    [Idx1,Idx2] = getLapIdxs(obj,1);
+    [Idx1,Idx2] = getLapIdxs(obj,p.Results.lapNum);
     ran = Idx1:Idx2-1;
     lim = [time(Idx1) time(Idx2)];
 else
@@ -65,13 +65,26 @@ else
 end
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
 vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
-PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
-% figure();
-% hold on; grid on
-% plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
+if turb
+    PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+else
+    PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
+end
+if turb
+    figure();
+    hold on; grid on
+    plot(FTurbBdy./(totDrag-FTurbBdy),'b-');  ylabel('$\mathrm{D_t/D_k}$');
+    figure(); hold on; grid on
+    plot(data(ran),FDragBdy(ran),'b-');
+    plot(data(ran),FDragFuse(ran),'r-');
+    plot(data(ran),FDragThr(ran),'g-');
+    plot(data(ran),FTurbBdy(ran),'c-');
+    plot(data(ran),totDrag(ran),'k-');
+    xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
+end
 figure();
 %%  Plot Turbine Power Output
-subplot(R,C,1); 
+subplot(R,C,1);
 hold on; grid on
 yyaxis left
 if lap
@@ -112,31 +125,31 @@ subplot(R,C,3); hold on; grid on
 if lap
     if con
         if turb
-            plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');
+            plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  ylim([0,inf])
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
         else
-            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     else
         if turb
-            plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim)
+            plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim);  ylim([0,inf])
             plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
         else
-            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     end
 else
     if turb
         plot(time,speed,'g-');  ylabel('Speed [m/s]');  xlim(lim)
-        plot(time,vKite,'b-');  ylabel('Speed [m/s]');
-        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd');
+        plot(time,vKite,'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
     else
         plot(time,vKite,'b-');  ylabel('Speed [m/s]');
-        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd');
+        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
     end
 end
 %%  Plot Angle of attack
@@ -167,22 +180,25 @@ subplot(R,C,5); hold on; grid on
 yyaxis left
 if lap
     if con
-        plot(data(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Path Position');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 1]);
+        plot(data(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Path Position');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);
     else
-        plot(time(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 1]);  xlim(lim)
+        plot(time(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
     end
 else
-    plot(time,CLsurf.^3./CDtot.^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 1]);  xlim(lim)
+    plot(time,CLsurf.^3./CDtot.^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
 end
 yyaxis right
 if lap
     if con
-        plot(data(ran),CLsurf(ran)./CDtot(ran),'r--');  xlabel('Path Position');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[1 0 0])
+        plot(data(ran),CLsurf(ran)./CDtot(ran),'r-');  xlabel('Path Position');  set(gca,'YColor',[0 0 0])
+        plot(data(ran),LiftDrag(ran),'k-');   xlabel('Path Position');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
     else
-        plot(time(ran),CLsurf(ran)./CDtot(ran),'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+        plot(time(ran),CLsurf(ran)./CDtot(ran),'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
+        plot(time(ran),LiftDrag(ran),'k-');   xlabel('Time [s]');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
     end
 else
-    plot(time,CLsurf./CDtot,'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+    plot(time,CLsurf./CDtot,'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
+    plot(time,LiftDrag,'k-');   xlabel('Time [s]');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
 end
 %%  Plot Lift-Drag ratio
 subplot(R,C,6); hold on; grid on
@@ -190,7 +206,7 @@ yyaxis left
 if lap
     if con
         plot(data(ran),totDrag(ran)*1e-3,'r-');    xlabel('Path Position');  ylabel('Force [kN]');  set(gca,'YColor',[0 0 0])
-        plot(data(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Path Position');  ylabel('Force [kN]');  legend('Drag','Lift') 
+        plot(data(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Path Position');  ylabel('Force [kN]');  legend('Drag','Lift')
     else
         plot(time(ran),totDrag(ran)*1e-3,'r-');    xlabel('Time [s]');  ylabel('Force [kN]');  set(gca,'YColor',[0 0 0])
         plot(time(ran),FLiftBdy(ran)*1e-3,'b-');   xlabel('Time [s]');  ylabel('Force [kN]');  legend('Drag','Lift') ;  xlim(lim);
@@ -215,7 +231,7 @@ end
 % figure; hold on; grid on
 % plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
 % plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
-% legend('CD','CL') 
+% legend('CD','CL')
 %%  Assess wing tips
 if p.Results.Vapp
     figure;

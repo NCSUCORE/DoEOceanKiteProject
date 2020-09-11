@@ -4,7 +4,7 @@
 
 VEHICLE               = "vehicleLE";
 PLANT                 = "plantDOE";
-SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
+SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
 
 %% Essential Values
 vhcl = OCT.vehicle;
@@ -107,7 +107,8 @@ vhcl.turb2.setPowerCoeff(.5,'')
 vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
     
-%% load/generate fluid dynamic datan
+%% load/generate fluid dynamic data
+vhcl.hydroCharacterization.setValue(3,'')
 vhcl.calcFluidDynamicCoefffs
 
 %% save file in its respective directory

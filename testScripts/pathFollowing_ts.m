@@ -41,7 +41,7 @@ env.water.setflowVec([2 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1.2,2.4,.3,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1.5,2.3,.3,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -101,5 +101,5 @@ tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'la
 %     %sound(y*.2, Fs, 16)
 %     fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
 % 
-%  vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-%      'PlotTracer',true,'FontSize',18)
+ vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+     'PlotTracer',true,'FontSize',18)
