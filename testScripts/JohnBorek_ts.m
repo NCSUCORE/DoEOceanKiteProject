@@ -3,15 +3,15 @@ Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario
 %   0 = fig8;
-%   1 = fig8-2rotor Old;  1.1 = fig8-2rotor New Stable;  1.2 = fig8-2rotor New XFoil;  1.3 = fig8-2rotor New;
+%   1 = fig8-2rot DOE-M;  1.1 = fig8-2rot AVL;  1.2 = fig8-2rot XFoil;  1.3 = fig8-2rot XFlr5;
 %   2 = fig8-winch DOE;
-%   3 = steady Old;       3.1 = steady New;       3.2 = steady New XFoil                3.3 = fig8-2rotor New;
-%   4 = LaR Old;          4.1 = LaR New;          4.2 = LaR New XFoil;
-simScenario = 3.2;
-%%  Set Physical Test Parameters
+%   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
+%   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
+simScenario = 1.1;
+%%  Set Test Parameters
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .25;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
-lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -39,17 +39,17 @@ for ii = 1:numel(flwSpd)
     loadComponent('idealSensorProcessing')                      %   Sensor processing
     
     if simScenario == 0
-        loadComponent('MantaKiteNACA2412');                                 %   Manta kite old
+        loadComponent('MantaKiteAVL_DOE');                                  %   Manta kite old
     elseif simScenario == 2
         loadComponent('fullScale1thr');                                     %   DOE kite 
     elseif simScenario == 1 || simScenario == 3 || simScenario == 4
-        loadComponent('Manta2RotNACA2412');                                 %   Manta kite old with 2 rotors
+        loadComponent('Manta2RotAVL_DOE');                                  %   Manta DOE kite with AVL 
     elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
-        loadComponent('Manta2RotNewThr075');                                      %   Manta kite new with 2 rotors
+        loadComponent('Manta2RotAVL_Thr075');                               %   Manta kite with AVL
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
-        loadComponent('Manta2RotXFoil_0Inc');                                 %   Manta kite new with 2 rotors and XFoil
+        loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
-        loadComponent('Manta2RotXFlr_0Inc');                                      %   Manta kite new with 2 rotors
+        loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -82,8 +82,7 @@ for ii = 1:numel(flwSpd)
     if simScenario == 0
         vhcl.turb1.setDiameter(0,'m')
     end
-    vhcl.turb1.setDiameter(.62,'m')
-    vhcl.turb2.setDiameter(.62,'m')
+%     vhcl.turb1.setDiameter(.75,'m');    vhcl.turb2.setDiameter(.75,'m');
     %%  Tethers Properties
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
     thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
@@ -166,24 +165,27 @@ for ii = 1:numel(flwSpd)
     %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
     end
-%     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+    if saveSim == 1
+        save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+    end
 end
 %%  Plot Results
 if simScenario < 3 && simScenario ~= 2
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'plotBeta',1==0,'lapNum',max(tsc.lapNumS.Data)-1)
+    lap = max(tsc.lapNumS.Data)-1;
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
 %%  Animate Simulation
-if simScenario <= 2
-    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
-        'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
-else
-    vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==1,...
-        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
-        'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
-end
+% if simScenario <= 2
+%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+%         'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+% else
+%     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==1,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
+% end
 %%  Compare to old results
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')

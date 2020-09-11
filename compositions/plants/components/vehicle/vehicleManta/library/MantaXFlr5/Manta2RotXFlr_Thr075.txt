@@ -1,0 +1,714 @@
+vhcl.fluidDensity.Value = 1.0000e+03
+vhcl.fluidDensity.Unit = 'kg/m^3'
+vhcl.fluidDensity.NoScale = false
+vhcl.fluidDensity.Description = 'Fluid density, used to calculate mass'
+vhcl.numTethers.Value = 1.0000e+00
+vhcl.numTethers.Unit is unitless or has no unit specified
+vhcl.numTethers.NoScale = true
+vhcl.numTethers.Description = 'Number of tethers'
+vhcl.buoyFactor.Value = 1.0000e+00
+vhcl.buoyFactor.Unit is unitless or has no unit specified
+vhcl.buoyFactor.NoScale = true
+vhcl.buoyFactor.Description = 'Buoyancy Factor = (Kite Density)/(Water Density)'
+vhcl.fluidCoeffsFileName.Value = 'Manta_Inc-0.mat'
+vhcl.fluidCoeffsFileName.Unit is unitless or has no unit specified
+vhcl.fluidCoeffsFileName.NoScale = true
+vhcl.fluidCoeffsFileName.Description = 'File that contains fluid dynamics coefficient data'
+vhcl.flowGradientDist.Value = 8.0000e-02
+vhcl.flowGradientDist.Unit = 'm'
+vhcl.flowGradientDist.NoScale = false
+vhcl.flowGradientDist.Description = 'Distance to space points used for estimating gradient of the flow field'
+vhcl.oldFluidMomentArms.Value = 0.0000e+00
+vhcl.oldFluidMomentArms.Unit is unitless or has no unit specified
+vhcl.oldFluidMomentArms.NoScale = false
+vhcl.oldFluidMomentArms.Description = 'Turns on the old (incorrect) calculation for fluid moment arms'
+vhcl.numTurbines.Value = 2.0000e+00
+vhcl.numTurbines.Unit is unitless or has no unit specified
+vhcl.numTurbines.NoScale = true
+vhcl.numTurbines.Description = 'Number of turbines'
+vhcl.volume.Value = 1.0509e+00
+vhcl.volume.Unit = 'm^3'
+vhcl.volume.NoScale = false
+vhcl.volume.Description = 'volume'
+vhcl.inertia_CM.Value = [1736.2769 -0.024783456 -109.16733;-0.024783456 2912.0475 0;-109.16733 0 4543.1424]
+vhcl.inertia_CM.Unit = 'kg*m^2'
+vhcl.inertia_CM.NoScale = false
+vhcl.inertia_CM.Description = 'Inertia Matrix'
+vhcl.Ma6x6_LEUL.Value = [66 0 10;0 767 0;10 0 4187]
+vhcl.Ma6x6_LEUL.Unit = 'kg'
+vhcl.Ma6x6_LEUL.NoScale = false
+vhcl.Ma6x6_LEUL.Description = 'Upper left quadrant 6x6 Added Mass Matrix'
+vhcl.Ma6x6_LEUR.Value = [0 -29 0;-304 0 1558;0 -3306 0]
+vhcl.Ma6x6_LEUR.Unit = 'kg*m'
+vhcl.Ma6x6_LEUR.NoScale = false
+vhcl.Ma6x6_LEUR.Description = 'Upper right quadrant 6x6 Added Mass Matrix'
+vhcl.Ma6x6_LELL.Value = [0 -304 0;-29 0 -3306;0 1558 0]
+vhcl.Ma6x6_LELL.Unit = 'kg*m'
+vhcl.Ma6x6_LELL.NoScale = false
+vhcl.Ma6x6_LELL.Description = 'Lower left quadrant 6x6 Added Mass Matrix'
+vhcl.Ma6x6_LELR.Value = [16300 0 -1128;0 8336 0;-1128 0 5962]
+vhcl.Ma6x6_LELR.Unit = 'kg*m^2'
+vhcl.Ma6x6_LELR.NoScale = false
+vhcl.Ma6x6_LELR.Description = 'Lower right quadrant 6x6 Added Mass Matrix'
+vhcl.D6x6_LE.Value = [0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0;0 0 0 0 0 0]
+vhcl.D6x6_LE.Unit is unitless or has no unit specified
+vhcl.D6x6_LE.NoScale = false
+vhcl.D6x6_LE.Description = '6x6 Damping Matrix'
+vhcl.allMaxCtrlDef.Value = 3.0000e+01
+vhcl.allMaxCtrlDef.Unit = 'deg'
+vhcl.allMaxCtrlDef.NoScale = false
+vhcl.allMaxCtrlDef.Description = 'Largest control surface deflection for all surfaces in the positive direction'
+vhcl.allMinCtrlDef.Value = -3.0000e+01
+vhcl.allMinCtrlDef.Unit = 'deg'
+vhcl.allMinCtrlDef.NoScale = false
+vhcl.allMinCtrlDef.Description = 'Largest control surface deflection for all surfaces in the negative direction'
+vhcl.allMaxCtrlDefSpeed.Value = 6.7082e+01
+vhcl.allMaxCtrlDefSpeed.Unit = 'deg/s'
+vhcl.allMaxCtrlDefSpeed.NoScale = false
+vhcl.allMaxCtrlDefSpeed.Description = 'Fastest rate of control surface deflection for all surfaces in either direction'
+vhcl.rB_LE.Value = [0;0;0]
+vhcl.rB_LE.Unit = 'm'
+vhcl.rB_LE.NoScale = false
+vhcl.rB_LE.Description = 'Vector going from the Wing LE to the body frame'
+vhcl.rCM_LE.Value = [0.84;0;0.04153]
+vhcl.rCM_LE.Unit = 'm'
+vhcl.rCM_LE.NoScale = false
+vhcl.rCM_LE.Description = 'Vector going from the Wing LE to the Center of Mass'
+vhcl.rBridle_LE.Value = [0.63;0;-0.1778]
+vhcl.rBridle_LE.Unit = 'm'
+vhcl.rBridle_LE.NoScale = false
+vhcl.rBridle_LE.Description = 'Vector going from the Wing LE to bridle point'
+vhcl.rCentOfBuoy_LE.Value = [0.84;0;0.04153]
+vhcl.rCentOfBuoy_LE.Unit = 'm'
+vhcl.rCentOfBuoy_LE.NoScale = false
+vhcl.rCentOfBuoy_LE.Description = 'Vector going from CM to center of buoyancy'
+vhcl.wingRootChord.Value = 8.0000e-01
+vhcl.wingRootChord.Unit = 'm'
+vhcl.wingRootChord.NoScale = false
+vhcl.wingRootChord.Description = 'Wing root chord'
+vhcl.wingAR.Value = 1.1111e+01
+vhcl.wingAR.Unit is unitless or has no unit specified
+vhcl.wingAR.NoScale = true
+vhcl.wingAR.Description = 'Wing Aspect ratio'
+vhcl.wingTR.Value = 8.0000e-01
+vhcl.wingTR.Unit is unitless or has no unit specified
+vhcl.wingTR.NoScale = true
+vhcl.wingTR.Description = 'Wing Taper ratio'
+vhcl.wingSweep.Value = 0.0000e+00
+vhcl.wingSweep.Unit = 'deg'
+vhcl.wingSweep.NoScale = false
+vhcl.wingSweep.Description = 'Wing sweep angle'
+vhcl.wingDihedral.Value = 0.0000e+00
+vhcl.wingDihedral.Unit = 'deg'
+vhcl.wingDihedral.NoScale = false
+vhcl.wingDihedral.Description = 'Wing dihedral angle'
+vhcl.wingIncidence.Value = 0.0000e+00
+vhcl.wingIncidence.Unit = 'deg'
+vhcl.wingIncidence.NoScale = false
+vhcl.wingIncidence.Description = 'Wing flow incidence angle'
+vhcl.wingAirfoil.Value = 'NACA2412'
+vhcl.wingAirfoil.Unit is unitless or has no unit specified
+vhcl.wingAirfoil.NoScale = true
+vhcl.wingAirfoil.Description = 'Wing airfoil'
+vhcl.wingClMin.Value = -1.7000e+00
+vhcl.wingClMin.Unit is unitless or has no unit specified
+vhcl.wingClMin.NoScale = true
+vhcl.wingClMin.Description = 'minimum section Lift Coef'
+vhcl.wingClMax.Value = 1.7000e+00
+vhcl.wingClMax.Unit is unitless or has no unit specified
+vhcl.wingClMax.NoScale = true
+vhcl.wingClMax.Description = 'maximum section Lift Coef'
+vhcl.hStab.rSurfLE_WingLEBdy.Value = [3.45;0;0]
+vhcl.hStab.rSurfLE_WingLEBdy.Unit = 'm'
+vhcl.hStab.rSurfLE_WingLEBdy.NoScale = false
+vhcl.hStab.rSurfLE_WingLEBdy.Description = 'Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface'
+vhcl.hStab.rootChord.Value = 5.2000e-01
+vhcl.hStab.rootChord.Unit = 'm'
+vhcl.hStab.rootChord.NoScale = false
+vhcl.hStab.rootChord.Description = 'Root chord'
+vhcl.hStab.halfSpan.Value = 1.6000e+00
+vhcl.hStab.halfSpan.Unit = 'm'
+vhcl.hStab.halfSpan.NoScale = false
+vhcl.hStab.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
+vhcl.hStab.TR.Value = 8.0000e-01
+vhcl.hStab.TR.Unit is unitless or has no unit specified
+vhcl.hStab.TR.NoScale = true
+vhcl.hStab.TR.Description = 'Taper ratio'
+vhcl.hStab.sweep.Value = 0.0000e+00
+vhcl.hStab.sweep.Unit = 'deg'
+vhcl.hStab.sweep.NoScale = false
+vhcl.hStab.sweep.Description = 'Sweep angle'
+vhcl.hStab.dihedral.Value = 0.0000e+00
+vhcl.hStab.dihedral.Unit = 'deg'
+vhcl.hStab.dihedral.NoScale = false
+vhcl.hStab.dihedral.Description = 'Dihedral angle'
+vhcl.hStab.incidence.Value = 1.1600e+00
+vhcl.hStab.incidence.Unit = 'deg'
+vhcl.hStab.incidence.NoScale = false
+vhcl.hStab.incidence.Description = 'Flow incidence angle'
+vhcl.hStab.Airfoil.Value = 'NACA0015'
+vhcl.hStab.Airfoil.Unit is unitless or has no unit specified
+vhcl.hStab.Airfoil.NoScale = true
+vhcl.hStab.Airfoil.Description = 'airfoil'
+vhcl.hStab.ClMin.Value = -1.7000e+00
+vhcl.hStab.ClMin.Unit is unitless or has no unit specified
+vhcl.hStab.ClMin.NoScale = true
+vhcl.hStab.ClMin.Description = 'Minimum section lift coef'
+vhcl.hStab.ClMax.Value = 1.7000e+00
+vhcl.hStab.ClMax.Unit is unitless or has no unit specified
+vhcl.hStab.ClMax.NoScale = true
+vhcl.hStab.ClMax.Description = 'Maximum section lift coef'
+vhcl.hStab.maxCtrlDef.Value = 3.0000e+01
+vhcl.hStab.maxCtrlDef.Unit = 'deg'
+vhcl.hStab.maxCtrlDef.NoScale = false
+vhcl.hStab.minCtrlDef.Value = -3.0000e+01
+vhcl.hStab.minCtrlDef.Unit = 'deg'
+vhcl.hStab.minCtrlDef.NoScale = false
+vhcl.hStab.maxCtrlDefSpeed.Value = 6.7082e+01
+vhcl.hStab.maxCtrlDefSpeed.Unit = 'deg/s'
+vhcl.hStab.maxCtrlDefSpeed.NoScale = false
+vhcl.hStab.spanUnitVec.Value = [0;1;0]
+vhcl.hStab.spanUnitVec.Unit is unitless or has no unit specified
+vhcl.hStab.spanUnitVec.NoScale = false
+vhcl.hStab.spanUnitVec.Description = 'Body frame unit vector for the span before dihedral/incidence'
+vhcl.hStab.chordUnitVec.Value = [1;0;0]
+vhcl.hStab.chordUnitVec.Unit is unitless or has no unit specified
+vhcl.hStab.chordUnitVec.NoScale = false
+vhcl.hStab.chordUnitVec.Description = 'Body frame unit vector for the chord before dihedral/incidence'
+vhcl.hStab.incAlphaUnitVecSurf.Value = [0;-1;0]
+vhcl.hStab.incAlphaUnitVecSurf.Unit is unitless or has no unit specified
+vhcl.hStab.incAlphaUnitVecSurf.NoScale = false
+vhcl.hStab.incAlphaUnitVecSurf.Description = 'Unit vector in the surface frame about which the apparent velocity vector is rotated to obtain an increasing alpha'
+vhcl.hStab.numTraps.Value = 2.0000e+00
+vhcl.hStab.numTraps.Unit is unitless or has no unit specified
+vhcl.hStab.numTraps.NoScale = false
+vhcl.hStab.numTraps.Description = '1 for one trapazoid, 2 for 2 trapazoids symmetric about root chord'
+vhcl.hStab.CL.Value = [-1.155034764;-1.121315364;-1.087595964;-1.053876564;-1.020157164;-0.986437764;-0.952718364;-0.918998964;-0.885279564;-0.851560164;-0.817840764;-0.784121364;-0.750401964;-0.716682564;-0.682963164;-0.649243764;-0.615524364;-0.581804964;-0.548085564;-0.514366164;-0.480646764;-0.446927364;-0.413207964;-0.379488564;-0.345769164;-0.312049764;-0.278330364;-0.244610964;-0.210891564;-0.177172164;-0.143452764;-0.109733364;-0.076013964;-0.042294564;-0.008575164;0.025144236;0.058863636;0.092583036;0.126302436;0.160021836;0.193741236;0.227460636;0.261180036;0.294899436;0.328618836;0.362338236;0.396057636;0.429777036;0.463496436;0.497215836;0.530935236;0.564654636;0.598374036;0.632093436;0.665812836;0.699532236;0.733251636;0.766971036;0.800690436;0.834409836;0.868129236;0.901848636;0.935568036;0.969287436;1.003006836;1.036726236;1.070445636;1.104165036;1.137884436;1.171603836;1.205323236]
+vhcl.hStab.CL.Unit is unitless or has no unit specified
+vhcl.hStab.CL.NoScale = true
+vhcl.hStab.CD.Value = [0.236854468715349;0.223286164496658;0.210119832779161;0.197355473562856;0.184993086847745;0.173032672633827;0.161474230921101;0.150317761709569;0.139563264999231;0.129210740790085;0.119260189082132;0.109711609875373;0.100565003169806;0.091820368965433;0.0834777072622529;0.0755370180602658;0.0679983013594719;0.0608615571598711;0.0541267854614635;0.0477939862642489;0.0418631595682275;0.0363343053733992;0.031207423679764;0.0264825144873219;0.022159577796073;0.0182386136060172;0.0147196219171545;0.0116026027294849;0.00888755604300841;0.00657448185772506;0.00466338017363483;0.00315425099073773;0.00204709430903374;0.00134191012852287;0.00103869844920512;0.0011374592710805;0.00163819259414899;0.0025408984184106;0.00384557674386534;0.00555222757051319;0.00766085089835416;0.0101714467273883;0.0130840150576155;0.0163985558890358;0.0201150692216493;0.0242335550554558;0.0287540133904555;0.0336764442266483;0.0390008475640343;0.0447272234026133;0.0508555717423855;0.0573858925833508;0.0643181859255092;0.0716524517688607;0.0793886901134054;0.0875269009591432;0.0960670843060741;0.105009240154198;0.114353368503515;0.124099469354025;0.134247542705729;0.144797588558625;0.155749606912715;0.167103597767998;0.178859561124474;0.191017496982142;0.203577405341005;0.21653928620106;0.229903139562308;0.24366896542475;0.257836763788384]
+vhcl.hStab.CD.Unit is unitless or has no unit specified
+vhcl.hStab.CD.NoScale = true
+vhcl.hStab.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
+vhcl.hStab.alpha.Unit = 'deg'
+vhcl.hStab.alpha.NoScale = false
+vhcl.hStab.gainCL.Value = [1.37666328487036e-19 0.0118282430232178 0]
+vhcl.hStab.gainCL.Unit = '1/deg'
+vhcl.hStab.gainCL.NoScale = false
+vhcl.hStab.gainCD.Value = [7.30227272727273e-06 -6.53174749831064e-24 0]
+vhcl.hStab.gainCD.Unit = '1/deg'
+vhcl.hStab.gainCD.NoScale = false
+vhcl.hStab.AR.Value = 6.8376e+00
+vhcl.hStab.AR.Unit is unitless or has no unit specified
+vhcl.hStab.AR.NoScale = false
+vhcl.hStab.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.hStab.planformArea.Value = 1.4976e+00
+vhcl.hStab.planformArea.Unit is unitless or has no unit specified
+vhcl.hStab.planformArea.NoScale = false
+vhcl.hStab.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
+vhcl.hStab.RSurf2Bdy.Value = [1 0 0;0 1 0;0 0 1]
+vhcl.hStab.RSurf2Bdy.Unit is unitless or has no unit specified
+vhcl.hStab.RSurf2Bdy.NoScale = false
+vhcl.hStab.RSurf2Bdy.Description = 'rotation matrix from the surface coordinates to the body coordinates'
+vhcl.hStab.rAeroCent_SurfLE.Value = [0.117481481481482;0;0]
+vhcl.hStab.rAeroCent_SurfLE.Unit = 'm'
+vhcl.hStab.rAeroCent_SurfLE.NoScale = false
+vhcl.hStab.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.hStab.rTipLE.Value = [0.104;0;0]
+vhcl.hStab.rTipLE.Unit = 'm'
+vhcl.hStab.rTipLE.NoScale = false
+vhcl.hStab.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
+vhcl.hStab.outlinePtsBdy.Value = [3.45 3.45 3.866 3.97 3.866 3.45 3.45;0 1.6 1.6 0 -1.6 -1.6 0;0 0 0 0 0 0 0]
+vhcl.hStab.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.hStab.outlinePtsBdy.NoScale = false
+vhcl.hStab.MACLength.Value = 4.6993e-01
+vhcl.hStab.MACLength.Unit = 'm'
+vhcl.hStab.MACLength.NoScale = false
+vhcl.hStab.MACLength.Description = 'length of the Mean Aerodynamic Chord'
+vhcl.vStab.rSurfLE_WingLEBdy.Value = [3.45;0;0]
+vhcl.vStab.rSurfLE_WingLEBdy.Unit = 'm'
+vhcl.vStab.rSurfLE_WingLEBdy.NoScale = false
+vhcl.vStab.rSurfLE_WingLEBdy.Description = 'Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface'
+vhcl.vStab.rootChord.Value = 5.2000e-01
+vhcl.vStab.rootChord.Unit = 'm'
+vhcl.vStab.rootChord.NoScale = false
+vhcl.vStab.rootChord.Description = 'Root chord'
+vhcl.vStab.halfSpan.Value = 1.9500e+00
+vhcl.vStab.halfSpan.Unit = 'm'
+vhcl.vStab.halfSpan.NoScale = false
+vhcl.vStab.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
+vhcl.vStab.TR.Value = 8.0000e-01
+vhcl.vStab.TR.Unit is unitless or has no unit specified
+vhcl.vStab.TR.NoScale = true
+vhcl.vStab.TR.Description = 'Taper ratio'
+vhcl.vStab.sweep.Value = 0.0000e+00
+vhcl.vStab.sweep.Unit = 'deg'
+vhcl.vStab.sweep.NoScale = false
+vhcl.vStab.sweep.Description = 'Sweep angle'
+vhcl.vStab.dihedral.Value = 0.0000e+00
+vhcl.vStab.dihedral.Unit = 'deg'
+vhcl.vStab.dihedral.NoScale = false
+vhcl.vStab.dihedral.Description = 'Dihedral angle'
+vhcl.vStab.incidence.Value = 0.0000e+00
+vhcl.vStab.incidence.Unit = 'deg'
+vhcl.vStab.incidence.NoScale = false
+vhcl.vStab.incidence.Description = 'Flow incidence angle'
+vhcl.vStab.Airfoil.Value = 'NACA0015'
+vhcl.vStab.Airfoil.Unit is unitless or has no unit specified
+vhcl.vStab.Airfoil.NoScale = true
+vhcl.vStab.Airfoil.Description = 'airfoil'
+vhcl.vStab.ClMin.Value = -1.7000e+00
+vhcl.vStab.ClMin.Unit is unitless or has no unit specified
+vhcl.vStab.ClMin.NoScale = true
+vhcl.vStab.ClMin.Description = 'Minimum section lift coef'
+vhcl.vStab.ClMax.Value = 1.7000e+00
+vhcl.vStab.ClMax.Unit is unitless or has no unit specified
+vhcl.vStab.ClMax.NoScale = true
+vhcl.vStab.ClMax.Description = 'Maximum section lift coef'
+vhcl.vStab.maxCtrlDef.Value = 3.0000e+01
+vhcl.vStab.maxCtrlDef.Unit = 'deg'
+vhcl.vStab.maxCtrlDef.NoScale = false
+vhcl.vStab.minCtrlDef.Value = -3.0000e+01
+vhcl.vStab.minCtrlDef.Unit = 'deg'
+vhcl.vStab.minCtrlDef.NoScale = false
+vhcl.vStab.maxCtrlDefSpeed.Value = 6.7082e+01
+vhcl.vStab.maxCtrlDefSpeed.Unit = 'deg/s'
+vhcl.vStab.maxCtrlDefSpeed.NoScale = false
+vhcl.vStab.spanUnitVec.Value = [0;0;1]
+vhcl.vStab.spanUnitVec.Unit is unitless or has no unit specified
+vhcl.vStab.spanUnitVec.NoScale = false
+vhcl.vStab.spanUnitVec.Description = 'Body frame unit vector for the span before dihedral/incidence'
+vhcl.vStab.chordUnitVec.Value = [1;0;0]
+vhcl.vStab.chordUnitVec.Unit is unitless or has no unit specified
+vhcl.vStab.chordUnitVec.NoScale = false
+vhcl.vStab.chordUnitVec.Description = 'Body frame unit vector for the chord before dihedral/incidence'
+vhcl.vStab.incAlphaUnitVecSurf.Value = [0;-1;0]
+vhcl.vStab.incAlphaUnitVecSurf.Unit is unitless or has no unit specified
+vhcl.vStab.incAlphaUnitVecSurf.NoScale = false
+vhcl.vStab.incAlphaUnitVecSurf.Description = 'Unit vector in the surface frame about which the apparent velocity vector is rotated to obtain an increasing alpha'
+vhcl.vStab.numTraps.Value = 1.0000e+00
+vhcl.vStab.numTraps.Unit is unitless or has no unit specified
+vhcl.vStab.numTraps.NoScale = false
+vhcl.vStab.numTraps.Description = '1 for one trapazoid, 2 for 2 trapazoids symmetric about root chord'
+vhcl.vStab.CL.Value = [-0.359728913578125;-0.349448809560268;-0.339168705542411;-0.328888601524554;-0.318608497506696;-0.308328393488839;-0.298048289470982;-0.287768185453125;-0.277488081435268;-0.267207977417411;-0.256927873399554;-0.246647769381696;-0.236367665363839;-0.226087561345982;-0.215807457328125;-0.205527353310268;-0.195247249292411;-0.184967145274554;-0.174687041256696;-0.164406937238839;-0.154126833220982;-0.143846729203125;-0.133566625185268;-0.123286521167411;-0.113006417149554;-0.102726313131696;-0.0924462091138393;-0.0821661050959821;-0.071886001078125;-0.0616058970602679;-0.0513257930424107;-0.0410456890245536;-0.0307655850066964;-0.0204854809888393;-0.0102053769709821;7.4727046875e-05;0.0103548310647321;0.0206349350825893;0.0309150391004464;0.0411951431183036;0.0514752471361607;0.0617553511540179;0.072035455171875;0.0823155591897321;0.0925956632075893;0.102875767225446;0.113155871243304;0.123435975261161;0.133716079279018;0.143996183296875;0.154276287314732;0.164556391332589;0.174836495350446;0.185116599368304;0.195396703386161;0.205676807404018;0.215956911421875;0.226237015439732;0.236517119457589;0.246797223475446;0.257077327493304;0.267357431511161;0.277637535529018;0.287917639546875;0.298197743564732;0.308477847582589;0.318757951600446;0.329038055618304;0.339318159636161;0.349598263654018;0.359878367671875]
+vhcl.vStab.CL.Unit is unitless or has no unit specified
+vhcl.vStab.CL.NoScale = true
+vhcl.vStab.CD.Value = [0.0770807245480205;0.072757203066651;0.0685590274586833;0.0644861977241173;0.060538713862953;0.0567165758751905;0.0530197837608297;0.0494483375198706;0.0460022371523132;0.0426814826581576;0.0394860740374038;0.0364160112900516;0.0334712944161012;0.0306519234155526;0.0279578982884057;0.0253892190346605;0.022945885654317;0.0206278981473753;0.0184352565138353;0.0163679607536971;0.0144260108669606;0.0126094068536258;0.0109181487136928;0.00935223644716148;0.00791167005403192;0.00659644953430409;0.005406574887978;0.00434204611505365;0.00340286321553103;0.00258902618941015;0.001900535036691;0.00133738975737358;0.000899590351457909;0.000587136818943968;0.000400029159831764;0.000338267374121295;0.000401851461812563;0.000590781422905566;0.000905057257400305;0.00134467896529678;0.00190964654659499;0.00259996000129494;0.00341561932939662;0.00435662453090004;0.00542297560580519;0.00661467255411208;0.00793171537582071;0.00937410407093107;0.0109418386394432;0.012634919081357;0.0144533453966726;0.0163971175853899;0.0184662356475089;0.0206606995830297;0.0229805093919522;0.0254256650742765;0.0279961666300024;0.0306920140591301;0.0335132073616596;0.0364597465375908;0.0395316315869237;0.0427288625096584;0.0460514393057948;0.0494993619753329;0.0530726305182728;0.0567712449346144;0.0605952052243578;0.0645445113875028;0.0686191634240497;0.0728191613339982;0.0771445051173485]
+vhcl.vStab.CD.Unit is unitless or has no unit specified
+vhcl.vStab.CD.NoScale = true
+vhcl.vStab.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
+vhcl.vStab.alpha.Unit = 'deg'
+vhcl.vStab.alpha.NoScale = false
+vhcl.vStab.gainCL.Value = [9.17775523246905e-20 0.00609402993032292 0]
+vhcl.vStab.gainCL.Unit = '1/deg'
+vhcl.vStab.gainCL.NoScale = false
+vhcl.vStab.gainCD.Value = [1.83477272727273e-05 -5.3684088912431e-21 0]
+vhcl.vStab.gainCD.Unit = '1/deg'
+vhcl.vStab.gainCD.NoScale = false
+vhcl.vStab.AR.Value = 4.1667e+00
+vhcl.vStab.AR.Unit is unitless or has no unit specified
+vhcl.vStab.AR.NoScale = false
+vhcl.vStab.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.vStab.planformArea.Value = 9.1260e-01
+vhcl.vStab.planformArea.Unit is unitless or has no unit specified
+vhcl.vStab.planformArea.NoScale = false
+vhcl.vStab.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
+vhcl.vStab.RSurf2Bdy.Value = [1 0 0;0 0 -1;0 1 0]
+vhcl.vStab.RSurf2Bdy.Unit is unitless or has no unit specified
+vhcl.vStab.RSurf2Bdy.NoScale = false
+vhcl.vStab.RSurf2Bdy.Description = 'rotation matrix from the surface coordinates to the body coordinates'
+vhcl.vStab.rAeroCent_SurfLE.Value = [0.117481481481482;0.938888888888889;0]
+vhcl.vStab.rAeroCent_SurfLE.Unit = 'm'
+vhcl.vStab.rAeroCent_SurfLE.NoScale = false
+vhcl.vStab.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.vStab.rTipLE.Value = [0.104;1.95;0]
+vhcl.vStab.rTipLE.Unit = 'm'
+vhcl.vStab.rTipLE.NoScale = false
+vhcl.vStab.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
+vhcl.vStab.outlinePtsBdy.Value = [3.45 3.45 3.866 3.97 3.45;0 0 0 0 0;0 1.95 1.95 0 0]
+vhcl.vStab.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.vStab.outlinePtsBdy.NoScale = false
+vhcl.vStab.MACLength.Value = 4.6993e-01
+vhcl.vStab.MACLength.Unit = 'm'
+vhcl.vStab.MACLength.NoScale = false
+vhcl.vStab.MACLength.Description = 'length of the Mean Aerodynamic Chord'
+vhcl.portWing.rSurfLE_WingLEBdy.Value = [0;0;0]
+vhcl.portWing.rSurfLE_WingLEBdy.Unit = 'm'
+vhcl.portWing.rSurfLE_WingLEBdy.NoScale = false
+vhcl.portWing.rSurfLE_WingLEBdy.Description = 'Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface'
+vhcl.portWing.rootChord.Value = 8.0000e-01
+vhcl.portWing.rootChord.Unit = 'm'
+vhcl.portWing.rootChord.NoScale = false
+vhcl.portWing.rootChord.Description = 'Root chord'
+vhcl.portWing.halfSpan.Value = 4.0000e+00
+vhcl.portWing.halfSpan.Unit = 'm'
+vhcl.portWing.halfSpan.NoScale = false
+vhcl.portWing.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
+vhcl.portWing.TR.Value = 8.0000e-01
+vhcl.portWing.TR.Unit is unitless or has no unit specified
+vhcl.portWing.TR.NoScale = true
+vhcl.portWing.TR.Description = 'Taper ratio'
+vhcl.portWing.sweep.Value = 0.0000e+00
+vhcl.portWing.sweep.Unit = 'deg'
+vhcl.portWing.sweep.NoScale = false
+vhcl.portWing.sweep.Description = 'Sweep angle'
+vhcl.portWing.dihedral.Value = -0.0000e+00
+vhcl.portWing.dihedral.Unit = 'deg'
+vhcl.portWing.dihedral.NoScale = false
+vhcl.portWing.dihedral.Description = 'Dihedral angle'
+vhcl.portWing.incidence.Value = -0.0000e+00
+vhcl.portWing.incidence.Unit = 'deg'
+vhcl.portWing.incidence.NoScale = false
+vhcl.portWing.incidence.Description = 'Flow incidence angle'
+vhcl.portWing.Airfoil.Value = 'NACA2412'
+vhcl.portWing.Airfoil.Unit is unitless or has no unit specified
+vhcl.portWing.Airfoil.NoScale = true
+vhcl.portWing.Airfoil.Description = 'airfoil'
+vhcl.portWing.ClMin.Value = -1.7000e+00
+vhcl.portWing.ClMin.Unit is unitless or has no unit specified
+vhcl.portWing.ClMin.NoScale = true
+vhcl.portWing.ClMin.Description = 'Minimum section lift coef'
+vhcl.portWing.ClMax.Value = 1.7000e+00
+vhcl.portWing.ClMax.Unit is unitless or has no unit specified
+vhcl.portWing.ClMax.NoScale = true
+vhcl.portWing.ClMax.Description = 'Maximum section lift coef'
+vhcl.portWing.maxCtrlDef.Value = 3.0000e+01
+vhcl.portWing.maxCtrlDef.Unit = 'deg'
+vhcl.portWing.maxCtrlDef.NoScale = false
+vhcl.portWing.minCtrlDef.Value = -3.0000e+01
+vhcl.portWing.minCtrlDef.Unit = 'deg'
+vhcl.portWing.minCtrlDef.NoScale = false
+vhcl.portWing.maxCtrlDefSpeed.Value = 6.7082e+01
+vhcl.portWing.maxCtrlDefSpeed.Unit = 'deg/s'
+vhcl.portWing.maxCtrlDefSpeed.NoScale = false
+vhcl.portWing.spanUnitVec.Value = [0;-1;0]
+vhcl.portWing.spanUnitVec.Unit is unitless or has no unit specified
+vhcl.portWing.spanUnitVec.NoScale = false
+vhcl.portWing.spanUnitVec.Description = 'Body frame unit vector for the span before dihedral/incidence'
+vhcl.portWing.chordUnitVec.Value = [1;0;0]
+vhcl.portWing.chordUnitVec.Unit is unitless or has no unit specified
+vhcl.portWing.chordUnitVec.NoScale = false
+vhcl.portWing.chordUnitVec.Description = 'Body frame unit vector for the chord before dihedral/incidence'
+vhcl.portWing.incAlphaUnitVecSurf.Value = [0;1;0]
+vhcl.portWing.incAlphaUnitVecSurf.Unit is unitless or has no unit specified
+vhcl.portWing.incAlphaUnitVecSurf.NoScale = false
+vhcl.portWing.incAlphaUnitVecSurf.Description = 'Unit vector in the surface frame about which the apparent velocity vector is rotated to obtain an increasing alpha'
+vhcl.portWing.numTraps.Value = 1.0000e+00
+vhcl.portWing.numTraps.Unit is unitless or has no unit specified
+vhcl.portWing.numTraps.NoScale = false
+vhcl.portWing.numTraps.Description = '1 for one trapazoid, 2 for 2 trapazoids symmetric about root chord'
+vhcl.portWing.CL.Value = [-2.22603060582559;-2.16014401708772;-2.09425742834985;-2.02837083961197;-1.9624842508741;-1.89659766213622;-1.83071107339835;-1.76482448466048;-1.6989378959226;-1.63305130718473;-1.56716471844685;-1.50127812970898;-1.43539154097111;-1.36950495223323;-1.30361836349536;-1.23773177475748;-1.17184518601961;-1.10595859728173;-1.04007200854386;-0.974185419805986;-0.908298831068112;-0.842412242330238;-0.776525653592364;-0.71063906485449;-0.644752476116616;-0.578865887378741;-0.512979298640867;-0.447092709902993;-0.381206121165119;-0.315319532427245;-0.249432943689371;-0.183546354951497;-0.117659766213622;-0.0517731774757483;0.0141134112621259;0.08;0.145886588737874;0.211773177475748;0.277659766213622;0.343546354951497;0.409432943689371;0.475319532427245;0.541206121165119;0.607092709902993;0.672979298640867;0.738865887378741;0.804752476116615;0.87063906485449;0.936525653592364;1.00241224233024;1.06829883106811;1.13418541980599;1.20007200854386;1.26595859728173;1.33184518601961;1.39773177475748;1.46361836349536;1.52950495223323;1.59539154097111;1.66127812970898;1.72716471844685;1.79305130718473;1.8589378959226;1.92482448466048;1.99071107339835;2.05659766213622;2.1224842508741;2.18837083961197;2.25425742834985;2.32014401708772;2.38603060582559]
+vhcl.portWing.CL.Unit is unitless or has no unit specified
+vhcl.portWing.CL.NoScale = true
+vhcl.portWing.CD.Value = [0.545342940692299;0.513942153763687;0.483478563198788;0.453952168997601;0.425362971160128;0.397710969686367;0.370996164576319;0.345218555829983;0.320378143447361;0.296474927428451;0.273508907773255;0.251480084481771;0.230388457553999;0.210234026989941;0.191016792789596;0.172736754952963;0.155393913480043;0.138988268370836;0.123519819625342;0.10898856724356;0.0953945112254915;0.0827376515711356;0.0710179882804927;0.0602355213535625;0.0503902507903451;0.0414821765908405;0.0335112987550488;0.0264776172829699;0.0203811321746038;0.0152218434299505;0.01099975104901;0.0077148550317824;0.00536715537826758;0.00395665208846557;0.00348334516237637;0.0039472346;0.00534832040133644;0.0076866025663857;0.0109620810951478;0.0151747559876227;0.0203246272438104;0.0264116948637109;0.0334359588473242;0.0413974191946504;0.0502960759056894;0.0601319289804412;0.0709049784189058;0.0826152242210832;0.0952626663869735;0.108847304916577;0.123369139809892;0.138828171066921;0.155224398687663;0.172557822672117;0.190828443020284;0.210036259732164;0.230181272807757;0.251263482247063;0.273282888050081;0.296239490216812;0.320133288747256;0.344964283641413;0.370732474899283;0.397437862520865;0.425080446506161;0.453660226855169;0.48317720356789;0.513631376644323;0.54502274608447;0.57735131188833;0.610617074055902]
+vhcl.portWing.CD.Unit is unitless or has no unit specified
+vhcl.portWing.CD.NoScale = true
+vhcl.portWing.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
+vhcl.portWing.alpha.Unit = 'deg'
+vhcl.portWing.alpha.NoScale = false
+vhcl.portWing.gainCL.Value = [-8.70792389920753e-08 0.0211206004133092 0]
+vhcl.portWing.gainCL.Unit = '1/deg'
+vhcl.portWing.gainCL.NoScale = false
+vhcl.portWing.gainCD.Value = [5.16068181818182e-05 0.000375763636363636 0]
+vhcl.portWing.gainCD.Unit = '1/deg'
+vhcl.portWing.gainCD.NoScale = false
+vhcl.portWing.AR.Value = 5.5556e+00
+vhcl.portWing.AR.Unit is unitless or has no unit specified
+vhcl.portWing.AR.NoScale = false
+vhcl.portWing.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.portWing.planformArea.Value = 2.8800e+00
+vhcl.portWing.planformArea.Unit is unitless or has no unit specified
+vhcl.portWing.planformArea.NoScale = false
+vhcl.portWing.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
+vhcl.portWing.RSurf2Bdy.Value = [1 0 0;0 -1 0;0 0 -1]
+vhcl.portWing.RSurf2Bdy.Unit is unitless or has no unit specified
+vhcl.portWing.RSurf2Bdy.NoScale = false
+vhcl.portWing.RSurf2Bdy.Description = 'rotation matrix from the surface coordinates to the body coordinates'
+vhcl.portWing.rAeroCent_SurfLE.Value = [0.180740740740741;1.92592592592593;0]
+vhcl.portWing.rAeroCent_SurfLE.Unit = 'm'
+vhcl.portWing.rAeroCent_SurfLE.NoScale = false
+vhcl.portWing.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.portWing.rTipLE.Value = [0.16;4;0]
+vhcl.portWing.rTipLE.Unit = 'm'
+vhcl.portWing.rTipLE.NoScale = false
+vhcl.portWing.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
+vhcl.portWing.outlinePtsBdy.Value = [0 0 0.64 0.8 0;0 -4 -4 0 0;0 0 0 0 0]
+vhcl.portWing.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.portWing.outlinePtsBdy.NoScale = false
+vhcl.portWing.MACLength.Value = 7.2296e-01
+vhcl.portWing.MACLength.Unit = 'm'
+vhcl.portWing.MACLength.NoScale = false
+vhcl.portWing.MACLength.Description = 'length of the Mean Aerodynamic Chord'
+vhcl.stbdWing.rSurfLE_WingLEBdy.Value = [0;0;0]
+vhcl.stbdWing.rSurfLE_WingLEBdy.Unit = 'm'
+vhcl.stbdWing.rSurfLE_WingLEBdy.NoScale = false
+vhcl.stbdWing.rSurfLE_WingLEBdy.Description = 'Vector in the body frame from the wing LE (body frame) to the leading-edge, inside corner of the surface'
+vhcl.stbdWing.rootChord.Value = 8.0000e-01
+vhcl.stbdWing.rootChord.Unit = 'm'
+vhcl.stbdWing.rootChord.NoScale = false
+vhcl.stbdWing.rootChord.Description = 'Root chord'
+vhcl.stbdWing.halfSpan.Value = 4.0000e+00
+vhcl.stbdWing.halfSpan.Unit = 'm'
+vhcl.stbdWing.halfSpan.NoScale = false
+vhcl.stbdWing.halfSpan.Description = 'Distance between the root chord and tip chord (not full wingspan for 2 traps)'
+vhcl.stbdWing.TR.Value = 8.0000e-01
+vhcl.stbdWing.TR.Unit is unitless or has no unit specified
+vhcl.stbdWing.TR.NoScale = true
+vhcl.stbdWing.TR.Description = 'Taper ratio'
+vhcl.stbdWing.sweep.Value = 0.0000e+00
+vhcl.stbdWing.sweep.Unit = 'deg'
+vhcl.stbdWing.sweep.NoScale = false
+vhcl.stbdWing.sweep.Description = 'Sweep angle'
+vhcl.stbdWing.dihedral.Value = 0.0000e+00
+vhcl.stbdWing.dihedral.Unit = 'deg'
+vhcl.stbdWing.dihedral.NoScale = false
+vhcl.stbdWing.dihedral.Description = 'Dihedral angle'
+vhcl.stbdWing.incidence.Value = 0.0000e+00
+vhcl.stbdWing.incidence.Unit = 'deg'
+vhcl.stbdWing.incidence.NoScale = false
+vhcl.stbdWing.incidence.Description = 'Flow incidence angle'
+vhcl.stbdWing.Airfoil.Value = 'NACA2412'
+vhcl.stbdWing.Airfoil.Unit is unitless or has no unit specified
+vhcl.stbdWing.Airfoil.NoScale = true
+vhcl.stbdWing.Airfoil.Description = 'airfoil'
+vhcl.stbdWing.ClMin.Value = -1.7000e+00
+vhcl.stbdWing.ClMin.Unit is unitless or has no unit specified
+vhcl.stbdWing.ClMin.NoScale = true
+vhcl.stbdWing.ClMin.Description = 'Minimum section lift coef'
+vhcl.stbdWing.ClMax.Value = 1.7000e+00
+vhcl.stbdWing.ClMax.Unit is unitless or has no unit specified
+vhcl.stbdWing.ClMax.NoScale = true
+vhcl.stbdWing.ClMax.Description = 'Maximum section lift coef'
+vhcl.stbdWing.maxCtrlDef.Value = 3.0000e+01
+vhcl.stbdWing.maxCtrlDef.Unit = 'deg'
+vhcl.stbdWing.maxCtrlDef.NoScale = false
+vhcl.stbdWing.minCtrlDef.Value = -3.0000e+01
+vhcl.stbdWing.minCtrlDef.Unit = 'deg'
+vhcl.stbdWing.minCtrlDef.NoScale = false
+vhcl.stbdWing.maxCtrlDefSpeed.Value = 6.7082e+01
+vhcl.stbdWing.maxCtrlDefSpeed.Unit = 'deg/s'
+vhcl.stbdWing.maxCtrlDefSpeed.NoScale = false
+vhcl.stbdWing.spanUnitVec.Value = [0;1;0]
+vhcl.stbdWing.spanUnitVec.Unit is unitless or has no unit specified
+vhcl.stbdWing.spanUnitVec.NoScale = false
+vhcl.stbdWing.spanUnitVec.Description = 'Body frame unit vector for the span before dihedral/incidence'
+vhcl.stbdWing.chordUnitVec.Value = [1;0;0]
+vhcl.stbdWing.chordUnitVec.Unit is unitless or has no unit specified
+vhcl.stbdWing.chordUnitVec.NoScale = false
+vhcl.stbdWing.chordUnitVec.Description = 'Body frame unit vector for the chord before dihedral/incidence'
+vhcl.stbdWing.incAlphaUnitVecSurf.Value = [0;-1;0]
+vhcl.stbdWing.incAlphaUnitVecSurf.Unit is unitless or has no unit specified
+vhcl.stbdWing.incAlphaUnitVecSurf.NoScale = false
+vhcl.stbdWing.incAlphaUnitVecSurf.Description = 'Unit vector in the surface frame about which the apparent velocity vector is rotated to obtain an increasing alpha'
+vhcl.stbdWing.numTraps.Value = 1.0000e+00
+vhcl.stbdWing.numTraps.Unit is unitless or has no unit specified
+vhcl.stbdWing.numTraps.NoScale = false
+vhcl.stbdWing.numTraps.Description = '1 for one trapazoid, 2 for 2 trapazoids symmetric about root chord'
+vhcl.stbdWing.CL.Value = [-2.22603060582559;-2.16014401708772;-2.09425742834985;-2.02837083961197;-1.9624842508741;-1.89659766213622;-1.83071107339835;-1.76482448466048;-1.6989378959226;-1.63305130718473;-1.56716471844685;-1.50127812970898;-1.43539154097111;-1.36950495223323;-1.30361836349536;-1.23773177475748;-1.17184518601961;-1.10595859728173;-1.04007200854386;-0.974185419805986;-0.908298831068112;-0.842412242330238;-0.776525653592364;-0.71063906485449;-0.644752476116616;-0.578865887378741;-0.512979298640867;-0.447092709902993;-0.381206121165119;-0.315319532427245;-0.249432943689371;-0.183546354951497;-0.117659766213622;-0.0517731774757483;0.0141134112621259;0.08;0.145886588737874;0.211773177475748;0.277659766213622;0.343546354951497;0.409432943689371;0.475319532427245;0.541206121165119;0.607092709902993;0.672979298640867;0.738865887378741;0.804752476116615;0.87063906485449;0.936525653592364;1.00241224233024;1.06829883106811;1.13418541980599;1.20007200854386;1.26595859728173;1.33184518601961;1.39773177475748;1.46361836349536;1.52950495223323;1.59539154097111;1.66127812970898;1.72716471844685;1.79305130718473;1.8589378959226;1.92482448466048;1.99071107339835;2.05659766213622;2.1224842508741;2.18837083961197;2.25425742834985;2.32014401708772;2.38603060582559]
+vhcl.stbdWing.CL.Unit is unitless or has no unit specified
+vhcl.stbdWing.CL.NoScale = true
+vhcl.stbdWing.CD.Value = [0.545342940692299;0.513942153763687;0.483478563198788;0.453952168997601;0.425362971160128;0.397710969686367;0.370996164576319;0.345218555829983;0.320378143447361;0.296474927428451;0.273508907773255;0.251480084481771;0.230388457553999;0.210234026989941;0.191016792789596;0.172736754952963;0.155393913480043;0.138988268370836;0.123519819625342;0.10898856724356;0.0953945112254915;0.0827376515711356;0.0710179882804927;0.0602355213535625;0.0503902507903451;0.0414821765908405;0.0335112987550488;0.0264776172829699;0.0203811321746038;0.0152218434299505;0.01099975104901;0.0077148550317824;0.00536715537826758;0.00395665208846557;0.00348334516237637;0.0039472346;0.00534832040133644;0.0076866025663857;0.0109620810951478;0.0151747559876227;0.0203246272438104;0.0264116948637109;0.0334359588473242;0.0413974191946504;0.0502960759056894;0.0601319289804412;0.0709049784189058;0.0826152242210832;0.0952626663869735;0.108847304916577;0.123369139809892;0.138828171066921;0.155224398687663;0.172557822672117;0.190828443020284;0.210036259732164;0.230181272807757;0.251263482247063;0.273282888050081;0.296239490216812;0.320133288747256;0.344964283641413;0.370732474899283;0.397437862520865;0.425080446506161;0.453660226855169;0.48317720356789;0.513631376644323;0.54502274608447;0.57735131188833;0.610617074055902]
+vhcl.stbdWing.CD.Unit is unitless or has no unit specified
+vhcl.stbdWing.CD.NoScale = true
+vhcl.stbdWing.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
+vhcl.stbdWing.alpha.Unit = 'deg'
+vhcl.stbdWing.alpha.NoScale = false
+vhcl.stbdWing.gainCL.Value = [-8.70792389920753e-08 0.0211206004133092 0]
+vhcl.stbdWing.gainCL.Unit = '1/deg'
+vhcl.stbdWing.gainCL.NoScale = false
+vhcl.stbdWing.gainCD.Value = [5.16068181818182e-05 0.000375763636363636 0]
+vhcl.stbdWing.gainCD.Unit = '1/deg'
+vhcl.stbdWing.gainCD.NoScale = false
+vhcl.stbdWing.AR.Value = 5.5556e+00
+vhcl.stbdWing.AR.Unit is unitless or has no unit specified
+vhcl.stbdWing.AR.NoScale = false
+vhcl.stbdWing.AR.Description = 'halfSpan^2/Area for 1 Trap and fullSpan^2/Area for 2 Traps'
+vhcl.stbdWing.planformArea.Value = 2.8800e+00
+vhcl.stbdWing.planformArea.Unit is unitless or has no unit specified
+vhcl.stbdWing.planformArea.NoScale = false
+vhcl.stbdWing.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
+vhcl.stbdWing.RSurf2Bdy.Value = [1 0 0;0 1 0;0 0 1]
+vhcl.stbdWing.RSurf2Bdy.Unit is unitless or has no unit specified
+vhcl.stbdWing.RSurf2Bdy.NoScale = false
+vhcl.stbdWing.RSurf2Bdy.Description = 'rotation matrix from the surface coordinates to the body coordinates'
+vhcl.stbdWing.rAeroCent_SurfLE.Value = [0.180740740740741;1.92592592592593;0]
+vhcl.stbdWing.rAeroCent_SurfLE.Unit = 'm'
+vhcl.stbdWing.rAeroCent_SurfLE.NoScale = false
+vhcl.stbdWing.rAeroCent_SurfLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the areodynamic center in surface coordinates'
+vhcl.stbdWing.rTipLE.Value = [0.16;4;0]
+vhcl.stbdWing.rTipLE.Unit = 'm'
+vhcl.stbdWing.rTipLE.NoScale = false
+vhcl.stbdWing.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
+vhcl.stbdWing.outlinePtsBdy.Value = [0 0 0.64 0.8 0;0 4 4 0 0;0 0 0 0 0]
+vhcl.stbdWing.outlinePtsBdy.Unit is unitless or has no unit specified
+vhcl.stbdWing.outlinePtsBdy.NoScale = false
+vhcl.stbdWing.MACLength.Value = 7.2296e-01
+vhcl.stbdWing.MACLength.Unit = 'm'
+vhcl.stbdWing.MACLength.NoScale = false
+vhcl.stbdWing.MACLength.Description = 'length of the Mean Aerodynamic Chord'
+vhcl.fuse.diameter.Value = 3.5560e-01
+vhcl.fuse.diameter.Unit = 'm'
+vhcl.fuse.diameter.NoScale = false
+vhcl.fuse.rNose_LE.Value = [-2.5;0;0]
+vhcl.fuse.rNose_LE.Unit = 'm'
+vhcl.fuse.rNose_LE.NoScale = false
+vhcl.fuse.rNose_LE.Description = 'Vector from the wing LE to the front of the fuselage'
+vhcl.fuse.rEnd_LE.Value = [3.97;0;0]
+vhcl.fuse.rEnd_LE.Unit = 'm'
+vhcl.fuse.rEnd_LE.NoScale = false
+vhcl.fuse.rEnd_LE.Description = 'Vector from the wing LE to the end of the fuselage'
+vhcl.fuse.sideDragCoeff.Value = 1.0000e+00
+vhcl.fuse.sideDragCoeff.Unit is unitless or has no unit specified
+vhcl.fuse.sideDragCoeff.NoScale = false
+vhcl.fuse.sideDragCoeff.Description = 'Drag Coeff if at 90 degrees angle of attack'
+vhcl.fuse.endDragCoeff.Value = 1.0000e-01
+vhcl.fuse.endDragCoeff.Unit is unitless or has no unit specified
+vhcl.fuse.endDragCoeff.NoScale = false
+vhcl.fuse.endDragCoeff.Description = 'Drag Coeff if at 0 degrees angle of attack'
+vhcl.fuse.length.Value = 6.4700e+00
+vhcl.fuse.length.Unit = 'm'
+vhcl.fuse.length.NoScale = false
+vhcl.fuse.length.Description = 'Total length of fuselage'
+vhcl.fuse.rAeroCent_LE.Value = [0.735;0;0]
+vhcl.fuse.rAeroCent_LE.Unit = 'm'
+vhcl.fuse.rAeroCent_LE.NoScale = false
+vhcl.fuse.rAeroCent_LE.Description = 'Vector from the kite CM to the fuselage aero center'
+vhcl.fuse.volume.Value = 6.2114e-01
+vhcl.fuse.volume.Unit = 'm^3'
+vhcl.fuse.volume.NoScale = false
+vhcl.initPosVecGnd.Unit = 'm'
+vhcl.initPosVecGnd.NoScale = false
+vhcl.initPosVecGnd.Description = 'Initial CM position represented in the inertial frame'
+vhcl.initVelVecBdy.Unit = 'm/s'
+vhcl.initVelVecBdy.NoScale = false
+vhcl.initVelVecBdy.Description = 'Initial CM velocity represented in the body frame '
+vhcl.initEulAng.Unit = 'rad'
+vhcl.initEulAng.NoScale = false
+vhcl.initEulAng.Description = 'Initial Euler angles'
+vhcl.initAngVelVec.Unit = 'rad/s'
+vhcl.initAngVelVec.NoScale = false
+vhcl.initAngVelVec.Description = 'Initial angular velocity vector'
+vhcl.hydroChracterization.Value = 3.0000e+00
+vhcl.hydroChracterization.Unit is unitless or has no unit specified
+vhcl.hydroChracterization.NoScale = false
+vhcl.hydroChracterization.Description = '1 = AVL; 2 = XFoil; 3 = XFlr'
+vhcl.mass.Value = 1.0509e+03
+vhcl.mass.Unit = 'kg'
+vhcl.mass.NoScale = false
+vhcl.mass.Description = 'Vehicle mass'
+vhcl.thrAttchPts_B.posVec.Value = [0.63;0;-0.1778]
+vhcl.thrAttchPts_B.posVec.Unit = 'm'
+vhcl.thrAttchPts_B.posVec.NoScale = false
+vhcl.thrAttchPts_B.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
+vhcl.fluidMomentArms.Value = [0.180740740740741 0.180740740740741 3.56748148148148 3.56748148148148;-1.92592592592593 1.92592592592593 0 0;0 0 0 0.938888888888889]
+vhcl.fluidMomentArms.Unit = 'm'
+vhcl.fluidMomentArms.NoScale = false
+vhcl.fuseMomentArm.Value = [0.735;0;0]
+vhcl.fuseMomentArm.Unit = 'm'
+vhcl.fuseMomentArm.NoScale = false
+vhcl.buoyMomentArm.Value = [0.84;0;0.04153]
+vhcl.buoyMomentArm.Unit = 'm'
+vhcl.buoyMomentArm.NoScale = false
+vhcl.turbMomentArms.Value = [0 0;-1.33333333333333 1.33333333333333;0 0]
+vhcl.turbMomentArms.Unit = 'm'
+vhcl.turbMomentArms.NoScale = false
+vhcl.rCM_B.Value = [0.84;0;0.04153]
+vhcl.rCM_B.Unit = 'm'
+vhcl.rCM_B.NoScale = false
+vhcl.wingTipPositions.Value = [0.16 0.16 3.554 3.554;-4 4 0 0;0 0 0 1.95]
+vhcl.wingTipPositions.Unit = 'm'
+vhcl.wingTipPositions.NoScale = false
+vhcl.fluidRefArea.Value = 5.7600e+00
+vhcl.fluidRefArea.Unit = 'm^2'
+vhcl.fluidRefArea.NoScale = false
+vhcl.fluidRefArea.Description = 'Reference area for aerodynamic calculations'
+vhcl.M6x6_B.Value = [1050.865 0 0 0 43.64242345 0;0 1050.865 0 -43.64242345 0 882.7266;0 0 1050.865 0 -882.7266 0;0 -43.64242345 0 1738.08936984588 -0.024783456 -145.826965698;43.64242345 0 -882.7266 -0.024783456 3655.35031384588 0;0 882.7266 0 -145.826965698 0 5284.632744]
+vhcl.M6x6_B.Unit is unitless or has no unit specified
+vhcl.M6x6_B.NoScale = false
+vhcl.M6x6_B.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'
+vhcl.Ma6x6_LE.Value = [66 0 10 0 -29 0;0 767 0 -304 0 1558;10 0 4187 0 -3306 0;0 -304 0 16300 0 -1128;-29 0 -3306 0 8336 0;0 1558 0 -1128 0 5962]
+vhcl.Ma6x6_LE.Unit is unitless or has no unit specified
+vhcl.Ma6x6_LE.NoScale = false
+vhcl.Ma6x6_LE.Description = '6x6 Added Mass Matrix. Created from scaled quadrant matrices'
+vhcl.staticMargin.Value = -7.6556e-01
+vhcl.staticMargin.Unit = 'm'
+vhcl.staticMargin.NoScale = false
+vhcl.staticMargin.Description = 'Static Margin of Stability'
+vhcl.contactPoints.Value = [0 0 3.866 3.866 -2.5 3.97;-4 4 1.6 -1.6 0 0;0 0 0 0 -0.1778 -0.1778]
+vhcl.contactPoints.Unit = 'm'
+vhcl.contactPoints.NoScale = false
+vhcl.contactPoints.Description = 'Points where contact forces are modeled'
+vhcl.turb2.mass.Value = 6.0000e+00
+vhcl.turb2.mass.Unit = 'kg'
+vhcl.turb2.mass.NoScale = false
+vhcl.turb2.mass.Description = 'Rotor mass'
+vhcl.turb2.diameter.Value = 5.6000e-01
+vhcl.turb2.diameter.Unit = 'm'
+vhcl.turb2.diameter.NoScale = false
+vhcl.turb2.diameter.Description = 'Diameter of the rotor'
+vhcl.turb2.axisUnitVec.Value = [-1;0;0]
+vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
+vhcl.turb2.axisUnitVec.NoScale = false
+vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
+vhcl.turb2.attachPtVec.Value = [0;1.33333333333333;0]
+vhcl.turb2.attachPtVec.Unit = 'm'
+vhcl.turb2.attachPtVec.NoScale = false
+vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
+vhcl.turb2.powerCoeff.Value = 5.0000e-01
+vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.powerCoeff.NoScale = false
+vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
+vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
+vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
+vhcl.turb2.axialInductionFactor.NoScale = false
+vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
+vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
+vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
+vhcl.turb2.tipSpeepRatio.NoScale = false
+vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
+vhcl.turb2.dragCoeff.Value = 7.5000e-01
+vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.dragCoeff.NoScale = false
+vhcl.turb2.momentArm.Value = [0;1.33333333333333;0]
+vhcl.turb2.momentArm.Unit = 'm'
+vhcl.turb2.momentArm.NoScale = false
+vhcl.turb2.momentOfInertia.Value = 4.7040e-01
+vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
+vhcl.turb2.momentOfInertia.NoScale = false
+vhcl.turb1.mass.Value = 6.0000e+00
+vhcl.turb1.mass.Unit = 'kg'
+vhcl.turb1.mass.NoScale = false
+vhcl.turb1.mass.Description = 'Rotor mass'
+vhcl.turb1.diameter.Value = 5.6000e-01
+vhcl.turb1.diameter.Unit = 'm'
+vhcl.turb1.diameter.NoScale = false
+vhcl.turb1.diameter.Description = 'Diameter of the rotor'
+vhcl.turb1.axisUnitVec.Value = [1;0;0]
+vhcl.turb1.axisUnitVec.Unit is unitless or has no unit specified
+vhcl.turb1.axisUnitVec.NoScale = false
+vhcl.turb1.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
+vhcl.turb1.attachPtVec.Value = [0;-1.33333333333333;0]
+vhcl.turb1.attachPtVec.Unit = 'm'
+vhcl.turb1.attachPtVec.NoScale = false
+vhcl.turb1.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
+vhcl.turb1.powerCoeff.Value = 5.0000e-01
+vhcl.turb1.powerCoeff.Unit is unitless or has no unit specified
+vhcl.turb1.powerCoeff.NoScale = false
+vhcl.turb1.powerCoeff.Description = 'Coefficient used in power calculation'
+vhcl.turb1.axialInductionFactor.Value = 1.5000e+00
+vhcl.turb1.axialInductionFactor.Unit is unitless or has no unit specified
+vhcl.turb1.axialInductionFactor.NoScale = false
+vhcl.turb1.axialInductionFactor.Description = 'Relationship between CP and CD'
+vhcl.turb1.tipSpeepRatio.Value = 6.0000e+00
+vhcl.turb1.tipSpeepRatio.Unit is unitless or has no unit specified
+vhcl.turb1.tipSpeepRatio.NoScale = false
+vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
+vhcl.turb1.dragCoeff.Value = 7.5000e-01
+vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
+vhcl.turb1.dragCoeff.NoScale = false
+vhcl.turb1.momentArm.Value = [0;-1.33333333333333;0]
+vhcl.turb1.momentArm.Unit = 'm'
+vhcl.turb1.momentArm.NoScale = false
+vhcl.turb1.momentOfInertia.Value = 4.7040e-01
+vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
+vhcl.turb1.momentOfInertia.NoScale = false
