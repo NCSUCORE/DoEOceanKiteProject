@@ -7,7 +7,7 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady New;       3.2 = steady New XFoil                3.3 = fig8-2rotor New;
 %   4 = LaR Old;          4.1 = LaR New;          4.2 = LaR New XFoil;
-simScenario = 1.1;
+simScenario = 3.2;
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .25;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
@@ -47,9 +47,9 @@ for ii = 1:numel(flwSpd)
     elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
         loadComponent('Manta2RotNewThr075');                                      %   Manta kite new with 2 rotors
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
-        loadComponent('Manta2RotNewXFoil');                                 %   Manta kite new with 2 rotors and XFoil
+        loadComponent('Manta2RotXFoil_0Inc');                                 %   Manta kite new with 2 rotors and XFoil
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
-        loadComponent('Manta2RotNew');                                      %   Manta kite new with 2 rotors
+        loadComponent('Manta2RotXFlr_0Inc');                                      %   Manta kite new with 2 rotors
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -166,7 +166,7 @@ for ii = 1:numel(flwSpd)
     %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
     end
-    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+%     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Plot Results
 if simScenario < 3 && simScenario ~= 2
@@ -175,15 +175,15 @@ else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
 %%  Animate Simulation
-% if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
-%         'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
-% else
-%     vhcl.animateSim(tsc,2,'View',[0,0],...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
-%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
-% end
+if simScenario <= 2
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
+        'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+else
+    vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==1,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+        'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
+end
 %%  Compare to old results
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')

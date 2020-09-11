@@ -552,95 +552,82 @@ classdef vehicleM < dynamicprops
         
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
-            
-            if obj.hydroChracterization.Value == 1
-                fileLoc = which(obj.fluidCoeffsFileName.Value);
-                if ~isfile(fileLoc)
-                    fprintf(['The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                        'Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                    str = input('(Y/N): \n','s');
-                    if isempty(str)
-                        str = 'Y';
-                    end
-                    if strcmpi(str,'Y')
-                        aeroStruct = runAVL(obj);
-                    else
-                        warning('Simulation won''t run without valid aero coefficient values')
-                    end
+            fileLoc = which(obj.fluidCoeffsFileName.Value);            
+            if ~isfile(fileLoc)
+                fprintf(['The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                    'Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                str = input('(Y/N): \n','s');
+                if isempty(str);  str = 'Y';  end
+                if strcmpi(str,'Y')
+                    aeroStruct = runAVL(obj);
                 else
-                    fprintf(['The file conaining the fluid dynamic coefficient data "%s" already exists.\n',...
-                        'Would you like to create a new file?\n'],obj.fluidCoeffsFileName.Value);
-                    str = input('(Y/N): \n','s');
-                    if isempty(str)
-                        str = 'Y';
-                    end
-                    if strcmpi(str,'Y')
+                    warning('Simulation won''t run without valid aero coefficient values')
+                end
+            else
+                fprintf(['The file conaining the fluid dynamic coefficient data "%s" already exists.\n',...
+                    'Would you like to overwrite?\n'],obj.fluidCoeffsFileName.Value);
+                str = input('(Y/N): \n','s');
+                if isempty(str);  str = 'Y';  end
+                if strcmpi(str,'Y')
+                    aeroStruct = runAVL(obj);
+                else
+                    fprintf('Would you like to create a new file?\n');
+                    str1 = input('(Y/N): \n','s');
+                    if isempty(str1);  str1 = 'Y';  end
+                    if strcmpi(str1,'Y')
                         newName = input('New filename (excluding ".mat"): \n','s');
                         obj.setFluidCoeffsFileName(newName,'');
                         aeroStruct = runAVL(obj);
-                    else 
-                        load(fileLoc,'aeroStruct');
-                    end
-                end
-            elseif obj.hydroChracterization.Value == 2
-                fileLoc = which(obj.fluidCoeffsFileName.Value);
-                if ~isfile(fileLoc)
-                    fprintf(['The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                        'Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                    str = input('(Y/N): \n','s');
-                    if isempty(str)
-                        str = 'Y';
-                    end
-                    if strcmpi(str,'Y')
-                        aeroStruct = runAVL(obj);
                     else
-                        warning('Simulation won''t run without valid aero coefficient values')
-                    end
-                    W = load('NACA2412_corrected.mat');
-                    H = load('NACA0015_corrected_hStab.mat');
-                    V = load('NACA0015_corrected_vStab.mat');
-                    aeroStruct(1).CL = W.cl_c/2;
-                    aeroStruct(1).CD = W.CD_c/2;
-                    aeroStruct(1).alpha = W.alfa_c;
-                    aeroStruct(2).CL = W.cl_c/2;
-                    aeroStruct(2).CD = W.CD_c/2;
-                    aeroStruct(2).alpha = W.alfa_c;
-                    aeroStruct(3).CL = H.cl_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(3).CD = H.CD_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
-                    aeroStruct(4).CL = V.cl_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(4).CD = V.CD_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(4).alpha = V.alfa_c;
-                else
-                    fprintf(['The file conaining the fluid dynamic coefficient data already exists.\n',...
-                        'Would you like to create a new file?\n']);
-                    str = input('(Y/N): \n','s');
-                    if isempty(str)
-                        str = 'Y';
-                    end
-                    if strcmpi(str,'Y')
-                        newName = input('New filename (excluding ".mat"): \n','s');
-                        obj.setFluidCoeffsFileName(newName,'');
-                        aeroStruct = runAVL(obj);
-                    else 
                         load(fileLoc,'aeroStruct');
                     end
-                    W = load('NACA2412_corrected.mat');
-                    H = load('NACA0015_corrected_hStab.mat');
-                    V = load('NACA0015_corrected_vStab.mat');
-                    aeroStruct(1).CL = W.cl_c/2;
-                    aeroStruct(1).CD = W.CD_c/2;
-                    aeroStruct(1).alpha = W.alfa_c;
-                    aeroStruct(2).CL = W.cl_c/2;
-                    aeroStruct(2).CD = W.CD_c/2;
-                    aeroStruct(2).alpha = W.alfa_c;
-                    aeroStruct(3).CL = H.cl_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(3).CD = H.CD_c*(obj.hStab.halfSpan.Value*2*obj.hStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
-                    aeroStruct(4).CL = V.cl_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(4).CD = V.CD_c*(obj.vStab.halfSpan.Value*obj.vStab.MACLength.Value)/obj.fluidRefArea.Value;
-                    aeroStruct(4).alpha = V.alfa_c;
                 end
+            end
+            if obj.hydroChracterization.Value == 2
+                W = load('NACA2412_corrected.mat');
+                H = load('NACA0015_corrected_hStab.mat');
+                V = load('NACA0015_corrected_vStab.mat');
+                aeroStruct(1).CL = W.cl_c/2;
+                aeroStruct(1).CD = W.CD_c/2;
+                aeroStruct(1).alpha = W.alfa_c;
+                aeroStruct(2).CL = W.cl_c/2;
+                aeroStruct(2).CD = W.CD_c/2;
+                aeroStruct(2).alpha = W.alfa_c;
+                aeroStruct(3).CL = H.cl_c*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(3).CD = H.CD_c*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
+                aeroStruct(4).CL = V.cl_c*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(4).CD = V.CD_c*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(4).alpha = V.alfa_c;
+            elseif obj.hydroChracterization.Value == 3
+                AR = obj.wingAR.Value;
+                % hard coded values corresponding to NACA 2412
+                if ~strcmp(obj.wingAirfoil.Value,'NACA2412')
+                    warning('XFLR values are only applicable to wingAirfoil.Value=NACA2412');
+                end
+                gammaw = 0.9512;
+                eLw = 0.7019;
+                Clw0 = 0.16;
+                Cdw_visc = 0.0297;
+                Cdw_ind = 0.2697;
+                AoA = linspace(-55,55,71)';
+                [CLFullWing,CDFullWing] = ...
+                    XFLRWingCalc(AoA,AR,gammaw,eLw,Clw0,Cdw_visc,...
+                    Cdw_ind,obj.wingAirfoil.Value);
+                [CLhStab,CDhStab] = XFLRHStabCalc(AoA,obj.fluidRefArea.Value,obj.hStab.planformArea.Value,obj.hStab.incidence.Value);
+                [CLvStab,CDvStab] = XFLRVStabCalc(AoA,obj.fluidRefArea.Value,obj.vStab.planformArea.Value);
+                % overwrite values from AVL
+                for ii = 1:2
+                    aeroStruct(ii).alpha = AoA;
+                    aeroStruct(ii).CL = CLFullWing./2;
+                    aeroStruct(ii).CD = CDFullWing./2;
+                end
+                aeroStruct(3).alpha = AoA;
+                aeroStruct(3).CL    = CLhStab;
+                aeroStruct(3).CD    = CDhStab;
+                aeroStruct(4).alpha = AoA;
+                aeroStruct(4).CL    = CLvStab;
+                aeroStruct(4).CD    = CDvStab;
             end
                 
             obj.portWing.setCL(aeroStruct(1).CL,'');
