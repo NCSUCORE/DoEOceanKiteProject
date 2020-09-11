@@ -79,9 +79,9 @@ M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment
     + M.T + M.Ca;
 MLE = M;
 %%  Find required horizontal stabilizer CL for trim
-[MCM,F,CLCM] = getReqStab(MCM,F,CM,Env,hStab,vApp,uApp);
-[MBR,F,CLBR] = getReqStab(MBR,F,BR,Env,hStab,vApp,uApp);
-[MLE,F,CLLE] = getReqStab(MLE,F,LE,Env,hStab,vApp,uApp);
+[MCM,F,CLCM] = getReqStab(MCM,F,CM,Env,hStab,vApp,uApp,CL);
+[MBR,F,CLBR] = getReqStab(MBR,F,BR,Env,hStab,vApp,uApp,CL);
+[MLE,F,CLLE] = getReqStab(MLE,F,LE,Env,hStab,vApp,uApp,CL);
 end
 %%  Local functions 
 function C = Rx(x)
@@ -111,7 +111,7 @@ CD.F =                 (fuse.CD0.*cosd(alpha)+fuse.CDs.*(1-cosd(alpha)));
 CD.Wa = CL.Wa^2/(pi*wing.eD*wing.AR);
 CD.Ha = CL.Ha^2/(pi*hStab.eD*hStab.AR);
 end
-function [M,F,CL] = getReqStab(M,F,A,Env,hStab,vApp,uApp)
+function [M,F,CL] = getReqStab(M,F,A,Env,hStab,vApp,uApp,CL)
 CL.hReq = 2*dot(M.B+M.G+M.W+M.V+M.F+M.T+M.dH,[0;1;0])...
             /(Env.rho*hStab.S*norm(vApp)^2*norm(A.xH));
 F.liftBhReq = 1/2*Env.rho*CL.hReq*hStab.S*norm(vApp)^2*cross(uApp,[0;1;0]);

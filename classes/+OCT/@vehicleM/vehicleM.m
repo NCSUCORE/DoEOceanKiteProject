@@ -614,7 +614,7 @@ classdef vehicleM < dynamicprops
                 [CLFullWing,CDFullWing] = ...
                     XFLRWingCalc(AoA,AR,gammaw,eLw,Clw0,Cdw_visc,...
                     Cdw_ind,obj.wingAirfoil.Value);
-                [CLhStab,CDhStab] = XFLRHStabCalc(AoA,obj.fluidRefArea.Value,obj.hStab.planformArea.Value,obj.hStab.incidence.Value);
+                [CLhStab,CDhStab] = XFLRHStabCalc_Ind(AoA,obj.fluidRefArea.Value,obj.hStab.planformArea.Value,obj.hStab.incidence.Value);
                 [CLvStab,CDvStab] = XFLRVStabCalc(AoA,obj.fluidRefArea.Value,obj.vStab.planformArea.Value);
                 % overwrite values from AVL
                 for ii = 1:2
