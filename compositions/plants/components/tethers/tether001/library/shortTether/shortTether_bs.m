@@ -19,15 +19,13 @@ thr.tether1.setDampingRatio(1,'');
 thr.tether1.setDragCoeff(0.5,'');
 thr.tether1.setDensity(1300,'kg/m^3');
 
-thr.tether1.setDragEnable(true,'');
-thr.tether1.setSpringDamperEnable(true,'');
-thr.tether1.setNetBuoyEnable(true,'');
 thr.tether1.setDiameter(thrDia,'m');
 
 thr.tether1.setMaxLength(400,'m');
 thr.tether1.setMinLinkLength(1,'m');
-thr.tether1.setMinLinkDeviation(.01,'m');
+thr.tether1.setMinLinkDeviation(.1,'m');
 thr.tether1.setMinSoftLength(0,'m');
+thr.tether1.setInitTetherLength(thr.tether1.maxLength.Value,'m');
 
 thr.tether1.minMaxLength.upperLimit.setValue(425,'')
 thr.tether1.minMaxLength.lowerLimit.setValue(.1,'')
