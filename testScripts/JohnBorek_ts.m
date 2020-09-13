@@ -7,7 +7,7 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 1.1;
+simScenario = 3.3;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
@@ -123,18 +123,18 @@ for ii = 1:numel(flwSpd)
         fltCtrl.pitchSPkpSlope.setValue(0,'');              fltCtrl.pitchSPkpInt.setValue(0,'');
         fltCtrl.pitchSP.kp.setValue(0,'(deg)/(deg)');       fltCtrl.pitchSP.ki.setValue(0,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
         fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller
-        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+%         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.setNomSpoolSpeed(0,'m/s');
         vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
     end
     tRef = [0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000];
-    pSP =  [30 30  30  30  30   40   40   40   40   40   40   40   40];
+    pSP =  0:12;% [30 30  30  30  30   40   40   40   40   40   40   40   40];
     thr.tether1.dragEnable.setValue(1,'');
 %     vhcl.setMa6x6_LE(zeros(6),'');
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
     %%  Set up critical system parameters and run simulation
 %     SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
-    simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(3200,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);
