@@ -42,6 +42,11 @@ classdef SLFAndSpoolCtrl < handle
         shortLeashLength
         LaRelevationSP
         LaRelevationSPErr
+        % Pitch setpoint 
+        pitchCtrl
+        pitchConst
+        pitchTime
+        pitchLookup
     end
     
     methods
@@ -86,6 +91,11 @@ classdef SLFAndSpoolCtrl < handle
             obj.shortLeashLength        = SIM.parameter('Unit','m','Description','Length of the short leash');
             obj.LaRelevationSP          = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
             obj.LaRelevationSPErr       = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint error where spooling is allowed');
+            
+            obj.pitchCtrl               = SIM.parameter('Unit','','Description','Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR');
+            obj.pitchConst              = SIM.parameter('Unit','deg','Description','Constant pitch setpoint');
+            obj.pitchTime               = SIM.parameter('Unit','s','Description','Reference time for pitch setpoint lookup table');
+            obj.pitchLookup             = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
         end
         
         function setTanRoll(obj,val,units)

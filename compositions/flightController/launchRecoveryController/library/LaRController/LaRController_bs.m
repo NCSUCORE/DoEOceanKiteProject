@@ -7,7 +7,7 @@ fltCtrl.setSearchSize(.5,'');
 fltCtrl.setElevatorReelInDef(20,'deg')
 fltCtrl.firstSpoolLap.setValue(1,'');
 
-%%  Control surface parameters
+%%  Control parameters
 fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
@@ -40,6 +40,10 @@ fltCtrl.pitchAngleMax.lowerLimit.setValue(-40,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
+fltCtrl.pitchCtrl.setValue(2,'');
+fltCtrl.pitchConst.setValue(0,'deg');
+fltCtrl.pitchTime.setValue([0 2000],'s');
+fltCtrl.pitchLookup.setValue([0 0],'deg');
 %% Spooling
 fltCtrl.setCtrlVecUpdateFcn('combinedCmd','')
 fltCtrl.setTetherLengthSetpointFcn('combinedTLSP','')
