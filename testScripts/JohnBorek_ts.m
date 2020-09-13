@@ -125,16 +125,14 @@ for ii = 1:numel(flwSpd)
         fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller
 %         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.setNomSpoolSpeed(0,'m/s');
-        vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
+        fltCtrl.pitchCtrl.setValue(1,'');                   fltCtrl.pitchConst.setValue(0,'deg');
+        fltCtrl.pitchTime.setValue([0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000],'s');
+        fltCtrl.pitchLookup.setValue(0:12,'deg');
     end
-    tRef = [0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000];
-    pSP =  0:12;% [30 30  30  30  30   40   40   40   40   40   40   40   40];
     thr.tether1.dragEnable.setValue(1,'');
-%     vhcl.setMa6x6_LE(zeros(6),'');
-    % vhcl.rBridle_LE.setValue([0,0,0]','m');
     %%  Set up critical system parameters and run simulation
 %     SIXDOFDYNAMICS        = "sixDoFDynamicsCoupled";
-    simParams = SIM.simParams;  simParams.setDuration(3200,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(500,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);

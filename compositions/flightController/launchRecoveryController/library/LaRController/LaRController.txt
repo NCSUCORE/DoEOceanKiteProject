@@ -200,3 +200,19 @@ fltCtrl.LaRelevationSPErr.Value = 2.0000e+00
 fltCtrl.LaRelevationSPErr.Unit = 'deg'
 fltCtrl.LaRelevationSPErr.NoScale = false
 fltCtrl.LaRelevationSPErr.Description = 'Reel-in elevation angle setpoint error where spooling is allowed'
+fltCtrl.pitchCtrl.Value = 2.0000e+00
+fltCtrl.pitchCtrl.Unit is unitless or has no unit specified
+fltCtrl.pitchCtrl.NoScale = false
+fltCtrl.pitchCtrl.Description = 'Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR'
+fltCtrl.pitchConst.Value = 0.0000e+00
+fltCtrl.pitchConst.Unit = 'deg'
+fltCtrl.pitchConst.NoScale = false
+fltCtrl.pitchConst.Description = 'Constant pitch setpoint'
+fltCtrl.pitchTime.Value = [0 2000]
+fltCtrl.pitchTime.Unit = 's'
+fltCtrl.pitchTime.NoScale = false
+fltCtrl.pitchTime.Description = 'Reference time for pitch setpoint lookup table'
+fltCtrl.pitchLookup.Value = [0 0]
+fltCtrl.pitchLookup.Unit = 'deg'
+fltCtrl.pitchLookup.NoScale = false
+fltCtrl.pitchLookup.Description = 'Pitch setpoint lookup values'
