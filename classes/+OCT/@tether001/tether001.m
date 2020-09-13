@@ -14,19 +14,20 @@ classdef tether001 < handle
         initAirNodePos
         initGndNodeVel
         initAirNodeVel
-        initNodePos
-        initNodeVel
-        dragEnable
-        springDamperEnable
-        netBuoyEnable
         orgLengths
         maxLength
-        minMaxLength
         minLinkLength
         minLinkDeviation
         minSoftLength
+        initTetherLength
+        minMaxLength
     end
     
+    properties (Dependent)
+        initNodePos
+        initNodeVel
+    end
+        
     methods
         function obj = tether001(numNodes)
             obj.numNodes        = SIM.parameter('Value',numNodes,'NoScale',true);
@@ -40,137 +41,221 @@ classdef tether001 < handle
             obj.initAirNodePos  = SIM.parameter('Unit','m');
             obj.initGndNodeVel  = SIM.parameter('Unit','m/s');
             obj.initAirNodeVel  = SIM.parameter('Unit','m/s');
-            obj.initNodePos     = SIM.parameter('Unit','m','Description','Initial conditions for intermediate (not end) nodes.');
-            obj.initNodeVel     = SIM.parameter('Unit','m/s','Description','Initial conditions for intermediate (not end) nodes.');
-            obj.dragEnable          = SIM.parameter('Value',true,'NoScale',true);
-            obj.springDamperEnable  = SIM.parameter('Value',true,'NoScale',true);
-            obj.netBuoyEnable       = SIM.parameter('Value',true,'NoScale',true);
             obj.orgLengths          = SIM.parameter('Unit','m');
             obj.maxLength           = SIM.parameter('Unit','m');
             obj.minLinkLength       = SIM.parameter('Unit','m');
             obj.minLinkDeviation    = SIM.parameter('Unit','m');
             obj.minSoftLength       = SIM.parameter('Unit','m');
+            obj.initTetherLength    = SIM.parameter('Unit','m');
             obj.minMaxLength        = CTR.sat;
         end
         
-        function obj = setNumNodes(obj,val,units)
+        function obj = setNumNodes(obj,val,units) %Number of nodes in tether
             obj.numNodes.setValue(val,units);
-        end        
-        function obj = setDiameter(obj,val,units)
-            obj.diameter.setValue(val,units);
-        end
-        function obj = setYoungsMod(obj,val,units)
-            obj.youngsMod.setValue(val,units);
-        end
-        function obj = setVehicleMass(obj,val,units)
-            obj.vehicleMass.setValue(val,units);
-        end
-        function obj = setDampingRatio(obj,val,units)
-            obj.dampingRatio.setValue(val,units);
-        end
-        function obj = setDragCoeff(obj,val,units)
-            obj.dragCoeff.setValue(val,units);
-        end
-        function obj = setDensity(obj,val,units)
-            obj.density.setValue(val,units);
-        end
-        function obj = setInitGndNodePos(obj,val,units)
-            obj.initGndNodePos.setValue(val,units);
-        end
-        function obj = setInitAirNodePos(obj,val,units)
-            obj.initAirNodePos.setValue(val,units);
-        end
-        function obj = setInitGndNodeVel(obj,val,units)
-            obj.initGndNodeVel.setValue(val,units);
-        end
-        function obj = setInitAirNodeVel(obj,val,units)
-            obj.initAirNodeVel.setValue(val,units);
-        end
-        function obj = setInit.setValueAirNodeVel(obj,val,units)
-            % note rodney mitchell this looks like the same as above. DO we
-            % need both methods?
-            obj.initAirNodeVel.setValue(val,units);
-        end
-        function obj = setInitNodePos(obj,val,units)
-            obj.initNodePos.setValue(val,units);
-        end
-        function obj = setInitNodeVel(obj,val,units)
-            obj.initNodeVel.setValue(val,units);
-        end
-        function obj = setDragEnable(obj,val,units)
-            if ~islogical(val)
-                warning('Value is not logical, converting to %s',num2str(logical(val)))
-                val = logical(val);
-            end
-            obj.dragEnable.setValue(val,units);
-        end
-        function obj = setSpringDamperEnable(obj,val,units)
-            if ~islogical(val)
-                warning('Value is not logical, converting to %s',num2str(logical(val)))
-                val = logical(val);
-            end
-            obj.springDamperEnable.setValue(val,units);
-        end
-        function obj = setNetBuoyEnable(obj,val,units)
-            if ~islogical(val)
-                warning('Value is not logical, converting to %s',num2str(logical(val)))
-                val = logical(val);
-            end
-            obj.netBuoyEnable.setValue(val,units);
-        end
-%         function obj = setOrgLengths(obj,val,units)
-%             obj.setOrgLengths.setValue(val,units);
-%         end
-        function obj = setMaxLength(obj,val,units)
-            obj.maxLength.setValue(val,units);
-        end
-        function obj = setMinLinkLength(obj,val,units)
-            obj.minLinkLength.setValue(val,units);
-        end
-        function obj = setMinLinkDeviation(obj,val,units)
-            obj.minLinkDeviation.setValue(val,units);
-        end
-        function obj = setMinSoftLength(obj,val,units)
-            obj.minSoftLength.setValue(val,units);
         end
         
-        function val = get.orgLengths(obj)
+        function obj = setDiameter(obj,val,units) %Diameter of tether
+            obj.diameter.setValue(val,units);
+        end
+        
+        function obj = setYoungsMod(obj,val,units) %Youngs modulus of tether
+            obj.youngsMod.setValue(val,units);
+        end
+        
+        function obj = setVehicleMass(obj,val,units) %mass of vehicle for damping
+            obj.vehicleMass.setValue(val,units);
+        end
+        
+        function obj = setDampingRatio(obj,val,units) %damping ratio of tether
+            obj.dampingRatio.setValue(val,units);
+        end
+        
+        function obj = setDragCoeff(obj,val,units) %drag coeff of tether
+            obj.dragCoeff.setValue(val,units);
+        end
+        
+        function obj = setDensity(obj,val,units) %tether density
+            obj.density.setValue(val,units);
+        end
+        
+        function obj = setInitGndNodePos(obj,val,units) %initial gnd node position
+            obj.initGndNodePos.setValue(val,units);
+        end
+        
+        function obj = setInitAirNodePos(obj,val,units) %initial air node position
+            obj.initAirNodePos.setValue(val,units);
+        end
+        
+        function obj = setInitGndNodeVel(obj,val,units) %initial gnd node velocity
+            obj.initGndNodeVel.setValue(val,units);
+        end
+        
+        function obj = setInitAirNodeVel(obj,val,units) %initial air node velocity
+            obj.initAirNodeVel.setValue(val,units);
+        end
+     
+        function val = get.orgLengths(obj) %length of segments at full extension
             val = ((obj.maxLength.Value)/(obj.numNodes.Value-1))*ones(1,obj.numNodes.Value-1);
             val = SIM.parameter('Value',val,'Unit','m');
         end
         
-        function val = get.initNodePos(obj)
-            % note rodney mitchell this forces the nodes to be evenly distributed between the gound and second to last node.
-            % Is that what we want? This means that you cannot change the
-            % initial value of any intermediate node. I mean, you can
-            % change it, but you can't get it back once it's been changed.
-            % If this behavior is intended I suggest making the property
-            % dependent. If the behavior is not intended I suggest making a
-            % class method for the intended behavior and releasing the get.
-            if obj.numNodes.Value>2
-                pos = ...
-                    [linspace(obj.initGndNodePos.Value(1),obj.initAirNodePos.Value(1),obj.numNodes.Value);...
-                    linspace(obj.initGndNodePos.Value(2),obj.initAirNodePos.Value(2),obj.numNodes.Value);...
-                    linspace(obj.initGndNodePos.Value(3),obj.initAirNodePos.Value(3),obj.numNodes.Value)];
+        function obj = setMaxLength(obj,val,units) %max tether length
+            obj.maxLength.setValue(val,units);
+        end
+        
+        function obj = setMinLinkLength(obj,val,units) %min link length for rediscretization
+            obj.minLinkLength.setValue(val,units);
+        end        
+        
+        function obj = setMinLinkDeviation(obj,val,units) %min link deviation for rediscretization
+            obj.minLinkDeviation.setValue(val,units);
+        end
+        
+        function obj = setMinSoftLength(obj,val,units) %length for spring softening to kick in
+            obj.minSoftLength.setValue(val,units);
+        end
+
+        function obj = setInitTetherLength(obj,val,units) %intermediate nodes velocities
+            obj.initTetherLength.setValue(val,units);
+        end
+        
+
+        function val = get.initNodePos(obj) %sets intermediate node positions based on reeled out length
+            if obj.numNodes.Value > 2 %sets intermediat nodes IC
+                
+                %Initilize
+                ActiveLengths = zeros(size(obj.orgLengths.Value));
+                L = zeros(size(ActiveLengths));
+                
+                %set flags and counters 
+                a = 1;
+                tetherInitflag1 = false;
+                tetherInitflag2 = false;
+                
+                if obj.initTetherLength.Value == obj.maxLength.Value  %Full Extension
+                    a = a+1;
+                    L(1:end) = obj.orgLengths.Value(1:end);
+                    FirstLink = obj.orgLengths.Value(1);
+                elseif obj.initTetherLength.Value >= obj.maxLength.Value  %Over Extension
+                    a = a+1;
+                    L(1:end) = obj.orgLengths.Value(1:end);
+                    FirstLink = obj.orgLengths.Value(1) + obj.initTetherLength.Value - obj.maxLength.Value;
+                else %Any amount of reel-in
+                    while tetherInitflag1 == false %finds position of bottom link
+                        if obj.initTetherLength.Value == sum(obj.orgLengths.Value(a:end))
+                            tetherInitflag1 = true;
+                        elseif obj.initTetherLength.Value > sum(obj.orgLengths.Value(a:end))
+                            tetherInitflag1 = true;
+                        else
+                            a=a+1;
+                        end
+                    end
+                    %Update first link length value
+                    FirstLink = obj.orgLengths.Value(a-1)-(sum(obj.orgLengths.Value((a-1):end))-obj.initTetherLength.Value);
+                end
+                
+                if FirstLink < obj.minLinkLength.Value %If below limit
+                    tetherInitflag2  = true;
+                end
+                
+                if tetherInitflag2==true %If below min lenght absorb into next link
+                    L((a):end) = [obj.orgLengths.Value(a)+FirstLink,obj.orgLengths.Value((a+1):end)];
+                else %if not below limit just set first link to value
+                    L((a-1):end) = [FirstLink,obj.orgLengths.Value((a):end)];
+                end
+                activeNodes = nnz(L)+1;
+
+                spacingWeights = L/sum(L); %Weights spaces based on link lengths
+                %Prealocates the nodes at the ground
+                pos = [obj.initGndNodePos.Value(1)*ones(1,obj.numNodes.Value);...
+                       obj.initGndNodePos.Value(2)*ones(1,obj.numNodes.Value);...
+                       obj.initGndNodePos.Value(3)*ones(1,obj.numNodes.Value)]; 
+                for ii = (obj.numNodes.Value-activeNodes+2):obj.numNodes.Value %sets nodes based on weights along line
+                    if ii == find(spacingWeights,1,'first')+1
+                        pos(1,ii) = spacingWeights(find(spacingWeights,1,'first'))*(obj.initAirNodePos.Value(1)-obj.initGndNodePos.Value(1))+pos(1,ii-1);
+                        pos(2,ii) = spacingWeights(find(spacingWeights,1,'first'))*(obj.initAirNodePos.Value(2)-obj.initGndNodePos.Value(2))+pos(2,ii-1);
+                        pos(3,ii) = spacingWeights(find(spacingWeights,1,'first'))*(obj.initAirNodePos.Value(3)-obj.initGndNodePos.Value(3))+pos(3,ii-1);
+                    else
+                        pos(1,ii) = spacingWeights(find(spacingWeights,1,'first')+1)*(obj.initAirNodePos.Value(1)-obj.initGndNodePos.Value(1))+pos(1,ii-1);
+                        pos(2,ii) = spacingWeights(find(spacingWeights,1,'first')+1)*(obj.initAirNodePos.Value(2)-obj.initGndNodePos.Value(2))+pos(2,ii-1);
+                        pos(3,ii) = spacingWeights(find(spacingWeights,1,'first')+1)*(obj.initAirNodePos.Value(3)-obj.initGndNodePos.Value(3))+pos(3,ii-1);
+                    end
+                end
                 pos = pos(:,2:end-1);
-            else
+            else %no intermediat nodes
                 pos = [];
             end
             val = SIM.parameter('Value',pos,'Unit','m');
         end
+        
         function val = get.initNodeVel(obj)
-            if obj.numNodes.Value>2
-                vel = ...
-                    [linspace(obj.initGndNodeVel.Value(1),obj.initAirNodeVel.Value(1),obj.numNodes.Value);...
-                    linspace(obj.initGndNodeVel.Value(2),obj.initAirNodeVel.Value(2),obj.numNodes.Value);...
-                    linspace(obj.initGndNodeVel.Value(3),obj.initAirNodeVel.Value(3),obj.numNodes.Value)];
+            if obj.numNodes.Value > 2 %sets intermediat nodes IC
+                %Initilize
+                ActiveLengths = zeros(size(obj.orgLengths.Value));
+                L = zeros(size(ActiveLengths));
+                
+                %set flags and counters 
+                a = 1;
+                tetherInitflag1 = false;
+                tetherInitflag2 = false;
+                
+                if obj.initTetherLength.Value == obj.maxLength.Value  %Full Extension
+                    a = a+1;
+                    L(1:end) = obj.orgLengths.Value(1:end);
+                    FirstLink = obj.orgLengths.Value(1);
+                elseif obj.initTetherLength.Value >= obj.maxLength.Value  %Over Extension
+                    a = a+1;
+                    L(1:end) = obj.orgLengths.Value(1:end);
+                    FirstLink = obj.orgLengths.Value(1) + obj.initTetherLength.Value - obj.maxLength.Value;
+                else %Any amount of reel-in
+                    while tetherInitflag1 == false %finds position of bottom link
+                        if obj.initTetherLength.Value == sum(obj.orgLengths.Value(a:end))
+                            tetherInitflag1 = true;
+                        elseif obj.initTetherLength.Value > sum(obj.orgLengths.Value(a:end))
+                            tetherInitflag1 = true;
+                        else
+                            a=a+1;
+                        end
+                    end
+                    %Update first link length value
+                    FirstLink = obj.orgLengths.Value(a-1)-(sum(obj.orgLengths.Value((a-1):end))-obj.initTetherLength.Value);
+                end
+                
+                if FirstLink < obj.minLinkLength.Value %If below limit
+                    tetherInitflag2  = true;
+                end
+                
+                if tetherInitflag2==true %If below min lenght absorb into next link
+                    L((a):end) = [obj.orgLengths.Value(a)+FirstLink,obj.orgLengths.Value((a+1):end)];
+                else %if not below limit just set first link to value
+                    L((a-1):end) = [FirstLink,obj.orgLengths.Value((a):end)];
+                end
+                activeNodes = nnz(L)+1;
+
+                spacingWeights = L/sum(L); %Weights spaces based on link lengths
+                %Prealocates the nodes at the ground
+                vel = [obj.initGndNodeVel.Value(1)*ones(1,obj.numNodes.Value);...
+                       obj.initGndNodeVel.Value(2)*ones(1,obj.numNodes.Value);...
+                       obj.initGndNodeVel.Value(3)*ones(1,obj.numNodes.Value)];
+                for ii = (obj.numNodes.Value-activeNodes+2):obj.numNodes.Value %sets node velocities based on weights along line
+                    if ii == find(spacingWeights,1,'first')+1
+                        vel(1,ii) = spacingWeights(find(spacingWeights,1,'first'))*(obj.initAirNodeVel.Value(1)-obj.initGndNodeVel.Value(1))+vel(1,ii-1);
+                        vel(2,ii) = spacingWeights(find(spacingWeights,1,'first'))*(obj.initAirNodeVel.Value(2)-obj.initGndNodeVel.Value(2))+vel(2,ii-1);
+                        vel(3,ii) = spacingWeights(find(spacingWeights,1,'first'))*(obj.initAirNodeVel.Value(1)-obj.initGndNodeVel.Value(3))+vel(3,ii-1);
+                    else
+                        vel(1,ii) = spacingWeights(find(spacingWeights,1,'first')+1)*(obj.initAirNodeVel.Value(1)-obj.initGndNodeVel.Value(1))+vel(1,ii-1);
+                        vel(2,ii) = spacingWeights(find(spacingWeights,1,'first')+1)*(obj.initAirNodeVel.Value(2)-obj.initGndNodeVel.Value(2))+vel(2,ii-1);
+                        vel(3,ii) = spacingWeights(find(spacingWeights,1,'first')+1)*(obj.initAirNodeVel.Value(3)-obj.initGndNodeVel.Value(3))+vel(3,ii-1);
+                    end
+                end
                 vel = vel(:,2:end-1);
-            else
+            else %no intermediat nodes
                 vel = [];
             end
-            val = SIM.parameter('Value',vel,'Unit','m/s');
-            
+            val = SIM.parameter('Value',vel,'Unit','m');
         end
+        
+        
         
         % Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
@@ -179,6 +264,7 @@ classdef tether001 < handle
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
         end
+        
     end
 end
 

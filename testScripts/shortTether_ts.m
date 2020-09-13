@@ -1,4 +1,4 @@
-
+ 
 
 %% Test script for John to control the kite model 
 Simulink.sdi.clear
@@ -6,19 +6,19 @@ clear;clc;%close all
 %%  Select sim scenario 
 %   0 = fig8;   1 = fig8-rotor;   1.1 = fig8-2rotor;   1.2 = fig8-2rotor New Model;
 %   2 = fig8-winch;   3 = steady;  4 = LaR;  4.2 = LaR New Model;
-simScenario = 4.2;
+simScenario = 4;
 %%  Set Physical Test Parameters
-thrLength = 400;                                            %   m - Initial tether length 
+initTetherLength = 310;                                     %   m - Initial tether length 
+maxTetherLength = 400;
 flwSpd = .25;                                               %   m/s - Flow speed 
 lengthScaleFactors = 0.8;                                   %   Factor to scale DOE kite to Manta Ray 
 el = 30*pi/180;                                             %   rad - Mean elevation angle 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters 
 %%  Load components
-     minLinkDeviation = .01;
-     minSoftLength = 200;
-     minLinkLength = 1;                                      %   Length at which tether rediscretizes
+
      reelSpeed = .25;
+     simulationTime = 1000;
      
 if simScenario == 3
     loadComponent('baselineSteadyLevelFlight');             %   Steady-level flight controller 
@@ -59,9 +59,9 @@ end
 % loadComponent('constEllipse');                              %   High level controller
 loadComponent('constBoothLem');                             %   High level controller
 if strcmpi(PATHGEOMETRY,'ellipse')
-    hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Ellipse
+    hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,initTetherLength],'[rad rad rad rad m]') % Ellipse
 else
-    hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+    hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,initTetherLength],'[rad rad rad rad m]') % Lemniscate of Booth
 end
 %%  Ground Station Properties
 gndStn.setPosVec([0 0 0],'m')
@@ -78,15 +78,19 @@ if simScenario == 0 || simScenario == 2
     vhcl.turb1.setDiameter(0,'m')
 end
 %%  Tethers Properties
-thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
-thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
-thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-thr.tether1.setDiameter(0.007,thr.tether1.diameter.Unit);
-thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
+
+
+%Tether Initial Conditions
+    thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
+    thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)+rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+    thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+    thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+    thr.tether1.maxLength.setValue(maxTetherLength,'m');
+    thr.tether1.initTetherLength.setValue(initTetherLength,'m');
+%Tether Properties
+    thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+
+    
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(reelSpeed,'m/s');
@@ -118,10 +122,9 @@ if simScenario >= 3
 end
 tRef = [0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000];
 pSP =  [30 30  30  30  30   40   40   40   40   40   40   40   40];    
-thr.tether1.dragEnable.setValue(0,'');
 % vhcl.rBridle_LE.setValue([0,0,0]','m');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(simulationTime,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results 
 tsc = signalcontainer(logsout);
@@ -139,7 +142,7 @@ elseif simScenario == 1.2
     filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd,el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
 elseif simScenario == 2
-    filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
+    filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,initTetherLength,w*180/pi,h*180/pi);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Winch\');
 elseif simScenario == 3
     filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f_kd-%.2f_',dt,'.mat'),el*180/pi,fltCtrl.pitchMoment.kp.Value,fltCtrl.pitchMoment.ki.Value,fltCtrl.pitchMoment.kd.Value);
@@ -595,4 +598,10 @@ figure(4)
 % 
 %     
 %     vhcl.animateSim(tsc2,.5,'SaveGif',false)
-vhcl.animateSim(tsc,.5,'SaveGif',true)
+%vhcl.animateSim(tsc,.5,'SaveGif',true,'zoom',true)
+clc
+diff([thr.tether1.initGndNodePos.Value,thr.tether1.initNodePos.Value,thr.tether1.initAirNodePos.Value],1,2)
+vhcl.animateSim(tsc,.1,'SaveGif',true,'View',[71,0])
+%[thr.tether1.initGndNodePos.Value,thr.tether1.initNodePos.Value,thr.tether1.initAirNodePos.Value]
+
+
