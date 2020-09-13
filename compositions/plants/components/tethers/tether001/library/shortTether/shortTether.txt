@@ -39,4 +39,28 @@ thr.tether1.initGndNodeVel.Unit = 'm/s'
 thr.tether1.initGndNodeVel.NoScale = false
 thr.tether1.initAirNodeVel.Unit = 'm/s'
 thr.tether1.initAirNodeVel.NoScale = false
-thr.tether1.initNodePos is non-string and non-numeric and takes up 7.0000e+00 bytes
+thr.tether1.orgLengths.Value = [100 100 100 100]
+thr.tether1.orgLengths.Unit = 'm'
+thr.tether1.orgLengths.NoScale = false
+thr.tether1.maxLength.Value = 4.0000e+02
+thr.tether1.maxLength.Unit = 'm'
+thr.tether1.maxLength.NoScale = false
+thr.tether1.minLinkLength.Value = 1.0000e+00
+thr.tether1.minLinkLength.Unit = 'm'
+thr.tether1.minLinkLength.NoScale = false
+thr.tether1.minLinkDeviation.Value = 1.0000e-01
+thr.tether1.minLinkDeviation.Unit = 'm'
+thr.tether1.minLinkDeviation.NoScale = false
+thr.tether1.minSoftLength.Value = 0.0000e+00
+thr.tether1.minSoftLength.Unit = 'm'
+thr.tether1.minSoftLength.NoScale = false
+thr.tether1.initTetherLength.Value = 4.0000e+02
+thr.tether1.initTetherLength.Unit = 'm'
+thr.tether1.initTetherLength.NoScale = false
+thr.tether1.minMaxLength.upperLimit.Value = 4.2500e+02
+thr.tether1.minMaxLength.upperLimit.Unit is unitless or has no unit specified
+thr.tether1.minMaxLength.upperLimit.NoScale = false
+thr.tether1.minMaxLength.lowerLimit.Value = 1.0000e-01
+thr.tether1.minMaxLength.lowerLimit.Unit is unitless or has no unit specified
+thr.tether1.minMaxLength.lowerLimit.NoScale = false
+thr.tether1.initNodePos is non-string and non-numeric and takes up 3.4000e+01 bytes
