@@ -374,7 +374,7 @@ classdef signalcontainer < dynamicprops
             
         end
         function Pow = rotPowerSummary(obj,vhcl,env)
-            [Idx1,Idx2] = obj.getLapIdxs(1);
+            [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
             ran = Idx1:Idx2-1;
             [CLsurf,CDtot] = getCLCD(obj,vhcl);
             C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));

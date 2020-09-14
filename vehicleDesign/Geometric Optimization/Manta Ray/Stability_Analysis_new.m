@@ -4,7 +4,8 @@ clc;clear;
 %%  Input definitions 
 % loadComponent('Manta2RotAVL_0Inc');                          %   Load new vehicle with 2 rotors
 % loadComponent('Manta2RotXFoil_0Inc');                          %   Load new vehicle with 2 rotors
-loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
+% loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
+loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span

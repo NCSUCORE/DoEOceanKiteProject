@@ -7,12 +7,12 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 4.3;
+simScenario = 1.3;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .25;%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
-el = 40*pi/180;                                             %   rad - Mean elevation angle
+flwSpd = 0.25;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
+el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
@@ -32,6 +32,7 @@ for ii = 1:numel(flwSpd)
         minSoftLength = 0;
         minLinkLength = 1;                                      %   Length at which tether rediscretizes
         loadComponent('shortTether');                           %   Tether for reeling
+        thr.tether1.setInitTetherLength(thrLength,'m');
     else
         loadComponent('MantaTether');                           %   Single link tether
     end
@@ -82,9 +83,8 @@ for ii = 1:numel(flwSpd)
     if simScenario == 0
         vhcl.turb1.setDiameter(0,'m')
     end
-%     vhcl.turb1.setDiameter(.75,'m');    vhcl.turb2.setDiameter(.75,'m');
+%     vhcl.turb1.setDiameter(D(ii),'m');    vhcl.turb2.setDiameter(D(ii),'m');
     %%  Tethers Properties
-    thr.tether1.setInitTetherLength(thrLength,'m');
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
     thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
         +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
@@ -124,20 +124,20 @@ for ii = 1:numel(flwSpd)
         fltCtrl.pitchSPkpSlope.setValue(0,'');              fltCtrl.pitchSPkpInt.setValue(0,'');
         fltCtrl.pitchSP.kp.setValue(0,'(deg)/(deg)');       fltCtrl.pitchSP.ki.setValue(0,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
         fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller
-%         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.setNomSpoolSpeed(0,'m/s');
-        fltCtrl.pitchCtrl.setValue(1,'');                   fltCtrl.pitchConst.setValue(0,'deg');
+        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
         fltCtrl.pitchTime.setValue([0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000],'s');
         fltCtrl.pitchLookup.setValue(0:12,'deg');
     end
 %     thr.tether1.dragEnable.setValue(1,'');
     %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);
     if simScenario ~= 2 && simScenario < 3
-%         Pow = tsc.rotPowerSummary(vhcl,env);
+        Pow = tsc.rotPowerSummary(vhcl,env);
     end
     dt = datestr(now,'mm-dd_HH-MM');
     if simScenario == 0
@@ -149,17 +149,17 @@ for ii = 1:numel(flwSpd)
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
         else
             filename = sprintf(strcat('Turb%.1f_V-%.3f.mat'),simScenario,flwSpd(ii));
-            fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','400 m Tether 9-6\');
+            fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','400 m Tether AVL\');
         end
     elseif simScenario == 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Winch\');
     elseif simScenario >= 3 && simScenario < 4
         if vhcl.Ma6x6_LE.Value(1,1) ~= 0; AM = 1; else; AM = 0; end
-        filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f_',dt,'.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
+        filename = sprintf(strcat('Steady%.1f_EL-%.1f_kp-%.2f_ki-%.2f_',dt,'.mat'),simScenario,el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Steady\');
     elseif simScenario >= 4
-        filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
+        filename = sprintf(strcat('LaR%.1f_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),simScenario,el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
     %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
     end
@@ -175,15 +175,15 @@ else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
 %%  Animate Simulation
-if simScenario <= 2
-    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-        'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-        'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
-else
-    vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
-        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
-        'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
-end
+% if simScenario <= 2
+%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+%         'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+% else
+%     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
+% end
 %%  Compare to old results
 % tsc.turbEnrg.Data(1,1,end)
 % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
