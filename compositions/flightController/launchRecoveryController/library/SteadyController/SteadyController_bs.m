@@ -58,11 +58,11 @@ fltCtrl.setMaxTL(400,'m')
 fltCtrl.setSwitchFilterConstant(.1,'s')
 fltCtrl.setSwitchFilterDuration(10,'s')
 fltCtrl.setNonXCurrentSpoolInGain(1.5,'')
-fltCtrl.setSpoolCtrlTimeConstant(5,'s')
-fltCtrl.setNomSpoolSpeed(.25,'m/s')
+fltCtrl.setSpoolCtrlTimeConstant(2,'s')
+fltCtrl.setNomSpoolSpeed(0,'m/s')
 fltCtrl.setShortLeashLength(20,'m')
 fltCtrl.LaRelevationSP.setValue(45,'deg');
-fltCtrl.LaRelevationSPErr.setValue(1,'deg');
+fltCtrl.LaRelevationSPErr.setValue(2,'deg');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 save(saveFile,'SPOOLINGCONTROLLER','-append')

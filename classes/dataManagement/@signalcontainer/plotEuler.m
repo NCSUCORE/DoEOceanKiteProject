@@ -3,7 +3,8 @@ p = inputParser;
 addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'Vapp',false,@islogical);
-addOptional(p,'plotBeta',false,@islogical);
+addOptional(p,'xlim',[-inf inf],@isnumeric);
+addOptional(p,'ylim',[-inf inf],@isnumeric);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'Color',[0 0 1],@isnumeric);
 parse(p,varargin{:})
@@ -21,8 +22,10 @@ if lap
     end
     ran = Idx1:Idx2-1;
     lim = [time(Idx1) time(Idx2)];
-else
+elseif isinf(p.Results.xlim(1))
     lim = [time(1) time(end)];
+else
+    lim = p.Results.xlim;
 end
 roll = squeeze(obj.eulerAngles.Data(1,1,:))*180/pi;
 pitch = squeeze(obj.eulerAngles.Data(2,1,:))*180/pi;
