@@ -89,7 +89,7 @@ fltCtrl.startControl.Description = 'Time at which we switch the roll controller 
 fltCtrl.outRanges.Unit is unitless or has no unit specified
 fltCtrl.outRanges.NoScale = false
 fltCtrl.outRanges.Description = 'Upper/lower limits of path variable for spooling'
-fltCtrl.elevatorReelInDef.Value = 2.0000e+01
+fltCtrl.elevatorReelInDef.Value = 0.0000e+00
 fltCtrl.elevatorReelInDef.Unit = 'deg'
 fltCtrl.elevatorReelInDef.NoScale = false
 fltCtrl.elevatorReelInDef.Description = 'Deflection angle of elevator used during spool in'
@@ -103,7 +103,7 @@ fltCtrl.fcnName.Description = 'Name of the path shape function you want to use.'
 fltCtrl.initPathVar.Unit is unitless or has no unit specified
 fltCtrl.initPathVar.NoScale = false
 fltCtrl.initPathVar.Description = 'Initial path variable'
-fltCtrl.firstSpoolLap.Value = 1.0000e+00
+fltCtrl.firstSpoolLap.Value = 1.0000e+03
 fltCtrl.firstSpoolLap.Unit is unitless or has no unit specified
 fltCtrl.firstSpoolLap.NoScale = false
 fltCtrl.firstSpoolLap.Description = 'First Lap to begin spooling'

@@ -9,9 +9,9 @@ fltCtrl.setPerpErrorVal(6*pi/180,'rad');
 fltCtrl.setSearchSize(.5,'');
 fltCtrl.setMinR(80,'m')
 fltCtrl.setMaxR(160,'m')
-fltCtrl.setElevatorReelInDef(20,'deg')
+fltCtrl.setElevatorReelInDef(0,'deg')
 fltCtrl.setStartControl(1,'s')
-fltCtrl.firstSpoolLap.setValue(1,'');
+fltCtrl.firstSpoolLap.setValue(1000,'');
 
 % Control surface parameters
 fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');

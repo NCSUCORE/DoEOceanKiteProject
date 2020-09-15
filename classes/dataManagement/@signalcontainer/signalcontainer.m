@@ -383,7 +383,7 @@ classdef signalcontainer < dynamicprops
             Pow.avg = mean(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
             Pow.max = max(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
             Pow.min = min(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
-            fprintf('Lap average power output:\n Min\t\t Max\t\t Avg\t\t Loyd\n %.02f kW\t %.02f kW\t %.02f kW\t %.02f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
+            fprintf('Lap average power output:\n Min\t\t Max\t\t Avg\t\t Loyd\n %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
         end
     end
 end
