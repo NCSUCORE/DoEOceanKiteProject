@@ -593,10 +593,10 @@ classdef vehicleM < dynamicprops
                 aeroStruct(2).CL = W.CL/2;
                 aeroStruct(2).CD = W.CD/2;
                 aeroStruct(2).alpha = W.alpha;
-                aeroStruct(3).CL = H.CL*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(3).CL = (H.CL-H.CL(36))*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).CD = H.CD*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).alpha = H.alpha-obj.hStab.incidence.Value;
-                aeroStruct(4).CL = V.CL*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(4).CL = (V.CL-V.CL(36))*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(4).CD = V.CD*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(4).alpha = V.alpha;
             elseif obj.hydroChracterization.Value == 3

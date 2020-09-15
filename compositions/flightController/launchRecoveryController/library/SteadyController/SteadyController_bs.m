@@ -26,8 +26,6 @@ fltCtrl.pitchSP.kd.setValue(0,'(deg)/(deg/s)');
 fltCtrl.pitchSP.tau.setValue(.01,'s');
 fltCtrl.pitchSPkpSlope.setValue(.02368,'');
 fltCtrl.pitchSPkpInt.setValue(.5263,'');
-fltCtrl.pitchSPkiSlope.setValue(.0001842,'');
-fltCtrl.pitchSPkiInt.setValue(.006316,'');
 
 fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');
 fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');
@@ -58,11 +56,11 @@ fltCtrl.setMaxTL(400,'m')
 fltCtrl.setSwitchFilterConstant(.1,'s')
 fltCtrl.setSwitchFilterDuration(10,'s')
 fltCtrl.setNonXCurrentSpoolInGain(1.5,'')
-fltCtrl.setSpoolCtrlTimeConstant(5,'s')
-fltCtrl.setNomSpoolSpeed(.25,'m/s')
+fltCtrl.setSpoolCtrlTimeConstant(2,'s')
+fltCtrl.setNomSpoolSpeed(0,'m/s')
 fltCtrl.setShortLeashLength(20,'m')
 fltCtrl.LaRelevationSP.setValue(45,'deg');
-fltCtrl.LaRelevationSPErr.setValue(1,'deg');
+fltCtrl.LaRelevationSPErr.setValue(2,'deg');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 save(saveFile,'SPOOLINGCONTROLLER','-append')
