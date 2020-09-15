@@ -7,30 +7,29 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 4.3;
+simScenario = 3.3;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = 0.25;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
-el = 40*pi/180;                                             %   rad - Mean elevation angle
+el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
     %%  Load components
-    if simScenario >= 3
+    if simScenario >= 4
         loadComponent('LaRController');                         %   Launch and recovery controller
+    elseif simScenario >= 3 && simScenario < 4
+        loadComponent('SteadyController');                      %   Steady-flight controller
     elseif simScenario == 2
-        loadComponent('pathFollowingCtrlForILC');
+        loadComponent('pathFollowingCtrlForILC');               %   Path-following controller with spooling 
     else
         loadComponent('pathFollowingCtrlForManta');             %   Path-following controller
     end
     loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-    loadComponent('MantaGndStn');                       %   Ground station
+    loadComponent('MantaGndStn');                               %   Ground station
     loadComponent('winchManta');                                %   Winches
     if simScenario >= 4
-        minLinkDeviation = .1;
-        minSoftLength = 0;
-        minLinkLength = 1;                                      %   Length at which tether rediscretizes
         loadComponent('shortTether');                           %   Tether for reeling
         thr.tether1.setInitTetherLength(thrLength,'m');
     else
@@ -38,7 +37,6 @@ for ii = 1:numel(flwSpd)
     end
     loadComponent('idealSensors')                               %   Sensors
     loadComponent('idealSensorProcessing')                      %   Sensor processing
-    
     if simScenario == 0
         loadComponent('MantaKiteAVL_DOE');                                  %   Manta kite old
     elseif simScenario == 2
@@ -86,34 +84,22 @@ for ii = 1:numel(flwSpd)
     wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
     wnch.winch1.LaRspeed.setValue(1,'m/s');
     %%  Controller User Def. Parameters and dependant properties
-    fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
-    fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
-        hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
+    fltCtrl.setFcnName(PATHGEOMETRY,'');
+    fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
     if simScenario == 1.1
         fltCtrl.setElevatorReelInDef(-2,'deg')
-    else
-        fltCtrl.setElevatorReelInDef(0,'deg')
     end
-    fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
     if simScenario >= 4
-        fltCtrl.LaRelevationSP.setValue(35,'deg');
-        fltCtrl.setNomSpoolSpeed(.25,'m/s');
+        fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
     end
     if simScenario >= 3 && simScenario < 4
-        fltCtrl.pitchSPkpSlope.setValue(0,'');              fltCtrl.pitchSPkpInt.setValue(0,'');
-        fltCtrl.pitchSP.kp.setValue(0,'(deg)/(deg)');       fltCtrl.pitchSP.ki.setValue(0,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
-        fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');     fltCtrl.elevCmd.ki.setValue(5,'(deg)/(rad*s)');    %   Elevation angle inner-loop controller
 %         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.setNomSpoolSpeed(0,'m/s');
         fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
-        fltCtrl.pitchTime.setValue([0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000],'s');
-        fltCtrl.pitchLookup.setValue(0:12,'deg');
+        fltCtrl.pitchTime.setValue(0:250:3000,'s');         fltCtrl.pitchLookup.setValue(0:12,'deg');
     end
-%     thr.tether1.dragEnable.setValue(1,'');
-%     vhcl.setMa6x6_LE(zeros(6),'');
     %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);

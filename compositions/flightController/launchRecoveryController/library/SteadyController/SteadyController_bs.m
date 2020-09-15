@@ -26,6 +26,8 @@ fltCtrl.pitchSP.kd.setValue(0,'(deg)/(deg/s)');
 fltCtrl.pitchSP.tau.setValue(.01,'s');
 fltCtrl.pitchSPkpSlope.setValue(.02368,'');
 fltCtrl.pitchSPkpInt.setValue(.5263,'');
+fltCtrl.pitchSPkiSlope.setValue(7.895e-5,'');
+fltCtrl.pitchSPkiInt.setValue(.008421,'');
 
 fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');
 fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');
