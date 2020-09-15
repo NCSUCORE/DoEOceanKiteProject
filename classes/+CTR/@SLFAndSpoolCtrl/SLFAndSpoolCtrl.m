@@ -10,6 +10,8 @@ classdef SLFAndSpoolCtrl < handle
         pitchSP
         pitchSPkpSlope
         pitchSPkpInt
+        pitchSPkiSlope
+        pitchSPkiInt
         elevCmd
         % Saturations
         maxBank
@@ -58,6 +60,8 @@ classdef SLFAndSpoolCtrl < handle
             obj.pitchSP             = CTR.FPID('deg','deg');
             obj.pitchSPkpSlope      = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
             obj.pitchSPkpInt        = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
+            obj.pitchSPkiSlope      = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
+            obj.pitchSPkiInt        = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
             obj.elevCmd             = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
