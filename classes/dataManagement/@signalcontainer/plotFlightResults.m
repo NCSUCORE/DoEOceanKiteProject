@@ -38,6 +38,9 @@ if turb
 else
     power = squeeze(obj.winchPower.Data(:,1));
     energy = cumtrapz(time,power)/1000/3600;
+    diffTime = diff(obj.winchPower.Time);
+    timesteps = .5*([diffTime; diffTime(end)] + [diffTime(1); diffTime]); %averages left and right timestep lengths for each data point.
+    energy1 = squeeze(obj.winchPower.Data).*squeeze(timesteps)/1000/3600;
 end
 vKite = -squeeze(obj.velCMvec.Data(1,:,:));
 %   Tether tension
@@ -81,7 +84,7 @@ if lap
     if con
         plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
         plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
-        text(0.1,0.15,sprintf('P = %.1f kW',mean(power(ran))))
+        text(0.1,0.15,sprintf('P = %.3f kW',mean(power(ran))*1e-3))
     else
         plot(time(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
         plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
