@@ -65,11 +65,12 @@ else
     LiftDrag = FLiftBdy./(FDragBdy + FDragFuse);
 end
 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
-vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
 if turb
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+    vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
 else
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
+    vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2)*2/3;
 end
 figure();
 %%  Plot Power Output
@@ -80,6 +81,7 @@ if lap
     if con
         plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
         plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
+        text(0.1,0.15,sprintf('P = %.1f kW',mean(power(ran))))
     else
         plot(time(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
         plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
@@ -117,6 +119,7 @@ if lap
             plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  ylim([0,inf])
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
+            text(0.05,0.15,sprintf('V = %.3f m/s',mean(speed(ran))))
         else
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
@@ -226,7 +229,7 @@ if turb && p.Results.dragChar && con
     figure(); subplot(2,1,2); hold on; grid on
     plot(data(ran),FTurbBdy(ran)./(totDrag(ran)-FTurbBdy(ran)),'b-');  
     plot(data(ran),.5*ones(length(data(ran)),1),'r-');
-    xlabel('Path Position');  ylabel('$\mathrm{D_t/D_k}$');  
+    xlabel('Path Position');  ylabel('$\mathrm{D_t/D_k}$');  ylim([0 1]);
     subplot(2,1,1); hold on; grid on
     plot(data(ran),FDragBdy(ran),'b-');
     plot(data(ran),FDragFuse(ran),'r-');

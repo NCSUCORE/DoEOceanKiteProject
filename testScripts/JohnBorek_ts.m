@@ -7,11 +7,12 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 3.3;
+simScenario = 1.3;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = 0.25;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
+flwSpd = 0.315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
+D = 0.58:.01:0.65;
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -49,6 +50,7 @@ for ii = 1:numel(flwSpd)
         loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
         loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
+%         loadComponent('Manta2RotXFlr_Thr075_125Inc');                               %   Manta kite with AVL
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -98,7 +100,8 @@ for ii = 1:numel(flwSpd)
         fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
         fltCtrl.pitchTime.setValue(0:250:3000,'s');         fltCtrl.pitchLookup.setValue(0:12,'deg');
     end
-    %%  Set up critical system parameters and run simulation
+%     vhcl.turb1.setDiameter(D(ii),'m');     vhcl.turb2.setDiameter(D(ii),'m')
+%%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
@@ -112,11 +115,12 @@ for ii = 1:numel(flwSpd)
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
     elseif simScenario > 0 && simScenario < 2
         if numel(flwSpd) == 1
-            filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+%             filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+            filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_I-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,vhcl.hStab.incidence.Value);
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
         else
-            filename = sprintf(strcat('Turb%.1f_V-%.3f.mat'),simScenario,flwSpd(ii));
-            fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','400 m Tether AVL\');
+            filename = sprintf(strcat('Turb%.1f_V-%.3f_D-%.2f.mat'),simScenario,flwSpd(1),D(ii));
+            fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','D\');
         end
     elseif simScenario == 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
@@ -145,7 +149,7 @@ end
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==1,...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
