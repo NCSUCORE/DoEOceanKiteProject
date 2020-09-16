@@ -7,11 +7,11 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 1.3;
+simScenario = 2;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = 0.315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
+flwSpd = 2;%.315;%0.315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
 D = 0.58:.01:0.65;
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -28,11 +28,18 @@ for ii = 1:numel(flwSpd)
         loadComponent('pathFollowingCtrlForManta');             %   Path-following controller
     end
     loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-    loadComponent('MantaGndStn');                               %   Ground station
-    loadComponent('winchManta');                                %   Winches
+    if simScenario == 2
+        loadComponent('pathFollowingGndStn');                   %   DOE Ground station
+        loadComponent('oneDOFWnch');                            %   DOE Winch
+    else
+        loadComponent('MantaGndStn');                           %   Manta Ground station
+        loadComponent('winchManta');                            %   Manta Winch
+    end
     if simScenario >= 4
         loadComponent('shortTether');                           %   Tether for reeling
         thr.tether1.setInitTetherLength(thrLength,'m');
+    elseif simScenario == 2
+        loadComponent('pathFollowingTether');                   %   DOE Tether 
     else
         loadComponent('MantaTether');                           %   Single link tether
     end
@@ -64,10 +71,14 @@ for ii = 1:numel(flwSpd)
     end
     %%  Set basis parameters for high level controller
     loadComponent('constBoothLem');                             %   High level controller
-    hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+    if simScenario == 2
+        hiLvlCtrl.basisParams.setValue([1.5,2.3,.3,0*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+    else
+        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+    end
     %%  Ground Station Properties
     %%  Vehicle Properties
-    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,(11/2)*norm(env.water.flowVec.Value))
+    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,(11/2)*norm([1;0;0]))
     if simScenario >= 3
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
         vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
@@ -79,12 +90,18 @@ for ii = 1:numel(flwSpd)
     thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-    thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-    thr.tether1.setDiameter(0.007,thr.tether1.diameter.Unit);
-    thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
+    if ~(simScenario == 2)
+        thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
+        thr.tether1.setDiameter(0.007,thr.tether1.diameter.Unit);
+        thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
+    end
     %%  Winches Properties
-    wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-    wnch.winch1.LaRspeed.setValue(1,'m/s');
+    if simScenario == 2
+        wnch.winch1.initLength.setValue(1.240302277935769e+02,'m')
+    else
+        wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+        wnch.winch1.LaRspeed.setValue(1,'m/s');
+    end
     %%  Controller User Def. Parameters and dependant properties
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
@@ -139,7 +156,7 @@ for ii = 1:numel(flwSpd)
     end
 end
 %%  Plot Results
-if simScenario < 3 && simScenario ~= 2
+if simScenario < 3
     lap = max(tsc.lapNumS.Data)-1;
     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
 else
