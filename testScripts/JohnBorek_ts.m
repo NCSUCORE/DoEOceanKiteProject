@@ -9,7 +9,7 @@ clear;clc;%close all
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
 simScenario = 2;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = 2;%.315;%0.315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
 D = 0.58:.01:0.65;

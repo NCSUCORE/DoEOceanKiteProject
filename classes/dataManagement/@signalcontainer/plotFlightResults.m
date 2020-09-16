@@ -34,13 +34,18 @@ if turb
         power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
         energy = cumtrapz(time,power)/1000/3600;
         speed = (squeeze(obj.turbVel.Data(1,1,:))+squeeze(obj.turbVel.Data(1,2,:)))/2;
+        diffTime = diff(obj.turbPow.Time);
+        timesteps = .5*([diffTime; diffTime(end)] + [diffTime(1); diffTime]); %averages left and right timestep lengths for each data point.
+        energy1 = power.*squeeze(timesteps);
+        powAvg = sum(energy1(Idx1:Idx2))/(obj.turbPow.Time(Idx2)-obj.turbPow.Time(Idx1));
     end
 else
     power = squeeze(obj.winchPower.Data(:,1));
-    energy = cumtrapz(time,power)/1000/3600;
+    energy = cumtrapz(time,power);
     diffTime = diff(obj.winchPower.Time);
     timesteps = .5*([diffTime; diffTime(end)] + [diffTime(1); diffTime]); %averages left and right timestep lengths for each data point.
-    energy1 = squeeze(obj.winchPower.Data).*squeeze(timesteps)/1000/3600;
+    energy1 = squeeze(obj.winchPower.Data).*squeeze(timesteps);
+    powAvg = sum(energy1(Idx1:Idx2))/(obj.winchPower.Time(Idx2)-obj.winchPower.Time(Idx1));
 end
 vKite = -squeeze(obj.velCMvec.Data(1,:,:));
 %   Tether tension
@@ -84,7 +89,7 @@ if lap
     if con
         plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
         plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
-        text(0.1,0.15,sprintf('P = %.3f kW',mean(power(ran))*1e-3))
+        text(0.1,0.15,sprintf('P = %.3f kW',mean(powAvg)*1e-3))
     else
         plot(time(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
         plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
@@ -96,12 +101,12 @@ end
 yyaxis right
 if lap
     if con
-        plot(data(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0])
+        plot(data(ran),(energy(ran)-energy(Idx1))/1000/3600,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0])
     else
-        plot(time(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+        plot(time(ran),(energy(ran)-energy(Idx1))/1000/3600,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
     end
 else
-    plot(time,energy,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+    plot(time,energy/1000/3600,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
 end
 %%  Plot Tether Tension
 subplot(R,C,2); hold on; grid on
