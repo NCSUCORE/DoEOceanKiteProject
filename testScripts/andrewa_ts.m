@@ -3,19 +3,22 @@ Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario
 %   0 = fig8;
-%   1 = fig8-2rotor Old;  1.1 = fig8-2rotor New;  1.2 = fig8-2rotor New XFoil;  2 = fig8-winch DOE;
-%   3 = steady Old;       3.1 = steady New;       3.2 = steady New XFoil 
-%   4 = LaR Old;          4.1 = LaR New;          4.2 = LaR New XFoil;
-simScenario = 3.1;
+%   1 = fig8-2rot DOE-M;  1.1 = fig8-2rot AVL;  1.2 = fig8-2rot XFoil;  1.3 = fig8-2rot XFlr5;
+%   2 = fig8-winch DOE;
+%   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5      3.4 = Steady XFlr5 Passive ;
+%   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
+simScenario = 3.4;
+simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .315%[0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5];%[0.25 0.315 0.5 1 2];                                               %   m/s - Flow speed
-expFactor = .05%[0.05 0.075 0.1 0.125 0.15 0.175 0.2]%Experimental Scale
-for jj = 1:numel(expFactor)
-    jj
-el = 30*pi/180;                                             %   rad - Mean elevation angle
+flwSpd = 0.25                                               %   m/s - Flow speed
+el = 75*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);
+desPitch = 14 % Desired Pitch in degrees
+if simScenario == 3 && simScenariosub == 3
+ctrlPitch = 0 % Controller State 0 - Single Pitch 1 - Lookup Table 2 - Elevator Controller
+end
 %   Path basis parameters
 for ii = 1:numel(flwSpd)
     ii
@@ -42,15 +45,17 @@ for ii = 1:numel(flwSpd)
     loadComponent('idealSensorProcessing')                      %   Sensor processing
     
     if simScenario == 0
-        loadComponent('MantaKiteNACA2412');                                 %   Manta kite old
+        loadComponent('MantaKiteAVL_DOE');                                  %   Manta kite old
     elseif simScenario == 2
         loadComponent('fullScale1thr');                                     %   DOE kite 
     elseif simScenario == 1 || simScenario == 3 || simScenario == 4
-        loadComponent('Manta2RotNACA2412');                                 %   Manta kite old with 2 rotors
+        loadComponent('Manta2RotAVL_DOE');                                  %   Manta DOE kite with AVL 
     elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
-        loadComponent('Manta2RotNew');                                      %   Manta kite new with 2 rotors
+        loadComponent('Manta2RotAVL_Thr075');                               %   Manta kite with AVL
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
-        loadComponent('Manta2RotNewXFoil');                                 %   Manta kite new with 2 rotors and XFoil
+        loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
+    elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
+        loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -120,8 +125,13 @@ for ii = 1:numel(flwSpd)
         vhcl.turb1.setPowerCoeff(0,'');
     end
     if simScenario >= 3 && simScenario < 4
-        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       
-        fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+        if simScenariosub == 3
+            fltCtrl.pitchConst.setValue(desPitch,'deg')
+            fltCtrl.pitchCtrl.setValue(ctrlPitch,'')
+        elseif simScenariosub == 4
+            fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       
+            fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+        end
         fltCtrl.setNomSpoolSpeed(0,'m/s');
     end
     tRef = [0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000];
@@ -129,98 +139,49 @@ for ii = 1:numel(flwSpd)
     thr.tether1.dragEnable.setValue(1,'');
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
     %%  Set up critical system parameters and run simulation
-    %% Scaling
-    LFactor = expFactor(jj);      %Length Scale Factor
-    DFactor = 1;        %Density Scale Factor
-    
-    env.scale(LFactor,DFactor);
-    vhcl.scale(LFactor,DFactor);
-    gndStn.scale(LFactor,DFactor);
-    thr.scale(LFactor,DFactor);
-    % wnch.scale(LFactor,DFactor);
-    ctrl.scale(LFactor,DFactor);
-    fltCtrl.scale(LFactor,DFactor);
-    hiLvlCtrl.scale(LFactor,DFactor);
-    
     simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
-    simWithMonitor('OCTModel')
+    simWithMonitor('OCTModel_for_lin')
     %[A, B, C, D] = linmod('OCTModel',xFinal,[0 0 0 0]);
     %%  Log Results
     
     tsc = signalcontainer(logsout);
-    tempLoad = tsc.FFluidBdy.max
-    peakLoadX(jj,ii) = tempLoad(1);
-    peakLoadY(jj,ii) = tempLoad(2);
-    peakLoadZ(jj,ii) = tempLoad(3);
-%     if simScenario ~= 2
-%         Pow = tsc.rotPowerSummary(vhcl,env);
-%     end
-%     dt = datestr(now,'mm-dd_HH-MM');
-%     if simScenario == 0
-%         filename = sprintf(strcat('Manta_EL-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
-%         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
-%     elseif simScenario > 0 && simScenario < 2
-%         if numel(flwSpd) == 1
-%             filename = sprintf(strcat('Turb2_V-%.2f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
-%             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Rotor\');
-%         else
-%             filename = sprintf(strcat('NewTurb2_V-%.3f.mat'),flwSpd(ii));
-%             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','400 m Tether 9-6\');
-%         end
-%     elseif simScenario == 2
-%         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
-%         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Winch\');
-%     elseif simScenario >= 3 && simScenario < 4
-%         filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f_',dt,'.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
-%         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta','Steady\');
-%     elseif simScenario >= 4
-%         filename = sprintf(strcat('LaR_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
-%     %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
-%         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
-%     end
-% %     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+    tempLoad = tsc.airTenVecs.mag
+    if simScenario  > 3 && simScenario < 4
+        thrTen = tempLoad.getdatasamples(length(tempLoad.Data));
+    else
+        thrTen = norm(tempLoad.max);
+    end
 end
-end
+
 %%  Plot Results
-if simScenario < 3 && simScenario ~= 2
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'plotBeta',1==0,'lapNum',max(tsc.lapNumS.Data)-1)
-else
-    tsc.plotLaR(fltCtrl);
-end
 close all
-expFactorPlot = repmat(expFactor',[1,10]);
-flwSpdPlot = repmat(flwSpd,[7,1]);
-flwSpdScale = (flwSpd'*expFactor.^(1/2))'
+if simScenario < 3 && simScenario ~= 2
+    lap = max(tsc.lapNumS.Data)-1;
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+else
+    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+end
+lenScale = repmat(linspace(0.05,0.15)',1,100);
 
-figure
-surf(expFactorPlot,flwSpdPlot,peakLoadX)
+if simScenario > 3 && simScenario < 4
+    flwSpdPlot = repmat(linspace(0.05,1),100,1);
+    if simScenariosub == 3
+        fileName = ['ssTen_',num2str(flwSpd),'AoA',num2str(desPitch),'.png'];
+    elseif simScenariosub == 4
+        fileName = ['ssTen_',num2str(flwSpd),'passive.png'];
+    end
+else
+    flwSpdPlot = repmat(linspace(0.05,0.25),100,1);
+    fileName = ['peakTen_',num2str(flwSpd),'.png'];
+end
+thrTenPlot = thrTen.*(flwSpdPlot/flwSpd).^2.*lenScale.^2;
+
+f1 = figure
+surf(lenScale,flwSpdPlot,thrTenPlot)
 xlabel('Experimental Scale')
 ylabel('Normalized Simulated Flow Speed')
-zlabel('Peak Aerodynamic Load X Direction [N]')
-set(gca,'ZScale','log')
-
-figure
-surf(expFactorPlot,flwSpdPlot,peakLoadY)
-xlabel('Experimental Scale')
-ylabel('Normalized Simulated Flow Speed')
-zlabel('Peak Aerodynamic Load Z Direction [N]')
-set(gca,'ZScale','log')
-
-figure
-surf(expFactorPlot,flwSpdPlot,peakLoadZ)
-xlabel('Experimental Scale')
-ylabel('Normalized Simulated Flow Speed')
-zlabel('Peak Aerodynamic Load Z Direction [N]')
-set(gca,'ZScale','log')
-
-sclChkZ = peakLoadZ./flwSpdScale.^(2)./(expFactorPlot.^(2))
-sclChkZNorm = sclChkZ/max(sclChkZ,[],'all')
-figure
-surf(expFactorPlot,flwSpdScale,sclChkZNorm)
-xlabel('Experimental Scale')
-ylabel('Simulated Flow Speed')
-zlabel('Scaled Load')
-
+zlabel('Tether Tension [N]')
+saveas(f1,fileName)
 
 %%  Animate Simulation
 % if simScenario <= 2
@@ -232,9 +193,5 @@ zlabel('Scaled Load')
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
 %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
 % end
-%%  Compare to old results
-% tsc.turbEnrg.Data(1,1,end)
-% load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
-% tsc.turbEnrg.Data(1,1,end)
 
 
