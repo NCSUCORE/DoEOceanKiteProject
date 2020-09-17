@@ -7,7 +7,7 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 1.3;
+simScenario = 4.3;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
@@ -16,7 +16,7 @@ D = 0.58:.01:0.65;  E = -.25:.1:.75;
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-for ii = 1:numelflwSpd)
+for ii = 1:numel(flwSpd)
     %%  Load components
     if simScenario >= 4
         loadComponent('LaRController');                         %   Launch and recovery controller
