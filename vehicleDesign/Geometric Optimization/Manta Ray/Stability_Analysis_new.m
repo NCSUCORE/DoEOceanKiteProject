@@ -3,8 +3,8 @@ clc;clear;
 
 %%  Input definitions 
 % loadComponent('Manta2RotAVL_0Inc');                          %   Load new vehicle with 2 rotors
-loadComponent('Manta2RotXFoil_0Inc');                          %   Load new vehicle with 2 rotors
-% loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
+% loadComponent('Manta2RotXFoil_0Inc');                          %   Load new vehicle with 2 rotors
+loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
 % loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
@@ -94,7 +94,7 @@ Ang.elevation = 80;                                     %   deg - Elevation angl
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = 0-10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
@@ -117,7 +117,7 @@ end
 if numel(Ang.pitch) > 1
     figure; 
     hold on; grid on
-    plot(Ang.pitch,pitchM,'r-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
+    plot(Ang.pitch,pitchM,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
 end
 % figure; hold on; grid on
 % plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')

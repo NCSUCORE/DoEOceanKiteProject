@@ -8,7 +8,8 @@ TcG = Ry(Ang.zenith)*Rz(Ang.azimuth);                   %   Rotation matrix from
 BcT = Ry(Ang.tanPitch)*Rz(Ang.heading);                 %   Rotation matrix from tangent to body frame 
 TcB = transpose(BcT);                                   %   Rotation matrix from body to tangent frame 
 BcG = BcT*TcG;                                          %   Rotation matrix from ground to body frame 
-
+pitch = Ang.zenith+Ang.tanPitch;
+spd = Env.vFlow(1);
 vApp = BcG*Env.vFlow-Sys.vKite;                         %   m/s - Apparent flow velocity
 uApp = vApp./norm(vApp);                                %   Apparent velocity direction
 alpha = atan2(vApp(3),vApp(1));                         %   Angle of attack
@@ -41,7 +42,8 @@ F.thrB = BcT*[0;0;thrForce];                        %   N - Tether force in the 
 F.thrB = -Fnet;                                     %   N - Tether force during static equilibrium 
 Theta0 = atan2(-F.thrB(3),-F.thrB(1))*180/pi;       %   deg - Steady-state elevation angle 
 %%  Moment Calculations
-M.Ca = -CaNu(4:6)*0;                                  %   Nm - Moment due to added mass Coriolis terms 
+load('MonkMoments.mat');                     %   Nm - Moment due to added mass Coriolis terms 
+M.a = interp2(Monk.pitch,Monk.spd,Monk.Madd,pitch,spd);
 %%  About the CM
 M.B = cross(CM.xb,F.buoyB);                         %   Nm - Buoyancy moment
 M.G = cross(CM.xg,F.gravB);                         %   Nm - Gravitational moment
@@ -52,7 +54,7 @@ M.V = cross(CM.xV,F.dragBv);                        %   Nm - Vertical stabilizer
 M.F = cross(CM.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(CM.xbr,F.thrB);                         %   Nm - Tether moment
 M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment
-    + M.T + M.Ca;
+    + M.T + M.a;
 MCM = M;
 %%  About the tether attachment point 
 M.B = cross(BR.xb,F.buoyB);                         %   Nm - Buoyancy moment
@@ -64,7 +66,7 @@ M.V = cross(BR.xV,F.dragBv);                        %   Nm - Vertical stabilizer
 M.F = cross(BR.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(BR.xbr,F.thrB);                         %   Nm - Tether moment
 M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment
-    + M.T + M.Ca;
+    + M.T;% + M.a;
 MBR = M;
 %%  About the LE
 M.B = cross(LE.xb,F.buoyB);                         %   Nm - Buoyancy moment
@@ -76,7 +78,7 @@ M.V = cross(LE.xV,F.dragBv);                        %   Nm - Vertical stabilizer
 M.F = cross(LE.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(LE.xbr,F.thrB);                         %   Nm - Tether moment
 M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment
-    + M.T + M.Ca;
+    + M.T ;%+ M.a;
 MLE = M;
 %%  Find required horizontal stabilizer CL for trim
 [MCM,F,CLCM] = getReqStab(MCM,F,CM,Env,hStab,vApp,uApp,CL);

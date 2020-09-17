@@ -29,10 +29,10 @@ if turb
     N = vhcl.numTurbines.Value;
     if N == 1
         power = squeeze(obj.turbPow.Data(1,1,:));
-        energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600;
+        energy = squeeze(obj.turbEnrg.Data(1,1,:));
     else
         power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
-        energy = cumtrapz(time,power)/1000/3600;
+        energy = cumtrapz(time,power);
         speed = (squeeze(obj.turbVel.Data(1,1,:))+squeeze(obj.turbVel.Data(1,2,:)))/2;
         diffTime = diff(obj.turbPow.Time);
         timesteps = .5*([diffTime; diffTime(end)] + [diffTime(1); diffTime]); %averages left and right timestep lengths for each data point.
@@ -128,6 +128,7 @@ if lap
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
             text(0.05,0.15,sprintf('V = %.3f m/s',mean(speed(ran))))
+            text(0.05,0.4,['$\mathrm{V_f}$',sprintf(' = %.3f m/s',env.water.speed.Value)])
         else
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
