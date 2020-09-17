@@ -16,7 +16,7 @@ D = 0.58:.01:0.65;  E = -.25:.1:.75;
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-for ii = 1:numel(E)%flwSpd)
+for ii = 1:numelflwSpd)
     %%  Load components
     if simScenario >= 4
         loadComponent('LaRController');                         %   Launch and recovery controller
@@ -61,7 +61,7 @@ for ii = 1:numel(E)%flwSpd)
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
-    env.water.setflowVec([flwSpd(1) 0 0],'m/s');               %   m/s - Flow speed vector
+    env.water.setflowVec([flwSpd(ii) 0 0],'m/s');               %   m/s - Flow speed vector
     if simScenario == 0
         ENVIRONMENT = 'environmentManta';                       %   Single turbine
     elseif simScenario == 2
@@ -106,8 +106,8 @@ for ii = 1:numel(E)%flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.3
-        fltCtrl.setElevatorReelInDef(E(ii),'deg')
+    if simScenario == 1.1
+        fltCtrl.setElevatorReelInDef(-2,'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
@@ -131,7 +131,7 @@ for ii = 1:numel(E)%flwSpd)
         filename = sprintf(strcat('Manta_EL-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
     elseif simScenario > 0 && simScenario < 2
-        if numel(flwSpd) == 2
+        if numel(flwSpd) == 1
 %             filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
             filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_I-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,vhcl.hStab.incidence.Value);
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
