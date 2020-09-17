@@ -378,9 +378,14 @@ classdef signalcontainer < dynamicprops
             ran = Idx1:Idx2-1;
             [CLsurf,CDtot] = getCLCD(obj,vhcl);
             C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
-            Pow.loyd = mean(PLoyd)*1e-3;
-            Pow.avg = mean(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
+            diffTime = diff(obj.turbPow.Time);
+            timesteps = .5*([diffTime; diffTime(end)] + [diffTime(1); diffTime]); %averages left and right timestep lengths for each data point.
+            energy1 = power.*squeeze(timesteps);
+            energy2 = PLoyd.*squeeze(timesteps);
+            Pow.loyd = sum(energy2(Idx1:Idx2))/(obj.turbPow.Time(Idx2)-obj.turbPow.Time(Idx1))*1e-3;
+            Pow.avg = sum(energy1(Idx1:Idx2))/(obj.turbPow.Time(Idx2)-obj.turbPow.Time(Idx1))*1e-3;
             Pow.max = max(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
             Pow.min = min(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
             fprintf('Lap average power output:\n Min\t\t Max\t\t Avg\t\t Loyd\n %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
