@@ -16,7 +16,9 @@ end
 Monk.spd = spd; Monk.pitch = pitch; Monk.Madd = Madd;
 save('MonkMoments.mat','Monk')
 %%
+load('MonkMoments.mat');                     %   Nm - Moment due to added mass Coriolis terms 
 figure; subplot(2,1,1);
-surf(pitch,spd,Madd);  xlabel('$\theta$ [deg]');  ylabel('$V_\mathrm{flow}$ [m/s]');  zlabel('Pitch Moment [Nm]');
+surf(Monk.pitch,Monk.spd,Monk.Madd);  xlabel('$\theta$ [deg]');  ylabel('$V_\mathrm{flow}$ [m/s]');  zlabel('Pitch Moment [Nm]');
 subplot(2,1,2);  
-contourf(pitch,spd,Madd,25);  xlabel('$\theta$ [deg]');  ylabel('$V_\mathrm{flow}$ [m/s]');
+contourf(Monk.pitch,Monk.spd,Monk.Madd,25);  xlabel('$\theta$ [deg]');  ylabel('$V_\mathrm{flow}$ [m/s]');
+set(gcf,'OuterPosition',[-5.4000   34.6000  700.0000  830.4000]);
