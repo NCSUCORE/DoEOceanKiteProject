@@ -10,16 +10,17 @@ clear;clc;%close all
 simScenario = 3.3;
 simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
-thrLength = 400;                                            %   m - Initial tether length
-flwSpd = 0.25                                               %   m/s - Flow speed
-el = 35*pi/180;                                             %   rad - Mean elevation angle
+thrLength = 20%[10:5:50];                                            %   m - Initial tether length
+flwSpd = .5%[0.25:.25:4];                                               %   m/s - Flow speed
+el = 75*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);
-desPitch = 14 % Desired Pitch in degrees
-if simScenario == 3 && simScenariosub == 3
+desPitch = 10;%8 % Desired Pitch in degrees
+if simScenario == 3.3
 ctrlPitch = 0 % Controller State 0 - Single Pitch 1 - Lookup Table 2 - Elevator Controller
 end
 %   Path basis parameters
+for jj = 1:numel(thrLength)
 for ii = 1:numel(flwSpd)
     ii
     %%  Load components
@@ -70,9 +71,9 @@ for ii = 1:numel(flwSpd)
     %%  Set basis parameters for high level controller
     loadComponent('constBoothLem');                             %   High level controller
     if strcmpi(PATHGEOMETRY,'ellipse')
-        hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Ellipse
+        hiLvlCtrl.basisParams.setValue([w,h,el,0*pi/180,thrLength(jj)],'[rad rad rad rad m]') % Ellipse
     else
-        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength(jj)],'[rad rad rad rad m]') % Lemniscate of Booth
     end
     %%  Ground Station Properties
     gndStn.setPosVec([0 0 0],'m')
@@ -125,10 +126,10 @@ for ii = 1:numel(flwSpd)
         vhcl.turb1.setPowerCoeff(0,'');
     end
     if simScenario >= 3 && simScenario < 4
-        if simScenariosub == 3
+        if simScenario == 3.3
             fltCtrl.pitchConst.setValue(desPitch,'deg')
             fltCtrl.pitchCtrl.setValue(ctrlPitch,'')
-        elseif simScenariosub == 4
+        elseif simScenario == 3.4
             fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       
             fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         end
@@ -138,62 +139,83 @@ for ii = 1:numel(flwSpd)
     pSP =  [30 30  30  30  30   40   40   40   40   40   40   40   40];
     thr.tether1.dragEnable.setValue(1,'');
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
-    %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
-    simWithMonitor('OCTModel_for_lin')
-    %[A, B, C, D] = linmod('OCTModel',xFinal,[0 0 0 0]);
-    %%  Log Results
     
+%%  Set up critical system parameters and run simulation
+    simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+    %Setup Initial State Conditions
+    fprintf('Simulating')
+    sim('OCTModel_for_lin')
+    close all
     tsc = signalcontainer(logsout);
-    tempLoad = tsc.airTenVecs.mag
-    if simScenario  > 3 && simScenario < 4
-        thrTen = tempLoad.getdatasamples(length(tempLoad.Data));
-    else
-        thrTen = norm(tempLoad.max);
-    end
-end
+    tsc.plotLaR(fltCtrl);
+    %Get control inputs at steady state
+        len = tsc.azimuthAngle.Length
+        trimCtrl = tsc.ctrlSurfDeflCmd.getsamples(len).Data
+     fprintf('Linearizing')    
+    [A,B,C,D] = linmod('OCTModel_for_lin',xFinal,[0 0 0 0]);
+    sys = ss(A,B,C,D);
+    linsys.ss = sys;
+    linsys.title = sprintf('Flow Speed %.2f m/s Tether Length %d m',...
+        flwSpd(ii), thrLength(jj));
+    linsys.timeseries = tsc;
+    varNam = sprintf('Flw%.2fThr%d.mat',flwSpd(ii),thrLength(jj));
+    save(varNam,'linsys')
+    clear linsys
+    clear trimCtrl
+%     %[A, B, C, D] = linmod('OCTModel',xFinal,[0 0 0 0]);
+%     %%  Log Results
+%     
 
-%%  Plot Results
+%     tempLoad = tsc.airTenVecs.mag
+%     if simScenario  > 3 && simScenario < 4
+%         thrTen = tempLoad.getdatasamples(length(tempLoad.Data));
+%     else
+%         thrTen = norm(tempLoad.max);
+%     end
+end
+end
+%  Plot Results
 close all
 if simScenario < 3 && simScenario ~= 2
     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'plotBeta',1==0,'lapNum',max(tsc.lapNumS.Data)-1)
 else
     tsc.plotLaR(fltCtrl);
 end
-
-lenScale = repmat(linspace(0.05,0.15)',1,100);
-
-if simScenario > 3 && simScenario < 4
-    flwSpdPlot = repmat(linspace(0.05,1),100,1);
-    if simScenariosub = 3
-        fileName = ['ssTen_'
-else
-    flwSpdPlot = repmat(linspace(0.05,0.25),100,1);
-end
-thrTenPlot = thrTen.*(flwSpdPlot/flwSpd).^2.*lenScale.^2;
-
-figure
-surf(lenScale,flwSpdPlot,thrTenPlot)
-xlabel('Experimental Scale')
-ylabel('Normalized Simulated Flow Speed')
-zlabel('Tether Tension [N]')
-% set(gca,'ZScale','log')
-
-
-
-%%  Animate Simulation
-% if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
-%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+% 
+% lenScale = repmat(linspace(0.05,0.15)',1,100);
+% 
+% if simScenario > 3 && simScenario < 4
+%     flwSpdPlot = repmat(linspace(0.05,1),100,1);
+%     if simScenariosub == 3
+%         fileName = ['ssTen_']
+%     end
 % else
-%     vhcl.animateSim(tsc,2,'View',[0,0],...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
-%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
+%     flwSpdPlot = repmat(linspace(0.05,0.25),100,1);
 % end
-%%  Compare to old results
-% tsc.turbEnrg.Data(1,1,end)
-% load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
-% tsc.turbEnrg.Data(1,1,end)
+% thrTenPlot = thrTen.*(flwSpdPlot/flwSpd).^2.*lenScale.^2;
+% 
+% figure
+% surf(lenScale,flwSpdPlot,thrTenPlot)
+% xlabel('Experimental Scale')
+% ylabel('Normalized Simulated Flow Speed')
+% zlabel('Tether Tension [N]')
+% % set(gca,'ZScale','log')
+% 
+% 
+% 
+% %%  Animate Simulation
+% % if simScenario <= 2
+% %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
+% %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'Pause',false,...
+% %         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+% % else
+% %     vhcl.animateSim(tsc,2,'View',[0,0],...
+% %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+% %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
+% % end
+% %%  Compare to old results
+% % tsc.turbEnrg.Data(1,1,end)
+% % load('C:\Users\John Jr\Desktop\Manta Ray\Model\Results\Manta\Rotor\Turb2_V-0.25_EL-30.0_D-0.56_w-40.0_h-15.0_08-04_10-56.mat')
+% % tsc.turbEnrg.Data(1,1,end)
 
 
