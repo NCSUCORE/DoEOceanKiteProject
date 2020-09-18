@@ -7,13 +7,14 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5      3.4 = Steady XFlr5 Passive ;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 3.3;
+simScenario = 1.3;
 simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
-thrLength = 400;                                            %   m - Initial tether length
+thrLength = 80;                                            %   m - Initial tether length
 flwSpd = 0.25                                               %   m/s - Flow speed
 el = 35*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
+linState = 1
 [a,b] = boothParamConversion(w,h);
 desPitch = 14 % Desired Pitch in degrees
 if simScenario == 3 && simScenariosub == 3
@@ -125,13 +126,13 @@ for ii = 1:numel(flwSpd)
         vhcl.turb1.setPowerCoeff(0,'');
     end
     if simScenario >= 3 && simScenario < 4
-        if simScenariosub == 3
-            fltCtrl.pitchConst.setValue(desPitch,'deg')
-            fltCtrl.pitchCtrl.setValue(ctrlPitch,'')
-        elseif simScenariosub == 4
-            fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       
-            fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-        end
+%         if simScenariosub == 3
+%             fltCtrl.pitchConst.setValue(desPitch,'deg')
+%             fltCtrl.pitchCtrl.setValue(ctrlPitch,'')
+%         elseif simScenariosub == 4
+%             fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       
+%             fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+%         end
         fltCtrl.setNomSpoolSpeed(0,'m/s');
     end
     tRef = [0  250 500 750 1000 1250 1500 1750 2000 2250 2500 2750 3000];
@@ -139,7 +140,7 @@ for ii = 1:numel(flwSpd)
     thr.tether1.dragEnable.setValue(1,'');
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
     %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel_for_lin')
     %[A, B, C, D] = linmod('OCTModel',xFinal,[0 0 0 0]);
     %%  Log Results
@@ -147,7 +148,7 @@ for ii = 1:numel(flwSpd)
     tsc = signalcontainer(logsout);
     tempLoad = tsc.airTenVecs.mag
     if simScenario  > 3 && simScenario < 4
-        thrTen = tempLoad.getdatasamples(length(tempLoad.Data));
+        %thrTen = tempLoad.getdatasamples(tsc));
     else
         thrTen = norm(tempLoad.max);
     end
@@ -161,12 +162,11 @@ else
     tsc.plotLaR(fltCtrl);
 end
 
-lenScale = repmat(linspace(0.05,0.15)',1,100);
+lenScale = repmat(linspace(0.05,0.10)',1,100);
 
 if simScenario > 3 && simScenario < 4
     flwSpdPlot = repmat(linspace(0.05,1),100,1);
-    if simScenariosub = 3
-        fileName = ['ssTen_'
+    %if simScenariosub = 3
 else
     flwSpdPlot = repmat(linspace(0.05,0.25),100,1);
 end
@@ -175,8 +175,10 @@ thrTenPlot = thrTen.*(flwSpdPlot/flwSpd).^2.*lenScale.^2;
 figure
 surf(lenScale,flwSpdPlot,thrTenPlot)
 xlabel('Experimental Scale')
-ylabel('Normalized Simulated Flow Speed')
+ylabel('Flow Speed[m/s]')
 zlabel('Tether Tension [N]')
+title({'Peak tether tension under cross current motion',...
+    '35 [deg] Mean Elevation, 40 [deg] Azimuth Sweep, Tether/Span = 100'})
 % set(gca,'ZScale','log')
 
 
