@@ -1,4 +1,4 @@
-function [invNodeMasses,nodeMasses]  = tetherNodeInvMass(Activelength,ActiveNodes, numNodes, thrDiam, tetherDensity)
+function invNodeMasses  = tetherNodeInvMass(Activelength,ActiveNodes, numNodes, thrDiam, tetherDensity)
 
 %tetherDensity = 952;
 %thrDiam = .0144;
@@ -14,10 +14,6 @@ linkMasses  = tetherDensity*(Activelength*(pi/4)*thrDiam^2);
 invNodeMasses = zeros(3,No);
 invNodeMasses(:,(No-Na+1):end) = repmat(1./([linkMasses((No-Na+1)) linkMasses((No-Na+1):end-1)+linkMasses((No-Na+2):end) linkMasses(end)]/2),[3 1]);
 
-nodeMasses = zeros(3,No);
-nodeMasses(:,(No-Na+1):end) = repmat(([linkMasses((No-Na+1)) linkMasses((No-Na+1):end-1)+linkMasses((No-Na+2):end) linkMasses(end)]/2),[3 1]);
-
-
 %Make Zero Inverse mass also equal to zero
 for i = 1:size(invNodeMasses,2)
     if invNodeMasses(:,i) == Inf
@@ -29,8 +25,6 @@ end
 if invNodeMasses(:,1) == 0
     invNodeMasses(:,1) = invNodeMasses(:,No-Na+1);
     invNodeMasses(:,No-Na+1) = [0;0;0];
-    nodeMasses(:,1) = nodeMasses(:,No-Na+1);
-    nodeMasses(:,No-Na+1) = [0;0;0];
 end
 
 

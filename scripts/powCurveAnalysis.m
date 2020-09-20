@@ -19,8 +19,8 @@ vFlow = .1:.01:.5;
 powCurve = P(vFlow);
 powCurvea = Pa(vFlow);
 figure; hold on; grid on ;
-plot(vFlow,powCurvea,'b--'); xlabel('$V_\mathrm{flow}$ [m/s]'); ylabel('Avg. Power [kW]')
-plot(vFlow,powCurve,'b-'); xlabel('Flow Velocity [m/s]'); ylabel('Avg. Power/Lap [kW]')
+plot(vFlow,powCurvea,'b--'); xlabel('$V_\mathrm{flow}$ [m/s]'); ylabel('Avg. Power [W]')
+plot(vFlow,powCurve,'b-'); xlabel('Flow Velocity [m/s]'); ylabel('Avg. Power/Lap [W]')
 plot(.315,P(.315),'r*','markersize',12,'linewidth',2)
 plot(.315,Pa(.315),'r*','markersize',12,'linewidth',2)
 legend('AVL','XFlr5','location','northwest','autoupdate','off')
