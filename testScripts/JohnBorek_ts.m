@@ -7,16 +7,17 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
-simScenario = 3.3;
+simScenario = 1.3;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .5;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
-D = 0.58:.01:0.65;  E = -.25:.1:.75;
-el = 75*pi/180;                                             %   rad - Mean elevation angle
+flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
+D = 0.64:.01:0.65;  E = -.25:.05:.75;  
+el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-for ii = 1:numel(flwSpd)
+for ii = 1:numel(D)%flwSpd)
+    for jj = 1:numel(E)
     %%  Load components
     if simScenario >= 4
         loadComponent('LaRController');                         %   Launch and recovery controller
@@ -61,7 +62,7 @@ for ii = 1:numel(flwSpd)
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
-    env.water.setflowVec([flwSpd(ii) 0 0],'m/s');               %   m/s - Flow speed vector
+    env.water.setflowVec([flwSpd(1) 0 0],'m/s');               %   m/s - Flow speed vector
     if simScenario == 0
         ENVIRONMENT = 'environmentManta';                       %   Single turbine
     elseif simScenario == 2
@@ -78,7 +79,7 @@ for ii = 1:numel(flwSpd)
     end
     %%  Ground Station Properties
     %%  Vehicle Properties
-    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,(11/2)*norm([1;0;0]))
+    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
     if simScenario >= 3
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
         vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
@@ -106,20 +107,21 @@ for ii = 1:numel(flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.1
-        fltCtrl.setElevatorReelInDef(-2,'deg')
+    if simScenario == 1.3
+        fltCtrl.setElevatorReelInDef(E(jj),'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
     end
     if simScenario >= 3 && simScenario < 4
-        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
+%         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(15,'deg');
         fltCtrl.pitchTime.setValue(0:250:3000,'s');         fltCtrl.pitchLookup.setValue(0:12,'deg');
     end
-%     vhcl.turb1.setDiameter(D(ii),'m');     vhcl.turb2.setDiameter(D(ii),'m')
+    vhcl.turb1.setDiameter(D(ii),'m');     vhcl.turb2.setDiameter(D(ii),'m')
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(15000,'s');  dynamicCalc = '';
+    fprintf('Diameter = %.2f m;\t Elevator = %.3f deg\n',D(ii),E(jj));
+    simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);
@@ -131,13 +133,14 @@ for ii = 1:numel(flwSpd)
         filename = sprintf(strcat('Manta_EL-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
     elseif simScenario > 0 && simScenario < 2
-        if numel(flwSpd) == 1
+        if numel(flwSpd) == 2
 %             filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
             filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_I-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,vhcl.hStab.incidence.Value);
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
         else
-            filename = sprintf(strcat('Turb%.1f_V-%.3f_E-%.2f.mat'),simScenario,flwSpd(1),E(ii));
-            fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','E\');
+            filename = sprintf(strcat('Turb%.1f_V-%.3f_D-%.2f_E-%.3f.mat'),simScenario,flwSpd(1),D(ii),E(jj));
+%             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','D\');
+            fpath = 'D:\Results\';
         end
     elseif simScenario == 2
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
@@ -148,20 +151,20 @@ for ii = 1:numel(flwSpd)
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Steady\');
     elseif simScenario >= 4
         filename = sprintf(strcat('LaR%.1f_EL-%.1f_SP-%.1f_t-%.1f_Wnch-%.1f_',dt,'.mat'),simScenario,el*180/pi,fltCtrl.LaRelevationSP.Value,simParams.duration.Value,fltCtrl.nomSpoolSpeed.Value);
-    %     filename = sprintf(strcat('Elevation_kp-%.1f_ki-%.2f_',dt,'.mat'),fltCtrl.pitchSP.kp.Value,fltCtrl.pitchSP.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','LaR\');
     end
     if saveSim == 1
         save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
     end
+    end
 end
 %%  Plot Results
-if simScenario < 3
-    lap = max(tsc.lapNumS.Data)-1;
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-else
-    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-end
+% if simScenario < 3
+%     lap = max(tsc.lapNumS.Data)-1;
+%     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==1)
+% else
+%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+% end
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...

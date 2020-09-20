@@ -57,15 +57,15 @@ if ~p.Results.Steady
     plot(time,airNode,'b-');  plot(time,gndNode,'r--');  %ylim([0 .5]);
     xlabel('Time [s]');  ylabel('Tension [kN]');  legend('Kite','Glider');  %xlim([1900 2100])
 else
-    %%  Plot Tether Tension
-    figure; subplot(2,1,1); hold on; grid on;
-    plot(time,Mwing,'b');   plot(time,MhStab,'r');
-    plot(time,MvStab,'m');  plot(time,Mfuse,'c');
-    plot(time,Mthr,'color',[255,153,51]/255);    plot(time,Mstatic,'g');
-    plot(time,Madd,'color',[.45,0,0]);    
-    xlabel('Time [s]');  ylabel('Moment [Nm]');
-    legend('Wing','hStab','vStab','Fuse','Thr','Buoy+Grav','Add');
-    subplot(2,1,2); hold on; grid on;
-    plot(time,Mnet,'k-');  xlabel('Time [s]');  ylabel('Net Moment [Nm]');
+%     %%  Plot Tether Tension
+%     figure; subplot(2,1,1); hold on; grid on;
+%     plot(time,Mwing,'b');   plot(time,MhStab,'r');
+%     plot(time,MvStab,'m');  plot(time,Mfuse,'c');
+%     plot(time,Mthr,'color',[255,153,51]/255);    plot(time,Mstatic,'g');
+%     plot(time,Madd,'color',[.45,0,0]);    
+%     xlabel('Time [s]');  ylabel('Moment [Nm]');
+%     legend('Wing','hStab','vStab','Fuse','Thr','Buoy+Grav','Add');
+%     subplot(2,1,2); hold on; grid on;
+%     plot(time,Mnet,'k-');  xlabel('Time [s]');  ylabel('Net Moment [Nm]');
 end
 end

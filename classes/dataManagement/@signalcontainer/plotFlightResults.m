@@ -89,7 +89,7 @@ if lap
     if con
         plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
         plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
-        text(0.1,0.15,sprintf('P = %.3f kW',mean(powAvg)*1e-3))
+%         text(0.04,310,sprintf('P = %.3f kW',mean(powAvg)*1e-3))
     else
         plot(time(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
         plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
@@ -127,8 +127,8 @@ if lap
             plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  ylim([0,inf])
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
-            text(0.05,0.15,sprintf('V = %.3f m/s',mean(speed(ran))))
-            text(0.05,0.4,['$\mathrm{V_f}$',sprintf(' = %.3f m/s',env.water.speed.Value)])
+%             text(0.05,1,sprintf('V = %.3f m/s',mean(speed(ran))))
+%             text(0.05,3,['$\mathrm{V_f}$',sprintf(' = %.3f m/s',env.water.speed.Value)])
         else
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
