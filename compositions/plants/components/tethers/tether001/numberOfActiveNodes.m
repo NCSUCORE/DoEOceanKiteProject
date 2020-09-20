@@ -54,7 +54,7 @@ else %Any amount of reel-in
     Na = No-a+2;
     
     %Checks for delta if within minimum length
-    if flagIn1  == true && Na > 2
+    if flagIn1  == true
         
         % pt is the location of first active node (1x3)
         % v1 is ground node location (1x3)
@@ -103,8 +103,8 @@ end
 
 ActiveNodes = nnz(L)+1;
 ActiveLengths = L;
-Delta = Delta;
 
+Delta = Delta;
 %Delta = Na;
 % 
 % Na = No-a+2;
