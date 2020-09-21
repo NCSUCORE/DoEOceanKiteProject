@@ -3,9 +3,9 @@ clc;clear;
 
 %%  Input definitions 
 % loadComponent('Manta2RotAVL_0Inc');                          %   Load new vehicle with 2 rotors
-loadComponent('Manta2RotXFoil_0Inc');                          %   Load new vehicle with 2 rotors
+% loadComponent('Manta2RotXFoil_0Inc');                          %   Load new vehicle with 2 rotors
 % loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
-% loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
+loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -84,7 +84,7 @@ LE.xV = Sys.xV-Sys.LE;
 LE.xf = Sys.f-Sys.LE;
 
 Sys.vKite = [0 0 0]';                               %   m/s - Kite velocity 
-Env.vFlow = [.25 0 0]';                             %   m/s - Flow speed 
+Env.vFlow = [1.6 0 0]';                             %   m/s - Flow speed 
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
@@ -94,18 +94,22 @@ Ang.elevation = 80;                                     %   deg - Elevation angl
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = 0-10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle
 %%  Analyze Stability 
 pitchM = zeros(numel(Ang.pitch),1);
+pitchMa = zeros(numel(Ang.pitch),1);
+lift = zeros(numel(Ang.pitch),1);
 alphaRef = -10:.01:10;
 CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
 for i = 1:numel(Ang.pitch)
     Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;              %   deg - Tangent pitch angle
-    [MCM,MBR(i),MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR);
+    [MCM,MBR(i),MLE,F(i),CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR);
     pitchM(i) = MBR(i).tot(2);
+    pitchMa(i) = MBR(i).totMa(2);
+    lift(i) = sqrt(sum((F(i).liftBw+F(i).liftBw).^2));
     hReq = CLBR.hReq;
     if numel(Ang.pitch) == 1 && Ang.pitch(i) == 0
         idx = find(abs(CLh-hReq) <= .0005);
@@ -115,9 +119,12 @@ for i = 1:numel(Ang.pitch)
 end
 %%  Plotting 
 if numel(Ang.pitch) > 1
-    figure; 
-    hold on; grid on
-    plot(Ang.pitch,pitchM,'r-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
+    figure; subplot(2,1,1); hold on; grid on;
+    plot(Ang.pitch,pitchM,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
+    plot(Ang.pitch,pitchMa,'r-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
+    legend('w/o $\mathrm{M_{add}}$','w/ $\mathrm{M_{add}}$')
+    subplot(2,1,2); hold on; grid on;
+    plot(Ang.pitch,lift,'b-');  xlabel('$\theta$ [deg]');  ylabel('Lift [N]')
 end
 % figure; hold on; grid on
 % plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
