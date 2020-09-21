@@ -221,7 +221,19 @@ classdef signalcontainer < dynamicprops
             CDtot = CDfuse+CDsurf;
             CLsurf = obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data;
         end
-        
+        function [Lift,Drag,Fuse,Thr] = getLiftDrag(obj)
+            FLiftBdyP1 = squeeze(sqrt(sum(obj.portWingLift.Data(:,1,:).^2,1)));
+            FLiftBdyP2 = squeeze(sqrt(sum(obj.stbdWingLift.Data(:,1,:).^2,1)));
+            FLiftBdyP3 = squeeze(sqrt(sum(obj.hStabLift.Data(:,1,:).^2,1)));
+            Lift   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
+            FDragBdyP1 = squeeze(sqrt(sum(obj.portWingDrag.Data(:,1,:).^2,1)));
+            FDragBdyP2 = squeeze(sqrt(sum(obj.stbdWingDrag.Data(:,1,:).^2,1)));
+            FDragBdyP3 = squeeze(sqrt(sum(obj.hStabDrag.Data(:,1,:).^2,1)));
+            FDragBdyP4 = squeeze(sqrt(sum(obj.vStabDrag.Data(:,1,:).^2,1)));
+            Drag = FDragBdyP1 + FDragBdyP2 + FDragBdyP3 + FDragBdyP4;
+            Fuse = squeeze(sqrt(sum(obj.FFuseBdy.Data.^2,1)));
+            Thr = squeeze(sqrt(sum(obj.thrDragVecs.Data.^2,1)));
+        end
         function stats = plotAndComputeLapStats(obj)
             % local functions
             uVec = @(x,y)['$\hat{',x,'}_{\bar{',y,'}}$'];

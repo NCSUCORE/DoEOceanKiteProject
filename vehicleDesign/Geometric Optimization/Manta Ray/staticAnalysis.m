@@ -1,8 +1,6 @@
 function [MCM,MBR,MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR)
-%%  Rotation Matrices 
-% Rx = @(x) [1 0 0;0 cosd(x) sind(x);0 -sind(x) cosd(x)]; %   Rotation matrix for rotations about the x-axis 
-% Ry = @(x) [cosd(x) 0 -sind(x);0 1 0;sind(x) 0 cosd(x)]; %   Rotation matrix for rotations about the y-axis 
-% Rz = @(x) [cosd(x) sind(x) 0;-sind(x) cosd(x) 0;0 0 1]; %   Rotation matrix for rotations about the z-axis
+%%  Munk Moment
+load('MunkMoments.mat')
 %%  Important Variables 
 TcG = Ry(Ang.zenith)*Rz(Ang.azimuth);                   %   Rotation matrix from ground to tangent frame 
 BcT = Ry(Ang.tanPitch)*Rz(Ang.heading);                 %   Rotation matrix from tangent to body frame 
@@ -20,7 +18,9 @@ Ca(4:6,1:3) = -crossProdMat(mvR(1:3));
 Ca(4:6,4:6) = -crossProdMat(mvR(4:6));
 CaNu = Ca*mvR;
 %%  Force Calculations
-F.Ca = -CaNu(1:3)*0;
+F.Ca = [interp2(Munk.pitch,Munk.vFlow,Munk.F(:,:,1),alpha*180/pi,Env.vFlow(1));
+        interp2(Munk.pitch,Munk.vFlow,Munk.F(:,:,2),alpha*180/pi,Env.vFlow(1));
+        interp2(Munk.pitch,Munk.vFlow,Munk.F(:,:,3),alpha*180/pi,Env.vFlow(1))];
 F.gravG = [0 0 -Sys.m*Env.g]';                          %   N - Gravitational force
 F.gravB = BcG*F.gravG;                                  %   N - Gravitational force (body)
 F.buoyG = -F.gravG*Sys.B;                               %   N - Buoyancy force
@@ -41,7 +41,9 @@ F.thrB = BcT*[0;0;thrForce];                        %   N - Tether force in the 
 F.thrB = -Fnet;                                     %   N - Tether force during static equilibrium 
 Theta0 = atan2(-F.thrB(3),-F.thrB(1))*180/pi;       %   deg - Steady-state elevation angle 
 %%  Moment Calculations
-M.Ca = -CaNu(4:6)*0;                                  %   Nm - Moment due to added mass Coriolis terms 
+M.Ca = [interp2(Munk.pitch,Munk.vFlow,Munk.M(:,:,1),alpha*180/pi,Env.vFlow(1));
+        interp2(Munk.pitch,Munk.vFlow,Munk.M(:,:,2),alpha*180/pi,Env.vFlow(1));
+        interp2(Munk.pitch,Munk.vFlow,Munk.M(:,:,3),alpha*180/pi,Env.vFlow(1))];                                  %   Nm - Moment due to added mass Coriolis terms 
 %%  About the CM
 M.B = cross(CM.xb,F.buoyB);                         %   Nm - Buoyancy moment
 M.G = cross(CM.xg,F.gravB);                         %   Nm - Gravitational moment
@@ -51,7 +53,9 @@ M.H = cross(CM.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabiliz
 M.V = cross(CM.xV,F.dragBv);                        %   Nm - Vertical stabilizer moment
 M.F = cross(CM.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(CM.xbr,F.thrB);                         %   Nm - Tether moment
-M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment
+M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment minus added mass
+    + M.T;
+M.totMa = M.B + M.G + M.W + M.H + M.V + M.F ...     %   Nm - Total moment
     + M.T + M.Ca;
 MCM = M;
 %%  About the tether attachment point 
@@ -63,7 +67,9 @@ M.H = cross(BR.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabiliz
 M.V = cross(BR.xV,F.dragBv);                        %   Nm - Vertical stabilizer moment
 M.F = cross(BR.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(BR.xbr,F.thrB);                         %   Nm - Tether moment
-M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment
+M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment minus added mass
+    + M.T;
+M.totMa = M.B + M.G + M.W + M.H + M.V + M.F ...     %   Nm - Total moment
     + M.T + M.Ca;
 MBR = M;
 %%  About the LE
@@ -75,7 +81,9 @@ M.H = cross(LE.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabiliz
 M.V = cross(LE.xV,F.dragBv);                        %   Nm - Vertical stabilizer moment
 M.F = cross(LE.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(LE.xbr,F.thrB);                         %   Nm - Tether moment
-M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment
+M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment minus added mass
+    + M.T;
+M.totMa = M.B + M.G + M.W + M.H + M.V + M.F ...     %   Nm - Total moment
     + M.T + M.Ca;
 MLE = M;
 %%  Find required horizontal stabilizer CL for trim
