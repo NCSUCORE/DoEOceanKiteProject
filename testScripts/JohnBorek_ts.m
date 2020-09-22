@@ -138,12 +138,12 @@ for ii = 1:numel(flwSpd)
     end
 end
 %%  Plot Results
-% if simScenario < 3
-%     lap = max(tsc.lapNumS.Data)-1;
-%     tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==1)
-% else
-%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-% end
+if simScenario < 3
+    lap = max(tsc.lapNumS.Data)-1;
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==1)
+else
+    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+end
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
