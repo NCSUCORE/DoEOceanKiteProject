@@ -6,7 +6,7 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-simScenario = 1.3;
+simScenario = 1.4;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
@@ -49,7 +49,8 @@ for ii = 1:numel(flwSpd)
         loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
         loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5
-        %         loadComponent('Manta2RotXFlr_Thr075_125Inc');                               %   Manta kite with AVL
+    elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
+        loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -79,8 +80,9 @@ for ii = 1:numel(flwSpd)
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-    thr.tether1.setDiameter(0.007,thr.tether1.diameter.Unit);
+    thr.tether1.setDiameter(0.010,thr.tether1.diameter.Unit);
     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
+    thr.tether1.dragCoeff.setValue(1,'');
     %%  Winches Properties
     wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
     wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -101,13 +103,12 @@ for ii = 1:numel(flwSpd)
     end
     thr.tether1.dragEnable.setValue(1,'');
     %%  Set up critical system parameters and run simulation
-    fprintf('Diameter = %.2f m;\t Elevator = %.3f deg\n',D(ii),E(jj));
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
     %%  Log Results
     tsc = signalcontainer(logsout);
     if simScenario ~= 2 && simScenario < 3
-        %             Pow = tsc.rotPowerSummary(vhcl,env);
+        Pow = tsc.rotPowerSummary(vhcl,env);
     end
     dt = datestr(now,'mm-dd_HH-MM');
     if simScenario == 0
@@ -115,8 +116,8 @@ for ii = 1:numel(flwSpd)
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
     elseif simScenario > 0 && simScenario < 2
         if numel(flwSpd) == 1
-            %                 filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
-            filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_I-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,vhcl.hStab.incidence.Value);
+            % filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
+            filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_ThrD-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,thr.tether1.diameter.Value*1000);
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
         else
             filename = sprintf(strcat('Turb%.1f_V-%.3f.mat'),simScenario,flwSpd(ii));
@@ -140,7 +141,7 @@ end
 %%  Plot Results
 if simScenario < 3
     lap = max(tsc.lapNumS.Data)-1;
-    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==1)
+    tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end

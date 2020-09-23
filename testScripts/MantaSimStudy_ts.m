@@ -9,10 +9,10 @@ clear;clc;%close all
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
 simScenario = 1.3;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
-D = 0.3:.01:0.65;  E = -.5:.05:.75;
+D = 0.6;  E = -1:.1:0;
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -52,7 +52,7 @@ for ii = 1:numel(D)%flwSpd)
             loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
         elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
             loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5
-            %         loadComponent('Manta2RotXFlr_Thr075_125Inc');                               %   Manta kite with AVL
+            loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5
         end
         %%  Environment Properties
         loadComponent('ConstXYZT');                                 %   Environment
@@ -103,7 +103,7 @@ for ii = 1:numel(D)%flwSpd)
             fltCtrl.pitchTime.setValue(0:250:3000,'s');         fltCtrl.pitchLookup.setValue(0:12,'deg');
         end
         vhcl.turb1.setDiameter(D(ii),'m');     vhcl.turb2.setDiameter(D(ii),'m')
-        thr.tether1.dragEnable.setValue(0,'');
+        thr.tether1.dragEnable.setValue(1,'');
         %%  Set up critical system parameters and run simulation
         fprintf('Diameter = %.2f m;\t Elevator = %.3f deg\n',D(ii),E(jj));
         simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
@@ -153,7 +153,7 @@ for ii = 1:numel(D)%flwSpd)
         Ffuse(ii,jj) = mean(Fuse(ran)); Fthr(ii,jj) = mean(Thr(ran));   Fturb(ii,jj) = mean(Turb(ran));
     end
 end
-save('DiamAndAoAStudy.mat','Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr','Fturb','D','E')
+% save('DiamAndAoAStudy.mat','Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr','Fturb','D','E')
 %%  Plot Results
 % if simScenario < 3
 %     lap = max(tsc.lapNumS.Data)-1;
