@@ -14,7 +14,7 @@ E_structure = 100*10^9;
 
 %Conductor Wire Properties
 Bool_wire = 1;
-numWires = 10;
+numWires = 9;
 D_wireMin = .001; %avg.0018
 D_wireMax = .0015;
 rho_wire = 8960;
@@ -97,8 +97,8 @@ for ii = 1:length(D_wire)
         V_in = power/current;
         wire_resistance(ii,jj) = rho_electrical*l/A_wire(ii,jj);
         %V_drop(ii,jj) = current*wire_resistance(ii,jj);
-        V_drop(ii,jj) = 2*current*wire_resistance(ii,jj);
-        PowerLoss(ii,jj) = 2*wire_resistance(ii,jj)*current^2;
+        V_drop(ii,jj) = current*wire_resistance(ii,jj);
+        PowerLoss(ii,jj) = wire_resistance(ii,jj)*current^2;
         V_drop_percent(ii,jj) = (V_drop(ii,jj)/V_in)*100;
         V_out = V_in-V_drop;
         
