@@ -628,6 +628,35 @@ classdef vehicleM < dynamicprops
                 aeroStruct(4).alpha = AoA;
                 aeroStruct(4).CL    = CLvStab;
                 aeroStruct(4).CD    = CDvStab;
+            elseif obj.hydroChracterization.Value == 4
+                AR = obj.wingAR.Value;
+                % hard coded values corresponding to NACA 2412
+                if ~strcmp(obj.wingAirfoil.Value,'NACA2412')
+                    warning('XFLR values are only applicable to wingAirfoil.Value=NACA2412');
+                end
+                gammaw = 0.9512;
+                eLw = 0.7019;
+                Clw0 = 0.16;
+                Cdw_visc = 0.0297;
+                Cdw_ind = 0.15;
+                AoA = linspace(-55,55,71)';
+                [CLFullWing,CDFullWing] = ...
+                    XFLRWingCalc(AoA,AR,gammaw,eLw,Clw0,Cdw_visc,...
+                    Cdw_ind,obj.wingAirfoil.Value);
+                [CLhStab,CDhStab] = XFLRHStabCalc_Ind(AoA,obj.fluidRefArea.Value,obj.hStab.planformArea.Value,obj.hStab.incidence.Value);
+                [CLvStab,CDvStab] = XFLRVStabCalc(AoA,obj.fluidRefArea.Value,obj.vStab.planformArea.Value);
+                % overwrite values from AVL
+                for ii = 1:2
+                    aeroStruct(ii).alpha = AoA;
+                    aeroStruct(ii).CL = CLFullWing./2;
+                    aeroStruct(ii).CD = CDFullWing./2+.0035;
+                end
+                aeroStruct(3).alpha = AoA;
+                aeroStruct(3).CL    = CLhStab;
+                aeroStruct(3).CD    = CDhStab+.0035;
+                aeroStruct(4).alpha = AoA;
+                aeroStruct(4).CL    = CLvStab;
+                aeroStruct(4).CD    = CDvStab+.0035;
             end
                 
             obj.portWing.setCL(aeroStruct(1).CL,'');

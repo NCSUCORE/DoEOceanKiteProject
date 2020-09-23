@@ -1,4 +1,4 @@
-function [MCM,MBR,MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR)
+function [MCM,MBR,MLE,F,CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,turb,Ang,CM,LE,BR)
 %%  Munk Moment
 load('MunkMoments.mat')
 %%  Important Variables 
@@ -10,13 +10,6 @@ BcG = BcT*TcG;                                          %   Rotation matrix from
 vApp = BcG*Env.vFlow-Sys.vKite;                         %   m/s - Apparent flow velocity
 uApp = vApp./norm(vApp);                                %   Apparent velocity direction
 alpha = atan2(vApp(3),vApp(1));                         %   Angle of attack
-vR = [vApp;0;0;0];
-mvR = Sys.ma*vR;
-Ca = zeros(6);
-Ca(1:3,4:6) = -crossProdMat(mvR(1:3));
-Ca(4:6,1:3) = -crossProdMat(mvR(1:3));
-Ca(4:6,4:6) = -crossProdMat(mvR(4:6));
-CaNu = Ca*mvR;
 %%  Force Calculations
 F.Ca = [interp2(Munk.pitch,Munk.vFlow,Munk.F(:,:,1),alpha*180/pi,Env.vFlow(1));
         interp2(Munk.pitch,Munk.vFlow,Munk.F(:,:,2),alpha*180/pi,Env.vFlow(1));
@@ -25,6 +18,7 @@ F.gravG = [0 0 -Sys.m*Env.g]';                          %   N - Gravitational fo
 F.gravB = BcG*F.gravG;                                  %   N - Gravitational force (body)
 F.buoyG = -F.gravG*Sys.B;                               %   N - Buoyancy force
 F.buoyB = BcG*F.buoyG;                                  %   N - Buoyancy force (body)
+F.turbB = 1/2*Env.rho*turb.CD*pi/4*turb.D^2*vApp(1)^2*uApp*turb.num;
 [CL,CD,fuse] = getCLCD(alpha,wing,hStab,vStab,fuse);
 %   Lift Forces
 F.liftBw = 1/2*Env.rho*CL.W*wing.S*norm(vApp)^2*cross(uApp,[0;1;0]);
@@ -53,10 +47,11 @@ M.H = cross(CM.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabiliz
 M.V = cross(CM.xV,F.dragBv);                        %   Nm - Vertical stabilizer moment
 M.F = cross(CM.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(CM.xbr,F.thrB);                         %   Nm - Tether moment
+M.Tu = cross(CM.xT,F.turbB);                        %   Nm - Turbine moment 
 M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment minus added mass
-    + M.T;
+    + M.T + M.Tu;
 M.totMa = M.B + M.G + M.W + M.H + M.V + M.F ...     %   Nm - Total moment
-    + M.T + M.Ca;
+    + M.T + M.Tu + M.Ca;
 MCM = M;
 %%  About the tether attachment point 
 M.B = cross(BR.xb,F.buoyB);                         %   Nm - Buoyancy moment
@@ -67,10 +62,11 @@ M.H = cross(BR.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabiliz
 M.V = cross(BR.xV,F.dragBv);                        %   Nm - Vertical stabilizer moment
 M.F = cross(BR.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(BR.xbr,F.thrB);                         %   Nm - Tether moment
+M.Tu = cross(BR.xT,F.turbB);                        %   Nm - Turbine moment 
 M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment minus added mass
-    + M.T;
+    + M.T + M.Tu;
 M.totMa = M.B + M.G + M.W + M.H + M.V + M.F ...     %   Nm - Total moment
-    + M.T + M.Ca;
+    + M.T + M.Tu + M.Ca;
 MBR = M;
 %%  About the LE
 M.B = cross(LE.xb,F.buoyB);                         %   Nm - Buoyancy moment
@@ -81,10 +77,11 @@ M.H = cross(LE.xH,F.liftBh+F.dragBh);               %   Nm - Horizontal stabiliz
 M.V = cross(LE.xV,F.dragBv);                        %   Nm - Vertical stabilizer moment
 M.F = cross(LE.xf,F.dragBf);                        %   Nm - Fuselage moment
 M.T = cross(LE.xbr,F.thrB);                         %   Nm - Tether moment
+M.Tu = cross(LE.xT,F.turbB);                        %   Nm - Turbine moment 
 M.tot = M.B + M.G + M.W + M.H + M.V + M.F ...       %   Nm - Total moment minus added mass
-    + M.T;
+    + M.T + M.Tu;
 M.totMa = M.B + M.G + M.W + M.H + M.V + M.F ...     %   Nm - Total moment
-    + M.T + M.Ca;
+    + M.T + M.Tu + M.Ca;
 MLE = M;
 %%  Find required horizontal stabilizer CL for trim
 [MCM,F,CLCM] = getReqStab(MCM,F,CM,Env,hStab,vApp,uApp,CL);
@@ -120,14 +117,11 @@ CD.Wa = CL.Wa^2/(pi*wing.eD*wing.AR);
 CD.Ha = CL.Ha^2/(pi*hStab.eD*hStab.AR);
 end
 function [M,F,CL] = getReqStab(M,F,A,Env,hStab,vApp,uApp,CL)
-CL.hReq = 2*dot(M.B+M.G+M.W+M.V+M.F+M.T+M.dH,[0;1;0])...
+CL.hReq = 2*dot(M.B+M.G+M.W+M.V+M.F+M.T+M.Tu+M.Ca+M.dH,[0;1;0])...
             /(Env.rho*hStab.S*norm(vApp)^2*norm(A.xH));
 F.liftBhReq = 1/2*Env.rho*CL.hReq*hStab.S*norm(vApp)^2*cross(uApp,[0;1;0]);
 M.HReq = cross(A.xH,F.liftBhReq+F.dragBh);               %   Nm - Horizontal stabilizer moment
-M.totReq = M.B+M.G+M.W+M.HReq+M.V+M.T;                          %   Nm - Total moment
-end
-function A = crossProdMat(a)
-A = [0,-a(3),a(2);a(3),0,-a(1);-a(2),a(1),0];
+M.totReq = M.B+M.G+M.W+M.HReq+M.V+M.T+M.Tu;                          %   Nm - Total moment
 end
 
 

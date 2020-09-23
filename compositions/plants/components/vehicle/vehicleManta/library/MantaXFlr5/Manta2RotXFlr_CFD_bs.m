@@ -4,7 +4,7 @@ clear; clc
 VEHICLE               = "vehicleManta2Rot";
 PLANT                 = "plantManta2Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
-LIBRARY               = "Manta2RotXFlr_Thr075";
+LIBRARY               = "Manta2RotXFlr_CFD";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -13,7 +13,7 @@ vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_Inc-0','');
-vhcl.setHydroCharacterization(3,'');
+vhcl.setHydroCharacterization(4,'');
 %% Volumes and Inertia
 vhcl.setVolume(1.050865,'m^3');
 Ixx = 1.7362769e3;
@@ -55,7 +55,8 @@ vhcl.hStab.setRootChord(.52,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(3.2/((.52+.52*.8)*.5),''); %Span 4, hspan 2
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(1.16,'deg');
+vhcl.hStab.setIncidence(1.52,'deg');
+% vhcl.hStab.setIncidence(0,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
