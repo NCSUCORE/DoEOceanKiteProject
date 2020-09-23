@@ -6,6 +6,7 @@ clc;clear;
 % loadComponent('Manta2RotXFoil_0Inc');                          %   Load new vehicle with 2 rotors
 % loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
 loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
+% loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5 
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -43,6 +44,10 @@ fuse.CDs = vhcl.fuse.sideDragCoeff.Value;           %   Fuselage drag coefficien
 fuse.L = vhcl.fuse.length.Value;                    %   m - Length of fuselage 
 fuse.D = vhcl.fuse.diameter.Value;                  %   m - Fuselage diameter 
 
+turb.D = vhcl.turb1.diameter.Value;                 %   m - Turbine diameter 
+turb.CD = vhcl.turb1.dragCoeff.Value;               %   Rotor drag coefficient 
+turb.num = vhcl.numTurbines.Value;                  %   # of turbines 
+
 Sys.m = vhcl.mass.Value;                            %   kg - vehicle mass
 Sys.ma = vhcl.Ma6x6_LE.Value;                       %   kg - added mass matrix 
 Sys.B = 1;                                          %   Buoyancy factor
@@ -58,33 +63,25 @@ Sys.xV = Sys.LE+...                                 %   m - Vertical stabilizer 
     vhcl.vStab.rSurfLE_WingLEBdy.Value+...
     vStab.aeroCent;
 Sys.f = Sys.LE+vhcl.fuseMomentArm.Value;            %   m - Fuselage aerodynamic center w/ respect to nose
+Sys.xT = Sys.LE;
 
-CM.xg = Sys.xg-Sys.xg;                              
-CM.xb = Sys.xb-Sys.xg;
-CM.xbr = Sys.xbr-Sys.xg;
-CM.xW = Sys.xW-Sys.xg;
-CM.xH = Sys.xH-Sys.xg;
-CM.xV = Sys.xV-Sys.xg;
-CM.xf = Sys.f-Sys.xg;
+CM.xg = Sys.xg-Sys.xg;      CM.xb = Sys.xb-Sys.xg;
+CM.xbr = Sys.xbr-Sys.xg;    CM.xW = Sys.xW-Sys.xg;
+CM.xH = Sys.xH-Sys.xg;      CM.xV = Sys.xV-Sys.xg;
+CM.xf = Sys.f-Sys.xg;       CM.xT = Sys.xT-Sys.xg;
 
-BR.xg = Sys.xg-Sys.xbr;                              
-BR.xb = Sys.xb-Sys.xbr;
-BR.xbr = Sys.xbr-Sys.xbr;
-BR.xW = Sys.xW-Sys.xbr;
-BR.xH = Sys.xH-Sys.xbr;
-BR.xV = Sys.xV-Sys.xbr;
-BR.xf = Sys.f-Sys.xbr;
+BR.xg = Sys.xg-Sys.xbr;     BR.xb = Sys.xb-Sys.xbr;
+BR.xbr = Sys.xbr-Sys.xbr;   BR.xW = Sys.xW-Sys.xbr;
+BR.xH = Sys.xH-Sys.xbr;     BR.xV = Sys.xV-Sys.xbr;
+BR.xf = Sys.f-Sys.xbr;      BR.xT = Sys.xT-Sys.xbr;
 
-LE.xg = Sys.xg-Sys.LE;
-LE.xb = Sys.xb-Sys.LE;
-LE.xbr = Sys.xbr-Sys.LE;
-LE.xW = Sys.xW-Sys.LE;
-LE.xH = Sys.xH-Sys.LE;
-LE.xV = Sys.xV-Sys.LE;
-LE.xf = Sys.f-Sys.LE;
+LE.xg = Sys.xg-Sys.LE;      LE.xb = Sys.xb-Sys.LE;
+LE.xbr = Sys.xbr-Sys.LE;    LE.xW = Sys.xW-Sys.LE;
+LE.xH = Sys.xH-Sys.LE;      LE.xV = Sys.xV-Sys.LE;
+LE.xf = Sys.f-Sys.LE;       LE.xT = Sys.xT-Sys.LE;
 
 Sys.vKite = [0 0 0]';                               %   m/s - Kite velocity 
-Env.vFlow = [1.6 0 0]';                             %   m/s - Flow speed 
+Env.vFlow = [1.646 0 0]';                             %   m/s - Flow speed 
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
@@ -106,10 +103,14 @@ alphaRef = -10:.01:10;
 CLh = interp1(hStab.alpha,hStab.CL,alphaRef);
 for i = 1:numel(Ang.pitch)
     Ang.tanPitch = Ang.pitch(i)-90+Ang.elevation;              %   deg - Tangent pitch angle
-    [MCM,MBR(i),MLE,F(i),CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,Ang,CM,LE,BR);
+    [MCM,MBR(i),MLE,F(i),CLCM,CLBR,CLLE,CD,Theta0] = staticAnalysis(Sys,Env,wing,hStab,vStab,fuse,turb,Ang,CM,LE,BR);
     pitchM(i) = MBR(i).tot(2);
     pitchMa(i) = MBR(i).totMa(2);
-    lift(i) = sqrt(sum((F(i).liftBw+F(i).liftBw).^2));
+    if Ang.pitch(i) < -1.9
+        lift(i) = -sqrt(sum((F(i).liftBw+F(i).liftBw).^2));
+    else
+        lift(i) = sqrt(sum((F(i).liftBw+F(i).liftBw).^2));
+    end
     hReq = CLBR.hReq;
     if numel(Ang.pitch) == 1 && Ang.pitch(i) == 0
         idx = find(abs(CLh-hReq) <= .0005);
@@ -117,17 +118,35 @@ for i = 1:numel(Ang.pitch)
         CLhN = CLh(idx)
     end
 end
+if numel(Ang.pitch) > 1
+    mL = (lift(end)-lift(end-1))/(Ang.pitch(end)-Ang.pitch(end-1));
+    mL1 = diff(lift)./diff(Ang.pitch');
+    mM = (pitchM(end)-pitchM(end-1))/(Ang.pitch(end)-Ang.pitch(end-1));
+    mM1 = diff(pitchM)./diff(Ang.pitch');
+    mMa = (pitchMa(end)-pitchMa(end-1))/(Ang.pitch(end)-Ang.pitch(end-1));
+    mMa1 = diff(pitchMa)./diff(Ang.pitch');
+    hStatic = mM/mL;
+    hStatica = mMa/mL;
+    hS = pitchM./lift;
+    hSa = pitchMa./lift;
+    hS1 = mM1./mL1;
+    hSa1 = mMa1./mL1;
+end
 %%  Plotting 
 if numel(Ang.pitch) > 1
-    figure; subplot(2,1,1); hold on; grid on;
+    figure; %subplot(2,1,1); 
+    hold on; grid on;
     plot(Ang.pitch,pitchM,'b-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
     plot(Ang.pitch,pitchMa,'r-');  xlabel('$\theta$ [deg]');  ylabel('Pitch Moment [Nm]')
     legend('w/o $\mathrm{M_{add}}$','w/ $\mathrm{M_{add}}$')
-    subplot(2,1,2); hold on; grid on;
-    plot(Ang.pitch,lift,'b-');  xlabel('$\theta$ [deg]');  ylabel('Lift [N]')
+%     subplot(2,1,2); hold on; grid on;
+%     plot(Ang.pitch,lift,'b-');  xlabel('$\theta$ [deg]');  ylabel('Lift [N]')
 end
 % figure; hold on; grid on
 % plot(hStab.alpha,hStab.CL,'b-');  xlabel('$\theta$ [deg]');  ylabel('CLh')
 
-    
-    
+%%
+figure; subplot(1,2,1); hold on; grid on;
+plot(Ang.pitch,pitchMa,'b-');  xlabel('$\alpha$ [deg]');  ylabel('Pitch Moment [Nm]')
+subplot(1,2,2); hold on; grid on;
+plot(Ang.pitch(2:end),hSa1,'b-');  xlabel('$\alpha$ [deg]');  ylabel('Stability [m]')

@@ -13,7 +13,7 @@ for ii = 1:numel(D)
         [Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
         Turb = squeeze(sqrt(sum(tsc.FTurbBdy.Data.^2,1)));
         Pow = tsc.rotPowerSummary(vhcl,env);
-        Pavg(ii,jj) = Pow.avg;
+        Pavg(ii,jj) = Pow.avg;          Ployd(ii,jj) = Pow.loyd;
         AoA(ii,jj) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
         CL(ii,jj) = mean(CLtot(ran));   CD(ii,jj) = mean(CDtot(ran));
         Fdrag(ii,jj) = mean(Drag(ran)); Flift(ii,jj) = mean(Lift(ran));
@@ -21,7 +21,7 @@ for ii = 1:numel(D)
     end
 end
 toc
-save('DiamAndAoAStudy.mat','Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr','Fturb','D','E')
+save('DiamAndAoAStudyThr.mat','Pavg','Ployd','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr','Fturb','D','E')
 %%
 for i = 1:numel(D)
     [Pmax(i),Dmax(i)] = max(Pavg(i,:));
