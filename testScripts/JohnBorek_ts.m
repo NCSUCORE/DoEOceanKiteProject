@@ -8,7 +8,7 @@ clear;clc;%close all
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
 simScenario = 1.4;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
@@ -50,7 +50,8 @@ for ii = 1:numel(flwSpd)
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
         loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5
     elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-        loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5
+        loadComponent('Manta2RotXFlr_CFD');                                 %   Manta kite with XFlr5
+%         loadComponent('Manta2RotXFlr_CFD_AR10');                                 %   Manta kite with XFlr5
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -80,7 +81,7 @@ for ii = 1:numel(flwSpd)
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-    thr.tether1.setDiameter(0.010,thr.tether1.diameter.Unit);
+    thr.tether1.setDiameter(0.0095,thr.tether1.diameter.Unit);
     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
     thr.tether1.dragCoeff.setValue(1,'');
     %%  Winches Properties
@@ -90,8 +91,8 @@ for ii = 1:numel(flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.1
-        fltCtrl.setElevatorReelInDef(-2,'deg')
+    if simScenario == 1.4
+        fltCtrl.setElevatorReelInDef(.5,'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
@@ -108,7 +109,7 @@ for ii = 1:numel(flwSpd)
     %%  Log Results
     tsc = signalcontainer(logsout);
     if simScenario ~= 2 && simScenario < 3
-        Pow = tsc.rotPowerSummary(vhcl,env);
+%         Pow = tsc.rotPowerSummary(vhcl,env);
     end
     dt = datestr(now,'mm-dd_HH-MM');
     if simScenario == 0
@@ -117,7 +118,7 @@ for ii = 1:numel(flwSpd)
     elseif simScenario > 0 && simScenario < 2
         if numel(flwSpd) == 1
             % filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
-            filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_ThrD-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,thr.tether1.diameter.Value*1000);
+            filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_ThrD-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,thr.tether1.diameter.Value*1000);
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
         else
             filename = sprintf(strcat('Turb%.1f_V-%.3f.mat'),simScenario,flwSpd(ii));
