@@ -53,7 +53,7 @@ for ii = 1:numel(D)%flwSpd)
         elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
             loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5
         elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-            loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5
+            loadComponent('Manta2RotXFlr_CFD_AR10');                              %   Manta kite with XFlr5
         end
         %%  Environment Properties
         loadComponent('ConstXYZT');                                 %   Environment

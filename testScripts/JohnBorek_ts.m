@@ -51,7 +51,7 @@ for ii = 1:numel(flwSpd)
         loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5
     elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
         loadComponent('Manta2RotXFlr_CFD');                                 %   Manta kite with XFlr5
-%         loadComponent('Manta2RotXFlr_CFD_AR10');                                 %   Manta kite with XFlr5
+        loadComponent('Manta2RotXFlr_CFD_AR10');                                 %   Manta kite with XFlr5
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -109,7 +109,7 @@ for ii = 1:numel(flwSpd)
     %%  Log Results
     tsc = signalcontainer(logsout);
     if simScenario ~= 2 && simScenario < 3
-%         Pow = tsc.rotPowerSummary(vhcl,env);
+        Pow = tsc.rotPowerSummary(vhcl,env);
     end
     dt = datestr(now,'mm-dd_HH-MM');
     if simScenario == 0
