@@ -141,12 +141,14 @@ for ii = 1:numel(flwSpd)
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
     %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
-    simWithMonitor('OCTModel_for_lin')
+    simWithMonitor('OCTModel')
     %[A, B, C, D] = linmod('OCTModel',xFinal,[0 0 0 0]);
     %%  Log Results
     
     tsc = signalcontainer(logsout);
     tempLoad = tsc.airTenVecs.mag
+ 
+    %wingLoad = tsc.air
     if simScenario  > 3 && simScenario < 4
         %thrTen = tempLoad.getdatasamples(tsc));
     else
@@ -161,7 +163,9 @@ if simScenario < 3 && simScenario ~= 2
 else
     tsc.plotLaR(fltCtrl);
 end
-
+wingLoad = tsc.stbdWingForce.Data;
+hstabLoad = tsc.hStabForce.Data;
+vstabLoad = tsc.vStabForce.Data;
 lenScale = repmat(linspace(0.05,0.10)',1,100);
 
 if simScenario > 3 && simScenario < 4
