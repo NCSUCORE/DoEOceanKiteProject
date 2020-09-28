@@ -1,3 +1,6 @@
 [submodule "repository"]
 	path = repository
 	url = https://github.com/NCSUCORE/DoEOceanKiteProject.git
+[submodule "documentation/kiteCad"]
+	path = documentation/kiteCad
+	url = https://github.com/NCSUCORE/kiteCADRepo.git

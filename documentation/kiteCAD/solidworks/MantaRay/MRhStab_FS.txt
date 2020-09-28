@@ -1,6 +1,0 @@
-﻿"rootChord"= 0.52
-"NACAairfoil"= 0015
-"incidentAngle"= 2
-"aspectRatio"= 6.8376
-"taperRatio"= 0.8
-"sweepAngle"= 0'H-stab sweep angle
