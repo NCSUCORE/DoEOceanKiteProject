@@ -202,6 +202,9 @@ Radiuses = [D_total/2                                                       ;...
             (D_wire/2 + thick_insulation)*ones(numWires,1)                  ;...
             D_fiberOptic/2*ones(numFiberOptic,1)                                        ;...
             (D_fiberOptic/2 + thick_fiberOpticSheath)*ones(numFiberOptic,1)];
+%% convert to mm
+Centers = Centers*1000;
+Radiuses = Radiuses*1000;
 
 %% Plots for circles
 for ii = 1:length(Radiuses)
@@ -209,8 +212,10 @@ for ii = 1:length(Radiuses)
 end
 
 %% Plot limits
-app.PlotAxes.DrawPlot.YLim = [-max(D_total,[],'all')/2, max(D_total,[],'all')/2];
-app.PlotAxes.DrawPlot.XLim = [-max(D_total,[],'all')/2, max(D_total,[],'all')/2];
+app.PlotAxes.DrawPlot.YLim = 1000.*[-max(D_total,[],'all')/2, max(D_total,[],'all')/2];
+app.PlotAxes.DrawPlot.XLim = 1000.*[-max(D_total,[],'all')/2, max(D_total,[],'all')/2];
+
+%% Plot Label
 
 %% Outputs of App
 support_Force = M_total*g - M_totalDisplaced*g;
