@@ -6,7 +6,7 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-simScenario = 1.4;
+simScenario = 1.5;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
@@ -51,7 +51,8 @@ for ii = 1:numel(flwSpd)
         loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5
     elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
         loadComponent('Manta2RotXFlr_CFD');                                 %   Manta kite with XFlr5
-        loadComponent('Manta2RotXFlr_CFD_AR10');                                 %   Manta kite with XFlr5
+    elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
+        loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -81,7 +82,7 @@ for ii = 1:numel(flwSpd)
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-    thr.tether1.setDiameter(0.0095,thr.tether1.diameter.Unit);
+    thr.tether1.setDiameter(0.01,thr.tether1.diameter.Unit);
     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
     thr.tether1.dragCoeff.setValue(1,'');
     %%  Winches Properties
@@ -91,18 +92,19 @@ for ii = 1:numel(flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.4
-        fltCtrl.setElevatorReelInDef(.5,'deg')
+    if simScenario == 1.1
+        fltCtrl.setElevatorReelInDef(-2,'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
     end
     if simScenario >= 3 && simScenario < 4
-        %         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+%         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(15,'deg');
         fltCtrl.pitchTime.setValue(0:250:3000,'s');         fltCtrl.pitchLookup.setValue(0:12,'deg');
     end
     thr.tether1.dragEnable.setValue(1,'');
+%     vhcl.turb1.setDiameter(D(ii),'m');     vhcl.turb2.setDiameter(D(ii),'m')
     %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
@@ -152,8 +154,8 @@ end
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
 %         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
-%     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==1,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+%     vhcl.animateSim(tsc,2,'Pause',1==0,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
 %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
 % end
 %%  Compare to old results

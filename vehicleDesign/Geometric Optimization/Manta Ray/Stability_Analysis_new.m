@@ -4,10 +4,10 @@ clc;clear;
 %%  Input definitions 
 % loadComponent('Manta2RotAVL_0Inc');                          %   Load new vehicle with 2 rotors
 % loadComponent('Manta2RotXFoil_0Inc');                          %   Load new vehicle with 2 rotors
-loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
+% loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
 % loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
 % loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5 
-loadComponent('Manta2RotXFlr_CFD_AR10');                                 %   Manta kite with XFlr5
+loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -20,7 +20,8 @@ wing.Cfe = 0.003;                                   %   Wing skin-friction drag 
 wing.gamma = 1;                                     %   Wing airfoil lift curve slope multiplicative constant
 wing.eL = 0.9;                                      %   Wing lift Oswald efficiency factor
 wing.eD = 0.9;                                      %   Wing drag Oswald efficiency factor
-wing.aeroCent = [.1807 0 0]';                       %   Wing aerodynamic center 
+wing.aeroCent = ...                                 %   Wing aerodynamic center 
+    [vhcl.portWing.rAeroCent_SurfLE.Value(1) 0 0]';
 wing.E = 69e9;                                      %   Wing modulus of elasticity 
 
 hStab.alpha = vhcl.hStab.alpha.Value;               %   Horizontal stabilizer alpha vec
@@ -38,7 +39,7 @@ vStab.alpha = vhcl.vStab.alpha.Value;               %   Find index corresponding
 vStab.CD = vhcl.vStab.CD.Value;                     %   Horizontal stabilizer drag coefficient at zero alpha
 vStab.S = vhcl.fluidRefArea.Value;                  %   Reference area for horizontal stabilizer
 vStab.eD = 0.9;                                     %   Vertical stabilizer drag Oswald efficiency factor
-vStab.aeroCent = [.1739 0 .9389]';                  %   Vertical stabilizer aero center
+vStab.aeroCent = [.1175 0 .9389]';                  %   Vertical stabilizer aero center
 
 fuse.CD0 = vhcl.fuse.endDragCoeff.Value;            %   Fuselage drag coefficient at 0° AoA
 fuse.CDs = vhcl.fuse.sideDragCoeff.Value;           %   Fuselage drag coefficient at 90° AoA
@@ -86,7 +87,7 @@ Env.vFlow = [1.646 0 0]';                             %   m/s - Flow speed
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
-% [Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
+[Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
 %%  Position and Orientation Angles 
 Ang.elevation = 80;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
