@@ -56,7 +56,7 @@ for ii = 1:numel(flwSpd)
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
         loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
-        loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
+        loadComponent('fullScale1thr');                              %   Manta kite with XFlr5 
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -172,7 +172,7 @@ if simScenario > 3 && simScenario < 4
     flwSpdPlot = repmat(linspace(0.05,1),100,1);
     %if simScenariosub = 3
 else
-    flwSpdPlot = repmat(linspace(0.05,0.25),100,1);
+    flwSpdPlot = repmat(linspace(0.05,.5),100,1);
 end
 thrTenPlot = thrTen.*(flwSpdPlot/flwSpd).^2.*lenScale.^2;
 
