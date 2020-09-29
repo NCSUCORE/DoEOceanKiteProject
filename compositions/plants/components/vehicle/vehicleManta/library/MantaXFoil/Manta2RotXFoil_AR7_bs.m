@@ -4,7 +4,7 @@
 VEHICLE               = "vehicleManta2Rot";
 PLANT                 = "plantManta2Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
-LIBRARY               = "Manta2RotXFlr_CFD_AR";
+LIBRARY               = "Manta2RotXFoil_AR7";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -12,15 +12,15 @@ vhcl = OCT.vehicleM;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('Manta_Inc-0_AR9','');
-vhcl.setHydroCharacterization(4,'');
+vhcl.setFluidCoeffsFileName('Manta_Inc-0_AR7','');
+vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
-vhcl.setVolume(1.23959,'m^3');
-Ixx = 2.6331156e3;
-Iyy = 3.0187659e3;
-Izz = 5.5462679e3;
-Ixy = 6.3461301e-2;
-Ixz = 1.0917430e2;
+vhcl.setVolume(1.5803,'m^3');
+Ixx = 4.2532000e3;
+Iyy = 3.0541896e3;
+Izz = 7.1966048e3;
+Ixy = 7.6868199e-2;
+Ixz = 1.0931323e2;
 Iyz = 0;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
@@ -28,7 +28,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([.815587;0;.0379757],'m')
+vhcl.setRCM_LE([.77956808;0;.034993723],'m')
 vhcl.setRB_LE([0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
@@ -38,9 +38,9 @@ vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 
 %% Wing
-AR = 9; b = 8; MAC = b/AR; cR = 2*MAC/1.8;
+AR = 7; b = 8; MAC = b/AR; cR = 2*MAC/1.8;
 vhcl.setWingRootChord(cR,'m');
-vhcl.setWingAR(9,'');
+vhcl.setWingAR(7,'');
 vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(0,'deg');
 vhcl.setWingDihedral(0,'deg');
@@ -56,8 +56,7 @@ vhcl.hStab.setRootChord(.52,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpan(1.95,'m');
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(.6,'deg');
-% vhcl.hStab.setIncidence(0,'deg');
+vhcl.hStab.setIncidence(0,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
@@ -80,7 +79,6 @@ vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1)+vhcl.hStab.rootC
                           vhcl.vStab.rSurfLE_WingLEBdy.Value(1)+vhcl.vStab.rootChord.Value);0;0],'m');
 
 vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)*.75;0;-vhcl.fuse.diameter.Value/2],'m');
-% vhcl.setRBridle_LE(vhcl.rCM_LE.Value,'m');
 %% Turbines
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
@@ -111,7 +109,7 @@ Input.vStab.Thickness = 15; Input.vStab.Sections = 10;
 Input.fuse.Sections = 10; 
 [MA] = getAddedMass(Input,vhcl);
 vhcl.setMa6x6_LE(MA,'');
-% vhcl.plot
+vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 
