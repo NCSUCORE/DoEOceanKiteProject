@@ -22,7 +22,7 @@ n
 
 
 oper
-re 1e+06
+re 700000
 mach 0
 visc
 pacc
