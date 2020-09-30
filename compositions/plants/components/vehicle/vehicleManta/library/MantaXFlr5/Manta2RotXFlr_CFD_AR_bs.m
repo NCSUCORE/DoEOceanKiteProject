@@ -38,9 +38,9 @@ vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 
 %% Wing
-AR = 9; b = 8; MAC = b/AR; cR = 2*MAC/1.8;
+AR = 9/2; b = 4; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
 vhcl.setWingRootChord(cR,'m');
-vhcl.setWingAR(9,'');
+vhcl.setWingAR(AR*2,'');
 vhcl.setWingTR(0.8,'');
 vhcl.setWingSweep(0,'deg');
 vhcl.setWingDihedral(0,'deg');
