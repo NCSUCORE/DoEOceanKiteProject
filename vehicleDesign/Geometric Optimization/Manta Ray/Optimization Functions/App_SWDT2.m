@@ -4,7 +4,7 @@ function [Ixx_opt,Mw_out,exitflag,Wopt] = App_SWDT2(AR_opt, S_opt, Volwing, Ixx_
 % Author: Sumedh Beknalkar
 
 in.Wskin = 20; in.Wsp1 = 1; in.Wsp2 = 5; in.Wsp3 = 10;
-in.Skmax = 0.2; in.Sp1max = 0.1;  in.Sp2max = 0.1;  in.Sp3max = 0.1; 
+in.Skmax = 0.2; in.Sp1max = 0.2;  in.Sp2max = 0.2;  in.Sp3max = 0.2; 
 in.rho = 1000.0;
 in.rhow = 2710.0; %Al
 in.wmassrat = .4;
