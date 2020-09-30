@@ -29,7 +29,7 @@ if turb
     N = vhcl.numTurbines.Value;
     if N == 1
         power = squeeze(obj.turbPow.Data(1,1,:));
-        energy = squeeze(obj.turbEnrg.Data(1,1,:))/1000/3600;
+        energy = cumtrapz(time,power)/1000/3600;
     else
         power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
         energy = cumtrapz(time,power)/1000/3600;
