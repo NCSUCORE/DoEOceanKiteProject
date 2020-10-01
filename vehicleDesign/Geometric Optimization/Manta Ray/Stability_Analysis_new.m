@@ -8,6 +8,7 @@ clc;clear;
 % loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
 % loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5 
 loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
+% loadComponent('Manta2RotXFoil_AR7');
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span
@@ -87,7 +88,7 @@ Env.vFlow = [1.646 0 0]';                             %   m/s - Flow speed
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
-[Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
+% [Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
 %%  Position and Orientation Angles 
 Ang.elevation = 80;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
