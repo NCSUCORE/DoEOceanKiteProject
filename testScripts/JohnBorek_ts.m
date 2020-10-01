@@ -8,7 +8,7 @@ clear;clc;%close all
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
 simScenario = 1.5;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
@@ -53,6 +53,8 @@ for ii = 1:numel(flwSpd)
         loadComponent('Manta2RotXFlr_CFD');                                 %   Manta kite with XFlr5
     elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
         loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
+    elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
+        loadComponent('Manta2RotXFoil_AR7');                                 %   Manta kite with XFlr5
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -92,19 +94,19 @@ for ii = 1:numel(flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.1
-        fltCtrl.setElevatorReelInDef(-2,'deg')
+    if simScenario == 1.6
+        fltCtrl.setElevatorReelInDef(-1,'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
     end
     if simScenario >= 3 && simScenario < 4
-%         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(15,'deg');
+        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
         fltCtrl.pitchTime.setValue(0:250:3000,'s');         fltCtrl.pitchLookup.setValue(0:12,'deg');
     end
     thr.tether1.dragEnable.setValue(1,'');
-%     vhcl.turb1.setDiameter(D(ii),'m');     vhcl.turb2.setDiameter(D(ii),'m')
+%     vhcl.turb1.setDiameter(.5,'m');     vhcl.turb2.setDiameter(.5,'m')
     %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
@@ -130,7 +132,6 @@ for ii = 1:numel(flwSpd)
         filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Winch\');
     elseif simScenario >= 3 && simScenario < 4
-        if vhcl.Ma6x6_LE.Value(1,1) ~= 0; AM = 1; else; AM = 0; end
         filename = sprintf(strcat('Steady%.1f_EL-%.1f_kp-%.2f_ki-%.2f_',dt,'.mat'),simScenario,el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Steady\');
     elseif simScenario >= 4
@@ -151,11 +152,11 @@ end
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
+%         'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
-%     vhcl.animateSim(tsc,2,'Pause',1==0,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
+%     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
 %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
 % end
 %%  Compare to old results

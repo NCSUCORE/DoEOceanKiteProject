@@ -584,21 +584,21 @@ classdef vehicleM < dynamicprops
                 end
             end
             if obj.hydroChracterization.Value == 2
-                W = load('NACA2412_wing_corrected.mat');
-                H = load('NACA0015_stab_corrected.mat');
-                V = load('NACA0015_stab_corrected.mat');
-                aeroStruct(1).CL = W.CL/2;
-                aeroStruct(1).CD = W.CD/2;
-                aeroStruct(1).alpha = W.alpha;
-                aeroStruct(2).CL = W.CL/2;
-                aeroStruct(2).CD = W.CD/2;
-                aeroStruct(2).alpha = W.alpha;
-                aeroStruct(3).CL = (H.CL-H.CL(36))*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
-                aeroStruct(3).CD = H.CD*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
-                aeroStruct(3).alpha = H.alpha-obj.hStab.incidence.Value;
-                aeroStruct(4).CL = (V.CL-V.CL(36))*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
-                aeroStruct(4).CD = V.CD*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
-                aeroStruct(4).alpha = V.alpha;
+                W = load('NACA2412_9_30_AR7_Wing.mat');
+                H = load('NACA0015_9_30_AR8_Hstab.mat');
+                V = load('NACA0015_9_30_AR4_Vstab.mat');
+                aeroStruct(1).CL = W.cl_c/2;
+                aeroStruct(1).CD = W.CD_c/2;
+                aeroStruct(1).alpha = W.alfa_c;
+                aeroStruct(2).CL = W.cl_c/2;
+                aeroStruct(2).CD = W.CD_c/2;
+                aeroStruct(2).alpha = W.alfa_c;
+                aeroStruct(3).CL = (H.cl_c-H.cl_c(36))*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(3).CD = H.CD_c*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
+                aeroStruct(4).CL = (V.cl_c-V.cl_c(36))*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(4).CD = V.CD_c*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
+                aeroStruct(4).alpha = V.alfa_c;
             elseif obj.hydroChracterization.Value == 3
                 AR = obj.wingAR.Value;
                 % hard coded values corresponding to NACA 2412

@@ -642,7 +642,7 @@ vhcl.turb1.mass.Value = 6.0000e+00
 vhcl.turb1.mass.Unit = 'kg'
 vhcl.turb1.mass.NoScale = false
 vhcl.turb1.mass.Description = 'Rotor mass'
-vhcl.turb1.diameter.Value = 7.9000e-01
+vhcl.turb1.diameter.Value = 7.2500e-01
 vhcl.turb1.diameter.Unit = 'm'
 vhcl.turb1.diameter.NoScale = false
 vhcl.turb1.diameter.Description = 'Diameter of the rotor'
@@ -654,7 +654,7 @@ vhcl.turb1.attachPtVec.Value = [0;-1.33333333333333;0]
 vhcl.turb1.attachPtVec.Unit = 'm'
 vhcl.turb1.attachPtVec.NoScale = false
 vhcl.turb1.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
-vhcl.turb1.powerCoeff.Value = 5.0000e-01
+vhcl.turb1.powerCoeff.Value = 4.0000e-01
 vhcl.turb1.powerCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.powerCoeff.NoScale = false
 vhcl.turb1.powerCoeff.Description = 'Coefficient used in power calculation'
@@ -666,20 +666,24 @@ vhcl.turb1.tipSpeepRatio.Value = 6.0000e+00
 vhcl.turb1.tipSpeepRatio.Unit is unitless or has no unit specified
 vhcl.turb1.tipSpeepRatio.NoScale = false
 vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
-vhcl.turb1.dragCoeff.Value = 7.5000e-01
+vhcl.turb1.dragCoef.Value = 9.0000e-01
+vhcl.turb1.dragCoef.Unit is unitless or has no unit specified
+vhcl.turb1.dragCoef.NoScale = false
+vhcl.turb1.dragCoef.Description = 'Coefficient used in drag calculation'
+vhcl.turb1.dragCoeff.Value = 6.0000e-01
 vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoeff.NoScale = false
 vhcl.turb1.momentArm.Value = [0;-1.33333333333333;0]
 vhcl.turb1.momentArm.Unit = 'm'
 vhcl.turb1.momentArm.NoScale = false
-vhcl.turb1.momentOfInertia.Value = 9.3615e-01
+vhcl.turb1.momentOfInertia.Value = 7.8844e-01
 vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb1.momentOfInertia.NoScale = false
 vhcl.turb2.mass.Value = 6.0000e+00
 vhcl.turb2.mass.Unit = 'kg'
 vhcl.turb2.mass.NoScale = false
 vhcl.turb2.mass.Description = 'Rotor mass'
-vhcl.turb2.diameter.Value = 7.9000e-01
+vhcl.turb2.diameter.Value = 7.2500e-01
 vhcl.turb2.diameter.Unit = 'm'
 vhcl.turb2.diameter.NoScale = false
 vhcl.turb2.diameter.Description = 'Diameter of the rotor'
@@ -691,7 +695,7 @@ vhcl.turb2.attachPtVec.Value = [0;1.33333333333333;0]
 vhcl.turb2.attachPtVec.Unit = 'm'
 vhcl.turb2.attachPtVec.NoScale = false
 vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
-vhcl.turb2.powerCoeff.Value = 5.0000e-01
+vhcl.turb2.powerCoeff.Value = 4.0000e-01
 vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
 vhcl.turb2.powerCoeff.NoScale = false
 vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
@@ -703,12 +707,16 @@ vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
 vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
 vhcl.turb2.tipSpeepRatio.NoScale = false
 vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
-vhcl.turb2.dragCoeff.Value = 7.5000e-01
+vhcl.turb2.dragCoef.Value = 9.0000e-01
+vhcl.turb2.dragCoef.Unit is unitless or has no unit specified
+vhcl.turb2.dragCoef.NoScale = false
+vhcl.turb2.dragCoef.Description = 'Coefficient used in drag calculation'
+vhcl.turb2.dragCoeff.Value = 6.0000e-01
 vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb2.dragCoeff.NoScale = false
 vhcl.turb2.momentArm.Value = [0;1.33333333333333;0]
 vhcl.turb2.momentArm.Unit = 'm'
 vhcl.turb2.momentArm.NoScale = false
-vhcl.turb2.momentOfInertia.Value = 9.3615e-01
+vhcl.turb2.momentOfInertia.Value = 7.8844e-01
 vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb2.momentOfInertia.NoScale = false
