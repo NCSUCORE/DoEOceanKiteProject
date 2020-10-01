@@ -10,8 +10,8 @@ clear;clc;%close all
 simScenario = 1.3;
 simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
-thrLength = 80;                                            %   m - Initial tether length
-flwSpd = 0.25                                               %   m/s - Flow speed
+thrLength = 8;                                            %   m - Initial tether length
+flwSpd = 1                                               %   m/s - Flow speed
 el = 35*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 linState = 1
@@ -56,7 +56,7 @@ for ii = 1:numel(flwSpd)
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
         loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
-        loadComponent('fullScale1thr');                              %   Manta kite with XFlr5 
+        loadComponent('Manta2RotXFlr_CFD_AR__ExpScale');                              %   Manta kite with XFlr5 
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -166,13 +166,13 @@ end
 wingLoad = tsc.stbdWingForce.Data;
 hstabLoad = tsc.hStabForce.Data;
 vstabLoad = tsc.vStabForce.Data;
-lenScale = repmat(linspace(0.05,0.10)',1,100);
+lenScale = repmat(linspace(0.05,1)',1,100);
 
 if simScenario > 3 && simScenario < 4
     flwSpdPlot = repmat(linspace(0.05,1),100,1);
     %if simScenariosub = 3
 else
-    flwSpdPlot = repmat(linspace(0.05,.5),100,1);
+    flwSpdPlot = repmat(linspace(0.05,1),100,1);
 end
 thrTenPlot = thrTen.*(flwSpdPlot/flwSpd).^2.*lenScale.^2;
 
