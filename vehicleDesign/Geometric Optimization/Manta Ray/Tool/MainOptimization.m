@@ -1,111 +1,110 @@
-% Solver Script
+% Optimization Solver Script for Manta Ray Project
 clc; clear;
-% Setting Parameters Structs
-%--------------------------------------------------------------
-%Main tab Parameters
-Opt.Preq   = 100.0;        %   kW - rated power
-Opt.vin    = .5;           %   m/s - flow speed 
-Opt.Dfll   = .35;          %   m - fuselage diameter lower limit 
-Opt.Dful   = .5;           %   m - fuselage diameter upper limit 
-Opt.Lfll   = 6.5;          %   m - fuselage length lower limit 
-Opt.Lful   = 8;            %   m - fuselage length upper limit 
-Opt.ARll   = 7;            %   AR lower limit 
-Opt.ARul   = 10;           %   AR upper limit
-Opt.Spanll = 8;            %   m - span lower limit
-Opt.Spanul = 8;            %   m - span upper limit 
-Opt.tar_buoy = 1;          %   target buoyancy ratio 
-Opt.wmassrat = 0.5;        %   wing:kite mass ratio
-%-------------------------------------------------------------------
-% SFOT Parameters
-loadComponent('Manta2RotXFlr_CFD_AR');      %   Manta kite with 2 rotors
-W.b = vhcl.portWing.halfSpan.Value*2;
-W.c = vhcl.portWing.MACLength.Value;
-W.AR = W.b/W.c;
-H.b = vhcl.hStab.halfSpan.Value*2;
-H.c = vhcl.hStab.MACLength.Value;
-H.AR = H.b/H.c;
-V.b = vhcl.vStab.halfSpan.Value;
-V.c = vhcl.vStab.MACLength.Value;
-V.AR = V.b/V.c;
-SFOTParams.Lscale = 1;  SFOTParams.gammaw = 0.95; SFOTParams.eLw = 0.71;
-SFOTParams.Clw0 = 0.16; SFOTParams.x_g = 0.2*SFOTParams.Lscale;
-SFOTParams.h_sm = -0.2*SFOTParams.Lscale; SFOTParams.Cd0_h = 1.7*(10^-4);
-SFOTParams.Cdw_visc = 0.03; SFOTParams.Cdw_ind = 1/(pi*0.98);
-SFOTParams.Cdh_ovrall =  0.16;  SFOTParams.Cfuse = 0.003; 
-
-SFOTParams.eta = 0.3; SFOTParams.netaV = 0.8; 
-SFOTParams.rho = 1000.0;
-
-SFOTParams.ClHStall = 0.0791.*(10) + 0.1553;
-%------------------------------------------------------------------------
-% SWDT variables
-SWDTParams.ChrdT = 0.12;
-% Material properties
-SWDTParams.E = 69*(10^9); %Aluminium
-SWDTParams.rhow = 2710.0; %Al
-% Percentage Deflection at centroid
-SWDTParams.defper = 5.0;
-SWDTParams.NSparmax = 3.0;
-SWDTParams.Skmax = 0.2; SWDTParams.Sp1max = 0.15; 
-SWDTParams.Sp2max = 0.12;  SWDTParams.Sp3max = 0.1; 
-%Weights on objective function entities
-SWDTParams.Wskin = 20; SWDTParams.Wsp1 = 1; 
-SWDTParams.Wsp2 = 5; SWDTParams.Wsp3 = 10;
-%------------------------------------------------------------------------
-SFDTParams.eff_fuse = 0.9;
-SFDTParams.Fthkmax = 0.5;
-SFDTParams.x_1 = 0.4;SFDTParams.x_2 = 0.3;SFDTParams.x_W = 0.45;
-SFDTParams.C_Hstab = 0.2;
-SFDTParams.FOS = 1.5;
-SFDTParams.S_yield = 270000000.0;
-SFDTParams.Int_P = 100000.0;
-SFDTParams.Ext_P = 220000.0;
-SFDTParams.Dyn_P = 50000.0;
-
-App_OverallKiteDesign(Opt, SFOTParams, SWDTParams, SFDTParams)
+% Main Optimization Parameters ------------------------------------------------------------------
+OPT.Preq        = 100.0;                %   kW - Rated power
+OPT.vin         = .5;                   %   m/s - Flow speed
+OPT.rho         = 1000;                 %   kg/m^3 - Fluid density 
+OPT.Dfll        = .35;                  %   m - Fuselage diameter lower limit
+OPT.Dful        = .5;                   %   m - Fuselage diameter upper limit
+OPT.Lfll        = 6.5;                  %   m - Fuselage length lower limit
+OPT.Lful        = 6.5;                  %   m - Fuselage length upper limit
+OPT.ARll        = 7;                    %   AR lower limit
+OPT.ARul        = 10;                   %   AR upper limit
+OPT.Spanll      = 8;                    %   m - Span lower limit
+OPT.Spanul      = 8;                    %   m - Span upper limit
+OPT.tar_buoy    = 1;                    %   Target buoyancy ratio
+OPT.wmassrat    = 0.5;                  %   Wing:kite mass ratio
+% SFOT Parameters -------------------------------------------------------------------------------
+loadComponent('Manta2RotXFlr_CFD_AR');  %   Manta kite with 2 rotors
+SFOT            = initParam(vhcl);      %   Define initial vehicle properties
+% SWDT variables --------------------------------------------------------------------------------
+SWDT.ChrdT      = 0.12;                 %   Chord thickness fraction
+SWDT.E          = 71.7e9;               %   Pa - Al 7075 Young's modulus
+SWDT.rho        = 2810.0;               %   kg/m^3 - Al 7075 density
+SWDT.dx         = 5.0;                  %   Maximum wing deflection at aerodynamic center
+SWDT.NSparMax   = 3.0;                  %   Maximum number of spars
+SWDT.Skmax      = 0.2;                  %    - Maximum skin thickness
+SWDT.Sp1max     = 0.15;                 %    - Maximum spar 1 thickness
+SWDT.Sp2max     = 0.12;                 %    - Maximum spar 2 thickness
+SWDT.Sp3max     = 0.1;                  %    - Maximum spar 3 thickness
+SWDT.Wskin      = 20;                   %   Objective function weights on skin thickness
+SWDT.Wsp1       = 1;                    %   Objective function weights on spar 1 thickness
+SWDT.Wsp2       = 5;                    %   Objective function weights on spar 2 thickness
+SWDT.Wsp3       = 10;                   %   Objective function weights on spar 3 thickness
+% SFDT variables --------------------------------------------------------------------------------
+SFDT.eff_fuse   = 0.9;                  %
+SFDT.Fthkmax    = 0.5;                  %
+SFDT.x_1        = 0.4;                  %
+SFDT.x_2        = 0.3;                  %
+SFDT.x_W        = 0.45;                 %
+SFDT.C_Hstab    = 0.2;                  %
+SFDT.FOS        = 1.5;                  %   Factor of safety
+SFDT.S_yield    = 270000000.0;          %   Pa -
+SFDT.Int_P      = 100000.0;             %   Pa -
+SFDT.Ext_P      = 220000.0;             %   Pa -
+SFDT.Dyn_P      = 50000.0;              %   Pa -
 
 %%  Optimization
 warning('off','all');
 
 intrvls = 10;
-Df_vec = linspace(Opt.Dfll,Opt.Dful,intrvls);
-Lf_vec = linspace(Opt.Lfll,Opt.Lful,intrvls);
+Df_vec = linspace(OPT.Dfll,OPT.Dful,intrvls);
+Lf_vec = linspace(OPT.Lfll,OPT.Lful,intrvls);
 
 Mtot = 10^10;
 Mtot_mat = zeros(intrvls,intrvls);
 
 for iDf= 1:length(Df_vec)
-    Df =  Df_vec(iDf);
+    SFOT.F.D =  Df_vec(iDf);                %   m - Update fuselage diameter
     for iLf = 1:length(Lf_vec)
-       Lf =  Lf_vec(iLf);
-       [AR_out, Span_out, Volwing,Ixx_lim,Ixx_req,Fz,Power] = App_SFOT(Df,Lf,Opt,SFOTParams,SWDTParams);
-       AR_mat(iDf,iLf) = AR_out;
-       Span_mat(iDf,iLf) = Span_out;
-       Ixx_lim_mat(iDf,iLf) = Ixx_lim;
-       Ixx_req_mat(iDf,iLf) = Ixx_req;
-       Power_mat(iDf,iLf) = Power;
-       Volfuse = (0.25*pi*Df*Df*Lf*SFDTParams.eff_fuse);
-       Voltot = Volfuse + Volwing;
-       if AR_out > 0 && (Volwing*SWDTParams.rhow/SFOTParams.rho*Voltot) >= Opt.wmassrat
-          [Ixx_opt,Mwing,exitflagW,Wopt,NSp] = App_SWDT(AR_out, Span_out, Ixx_req,SWDTParams);
-          NSp_mat(iDf,iLf) = NSp;
-          exitflagW_mat(iDf,iLf) = exitflagW;
-          Mwing_mat(iDf,iLf) = Mwing;
-          if exitflagW == 1
-              [Mfuse,Fthk,exitflagF] = App_SFDT(Df,Lf,Fz,Opt,SFOTParams,SWDTParams,SFDTParams);
-              Mfuse_mat(iDf,iLf) = Mfuse;
-              Fthk_mat(iDf,iLf) = Fthk;
-              exitflagF_mat(iDf,iLf) = exitflagF;
-              Mtot_mat(iDf,iLf)=Mfuse + Mwing;
-              if (Mtot > Mfuse+Mwing && exitflagF == 1)
-                  Mtot = Mfuse+Mwing;
-                  iLf_opt = iLf;
-                  iDf_opt = iDf;
-                  Wingdim = Wopt;
-              end
-   
-          end
-       end
+        SFOT.F.L =  Lf_vec(iLf);            %   m - Update fuselage length
+        SFOT = initParam(vhcl,SFOT);        %   Update vehicle properties
+        options = optimoptions('fmincon'...  %   Optimization options
+            ,'display','iter',...          
+            'Algorithm','sqp',...
+            'MaxIterations',1e6,...
+            'MaxFunctionEvaluations',1e6);
+        J = @(U_0)SFOTcost(U_0,SFOT,OPT);
+        C = [];
+        lb = [OPT.ARll OPT.Spanll];                     %   Optimization lower bound
+        ub = [OPT.ARul OPT.Spanul];                     %   Optimization upper bound
+        U = [OPT.ARul OPT.Spanul];                      %   Optimization initial guess
+        [uopt,pow,conv_flag] = fmincon(J,U,[],[],[],... %   Perform optimization
+            [],lb,ub,[],options);
+        [Ixx] = airfoil_grid(uopt(1),SFOT.W.b);         %   Obtain current wing moment of inertia
+        [Ixx_lim] = airfoil_grid_func_skin_web(uopt(1),SFOT.W.b);
+        [Pow,Flift,~,~] = SFOTcost(uopt,SFOT,OPT);
+        [Pow1,Flift1,~,~] = SFOTcost([7 8],SFOT,OPT);
+        delX = percDef*SFOT.W.b/2/100.0;
+        Ixx_req = 5*Flift*(wing.aeroCent^3)/(48*wing.E*delX)*(39.37^4);
+        
+        AR_mat(iDf,iLf) = AR_out;
+        Span_mat(iDf,iLf) = Span_out;
+        Ixx_lim_mat(iDf,iLf) = Ixx_lim;
+        Ixx_req_mat(iDf,iLf) = Ixx_req;
+        Power_mat(iDf,iLf) = Power;
+        Volfuse = (0.25*pi*Df*Df*Lf*SFDT.eff_fuse);
+        Voltot = Volfuse + Volwing;
+        if AR_out > 0 && (Volwing*SWDT.rhow/SFOTParams.rho*Voltot) >= OPT.wmassrat
+            [Ixx_opt,Mwing,exitflagW,Wopt,NSp] = App_SWDT(AR_out, Span_out, Ixx_req,SWDT);
+            NSp_mat(iDf,iLf) = NSp;
+            exitflagW_mat(iDf,iLf) = exitflagW;
+            Mwing_mat(iDf,iLf) = Mwing;
+            if exitflagW == 1
+                [Mfuse,Fthk,exitflagF] = App_SFDT(Df,Lf,Fz,OPT,SFOTParams,SWDT,SFDT);
+                Mfuse_mat(iDf,iLf) = Mfuse;
+                Fthk_mat(iDf,iLf) = Fthk;
+                exitflagF_mat(iDf,iLf) = exitflagF;
+                Mtot_mat(iDf,iLf)=Mfuse + Mwing;
+                if (Mtot > Mfuse+Mwing && exitflagF == 1)
+                    Mtot = Mfuse+Mwing;
+                    iLf_opt = iLf;
+                    iDf_opt = iDf;
+                    Wingdim = Wopt;
+                end
+                
+            end
+        end
     end
 end
 
