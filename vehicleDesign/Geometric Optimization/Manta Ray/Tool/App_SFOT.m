@@ -1,14 +1,6 @@
-function [AR_opt,Span_opt,Volwing,Ixx_lim,Ixx_req,Fz_out,Power_out]=App_SFOT(Df_in,Lf_in,MTParams,SFOTParams,SWDTParams)
+function [AR_opt,Span_opt,Volwing,Ixx_lim,Ixx_req,Fz_out,Power_out] = App_SFOT(OPT,SFOT,SWDT)
 
 
-
-global Df Lf Fz
-global Power
-
-
-
-Df = Df_in;
-Lf = Lf_in;
 
 % AR limits
 AR_ll = MTParams.ARll;
