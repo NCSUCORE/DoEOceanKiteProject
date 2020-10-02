@@ -23,11 +23,11 @@ ii = 1; jj = 1; %comp = zeros(ilen,jlen,klen);
 %F = zeros(ilen,jlen,klen);
 flwMat = repmat(flwSpdArray,12,1);
 filt = [ones(7,7) zeros(7,6);zeros(6,7) ones(6,6)];
-for k = 1:klen
+for k = 1%:klen
     k
-for i = 1:ilen
+for i = 1%:ilen
     i
-for j = 1:jlen
+for j = 1%:jlen
     %Load the proper data
     thrLen = 10 + 5*(i-1);
     flwSpd = 25 + 25*(j-1);
