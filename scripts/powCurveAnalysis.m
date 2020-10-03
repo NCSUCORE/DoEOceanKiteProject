@@ -23,7 +23,7 @@ end
 toc
 save('DiamAndAoAStudyThr.mat','Pavg','Ployd','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr','Fturb','D','E')
 %%
-load('TurbDiamStudy.mat')
+% load('TurbDiamStudy.mat')
 for i = 1:numel(E)
     Idx = find(AoA(:,i) > 13.5);
     Pavg(Idx,i) = NaN;   AoA(Idx,i) = NaN;   CL(Idx,i) = NaN;  CD(Idx,i) = NaN;
@@ -54,6 +54,11 @@ subplot(2,2,4);
 contourf(E,D,Fturb./(Fdrag+Ffuse),20,'edgecolor','none');  xlabel('Elevator [deg]');  ylabel('Diameter [m]');  
 title('Avg. $\mathrm{D_t/D_k}$');  colorbar;  hold on; plot(E(Dmax),D,'r-')
 plot(E(Em),D(Dm),'kx','markersize',10,'linewidth',2);
+%%
+figure; hold on; grid on 
+xlabel('Tether Diameter [mm]')
+ylabel('Power [kW]')
+plot(ThrD*1e3,Pavg,'b-')
 %%
 % figure; subplot(2,1,1); hold on; grid on;
 % plot(AoA,Pavg,'b-'); xlabel('Avg. AoA [deg]'); ylabel('Avg. Power [kW]')

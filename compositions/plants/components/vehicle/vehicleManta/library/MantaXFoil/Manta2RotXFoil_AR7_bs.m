@@ -56,8 +56,8 @@ vhcl.hStab.setRootChord(.6,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpan(2,'m');
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(1.2,'deg');
 vhcl.hStab.setIncidence(0,'deg');
+% vhcl.hStab.setIncidence(0,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
@@ -72,12 +72,12 @@ vhcl.vStab.setClMin(-1.7,'');
 vhcl.vStab.setClMax(1.7,'');
 
 %% Fuselage (could use more realistic numbers)
-vhcl.fuse.setDiameter(0.3556,'m');
+vhcl.fuse.setDiameter(0.5,'m');
 vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
 vhcl.fuse.setREnd_LE([4.25;0;0],'m');
-vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.25;0;-vhcl.fuse.diameter.Value/2],'m');
+vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.35;0;-vhcl.fuse.diameter.Value/2],'m');
 %% Turbines
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
