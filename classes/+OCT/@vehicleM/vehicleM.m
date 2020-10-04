@@ -588,10 +588,14 @@ classdef vehicleM < dynamicprops
                     if obj.portWing.halfSpan.Value == 5
                         W = load('NACA2412_b10_AR9.mat');
                     elseif obj.portWing.halfSpan.Value == 4.5
-                        W = load('NACA2412_b10_AR9.mat');
+                        W = load('NACA2412_b9_AR9.mat');
+                    elseif obj.portWing.halfSpan.Value == 4
+                        W = load('NACA2412_b8_AR9.mat');
                     else
                         error('No XFoil wing data exists for this combination of span = %.1f and AR = %.1f',obj.portWing.halfSpan.Value,obj.portWing.AR.Value)
                     end
+                elseif obj.portWing.AR.Value == 4
+                    W = load('NACA2412_b8_AR8.mat');
                 elseif obj.portWing.AR.Value == 3.5
                     W = load('NACA2412_b8_AR7.mat');
                 else
