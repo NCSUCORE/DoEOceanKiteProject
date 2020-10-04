@@ -6,7 +6,7 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-simScenario = 1.8;
+simScenario = 1.5;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
@@ -52,13 +52,15 @@ for ii = 1:numel(flwSpd)
     elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
         loadComponent('Manta2RotXFlr_CFD');                                 %   Manta kite with XFlr5
     elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
-        loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
+        loadComponent('Manta2RotXFoil_AR8_b8');                                 %   Manta kite with XFlr5
     elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
-        loadComponent('Manta2RotXFoil_AR7');                                 %   Manta kite with XFlr5
+        loadComponent('Manta2RotXFoil_AR9_b8');                                 %   Manta kite with XFlr5
     elseif simScenario == 1.7 || simScenario == 3.7 || simScenario == 4.7
         loadComponent('Manta2RotXFoil_AR9_b9');                                 %   Manta kite with XFlr5
     elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
-        loadComponent('Manta2RotXFoil_AR9_b10');                                 %   Manta kite with XFlr5
+        loadComponent('Manta2RotXFoil_AR9_b10');                                %   Manta kite with XFlr5
+    elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
+        loadComponent('Manta2RotXFoil_AR7_b8');                                 %   Manta kite with XFlr5
     end
     %%  Environment Properties
     loadComponent('ConstXYZT');                                 %   Environment
@@ -98,8 +100,8 @@ for ii = 1:numel(flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.7
-%         fltCtrl.setElevatorReelInDef(-.5,'deg')
+    if simScenario == 1.5
+        fltCtrl.setElevatorReelInDef(-.25,'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
@@ -107,7 +109,7 @@ for ii = 1:numel(flwSpd)
     if simScenario >= 3 && simScenario < 4
         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
-        fltCtrl.pitchTime.setValue(0:250:3000,'s');         fltCtrl.pitchLookup.setValue(0:12,'deg');
+        fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
     end
     thr.tether1.dragEnable.setValue(1,'');
 %     vhcl.turb1.setDiameter(.75,'m');     vhcl.turb2.setDiameter(.75,'m')
@@ -153,9 +155,9 @@ end
 if simScenario < 3
     lap = max(tsc.lapNumS.Data)-1;
     if max(tsc.lapNumS.Data) < 2
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     else
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     end
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
@@ -171,8 +173,8 @@ end
 %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
 % end
 %%  Compare to old results
-load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\Results\Manta 2.0\Rotor\Turb1.8_V-0.315_EL-30.0_D-0.65_E--0.30_10-03_16-07.mat')
-tsc.rotPowerSummary(vhcl,env);
-[Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-fprintf('Average AoA = %.3f \n',AoA);
+% load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\Results\Manta 2.0\Rotor\Turb1.8_V-0.315_EL-30.0_D-0.65_E--0.30_10-03_16-07.mat')
+% tsc.rotPowerSummary(vhcl,env);
+% [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+% AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
+% fprintf('Average AoA = %.3f \n',AoA);
