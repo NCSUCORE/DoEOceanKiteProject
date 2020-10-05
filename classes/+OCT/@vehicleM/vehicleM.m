@@ -584,18 +584,42 @@ classdef vehicleM < dynamicprops
                 end
             end
             if obj.hydroChracterization.Value == 2
-                W = load('NACA2412_9_30_AR7_Wing.mat');
-                H = load('NACA0015_9_30_AR8_Hstab.mat');
-                V = load('NACA0015_9_30_AR4_Vstab.mat');
-                aeroStruct(1).CL = W.cl_c/2;
-                aeroStruct(1).CD = W.CD_c/2;
-                aeroStruct(1).alpha = W.alfa_c;
-                aeroStruct(2).CL = W.cl_c/2;
-                aeroStruct(2).CD = W.CD_c/2;
-                aeroStruct(2).alpha = W.alfa_c;
+                if obj.portWing.AR.Value == 4.5
+                    if obj.portWing.halfSpan.Value == 5
+                        W = load('NACA2412_b10_AR9.mat');
+                    elseif obj.portWing.halfSpan.Value == 4.5
+                        W = load('NACA2412_b9_AR9.mat');
+                    elseif obj.portWing.halfSpan.Value == 4
+                        W = load('NACA2412_b8_AR9.mat');
+                    else
+                        error('No XFoil wing data exists for this combination of span = %.1f and AR = %.1f',obj.portWing.halfSpan.Value,obj.portWing.AR.Value)
+                    end
+                elseif obj.portWing.AR.Value == 4
+                    W = load('NACA2412_b8_AR8.mat');
+                elseif obj.portWing.AR.Value == 3.5
+                    W = load('NACA2412_b8_AR7.mat');
+                else
+                    error('No XFoil wing data exists for this combination of span = %.1f and AR = %.1f',obj.portWing.halfSpan.Value,obj.portWing.AR.Value)
+                end
+                aeroStruct(1).CL = W.cl_c/2;    aeroStruct(1).CD = W.CD_c/2;    aeroStruct(1).alpha = W.alfa_c;
+                aeroStruct(2).CL = W.cl_c/2;    aeroStruct(2).CD = W.CD_c/2;    aeroStruct(2).alpha = W.alfa_c;
+                if obj.hStab.halfSpan.Value == 2
+                    if obj.hStab.rootChord.Value == 0.55
+                        H = load('NACA0015_b2_c0.55.mat');
+                    elseif obj.hStab.rootChord.Value == 0.6
+                        H = load('NACA0015_b2_c0.6.mat');
+                    else
+                        error('No XFoil wing data exists for this combination of span = %.1f and chord = %.2f',obj.hStab.halfSpan.Value,obj.hStab.rootChord.Value)
+                    end
+                elseif obj.hStab.halfSpan.Value == 1.95
+                    H = load('NACA0015_b1.95_c0.52.mat');
+                else
+                    error('No XFoil wing data exists for this combination of span = %.1f and chord = %.2f',obj.hStab.halfSpan.Value,obj.hStab.rootChord.Value)
+                end
                 aeroStruct(3).CL = (H.cl_c-H.cl_c(36))*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).CD = H.CD_c*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
+                V = load('NACA0015_b.95_vStab.mat');
                 aeroStruct(4).CL = (V.cl_c-V.cl_c(36))*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(4).CD = V.CD_c*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(4).alpha = V.alfa_c;
