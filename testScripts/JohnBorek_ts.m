@@ -6,9 +6,9 @@ clear;clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-simScenario = 1.5;
+simScenario = 1.6;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
@@ -100,8 +100,8 @@ for ii = 1:numel(flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.5
-        fltCtrl.setElevatorReelInDef(-.25,'deg')
+    if simScenario == 1.6
+%         fltCtrl.setElevatorReelInDef(-.5,'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
