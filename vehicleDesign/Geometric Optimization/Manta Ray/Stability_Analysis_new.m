@@ -7,8 +7,11 @@ clc;clear;
 % loadComponent('Manta2RotXFlr_0Inc');                          %   Load new vehicle with 2 rotors
 % loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5 
 % loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5 
-loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
-% loadComponent('Manta2RotXFoil_AR7');
+% loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
+% loadComponent('Manta2RotXFoil_AR7');                                 %   Manta kite with XFlr5
+% loadComponent('Manta2RotXFoil_AR9_b9');                                 %   Manta kite with XFlr5
+loadComponent('Manta2RotXFoil_AR9_b10');                                 %   Manta kite with XFlr5
+
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
 wing.b = 8;                                         %   Wing span

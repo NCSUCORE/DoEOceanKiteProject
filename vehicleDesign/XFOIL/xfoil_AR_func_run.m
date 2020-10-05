@@ -31,3 +31,9 @@ xfoil_in.oswald       = 0.92;
 xfoil_in.Re           = 0.7e6;
 
 xfoil_Vstab = xfoil_AR_func(xfoil_in);
+
+figure
+hold on
+plot(xfoil_Wing.alfa_c,xfoil_Wing.CL_c,'k');
+plot(xfoil_Hstab.alfa_c,xfoil_Hstab.CL_c,'b');
+plot(xfoil_Vstab.alfa_c,xfoil_Vstab.CL_c,'r');

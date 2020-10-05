@@ -10,6 +10,7 @@ vhcl.buoyFactor.Value = 1.0000e+00
 vhcl.buoyFactor.Unit is unitless or has no unit specified
 vhcl.buoyFactor.NoScale = true
 vhcl.buoyFactor.Description = 'Buoyancy Factor = (Kite Density)/(Water Density)'
+vhcl.fluidCoeffsFileName.Value = 'Manta_Inc-0_AR9.mat'
 vhcl.fluidCoeffsFileName.Value = 'Exp_AR_9.mat'
 vhcl.fluidCoeffsFileName.Unit is unitless or has no unit specified
 vhcl.fluidCoeffsFileName.NoScale = true
