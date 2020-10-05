@@ -75,7 +75,7 @@ subplot(12,3,[21 33]); hold on; grid on;
 plot(depth,elev(1,:),'b-'); xlabel('Depth [m]'); ylabel('Elevation [deg]'); 
 %%
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Depth Study\');
-save([fpath,'DepthStudy_1-8.mat'],'p','flwSpd','Pmax','elev','thrL','depth');
+save([fpath,'DepthStudy_1-7.mat'],'p','flwSpd','Pmax','elev','thrL','depth');
 
 
 
