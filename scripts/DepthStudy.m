@@ -1,7 +1,7 @@
 %%  Depth Study 
 thrLength = 400:25:600;                                 %   m - Initial tether length
 flwSpd = 0.25:0.025:0.5;                                %   m/s - Flow speed
-el = (30:5:60)*pi/180;                                  %   rad - Mean elevation angle
+% el = (30:5:60)*pi/180;                                  %   rad - Mean elevation angle
 depth = [300 250 200 150 125 100];
 %%  Get Important Results 
 % fpath = 'D:\Results\';
@@ -30,7 +30,7 @@ depth = [300 250 200 150 125 100];
 % elevation = el*180/pi;
 % save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr','Fturb','thrLength','elevation','Depth','flwSpd')
 %%
-load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Depth Study\Elevation_TetherLength_Study_1-8.mat')
+load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Depth Study\Elevation_TetherLength_Study_1-7.mat')
 %%  Obtain Pmax Matrix 
 Pmax = zeros(numel(flwSpd),numel(depth));  elev = Pmax;  thrL = Pmax;
 for i = 1:numel(flwSpd)
@@ -39,35 +39,34 @@ for i = 1:numel(flwSpd)
     end
 end
 %%  Fit Cubic Curve
+tLength = [400 600];    
+effR = [0.85 0.78];                               %   AR = 8; b = 8
+% effR = [0.795 0.693];                             %   AR = 9; b = 9
 for k = 1:numel(depth)
-    p(:,k) = polyfit(flwSpd,Pmax(:,k),3)';
+    eff = interp1(tLength,effR,thrL(1,k));
+    p(:,k) = polyfit(flwSpd,Pmax(:,k)*eff,3)';
 end
 %%  Plotting 
 speed = 0.1:0.01:0.5;
 figure;  
 subplot(12,3,[1 7]); hold on; grid on;
-plot(speed,p(1,1)*speed.^3+p(2,1)*speed.^2+p(3,1)*speed+p(4,1),'b-'); xlim([0.1 0.5]); ylim([0 4]);
-ylabel('$P_\mathrm{avg}$ [kW]'); 
-title(sprintf('Depth = %d m',depth(1)));
+plot(speed,p(1,1)*speed.^3+p(2,1)*speed.^2+p(3,1)*speed+p(4,1),'b-'); xlim([0.1 0.5]); YLIM = get(gca,'YLim');
+ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(1)));
 subplot(12,3,[2 8]); hold on; grid on;
-plot(speed,p(1,2)*speed.^3+p(2,2)*speed.^2+p(3,2)*speed+p(4,2),'b-'); xlim([0.1 0.5]); ylim([0 4]);
-title(sprintf('Depth = %d m',depth(2)));
+plot(speed,p(1,2)*speed.^3+p(2,2)*speed.^2+p(3,2)*speed+p(4,2),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(2)));
 subplot(12,3,[13 19]); hold on; grid on;
-plot(speed,p(1,3)*speed.^3+p(2,3)*speed.^2+p(3,3)*speed+p(4,3),'b-'); xlim([0.1 0.5]); ylim([0 4]);
-ylabel('$P_\mathrm{avg}$ [kW]'); 
-title(sprintf('Depth = %d m',depth(3)));
+plot(speed,p(1,3)*speed.^3+p(2,3)*speed.^2+p(3,3)*speed+p(4,3),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(3)));
 subplot(12,3,[14 20]); hold on; grid on;
-plot(speed,p(1,4)*speed.^3+p(2,4)*speed.^2+p(3,4)*speed+p(4,4),'b-'); xlim([0.1 0.5]); ylim([0 4]);
-title(sprintf('Depth = %d m',depth(4)));
+plot(speed,p(1,4)*speed.^3+p(2,4)*speed.^2+p(3,4)*speed+p(4,4),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(4)));
 subplot(12,3,[25 31]); hold on; grid on;
-plot(speed,p(1,5)*speed.^3+p(2,5)*speed.^2+p(3,5)*speed+p(4,5),'b-'); xlim([0.1 0.5]); ylim([0 4]);
-xlabel('$V_\mathrm{flow}$ [m/s]'); 
-ylabel('$P_\mathrm{avg}$ [kW]'); 
-title(sprintf('Depth = %d m',depth(5)));
+plot(speed,p(1,5)*speed.^3+p(2,5)*speed.^2+p(3,5)*speed+p(4,5),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+xlabel('$V_\mathrm{flow}$ [m/s]'); ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(5)));
 subplot(12,3,[26 32]); hold on; grid on;
-plot(speed,p(1,6)*speed.^3+p(2,6)*speed.^2+p(3,6)*speed+p(4,6),'b-'); xlim([0.1 0.5]); ylim([0 4]);
-xlabel('$V_\mathrm{flow}$ [m/s]'); 
-title(sprintf('Depth = %d m',depth(6)));
+plot(speed,p(1,6)*speed.^3+p(2,6)*speed.^2+p(3,6)*speed+p(4,6),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+xlabel('$V_\mathrm{flow}$ [m/s]'); ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(6)));
 
 subplot(12,3,[3 15]); hold on; grid on;
 plot(depth,thrL(1,:),'b-'); xlabel('Depth [m]'); ylabel('Tether Length [m]'); 
@@ -75,7 +74,7 @@ subplot(12,3,[21 33]); hold on; grid on;
 plot(depth,elev(1,:),'b-'); xlabel('Depth [m]'); ylabel('Elevation [deg]'); 
 %%
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Depth Study\');
-save([fpath,'DepthStudy_1-7.mat'],'p','flwSpd','Pmax','elev','thrL','depth');
+save([fpath,'DepthStudy_1-5.mat'],'p','flwSpd','Pmax','elev','thrL','depth');
 
 
 
