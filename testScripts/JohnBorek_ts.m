@@ -59,7 +59,7 @@ for ii = 1:numel(flwSpd)
         loadComponent('Manta2RotXFoil_AR9_b9');                                 %   Manta kite with XFlr5
     elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
         loadComponent('Manta2RotXFoil_AR9_b10');                                %   Manta kite with XFlr5
-    elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
+    elseif simScenario == 1.9 || simScenario == 3.9 || simScenario == 4.9
         loadComponent('Manta2RotXFoil_AR7_b8');                                 %   Manta kite with XFlr5
     end
     %%  Environment Properties
@@ -100,8 +100,8 @@ for ii = 1:numel(flwSpd)
     fltCtrl.setFcnName(PATHGEOMETRY,'');
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
     fltCtrl.rudderGain.setValue(0,'')
-    if simScenario == 1.6
-%         fltCtrl.setElevatorReelInDef(-.5,'deg')
+    if simScenario == 1.5
+%         fltCtrl.setElevatorReelInDef(-.25,'deg')
     end
     if simScenario >= 4
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');

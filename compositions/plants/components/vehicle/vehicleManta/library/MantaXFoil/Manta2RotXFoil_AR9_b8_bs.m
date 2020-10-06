@@ -56,7 +56,7 @@ vhcl.hStab.setRootChord(.52,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpan(1.95,'m');
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(0,'deg');
+vhcl.hStab.setIncidence(-.25,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
@@ -82,7 +82,7 @@ vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
 vhcl.turb1.setMass(6,'kg')
-vhcl.turb1.setDiameter(.6,'m')
+vhcl.turb1.setDiameter(.625,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb1.setPowerCoeff(.4,'')
@@ -91,7 +91,7 @@ vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
 % starboard rotor
 vhcl.turb2.setMass(6,'kg')
-vhcl.turb2.setDiameter(.6,'m')
+vhcl.turb2.setDiameter(.625,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb2.setPowerCoeff(.4,'')
