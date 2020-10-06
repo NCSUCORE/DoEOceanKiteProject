@@ -27,7 +27,7 @@ save('DiamAndAoAStudyThr.mat','Pavg','Ployd','AoA','CL','CD','Fdrag','Flift','Ff
 figure; hold on; grid on 
 xlabel('Tether Diameter [mm]')
 ylabel('Power [kW]')
-plot(ThrD*1e3,Pavg,'b-')
+plot(thrD*1e3,Pavg,'b-')
 %%
 % figure; subplot(2,1,1); hold on; grid on;
 % plot(AoA,Pavg,'b-'); xlabel('Avg. AoA [deg]'); ylabel('Avg. Power [kW]')

@@ -15,8 +15,8 @@ klen = length(AoA);
 delay = 6.47./flwSpdArray;
 
 %% Loop over Flow Speed
-for i = 3
-for k = 1
+for i = 1:ilen
+for k = 1:klen
     moviename = sprintf('%d_%d_Lat',5+i*5,k*2-2);
     f1 = figure%('visible','off');    
     x1 = 0;
@@ -55,7 +55,9 @@ for k = 1
         plot(num(2),0,'ro')
         plot(-den(2),0,'rx')
         hold off
-        title('Lateral Dynamics Pole Map w/ Pade Delay Approximation')
+        title({'Lateral Dynamics Pole Map w/ Pade Delay Approximation',...
+            sprintf('Tether Length = %d m, AoA = %d degrees, Flow Speed = %.2f m/s'...
+            ,thrLenArray(i),AoA(k),flwSpdArray(j))})
         xlim([x1 2])
         ylim([y1 -y1])
         f = getframe(f1);
@@ -67,7 +69,7 @@ for k = 1
             imwrite(imind,cm,moviename,'gif','WriteMode','append','DelayTime',1/3)
         end
     end
-
+close all
     
     for j = 1:jlen
         x1t = floor(min(real(pole(linDyn.Long{i,j,k}))));
@@ -93,7 +95,9 @@ for k = 1
         plot(num(2),0,'ro')
         plot(-den(2),0,'rx')
         hold off
-        title('Longitudinal Dynamics Pole Map w/ Pade Delay Approximation')
+        title({'Longitudinal Dynamics Pole Map w/ Pade Delay Approximation',...
+            sprintf('Tether Length = %d m, AoA = %d degrees, Flow Speed = %.2f m/s'...
+            ,thrLenArray(i),AoA(k),flwSpdArray(j))})
         hold off
         xlim([x1 2])
         ylim([y1 -y1])
@@ -106,12 +110,13 @@ for k = 1
             imwrite(imind,cm,moviename,'gif','WriteMode','append','DelayTime',1/3)
         end
     end
+    close all
 end
 end
 
 %% Loop over Tether Length
-for j = 1:16
-for k = 1
+for j = 1:jlen
+for k = 1:klen
     moviename = sprintf('%dms_%ddeg_Lat',25*j,k*2-2);
     [num,den]=pade(delay(j),1);
     f1 = figure%('visible','off');    
@@ -119,7 +124,7 @@ for k = 1
     x2 = den(2);
     y1 = 0;
     
-    for i = 1:ilen
+    for i = 1%:ilen
         x1t = floor(min(real(pole(linDyn.Lat{i,j,k}))));
         x2t = ceil(max(real(pole(linDyn.Lat{i,j,k}))));
         y1t = floor(min(imag(pole(linDyn.Lat{i,j,k}))));
@@ -152,10 +157,11 @@ for k = 1
         plot(num(2),0,'ro')
         plot(-den(2),0,'rx')
         hold off
-        title('Lateral Dynamics Pole Map w/ Pade Delay Approximation')
-        %annotation(sprintf('Tether Length = %d m',thrLenArray(i)))
         xlim([x1 1])
         ylim([y1 -y1])
+        title({'Lateral Dynamics Pole Map w/ Pade Delay Approximation',...
+            sprintf('Tether Length = %d m, AoA = %d degrees, Flow Speed = %.2f m/s'...
+            ,thrLenArray(i),AoA(k),flwSpdArray(j))})
         f = getframe(f1);
         im = frame2im(f);
         [imind,cm]  = rgb2ind(im,256);
@@ -165,7 +171,7 @@ for k = 1
             imwrite(imind,cm,moviename,'gif','WriteMode','append','DelayTime',1/3)
         end
     end
-
+close all
     x1 = 0;
     x2 = den(2);
     y1 = 0;
@@ -193,7 +199,9 @@ for k = 1
         plot(num(2),0,'ro')
         plot(-den(2),0,'rx')
         hold off
-        title('Longitudinal Dynamics Pole Map w/ Pade Delay Approximation')
+        title({'Longitudinal Dynamics Pole Map w/ Pade Delay Approximation',...
+            sprintf('Tether Length = %d m, AoA = %d degrees, Flow Speed = %.2f m/s'...
+            ,thrLenArray(i),AoA(k),flwSpdArray(j))})
         hold off
         xlim([x1 1])
         ylim([y1 -y1])
@@ -206,12 +214,13 @@ for k = 1
             imwrite(imind,cm,moviename,'gif','WriteMode','append','DelayTime',1/3)
         end
     end
+    close all
 end
 end
 
 %% Loop over Pitch Angle
-for j = 16
-for i = 3
+for j = 1:jlen
+for i = 1:ilen
     moviename = sprintf('%dm_%dms_Lat',5+5*i,25*j);
     f1 = figure%('visible','off');    
     x1 = 0;
@@ -250,7 +259,9 @@ for i = 3
         plot(num(2),0,'ro')
         plot(-den(2),0,'rx')
         hold off
-        title('Lateral Dynamics Pole Map w/ Pade Delay Approximation')
+        title({'Lateral Dynamics Pole Map w/ Pade Delay Approximation',...
+            sprintf('Tether Length = %d m, AoA = %d degrees, Flow Speed = %.2f m/s'...
+            ,thrLenArray(i),AoA(k),flwSpdArray(j))})
         xlim([x1 2])
         ylim([y1 -y1])
         f = getframe(f1);
@@ -262,7 +273,7 @@ for i = 3
             imwrite(imind,cm,moviename,'gif','WriteMode','append','DelayTime',1/3)
         end
     end
-
+close all
     
     for k = 1:klen
         x1t = floor(min(real(pole(linDyn.Long{i,j,k}))));
@@ -288,7 +299,9 @@ for i = 3
         plot(num(2),0,'ro')
         plot(-den(2),0,'rx')
         hold off
-        title('Longitudinal Dynamics Pole Map w/ Pade Delay Approximation')
+        title({'Longitudinal Dynamics Pole Map w/ Pade Delay Approximation',...
+            sprintf('Tether Length = %d m, AoA = %d degrees, Flow Speed = %.2f m/s'...
+            ,thrLenArray(i),AoA(k),flwSpdArray(j))})
         hold off
         xlim([x1 2])
         ylim([y1 -y1])
@@ -301,5 +314,6 @@ for i = 3
             imwrite(imind,cm,moviename,'gif','WriteMode','append','DelayTime',1/3)
         end
     end
+    close all
 end
 end
