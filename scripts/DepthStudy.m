@@ -40,38 +40,39 @@ for i = 1:numel(flwSpd)
 end
 %%  Fit Cubic Curve
 tLength = [400 600];    
-effR = [0.85 0.78];                               %   AR = 8; b = 8
-% effR = [0.795 0.693];                             %   AR = 9; b = 9
+% effR = [0.87 0.8];                                  %   AR = 8; b = 8
+% effR = [0.84 0.75];                                 %   AR = 9; b = 9
+effR = [0.8 0.7];                                   %   AR = 9; b = 10
 for k = 1:numel(depth)
     eff = interp1(tLength,effR,thrL(1,k));
     p(:,k) = polyfit(flwSpd,Pmax(:,k)*eff,3)';
 end
 %%  Plotting 
 speed = 0.1:0.01:0.5;
-figure;  
+% figure;  
 subplot(12,3,[1 7]); hold on; grid on;
-plot(speed,p(1,1)*speed.^3+p(2,1)*speed.^2+p(3,1)*speed+p(4,1),'b-'); xlim([0.1 0.5]); YLIM = get(gca,'YLim');
+plot(speed,p(1,1)*speed.^3+p(2,1)*speed.^2+p(3,1)*speed+p(4,1),'g-'); xlim([0.1 0.5]); YLIM = get(gca,'YLim');
 ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(1)));
 subplot(12,3,[2 8]); hold on; grid on;
-plot(speed,p(1,2)*speed.^3+p(2,2)*speed.^2+p(3,2)*speed+p(4,2),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+plot(speed,p(1,2)*speed.^3+p(2,2)*speed.^2+p(3,2)*speed+p(4,2),'g-'); xlim([0.1 0.5]); ylim(YLIM);
 ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(2)));
 subplot(12,3,[13 19]); hold on; grid on;
-plot(speed,p(1,3)*speed.^3+p(2,3)*speed.^2+p(3,3)*speed+p(4,3),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+plot(speed,p(1,3)*speed.^3+p(2,3)*speed.^2+p(3,3)*speed+p(4,3),'g-'); xlim([0.1 0.5]); ylim(YLIM);
 ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(3)));
 subplot(12,3,[14 20]); hold on; grid on;
-plot(speed,p(1,4)*speed.^3+p(2,4)*speed.^2+p(3,4)*speed+p(4,4),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+plot(speed,p(1,4)*speed.^3+p(2,4)*speed.^2+p(3,4)*speed+p(4,4),'g-'); xlim([0.1 0.5]); ylim(YLIM);
 ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(4)));
 subplot(12,3,[25 31]); hold on; grid on;
-plot(speed,p(1,5)*speed.^3+p(2,5)*speed.^2+p(3,5)*speed+p(4,5),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+plot(speed,p(1,5)*speed.^3+p(2,5)*speed.^2+p(3,5)*speed+p(4,5),'g-'); xlim([0.1 0.5]); ylim(YLIM);
 xlabel('$V_\mathrm{flow}$ [m/s]'); ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(5)));
 subplot(12,3,[26 32]); hold on; grid on;
-plot(speed,p(1,6)*speed.^3+p(2,6)*speed.^2+p(3,6)*speed+p(4,6),'b-'); xlim([0.1 0.5]); ylim(YLIM);
+plot(speed,p(1,6)*speed.^3+p(2,6)*speed.^2+p(3,6)*speed+p(4,6),'g-'); xlim([0.1 0.5]); ylim(YLIM);
 xlabel('$V_\mathrm{flow}$ [m/s]'); ylabel('$P_\mathrm{avg}$ [kW]'); title(sprintf('Depth = %d m',depth(6)));
 
 subplot(12,3,[3 15]); hold on; grid on;
-plot(depth,thrL(1,:),'b-'); xlabel('Depth [m]'); ylabel('Tether Length [m]'); 
+plot(depth,thrL(1,:),'g-'); xlabel('Depth [m]'); ylabel('Tether Length [m]'); 
 subplot(12,3,[21 33]); hold on; grid on;
-plot(depth,elev(1,:),'b-'); xlabel('Depth [m]'); ylabel('Elevation [deg]'); 
+plot(depth,elev(1,:),'g-'); xlabel('Depth [m]'); ylabel('Elevation [deg]'); 
 %%
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Depth Study\');
 save([fpath,'DepthStudy_1-5.mat'],'p','flwSpd','Pmax','elev','thrL','depth');
