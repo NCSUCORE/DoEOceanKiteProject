@@ -5,7 +5,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(600,'s');
+simParams.setDuration(50,'s');
 dynamicCalc = '';
 flowSpeed = 1;
 thrLength = 100;
@@ -19,8 +19,9 @@ h = 6*pi/180;
 
 %% Load components
 % Flight Controller
-loadComponent('pathFollowingCtrlForILC');
-fltCtrl.rudderGain.setValue(0,'')
+loadComponent('guidanceLawPathFollowing');
+% loadComponent('pathFollowingCtrlForILC');
+
 % Spooling controller
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
@@ -84,9 +85,11 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     gndStn.posVec.Value);
 
 fltCtrl.elevatorReelInDef.setValue(0,'deg');
+fltCtrl.rudderGain.setValue(0,'');
+fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
 %% Run Simulation
-simWithMonitor('OCTModel')
+simWithMonitor('OCTModel');
 tsc = signalcontainer(logsout);
 
 %%  Log Results
@@ -113,5 +116,5 @@ vapp3 = mean(max(0,B_Vapp(1,:)).^3);
 
 
 %%
-vhcl.animateSim(tsc,0.5,...
-    'PathFunc',fltCtrl.fcnName.Value);
+vhcl.animateSim(tsc,0.25,...
+    'PathFunc',fltCtrl.fcnName.Value,'pause',true);
