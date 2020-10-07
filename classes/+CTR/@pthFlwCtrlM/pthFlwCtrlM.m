@@ -7,6 +7,7 @@ classdef pthFlwCtrlM < handle
         tanRoll
         yawMoment
         rollMoment
+        elevCtrl
         % Saturations
         maxBank
         controlSigMax
@@ -26,14 +27,21 @@ classdef pthFlwCtrlM < handle
         initPathVar
         firstSpoolLap
         rudderGain
+        % Pitch setpoint 
+        AoACtrl
+        AoASP
+        AoAConst
+        AoATime
+        AoALookup
     end
     
     methods
         function obj = pthFlwCtrlM
             %PTHFLWCTRL 
-            obj.tanRoll              = CTR.FPID('rad','rad');
+            obj.tanRoll             = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
+            obj.elevCtrl            = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
@@ -53,6 +61,12 @@ classdef pthFlwCtrlM < handle
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable');
             obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
             obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
+            
+            obj.AoACtrl             = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = none; 1 = On');
+            obj.AoASP               = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = constant; 1 = time-lookup');
+            obj.AoAConst            = SIM.parameter('Unit','deg','Description','Constant AoA setpoint');
+            obj.AoATime             = SIM.parameter('Unit','s','Description','Reference time for AoA setpoint lookup table');
+            obj.AoALookup           = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
         end
         
         function setWinchSpeedIn(obj,val,unit)

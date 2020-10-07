@@ -149,21 +149,24 @@ end
 subplot(R,C,4); hold on; grid on
 if lap
     if con
-        plot(data(ran),squeeze(obj.portWingAoA.Data(1,1,ran)),'b-');
-        plot(data(ran),squeeze(obj.stbdWingAoA.Data(1,1,ran)),'r-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA')
+        plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-');  
+        plot(data(ran),squeeze(obj.AoA.Data(ran))*180/pi,'b-'); 
+        ylabel('Angle [deg]');  legend('Setpoint','AoA');
         if p.Results.plotBeta
             plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta')
         end
     else
-        plot(time(ran),squeeze(obj.portWingAoA.Data(1,1,ran)),'b-');
-        plot(time(ran),squeeze(obj.stbdWingAoA.Data(1,1,ran)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
+        plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-');  
+        plot(time(ran),squeeze(obj.AoA.Data(ran))*180/pi,'b-'); 
+        ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
         if p.Results.plotBeta
             plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
         end
     end
 else
-    plot(time,squeeze(obj.portWingAoA.Data(1,1,:)),'b-');
-    plot(time,squeeze(obj.stbdWingAoA.Data(1,1,:)),'r-');  ylabel('Angle [deg]');  xlim(lim);  legend('Port AoA','Stbd AoA')
+    plot(time,obj.AoASP.Data*180/pi,'r-');  
+    plot(time,squeeze(obj.AoA.Data)*180/pi,'b-'); 
+    ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
     if p.Results.plotBeta
         plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
     end

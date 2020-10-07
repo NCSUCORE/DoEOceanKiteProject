@@ -57,7 +57,7 @@ vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpan(2,'m');
 vhcl.hStab.setSweep(0,'deg');
 vhcl.hStab.setIncidence(.1,'deg');
-vhcl.hStab.setIncidence(0,'deg');
+vhcl.hStab.setIncidence(-.25,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
