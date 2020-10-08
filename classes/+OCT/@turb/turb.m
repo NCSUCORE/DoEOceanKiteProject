@@ -11,6 +11,8 @@ classdef turb < handle
         axialInductionFactor
         tipSpeepRatio
         dragCoef
+        staticArea
+        staticCD
     end
     properties (Dependent)
         dragCoeff
@@ -27,6 +29,8 @@ classdef turb < handle
             obj.dragCoef             = SIM.parameter('Unit','','Description','Coefficient used in drag calculation');
             obj.axialInductionFactor = SIM.parameter('Unit','','Description','Relationship between CP and CD');
             obj.tipSpeepRatio        = SIM.parameter('Unit','','Description','Relationship between flow speed and rotor tip speed');
+            obj.staticArea           = SIM.parameter('Unit','m^2','Description','Projected area of the static turbine');
+            obj.staticCD             = SIM.parameter('Unit','','Description','Turbine drag coefficient while static');
         end
         
         function setMass(obj,val,units)
@@ -59,6 +63,14 @@ classdef turb < handle
         
         function setTipSpeedRatio(obj,val,units)
             obj.tipSpeepRatio.setValue(val,units)
+        end
+        
+        function setStaticArea(obj,val,units)
+            obj.staticArea.setValue(val,units)
+        end
+
+        function setStaticCD(obj,val,units)
+            obj.staticCD.setValue(val,units)
         end
 
         function val = get.dragCoeff(obj)
