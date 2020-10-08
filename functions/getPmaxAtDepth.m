@@ -12,7 +12,7 @@ end
 
 Pmax = max(max(Pavg(:,:,vFlow)));
 [Ix,Iy] = find(Pavg(:,:,vFlow)==Pmax);
-el = elevation(Iy);
-thrL = thrLength(Ix);
+el = elevation(min(Iy));
+thrL = thrLength(min(Ix));
 end
 

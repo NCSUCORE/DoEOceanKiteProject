@@ -6,11 +6,11 @@ clear;%clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-simScenario = 1.8;
+simScenario = 1.5;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .5;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
+flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -90,7 +90,7 @@ for ii = 1:numel(flwSpd)
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-    thr.tether1.setDiameter(0.01,thr.tether1.diameter.Unit);
+    thr.tether1.setDiameter(0.00874,thr.tether1.diameter.Unit);
     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1,thr.tether1.youngsMod.Unit);
     thr.tether1.dragCoeff.setValue(1,'');
     %%  Winches Properties
@@ -107,17 +107,17 @@ for ii = 1:numel(flwSpd)
         fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
     end
     if simScenario >= 3 && simScenario < 4
-        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
+%         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
         fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
     elseif simScenario >= 1 && simScenario < 2
         fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.AoASP.setValue(0,'');
-        fltCtrl.AoAConst.setValue(9.25*pi/180,'deg');
-        fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([10 2 10]*pi/180,'deg');
+        fltCtrl.AoAConst.setValue(14*pi/180,'deg');
+        fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
         fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
     end
     thr.tether1.dragEnable.setValue(1,'');
-%     vhcl.turb1.setDiameter(.75,'m');     vhcl.turb2.setDiameter(.75,'m')
+%     vhcl.turb1.setDiameter(.675,'m');     vhcl.turb2.setDiameter(.675,'m')
     %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')

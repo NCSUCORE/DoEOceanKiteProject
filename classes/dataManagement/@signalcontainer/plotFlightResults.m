@@ -165,7 +165,7 @@ if lap
     end
 else
     plot(time,obj.AoASP.Data*180/pi,'r-');  
-    plot(time,squeeze(obj.AoA.Data)*180/pi,'b-'); 
+    plot(time,squeeze(obj.AoA.Data)*180/pi,'b-'); ylim([0 20]);
     ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
     if p.Results.plotBeta
         plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)

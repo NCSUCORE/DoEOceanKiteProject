@@ -15,12 +15,12 @@ vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR8_b8','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
-vhcl.setVolume(2.0356148,'m^3');
-Ixx = 3.3402551e+03;
-Iyy = 5.4635690e+03;
-Izz = 8.6680707e+03;
-Ixy = 7.3728032e-02;
-Ixz = 1.0850361e+02;
+vhcl.setVolume(1.5995184,'m^3');
+Ixx = 3.3181109e+03;
+Iyy = 4.0407857e+03;
+Izz = 7.2456248e+03;
+Ixy = 7.6635270e-02;
+Ixz = 1.0686861e+02;
 Iyz = 0;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
@@ -28,7 +28,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([8.5185838e-01;0;2.4645909e-02],'m')
+vhcl.setRCM_LE([8.8444775e-01;0;3.1365427e-02],'m')
 vhcl.setRB_LE([0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
@@ -72,11 +72,11 @@ vhcl.vStab.setClMin(-1.7,'');
 vhcl.vStab.setClMax(1.7,'');
 
 %% Fuselage (could use more realistic numbers)
-vhcl.fuse.setDiameter(0.5,'m');
+vhcl.fuse.setDiameter(0.4,'m');
 vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
-vhcl.fuse.setREnd_LE([4.25;0;0],'m');
+vhcl.fuse.setREnd_LE([4.1;0;0],'m');
 vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
 %% Turbines
 vhcl.setNumTurbines(2,'');
@@ -90,6 +90,8 @@ vhcl.turb1.setPowerCoeff(.4,'')
 vhcl.turb1.setDragCoef(.9,'')
 vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
+vhcl.turb1.setStaticArea(0.08,'m^2')
+vhcl.turb1.setStaticCD(1.5,'')
 % starboard rotor
 vhcl.turb2.setMass(6,'kg')
 vhcl.turb2.setDiameter(.7,'m')
@@ -99,7 +101,8 @@ vhcl.turb2.setPowerCoeff(.4,'')
 vhcl.turb2.setDragCoef(.9,'')
 vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
-
+vhcl.turb2.setStaticArea(0.08,'m^2')
+vhcl.turb2.setStaticCD(1.5,'')
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
 
