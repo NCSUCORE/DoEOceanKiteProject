@@ -38,7 +38,7 @@ elems(4).Complexity = 'real';
 elems(4).Unit = 'm/s';
 
 elems(5) = Simulink.BusElement;
-elems(5).Name = 'rotorCP';
+elems(5).Name = 'turbOnOff';
 elems(5).Dimensions = 1;
 elems(5).DimensionsMode = 'Fixed';
 elems(5).DataType = 'double';

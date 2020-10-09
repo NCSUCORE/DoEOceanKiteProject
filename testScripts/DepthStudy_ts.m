@@ -7,7 +7,7 @@ simScenario = 1.5;
 saveSim = 1;                                                %   Flag to save results
 thrLength = 400:25:600;                                            %   m - Initial tether length
 flwSpd = 0.25:0.025:0.5;                              %   m/s - Flow speed
-el = (20:2.5:50)*pi/180;                                             %   rad - Mean elevation angle
+el = (20:2.5:45)*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for kk = 1:numel(flwSpd)
@@ -15,7 +15,7 @@ for kk = 1:numel(flwSpd)
         for jj = 1:numel(el)
             Simulink.sdi.clear
             %%  Load components
-            loadComponent('pathFollowingCtrlForManta');             %   Path-following controller
+            loadComponent('pathFollowWithAoACtrl');                 %   Path-following controller with AoA control
             loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
             loadComponent('MantaGndStn');                               %   Ground station
             loadComponent('winchManta');                                %   Winches
@@ -44,7 +44,7 @@ for kk = 1:numel(flwSpd)
                 loadComponent('Manta2RotXFoil_AR9_b9');                                 %   Manta kite with XFlr5
             elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
                 loadComponent('Manta2RotXFoil_AR9_b10');                                %   Manta kite with XFlr5
-            elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
+            elseif simScenario == 1.9 || simScenario == 3.9 || simScenario == 4.9
                 loadComponent('Manta2RotXFoil_AR7_b8');                                 %   Manta kite with XFlr5
             end
             %%  Environment Properties
@@ -71,7 +71,7 @@ for kk = 1:numel(flwSpd)
             thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
             thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
             thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-            thr.tether1.setDiameter(0.0109,thr.tether1.diameter.Unit);
+            thr.tether1.setDiameter(0.00874,thr.tether1.diameter.Unit);
             thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
             thr.tether1.dragCoeff.setValue(1,'');
             %%  Winches Properties
@@ -82,8 +82,10 @@ for kk = 1:numel(flwSpd)
             fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
             fltCtrl.rudderGain.setValue(0,'')
             thr.tether1.dragEnable.setValue(1,'');
-            fltCtrl.setElevatorReelInDef(-.25,'deg')
-            %%  Set up critical system parameters and run simulation
+            fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.AoASP.setValue(0,'');
+            fltCtrl.AoAConst.setValue(14*pi/180,'deg');
+            fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
+            fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');            %%  Set up critical system parameters and run simulation
             fprintf('Flow Speed = %.3f m/s;\tTether Length = %.1f m;\t Elevation = %.1f deg\n',flwSpd(kk),thrLength(ii),el(jj)*180/pi);
             simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
             simWithMonitor('OCTModel')
@@ -91,9 +93,9 @@ for kk = 1:numel(flwSpd)
             tsc = signalcontainer(logsout);
             dt = datestr(now,'mm-dd_HH-MM');
             filename = sprintf(strcat('Turb%.1f_V-%.3f_thrL-%d_el-%d.mat'),simScenario,flwSpd(kk),thrLength(ii),el(jj)*180/pi);
-            fpath = 'D:\Results\';
+            fpath = 'D:\Results2\';
             if saveSim == 1
-                save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+                save(strcat(fpath,filename),'tsc','vhcl','fltCtrl','LIBRARY')
             end
             [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
             [CLtot,CDtot] = tsc.getCLCD(vhcl);
