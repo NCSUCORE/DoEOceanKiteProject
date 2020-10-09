@@ -56,8 +56,16 @@ effR = [0.8 0.7];                                   %   AR = 9; b = 10
 for k = 1:numel(depth)
     eff = interp1(tLength,effR,thrL(1,k));
     Index = find(Pmax(:,k)~=0);
-    Ptemp = Pmax(Pmax(:,k)~=0,k)*eff;
     p(:,k) = polyfit(flwSpd(Index),Pmax(Index,k)*eff,3)';
+end
+%%
+for i = 1:numel(flwSpd)
+    for j = 1:numel(depth)
+%         if ~isnan(Pmax(i,j))
+            eff = interp1(tLength,effR,thrL(i,j));
+            Pmax1(i,j) = Pmax(i,j)*eff;
+%         end
+    end
 end
 %%  Plotting 
 speed = 0.1:0.01:0.5;
@@ -86,9 +94,18 @@ plot(depth,thrL(1,:),'b-'); xlabel('Depth [m]'); ylabel('Tether Length [m]');
 subplot(12,3,[21 33]); hold on; grid on;
 plot(depth,elev(1,:),'b-'); xlabel('Depth [m]'); ylabel('Elevation [deg]'); 
 %%
-Pmax(Pmax==0) = NaN;
-figure;
-a = contourf(depth,flwSpd,Pmax,20,'edgecolor','none');  xlabel('Depth [m]');  ylabel('$V_\mathrm{flow}$ [m/s]');  colorbar
+figure; subplot(2,2,1); hold on; grid on
+a = contourf(depth,flwSpd,Pmax,20,'edgecolor','none');  
+xlabel('Depth [m]');  ylabel('$V_\mathrm{flow}$ [m/s]');  title('Power at Kite [kW]');  colorbar
+subplot(2,2,3); hold on; grid on
+a = contourf(depth,flwSpd,Pmax1,20,'edgecolor','none');  
+xlabel('Depth [m]');  ylabel('$V_\mathrm{flow}$ [m/s]');  title('Power at Glider [kW]');  colorbar
+subplot(2,2,2); hold on; grid on
+a = contourf(depth,flwSpd,thrL,20,'edgecolor','none');  
+xlabel('Depth [m]');  ylabel('$V_\mathrm{flow}$ [m/s]');  title('Optimal Tether Length [m]');  colorbar
+subplot(2,2,4); hold on; grid on
+a = contourf(depth,flwSpd,elev,20,'edgecolor','none');  
+xlabel('Depth [m]');  ylabel('$V_\mathrm{flow}$ [m/s]');  title('Optimal Elevation Angle [deg]');  colorbar
 %%
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Depth Study\');
 save([fpath,'DepthStudy_1-5A.mat'],'p','flwSpd','Pmax','elev','thrL','depth');
