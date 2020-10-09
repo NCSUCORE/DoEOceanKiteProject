@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 %% Test script for John to control the kite model
 Simulink.sdi.clear
 clear;clc;%close all
@@ -222,5 +223,6 @@ end
 % vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
 %     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
 %     'ZoomIn',1==0);
+
 
 

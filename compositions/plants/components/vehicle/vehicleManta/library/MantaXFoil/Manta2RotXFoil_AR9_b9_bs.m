@@ -90,6 +90,8 @@ vhcl.turb1.setPowerCoeff(.4,'')
 vhcl.turb1.setDragCoef(.9,'')
 vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
+vhcl.turb1.setStaticArea(0.08,'m^2')
+vhcl.turb1.setStaticCD(1.5,'')
 % starboard rotor
 vhcl.turb2.setMass(6,'kg')
 vhcl.turb2.setDiameter(.7,'m')
@@ -99,6 +101,8 @@ vhcl.turb2.setPowerCoeff(.4,'')
 vhcl.turb2.setDragCoef(.9,'')
 vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
+vhcl.turb2.setStaticArea(0.08,'m^2')
+vhcl.turb2.setStaticCD(1.5,'')
 
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs

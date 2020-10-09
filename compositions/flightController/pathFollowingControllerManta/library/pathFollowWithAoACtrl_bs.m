@@ -26,10 +26,10 @@ fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue(2.3458e3,'(N*m)/(rad)');
 
-fltCtrl.pitchMoment.kp.setValue(20000,'(N*m)/(rad)')
-fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.pitchMoment.kd.setValue(0,'(N*m)/(rad/s)');
-fltCtrl.pitchMoment.tau.setValue(0.001,'s');
+fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+fltCtrl.elevCtrl.kd.setValue(0,'(deg)/(rad/s)');
+fltCtrl.elevCtrl.tau.setValue(0.001,'s');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
@@ -38,9 +38,9 @@ fltCtrl.startControl.setValue(0,'s');
 
 fltCtrl.AoACtrl.setValue(0,'');                   
 fltCtrl.AoASP.setValue(0,'');                   
-fltCtrl.AoAConst.setValue(9,'deg');
+fltCtrl.AoAConst.setValue(10*pi/180,'deg');
 fltCtrl.AoATime.setValue([0 1000 2000],'s');         
-fltCtrl.AoALookup.setValue([9 4 9],'deg');
+fltCtrl.AoALookup.setValue([9 4 9]*pi/180,'deg');
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
