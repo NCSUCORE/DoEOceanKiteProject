@@ -1,0 +1,226 @@
+fltCtrl.tanRoll.kp.Value = 2.0000e-01
+fltCtrl.tanRoll.kp.Unit = '(rad)/(rad)'
+fltCtrl.tanRoll.kp.NoScale = false
+fltCtrl.tanRoll.kp.Description = 'Proportional gain'
+fltCtrl.tanRoll.ki.Value = 0.0000e+00
+fltCtrl.tanRoll.ki.Unit = '(rad)/(rad*s)'
+fltCtrl.tanRoll.ki.NoScale = false
+fltCtrl.tanRoll.ki.Description = 'Integral gain'
+fltCtrl.tanRoll.kd.Value = 0.0000e+00
+fltCtrl.tanRoll.kd.Unit = '(rad)/(rad/s)'
+fltCtrl.tanRoll.kd.NoScale = false
+fltCtrl.tanRoll.kd.Description = 'Derivative gain'
+fltCtrl.tanRoll.tau.Value = 1.0000e-03
+fltCtrl.tanRoll.tau.Unit = 's'
+fltCtrl.tanRoll.tau.NoScale = false
+fltCtrl.tanRoll.tau.Description = 'Time Constant'
+fltCtrl.yawMoment.kp.Value = 5.7296e+03
+fltCtrl.yawMoment.kp.Unit = '(N*m)/(rad)'
+fltCtrl.yawMoment.kp.NoScale = false
+fltCtrl.yawMoment.kp.Description = 'Proportional gain'
+fltCtrl.yawMoment.ki.Value = 0.0000e+00
+fltCtrl.yawMoment.ki.Unit = '(N*m)/(rad*s)'
+fltCtrl.yawMoment.ki.NoScale = false
+fltCtrl.yawMoment.ki.Description = 'Integral gain'
+fltCtrl.yawMoment.kd.Value = 0.0000e+00
+fltCtrl.yawMoment.kd.Unit = '(N*m)/(rad/s)'
+fltCtrl.yawMoment.kd.NoScale = false
+fltCtrl.yawMoment.kd.Description = 'Derivative gain'
+fltCtrl.yawMoment.tau.Value = 1.0000e+00
+fltCtrl.yawMoment.tau.Unit = 's'
+fltCtrl.yawMoment.tau.NoScale = false
+fltCtrl.yawMoment.tau.Description = 'Time Constant'
+fltCtrl.rollMoment.kp.Value = 5.2087e+05
+fltCtrl.rollMoment.kp.Unit = '(N*m)/(rad)'
+fltCtrl.rollMoment.kp.NoScale = false
+fltCtrl.rollMoment.kp.Description = 'Proportional gain'
+fltCtrl.rollMoment.ki.Value = 0.0000e+00
+fltCtrl.rollMoment.ki.Unit = '(N*m)/(rad*s)'
+fltCtrl.rollMoment.ki.NoScale = false
+fltCtrl.rollMoment.ki.Description = 'Integral gain'
+fltCtrl.rollMoment.kd.Value = 5.2087e+05
+fltCtrl.rollMoment.kd.Unit = '(N*m)/(rad/s)'
+fltCtrl.rollMoment.kd.NoScale = false
+fltCtrl.rollMoment.kd.Description = 'Derivative gain'
+fltCtrl.rollMoment.tau.Value = 1.0000e-03
+fltCtrl.rollMoment.tau.Unit = 's'
+fltCtrl.rollMoment.tau.NoScale = false
+fltCtrl.rollMoment.tau.Description = 'Time Constant'
+fltCtrl.pitchSP.kp.Value = 1.0000e+01
+fltCtrl.pitchSP.kp.Unit = '(deg)/(deg)'
+fltCtrl.pitchSP.kp.NoScale = false
+fltCtrl.pitchSP.kp.Description = 'Proportional gain'
+fltCtrl.pitchSP.ki.Value = 1.0000e-02
+fltCtrl.pitchSP.ki.Unit = '(deg)/(deg*s)'
+fltCtrl.pitchSP.ki.NoScale = false
+fltCtrl.pitchSP.ki.Description = 'Integral gain'
+fltCtrl.pitchSP.kd.Value = 0.0000e+00
+fltCtrl.pitchSP.kd.Unit = '(deg)/(deg/s)'
+fltCtrl.pitchSP.kd.NoScale = false
+fltCtrl.pitchSP.kd.Description = 'Derivative gain'
+fltCtrl.pitchSP.tau.Value = 1.0000e-02
+fltCtrl.pitchSP.tau.Unit = 's'
+fltCtrl.pitchSP.tau.NoScale = false
+fltCtrl.pitchSP.tau.Description = 'Time Constant'
+fltCtrl.pitchSPkpSlope.Value = 2.3680e-02
+fltCtrl.pitchSPkpSlope.Unit is unitless or has no unit specified
+fltCtrl.pitchSPkpSlope.NoScale = true
+fltCtrl.pitchSPkpSlope.Description = 'Variable kp slope value'
+fltCtrl.pitchSPkpInt.Value = 5.2630e-01
+fltCtrl.pitchSPkpInt.Unit is unitless or has no unit specified
+fltCtrl.pitchSPkpInt.NoScale = true
+fltCtrl.pitchSPkpInt.Description = 'Variable kp y-intercept value'
+fltCtrl.pitchSPkiSlope.Value = 7.8950e-05
+fltCtrl.pitchSPkiSlope.Unit is unitless or has no unit specified
+fltCtrl.pitchSPkiSlope.NoScale = true
+fltCtrl.pitchSPkiSlope.Description = 'Variable ki slope value'
+fltCtrl.pitchSPkiInt.Value = 8.4210e-03
+fltCtrl.pitchSPkiInt.Unit is unitless or has no unit specified
+fltCtrl.pitchSPkiInt.NoScale = true
+fltCtrl.pitchSPkiInt.Description = 'Variable ki y-intercept value'
+fltCtrl.elevCmd.kp.Value = 2.0000e+02
+fltCtrl.elevCmd.kp.Unit = '(deg)/(rad)'
+fltCtrl.elevCmd.kp.NoScale = false
+fltCtrl.elevCmd.kp.Description = 'Proportional gain'
+fltCtrl.elevCmd.ki.Value = 1.0000e+01
+fltCtrl.elevCmd.ki.Unit = '(deg)/(rad*s)'
+fltCtrl.elevCmd.ki.NoScale = false
+fltCtrl.elevCmd.ki.Description = 'Integral gain'
+fltCtrl.elevCmd.kd.Value = 0.0000e+00
+fltCtrl.elevCmd.kd.Unit = '(deg)/(rad/s)'
+fltCtrl.elevCmd.kd.NoScale = false
+fltCtrl.elevCmd.kd.Description = 'Derivative gain'
+fltCtrl.elevCmd.tau.Value = 1.0000e-02
+fltCtrl.elevCmd.tau.Unit = 's'
+fltCtrl.elevCmd.tau.NoScale = false
+fltCtrl.elevCmd.tau.Description = 'Time Constant'
+fltCtrl.maxBank.upperLimit.Value = Inf
+fltCtrl.maxBank.upperLimit.Unit is unitless or has no unit specified
+fltCtrl.maxBank.upperLimit.NoScale = false
+fltCtrl.maxBank.lowerLimit.Value = -Inf
+fltCtrl.maxBank.lowerLimit.Unit is unitless or has no unit specified
+fltCtrl.maxBank.lowerLimit.NoScale = false
+fltCtrl.controlSigMax.upperLimit.Value = 3.0000e+01
+fltCtrl.controlSigMax.upperLimit.Unit is unitless or has no unit specified
+fltCtrl.controlSigMax.upperLimit.NoScale = false
+fltCtrl.controlSigMax.lowerLimit.Value = -3.0000e+01
+fltCtrl.controlSigMax.lowerLimit.Unit is unitless or has no unit specified
+fltCtrl.controlSigMax.lowerLimit.NoScale = false
+fltCtrl.pitchAngleMax.upperLimit.Value = 4.5000e+01
+fltCtrl.pitchAngleMax.upperLimit.Unit is unitless or has no unit specified
+fltCtrl.pitchAngleMax.upperLimit.NoScale = false
+fltCtrl.pitchAngleMax.lowerLimit.Value = -4.5000e+01
+fltCtrl.pitchAngleMax.lowerLimit.Unit is unitless or has no unit specified
+fltCtrl.pitchAngleMax.lowerLimit.NoScale = false
+fltCtrl.searchSize.Value = 5.0000e-01
+fltCtrl.searchSize.Unit is unitless or has no unit specified
+fltCtrl.searchSize.NoScale = true
+fltCtrl.searchSize.Description = 'Range of normalized path variable to search'
+fltCtrl.initPathVar.Unit is unitless or has no unit specified
+fltCtrl.initPathVar.NoScale = false
+fltCtrl.initPathVar.Description = 'Initial path variable to begin golden section search around'
+fltCtrl.fcnName.Unit is unitless or has no unit specified
+fltCtrl.fcnName.NoScale = false
+fltCtrl.fcnName.Description = 'Path Style'
+fltCtrl.perpErrorVal.Unit = 'rad'
+fltCtrl.perpErrorVal.NoScale = false
+fltCtrl.perpErrorVal.Description = 'Central angle at which we saturate the desired velocity to the tangent vector'
+fltCtrl.startControl.Value = 0.0000e+00
+fltCtrl.startControl.Unit = 's'
+fltCtrl.startControl.NoScale = false
+fltCtrl.startControl.Description = 'Time at which we switch the roll controller on'
+fltCtrl.elevatorReelInDef.Value = 2.0000e+01
+fltCtrl.elevatorReelInDef.Unit = 'deg'
+fltCtrl.elevatorReelInDef.NoScale = false
+fltCtrl.elevatorReelInDef.Description = 'Deflection angle of elevator used during spool in'
+fltCtrl.firstSpoolLap.Value = 1.0000e+00
+fltCtrl.firstSpoolLap.Unit is unitless or has no unit specified
+fltCtrl.firstSpoolLap.NoScale = false
+fltCtrl.firstSpoolLap.Description = 'First Lap to begin spooling'
+fltCtrl.rudderGain.Value = 1.0000e+00
+fltCtrl.rudderGain.Unit is unitless or has no unit specified
+fltCtrl.rudderGain.NoScale = false
+fltCtrl.rudderGain.Description = '0 Turns off rudder'
+fltCtrl.ctrlVecUpdateFcn.Value = 'combinedCmd'
+fltCtrl.ctrlVecUpdateFcn.Unit is unitless or has no unit specified
+fltCtrl.ctrlVecUpdateFcn.NoScale = false
+fltCtrl.ctrlVecUpdateFcn.Description = 'Function to calculate ctrl and speed vectors between laps'
+fltCtrl.tetherLengthSetpointFcn.Value = 'combinedTLSP'
+fltCtrl.tetherLengthSetpointFcn.Unit is unitless or has no unit specified
+fltCtrl.tetherLengthSetpointFcn.NoScale = false
+fltCtrl.tetherLengthSetpointFcn.Description = 'Function to calculate ctrl and speed vectors between laps'
+fltCtrl.winchAndElevCmdFcn.Value = 'combinedCmd'
+fltCtrl.winchAndElevCmdFcn.Unit is unitless or has no unit specified
+fltCtrl.winchAndElevCmdFcn.NoScale = false
+fltCtrl.winchAndElevCmdFcn.Description = 'Function to calculate ctrl and speed vectors between laps'
+fltCtrl.initSpdVec.Value = [0 0 0 0 0]
+fltCtrl.initSpdVec.Unit = 'm/s'
+fltCtrl.initSpdVec.NoScale = false
+fltCtrl.initSpdVec.Description = 'initial speed Vec parameter; depends on chosen functions'
+fltCtrl.initCtrlVec.Value = [0.25 0.14 0 0 0 0 0 0]
+fltCtrl.initCtrlVec.Unit is unitless or has no unit specified
+fltCtrl.initCtrlVec.NoScale = false
+fltCtrl.initCtrlVec.Description = 'initial control Vec parameter; depends on chosen functions'
+fltCtrl.intraDrift.Value = 1.0000e+01
+fltCtrl.intraDrift.Unit = 'm'
+fltCtrl.intraDrift.NoScale = false
+fltCtrl.intraDrift.Description = 'Meters of drift per lap during intracycle'
+fltCtrl.dockedTetherLength.Unit = 'm'
+fltCtrl.dockedTetherLength.NoScale = false
+fltCtrl.dockedTetherLength.Description = 'Meters of unspooled tether while kite is docked to groundstation'
+fltCtrl.initTL.Value = 8.0000e+01
+fltCtrl.initTL.Unit = 'm'
+fltCtrl.initTL.NoScale = false
+fltCtrl.initTL.Description = 'initial/spool-in/pure-intracycle tether length'
+fltCtrl.maxTL.Value = 4.0000e+02
+fltCtrl.maxTL.Unit = 'm'
+fltCtrl.maxTL.NoScale = false
+fltCtrl.maxTL.Description = 'max tether length for multicycle'
+fltCtrl.switchFilterDuration.Value = 1.0000e+01
+fltCtrl.switchFilterDuration.Unit = 's'
+fltCtrl.switchFilterDuration.NoScale = false
+fltCtrl.switchFilterDuration.Description = 'length of time to filter ctrlSurfDef after state switch'
+fltCtrl.switchFilterConstant.Value = 1.0000e-01
+fltCtrl.switchFilterConstant.Unit = 's'
+fltCtrl.switchFilterConstant.NoScale = false
+fltCtrl.switchFilterConstant.Description = 'filter constant to use when filtering ctrlSurfDef after state switch'
+fltCtrl.nonXCurrentSpoolInGain.Value = 1.5000e+00
+fltCtrl.nonXCurrentSpoolInGain.Unit is unitless or has no unit specified
+fltCtrl.nonXCurrentSpoolInGain.NoScale = false
+fltCtrl.nonXCurrentSpoolInGain.Description = 'Flow speed multiplier to get glide-in winch speed'
+fltCtrl.spoolCtrlTimeConstant.Value = 2.0000e+00
+fltCtrl.spoolCtrlTimeConstant.Unit = 's'
+fltCtrl.spoolCtrlTimeConstant.NoScale = false
+fltCtrl.spoolCtrlTimeConstant.Description = 'Time constant for spooling command'
+fltCtrl.nomSpoolSpeed.Value = 0.0000e+00
+fltCtrl.nomSpoolSpeed.Unit = 'm/s'
+fltCtrl.nomSpoolSpeed.NoScale = false
+fltCtrl.nomSpoolSpeed.Description = 'Nominal spooling speed'
+fltCtrl.shortLeashLength.Value = 2.0000e+01
+fltCtrl.shortLeashLength.Unit = 'm'
+fltCtrl.shortLeashLength.NoScale = false
+fltCtrl.shortLeashLength.Description = 'Length of the short leash'
+fltCtrl.LaRelevationSP.Value = 4.5000e+01
+fltCtrl.LaRelevationSP.Unit = 'deg'
+fltCtrl.LaRelevationSP.NoScale = false
+fltCtrl.LaRelevationSP.Description = 'Reel-in elevation angle setpoint'
+fltCtrl.LaRelevationSPErr.Value = 2.0000e+00
+fltCtrl.LaRelevationSPErr.Unit = 'deg'
+fltCtrl.LaRelevationSPErr.NoScale = false
+fltCtrl.LaRelevationSPErr.Description = 'Reel-in elevation angle setpoint error where spooling is allowed'
+fltCtrl.pitchCtrl.Value = 2.0000e+00
+fltCtrl.pitchCtrl.Unit is unitless or has no unit specified
+fltCtrl.pitchCtrl.NoScale = false
+fltCtrl.pitchCtrl.Description = 'Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR'
+fltCtrl.pitchConst.Value = 0.0000e+00
+fltCtrl.pitchConst.Unit = 'deg'
+fltCtrl.pitchConst.NoScale = false
+fltCtrl.pitchConst.Description = 'Constant pitch setpoint'
+fltCtrl.pitchTime.Value = [0 2000]
+fltCtrl.pitchTime.Unit = 's'
+fltCtrl.pitchTime.NoScale = false
+fltCtrl.pitchTime.Description = 'Reference time for pitch setpoint lookup table'
+fltCtrl.pitchLookup.Value = [0 0]
+fltCtrl.pitchLookup.Unit = 'deg'
+fltCtrl.pitchLookup.NoScale = false
+fltCtrl.pitchLookup.Description = 'Pitch setpoint lookup values'
