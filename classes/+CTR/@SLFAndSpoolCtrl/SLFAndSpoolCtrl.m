@@ -12,7 +12,13 @@ classdef SLFAndSpoolCtrl < handle
         pitchSPkpInt
         pitchSPkiSlope
         pitchSPkiInt
+        yawSP
+        yawSPkpSlope
+        yawSPkpInt
+        yawSPkiSlope
+        yawSPkiInt
         elevCmd
+        rudderCmd
         % Saturations
         maxBank
         controlSigMax
@@ -49,6 +55,8 @@ classdef SLFAndSpoolCtrl < handle
         pitchConst
         pitchTime
         pitchLookup
+        yawCtrl
+        yawConst
     end
     
     methods
@@ -62,7 +70,13 @@ classdef SLFAndSpoolCtrl < handle
             obj.pitchSPkpInt        = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
             obj.pitchSPkiSlope      = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
             obj.pitchSPkiInt        = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
+            obj.yawSP               = CTR.FPID('deg','deg');
+            obj.yawSPkpSlope        = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
+            obj.yawSPkpInt          = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
+            obj.yawSPkiSlope        = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
+            obj.yawSPkiInt          = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
             obj.elevCmd             = CTR.FPID('rad','deg');
+            obj.rudderCmd           = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
@@ -98,6 +112,8 @@ classdef SLFAndSpoolCtrl < handle
             
             obj.pitchCtrl               = SIM.parameter('Unit','','Description','Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR');
             obj.pitchConst              = SIM.parameter('Unit','deg','Description','Constant pitch setpoint');
+            obj.yawCtrl                 = SIM.parameter('Unit','','Description','Flag to decide yaw setpoint source. 0 = contant; 1 = LaR');
+            obj.yawConst                = SIM.parameter('Unit','deg','Description','Constant yaw setpoint');
             obj.pitchTime               = SIM.parameter('Unit','s','Description','Reference time for pitch setpoint lookup table');
             obj.pitchLookup             = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
         end
