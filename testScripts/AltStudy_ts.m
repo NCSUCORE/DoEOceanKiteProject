@@ -4,17 +4,29 @@ clear;clc;%close all
 %%  Select sim scenario
 simScenario = 1.5;
 %%  Set Test Parameters
+load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherData.mat')
+Tmax = 20;
+Tref = [400 600];
+eff = [eval(sprintf('AR8b8.length400.tensionValues%d.efficencyPercent',Tmax))...
+    eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',Tmax))]/100;
 saveSim = 1;                                                %   Flag to save results
 A = 5:1:14;
 thrLength = 200:50:600;                                            %   m - Initial tether length
 flwSpd = [0.25 0.3 0.35 0.4 0.45 0.5];                              %   m/s - Flow speed
-el = (10:5:35)*pi/180;                                             %   rad - Mean elevation angle
+altitude = [50 100 150 200 250 300];
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for kk = 1:numel(flwSpd)
     for ii = 1:numel(thrLength)
-        for jj = 1:numel(el)
+        for jj = 1:numel(altitude)
             for ll = 1:numel(A)
+                TDiam = eval(sprintf('AR8b8.length400.tensionValues%d.outerDiam',Tmax));
+                young = eval(sprintf('AR8b8.length400.tensionValues%d.youngsMod',Tmax));
+                if altitude(jj) >= 0.7071*thrLength(ii)
+                    el = NaN;
+                else
+                    el = asind(altitude(jj)/thrLength(ii))*pi/180;
+                end
                 Simulink.sdi.clear
                 %%  Load components
                 loadComponent('pathFollowWithAoACtrl');                 %   Path-following controller with AoA control
@@ -61,7 +73,7 @@ for kk = 1:numel(flwSpd)
                 end
                 %%  Set basis parameters for high level controller
                 loadComponent('constBoothLem');                             %   High level controller
-                hiLvlCtrl.basisParams.setValue([a,b,el(jj),0*pi/180,thrLength(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
+                hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
                 %%  Ground Station Properties
                 %%  Vehicle Properties
                 vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd(kk)*norm([1;0;0]))
@@ -73,12 +85,11 @@ for kk = 1:numel(flwSpd)
                 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
                 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
                 thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-                thr.tether1.setDiameter(0.01,thr.tether1.diameter.Unit);
-                thr.tether1.setYoungsMod(55e9,thr.tether1.youngsMod.Unit);
+                thr.tether1.setDiameter(TDiam,thr.tether1.diameter.Unit);
+                thr.tether1.setYoungsMod(young,thr.tether1.youngsMod.Unit);
                 thr.tether1.dragCoeff.setValue(1,'');
                 %%  Winches Properties
                 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-                wnch.winch1.LaRspeed.setValue(1,'m/s');
                 %%  Controller User Def. Parameters and dependant properties
                 fltCtrl.setFcnName(PATHGEOMETRY,'');
                 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
@@ -88,7 +99,7 @@ for kk = 1:numel(flwSpd)
                 fltCtrl.AoAConst.setValue(A(ll)*pi/180,'deg');
                 fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
                 fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');            %%  Set up critical system parameters and run simulation
-                fprintf('Flow Speed = %.3f m/s;\tTether Length = %.1f m;\t Elevation = %.1f deg\n',flwSpd(kk),thrLength(ii),el(jj)*180/pi);
+                fprintf('Flow Speed = %.3f m/s;\tTether Length = %.1f m;\t Altitude = %d m;\t AoA = %d deg\n',flwSpd(kk),thrLength(ii),altitude(jj),A(ll));
                 simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
                 simWithMonitor('OCTModel')
                 %%  Log Results
@@ -97,7 +108,7 @@ for kk = 1:numel(flwSpd)
                 filename = sprintf(strcat('Turb%.1f_V-%.3f_thrL-%d_el-%.1f_A-%.1f.mat'),simScenario,flwSpd(kk),thrLength(ii),el(jj)*180/pi,A(ll));
                 fpath = 'D:\Results2\';
                 if saveSim == 1
-                    save(strcat(fpath,filename),'tsc','vhcl','fltCtrl','LIBRARY')
+%                     save(strcat(fpath,filename),'tsc','vhcl','fltCtrl','LIBRARY')
                 end
                 [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
                 [CLtot,CDtot] = tsc.getCLCD(vhcl);
@@ -108,8 +119,8 @@ for kk = 1:numel(flwSpd)
                 AoA(ii,jj,kk,ll) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
                 airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
                 gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-                ten(ii,kk) = max([max(airNode(ran)) max(gndNode(ran))]);
-                fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n',AoA(ii,kk),ten(ii,kk));
+                ten(ii,jj,kk,ll) = max([max(airNode(ran)) max(gndNode(ran))]);
+                fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN;\t Elevation = %.1f\n',AoA(ii,jj,kk,ll),ten(ii,jj,kk,ll),el*180/pi);
                 CL(ii,jj,kk,ll) = mean(CLtot(ran));   CD(ii,jj,kk,ll) = mean(CDtot(ran));
                 Fdrag(ii,jj,kk,ll) = mean(Drag(ran)); Flift(ii,jj,kk,ll) = mean(Lift(ran));
                 Ffuse(ii,jj,kk,ll) = mean(Fuse(ran)); Fthr(ii,jj,kk,ll) = mean(Thr(ran));   Fturb(ii,jj,kk,ll) = mean(Turb(ran));
@@ -119,8 +130,8 @@ for kk = 1:numel(flwSpd)
     end
 end
 %%
-filename1 = 'Comp_Study_1-5.mat';
-fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\');
+filename1 = sprintf('Alt_Study_1-5_Tmax-%d.mat',Tmax);
+fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Alt Study\');
 elevation = el*180/pi;
 save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
-    'Fturb','thrLength','elevation','Depth','flwSpd','A','ten')
+    'Fturb','thrLength','elevation','Depth','flwSpd','A','ten','Tmax')

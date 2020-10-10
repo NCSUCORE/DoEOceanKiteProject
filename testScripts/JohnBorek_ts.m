@@ -6,12 +6,12 @@ clear;%clc;%close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-simScenario = 3.5;
+simScenario = 1.5;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
-thrLength = 20;                                            %   m - Initial tether length
-flwSpd = 2;%.315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
-el = 80*pi/180;                                             %   rad - Mean elevation angle
+saveSim = 1;                                                %   Flag to save results
+thrLength = 400;                                            %   m - Initial tether length
+flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
+el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 for ii = 1:numel(flwSpd)
@@ -179,9 +179,9 @@ end
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
 %         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
-    vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
-        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-        'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
+%     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
+%         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
 % end
 %%  Compare to old results
 % Res = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\Results\Manta 2.0\Rotor\Turb1.5a_V-0.315_EL-30.0_D-0.70_AoA-11.99_10-08_14-37.mat');
