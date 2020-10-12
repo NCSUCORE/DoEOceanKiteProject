@@ -1,14 +1,14 @@
 %% Test script for John to control the kite model
-clear;clc;%close all
+clear;%clc;%close all
 %%  Select sim scenario
 %   0 = fig8;
 %   1 = fig8-2rot DOE-M;  1.1 = fig8-2rot AVL;  1.2 = fig8-2rot XFoil;  1.3 = fig8-2rot XFlr5;
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-simScenario = 1.6;
+simScenario = 1.5;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .315;%[0.25 0.315 0.5 1 2];                              %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
@@ -24,7 +24,7 @@ for ii = 1:numel(flwSpd)
     elseif simScenario == 2
         loadComponent('pathFollowingCtrlForILC');               %   Path-following controller with spooling
     else
-        loadComponent('pathFollowingCtrlForManta');             %   Path-following controller
+        loadComponent('pathFollowWithAoACtrl');                 %   Path-following controller with AoA control
     end
     loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
     loadComponent('MantaGndStn');                               %   Ground station
@@ -90,8 +90,8 @@ for ii = 1:numel(flwSpd)
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-    thr.tether1.setDiameter(0.01,thr.tether1.diameter.Unit);
-    thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
+    thr.tether1.setDiameter(0.009,thr.tether1.diameter.Unit);
+    thr.tether1.setYoungsMod(55e9,thr.tether1.youngsMod.Unit);
     thr.tether1.dragCoeff.setValue(1,'');
     %%  Winches Properties
     wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
@@ -108,11 +108,16 @@ for ii = 1:numel(flwSpd)
     end
     if simScenario >= 3 && simScenario < 4
         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(0,'deg');
+        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
         fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
+    elseif simScenario >= 1 && simScenario < 2
+        fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.AoASP.setValue(0,'');
+        fltCtrl.AoAConst.setValue(12*pi/180,'deg');
+        fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
+        fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
     end
     thr.tether1.dragEnable.setValue(1,'');
-%     vhcl.turb1.setDiameter(.75,'m');     vhcl.turb2.setDiameter(.75,'m')
+%     vhcl.turb1.setDiameter(.77,'m');     vhcl.turb2.setDiameter(.77,'m')
     %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
     simWithMonitor('OCTModel')
@@ -122,7 +127,10 @@ for ii = 1:numel(flwSpd)
         Pow = tsc.rotPowerSummary(vhcl,env);
         [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
         AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-        fprintf('Average AoA = %.3f \n',AoA);
+        airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
+        gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
+        ten = max([max(airNode(ran)) max(gndNode(ran))]);
+        fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n',AoA,ten);
     end
     dt = datestr(now,'mm-dd_HH-MM');
     if simScenario == 0
@@ -130,8 +138,11 @@ for ii = 1:numel(flwSpd)
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
     elseif simScenario > 0 && simScenario < 2
         if numel(flwSpd) == 1
-            % filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_w-%.1f_h-%.1f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,w*180/pi,h*180/pi);
-            filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_E-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,fltCtrl.elevatorReelInDef.Value);
+            if fltCtrl.AoACtrl.Value == 1
+                filename = sprintf(strcat('Turb%.1fa_V-%.3f_EL-%.1f_D-%.2f_AoA-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,AoA);
+            else
+                filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_E-%.2f_',dt,'.mat'),simScenario,flwSpd(ii),el*180/pi,vhcl.turb1.diameter.Value,fltCtrl.elevatorReelInDef.Value);
+            end
             fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
         else
             filename = sprintf(strcat('Turb%.1f_V-%.3f.mat'),simScenario,flwSpd(ii));
@@ -169,12 +180,15 @@ end
 %         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==1,...
+%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
 %         'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
 % end
 %%  Compare to old results
-% load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\Results\Manta 2.0\Rotor\Turb1.8_V-0.315_EL-30.0_D-0.65_E--0.30_10-03_16-07.mat')
-% tsc.rotPowerSummary(vhcl,env);
-% [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-% AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-% fprintf('Average AoA = %.3f \n',AoA);
+% Res = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\Results\Manta 2.0\Rotor\Turb1.5a_V-0.315_EL-30.0_D-0.70_AoA-11.99_10-08_14-37.mat');
+% Res.tsc.rotPowerSummary(Res.vhcl,Res.env);
+% [Idx1,Idx2] = Res.tsc.getLapIdxs(max(Res.tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+% AoA = mean(squeeze(Res.tsc.vhclAngleOfAttack.Data(:,:,ran)));
+% airNode = squeeze(sqrt(sum(Res.tsc.airTenVecs.Data.^2,1)))*1e-3;
+% gndNode = squeeze(sqrt(sum(Res.tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
+% ten = max([max(airNode(ran)) max(gndNode(ran))]);
+% fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n',AoA,ten);
