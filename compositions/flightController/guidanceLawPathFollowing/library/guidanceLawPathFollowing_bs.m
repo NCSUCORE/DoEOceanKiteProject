@@ -3,8 +3,8 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
 fltCtrl = CTR.guideLawPthFlw;
 
-fltCtrl.maxBank.upperLimit.setValue(90*pi/180,'');
-fltCtrl.maxBank.lowerLimit.setValue(-90*pi/180,'');
+fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
 fltCtrl.setPerpErrorVal(6*pi/180,'rad');
 fltCtrl.setSearchSize(.5,'');
 fltCtrl.setMinR(100,'m')
@@ -32,7 +32,7 @@ fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 fltCtrl.startControl.setValue(0,'s');
 fltCtrl.rudderGain.setValue(0,'');
 
-fltCtrl.targetForwardLength.setValue(1,'m');
+fltCtrl.targetForwardLength.setValue(5,'m');
 
 fltCtrl.setFcnName('lemOfBooth','');
 

@@ -5,22 +5,22 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(50,'s');
+simParams.setDuration(100,'s');
 dynamicCalc = '';
 flowSpeed = 1;
-thrLength = 100;
+thrLength = 200;
 % rad - Mean elevation angle
-el = 10*pi/180;    
+el = 30*pi/180;    
 % rad - Path width/height
-w = 25*pi/180;          
-h = 6*pi/180;  
+w = 50*pi/180;          
+h = 12*pi/180;  
 % Path basis parameters
 [a,b] = boothParamConversion(w,h);      
 
 %% Load components
 % Flight Controller
-loadComponent('guidanceLawPathFollowing');
-% loadComponent('pathFollowingCtrlForILC');
+% loadComponent('guidanceLawPathFollowing');
+loadComponent('pathFollowingCtrlForILC');
 
 % Spooling controller
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
@@ -89,6 +89,7 @@ fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
 %% Run Simulation
+keyboard
 simWithMonitor('OCTModel');
 tsc = signalcontainer(logsout);
 
@@ -117,4 +118,4 @@ vapp3 = mean(max(0,B_Vapp(1,:)).^3);
 
 %%
 vhcl.animateSim(tsc,0.25,...
-    'PathFunc',fltCtrl.fcnName.Value,'pause',true);
+    'PathFunc',fltCtrl.fcnName.Value,'pause',true,'plotTarget',false);

@@ -91,6 +91,8 @@ addParameter(p,'ScrollPlots',{}, @(x) isa(x,'cell') && all(isa([x{:}],'timeserie
 addParameter(p,'Bedrock',true,@islogical)
 % Plot bedrock or not
 addParameter(p,'LineAngleEst',false,@islogical)
+% 
+addParameter(p,'plotTarget',false,@islogical)
 
 % ---Parse the output---
 parse(p,tsc,timeStep,varargin{:})
@@ -281,6 +283,14 @@ if p.Results.PathPosition
         tscTmp.pathPosGnd.Data(2,:,1),...
         tscTmp.pathPosGnd.Data(3,:,1),...
         'ro');
+end
+% plot target
+if p.Results.plotTarget
+    h.targetPoint = scatter3(...
+        tscTmp.G_rTarget.Data(1,:,1),...
+        tscTmp.G_rTarget.Data(2,:,1),...
+        tscTmp.G_rTarget.Data(3,:,1),...
+        'b*');
 end
 
 % Plot navigation vectors
@@ -672,6 +682,13 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.pathPosition.ZData = pathPt(3);
     end
     
+    if p.Results.plotTarget
+       targPoint =  tscTmp.G_rTarget.getsamples(ii).Data;
+       h.targetPoint.XData = targPoint(1);
+       h.targetPoint.YData = targPoint(2);
+       h.targetPoint.ZData = targPoint(3);
+    end
+    
     % Update navigation vectors
     if p.Results.NavigationVecs
         tanVec  = len*tscTmp.tanVec.getsamples(ii).Data;
@@ -890,7 +907,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         writeVideo(vidWriter,frame)
     end
     if p.Results.Pause
-        pause
+        waitforbuttonpress;
     end
 end
 
