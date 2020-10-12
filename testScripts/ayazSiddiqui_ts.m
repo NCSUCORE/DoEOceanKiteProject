@@ -19,8 +19,8 @@ h = 12*pi/180;
 
 %% Load components
 % Flight Controller
-% loadComponent('guidanceLawPathFollowing');
-loadComponent('pathFollowingCtrlForILC');
+loadComponent('guidanceLawPathFollowing');
+% loadComponent('pathFollowingCtrlForILC');
 
 % Spooling controller
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
