@@ -670,6 +670,14 @@ vhcl.turb2.dragCoef.Value = 9.0000e-01
 vhcl.turb2.dragCoef.Unit is unitless or has no unit specified
 vhcl.turb2.dragCoef.NoScale = false
 vhcl.turb2.dragCoef.Description = 'Coefficient used in drag calculation'
+vhcl.turb2.staticArea.Value = 7.5000e-02
+vhcl.turb2.staticArea.Unit = 'm^2'
+vhcl.turb2.staticArea.NoScale = false
+vhcl.turb2.staticArea.Description = 'Projected area of the static turbine'
+vhcl.turb2.staticCD.Value = 1.5000e+00
+vhcl.turb2.staticCD.Unit is unitless or has no unit specified
+vhcl.turb2.staticCD.NoScale = false
+vhcl.turb2.staticCD.Description = 'Turbine drag coefficient while static'
 vhcl.turb2.dragCoeff.Value = 6.0000e-01
 vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb2.dragCoeff.NoScale = false
@@ -711,6 +719,14 @@ vhcl.turb1.dragCoef.Value = 9.0000e-01
 vhcl.turb1.dragCoef.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoef.NoScale = false
 vhcl.turb1.dragCoef.Description = 'Coefficient used in drag calculation'
+vhcl.turb1.staticArea.Value = 7.5000e-02
+vhcl.turb1.staticArea.Unit = 'm^2'
+vhcl.turb1.staticArea.NoScale = false
+vhcl.turb1.staticArea.Description = 'Projected area of the static turbine'
+vhcl.turb1.staticCD.Value = 1.5000e+00
+vhcl.turb1.staticCD.Unit is unitless or has no unit specified
+vhcl.turb1.staticCD.NoScale = false
+vhcl.turb1.staticCD.Description = 'Turbine drag coefficient while static'
 vhcl.turb1.dragCoeff.Value = 6.0000e-01
 vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoeff.NoScale = false

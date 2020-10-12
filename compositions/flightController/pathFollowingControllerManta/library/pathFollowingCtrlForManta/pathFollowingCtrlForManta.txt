@@ -46,6 +46,22 @@ fltCtrl.rollMoment.tau.Value = 1.0000e-03
 fltCtrl.rollMoment.tau.Unit = 's'
 fltCtrl.rollMoment.tau.NoScale = false
 fltCtrl.rollMoment.tau.Description = 'Time Constant'
+fltCtrl.pitchMoment.kp.Value = 2.0000e+04
+fltCtrl.pitchMoment.kp.Unit = '(N*m)/(rad)'
+fltCtrl.pitchMoment.kp.NoScale = false
+fltCtrl.pitchMoment.kp.Description = 'Proportional gain'
+fltCtrl.pitchMoment.ki.Value = 0.0000e+00
+fltCtrl.pitchMoment.ki.Unit = '(N*m)/(rad*s)'
+fltCtrl.pitchMoment.ki.NoScale = false
+fltCtrl.pitchMoment.ki.Description = 'Integral gain'
+fltCtrl.pitchMoment.kd.Value = 0.0000e+00
+fltCtrl.pitchMoment.kd.Unit = '(N*m)/(rad/s)'
+fltCtrl.pitchMoment.kd.NoScale = false
+fltCtrl.pitchMoment.kd.Description = 'Derivative gain'
+fltCtrl.pitchMoment.tau.Value = 1.0000e-03
+fltCtrl.pitchMoment.tau.Unit = 's'
+fltCtrl.pitchMoment.tau.NoScale = false
+fltCtrl.pitchMoment.tau.Description = 'Time Constant'
 fltCtrl.maxBank.upperLimit.Value = 3.4907e-01
 fltCtrl.maxBank.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.upperLimit.NoScale = false
@@ -111,3 +127,23 @@ fltCtrl.rudderGain.Value = 1.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
+fltCtrl.AoACtrl.Value = 0.0000e+00
+fltCtrl.AoACtrl.Unit is unitless or has no unit specified
+fltCtrl.AoACtrl.NoScale = false
+fltCtrl.AoACtrl.Description = 'Flag to decide AoA control. 0 = none; 1 = On'
+fltCtrl.AoASP.Value = 0.0000e+00
+fltCtrl.AoASP.Unit is unitless or has no unit specified
+fltCtrl.AoASP.NoScale = false
+fltCtrl.AoASP.Description = 'Flag to decide AoA control. 0 = constant; 1 = time-lookup'
+fltCtrl.AoAConst.Value = 9.0000e+00
+fltCtrl.AoAConst.Unit = 'deg'
+fltCtrl.AoAConst.NoScale = false
+fltCtrl.AoAConst.Description = 'Constant AoA setpoint'
+fltCtrl.AoATime.Value = [0 1000 2000]
+fltCtrl.AoATime.Unit = 's'
+fltCtrl.AoATime.NoScale = false
+fltCtrl.AoATime.Description = 'Reference time for AoA setpoint lookup table'
+fltCtrl.AoALookup.Value = [9 4 9]
+fltCtrl.AoALookup.Unit = 'deg'
+fltCtrl.AoALookup.NoScale = false
+fltCtrl.AoALookup.Description = 'Pitch setpoint lookup values'

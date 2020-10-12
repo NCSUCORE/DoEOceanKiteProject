@@ -26,12 +26,21 @@ fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue(2.3458e3,'(N*m)/(rad)');
 
+fltCtrl.pitchMoment.kp.setValue(20000,'(N*m)/(rad)')
+fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
+fltCtrl.pitchMoment.kd.setValue(0,'(N*m)/(rad/s)');
+fltCtrl.pitchMoment.tau.setValue(0.001,'s');
+
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
-% pitchKp = (1e5)/(2*pi/180);
+fltCtrl.AoACtrl.setValue(0,'');                   
+fltCtrl.AoASP.setValue(0,'');                   
+fltCtrl.AoAConst.setValue(9,'deg');
+fltCtrl.AoATime.setValue([0 1000 2000],'s');         
+fltCtrl.AoALookup.setValue([9 4 9],'deg');
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

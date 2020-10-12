@@ -17,7 +17,7 @@ thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thrDia = 0.012;
+thrDia = 0.01;
 
 thr.tether1.youngsMod.setValue(40e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.75,'');
