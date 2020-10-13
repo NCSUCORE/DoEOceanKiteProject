@@ -14,17 +14,21 @@ fltCtrl.setStartControl(1,'s')
 fltCtrl.firstSpoolLap.setValue(1,'');
 
 % Control surface parameters
-fltCtrl.tanRoll.kp.setValue(1,'(deg)/(deg)');
+tanRollGain = 1;
+rollMkp = 3;
+rollMkd = 6;
+
+fltCtrl.tanRoll.kp.setValue(tanRollGain,'(deg)/(deg)');
 fltCtrl.tanRoll.ki.setValue(0,'(deg)/(deg*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(deg)/(deg/s)');
 fltCtrl.tanRoll.tau.setValue(1e-3,'s');
 
-fltCtrl.rollMoment.kp.setValue((100)/(11*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue(rollMkp,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((100)/(11*pi/180),'(N*m)/(rad/s)');
-fltCtrl.rollMoment.tau.setValue(0.001,'s');
+fltCtrl.rollMoment.kd.setValue(rollMkd,'(N*m)/(rad/s)');
+fltCtrl.rollMoment.tau.setValue(0.0001,'s');
 
-fltCtrl.yawMoment.kp.setValue(1.225/(10*pi/180),'(N*m)/(rad)');
+fltCtrl.yawMoment.kp.setValue(0.1/(10*pi/180),'(N*m)/(rad)');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
@@ -32,11 +36,11 @@ fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 fltCtrl.startControl.setValue(0,'s');
 fltCtrl.rudderGain.setValue(0,'');
 
-fltCtrl.targetForwardLength.setValue(5,'m');
+fltCtrl.targetForwardLength.setValue(20,'m');
 
 fltCtrl.setFcnName('lemOfBooth','');
 
-pitchKp = (1e5)/(2*pi/180);
+pitchKp = (100)/(2*pi/180);
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
