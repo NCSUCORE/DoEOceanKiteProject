@@ -1,15 +1,15 @@
 env.gravAccel.Value = 9.8100e+00
 env.gravAccel.Unit = 'm/s^2'
 env.gravAccel.NoScale = true
-env.air.flowVec.Unit = 'm/s'
-env.air.flowVec.NoScale = false
-env.air.density.Value = 1.2250e+00
-env.air.density.Unit = 'kg/m^3'
-env.air.density.NoScale = false
-env.air.zGridPoints.Value = [0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200]
-env.air.zGridPoints.Unit = 'm'
-env.air.zGridPoints.NoScale = false
-env.air.speed.Value = 0.0000e+00
-env.air.speed.Unit = 'm/s'
-env.air.speed.NoScale = false
-env.air.elevation is non-string and non-numeric and takes up 1.5000e+01 bytes
+env.water.flowVec.Unit = 'm/s'
+env.water.flowVec.NoScale = false
+env.water.density.Value = 1.2250e+00
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false
+env.water.zGridPoints.Value = [0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200]
+env.water.zGridPoints.Unit = 'm'
+env.water.zGridPoints.NoScale = false
+env.water.speed.Value = 0.0000e+00
+env.water.speed.Unit = 'm/s'
+env.water.speed.NoScale = false
+env.water.elevation is non-string and non-numeric and takes up 1.5000e+01 bytes

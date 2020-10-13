@@ -3,7 +3,7 @@ clear all;clc;format compact
 %% Set up environment
 % Create
 env = ENV.env;
-env.addFlow({'air'},{'constXYZT'},'FlowDensities',1.225);
+env.addFlow({'water'},{'constXYZT'},'FlowDensities',1.225);
 % 
 % env.waterWave.wave1.waveNumber.setValue(1,'rad/m')
 % env.waterWave.wave1.frequency.setValue(.2,'rad/s')

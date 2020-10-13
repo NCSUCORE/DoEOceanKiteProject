@@ -5,12 +5,12 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(100,'s');
+simParams.setDuration(300,'s');
 dynamicCalc = '';
-flowSpeed = 1;
-thrLength = 200;
+flowSpeed = 10;
+thrLength = 500;
 % rad - Mean elevation angle
-el = 30*pi/180;    
+el = 15*pi/180;    
 % rad - Path width/height
 w = 50*pi/180;          
 h = 12*pi/180;  
@@ -19,7 +19,7 @@ h = 12*pi/180;
 
 %% Load components
 % Flight Controller
-loadComponent('guidanceLawPathFollowing');
+loadComponent('guidanceLawPathFollowingAir');
 % loadComponent('pathFollowingCtrlForILC');
 
 % Spooling controller
@@ -33,16 +33,16 @@ loadComponent('pathFollowingGndStn');
 % Winches
 loadComponent('ayazFullScaleOneThrWinch');
 % Tether
-loadComponent('ayazFullScaleOneThrTether');
+loadComponent('ayazAirborneThr');
 % Sensors
 loadComponent('idealSensors');
 % Sensor processing
 loadComponent('idealSensorProcessing');
 % Vehicle
-loadComponent('ayazFullScaleOneThrVhcl');
+loadComponent('ayazAirborneVhcl');
 
 % Environment
-loadComponent('ConstXYZT');
+loadComponent('ayazAirborneFlow');
 
 %% Environment IC's and dependant properties
 env.water.setflowVec([flowSpeed 0 0],'m/s')
@@ -89,34 +89,20 @@ fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
 %% Run Simulation
-keyboard
 simWithMonitor('OCTModel');
 tsc = signalcontainer(logsout);
 
 %%  Log Results
-dt = datestr(now,'mm-dd_HH-MM');
-% save file location
-
-[status, msg, msgID] = mkdir(fullfile(fileparts(which('OCTProject.prj')),'outputs'));
-fpath = fullfile(fileparts(which('OCTProject.prj')),'outputs\');
-filename = sprintf(strcat('FS-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
-save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
-
-%%
-figure;
-set(gcf, 'Position', get(0, 'Screensize'));
-stats = tsc.plotAndComputeLapStats;
-pLength = calculatePathLength(a,b,el,thrLength);
-percExtraDist = 100*(stats{2,3}-pLength)/pLength;
-
-G_vCM = squeeze(tsc.velocityVec.Data);
-avgSpeed = mean(vecnorm(G_vCM));
-
-B_Vapp = squeeze(tsc.vhclVapp.Data);
-vapp3 = mean(max(0,B_Vapp(1,:)).^3);
+% dt = datestr(now,'mm-dd_HH-MM');
+% % save file location
+% 
+% [status, msg, msgID] = mkdir(fullfile(fileparts(which('OCTProject.prj')),'outputs'));
+% fpath = fullfile(fileparts(which('OCTProject.prj')),'outputs\');
+% filename = sprintf(strcat('FS-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
+% save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams')
 
 
 %%
 vhcl.animateSim(tsc,0.5,...
     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',true,...
-    'SaveGif',true);
+    'SaveGif',false);

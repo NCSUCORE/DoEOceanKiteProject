@@ -11,13 +11,13 @@ vhcl = OCT.vehicle;
 
 loadComponent('ayazAirborneFlow');
 
-vhcl.setFluidDensity(env.air.density.Value,'kg/m^3')
+vhcl.setFluidDensity(env.water.density.Value,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,'');
 vhcl.setFluidCoeffsFileName('ayazAirborneCoeff_v1','');
 
 %% Volumes and Inertia
-vhcl.setVolume(2.85698,'m^3') %From CAD
+vhcl.setVolume(0.36,'m^3') %From CAD
 Ixx = 25;
 Iyy = 32;
 Izz = 56;
