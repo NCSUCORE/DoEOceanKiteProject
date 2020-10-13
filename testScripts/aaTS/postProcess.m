@@ -3,9 +3,9 @@ clear all
 close all
 
 %addpath('C:\Users\andre\Documents\Data\linSys')
-flwSpdArray = 2%[0.25:.25:2];
-AoA = [0:1:10]%[0:2:16];
-thrLenArray = 20%[20:5:50];
+flwSpdArray = [0.25:.25:2];
+AoA = [0:2:8]%[0:2:16];
+thrLenArray = [20:5:50];
 ilen = length(thrLenArray);
 jlen = length(flwSpdArray);
 klen = length(AoA);
@@ -22,7 +22,7 @@ klen = length(AoA);
 % ii = 1; jj = 1; %comp = zeros(ilen,jlen,klen);
 %F = zeros(ilen,jlen,klen);
 flwMat = repmat(flwSpdArray,12,1);
-filt = [ones(7,7) zeros(7,6);zeros(6,7) ones(6,6)];
+OLfilt = [ones(7,7) zeros(7,6);zeros(6,7) ones(6,6)];
 for k = 1:klen
     k
 for i = 1:ilen
@@ -41,7 +41,7 @@ for j = 1:jlen
     B = linsys.ss.B(stateOrder,:);
     C = linsys.ss.C(:,stateOrder);
     Atemp = A(:,stateOrder);
-    Anew = Atemp(stateOrder,:).*filt;
+    Anew = Atemp(stateOrder,:).*OLfilt;
     Along = Anew(1:7,1:7);
     Alat = Anew(8:13,8:13);
     Blong = B(1:7,:);
@@ -61,3 +61,4 @@ end
 end
 end
 
+save('linDyn.mat','linDyn');
