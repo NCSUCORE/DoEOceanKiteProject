@@ -19,6 +19,7 @@ classdef SLFAndSpoolCtrl < handle
         yawSPkiInt
         elevCmd
         rudderCmd
+        alrnCmd
         % Saturations
         maxBank
         controlSigMax
@@ -77,6 +78,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.yawSPkiInt          = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
             obj.elevCmd             = CTR.FPID('rad','deg');
             obj.rudderCmd           = CTR.FPID('rad','deg');
+            obj.alrnCmd             = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
