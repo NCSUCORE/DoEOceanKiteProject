@@ -52,8 +52,8 @@ function myTimerFcn(myTimerObj, ~, model,timeStep,minRate)
     set(myTimerObj,'UserData',oldtimes);
 end
 function [] = simMonitorStart(model,timeStep,minRate)
-    if ~slreportgen.utils.isModelLoaded('OCTModel')
-        OCTModel
+    if ~slreportgen.utils.isModelLoaded(model)
+        open_system(model)
     end
     oldtimes = zeros(1,5);
     sim_timer=timer("Name",strcat(model,"_timer"));
