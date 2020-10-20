@@ -47,13 +47,13 @@ for ii = 1:numel(flwSpd)
     loadComponent('idealSensorProcessing')                      %   Sensor processing
     
     if simScenario == 0
-        loadComponent('MantaKiteAVL_DOE');                                  %   Manta kite old
+        loadComponent('fullScale1thr');                                  %   Manta kite old
     elseif simScenario == 2
         loadComponent('fullScale1thr');                                     %   DOE kite 
     elseif simScenario == 1 || simScenario == 3 || simScenario == 4
         loadComponent('Manta2RotAVL_DOE');                                  %   Manta DOE kite with AVL 
     elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
-        loadComponent('Manta2RotAVL_Thr075');                               %   Manta kite with AVL
+        loadComponent('fullScale1thr');                               %   Manta kite with AVL
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
         loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
     elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
@@ -167,23 +167,25 @@ end
 wingLoad = tsc.stbdWingForce.Data;
 hstabLoad = tsc.hStabForce.Data;
 vstabLoad = tsc.vStabForce.Data;
-lenScale = repmat(linspace(0.05,1)',1,100);
+tempLoad = tsc.airTenVecs.mag
+thrTen = norm(tempLoad.max);
+lenScale = repmat(linspace(0.05,0.1,6)',1,100);
 
 if simScenario > 3 && simScenario < 4
-    flwSpdPlot = repmat(linspace(0.05,1),100,1);
+    flwSpdPlot = repmat(linspace(0.05,1),6,1);
     %if simScenariosub = 3
 else
-    flwSpdPlot = repmat(linspace(0.05,1),100,1);
+    flwSpdPlot = repmat(linspace(0.05,1),6,1);
 end
 thrTenPlot = thrTen.*(flwSpdPlot/flwSpd).^2.*lenScale.^2;
 
 figure
-surf(lenScale,flwSpdPlot,thrTenPlot)
-xlabel('Experimental Scale')
-ylabel('Flow Speed[m/s]')
-zlabel('Tether Tension [N]')
+plot(flwSpdPlot',thrTenPlot'); grid on;
+xlabel('Flow Speed[m/s]')
+ylabel('Tether Tension [N]')
 title({'Peak tether tension under cross current motion',...
-    '35 [deg] Mean Elevation, 40 [deg] Azimuth Sweep, Tether/Span = 100'})
+    '30 [deg] Mean Elevation, 40 [deg] Azimuth Sweep'})
+legend('Length Scale = 0.05','Length Scale = 0.06','Length Scale = 0.07','Length Scale = 0.08','Length Scale = 0.09','Length Scale = 0.10')
 % set(gca,'ZScale','log')
 
 

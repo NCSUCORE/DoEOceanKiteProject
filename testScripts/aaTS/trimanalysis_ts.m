@@ -13,17 +13,18 @@ simScenario = 3.3;
 simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
 thrLength = 20%[20 35 50];                         % m - Initial tether length
-flwSpd = 2%[0.25:.25:2];                             % m/s - Flow speed
-el = 66.96*pi/180;                                 % rad - Mean elevation angle
+flwSpd = [0.25 2]%[0.25:.25:2];                             % m/s - Flow speed
+elevation = 45  % elevation angle in degrees for tow controller
+el = elevation*pi/180;                                 % rad - Mean elevation angle
 
 
-if simScenario == 3.3
-ctrlPitch = 0; % Controller State 0 - Single Pitch 1 - Lookup Table 2 - Elevator Controller
+if simScenario > 3 &&  simScenario < 4
+ctrlPitch = 2; % Controller State 0 - Single Pitch 1 - Lookup Table 2 - Elevator Controller
 end
 desPitch = 0;%[0:2:16];                            % Desired Pitch in degrees
 
 %Sim Time
-simTime = 400
+simTime = 1000
 
 %Exit at SS
 exit = 0
@@ -34,23 +35,29 @@ linCtrl = 0; %0 - Normal Control; 1 - Freeze Control inputs for linearization
 linearize = 0;%0 - No linearization; 1 - Linearization turned on 
 saveLin = 0% 1 to save,
 
-%%Flow Disturbance
-flowAngle =[0 0 5]; %degrees
-flowDir = flowAngle*pi/180 % rotation direction of flow about body z degrees
+%%Flow Perturbation Matrix
+flowDirPert = [5]
 stepTime = 150; %Time to rotate flow
-
+rampSlope = 1/30; %slope of disturbance dist/s
 %Controller Freeze
 ctrlFreeze = 0; %Freeze Control Surface Deflections 0 = normal operation 1 = freeze @ ctrlFreezeTime
 ctrlFreezeTime = stepTime-10; %Sim time to freeze control surface deflections
 
 longloop = 0
 latLoopPlot = 0
-figure
+animate = 0
+
 if longloop == 1 || latLoopPlot == 1
 figure
 subplot(3,2,1);
 end
 %% Initialize Simulation
+for qq = 1:numel(flowDirPert)
+    %%Flow Disturbance
+    
+    flowAngle =[0 0 flowDirPert(qq)]; %degrees
+    flowDir = flowAngle*pi/180 % rotation direction of flow about body z degrees
+
 for kk = 1:numel(desPitch)
 for jj = 1:numel(thrLength)
 for ii =1:numel(flwSpd)
@@ -150,7 +157,7 @@ for ii =1:numel(flwSpd)
     end
     fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
     if simScenario >= 3 && simScenario < 4
-        fltCtrl.LaRelevationSP.setValue(35,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
+        fltCtrl.LaRelevationSP.setValue(elevation,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
         fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
         fltCtrl.pitchAngleMax.upperLimit.setValue(45,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-45,'');
         fltCtrl.setNomSpoolSpeed(.25,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
@@ -164,14 +171,15 @@ for ii =1:numel(flwSpd)
         fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
         fltCtrl.rudderCmd.tau.setValue(.1,'s');
-%         fltCtrl.rudderCmd.kp.setValue(1000,'(deg)/(rad)');
-%         fltCtrl.rudderCmd.ki.setValue(100,'(deg)/(rad*s)');
-%         fltCtrl.rudderCmd.kd.setValue(1000,'(deg)/(rad/s)');
-%         fltCtrl.rudderCmd.tau.setValue(.1,'s');
-        fltCtrl.yawSP.kp.setValue(0,'(deg)/(deg)');
-        fltCtrl.yawSP.ki.setValue(0,'(deg)/(deg*s)');
+        fltCtrl.rudderCmd.kp.setValue(1000,'(deg)/(rad)');
+        fltCtrl.rudderCmd.ki.setValue(100,'(deg)/(rad*s)');
+        fltCtrl.rudderCmd.kd.setValue(1000,'(deg)/(rad/s)');
+        fltCtrl.rudderCmd.tau.setValue(.1,'s');
+        fltCtrl.yawSP.kp.setValue(3,'(deg)/(deg)');
+        fltCtrl.yawSP.ki.setValue(0.05,'(deg)/(deg*s)');
         fltCtrl.yawSP.kd.setValue(0,'(deg)/(deg/s)');
         fltCtrl.yawSP.tau.setValue(.01,'s');
+        fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)')
 %         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');
 %         fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.setNomSpoolSpeed(0,'m/s');
@@ -188,19 +196,14 @@ for ii =1:numel(flwSpd)
     
     trimCtrl=[0 0 0 0];
 if linearize == 0
-    set_param(bdroot,'SimulationMode','accelerator')
+%     set_param(bdroot,'SimulationMode','accelerator')
 %     simWithMonitor('OCTModel')
     simWithMonitor('OCTModel_for_lin')
     tsc = signalcontainer(logsout);
 end
-    %     tsc.plotLaR(fltCtrl);
-%     plotLateral
-%     plotLong
-    %Turn off controller
+
     if linearize == 1
-%         linCtrl = 0
         set_param(bdroot,'SimulationMode','accelerator')
-%         set_param(bdroot,'SimulationCommand','Update')
         sim('OCTModel_for_lin')
         tsc = signalcontainer(logsout);
         if openLoop == 1
@@ -210,7 +213,7 @@ end
             set_param(bdroot,'SimulationMode','normal')
         %Get control inputs at steady state
         len = tsc.azimuthAngle.Length
-        trimCtrl = tsc.ctrlSurfDeflCmd.getsamples(len).Data
+        trimCtrl = tsc.ctrlSurfDeflCmd.getsamples(len).Data;
         set_param(bdroot,'SimulationCommand','Update')
         fprintf('Linearizing')
         [A,B,C,D] = linmod('OCTModel_for_lin',xFinal,[0 0 0 0 0]);
@@ -229,15 +232,7 @@ end
         clear trimCtrl
     end
     
-plot(tsc.azimuthAngle.Time,squeeze(tsc.azimuthAngle.Data),...
-    'LineWidth',0.5,'DisplayName',...
-        sprintf('L = %d m, Pitch = %d deg, Flow Velocity = %.2f m/s',...
-        thrLength(jj),desPitch(kk),flwSpd(ii)))
-        legend('Location','southwest','FontSize',24); hold on; grid on;
-xlabel('Time, [s]')
-ylabel('Azimuth Angle [deg]')
-set(findall(gcf,'Type','axes'),'FontSize',32)
-
+plotCtrlDeflections
     %% Lateral Plot Loop
 if latLoopPlot == 1
     subplot(3,3,1); hold on; grid on;
@@ -337,7 +332,7 @@ end
 end
 end
 end
-
+end
 %  Plot Results
 % close all
 % if simScenario < 3 && simScenario ~= 2
@@ -351,14 +346,25 @@ end
 % tsc.eul.plot
 
 % figure
-plotLateral
-% figure
-plotLong
-plotGroundAngles
-plotCtrlDeflections
-% vhcl.animateSim(tsc,2,...
-%     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%     'ZoomIn',1==0,'SaveGIF',true,'GifFile','animation.gif');
+% plotLateral
+% % figure
+% plotLong
+% plotGroundAngles
+% plotCtrlDeflections
+if animate == 1
+vhcl.animateSim(tsc,2,...
+    'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+    'ZoomIn',1==0,'SaveGIF',true,'GifFile','animation.gif');
+end
 
-
-
+% A = linsys.ss.A
+% B = linsys.ss.B
+% [n,q] = size(B)
+% for i = 1:n
+%     if i == 1
+%         test(:,1:i*q)=B;
+%     else
+%         test(:,(i-1)*q+1:i*q)=A^(i-1)*B;
+%     end
+% end
+% pass = rank(test)
