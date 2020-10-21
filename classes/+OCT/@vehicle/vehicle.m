@@ -841,14 +841,14 @@ classdef vehicle < dynamicprops
                         'r+','DisplayName','Tether Attachment Point');
                 end
                 % Turbines
-                for ii = 1:obj.numTurbines.Value
-                    pts = R*obj.turbines(ii).attachPtVec.Value;
-                    h.turb{ii} = plot3(h.ax,...
-                        pts(1)+p.Results.Position(1),...
-                        pts(2)+p.Results.Position(2),...
-                        pts(3)+p.Results.Position(3),...
-                        'm+','DisplayName','Turbine Attachment Point');
-                end
+%                 for ii = 1:obj.numTurbines.Value
+%                     pts = R*obj.turbines(ii).attachPtVec.Value;
+%                     h.turb{ii} = plot3(h.ax,...
+%                         pts(1)+p.Results.Position(1),...
+%                         pts(2)+p.Results.Position(2),...
+%                         pts(3)+p.Results.Position(3),...
+%                         'm+','DisplayName','Turbine Attachment Point');
+%                 end
                 
                 for ii = 1:4
                     pts = R*obj.fluidMomentArms.Value(:,ii);
@@ -867,7 +867,7 @@ classdef vehicle < dynamicprops
                                     'r*','DisplayName','Center of Mass');
                 % Coordinate origin
                 h.origin = plot3(h.ax,p.Results.Position(1),p.Results.Position(2),p.Results.Position(3),'kx','DisplayName','Body Frame Origin/Leading Edge');
-                legend(h.ax,[h.surf{1} h.thrAttchPts{1} h.turb{1} h.momArms{2} h.centOfMass h.origin],'Location','northeast')
+%                 legend(h.ax,[h.surf{1} h.thrAttchPts{1} h.turb{1} h.momArms{2} h.centOfMass h.origin],'Location','northeast')
             end
             grid on
             axis equal
