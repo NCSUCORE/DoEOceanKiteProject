@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-%addpath('C:\Users\andre\Documents\Data\linSys')
+addpath('C:\Users\andre\Documents\Data\linSys')
 flwSpdArray = [0.25:.25:2];
 AoA = [0:2:8]%[0:2:16];
 thrLenArray = [20:5:50];
