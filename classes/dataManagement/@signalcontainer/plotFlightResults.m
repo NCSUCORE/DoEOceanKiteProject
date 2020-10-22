@@ -150,14 +150,14 @@ subplot(R,C,4); hold on; grid on
 if lap
     if con
         plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-');  
-        plot(data(ran),squeeze(obj.AoA.Data(ran))*180/pi,'b-'); 
+        plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-'); 
         ylabel('Angle [deg]');  legend('Setpoint','AoA');
         if p.Results.plotBeta
             plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta')
         end
     else
         plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-');  
-        plot(time(ran),squeeze(obj.AoA.Data(ran))*180/pi,'b-'); 
+        plot(time(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-'); 
         ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
         if p.Results.plotBeta
             plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
@@ -165,7 +165,7 @@ if lap
     end
 else
     plot(time,obj.AoASP.Data*180/pi,'r-');  
-    plot(time,squeeze(obj.AoA.Data)*180/pi,'b-'); ylim([0 20]);
+    plot(time,squeeze(obj.vhclAngleOfAttack.Data),'b-'); ylim([0 20]);
     ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
     if p.Results.plotBeta
         plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
