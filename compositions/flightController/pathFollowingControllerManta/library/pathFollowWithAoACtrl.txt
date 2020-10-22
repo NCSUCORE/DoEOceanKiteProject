@@ -127,7 +127,7 @@ fltCtrl.rudderGain.Value = 1.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
-fltCtrl.AoACtrl.Value = 0.0000e+00
+fltCtrl.AoACtrl.Value = 1.0000e+00
 fltCtrl.AoACtrl.Unit is unitless or has no unit specified
 fltCtrl.AoACtrl.NoScale = false
 fltCtrl.AoACtrl.Description = 'Flag to decide AoA control. 0 = none; 1 = On'
@@ -135,7 +135,7 @@ fltCtrl.AoASP.Value = 0.0000e+00
 fltCtrl.AoASP.Unit is unitless or has no unit specified
 fltCtrl.AoASP.NoScale = false
 fltCtrl.AoASP.Description = 'Flag to decide AoA control. 0 = constant; 1 = time-lookup'
-fltCtrl.AoAConst.Value = 1.7453e-01
+fltCtrl.AoAConst.Value = 2.4435e-01
 fltCtrl.AoAConst.Unit = 'deg'
 fltCtrl.AoAConst.NoScale = false
 fltCtrl.AoAConst.Description = 'Constant AoA setpoint'
@@ -143,7 +143,7 @@ fltCtrl.AoATime.Value = [0 1000 2000]
 fltCtrl.AoATime.Unit = 's'
 fltCtrl.AoATime.NoScale = false
 fltCtrl.AoATime.Description = 'Reference time for AoA setpoint lookup table'
-fltCtrl.AoALookup.Value = [0.15707963267949 0.0698131700797732 0.15707963267949]
+fltCtrl.AoALookup.Value = [0.244346095279206 0.244346095279206 0.244346095279206]
 fltCtrl.AoALookup.Unit = 'deg'
 fltCtrl.AoALookup.NoScale = false
 fltCtrl.AoALookup.Description = 'Pitch setpoint lookup values'

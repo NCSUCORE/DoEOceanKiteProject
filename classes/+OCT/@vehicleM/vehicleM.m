@@ -51,6 +51,8 @@ classdef vehicleM < dynamicprops
         initAngVelVec
         
         hydroChracterization
+        
+        optAlpha
     end
     
     properties (Dependent)
@@ -154,6 +156,7 @@ classdef vehicleM < dynamicprops
             
 
             obj.hydroChracterization    = SIM.parameter('Value',1,'Unit','','Description','1 = AVL; 2 = XFoil; 3 = XFlr');
+            obj.optAlpha                = SIM.parameter('Unit','deg','Description','Optimal constant angle of attack');
             %Legacy Properties
 
         end
@@ -204,6 +207,10 @@ classdef vehicleM < dynamicprops
         
         function setHydroCharacterization(obj,val,units)
             obj.hydroChracterization.setValue(val,units);
+        end
+        
+        function setOptAlpha(obj,val,units)
+            obj.optAlpha.setValue(val,units);
         end
 
         function setNumTurbines(obj,val,units)
