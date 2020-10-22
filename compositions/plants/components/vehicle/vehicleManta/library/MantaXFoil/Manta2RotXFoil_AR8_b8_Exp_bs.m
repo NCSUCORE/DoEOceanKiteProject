@@ -4,7 +4,7 @@
 VEHICLE               = "vehicleManta2Rot";
 PLANT                 = "plantManta2Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
-LIBRARY               = "Manta2RotXFoil_AR8_b8";
+LIBRARY               = "Manta2RotXFoil_AR8_b8_exp";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -14,7 +14,7 @@ vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR8_b8_exp','');
 vhcl.setHydroCharacterization(2,'');
-scale = .1
+scale = .1;
 %% Volumes and Inertia
 vhcl.setVolume(0.00507354 ,'m^3');
 	Lxx = 0.14464249;	Lxy = -0.00000275;	Lxz = 0.00163106;
@@ -34,6 +34,8 @@ vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0]*scale,'m');
 vhcl.setAllMaxCtrlDef(30,'deg');
 vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
+
+vhcl.setOptAlpha(14,'deg');
 
 %% Wing
 AR = 8/2; b = 4*scale; tr = 0.8; cR = 2*(b/(AR))/(1+tr)
