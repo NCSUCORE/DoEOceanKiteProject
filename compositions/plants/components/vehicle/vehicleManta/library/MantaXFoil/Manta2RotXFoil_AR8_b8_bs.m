@@ -37,6 +37,7 @@ vhcl.setAllMaxCtrlDef(30,'deg');
 vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 
+vhcl.setOptAlpha(14,'deg');
 %% Wing
 AR = 8/2; b = 4; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
 vhcl.setWingRootChord(cR,'m');

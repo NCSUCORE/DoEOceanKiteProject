@@ -43,15 +43,10 @@ fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');
 fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCmd.tau.setValue(.01,'s');
 
-fltCtrl.rudderCmd.kp.setValue(1000,'(deg)/(rad)');
-fltCtrl.rudderCmd.ki.setValue(100,'(deg)/(rad*s)');
-fltCtrl.rudderCmd.kd.setValue(1000,'(deg)/(rad/s)');
+fltCtrl.rudderCmd.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
+fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.rudderCmd.tau.setValue(.01,'s');
-
-fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');
-fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
-fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
-fltCtrl.alrnCmd.tau.setValue(.01,'s');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')

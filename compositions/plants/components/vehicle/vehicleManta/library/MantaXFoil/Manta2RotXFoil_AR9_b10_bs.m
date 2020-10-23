@@ -11,7 +11,7 @@ vhcl = OCT.vehicleM;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
-vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
+vhcl.setBuoyFactor(1,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR9_b10','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
@@ -36,6 +36,8 @@ vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 vhcl.setAllMaxCtrlDef(30,'deg');
 vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
+
+vhcl.setOptAlpha(9,'deg');
 
 %% Wing
 AR = 9/2; b = 5; tr = 0.8; cR = 2*(b/(AR))/(1+tr);

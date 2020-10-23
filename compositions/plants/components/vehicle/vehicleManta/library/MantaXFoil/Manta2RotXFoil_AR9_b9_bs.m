@@ -37,6 +37,8 @@ vhcl.setAllMaxCtrlDef(30,'deg');
 vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 
+vhcl.setOptAlpha(13,'deg');
+
 %% Wing
 AR = 9/2; b = 4.5; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
 vhcl.setWingRootChord(cR,'m');
@@ -83,7 +85,7 @@ vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
 vhcl.turb1.setMass(6,'kg')
-vhcl.turb1.setDiameter(.7,'m')
+vhcl.turb1.setDiameter(.72,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb1.setPowerCoeff(.4,'')
@@ -94,7 +96,7 @@ vhcl.turb1.setStaticArea(0.08,'m^2')
 vhcl.turb1.setStaticCD(1.5,'')
 % starboard rotor
 vhcl.turb2.setMass(6,'kg')
-vhcl.turb2.setDiameter(.7,'m')
+vhcl.turb2.setDiameter(.72,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb2.setPowerCoeff(.4,'')
