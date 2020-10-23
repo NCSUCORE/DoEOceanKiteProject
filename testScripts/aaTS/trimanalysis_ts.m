@@ -13,7 +13,7 @@ simScenario = 3.3;
 simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
 thrLength = 20%[20 35 50];                         % m - Initial tether length
-flwSpd = [0.25 2]%[0.25:.25:2];                             % m/s - Flow speed
+flwSpd = [1.6462]%[0.25:.25:2];                             % m/s - Flow speed
 elevation = 45  % elevation angle in degrees for tow controller
 el = elevation*pi/180;                                 % rad - Mean elevation angle
 
@@ -36,9 +36,9 @@ linearize = 0;%0 - No linearization; 1 - Linearization turned on
 saveLin = 0% 1 to save,
 
 %%Flow Perturbation Matrix
-flowDirPert = [5]
+flowDirPert = 0;
 stepTime = 150; %Time to rotate flow
-rampSlope = 1/30; %slope of disturbance dist/s
+rampSlope = 1/10; %slope of disturbance dist/s
 %Controller Freeze
 ctrlFreeze = 0; %Freeze Control Surface Deflections 0 = normal operation 1 = freeze @ ctrlFreezeTime
 ctrlFreezeTime = stepTime-10; %Sim time to freeze control surface deflections
@@ -80,7 +80,7 @@ for ii =1:numel(flwSpd)
         minLinkLength = 1;                                      %   Length at which tether rediscretizes
         loadComponent('shortTether');                           %   Tether for reeling
     else
-        loadComponent('MantaTether');                           %   Single link tether
+        loadComponent('MantaTether_38kN');                         %   Single link tether
     end
     loadComponent('idealSensors')                               %   Sensors
     loadComponent('idealSensorProcessing')                      %   Sensor processing
@@ -95,8 +95,10 @@ for ii =1:numel(flwSpd)
         loadComponent('Manta2RotAVL_Thr075');                               %   Manta kite with AVL
     elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
         loadComponent('Manta2RotXFlr_CFD_AR__ExpScale');                             %   Manta kite with XFoil
-    elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
-        loadComponent('Manta2RotXFoil_AR8_b8');                              %   Manta kite with XFlr5 
+    elseif simScenario == 1.3 || simScenario == 3.3 ||  simScenario == 4.3
+        loadComponent('Manta2RotXFoil_AR8_b8');   
+    elseif simScenario == 1.4 || simScenario == 3.4   || simScenario == 4.3
+        loadComponent('Manta2RotXFoil_AR8_b8_B4pct');     %   Manta kite with XFlr5 
     end
     %%  Environment Properties
     loadComponent('constXYZT');                                 %   Environment
@@ -136,7 +138,7 @@ for ii =1:numel(flwSpd)
     thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-    thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
+    %thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
     thr.tether1.setDiameter(0.009,thr.tether1.diameter.Unit);
     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
     %%  Winches Properties
@@ -167,14 +169,15 @@ for ii =1:numel(flwSpd)
         fltCtrl.pitchConst.setValue(desPitch(kk),'deg');
         fltCtrl.pitchCtrl.setValue(ctrlPitch,'');
         fltCtrl.initCtrlVec;
-        fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)');
-        fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
-        fltCtrl.rudderCmd.tau.setValue(.1,'s');
-        fltCtrl.rudderCmd.kp.setValue(1000,'(deg)/(rad)');
-        fltCtrl.rudderCmd.ki.setValue(100,'(deg)/(rad*s)');
-        fltCtrl.rudderCmd.kd.setValue(1000,'(deg)/(rad/s)');
-        fltCtrl.rudderCmd.tau.setValue(.1,'s');
+        fltCtrl.alrnCmd.kp.setValue(0.1,'(deg)/(rad)');
+        fltCtrl.alrnCmd.tau.setValue(10,'s');
+        fltCtrl.alrnCmd.ki.setValue(fltCtrl.alrnCmd.kp.Value/210,'(deg)/(rad*s)');%fltCtrl.alrnCmd.kp.Value/210
+        fltCtrl.alrnCmd.kd.setValue(fltCtrl.alrnCmd.kp.Value*fltCtrl.alrnCmd.tau.Value,'(deg)/(rad/s)');
+
+%         fltCtrl.rudderCmd.kp.setValue(1000,'(deg)/(rad)');
+%         fltCtrl.rudderCmd.ki.setValue(fltCtrl.rudderCmd.kp.Value/(60/4) ,'(deg)/(rad*s)');
+%         fltCtrl.rudderCmd.kd.setValue(1000*.1,'(deg)/(rad/s)');
+%         fltCtrl.rudderCmd.tau.setValue(.1,'s');
         fltCtrl.yawSP.kp.setValue(3,'(deg)/(deg)');
         fltCtrl.yawSP.ki.setValue(0.05,'(deg)/(deg*s)');
         fltCtrl.yawSP.kd.setValue(0,'(deg)/(deg/s)');
@@ -233,6 +236,7 @@ end
     end
     
 plotCtrlDeflections
+plotLateral
     %% Lateral Plot Loop
 if latLoopPlot == 1
     subplot(3,3,1); hold on; grid on;
