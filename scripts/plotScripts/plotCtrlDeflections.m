@@ -11,16 +11,13 @@ plot(tsc.ctrlSurfDeflCmd.Time,squeeze(tsc.ctrlSurfDeflCmd.Data(:,4,1)),...
     'LineStyle','-','Color','b','LineWidth',1.5,'DisplayName','Rudder')
 xlabel('Time, [s]')
 ylabel({'Control Surface','Deflection [deg]'})
-legend('FontSize',20,'Location','southeast')
+legend('FontSize',20)
 
 subplot(2,2,2); hold on; grid on;
 plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi,...
-    'LineStyle','-','Color','k','LineWidth',1.5,'DisplayName','Yaw Angle')
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,...
-    'LineStyle','-','Color','b','LineWidth',1.5,'DisplayName','Roll Angle')
+    'LineStyle','-','Color','k','LineWidth',1.5)
 xlabel('Time, [s]')
-ylabel('[deg]')
-legend('FontSize',20,'Location','southeast')
+ylabel('Yaw Angle [deg]')
 
 subplot(2,2,3); hold on; grid on;
 plot(tsc.azimuthAngle.Time,squeeze(tsc.azimuthAngle.Data),...
@@ -29,10 +26,10 @@ xlabel('Time, [s]')
 ylabel('Azimuth Angle [deg]')
 
 subplot(2,2,4); hold on; grid on;
-plot(tsc.airTenVecs.Time,squeeze(tsc.airTenVecs.mag.Data),...
+plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),...
     'LineStyle','-','Color','k','LineWidth',1.5)
 xlabel('Time, [s]')
-ylabel('Tether Tension [N]')
+ylabel('Elevation Angle [deg]')
 
 set(findall(gcf,'Type','axes'),'FontSize',32)
 linkaxes(findall(gcf,'Type','axes'),'x')

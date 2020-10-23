@@ -36,11 +36,11 @@ fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
-fltCtrl.AoACtrl.setValue(0,'');                   
+fltCtrl.AoACtrl.setValue(1,'');                   
 fltCtrl.AoASP.setValue(0,'');                   
-fltCtrl.AoAConst.setValue(10*pi/180,'deg');
+fltCtrl.AoAConst.setValue(14*pi/180,'deg');
 fltCtrl.AoATime.setValue([0 1000 2000],'s');         
-fltCtrl.AoALookup.setValue([9 4 9]*pi/180,'deg');
+fltCtrl.AoALookup.setValue([14 14 14]*pi/180,'deg');
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
