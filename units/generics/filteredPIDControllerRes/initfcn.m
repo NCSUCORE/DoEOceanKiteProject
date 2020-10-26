@@ -17,5 +17,4 @@ elseif externalReset ~= "none" && isempty(rst)
     set_param([gcb,'/rst'],'position',[75   255   125   305])
     add_line(gcb,'rst/1',[get_param(i0,'Name'),'/2'])
     add_line(gcb,'rst/1',[get_param(i1,'Name'),'/2'])
-    add_line(gcb,'rst/1',[get_param(i2,'Name'),'/2'])
 end
