@@ -2,26 +2,30 @@
 Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario
-simScenario = 1.5;
+simScenario = 1.0;
 %%  Set Test Parameters
 load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherData.mat')
-Tmax = 43;
+Tmax = 20;
 Tref = [400 600];
 % eff = [eval(sprintf('AR8b8.length400.tensionValues%d.efficencyPercent',Tmax))...
 %     eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',Tmax))]/100;
 saveSim = 1;                                                %   Flag to save results
-A = 14;%5:1:14;
+A = 4.5:.5:14;
 thrLength = 200:50:600;                                            %   m - Initial tether length
 flwSpd = 0.1:0.05:0.5;                              %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
+cond = true;  jjold = 1;
 for kk = 1:numel(flwSpd)
     for ii = 1:numel(thrLength)
         for jj = 1:numel(altitude)
             for ll = 1:numel(A)
-                TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax));
-                young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax));
+                if jj ~= jjold 
+                    cond = true;
+                end
+                TDiam = 7.2e-3;
+                young = 57e9;
                 if altitude(jj) >= 0.7071*thrLength(ii) || altitude(jj) <= 0.1736*thrLength(ii)
                     el = NaN;
                 else
@@ -33,33 +37,33 @@ for kk = 1:numel(flwSpd)
                 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
                 loadComponent('MantaGndStn');                               %   Ground station
                 loadComponent('winchManta');                                %   Winches
-                loadComponent('MantaTether');                           %   Single link tether
+                loadComponent('MantaTether_38kN');                          %   Single link tether
                 loadComponent('idealSensors')                               %   Sensors
                 loadComponent('idealSensorProcessing')                      %   Sensor processing
                 if simScenario == 0
-                    loadComponent('MantaKiteAVL_DOE');                                  %   Manta kite old
+                    loadComponent('Manta2RotXFoil_AR8_b8_B4pct');                       %   AR = 8; 8m span; 4pct buoyant
                 elseif simScenario == 2
                     loadComponent('fullScale1thr');                                     %   DOE kite
                 elseif simScenario == 1 || simScenario == 3 || simScenario == 4
-                    loadComponent('Manta2RotAVL_DOE');                                  %   Manta DOE kite with AVL
+                    loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
                 elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
-                    loadComponent('Manta2RotAVL_Thr075');                               %   Manta kite with AVL
+                    loadComponent('Manta2RotXFoil_AR9_b9');                             %   AR = 9; 9m span
                 elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
-                    loadComponent('Manta2RotXFoil_Thr075');                             %   Manta kite with XFoil
+                    loadComponent('Manta2RotXFoil_AR9_b10');                            %   AR = 9; 10m span
                 elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
-                    loadComponent('Manta2RotXFlr_Thr075');                              %   Manta kite with XFlr5
+                    loadComponent('Manta2RotXFoil_AR8_b8_B4pct');                       %   AR = 8; 8m span; 4pct buoyant
                 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-                    loadComponent('Manta2RotXFlr_CFD');                              %   Manta kite with XFlr5
+                    loadComponent('Manta2RotXFoil_AR9_b9_B3pct');                       %   AR = 9; 9m span; 3pct buoyant
                 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
-                    loadComponent('Manta2RotXFoil_AR8_b8');                                 %   Manta kite with XFlr5
+                    loadComponent('Manta2RotXFoil_AR9_b10_B1pct');                      %   AR = 9; 10m span; 1pct buoyant
                 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
-                    loadComponent('Manta2RotXFoil_AR9_b8');                                 %   Manta kite with XFlr5
+                    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
                 elseif simScenario == 1.7 || simScenario == 3.7 || simScenario == 4.7
-                    loadComponent('Manta2RotXFoil_AR9_b9');                                 %   Manta kite with XFlr5
+                    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
                 elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
-                    loadComponent('Manta2RotXFoil_AR9_b10');                                %   Manta kite with XFlr5
+                    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
                 elseif simScenario == 1.9 || simScenario == 3.9 || simScenario == 4.9
-                    loadComponent('Manta2RotXFoil_AR7_b8');                                 %   Manta kite with XFlr5
+                    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
                 end
                 %%  Environment Properties
                 loadComponent('ConstXYZT');                                 %   Environment
@@ -99,9 +103,9 @@ for kk = 1:numel(flwSpd)
                 fltCtrl.AoAConst.setValue(A(ll)*pi/180,'deg');
                 fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
                 fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');            %%  Set up critical system parameters and run simulation
-                fprintf('\nFlow Speed = %.3f m/s;\tTether Length = %.1f m;\t Altitude = %d m;\t AoA = %d deg\n',flwSpd(kk),thrLength(ii),altitude(jj),A(ll));
+                fprintf('\nFlow Speed = %.3f m/s;\tTether Length = %.1f m;\t Altitude = %d m;\t AoA = %.1f deg\n',flwSpd(kk),thrLength(ii),altitude(jj),A(ll));
                 simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
-                if ~isnan(el)
+                if ~isnan(el) && (flwSpd(kk) > 0.2 || A(ll) == 14) && cond
                     simWithMonitor('OCTModel')
                     %%  Log Results
                     tsc = signalcontainer(logsout);
@@ -126,18 +130,22 @@ for kk = 1:numel(flwSpd)
                     Fdrag(ii,jj,kk,ll) = mean(Drag(ran)); Flift(ii,jj,kk,ll) = mean(Lift(ran));
                     Ffuse(ii,jj,kk,ll) = mean(Fuse(ran)); Fthr(ii,jj,kk,ll) = mean(Thr(ran));   Fturb(ii,jj,kk,ll) = mean(Turb(ran));
                     elevation(ii,jj,kk,ll) = el*180/pi;
+                    if ten(ii,jj,kk,ll) > Tmax
+                        cond = false;
+                    end
                 else
                     Pavg(ii,jj,kk,ll) = NaN;  AoA(ii,jj,kk,ll) = NaN;   ten(ii,jj,kk,ll) = NaN;
                     CL(ii,jj,kk,ll) = NaN;    CD(ii,jj,kk,ll) = NaN;    Fdrag(ii,jj,kk,ll) = NaN; 
                     Flift(ii,jj,kk,ll) = NaN; Ffuse(ii,jj,kk,ll) = NaN; Fthr(ii,jj,kk,ll) = NaN;   
                     Fturb(ii,jj,kk,ll) = NaN; elevation(ii,jj,kk,ll) = el*180/pi;
                 end
+                jjold = jj;
             end
         end
     end
 end
 %%
-filename1 = sprintf('Alt_Study_1-5b_Tmax-%d.mat',Tmax);
+filename1 = sprintf('Alt_Study_1-3_Tmax-%d.mat',Tmax);
 fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Alt Study\');
 save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
-    'Fturb','thrLength','elevation','flwSpd','A','ten','Tmax','altitude')
+    'Fturb','thrLength','elevation','flwSpd','A','ten','Tmax','altitude','ii','jj','ll','kk')
