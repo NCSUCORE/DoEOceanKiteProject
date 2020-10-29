@@ -3,9 +3,9 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.1;
+simScenario = 1.0;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .3;                                               %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
@@ -114,6 +114,7 @@ elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
 end
 %     vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
+% thr.tether1.setDragEnable(false,'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
