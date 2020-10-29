@@ -29,9 +29,9 @@ if simScenario >= 4
     thr.tether1.setInitTetherLength(thrLength,'m');         %   Initialize tether length 
 elseif (simScenario >= 1.3 && simScenario <= 1.5)...
        || (simScenario >= 3.3 && simScenario <= 3.5)
-    loadComponent('MantaTether_38kN');                      %   Tether with correct buoyancy
+    loadComponent('MantaTether_20kN');                      %   Tether with correct buoyancy
 else
-    loadComponent('MantaTether');                           %   Single link tether
+    loadComponent('MantaTether_20kN');                           %   Single link tether
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing

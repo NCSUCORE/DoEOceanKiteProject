@@ -17,6 +17,8 @@ classdef env < dynamicprops
             addRequired(p,'FlowTypes',@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'FlowDensities',[],@(x) all(isnumeric(x)))
             addOptional(p,'MnthIdx',1,@(x) mod(x,1)==0);
+            addOptional(p,'XYZTConst',false,@(x) islogical(x));
+            addOptional(p,'constSpd',0.3,@(x) isnumeric(x));
             parse(p,FlowNames,FlowTypes,varargin{:})
             % Create properties of env according to the specified classes
             for ii = 1:numel(p.Results.FlowNames)
