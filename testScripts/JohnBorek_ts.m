@@ -3,11 +3,11 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.0;
+simScenario = 1.3;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
-thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .3;                                               %   m/s - Flow speed
+thrLength = 200;                                            %   m - Initial tether length
+flwSpd = .1;                                               %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -29,6 +29,9 @@ if simScenario >= 4
     thr.tether1.setInitTetherLength(thrLength,'m');         %   Initialize tether length 
 elseif (simScenario >= 1.3 && simScenario <= 1.5)...
        || (simScenario >= 3.3 && simScenario <= 3.5)
+    loadComponent('MantaTether_38kN');                      %   Tether with correct buoyancy
+elseif (simScenario >= 1.6 && simScenario <= 1.9)...
+       || (simScenario >= 3.6 && simScenario <= 3.9)
     loadComponent('MantaTether_20kN');                      %   Tether with correct buoyancy
 else
     loadComponent('MantaTether_20kN');                           %   Single link tether
@@ -52,7 +55,7 @@ elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
     loadComponent('Manta2RotXFoil_AR9_b10_B1pct');                      %   AR = 9; 10m span; 1pct buoyant 
 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
-    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
+    loadComponent('Manta2RotXFoil_AR8_b8_B2pct');                       %   AR = 8; 8m span; 4pct buoyant 
 elseif simScenario == 1.7 || simScenario == 3.7 || simScenario == 4.7
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
@@ -87,8 +90,8 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-if ~(simScenario >= 1.3 && simScenario <= 1.5)...
-       && ~(simScenario >= 3.3 && simScenario <= 3.5)
+if ~(simScenario >= 1.3 && simScenario <= 1.9)...
+       && ~(simScenario >= 3.3 && simScenario <= 3.9)
     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
 end
 %%  Winches Properties
@@ -150,16 +153,16 @@ if saveSim == 1
     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Plot Results
-if simScenario < 3
-    lap = max(tsc.lapNumS.Data)-1;
-    if max(tsc.lapNumS.Data) < 2
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    end
-else
-    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-end
+% if simScenario < 3
+%     lap = max(tsc.lapNumS.Data)-1;
+%     if max(tsc.lapNumS.Data) < 2
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     else
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     end
+% else
+%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+% end
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...

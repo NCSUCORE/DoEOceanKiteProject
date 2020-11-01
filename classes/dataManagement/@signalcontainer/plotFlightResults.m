@@ -231,15 +231,15 @@ end
 %%  Plot Drag Characteristics 
 if turb && p.Results.dragChar && con
     figure(); subplot(2,1,2); hold on; grid on
-    plot(data(ran),FTurbBdy(ran)./(totDrag(ran)-FTurbBdy(ran)),'b-');  
-    plot(data(ran),.5*ones(length(data(ran)),1),'r-');
+    plot(time,FTurbBdy./(totDrag-FTurbBdy),'b-');  
+    plot(time,.5*ones(length(time),1),'r-');
     xlabel('Path Position');  ylabel('$\mathrm{D_t/D_k}$');  ylim([0 1]);
     subplot(2,1,1); hold on; grid on
-    plot(data(ran),FDragBdy(ran),'b-');
-    plot(data(ran),FDragFuse(ran),'r-');
-    plot(data(ran),FDragThr(ran),'g-');
-    plot(data(ran),FTurbBdy(ran),'c-');
-    plot(data(ran),totDrag(ran),'k-');
+    plot(time,FDragBdy,'b-');
+    plot(time,FDragFuse,'r-');
+    plot(time,FDragThr,'g-');
+    plot(time,FTurbBdy,'c-');
+    plot(time,totDrag,'k-');
     xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
 end
 %%  Assess wing tips
