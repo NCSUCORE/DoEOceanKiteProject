@@ -3,12 +3,13 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.3;
+simScenario = 1.0;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
-thrLength = 200;                                            %   m - Initial tether length
-flwSpd = .1;                                               %   m/s - Flow speed
+thrLength = 400;                                            %   m - Initial tether length
+flwSpd = .3;                                                %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
+Tmax = 20;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -27,19 +28,13 @@ loadComponent('winchManta');                                %   Winches
 if simScenario >= 4
     loadComponent('shortTether');                           %   Tether for reeling
     thr.tether1.setInitTetherLength(thrLength,'m');         %   Initialize tether length 
-elseif (simScenario >= 1.3 && simScenario <= 1.5)...
-       || (simScenario >= 3.3 && simScenario <= 3.5)
-    loadComponent('MantaTether_38kN');                      %   Tether with correct buoyancy
-elseif (simScenario >= 1.6 && simScenario <= 1.9)...
-       || (simScenario >= 3.6 && simScenario <= 3.9)
-    loadComponent('MantaTether_20kN');                      %   Tether with correct buoyancy
 else
-    loadComponent('MantaTether_20kN');                           %   Single link tether
+    loadComponent('MantaTether');                           %   Manta Ray tether
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 if simScenario == 0
-    loadComponent('Manta2RotXFoil_AR8_b8_B4pct');                       %   AR = 8; 8m span; 4pct buoyant 
+    loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 2
     loadComponent('fullScale1thr');                                     %   DOE kite
 elseif simScenario == 1 || simScenario == 3 || simScenario == 4
@@ -49,13 +44,13 @@ elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
 elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
     loadComponent('Manta2RotXFoil_AR9_b10');                            %   AR = 9; 10m span
 elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
-    loadComponent('Manta2RotXFoil_AR8_b8_B4pct');                       %   AR = 8; 8m span; 4pct buoyant 
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-    loadComponent('Manta2RotXFoil_AR9_b9_B3pct');                       %   AR = 9; 9m span; 3pct buoyant 
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
-    loadComponent('Manta2RotXFoil_AR9_b10_B1pct');                      %   AR = 9; 10m span; 1pct buoyant 
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
-    loadComponent('Manta2RotXFoil_AR8_b8_B2pct');                       %   AR = 8; 8m span; 4pct buoyant 
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.7 || simScenario == 3.7 || simScenario == 4.7
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.8 || simScenario == 3.8 || simScenario == 4.8
@@ -84,15 +79,22 @@ if simScenario >= 3
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
 %%  Tethers Properties
+load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherData.mat')
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-if ~(simScenario >= 1.3 && simScenario <= 1.9)...
-       && ~(simScenario >= 3.3 && simScenario <= 3.9)
-    thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
+if Tmax == 20
+   thr.tether1.youngsMod.setValue(57e9,'Pa');
+   thr.tether1.density.setValue(3570,'kg/m^3');
+   thr.tether1.setDiameter(0.0072,'m');
+elseif ~(simScenario >= 1.0 && simScenario <= 1.9)...
+       && ~(simScenario >= 3.0 && simScenario <= 3.9)
+   thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
+   thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
+   thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
 end
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
@@ -116,6 +118,7 @@ elseif simScenario >= 1 && simScenario < 2
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
 end
+vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %     vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
 % thr.tether1.setDragEnable(false,'');
 %%  Set up critical system parameters and run simulation
