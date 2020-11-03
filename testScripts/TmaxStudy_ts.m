@@ -4,11 +4,12 @@ clear;clc;%close all
 %%  Select sim scenario
 simScenario = 1.0;
 %%  Set Test Parameters
-load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherData.mat')
+fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');
+load([fpath2 'tetherDataNew.mat'])
 saveSim = 1;                                                %   Flag to save results
-Tmax = 20:1:38;
-thrLength = 200:50:600;                                            %   m - Initial tether length
-flwSpd = 0.1:0.05:0.5;                              %   m/s - Flow speed
+Tmax = 20;
+thrLength = 200:50:600;                                     %   m - Initial tether length
+flwSpd = 0.1:0.05:0.5;                                      %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -135,7 +136,7 @@ for ll = 1:numel(Tmax)
         'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','ii','jj','ll','kk')
 end
 %%
-filename1 = sprintf('Tmax_Study_AR8b8.mat');
-fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
-    'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','ii','jj','ll','kk')
+% filename1 = sprintf('Tmax_Study_AR8b8.mat');
+% fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
+% save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
+%     'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','ii','jj','ll','kk')
