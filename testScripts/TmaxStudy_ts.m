@@ -12,10 +12,10 @@ flwSpd = 0.1:0.05:0.5;                              %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-for kk = 1:numel(flwSpd)
-    for ii = 1:numel(thrLength)
-        for jj = 1:numel(altitude)
-            for ll = 1:numel(Tmax)
+for ll = 1:numel(Tmax)
+    for kk = 1:numel(flwSpd)
+        for ii = 1:numel(thrLength)
+            for jj = 1:numel(altitude)
                 eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',Tmax(ll)))/100;
                 TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax(ll)));
                 young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax(ll)));
@@ -110,26 +110,26 @@ for kk = 1:numel(flwSpd)
                     [Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
                     Turb = squeeze(sqrt(sum(tsc.FTurbBdy.Data.^2,1)));
                     Pow = tsc.rotPowerSummary(vhcl,env);
-                    Pavg(ii,jj,kk,ll) = Pow.avg;    PavgG(ii,jj,kk,ll) = Pow.avg*eff;
-                    AoA(ii,jj,kk,ll) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
+                    Pavg(ll,kk,ii,jj) = Pow.avg;    PavgG(ll,kk,ii,jj) = Pow.avg*eff;
+                    AoA(ll,kk,ii,jj) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
                     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
                     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-                    ten(ii,jj,kk,ll) = max([max(airNode(ran)) max(gndNode(ran))]);
-                    fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN;\t Elevation = %.1f\n',AoA(ii,jj,kk,ll),ten(ii,jj,kk,ll),el*180/pi);
-                    CL(ii,jj,kk,ll) = mean(CLtot(ran));   CD(ii,jj,kk,ll) = mean(CDtot(ran));
-                    Fdrag(ii,jj,kk,ll) = mean(Drag(ran)); Flift(ii,jj,kk,ll) = mean(Lift(ran));
-                    Ffuse(ii,jj,kk,ll) = mean(Fuse(ran)); Fthr(ii,jj,kk,ll) = mean(Thr(ran));   Fturb(ii,jj,kk,ll) = mean(Turb(ran));
-                    elevation(ii,jj,kk,ll) = el*180/pi;
+                    ten(ll,kk,ii,jj) = max([max(airNode(ran)) max(gndNode(ran))]);
+                    fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN;\t Elevation = %.1f\n',AoA(ll,kk,ii,jj),ten(ll,kk,ii,jj),el*180/pi);
+                    CL(ll,kk,ii,jj) = mean(CLtot(ran));   CD(ll,kk,ii,jj) = mean(CDtot(ran));
+                    Fdrag(ll,kk,ii,jj) = mean(Drag(ran)); Flift(ll,kk,ii,jj) = mean(Lift(ran));
+                    Ffuse(ll,kk,ii,jj) = mean(Fuse(ran)); Fthr(ll,kk,ii,jj) = mean(Thr(ran));   Fturb(ll,kk,ii,jj) = mean(Turb(ran));
+                    elevation(ll,kk,ii,jj) = el*180/pi;
                 else
-                    Pavg(ii,jj,kk,ll) = NaN;  AoA(ii,jj,kk,ll) = NaN;   ten(ii,jj,kk,ll) = NaN;
-                    CL(ii,jj,kk,ll) = NaN;    CD(ii,jj,kk,ll) = NaN;    Fdrag(ii,jj,kk,ll) = NaN; 
-                    Flift(ii,jj,kk,ll) = NaN; Ffuse(ii,jj,kk,ll) = NaN; Fthr(ii,jj,kk,ll) = NaN;   
-                    Fturb(ii,jj,kk,ll) = NaN; elevation(ii,jj,kk,ll) = el*180/pi;
+                    Pavg(ll,kk,ii,jj) = NaN;  AoA(ll,kk,ii,jj) = NaN;   ten(ll,kk,ii,jj) = NaN;
+                    CL(ll,kk,ii,jj) = NaN;    CD(ll,kk,ii,jj) = NaN;    Fdrag(ll,kk,ii,jj) = NaN; 
+                    Flift(ll,kk,ii,jj) = NaN; Ffuse(ll,kk,ii,jj) = NaN; Fthr(ll,kk,ii,jj) = NaN;   
+                    Fturb(ll,kk,ii,jj) = NaN; elevation(ll,kk,ii,jj) = el*180/pi;
                 end
             end
         end
     end
-    filename1 = sprintf('Tmax_Study_AR8b8_V-%.3f.mat',flwSpd(kk));
+    filename1 = sprintf('Tmax_Study_AR8b8_Tmax-%d.mat',Tmax(ll));
     fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
     save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
         'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','ii','jj','ll','kk')
