@@ -14,7 +14,7 @@ fltCtrl.setStartControl(1,'s')
 fltCtrl.firstSpoolLap.setValue(1000,'');
 
 % Control surface parameters
-fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
+fltCtrl.tanRoll.kp.setValue(0.8,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.tanRoll.tau.setValue(1e-3,'s');
@@ -31,6 +31,8 @@ fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.elevCtrl.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCtrl.tau.setValue(0.001,'s');
 
+fltCtrl.alphaCtrl.kp.setValue(1,'(kN)/(rad)');
+
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 
@@ -41,6 +43,8 @@ fltCtrl.AoASP.setValue(0,'');
 fltCtrl.AoAConst.setValue(14*pi/180,'deg');
 fltCtrl.AoATime.setValue([0 1000 2000],'s');         
 fltCtrl.AoALookup.setValue([14 14 14]*pi/180,'deg');
+
+fltCtrl.Tmax.setValue(38,'kN');
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
