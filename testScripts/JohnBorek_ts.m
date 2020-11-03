@@ -6,7 +6,7 @@ Simulink.sdi.clear
 simScenario = 1.0;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
-thrLength = 400;                                            %   m - Initial tether length
+thrLength = 200;                                            %   m - Initial tether length
 flwSpd = .3;                                                %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 Tmax = 20;                                                  %   kN - Max tether tension 
@@ -111,15 +111,15 @@ if simScenario >= 3 && simScenario < 4
     fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
     fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
 elseif simScenario >= 1 && simScenario < 2
-    fltCtrl.AoASP.setValue(0,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-%                                                         fltCtrl.AoAConst.setValue(10*pi/180,'deg');
+    fltCtrl.AoASP.setValue(2,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+    fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
     fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
     fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
-%     vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
+% vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
 % thr.tether1.setDragEnable(false,'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
@@ -132,7 +132,7 @@ if simScenario < 2 && simScenario >= 1
     AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-    ten = max([max(airNode(ran)) max(gndNode(ran))]);
+    ten = max([max(airNode(:)) max(gndNode(:))]);
     fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
 end
 dt = datestr(now,'mm-dd_HH-MM');
@@ -166,6 +166,16 @@ end
 % else
 %     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 % end
+% FmagHydro = squeeze(sqrt(sum(tsc.FFluidBdy.Data.^2,1)));
+% FmagBuoy = squeeze(sqrt(sum(tsc.FBuoyBdy.Data.^2,1)));
+% FmagGrav = squeeze(sqrt(sum(tsc.FGravBdy.Data.^2,1)));
+% figure; subplot(3,1,1); hold on; grid on;
+% plot(tsc.tanRoll.Time,squeeze(tsc.tanRoll.Data)*180/pi,'b-'); xlabel('Time [s]'); ylabel('Tan Roll [deg]');
+% subplot(3,1,2); hold on; grid on;
+% plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
+% subplot(3,1,3); hold on; grid on;
+% plot(tsc.FFluidBdy.Time,FmagHydro./(FmagBuoy-FmagGrav),'b-')
+% xlabel('Time [s]'); ylabel('$F_\mathrm{hydro}/(F_\mathrm{buoy}-F_\mathrm{grav})$');
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...

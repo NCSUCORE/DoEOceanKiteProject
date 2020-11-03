@@ -8,6 +8,7 @@ classdef pthFlwCtrlM < handle
         yawMoment
         rollMoment
         elevCtrl
+        alphaCtrl
         % Saturations
         maxBank
         controlSigMax
@@ -27,12 +28,13 @@ classdef pthFlwCtrlM < handle
         initPathVar
         firstSpoolLap
         rudderGain
-        % Pitch setpoint 
+        % Setpoint 
         AoACtrl
         AoASP
         AoAConst
         AoATime
         AoALookup
+        Tmax
     end
     
     methods
@@ -42,6 +44,7 @@ classdef pthFlwCtrlM < handle
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
             obj.elevCtrl            = CTR.FPID('rad','deg');
+            obj.alphaCtrl           = CTR.FPID('rad','kN');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
@@ -67,6 +70,7 @@ classdef pthFlwCtrlM < handle
             obj.AoAConst            = SIM.parameter('Unit','deg','Description','Constant AoA setpoint');
             obj.AoATime             = SIM.parameter('Unit','s','Description','Reference time for AoA setpoint lookup table');
             obj.AoALookup           = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
+            obj.Tmax                = SIM.parameter('Unit','kN','Description','Maximum tether tension limit');
         end
         
         function setWinchSpeedIn(obj,val,unit)
