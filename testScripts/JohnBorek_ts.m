@@ -6,7 +6,7 @@ Simulink.sdi.clear
 simScenario = 1.0;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
-thrLength = 200;                                            %   m - Initial tether length
+thrLength = 20;                                            %   m - Initial tether length
 flwSpd = .3;                                                %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 Tmax = 20;                                                  %   kN - Max tether tension 
