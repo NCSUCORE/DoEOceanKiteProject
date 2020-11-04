@@ -34,6 +34,10 @@ switch evalin('base','class(gndStn)')
         numNodesAnchor    = 2;
         numTethersAnchor  = 1;
         gndStnLmpMasPos = [0;0;0];
+    case 'OCT.prescribedGndStation001'
+        numNodesAnchor    = 2;
+        numTethersAnchor  = 1;
+        gndStnLmpMasPos = [0;0;0];
     case 'OCT.sixDoFStation'
         numNodesAnchor    = evalin('base','thr.numNodes.Value');   % Get the number of nodes
         numTethersAnchor  = evalin('base','gndStn.anchThrs.numTethers.Value'); % Get the number of tethers
