@@ -10,17 +10,17 @@ GROUNDSTATION         = 'groundStationPrescribed001';
 % the script saves the variable 'gndStn' to a 'prescribedGndStn.mat'
 %% Ground Station
 % Create
-gndStn = OCT.prescribedGndStation;
+gndStn = OCT.prescribedGndStation001;
 gndStn.numTethers.setValue(1,'');
 gndStn.build;
 
 % Set values
 %gndStn.inertia.setValue(1,'kg*m^2');
-gndStn.initPosVec.setValue([0 0 0],'m');
-gndStn.initEulVec.setValue([0 0 0],'rad');
+gndStn.initPosVecGnd.setValue([0 0 0],'m');
+gndStn.initEulAng.setValue([0 0 0],'rad');
 %gndStn.velVec.setValue([0 0 0],'m/s');
 %gndStn.dampCoeff.setValue(100,'(N*m)/(rad/s)');
-gndStn.thrAttch1.posVec.setValue([0 0 0]','m');
+gndStn.thrAttach.setPosVec([0 0 0],'m');
 %gndStn.freeSpnEnbl.setValue(false,'');
 gndStn.lumpedMassPositionMatrixBdy.setValue([0,0,0]','m');
 
