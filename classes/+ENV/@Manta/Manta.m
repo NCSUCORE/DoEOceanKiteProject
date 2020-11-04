@@ -11,6 +11,8 @@ classdef Manta < handle
         maxSpeed
         minSpeed
         month
+        constFlag
+        constSpd
     end
     
     properties (Hidden = true)
@@ -43,7 +45,7 @@ classdef Manta < handle
             % Get the name of the .mat file that should contain this data
             fName = fullfile(dataPath,['TS_FlowData_2017_',mnthString '.mat']);
             % If it doesn't exist, then attempt to build it
-            if ~isfile(fName) || p.Results.ForceRecompile
+            if (~isfile(fName)) || p.Results.ForceRecompile
                 % Check if the folder for that data exists
                 folder = folders(contains({folders.name},['2017' mnthString '_hourly']));
                 if isempty(folder)

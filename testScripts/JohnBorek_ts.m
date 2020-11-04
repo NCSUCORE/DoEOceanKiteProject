@@ -3,12 +3,13 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.1;
+simScenario = 1.0;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
-thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .3;                                               %   m/s - Flow speed
+saveSim = 0;                                                %   Flag to save results
+thrLength = 200;                                            %   m - Initial tether length
+flwSpd = .3;                                                %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
+Tmax = 20;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -27,16 +28,13 @@ loadComponent('winchManta');                                %   Winches
 if simScenario >= 4
     loadComponent('shortTether');                           %   Tether for reeling
     thr.tether1.setInitTetherLength(thrLength,'m');         %   Initialize tether length 
-elseif (simScenario >= 1.3 && simScenario <= 1.5)...
-       || (simScenario >= 3.3 && simScenario <= 3.5)
-    loadComponent('MantaTether_38kN');                      %   Tether with correct buoyancy
 else
-    loadComponent('MantaTether');                           %   Single link tether
+    loadComponent('MantaTether');                           %   Manta Ray tether
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 if simScenario == 0
-    loadComponent('Manta2RotXFoil_AR8_b8_B4pct');                       %   AR = 8; 8m span; 4pct buoyant 
+    loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 2
     loadComponent('fullScale1thr');                                     %   DOE kite
 elseif simScenario == 1 || simScenario == 3 || simScenario == 4
@@ -46,11 +44,11 @@ elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
 elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
     loadComponent('Manta2RotXFoil_AR9_b10');                            %   AR = 9; 10m span
 elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
-    loadComponent('Manta2RotXFoil_AR8_b8_B4pct');                       %   AR = 8; 8m span; 4pct buoyant 
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-    loadComponent('Manta2RotXFoil_AR9_b9_B3pct');                       %   AR = 9; 9m span; 3pct buoyant 
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
-    loadComponent('Manta2RotXFoil_AR9_b10_B1pct');                      %   AR = 9; 10m span; 1pct buoyant 
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.7 || simScenario == 3.7 || simScenario == 4.7
@@ -81,15 +79,22 @@ if simScenario >= 3
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
 %%  Tethers Properties
+load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherData.mat')
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-if ~(simScenario >= 1.3 && simScenario <= 1.5)...
-       && ~(simScenario >= 3.3 && simScenario <= 3.5)
-    thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
+if Tmax == 20
+   thr.tether1.youngsMod.setValue(57e9,'Pa');
+   thr.tether1.density.setValue(3570,'kg/m^3');
+   thr.tether1.setDiameter(0.0072,'m');
+elseif ~(simScenario >= 1.0 && simScenario <= 1.9)...
+       && ~(simScenario >= 3.0 && simScenario <= 3.9)
+   thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
+   thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
+   thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
 end
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
@@ -106,14 +111,16 @@ if simScenario >= 3 && simScenario < 4
     fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
     fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
 elseif simScenario >= 1 && simScenario < 2
-    fltCtrl.AoASP.setValue(0,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-%                                                         fltCtrl.AoAConst.setValue(10*pi/180,'deg');
+    fltCtrl.AoASP.setValue(2,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+    fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
     fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
     fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
 end
-%     vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
+vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
+% vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
+% thr.tether1.setDragEnable(false,'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
@@ -125,7 +132,7 @@ if simScenario < 2 && simScenario >= 1
     AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-    ten = max([max(airNode(ran)) max(gndNode(ran))]);
+    ten = max([max(airNode(:)) max(gndNode(:))]);
     fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
 end
 dt = datestr(now,'mm-dd_HH-MM');
@@ -149,16 +156,26 @@ if saveSim == 1
     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Plot Results
-if simScenario < 3
-    lap = max(tsc.lapNumS.Data)-1;
-    if max(tsc.lapNumS.Data) < 2
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    end
-else
-    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-end
+% if simScenario < 3
+%     lap = max(tsc.lapNumS.Data)-1;
+%     if max(tsc.lapNumS.Data) < 2
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     else
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     end
+% else
+%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+% end
+% FmagHydro = squeeze(sqrt(sum(tsc.FFluidBdy.Data.^2,1)));
+% FmagBuoy = squeeze(sqrt(sum(tsc.FBuoyBdy.Data.^2,1)));
+% FmagGrav = squeeze(sqrt(sum(tsc.FGravBdy.Data.^2,1)));
+% figure; subplot(3,1,1); hold on; grid on;
+% plot(tsc.tanRoll.Time,squeeze(tsc.tanRoll.Data)*180/pi,'b-'); xlabel('Time [s]'); ylabel('Tan Roll [deg]');
+% subplot(3,1,2); hold on; grid on;
+% plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
+% subplot(3,1,3); hold on; grid on;
+% plot(tsc.FFluidBdy.Time,FmagHydro./(FmagBuoy-FmagGrav),'b-')
+% xlabel('Time [s]'); ylabel('$F_\mathrm{hydro}/(F_\mathrm{buoy}-F_\mathrm{grav})$');
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
