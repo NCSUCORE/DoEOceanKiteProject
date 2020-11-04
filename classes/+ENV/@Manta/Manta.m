@@ -11,8 +11,6 @@ classdef Manta < handle
         maxSpeed
         minSpeed
         month
-        constFlag
-        constSpd
     end
     
     properties (Hidden = true)
@@ -43,11 +41,12 @@ classdef Manta < handle
             % Build two-character string for the month and day numbers
             mnthString = sprintf('%02d',p.Results.mnthIndx);
             % Get the name of the .mat file that should contain this data
-            fName = fullfile(dataPath,['TS_FlowData_2017_',mnthString '.mat']);
+            fName = fullfile(dataPath,['NewTS_FlowData_2017_',mnthString '.mat']);
             % If it doesn't exist, then attempt to build it
             if (~isfile(fName)) || p.Results.ForceRecompile
                 % Check if the folder for that data exists
-                folder = folders(contains({folders.name},['2017' mnthString '_hourly']));
+%                 folder = folders(contains({folders.name},['2017' mnthString '_hourly']));
+                folder = folders(contains({folders.name},[mnthString '-2017']));
                 if isempty(folder)
                     error('Unknown month')
                 elseif numel(folder)>1
