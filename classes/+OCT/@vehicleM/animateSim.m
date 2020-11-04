@@ -82,6 +82,8 @@ addParameter(p,'Pause',false,@islogical)
 % Zoom in the plot axes to focus on the body
 addParameter(p,'ZoomIn',false,@islogical)
 % Colorbar on right showing iteration power
+addParameter(p,'ZoomInMove',false,@islogical)
+% Colorbar on right showing iteration power
 addParameter(p,'PowerBar',false,@islogical)
 % Plot the tangent coordinate system
 addParameter(p,'TangentCoordSys',false,@islogical);
@@ -355,6 +357,17 @@ if p.Results.ZoomIn
     zlim(tscTmp.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
 end
 
+% Ste the plot limits to zoom in on the body with a moving ground station
+if p.Results.ZoomInMove
+    pt = tscTmp.positionVec.getsamples(1).Data;
+    pt2 = tscTmp.gndStnPositionVec.getsamples(1).Data;
+    r = pt-pt2;
+    midpt = (pt+pt2)/2;
+    limbound = norm(r)*[-1 1];
+    xlim(midpt(1)+limbound)
+    ylim(midpt(2)+limbound)
+    zlim(midpt(3)+limbound)
+end
 % Plot local aerodynamic force vectors
 if p.Results.LocalAero
     % Get the surface names
@@ -861,6 +874,22 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         xlim(pt(1)+obj.fuse.length.Value*[-1.5 1.5])
         ylim(pt(2)+obj.fuse.length.Value*[-1.5 1.5])
         zlim(pt(3)+obj.fuse.length.Value*[-1.5 1.5])
+    end
+    
+    if p.Results.ZoomInMove
+        pt = tscTmp.positionVec.getsamples(ii).Data;
+        [a,b] = size(tscTmp.gndStnPositionVec.Data);
+        if b == 1
+            pt2 = tscTmp.gndStnPositionVec.Data;
+        else
+            pt2 = tscTmp.gndStnPositionVec.getsamples(ii).Data;
+        end
+        r = pt-pt2;
+        midpt =(pt+pt2)/2;
+        limbound = norm(r)*[-1 1];
+        xlim(midpt(1)+limbound)
+        ylim(midpt(2)+limbound)
+        zlim(midpt(3)+limbound)
     end
     
     % Update scrolling plots

@@ -9,22 +9,22 @@ clear;clc;close all
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
 h = 10*pi/180;  w = 40*pi/180;                     % rad - Path width/height
 [a,b] = boothParamConversion(w,h);                 % Build Path
-simScenario = 1.2;
+simScenario = 2.3;
 simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
-thrLength = 3%[20 35 50];                         % m - Initial tether length
-flwSpd = [0.25]%[0.25:.25:2];                             % m/s - Flow speed
-elevation = 35  % elevation angle in degrees for tow controller
+thrLength = 20%[20 35 50];                         % m - Initial tether length
+flwSpd = [1e-6]%[0.25:.25:2];                             % m/s - Flow speed
+elevation = 40  % elevation angle in degrees for tow controller
 el = elevation*pi/180;                                 % rad - Mean elevation angle
 
 
-if simScenario > 3 &&  simScenario < 4
+if simScenario > 2 &&  simScenario < 4
 ctrlPitch = 2; % Controller State 0 - Single Pitch 1 - Lookup Table 2 - Elevator Controller
 end
 desPitch = 0;%[0:2:16];                            % Desired Pitch in degrees
 
 %Sim Time
-simTime = 100
+simTime = 600
 
 %Exit at SS
 exit = 0
@@ -33,7 +33,7 @@ exit = 0
 openLoop = 0 %1 = open loop linearization 0 = closed loop linearization
 linCtrl = 0; %0 - Normal Control; 1 - Freeze Control inputs for linearization
 linearize = 0;%0 - No linearization; 1 - Linearization turned on 
-saveLin = 0% 1 to save,
+saveLin = 0;% 1 to save,
 
 %%Flow Perturbation Matrix
 flowDirPert = [0]
@@ -42,6 +42,15 @@ rampSlope = 1/30; %slope of disturbance dist/s
 %Controller Freeze
 ctrlFreeze = 0; %Freeze Control Surface Deflections 0 = normal operation 1 = freeze @ ctrlFreezeTime
 ctrlFreezeTime = stepTime-10; %Sim time to freeze control surface deflections
+
+%Ground Station Trajectory
+time = [0 150 165 180 190 300 315 330 3000];
+vel = -2*[1 1 1 1 1 1 1 1 1;...
+    0 0 0 0 0 0 0 0 0;...
+    0 0 0 0 0 0 0 0 0]';
+angVel = [0 0 0 0 0 0 0 0 0;...
+    0 0 0 0 0 0 0 0 0;...
+    0 0 45/15*pi/180 0 0 0 0 0 0]';
 
 longloop = 0
 latLoopPlot = 0
@@ -63,16 +72,20 @@ for jj = 1:numel(thrLength)
 for ii =1:numel(flwSpd)
     linCtrl = 0; %0 - Normal Control; 1 - Controller Manipulation
     %%  Load components
-    if simScenario >= 3
+    if simScenario >= 3 || simScenario == 2.3
         loadComponent('slCtrl');                         %   Launch and recovery controller
 %         loadComponent('LaRController');                         %   Launch and recovery controller
     elseif simScenario == 2
         loadComponent('pathFollowingCtrlForILC');
     else
-        loadComponent('pathFollowingCtrlForManta');             %   Path-following controller
+        loadComponent('pathFollowWithAoACtrl');             %   Path-following controller
     end
     loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-    loadComponent('pathFollowingGndStn');                       %   Ground station
+    if simScenario > 2 && simScenario < 3
+        loadComponent('prescribedGndStn001')
+    else
+        loadComponent('pathFollowingGndStn');                       %   Ground station
+    end
     loadComponent('winchManta');                                %   Winches
     if simScenario >= 4
         minLinkDeviation = .1;
@@ -93,9 +106,13 @@ for ii =1:numel(flwSpd)
         loadComponent('Manta2RotAVL_DOE');                                  %   Manta DOE kite with AVL 
     elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
         loadComponent('Manta2RotAVL_Thr075');                               %   Manta kite with AVL
-    elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
-        loadComponent('Manta2RotXFlr_CFD_AR__ExpScale');                             %   Manta kite with XFoil
-    elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
+    elseif simScenario == 1.2 || simScenario == 2.2 || simScenario == 3.2 || simScenario == 4.2
+        loadComponent('Manta2RotXFoil_AR8_b8_expt');                             %   Manta kite with XFoil
+        vhcl.scale(.1,1);
+        vhcl.turb1.setDiameter(0,'m');
+        vhcl.turb2.setDiameter(0,'m');
+        vhcl.setBuoyFactor(1,'');
+    elseif simScenario == 1.3 || simScenario == 2.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
         loadComponent('Manta2RotXFoil_AR8_b8_B4pct');                              %   Manta kite with XFlr5 
     end
     %%  Environment Properties
@@ -116,39 +133,65 @@ for ii =1:numel(flwSpd)
         hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength(jj)],'[rad rad rad rad m]') % Lemniscate of Booth
     end
     %%  Ground Station Properties
-    gndStn.setPosVec([0 0 0],'m')
-    gndStn.setVelVec([0 0 0],'m/s')
-    gndStn.initAngPos.setValue(0,'rad');
-    gndStn.initAngVel.setValue(0,'rad/s');
+    if simScenario == 2.3
+        gndStn.setVelVecTrajectory(vel,time,'m/s');
+        gndStn.setAngVelTrajectory(angVel,time,'rad/s');
+        gndStn.setInitPosVecGnd([0 0 0],'m');
+        gndStn.setInitEulAng([0 0 0],'rad')
+    else
+        gndStn.setPosVec([0 0 0],'m');
+        gndStn.setVelVec([0 0 0],'m/s');
+        gndStn.initAngPos.setValue(0,'rad');
+        gndStn.initAngVel.setValue(0,'rad/s');
+    end
     %%  Vehicle Properties
-    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,(11/2)*norm(env.water.flowVec.Value))
-    if simScenario >= 3
-        vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
-        vhcl.setInitEulAng([0,desPitch(kk),0]*pi/180,'rad')
+    if simScenario < 3 && simScenario > 2
+        vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.initPosVecGnd.Value,0);
+            vhcl.setInitEulAng([0,desPitch(kk),0]*pi/180,'rad');
+    elseif simScenario > 3
+        vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0);
+        vhcl.setInitEulAng([0,desPitch(kk),0]*pi/180,'rad');
+    else
+        vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
     end
     if simScenario == 0
         vhcl.turb1.setDiameter(0,'m')
     end
     %%  Tethers Properties
-    thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
+    if simScenario < 3 && simScenario > 2
+        thr.tether1.initGndNodePos.setValue(gndStn.thrAttach.posVec.Value(:)+gndStn.initPosVecGnd.Value(:),'m');
+    else
+        thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
+    end
     thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
         +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-    thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+    thr.tether1.initGndNodeVel.setValue([2 0 0]','m/s');
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-%     thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
-     thr.tether1.setDiameter(0.0076,thr.tether1.diameter.Unit);
+    if simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
+        thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
+        thr.tether1.setDiameter(0.0076,thr.tether1.diameter.Unit);
+    end
     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
     %%  Winches Properties
-    wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+    if simScenario >2 && simScenario < 3
+        wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,env.water.flowVec.Value);
+    else
+        wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+    end
     wnch.winch1.LaRspeed.setValue(1,'m/s');
     %%  Controller User Def. Parameters and dependant properties
     fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
-    fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
-        hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
+    if simScenario > 2 && simScenario <3
+        fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
+            hiLvlCtrl.basisParams.Value,gndStn.initPosVecGnd.Value);
+    else
+        fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
+            hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
+    end
     if simScenario ~= 2
         fltCtrl.setFirstSpoolLap(1000,'');
-        fltCtrl.elevCtrl.kp.SetValue(
+     % fltCtrl.elevCtrl.kp.Value
     end
     fltCtrl.rudderGain.setValue(0,'')
     if simScenario == 1.1
@@ -157,7 +200,7 @@ for ii =1:numel(flwSpd)
         fltCtrl.setElevatorReelInDef(0,'deg')
     end
     fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
-    if simScenario >= 3 && simScenario < 4
+    if simScenario >= 2 && simScenario < 4
         fltCtrl.LaRelevationSP.setValue(elevation,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
         fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
         fltCtrl.pitchAngleMax.upperLimit.setValue(45,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-45,'');
@@ -168,24 +211,35 @@ for ii =1:numel(flwSpd)
         fltCtrl.pitchConst.setValue(desPitch(kk),'deg');
         fltCtrl.pitchCtrl.setValue(ctrlPitch,'');
         fltCtrl.initCtrlVec;
-        fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');
-        fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
+%         fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');
+%         fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
+%         fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
+%         fltCtrl.alrnCmd.tau.setValue(.1,'s');
+        fltCtrl.alrnCmd.kp.setValue(20,'(deg)/(rad)');
+        fltCtrl.alrnCmd.ki.setValue(1,'(deg)/(rad*s)');
+        fltCtrl.alrnCmd.kd.setValue(5,'(deg)/(rad/s)');
         fltCtrl.alrnCmd.tau.setValue(.1,'s');
-        fltCtrl.rudderCmd.kp.setValue(1000,'(deg)/(rad)');
-        fltCtrl.rudderCmd.ki.setValue(100,'(deg)/(rad*s)');
-        fltCtrl.rudderCmd.kd.setValue(1000,'(deg)/(rad/s)');
-        fltCtrl.rudderCmd.tau.setValue(.1,'s');
+%         fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)');
+%         fltCtrl.rudderCmd.ki.setValue(00,'(deg)/(rad*s)');
+%         fltCtrl.rudderCmd.kd.setValue(000,'(deg)/(rad/s)');
+%         fltCtrl.rudderCmd.tau.setValue(.1,'s');
+        fltCtrl.rudderCmd.kp.setValue(30,'(deg)/(rad)');
+        fltCtrl.rudderCmd.ki.setValue(.25,'(deg)/(rad*s)');
+        fltCtrl.rudderCmd.kd.setValue(20,'(deg)/(rad/s)');
+        fltCtrl.rudderCmd.tau.setValue(1,'s');
         fltCtrl.yawSP.kp.setValue(3,'(deg)/(deg)');
-        fltCtrl.yawSP.ki.setValue(0.05,'(deg)/(deg*s)');
+        fltCtrl.yawSP.ki.setValue(.25,'(deg)/(deg*s)');
         fltCtrl.yawSP.kd.setValue(0,'(deg)/(deg/s)');
-        fltCtrl.yawSP.tau.setValue(.01,'s');
+        fltCtrl.yawSP.tau.setValue(0.01,'s');
         fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)')
 %         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');
 %         fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.setNomSpoolSpeed(0,'m/s');
     end
-           
+    if simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
+%         fltCtrl.rollMoment.kp.setValue(21,'(N*m)/(rad)');
+%         fltCtrl.rollMoment.kd.setValue(191,'(N*m)/(rad/s)');
+    end
 %     fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)'); fltCtrl.rollMoment.kd.setValue(0,'(N*m)/(rad/s)'); 
     thr.tether1.dragEnable.setValue(1,'');
     % vhcl.rBridle_LE.setValue([0,0,0]','m');
@@ -355,7 +409,8 @@ end
 if animate == 1
 vhcl.animateSim(tsc,2,...
     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-    'ZoomIn',1==0,'SaveGIF',true,'GifFile','animation.gif');
+    'ZoomInMove',true,'SaveGIF',false,'GifFile','animation.gif',...
+    'View',[0,90]);
 end
 
 % A = linsys.ss.A
