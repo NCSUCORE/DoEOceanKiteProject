@@ -27,6 +27,7 @@ classdef Manta < handle
             p = inputParser;
             addRequired(p,'mnthIndx',@(x) mod(x,1)==0);
             addOptional(p,'ForceRecompile',false,@(x) islogical(x));
+            addOptional(p,'DataSel',1,@(x) isnumeric(x));
             parse(p,mnthIndx,varargin{:})
             % Get base path to where the model is stored on your computer
             basePath = fileparts(which('OCTModel'));
@@ -41,12 +42,19 @@ classdef Manta < handle
             % Build two-character string for the month and day numbers
             mnthString = sprintf('%02d',p.Results.mnthIndx);
             % Get the name of the .mat file that should contain this data
-            fName = fullfile(dataPath,['NewTS_FlowData_2017_',mnthString '.mat']);
+            if p.Results.DataSel == 1
+                fName = fullfile(dataPath,['NewTS_FlowData_2017_',mnthString '.mat']);
+            else
+                fName = fullfile(dataPath,['TS_FlowData_2017_',mnthString '.mat']);
+            end
             % If it doesn't exist, then attempt to build it
             if (~isfile(fName)) || p.Results.ForceRecompile
                 % Check if the folder for that data exists
-%                 folder = folders(contains({folders.name},['2017' mnthString '_hourly']));
-                folder = folders(contains({folders.name},[mnthString '-2017']));
+                if p.Results.DataSel == 1
+                    folder = folders(contains({folders.name},[mnthString '-2017']));
+                else
+                    folder = folders(contains({folders.name},['2017' mnthString '_hourly']));
+                end
                 if isempty(folder)
                     error('Unknown month')
                 elseif numel(folder)>1
@@ -473,29 +481,47 @@ classdef Manta < handle
             p = inputParser;
             addParameter(p,'BinSize',0.1,@(x) x>0)
             addParameter(p,'NumOfColorBands',10,@(x) mod(x,1)==0);
+            addOptional(p,'zIdx',23:25,@(x) isnumeric(x));
+            addOptional(p,'newFig',true,@(x) islogical(x));
+            addOptional(p,'title',true,@(x) islogical(x));
             parse(p,varargin{:})
             % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
             % Find water column with greatest avg flow velocity 
             [xIdx,yIdx] = obj.colOpt;
             % Get velocities at the grid points of interest 
-            zIdx = [15 20 22 23 24 25];
+            zIdx = p.Results.zIdx;
             colVels = squeeze(flowSpeeds(xIdx,yIdx,zIdx,:));
             % Plot Histograms
-            h = figure();
-            for ii = 1:6
-                subplot(3,2,ii);
+            if p.Results.newFig
+                h = figure();
+            else
+                h = gca;
+            end
+            for ii = 1:numel(zIdx)
+                if p.Results.newFig
+                    subplot(numel(zIdx),1,ii);
+                end
                 hold on;    grid on 
-                r = histogram(colVels(ii,:),20,'Normalization','probability');
+                if numel(zIdx) == 1
+                    r = histogram(colVels(:),20,'Normalization','probability');
+                    Vavg = mean(colVels(:));
+                else
+                    r = histogram(colVels(ii,:),20,'Normalization','probability');
+                    Vavg = mean(colVels(ii,:));
+                end
                 set(r,'FaceColor','b'); set(r,'EdgeColor','b')
                 set(gca,'FontSize',12)
                 YL = get(gca,'YLim');
-                plot([mean(colVels(ii,:)) mean(colVels(ii,:))],[0 50],'r-','linewidth',2)
-                set(gca,'YLim',YL)
-                if ii >= 5
+                plot([Vavg Vavg],[0 50],'r-','linewidth',2)
+                set(gca,'YLim',[0 0.5]); set(gca,'XLim',[0 0.5]); set(gca,'XTick',[0:.1:.5])
+                ylabel('Probability')
+                if ii >= numel(zIdx)
                     xlabel('Velocity [m/s]');
                 end
-                title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+                if p.Results.title
+                    title(['Depth = ',num2str(-obj.zGridPoints.Value(zIdx(ii))),' m'])
+                end
             end
         end
         function h = timeScale(obj,varargin)
@@ -636,6 +662,7 @@ classdef Manta < handle
             p = inputParser;
             addParameter(p,'xLim',[0 inf],@isnumeric);
             addParameter(p,'yLim',[0 1],@isnumeric);
+            addParameter(p,'mon',1,@isnumeric);
             parse(p,varargin{:})
              % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
@@ -680,15 +707,8 @@ classdef Manta < handle
             plot([p75 p75],[0 1],'r-')
             plot([p95 p95],[0 1],'r-')
             xlabel('Power [kW]');  ylabel('Probability');  xlim(p.Results.xLim);  ylim(p.Results.yLim);
-            if obj.month.Value == 1
-                mon = 'Jan';
-            elseif obj.month.Value == 4
-                mon = 'Apr';
-            elseif obj.month.Value == 7
-                mon = 'Jul';
-            elseif obj.month.Value == 10
-                mon = 'Oct';
-            end
+            Title = {'January','February','March','April','May','June','July','August','September','October','November','December'};
+            mon = Title{p.Results.mon};
             title(sprintf('%s: Opt. Depth = %d m',mon,Dopt));
         end
         function h = powPDFoptDepth(obj,Odepth,vC,pC,aC,varargin)
@@ -742,16 +762,16 @@ classdef Manta < handle
             plot([p75 p75],[0 1],'r-')
             plot([p95 p95],[0 1],'r-')
             xlabel('Power [kW]');  ylabel('Probability');  xlim(p.Results.xLim);  ylim(p.Results.yLim);
-            if obj.month.Value == 1
-                mon = 'January';
-            elseif obj.month.Value == 4
-                mon = 'April';
-            elseif obj.month.Value == 7
-                mon = 'July';
-            elseif obj.month.Value == 10
-                mon = 'October';
-            end
-            title(sprintf('%s',mon));
+%             if obj.month.Value == 1
+%                 mon = 'January';
+%             elseif obj.month.Value == 4
+%                 mon = 'April';
+%             elseif obj.month.Value == 7
+%                 mon = 'July';
+%             elseif obj.month.Value == 10
+%                 mon = 'October';
+%             end
+%             title(sprintf('%s',mon));
 
         end
     end

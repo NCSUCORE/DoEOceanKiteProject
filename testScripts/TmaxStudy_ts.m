@@ -6,7 +6,7 @@ simScenario = 1.0;
 %%  Set Test Parameters
 fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataNew.mat']);
 saveSim = 1;                                                %   Flag to save results
-Tmax = 20;
+Tmax = 38;
 thrLength = 200:50:600;                                     %   m - Initial tether length
 flwSpd = 0.1:0.05:0.5;                                      %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
