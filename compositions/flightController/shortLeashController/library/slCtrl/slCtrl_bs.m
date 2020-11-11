@@ -29,24 +29,29 @@ fltCtrl.pitchSPkpInt.setValue(.5263,'');
 fltCtrl.pitchSPkiSlope.setValue(7.895e-5,'');
 fltCtrl.pitchSPkiInt.setValue(.008421,'');
 
-fltCtrl.yawSP.kp.setValue(10,'(deg)/(deg)');
-fltCtrl.yawSP.ki.setValue(.01,'(deg)/(deg*s)');
-fltCtrl.yawSP.kd.setValue(0,'(deg)/(deg/s)');
-fltCtrl.yawSP.tau.setValue(.01,'s');
-fltCtrl.yawSPkpSlope.setValue(.02368,'');
-fltCtrl.yawSPkpInt.setValue(.5263,'');
-fltCtrl.yawSPkiSlope.setValue(7.895e-5,'');
-fltCtrl.yawSPkiInt.setValue(.008421,'');
+fltCtrl.rollSP.kp.setValue(3,'(deg)/(deg)');
+fltCtrl.rollSP.ki.setValue(.05,'(deg)/(deg*s)');
+fltCtrl.rollSP.kd.setValue(6,'(deg)/(deg/s)');
+fltCtrl.rollSP.tau.setValue(0.1,'s');
+fltCtrl.rollSPkpSlope.setValue(.02368,'');
+fltCtrl.rollSPkpInt.setValue(.5263,'');
+fltCtrl.rollSPkiSlope.setValue(7.895e-5,'');
+fltCtrl.rollSPkiInt.setValue(.008421,'');
 
 fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');
 fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');
 fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCmd.tau.setValue(.01,'s');
 
-fltCtrl.rudderCmd.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.rudderCmd.kp.setValue(10,'(deg)/(rad)');
 fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
-fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
-fltCtrl.rudderCmd.tau.setValue(.01,'s');
+fltCtrl.rudderCmd.kd.setValue(1,'(deg)/(rad/s)');
+fltCtrl.rudderCmd.tau.setValue(.1,'s');
+
+fltCtrl.alrnCmd.kp.setValue(5,'(deg)/(rad)');
+fltCtrl.alrnCmd.ki.setValue(.08,'(deg)/(rad*s)');
+fltCtrl.alrnCmd.kd.setValue(5,'(deg)/(rad/s)');
+fltCtrl.alrnCmd.tau.setValue(1,'s');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
@@ -80,5 +85,5 @@ fltCtrl.setShortLeashLength(20,'m')
 fltCtrl.LaRelevationSP.setValue(45,'deg');
 fltCtrl.LaRelevationSPErr.setValue(1,'deg');
 %% Save
-saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
+saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER')
 save(saveFile,'SPOOLINGCONTROLLER','-append')

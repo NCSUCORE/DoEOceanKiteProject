@@ -43,4 +43,13 @@ gndStn.thrAttach.posVec.Value = [0 0 0]
 gndStn.thrAttach.posVec.Unit = 'm'
 gndStn.thrAttach.posVec.NoScale = false
 gndStn.thrAttach.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
-gndStn.initVelVecBdy is non-string and non-numeric and takes up 1.9300e+02 bytes
+gndStn.pathVar.Value = 1.0000e+00
+gndStn.pathVar.Unit is unitless or has no unit specified
+gndStn.pathVar.NoScale = false
+gndStn.initSpiralRad.Value = 1.5000e+02
+gndStn.initSpiralRad.Unit = 'm'
+gndStn.initSpiralRad.NoScale = false
+gndStn.spiralWidth.Value = 1.0000e+02
+gndStn.spiralWidth.Unit = 'm'
+gndStn.spiralWidth.NoScale = false
+gndStn.initVelVecBdy is non-string and non-numeric and takes up 1.1000e+01 bytes

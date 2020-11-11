@@ -93,6 +93,8 @@ addParameter(p,'ScrollPlots',{}, @(x) isa(x,'cell') && all(isa([x{:}],'timeserie
 addParameter(p,'Bedrock',true,@islogical)
 % Plot bedrock or not
 addParameter(p,'LineAngleEst',false,@islogical)
+% Plot Flow Velocity Vector
+addParameter(p,'FlowVec',false,@islogical)
 
 % ---Parse the output---
 parse(p,tsc,timeStep,varargin{:})
