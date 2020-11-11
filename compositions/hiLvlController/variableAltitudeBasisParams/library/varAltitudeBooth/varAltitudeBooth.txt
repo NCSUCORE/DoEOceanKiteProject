@@ -1,0 +1,6 @@
+hiLvlCtrl.basisParams.Value = [0.3491 0.7999 0.523598775598299 0 400]
+hiLvlCtrl.basisParams.Unit = '[rad rad rad rad m]'
+hiLvlCtrl.basisParams.NoScale = false
+hiLvlCtrl.altitude.Value = 2.0000e+02
+hiLvlCtrl.altitude.Unit = 'm'
+hiLvlCtrl.altitude.NoScale = false

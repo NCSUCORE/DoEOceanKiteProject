@@ -3,13 +3,13 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.0;
+simScenario = 1.3;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .3;                                                %   m/s - Flow speed
+flwSpd = .5;                                                %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
-Tmax = 38;                                                  %   kN - Max tether tension 
+Tmax = 30;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -44,7 +44,7 @@ elseif simScenario == 1.1 || simScenario == 3.1 || simScenario == 4.1
 elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
     loadComponent('Manta2RotXFoil_AR9_b10');                            %   AR = 9; 10m span
 elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
-    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
+    loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
@@ -69,7 +69,14 @@ else
     ENVIRONMENT = 'environmentManta2Rot';                   %   Two turbines
 end
 %%  Set basis parameters for high level controller
-loadComponent('constBoothLem');                             %   High level controller
+if simScenario ~= 1.3
+    loadComponent('constBoothLem');                             %   High level controller
+else
+    loadComponent('varAltitudeBooth');                             %   High level controller
+    omega = 0.005;
+    fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
+    maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
+end
 hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
 %%  Vehicle Properties
@@ -79,24 +86,17 @@ if simScenario >= 3
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
 %%  Tethers Properties
-load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherData.mat')
+load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherDataNew.mat')
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-if Tmax == 20
-   thr.tether1.youngsMod.setValue(57e9,'Pa');
-   thr.tether1.density.setValue(3570,'kg/m^3');
-   thr.tether1.setDiameter(0.0072,'m');
-elseif ~(simScenario >= 1.0 && simScenario <= 1.9)...
-       && ~(simScenario >= 3.0 && simScenario <= 3.9)
-   thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
-   thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
-   thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
-end
-thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
+thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
+thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
+thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
+% thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -157,26 +157,24 @@ if saveSim == 1
     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Plot Results
-if simScenario < 3
-    lap = max(tsc.lapNumS.Data)-1;
-    if max(tsc.lapNumS.Data) < 2
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    end
-else
-    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-end
-% FmagHydro = squeeze(sqrt(sum(tsc.FFluidBdy.Data.^2,1)));
-% FmagBuoy = squeeze(sqrt(sum(tsc.FBuoyBdy.Data.^2,1)));
-% FmagGrav = squeeze(sqrt(sum(tsc.FGravBdy.Data.^2,1)));
-% figure; subplot(3,1,1); hold on; grid on;
-% plot(tsc.tanRoll.Time,squeeze(tsc.tanRoll.Data)*180/pi,'b-'); xlabel('Time [s]'); ylabel('Tan Roll [deg]');
-% subplot(3,1,2); hold on; grid on;
-% plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
-% subplot(3,1,3); hold on; grid on;
-% plot(tsc.FFluidBdy.Time,FmagHydro./(FmagBuoy-FmagGrav),'b-')
-% xlabel('Time [s]'); ylabel('$F_\mathrm{hydro}/(F_\mathrm{buoy}-F_\mathrm{grav})$');
+% if simScenario < 3
+%     lap = max(tsc.lapNumS.Data)-1;
+%     if max(tsc.lapNumS.Data) < 2
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     else
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     end
+% else
+%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+% end
+
+figure; subplot(3,1,1); hold on; grid on;
+plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
+subplot(3,1,2); hold on; grid on;
+plot(tsc.tetherLengths.Time,squeeze(tsc.tetherLengths.Data),'b-'); xlabel('Time [s]'); ylabel('Tether Length [m]');
+plot(tsc.positionVec.Time,squeeze(sqrt(sum(tsc.positionVec.Data.^2,1))),'r--'); legend('At Winch','Kite$-$Glider Pos')
+subplot(3,1,3); hold on; grid on;
+plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
