@@ -774,6 +774,49 @@ classdef Manta < handle
 %             title(sprintf('%s',mon));
 
         end
+        function Pout = powOptDepth(obj,Odepth,vC,pC,aC,varargin)
+            p = inputParser;
+            addParameter(p,'pct',95,@isnumeric);
+            parse(p,varargin{:})
+             % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Loop through every grid point
+            D = [200 250 300];  
+            vFlows = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
+            Dopt = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
+            Popt = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    for kk = 1:size(flowSpeeds,4)
+                        vD = squeeze(flowSpeeds(ii,jj,23:25,kk));
+                        for ll = 1:3
+                            alt0 = Odepth+obj.zGridPoints.Value(22+ll);
+                            v = vD(ll);
+                            if v < 0.1
+                                Pt(ll) = 0;
+                            elseif v > 0.5
+                                Pt(ll) = max(pC(:,aC==alt0));
+                            else
+                                Pt(ll) = interp1(vC,pC(:,aC==alt0),v,'linear','extrap');
+                            end
+                        end
+                        Dopt(ii,jj,kk) = min(D(max(Pt)==Pt));
+                        vFlows(ii,jj,kk) = min(vD(max(Pt)==Pt));
+                        Popt(ii,jj,kk) = min(Pt(max(Pt)==Pt));
+                    end
+                end
+            end
+            vAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            Pavg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    vAvg(ii,jj) = mean(vFlows(ii,jj,:));
+                    Pavg(ii,jj) = mean(Popt(ii,jj,:));
+                end
+            end
+            
+            Pout = prctile(Pavg,p.Results.pct,'all');
+        end
     end
 end
 
