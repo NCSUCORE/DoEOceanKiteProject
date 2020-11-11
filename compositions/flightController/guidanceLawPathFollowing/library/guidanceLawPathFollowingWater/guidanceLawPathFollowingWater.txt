@@ -62,7 +62,7 @@ fltCtrl.rollGainMultiplierPercentage.Value = 1.0000e+02
 fltCtrl.rollGainMultiplierPercentage.Unit is unitless or has no unit specified
 fltCtrl.rollGainMultiplierPercentage.NoScale = false
 fltCtrl.rollGainMultiplierPercentage.Description = 'Percentage multiplied to desired tangent roll angle which is equal to the ratio of min. distance of kite from the path to path length'
-fltCtrl.maxForwardLookupRatio.Value = 4.0000e-02
+fltCtrl.maxForwardLookupRatio.Value = 2.5000e-02
 fltCtrl.maxForwardLookupRatio.Unit is unitless or has no unit specified
 fltCtrl.maxForwardLookupRatio.NoScale = false
 fltCtrl.maxForwardLookupRatio.Description = 'Max forward lookup distance as a ratio of path length'

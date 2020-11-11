@@ -10,13 +10,13 @@ cd(fileparts(mfilename('fullpath')));
 simParams = SIM.simParams;
 simParams.setDuration(40*60,'s');
 dynamicCalc = '';
-flowSpeed = 1;
-thrLength = 150;
+flowSpeed = 0.5;
+thrLength = 200;
 % rad - Mean elevation angle
 el = 20*pi/180;    
 % rad - Path width/height
 w = 40*pi/180;          
-h = 10*pi/180;  
+h = 8*pi/180;  
 % Path basis parameters
 [a,b] = boothParamConversion(w,h);      
 
@@ -105,7 +105,7 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg');
 fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
-keyboard
+% keyboard
 simWithMonitor('OCTModel');
 
 tscOld = signalcontainer(logsout);
@@ -174,6 +174,13 @@ hold on;
 plot(tscNew.tanRoll.Time,tscNew.turbPow.Data(:)./1e3,'r-');
 ylabel('Power [kW]');
 
+fn = fn+1;
+figure(fn);
+plot(tscOld.vWindFuseGnd.Time,squeeze(tscOld.vWindFuseGnd.Data(1,1,:)),'b-');
+hold on;
+plot(tscNew.vWindFuseGnd.Time,squeeze(tscNew.vWindFuseGnd.Data(1,1,:)),'r-');
+ylabel('Flow speed at kite [m/s]');
+
 allAxes = findall(0,'type','axes');
 allPlots = findall(0,'type','Line');
 xlabel(allAxes,'Time [sec]');
@@ -236,20 +243,20 @@ GG.saveGifs = true;
 GG.timeStep = 0.5;
 GG.gifTimeStep = 0.1;
 
-% vhcl.animateSim(tscOld,GG.timeStep,...
-%     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
-%     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','oldGif.gif');
-% 
-% oldAx = gca;
-% 
-% try
-% vhcl.animateSim(tscNew,GG.timeStep,...
-%     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',true,...
-%     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif',...
-%     'XLim',oldAx.XLim,'YLim',oldAx.YLim,'ZLim',oldAx.ZLim);
-% catch
-%     vhcl.animateSim(tscNew,GG.timeStep,...
-%     'PathFunc',fltCtrl.fcnName.Value,'pause',true,'plotTarget',true,...
-%     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif');
-% end
+vhcl.animateSim(tscOld,GG.timeStep,...
+    'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
+    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','oldGif.gif');
+
+oldAx = gca;
+
+try
+vhcl.animateSim(tscNew,GG.timeStep,...
+    'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',true,...
+    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif',...
+    'XLim',oldAx.XLim,'YLim',oldAx.YLim,'ZLim',oldAx.ZLim);
+catch
+    vhcl.animateSim(tscNew,GG.timeStep,...
+    'PathFunc',fltCtrl.fcnName.Value,'pause',true,'plotTarget',true,...
+    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif');
+end
 
