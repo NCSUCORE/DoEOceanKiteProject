@@ -8,12 +8,12 @@ set(groot, 'defaultLegendInterpreter','latex');
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(180,'s');
+simParams.setDuration(40*60,'s');
 dynamicCalc = '';
 flowSpeed = 1;
 thrLength = 150;
 % rad - Mean elevation angle
-el = 5*pi/180;    
+el = 20*pi/180;    
 % rad - Path width/height
 w = 40*pi/180;          
 h = 10*pi/180;  
@@ -43,7 +43,9 @@ loadComponent('ayazOptVhcl');
 
 
 % Environment
-loadComponent('ConstXYZT');
+loadComponent('ayazSynFlow');
+% loadComponent('constXYZT');
+% env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
 
 cIn = maneuverabilityAdvanced(vhcl);
 cIn.meanElevationInRadians = el;
@@ -57,7 +59,7 @@ figure(10);
 pR = cIn.plotPathRadiusOfCurvature;
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([flowSpeed 0 0],'m/s')
+% env.water.setflowVec([flowSpeed 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % Lemniscate of Booth
@@ -74,7 +76,7 @@ vhcl.setICsOnPath(...
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
-    (11/2)*norm(env.water.flowVec.Value))   % Initial speed
+    (11/2)*norm(flowSpeed))   % Initial speed
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -88,11 +90,10 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
 %% Winches IC's and dependant properties
-wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[flowSpeed;0;0]);
 
 
 %% Run Simulation
-% keyboard
 
 loadComponent('pathFollowingCtrlForILC');
 fltCtrl.setFcnName(PATHGEOMETRY,'');
@@ -104,6 +105,7 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg');
 fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
+keyboard
 simWithMonitor('OCTModel');
 
 tscOld = signalcontainer(logsout);
