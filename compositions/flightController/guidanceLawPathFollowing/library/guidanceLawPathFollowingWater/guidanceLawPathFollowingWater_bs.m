@@ -5,7 +5,7 @@ fltCtrl = CTR.guideLawPthFlw;
 
 % guidance law controller parameters
 fltCtrl.rollGainMultiplierPercentage.setValue(100,'');
-fltCtrl.maxForwardLookupRatio.setValue(1/25,'');
+fltCtrl.maxForwardLookupRatio.setValue(1/40,'');
 fltCtrl.minForwardLookupRatio.setValue(0,'');
 fltCtrl.maxBank.upperLimit.setValue(30*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-30*pi/180,'');
