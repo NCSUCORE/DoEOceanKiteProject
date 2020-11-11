@@ -6,10 +6,10 @@ Simulink.sdi.clear
 simScenario = 1.0;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
-thrLength = 200;                                            %   m - Initial tether length
+thrLength = 400;                                            %   m - Initial tether length
 flwSpd = .3;                                                %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
-Tmax = 20;                                                  %   kN - Max tether tension 
+Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -96,6 +96,7 @@ elseif ~(simScenario >= 1.0 && simScenario <= 1.9)...
    thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
    thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
 end
+thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -156,16 +157,16 @@ if saveSim == 1
     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Plot Results
-% if simScenario < 3
-%     lap = max(tsc.lapNumS.Data)-1;
-%     if max(tsc.lapNumS.Data) < 2
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-%     else
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-%     end
-% else
-%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-% end
+if simScenario < 3
+    lap = max(tsc.lapNumS.Data)-1;
+    if max(tsc.lapNumS.Data) < 2
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+    else
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+    end
+else
+    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+end
 % FmagHydro = squeeze(sqrt(sum(tsc.FFluidBdy.Data.^2,1)));
 % FmagBuoy = squeeze(sqrt(sum(tsc.FBuoyBdy.Data.^2,1)));
 % FmagGrav = squeeze(sqrt(sum(tsc.FGravBdy.Data.^2,1)));

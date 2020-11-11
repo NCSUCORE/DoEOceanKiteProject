@@ -1,4 +1,4 @@
-fltCtrl.tanRoll.kp.Value = 1.0000e+00
+fltCtrl.tanRoll.kp.Value = 0.0000e+00
 fltCtrl.tanRoll.kp.Unit = '(deg)/(deg)'
 fltCtrl.tanRoll.kp.NoScale = false
 fltCtrl.tanRoll.kp.Description = 'Proportional gain'
@@ -10,7 +10,7 @@ fltCtrl.tanRoll.kd.Value = 0.0000e+00
 fltCtrl.tanRoll.kd.Unit = '(deg)/(deg/s)'
 fltCtrl.tanRoll.kd.NoScale = false
 fltCtrl.tanRoll.kd.Description = 'Derivative gain'
-fltCtrl.tanRoll.tau.Value = 1.0000e-03
+fltCtrl.tanRoll.tau.Value = 1.0000e+00
 fltCtrl.tanRoll.tau.Unit = 's'
 fltCtrl.tanRoll.tau.NoScale = false
 fltCtrl.tanRoll.tau.Description = 'Time Constant'
@@ -46,22 +46,30 @@ fltCtrl.rollMoment.tau.Value = 1.0000e-03
 fltCtrl.rollMoment.tau.Unit = 's'
 fltCtrl.rollMoment.tau.NoScale = false
 fltCtrl.rollMoment.tau.Description = 'Time Constant'
-fltCtrl.maxBank.upperLimit.Value = 3.4907e-01
+fltCtrl.maxBank.upperLimit.Value = 5.2360e-01
 fltCtrl.maxBank.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.upperLimit.NoScale = false
-fltCtrl.maxBank.lowerLimit.Value = -3.4907e-01
+fltCtrl.maxBank.lowerLimit.Value = -5.2360e-01
 fltCtrl.maxBank.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.lowerLimit.NoScale = false
-fltCtrl.controlSigMax.upperLimit.Value = 3.0000e+01
+fltCtrl.controlSigMax.upperLimit.Value = 1.5000e+01
 fltCtrl.controlSigMax.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.upperLimit.NoScale = false
-fltCtrl.controlSigMax.lowerLimit.Value = -3.0000e+01
+fltCtrl.controlSigMax.lowerLimit.Value = -1.5000e+01
 fltCtrl.controlSigMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.lowerLimit.NoScale = false
-fltCtrl.targetForwardLength.Value = 5.0000e+00
-fltCtrl.targetForwardLength.Unit = 'm'
-fltCtrl.targetForwardLength.NoScale = false
-fltCtrl.targetForwardLength.Description = 'Length ahead of current location on path used to set target location'
+fltCtrl.rollGainMultiplierPercentage.Value = 1.0000e+02
+fltCtrl.rollGainMultiplierPercentage.Unit is unitless or has no unit specified
+fltCtrl.rollGainMultiplierPercentage.NoScale = false
+fltCtrl.rollGainMultiplierPercentage.Description = 'Percentage multiplied to desired tangent roll angle which is equal to the ratio of min. distance of kite from the path to path length'
+fltCtrl.maxForwardLookupRatio.Value = 4.0000e-02
+fltCtrl.maxForwardLookupRatio.Unit is unitless or has no unit specified
+fltCtrl.maxForwardLookupRatio.NoScale = false
+fltCtrl.maxForwardLookupRatio.Description = 'Max forward lookup distance as a ratio of path length'
+fltCtrl.minForwardLookupRatio.Value = 0.0000e+00
+fltCtrl.minForwardLookupRatio.Unit is unitless or has no unit specified
+fltCtrl.minForwardLookupRatio.NoScale = false
+fltCtrl.minForwardLookupRatio.Description = 'Min forward lookup distance as a ratio of path length'
 fltCtrl.winchSpeedIn.Unit = 'm/s'
 fltCtrl.winchSpeedIn.NoScale = false
 fltCtrl.winchSpeedIn.Description = 'Max tether spool in speed.'
@@ -71,18 +79,15 @@ fltCtrl.winchSpeedOut.Description = 'Max tether spool out speed.'
 fltCtrl.ctrlAllocMat.Unit = '(deg)/(m^3)'
 fltCtrl.ctrlAllocMat.NoScale = false
 fltCtrl.ctrlAllocMat.Description = 'Control allocation matrix for control surfaces'
-fltCtrl.searchSize.Value = 5.0000e-01
 fltCtrl.searchSize.Unit is unitless or has no unit specified
 fltCtrl.searchSize.NoScale = true
 fltCtrl.searchSize.Description = 'Range of normalized path variable to search'
 fltCtrl.traditionalBool.Unit is unitless or has no unit specified
 fltCtrl.traditionalBool.NoScale = true
 fltCtrl.traditionalBool.Description = 'Switch for inter vs intra cycle spooling.  Should be phased out in favor of variant subsystem'
-fltCtrl.minR.Value = 1.0000e+02
 fltCtrl.minR.Unit = 'm'
 fltCtrl.minR.NoScale = false
 fltCtrl.minR.Description = 'Minimum radius for spooling switching'
-fltCtrl.perpErrorVal.Value = 1.0472e-01
 fltCtrl.perpErrorVal.Unit = 'rad'
 fltCtrl.perpErrorVal.NoScale = false
 fltCtrl.perpErrorVal.Description = 'Central angle at which we saturate the desired velocity to the tangent vector'
@@ -97,7 +102,6 @@ fltCtrl.elevatorReelInDef.Value = 0.0000e+00
 fltCtrl.elevatorReelInDef.Unit = 'deg'
 fltCtrl.elevatorReelInDef.NoScale = false
 fltCtrl.elevatorReelInDef.Description = 'Deflection angle of elevator used during spool in'
-fltCtrl.maxR.Value = 2.0000e+02
 fltCtrl.maxR.Unit = 'm'
 fltCtrl.maxR.NoScale = false
 fltCtrl.maxR.Description = 'Maximum radius for spooling switching'
