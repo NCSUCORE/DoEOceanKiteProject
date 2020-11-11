@@ -4,15 +4,15 @@ clear;clc;%close all
 %%  Select sim scenario
 simScenario = 1.0;
 %%  Set Test Parameters
-fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');
-load([fpath2 'tetherDataNew.mat'])
+fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataNew.mat']);
 saveSim = 1;                                                %   Flag to save results
-Tmax = 20;
+Tmax = 38;
 thrLength = 200:50:600;                                     %   m - Initial tether length
 flwSpd = 0.1:0.05:0.5;                                      %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
+tic
 for ll = 1:numel(Tmax)
     for kk = 1:numel(flwSpd)
         for ii = 1:numel(thrLength)
@@ -93,7 +93,7 @@ for ll = 1:numel(Tmax)
                 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
                 fltCtrl.rudderGain.setValue(0,'')
                 thr.tether1.dragEnable.setValue(1,'');
-                fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.AoASP.setValue(0,'');
+                fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.AoASP.setValue(2,'');
                 fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
                 fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax(ll),'kN');
                 fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
@@ -135,6 +135,7 @@ for ll = 1:numel(Tmax)
     save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
         'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','ii','jj','ll','kk')
 end
+toc
 %%
 % filename1 = sprintf('Tmax_Study_AR8b8.mat');
 % fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
