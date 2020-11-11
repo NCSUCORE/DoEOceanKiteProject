@@ -3,7 +3,7 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.3;
+simScenario = 1.0;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
@@ -168,13 +168,13 @@ end
 %     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 % end
 
-figure; subplot(3,1,1); hold on; grid on;
-plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
-subplot(3,1,2); hold on; grid on;
-plot(tsc.tetherLengths.Time,squeeze(tsc.tetherLengths.Data),'b-'); xlabel('Time [s]'); ylabel('Tether Length [m]');
-plot(tsc.positionVec.Time,squeeze(sqrt(sum(tsc.positionVec.Data.^2,1))),'r--'); legend('At Winch','Kite$-$Glider Pos')
-subplot(3,1,3); hold on; grid on;
-plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
+% figure; subplot(3,1,1); hold on; grid on;
+% plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
+% subplot(3,1,2); hold on; grid on;
+% plot(tsc.tetherLengths.Time,squeeze(tsc.tetherLengths.Data),'b-'); xlabel('Time [s]'); ylabel('Tether Length [m]');
+% plot(tsc.positionVec.Time,squeeze(sqrt(sum(tsc.positionVec.Data.^2,1))),'r--'); legend('At Winch','Kite$-$Glider Pos')
+% subplot(3,1,3); hold on; grid on;
+% plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
 %     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
