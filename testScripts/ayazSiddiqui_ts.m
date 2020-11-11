@@ -8,7 +8,7 @@ set(groot, 'defaultLegendInterpreter','latex');
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(40*60,'s');
+simParams.setDuration(4*60,'s');
 dynamicCalc = '';
 flowSpeed = 0.5;
 thrLength = 200;
