@@ -18,6 +18,9 @@ classdef prescribedGndStation001 < dynamicprops
         velVecTrajectory
         angVelTrajectory
         thrAttach
+        pathVar
+        initSpiralRad
+        spiralWidth
     end
     
     properties (Dependent)
@@ -35,6 +38,9 @@ classdef prescribedGndStation001 < dynamicprops
             obj.dampCoeff                   = SIM.parameter('Unit','(N*m)/(rad/s)');
             obj.eulerAngVec                 = SIM.parameter('Unit','rad');
             obj.freeSpnEnbl                 = SIM.parameter('NoScale',true);
+            obj.pathVar                     = SIM.parameter('Unit','');
+            obj.initSpiralRad               = SIM.parameter('Unit','m');
+            obj.spiralWidth                 = SIM.parameter('Unit','m');
             
             % Initial conditions
             obj.initPosVecGnd               = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
@@ -49,7 +55,15 @@ classdef prescribedGndStation001 < dynamicprops
         end
         
         % Setters
-        
+        function setSpiralWidth(obj,val,unit)
+            obj.spiralWidth.setValue(val,unit);
+        end
+        function setInitSpiralRad(obj,val,unit)
+            obj.initSpiralRad.setValue(val,unit);
+        end
+        function setPathVar(obj,val,unit)
+            obj.pathVar.setValue(val,unit);
+        end
         function setInitPosVecGnd(obj,val,unit)
             obj.initPosVecGnd.setValue(val,unit);
         end

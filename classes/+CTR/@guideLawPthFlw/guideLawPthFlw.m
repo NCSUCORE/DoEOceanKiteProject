@@ -10,8 +10,10 @@ classdef guideLawPthFlw < handle
         % Saturations
         maxBank
         controlSigMax
-        % target length ahead of path
-        targetForwardLength
+        % guidance law controls
+        rollGainMultiplierPercentage
+        maxForwardLookupRatio
+        minForwardLookupRatio
         % SIM.parameters
         winchSpeedIn
         winchSpeedOut
@@ -55,8 +57,10 @@ classdef guideLawPthFlw < handle
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable');
             obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
             obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
-            
-            obj.targetForwardLength = SIM.parameter('Value',[],'Unit','m','Description','Length ahead of current location on path used to set target location');
+            % guidance law controls
+            obj.rollGainMultiplierPercentage = SIM.parameter('Value',100,'Unit','','Description','Percentage multiplied to desired tangent roll angle which is equal to the ratio of min. distance of kite from the path to path length');
+            obj.maxForwardLookupRatio = SIM.parameter('Value',1/25,'Unit','','Description','Max forward lookup distance as a ratio of path length');
+            obj.minForwardLookupRatio = SIM.parameter('Value',0,'Unit','','Description','Min forward lookup distance as a ratio of path length');
         end
         
         function setWinchSpeedIn(obj,val,unit)
@@ -98,9 +102,7 @@ classdef guideLawPthFlw < handle
         function setFcnName(obj,val,unit)
             obj.fcnName.setValue(val,unit);
         end
-        function setTargetForwardLength(obj,val,unit)
-            obj.targetForwardLength.setValue(val,unit);
-        end
+
         
         
         function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec)
