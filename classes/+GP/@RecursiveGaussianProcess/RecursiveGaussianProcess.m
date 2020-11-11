@@ -44,7 +44,7 @@ classdef RecursiveGaussianProcess < GP.GaussianProcess
             % number of design/training points
             noTP = size(xB,2);
             % calculate mean and covariance at candidate point
-            mXt = obj.meanFunction(xt);
+            mXt = obj.meanFunction(xt,obj.meanFnProps);
             kXtXt = obj.calcSpatialCovariance(xt,xt);
             % calculate covariance of candidate wrt design points
             kXtX = NaN(1,noTP);
@@ -76,7 +76,7 @@ classdef RecursiveGaussianProcess < GP.GaussianProcess
             % number of design/training points
             noTP = size(xB,2);
             % calculate mean and covariance at candidate point
-            mXt = obj.meanFunction(xt);
+            mXt = obj.meanFunction(xt,obj.meanFnProps);
             kXtXt = obj.calcSpatialCovariance(xt,xt);
             % calculate covariance of candidate wrt design points
             kXtX = NaN(1,noTP);

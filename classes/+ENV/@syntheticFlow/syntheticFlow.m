@@ -16,6 +16,7 @@ classdef syntheticFlow
         stdDevSynData
         timeStepSynData
         tFinData
+        meanFnProps
     end
     properties (SetAccess = private)
         gravAccel
@@ -26,7 +27,7 @@ classdef syntheticFlow
             obj.gravAccel = SIM.parameter('Value',9.81,'Unit','m/s^2','NoScale',true);
             obj.spatialCovFn        = 'squaredExponential';
             obj.temporalCovFn       = 'squaredExponential';
-            obj.meanFn              = 'windPowerLaw';
+            obj.meanFn              = 'constantMean';
             obj.spatialCovAmp       = SIM.parameter('Unit','m^2');
             obj.spatialLengthScale  = SIM.parameter('Unit','m');
             obj.temporalLengthScale = SIM.parameter('Unit','s');
@@ -37,6 +38,7 @@ classdef syntheticFlow
             obj.stdDevSynData       = SIM.parameter('Value',0.5,'Unit','m/s','NoScale',false);
             obj.timeStepSynData     = SIM.parameter('Value',1*60,'Unit','s','NoScale',false);
             obj.tFinData            = SIM.parameter('Value',500*60,'Unit','s','NoScale',false);
+            obj.meanFnProps         = SIM.parameter('Unit','','Value',1.5);
         end
     end
     %% other methods
@@ -49,6 +51,7 @@ classdef syntheticFlow
             gp.temporalCovAmp      = 1;
             gp.temporalLengthScale = obj.temporalLengthScale.Value/60;
             gp.noiseVariance       = obj.noiseVariance.Value;
+            gp.meanFnProps         = obj.meanFnProps.Value;
             
             rng(obj.rngSeed.Value);
             [synFlow,synAlt] = gp.generateSyntheticFlowData(...
