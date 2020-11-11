@@ -12,11 +12,11 @@ classdef SLFAndSpoolCtrl < handle
         pitchSPkpInt
         pitchSPkiSlope
         pitchSPkiInt
-        yawSP
-        yawSPkpSlope
-        yawSPkpInt
-        yawSPkiSlope
-        yawSPkiInt
+        rollSP
+        rollSPkpSlope
+        rollSPkpInt
+        rollSPkiSlope
+        rollSPkiInt
         elevCmd
         rudderCmd
         alrnCmd
@@ -71,11 +71,11 @@ classdef SLFAndSpoolCtrl < handle
             obj.pitchSPkpInt        = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
             obj.pitchSPkiSlope      = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
             obj.pitchSPkiInt        = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
-            obj.yawSP               = CTR.FPID('deg','deg');
-            obj.yawSPkpSlope        = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
-            obj.yawSPkpInt          = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
-            obj.yawSPkiSlope        = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
-            obj.yawSPkiInt          = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
+            obj.rollSP               = CTR.FPID('deg','deg');
+            obj.rollSPkpSlope        = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
+            obj.rollSPkpInt          = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
+            obj.rollSPkiSlope        = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
+            obj.rollSPkiInt          = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
             obj.elevCmd             = CTR.FPID('rad','deg');
             obj.rudderCmd           = CTR.FPID('rad','deg');
             obj.alrnCmd             = CTR.FPID('rad','deg');
