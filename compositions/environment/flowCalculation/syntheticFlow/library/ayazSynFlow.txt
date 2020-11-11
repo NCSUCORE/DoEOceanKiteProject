@@ -34,6 +34,9 @@ env.water.timeStepSynData.NoScale = false
 env.water.tFinData.Value = 3.0000e+04
 env.water.tFinData.Unit = 's'
 env.water.tFinData.NoScale = false
+env.water.meanFnProps.Value = 1.5000e+00
+env.water.meanFnProps.Unit is unitless or has no unit specified
+env.water.meanFnProps.NoScale = false
 env.water.gravAccel.Value = 9.8100e+00
 env.water.gravAccel.Unit = 'm/s^2'
 env.water.gravAccel.NoScale = true

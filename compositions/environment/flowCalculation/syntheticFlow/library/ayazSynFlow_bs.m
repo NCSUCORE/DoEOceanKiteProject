@@ -17,6 +17,7 @@ env.water.zGridPoints.setValue(10:10:200,'m');
 env.water.stdDevSynData.setValue(0.5,'m/s');
 env.water.timeStepSynData.setValue(1*60,'s');
 env.water.tFinData.setValue(500*60,'s');
+env.water.meanFnProps.setValue(1.5,'');
 
 % env.waterWave.waveParamMat.setValue(env.waterWave.structAssem,'');
 % FLOWCALCULATION = 'constXYZT_planarWave';
