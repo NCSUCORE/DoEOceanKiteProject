@@ -16,6 +16,9 @@ gndStn.build;
 
 % Set values
 %gndStn.inertia.setValue(1,'kg*m^2');
+gndStn.pathVar.setValue(1,'');
+gndStn.initSpiralRad.setValue(150,'m');
+gndStn.spiralWidth.setValue(100,'m');
 gndStn.initPosVecGnd.setValue([0 0 0],'m');
 gndStn.initEulAng.setValue([0 0 0],'rad');
 %gndStn.velVec.setValue([0 0 0],'m/s');
