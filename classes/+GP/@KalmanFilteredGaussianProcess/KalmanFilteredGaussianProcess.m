@@ -56,6 +56,8 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
                 case 'squaredExponential'
                     val = initializeKFGPForSquaredExponentialKernel(obj);
             end
+            
+            val.meanFnVec = obj.meanFunction(obj.xMeasure,obj.meanFnProps);
         end
         
         % calculate square root of spatial covariance matrix
