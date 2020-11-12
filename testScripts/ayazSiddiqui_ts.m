@@ -8,9 +8,9 @@ set(groot, 'defaultLegendInterpreter','latex');
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(100,'s');
+simParams.setDuration(40*60,'s');
 dynamicCalc = '';
-flowSpeed = 0.5;
+flowSpeed = 1.5;
 thrLength = 200;
 % rad - Mean elevation angle
 el = 20*pi/180;    
@@ -196,10 +196,10 @@ set(allAxes,'FontSize',12);
 xlim(allAxes,[0 tscNew.tanRoll.Time(end)]);
 figNames = {'desTanRoll','speed','pSurrog'};
 
-% for ii = 1:fn
-%     figure(ii);
-%     exportgraphics(gca,[figNames{ii},'.png'],'Resolution',600);
-% end
+for ii = 1:fn
+    figure(ii);
+    exportgraphics(gca,[figNames{ii},'.png'],'Resolution',600);
+end
 
 %%
 if strcmpi(FLIGHTCONTROLLER,'guidanceLawPathFollowing')
@@ -234,7 +234,7 @@ if strcmpi(FLIGHTCONTROLLER,'guidanceLawPathFollowing')
     xlim(sb(:),[0 tData(end)]);
     
 %      xlim(sb.Children(:),[min(tData(lastTwoLaps)) max(tData(lastTwoLaps))]);
-%     exportgraphics(gcf,['newConRes','.png'],'Resolution',600);
+    exportgraphics(gcf,['newConRes','.png'],'Resolution',600);
 
 end
 
