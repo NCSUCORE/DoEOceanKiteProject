@@ -110,7 +110,7 @@ ck_k    = reshape(block.InputPort(2).Data,length(sk_k),[]);
 xSamp   = block.InputPort(3).Data;
 flowVal = block.InputPort(4).Data;
 
-ySamp =  kfgp.meanFunction(xSamp) - flowVal;
+ySamp =  kfgp.meanFunction(xSamp,kfgp.meanFnProps) - flowVal;
 
 [F_t,sigF_t,skp1_kp1,ckp1_kp1] = ...
     kfgp.calcKalmanStateEstimates(sk_k,ck_k,xSamp,ySamp);
@@ -120,10 +120,10 @@ ySamp =  kfgp.meanFunction(xSamp) - flowVal;
 predMeansKFGP = kfgp.initVals.meanFnVec(:) - muKFGP(:);
 postVarsKFGP  = sigKFGP(:);
     
-block.OutputPort(1).Data = predMeansKFGP;
-block.OutputPort(2).Data = postVarsKFGP;
-block.OutputPort(3).Data = skp1_kp1(:);
-block.OutputPort(4).Data = ckp1_kp1(:);
+block.OutputPort(1).Data = real(predMeansKFGP);
+block.OutputPort(2).Data = real(postVarsKFGP);
+block.OutputPort(3).Data = real(skp1_kp1(:));
+block.OutputPort(4).Data = real(ckp1_kp1(:));
 
 %end Outputs
 
