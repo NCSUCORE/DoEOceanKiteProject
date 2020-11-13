@@ -8,12 +8,12 @@ set(groot, 'defaultLegendInterpreter','latex');
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(40*60,'s');
+simParams.setDuration(5*60,'s');
 dynamicCalc = '';
 flowSpeed = 1.5;
 thrLength = 200;
 % rad - Mean elevation angle
-el = 20*pi/180;    
+initElevation = 20*pi/180;    
 % rad - Path width/height
 w = 40*pi/180;          
 h = 8*pi/180;  
@@ -26,7 +26,16 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('constBoothLem');
+% loadComponent('constBoothLem.mat');
+% hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
+loadComponent('gpkfPathOpt');
+
+hiLvlCtrl.maxStepChange        = (5/thrLength)*180/pi;
+hiLvlCtrl.minVal               = 5;
+hiLvlCtrl.maxVal               = 45;
+hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
+hiLvlCtrl.initVals    = hiLvlCtrl.basisParams.Value(3)*180/pi;
+
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -48,7 +57,7 @@ loadComponent('ayazSynFlow');
 % env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
 
 cIn = maneuverabilityAdvanced(vhcl);
-cIn.meanElevationInRadians = el;
+cIn.meanElevationInRadians = initElevation;
 cIn.pathWidth = w*180/pi;
 cIn.pathHeight = h*180/pi;
 cIn.tetherLength = thrLength;
@@ -60,10 +69,6 @@ pR = cIn.plotPathRadiusOfCurvature;
 
 %% Environment IC's and dependant properties
 % env.water.setflowVec([flowSpeed 0 0],'m/s')
-
-%% Set basis parameters for high level controller
-% Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]');
 
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
@@ -105,7 +110,7 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg');
 fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
-% keyboard
+keyboard
 simWithMonitor('OCTModel');
 
 tscOld = signalcontainer(logsout);
@@ -113,6 +118,7 @@ statOld = computeSimLapStats(tscOld);
 trackOld = statOld{2,3}/cIn.pathLength;
 
 %%
+keyboard
 loadComponent('guidanceLawPathFollowingWater');
 fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
@@ -196,10 +202,10 @@ set(allAxes,'FontSize',12);
 xlim(allAxes,[0 tscNew.tanRoll.Time(end)]);
 figNames = {'desTanRoll','speed','pSurrog'};
 
-for ii = 1:fn
-    figure(ii);
-    exportgraphics(gca,[figNames{ii},'.png'],'Resolution',600);
-end
+% for ii = 1:fn
+%     figure(ii);
+%     exportgraphics(gca,[figNames{ii},'.png'],'Resolution',600);
+% end
 
 %%
 if strcmpi(FLIGHTCONTROLLER,'guidanceLawPathFollowing')
@@ -234,7 +240,7 @@ if strcmpi(FLIGHTCONTROLLER,'guidanceLawPathFollowing')
     xlim(sb(:),[0 tData(end)]);
     
 %      xlim(sb.Children(:),[min(tData(lastTwoLaps)) max(tData(lastTwoLaps))]);
-    exportgraphics(gcf,['newConRes','.png'],'Resolution',600);
+%     exportgraphics(gcf,['newConRes','.png'],'Resolution',600);
 
 end
 

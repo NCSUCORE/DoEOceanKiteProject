@@ -2,6 +2,7 @@ clear
 clc
 
 HILVLCONTROLLER = 'gpkfPathOpt';
+PATHGEOMETRY = 'lemOfBooth';
 
 loadComponent('ayazSynFlow');
 
@@ -31,10 +32,6 @@ predictionHorz  = 6;
 % MPC constants
 exploitationConstant = 1;
 explorationConstant  = 2^6;
-% step limits and bounds
-duMax = 6;
-minElev = 5;
-maxElev = 60;
 
 
 hiLvlCtrl.spatialCovFn         = spatialCovFn;
@@ -51,15 +48,9 @@ hiLvlCtrl.meanFnProps          = env.water.meanFnProps.Value;
 %%
 hiLvlCtrl.mpckfgpTimeStep      = mpckfgpTimeStep;
 hiLvlCtrl.predictionHorz       = predictionHorz;
-hiLvlCtrl.exploitationConstant = predictionHorz;
-hiLvlCtrl.explorationConstant  = predictionHorz;
-hiLvlCtrl.maxStepChange        = duMax;
-hiLvlCtrl.minVal               = minElev;
-hiLvlCtrl.maxVal               = maxElev;
-
-
-
+hiLvlCtrl.exploitationConstant = exploitationConstant;
+hiLvlCtrl.explorationConstant  = explorationConstant;
 
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
-
+save(saveFile,'PATHGEOMETRY','-append')
 

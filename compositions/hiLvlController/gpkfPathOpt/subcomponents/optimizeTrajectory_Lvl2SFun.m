@@ -118,7 +118,7 @@ predictionHorz = mpckfgp.predictionHorizon;
 mpckfgp.tetherLength = thrLength;
 
 
-ySamp =  mpckfgp.meanFunction(xSamp) - flowVal;
+ySamp =  mpckfgp.meanFunction(xSamp,mpckfgp.meanFnProps) - flowVal;
 
 % mpc kalman estimate
 [F_t_mpc,sigF_t_mpc,skp1_kp1_mpc,ckp1_kp1_mpc] = ...
@@ -169,9 +169,9 @@ jExploreFmin = sum(jExpreFmin);
 
 % nextPoint = mpckfgp.convertMeanElevToAlt(bestTraj(1));
  
-block.OutputPort(1).Data = bestTraj(1);
-block.OutputPort(2).Data = jExploitFmin;
-block.OutputPort(3).Data = jExploreFmin;
+block.OutputPort(1).Data = real(bestTraj(1));
+block.OutputPort(2).Data = real(jExploitFmin);
+block.OutputPort(3).Data = real(jExploreFmin);
 
 %end Outputs
 
