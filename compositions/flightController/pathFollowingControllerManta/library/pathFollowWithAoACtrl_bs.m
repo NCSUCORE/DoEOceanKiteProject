@@ -41,11 +41,9 @@ fltCtrl.startControl.setValue(0,'s');
 fltCtrl.AoACtrl.setValue(1,'');                   
 fltCtrl.AoASP.setValue(0,'');                   
 fltCtrl.AoAConst.setValue(14*pi/180,'deg');
-fltCtrl.AoATime.setValue([0 1000 2000],'s');         
-fltCtrl.AoALookup.setValue([14 14 14]*pi/180,'deg');
 
-fltCtrl.Tmax.setValue(38,'kN');
-
+fltCtrl.Tmax.setValue(30,'kN');
+fltCtrl.optAltitude.setValue(200,'m');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 save(saveFile,'SPOOLINGCONTROLLER','-append')
