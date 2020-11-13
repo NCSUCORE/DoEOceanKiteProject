@@ -39,7 +39,7 @@ Lt = chol(temporalCovMat,'lower');
 samp = stdDev*(randn(numel(altitudes),numel(timeVals)));
 
 % mean functions
-[~,M] = meshgrid(timeVals,pp.Results.meanFunc(altitudes));
+[~,M] = meshgrid(timeVals,pp.Results.meanFunc(altitudes,obj.meanFnProps));
 
 % output
 filterSamp = (Lz*(Lt*samp')') + M;
