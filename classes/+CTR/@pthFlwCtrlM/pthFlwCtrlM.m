@@ -32,9 +32,8 @@ classdef pthFlwCtrlM < handle
         AoACtrl
         AoASP
         AoAConst
-        AoATime
-        AoALookup
         Tmax
+        optAltitude
     end
     
     methods
@@ -68,9 +67,8 @@ classdef pthFlwCtrlM < handle
             obj.AoACtrl             = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = none; 1 = On');
             obj.AoASP               = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = constant; 1 = time-lookup');
             obj.AoAConst            = SIM.parameter('Unit','deg','Description','Constant AoA setpoint');
-            obj.AoATime             = SIM.parameter('Unit','s','Description','Reference time for AoA setpoint lookup table');
-            obj.AoALookup           = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
             obj.Tmax                = SIM.parameter('Unit','kN','Description','Maximum tether tension limit');
+            obj.optAltitude         = SIM.parameter('Unit','m','Description','Mean operating altitude');
         end
         
         function setWinchSpeedIn(obj,val,unit)
