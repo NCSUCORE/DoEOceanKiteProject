@@ -11,12 +11,12 @@ simParams = SIM.simParams;
 simParams.setDuration(5*60,'s');
 dynamicCalc = '';
 flowSpeed = 1.5;
-thrLength = 200;
+thrLength = 400;
 % rad - Mean elevation angle
 initElevation = 20*pi/180;    
 % rad - Path width/height
-w = 40*pi/180;          
-h = 8*pi/180;  
+w = 30*pi/180;          
+h = 6*pi/180;  
 % Path basis parameters
 [a,b] = boothParamConversion(w,h);      
 
@@ -30,11 +30,14 @@ loadComponent('oneDoFGSCtrlBasic');
 % hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
 loadComponent('gpkfPathOpt');
 
-hiLvlCtrl.maxStepChange        = (5/thrLength)*180/pi;
+hiLvlCtrl.maxStepChange        = (40/thrLength)*180/pi;
 hiLvlCtrl.minVal               = 5;
 hiLvlCtrl.maxVal               = 45;
 hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
-hiLvlCtrl.initVals    = hiLvlCtrl.basisParams.Value(3)*180/pi;
+hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
+hiLvlCtrl.rateLimit         = 0.1;
+hiLvlCtrl.kfgpTimeStep      = 5/60;
+hiLvlCtrl.mpckfgpTimeStep   = 2;
 
 % Ground station
 loadComponent('pathFollowingGndStn');
