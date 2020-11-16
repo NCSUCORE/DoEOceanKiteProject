@@ -3,12 +3,11 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.3;
+simScenario = 1.0;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;  altitude = 200;                           %   m - Initial tether length/operating altitude 
 flwSpd = .3;                                                %   m/s - Flow speed
-el = 30*pi/180;                                             %   rad - Mean elevation angle
 Tmax = 30;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -18,6 +17,8 @@ maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
 if simScenario == 1.3
     thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
     el = interp2(maxT.altitude,maxT.flwSpd,maxT.R.EL,altitude,flwSpd)*pi/180;
+else
+    el = asin(altitude/thrLength);
 end
 if simScenario >= 4
     loadComponent('LaRController');                         %   Launch and recovery controller
