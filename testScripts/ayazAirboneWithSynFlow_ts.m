@@ -5,9 +5,9 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(2*60,'s');
+simParams.setDuration(10*60,'s');
 dynamicCalc = '';
-flowSpeed = 5;
+flowSpeed = 10;
 thrLength = 1000;
 % rad - Mean elevation angle
 initElevation = 30*pi/180;    
@@ -36,23 +36,23 @@ loadComponent('idealSensorProcessing');
 loadComponent('ayazAirborneVhcl');
 
 % High level controller
-% loadComponent('constBoothLem');
-% hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
-loadComponent('gpkfPathOptAirborne');
-
-hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
-hiLvlCtrl.minVal               = 10;
-hiLvlCtrl.maxVal               = 45;
-hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
-hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
-hiLvlCtrl.rateLimit         = 0.05;
-hiLvlCtrl.kfgpTimeStep      = 15/60;
-hiLvlCtrl.mpckfgpTimeStep   = 5;
+loadComponent('constBoothLem');
+hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
+% loadComponent('gpkfPathOptAirborne');
+% 
+% hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
+% hiLvlCtrl.minVal               = 10;
+% hiLvlCtrl.maxVal               = 45;
+% hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
+% hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
+% hiLvlCtrl.rateLimit         = 0.05;
+% hiLvlCtrl.kfgpTimeStep      = 15/60;
+% hiLvlCtrl.mpckfgpTimeStep   = 5;
 
 % Environment
-loadComponent('ayazAirborneSynFlow');
-% loadComponent('ayazAirborneFlow.mat');
-% env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
+% loadComponent('ayazAirborneSynFlow');
+loadComponent('ayazAirborneFlow.mat');
+env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
 
 cIn = maneuverabilityAdvanced(vhcl);
 cIn.meanElevationInRadians = initElevation;
@@ -173,11 +173,11 @@ GG.saveGifs = true;
 GG.timeStep = 1;
 GG.gifTimeStep = 0.1;
 
-vhcl.animateSim(tscOld,GG.timeStep,...
-    'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
-    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
-    'GifFile','AirOldGif.gif','plotFlowShearProfile',true,'plotTracer',false);
-
+% vhcl.animateSim(tscOld,GG.timeStep,...
+%     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
+%     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
+%     'GifFile','AirOldGif.gif','plotFlowShearProfile',true,'plotTracer',false);
+% 
 
 
 

@@ -8,12 +8,12 @@ simParams = SIM.simParams;
 simParams.setDuration(3*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
-thrLength = 500;
+thrLength = 1000;
 % rad - Mean elevation angle
-initElevation = 15*pi/180;    
+initElevation = 20*pi/180;    
 % rad - Path width/height
-w = 50*pi/180;          
-h = 12*pi/180;  
+w = 40*pi/180;          
+h = 8*pi/180;  
 % Path basis parameters
 [a,b] = boothParamConversion(w,h);      
 
