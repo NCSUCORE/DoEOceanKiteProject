@@ -5,7 +5,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(180*60,'s');
+simParams.setDuration(2*60,'s');
 dynamicCalc = '';
 flowSpeed = 5;
 thrLength = 1000;
@@ -170,7 +170,7 @@ figNames = {'desTanRoll','speed','pSurrog','pTurb','flowAtKite'};
 
 %%
 GG.saveGifs = true;
-GG.timeStep = 5;
+GG.timeStep = 1;
 GG.gifTimeStep = 0.1;
 
 vhcl.animateSim(tscOld,GG.timeStep,...

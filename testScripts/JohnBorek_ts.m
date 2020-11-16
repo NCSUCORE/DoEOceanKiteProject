@@ -1,13 +1,13 @@
 %% Test script for John to control the kite model
-clear;%clc;
+clear;clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
 simScenario = 1.0;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
+saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .5;                                                %   m/s - Flow speed
+flwSpd = .3;                                                %   m/s - Flow speed
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 Tmax = 30;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -76,6 +76,10 @@ else
     omega = 0.005;
     fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
     maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
+    hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
+    hiLvlCtrl.ELctrl.setValue(2,'');
+    hiLvlCtrl.ThrCtrl.setValue(1,'');
+    hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
 end
 hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
@@ -114,7 +118,6 @@ if simScenario >= 3 && simScenario < 4
 elseif simScenario >= 1 && simScenario < 2
     fltCtrl.AoASP.setValue(2,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
     fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-    fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
     fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
@@ -141,7 +144,8 @@ if simScenario == 0
     filename = sprintf(strcat('Manta_EL-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
 elseif simScenario > 0 && simScenario < 2
-    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_AoA-%.2f_',dt,'.mat'),simScenario,flwSpd,el*180/pi,vhcl.turb1.diameter.Value,AoA);
+%     filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_R-%.2f_',dt,'.mat'),simScenario,flwSpd,el*180/pi,vhcl.turb1.diameter.Value,hiLvlCtrl.ELslew.Value);
+    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_AoA-%.2f_',dt,'.mat'),simScenario,flwSpd,el*180/pi,vhcl.turb1.diameter.Value,vhcl.optAlpha.Value);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
 elseif simScenario == 2
     filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
@@ -157,29 +161,30 @@ if saveSim == 1
     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Plot Results
-% if simScenario < 3
-%     lap = max(tsc.lapNumS.Data)-1;
-%     if max(tsc.lapNumS.Data) < 2
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-%     else
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-%     end
-% else
-%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-% end
-
-% figure; subplot(3,1,1); hold on; grid on;
-% plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
-% subplot(3,1,2); hold on; grid on;
-% plot(tsc.tetherLengths.Time,squeeze(tsc.tetherLengths.Data),'b-'); xlabel('Time [s]'); ylabel('Tether Length [m]');
-% plot(tsc.positionVec.Time,squeeze(sqrt(sum(tsc.positionVec.Data.^2,1))),'r--'); legend('At Winch','Kite$-$Glider Pos')
-% subplot(3,1,3); hold on; grid on;
-% plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
+if simScenario < 3
+    lap = max(tsc.lapNumS.Data)-1;
+    if max(tsc.lapNumS.Data) < 2
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+    else
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+    end
+else
+    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+end
+%%
+figure; subplot(1,3,1); hold on; grid on;
+plot(tsc.basisParams.Time,squeeze(tsc.basisParams.Data(3,:,:))*180/pi,'r-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
+plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),'b-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
+legend('Setpoint','Actual','location','northwest')
+subplot(1,3,2); hold on; grid on;
+plot(tsc.tetherLengths.Time,squeeze(tsc.tetherLengths.Data),'b-'); xlabel('Time [s]'); ylabel('Tether Length [m]');
+subplot(1,3,3); hold on; grid on;
+plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+    vhcl.animateSim(tsc,5,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',15,...
+        'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+        'ZoomIn',1==0,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
