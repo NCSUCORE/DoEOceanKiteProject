@@ -12,7 +12,7 @@ vhcl = OCT.vehicle;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('senEff_1','');
+vhcl.setFluidCoeffsFileName('ayazOptVhclCoeff_v1','');
 
 %% Volumes and Inertia
 % vhcl.setVolume(2.85698,'m^3') %From CAD

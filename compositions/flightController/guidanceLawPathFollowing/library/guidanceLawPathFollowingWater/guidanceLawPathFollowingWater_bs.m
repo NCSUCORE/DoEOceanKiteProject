@@ -22,8 +22,8 @@ fltCtrl.rollMoment.tau.setValue(0.001,'s');
 % yaw moment
 fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
 % max control surface deflections
-fltCtrl.controlSigMax.upperLimit.setValue(15,'')
-fltCtrl.controlSigMax.lowerLimit.setValue(-15,'')
+fltCtrl.controlSigMax.upperLimit.setValue(30,'')
+fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 % rudder gain
 fltCtrl.rudderGain.setValue(0,'');
 % path function
