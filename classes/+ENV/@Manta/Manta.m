@@ -774,7 +774,7 @@ classdef Manta < handle
 %             title(sprintf('%s',mon));
 
         end
-        function Pout = powOptDepth(obj,Odepth,vC,pC,aC,varargin)
+        function [Pout,vout,Dout] = powOptDepth(obj,Odepth,vC,pC,aC,varargin)
             p = inputParser;
             addParameter(p,'pct',95,@isnumeric);
             parse(p,varargin{:})
@@ -816,6 +816,17 @@ classdef Manta < handle
             end
             
             Pout = prctile(Pavg,p.Results.pct,'all');
+            row = [];   thresh = 0.0001;
+            while isempty(row)
+                [row,col] = find(abs(Pavg-Pout)<=thresh,1,'first');
+                if thresh <= 0.01
+                    thresh = thresh*10;
+                else
+                    thresh = thresh+.01;
+                end
+            end
+            vout = vAvg(row,col);
+            Dout = [row;col];
         end
     end
 end
