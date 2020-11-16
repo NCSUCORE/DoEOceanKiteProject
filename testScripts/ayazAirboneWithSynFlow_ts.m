@@ -5,7 +5,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(40*60,'s');
+simParams.setDuration(180*60,'s');
 dynamicCalc = '';
 flowSpeed = 5;
 thrLength = 1000;
@@ -40,12 +40,12 @@ loadComponent('ayazAirborneVhcl');
 % hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
 loadComponent('gpkfPathOptAirborne');
 
-hiLvlCtrl.maxStepChange        = (100/thrLength)*180/pi;
-hiLvlCtrl.minVal               = 5;
-hiLvlCtrl.maxVal               = 60;
+hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
+hiLvlCtrl.minVal               = 10;
+hiLvlCtrl.maxVal               = 45;
 hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
 hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
-hiLvlCtrl.rateLimit         = 0.1;
+hiLvlCtrl.rateLimit         = 0.05;
 hiLvlCtrl.kfgpTimeStep      = 15/60;
 hiLvlCtrl.mpckfgpTimeStep   = 5;
 
@@ -140,9 +140,15 @@ ylabel('Power [kW]');
 
 fn = fn+1;
 figure(fn);
-plot(tscOld.vWindFuseGnd.Time,squeeze(tscOld.vWindFuseGnd.Data(1,1,:)),'b-');
+plot(tscOld.tanRoll.Time,squeeze(tscOld.vWindFuseGnd.Data(1,1,:)),'b-');
 hold on;
 ylabel('Flow speed at kite [m/s]');
+
+fn = fn+1;
+figure(fn);
+plot(tscOld.tanRoll.Time,squeeze(tscOld.basisParams.Data(:,3)*180/pi),'b-');
+hold on;
+ylabel('Path mean elevation angle [m/s]');
 
 allAxes = findall(0,'type','axes');
 allPlots = findall(0,'type','Line');
@@ -164,12 +170,13 @@ figNames = {'desTanRoll','speed','pSurrog','pTurb','flowAtKite'};
 
 %%
 GG.saveGifs = true;
-GG.timeStep = 1;
+GG.timeStep = 5;
 GG.gifTimeStep = 0.1;
 
 vhcl.animateSim(tscOld,GG.timeStep,...
     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
-    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','AirOldGif.gif');
+    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
+    'GifFile','AirOldGif.gif','plotFlowShearProfile',true,'plotTracer',false);
 
 
 
