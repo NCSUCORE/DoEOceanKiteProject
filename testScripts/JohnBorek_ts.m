@@ -12,7 +12,8 @@ Tmax = 30;                                                  %   kN - Max tether 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
-fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
+fpath = fullfile(fileparts(which('OCTProject.prj')),...
+    'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
 if simScenario == 1.3
     thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
@@ -94,7 +95,7 @@ if simScenario >= 3
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
 %%  Tethers Properties
-load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\vehicleDesign\Tether\tetherDataNew.mat')
+load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
