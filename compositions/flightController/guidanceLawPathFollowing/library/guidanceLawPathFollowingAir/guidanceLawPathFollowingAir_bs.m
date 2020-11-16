@@ -3,33 +3,34 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
 fltCtrl = CTR.guideLawPthFlw;
 
-fltCtrl.maxBank.upperLimit.setValue(50*pi/180,'');
-fltCtrl.maxBank.lowerLimit.setValue(-50*pi/180,'');
-fltCtrl.setPerpErrorVal(6*pi/180,'rad');
-fltCtrl.setSearchSize(.5,'');
-fltCtrl.setMinR(100,'m')
-fltCtrl.setMaxR(200,'m')
+% guidance law controller parameters
+fltCtrl.rollGainMultiplierPercentage.setValue(100/30,'');
+fltCtrl.maxForwardLookupRatio.setValue(1/50,'');
+fltCtrl.minForwardLookupRatio.setValue(0,'');
+fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
+% elevation deflection at reel in
 fltCtrl.setElevatorReelInDef(0,'deg')
-fltCtrl.setStartControl(1,'s')
+% start control at time
+fltCtrl.setStartControl(0,'s')
 fltCtrl.firstSpoolLap.setValue(1,'');
-
 % Control surface parameters
 fltCtrl.rollMoment.kp.setValue(47.8526*100,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollMoment.kd.setValue(34.6167*100,'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(7.2340e-04,'s');
 
-fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
-
+% yaw moment
+fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
+% max control surface deflections
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
-
-fltCtrl.startControl.setValue(0,'s');
+% rudder gain
 fltCtrl.rudderGain.setValue(0,'');
-
-fltCtrl.targetForwardLength.setValue(35,'m');
-
+% path function
 fltCtrl.setFcnName('lemOfBooth','');
+% pitch gain
+pitchKp = (1e5)/(2*pi/180);
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

@@ -16,7 +16,7 @@ cIn.hstabZerAoADrag = 0.1*cIn.hstabZerAoADrag;
 cIn.vstabOswaldEff = 0.3;
 
 % tether length
-cIn.tetherLength = 100;
+cIn.tetherLength = 1000;
 
 %% analysis conditions
 % path shapes
