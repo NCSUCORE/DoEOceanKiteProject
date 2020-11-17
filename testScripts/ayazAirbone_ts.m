@@ -103,7 +103,7 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg');
 fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
-keyboard
+% keyboard
 simWithMonitor('OCTModel');
 
 tscOld = signalcontainer(logsout);
@@ -120,7 +120,7 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 fltCtrl.elevatorReelInDef.setValue(0,'deg');
 fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
-keyboard
+% keyboard
 simWithMonitor('OCTModel');
 
 tscNew = signalcontainer(logsout);

@@ -6,6 +6,7 @@ addParameter(pp,'timeStep',1,@isnumeric);
 addParameter(pp,'meanFunc',obj.meanFunction);
 addParameter(pp,'spatialLengthScale',obj.spatialLengthScale);
 addParameter(pp,'temporalLengthScale',obj.temporalLengthScale);
+addParameter(pp,'minFlowValue',0);
 
 parse(pp,varargin{:});
 
@@ -49,7 +50,7 @@ timeInSec = timeVals*60;
 
 % select values from 6 to end-5
 filterSamp = filterSamp(6:end-5,6:end-5);
-filterSamp(filterSamp<0) = 0;
+filterSamp(filterSamp<pp.Results.minFlowValue) = pp.Results.minFlowValue;
 timeInSec  = timeInSec(6:end-5);
 altitudes  = altitudes(6:end-5);
 

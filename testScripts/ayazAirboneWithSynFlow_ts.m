@@ -5,7 +5,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(10*60,'s');
+simParams.setDuration(20*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
 thrLength = 1000;
@@ -36,23 +36,27 @@ loadComponent('idealSensorProcessing');
 loadComponent('ayazAirborneVhcl');
 
 % High level controller
-loadComponent('constBoothLem');
-hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
-% loadComponent('gpkfPathOptAirborne');
-% 
-% hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
-% hiLvlCtrl.minVal               = 10;
-% hiLvlCtrl.maxVal               = 45;
-% hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
-% hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
-% hiLvlCtrl.rateLimit         = 0.05;
-% hiLvlCtrl.kfgpTimeStep      = 15/60;
-% hiLvlCtrl.mpckfgpTimeStep   = 5;
+% loadComponent('constBoothLem');
+% hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
+
+loadComponent('gpkfPathOptAirborne');
+hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
+hiLvlCtrl.minVal               = 10;
+hiLvlCtrl.maxVal               = 50;
+hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
+hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
+hiLvlCtrl.rateLimit         = 0.15;
+hiLvlCtrl.kfgpTimeStep      = 10/60;
+hiLvlCtrl.mpckfgpTimeStep   = 3;
+predictionHorz  = 6;
+exploitationConstant = 1;
+explorationConstant  = 2^6;
 
 % Environment
-% loadComponent('ayazAirborneSynFlow');
-loadComponent('ayazAirborneFlow.mat');
-env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
+loadComponent('ayazAirborneSynFlow');
+
+% loadComponent('ayazAirborneFlow.mat');
+% env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
 
 cIn = maneuverabilityAdvanced(vhcl);
 cIn.meanElevationInRadians = initElevation;
@@ -76,7 +80,7 @@ vhcl.setICsOnPath(...
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
-    (11/11)*norm(flowSpeed))   % Initial speed
+    (11/2)*norm(flowSpeed))   % Initial speed
 
 %% Tethers IC's and dependant properties
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)...
@@ -140,15 +144,24 @@ ylabel('Power [kW]');
 
 fn = fn+1;
 figure(fn);
+plot(tscOld.tanRoll.Time,(squeeze(vecnorm(tscOld.velCMvec.Data))./...
+    squeeze(tscOld.vWindFuseGnd.Data(1,1,:))).^3,'b-');
+hold on;
+ylabel('$(V_{k}/V_{w})^3$ [-]');
+
+fn = fn+1;
+figure(fn);
 plot(tscOld.tanRoll.Time,squeeze(tscOld.vWindFuseGnd.Data(1,1,:)),'b-');
 hold on;
 ylabel('Flow speed at kite [m/s]');
 
 fn = fn+1;
 figure(fn);
-plot(tscOld.tanRoll.Time,squeeze(tscOld.basisParams.Data(:,3)*180/pi),'b-');
+plot(tscOld.tanRoll.Time,squeeze(tscOld.elevationAngle.Data(:)),'r');
 hold on;
+plot(tscOld.tanRoll.Time,squeeze(tscOld.basisParams.Data(:,3)*180/pi),'b-');
 ylabel('Path mean elevation angle [m/s]');
+legend('Actual','SP')
 
 allAxes = findall(0,'type','axes');
 allPlots = findall(0,'type','Line');
@@ -176,8 +189,13 @@ GG.gifTimeStep = 0.1;
 vhcl.animateSim(tscOld,GG.timeStep,...
     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
-    'GifFile','AirOldGif.gif','plotFlowShearProfile',false,'plotTracer',false);
+    'GifFile','AirOldGif.gif','plotFlowShearProfile',true,'plotTracer',false);
 
+filename = strcat(cd,'\',sprintf('SynFlowRes_Date-'),...
+    strrep(datestr(datetime),':','-'),'.mat');
+%%
+save(filename,'tscOld','vhcl','thr','fltCtrl','env','simParams','gndStn',...
+    'hiLvlCtrl');
 
 
 

@@ -18,6 +18,7 @@ env.water.stdDevSynData.setValue(3,'m/s');
 env.water.timeStepSynData.setValue(3*60,'s');
 env.water.tFinData.setValue(600*60,'s');
 env.water.meanFnProps.setValue([3.77,0.14],'');
+env.water.minFlowVal.setValue(2,'m/s');
 
 [synFlow,synAlt] = env.water.generateData();
 
