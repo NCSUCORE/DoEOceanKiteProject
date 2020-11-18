@@ -17,6 +17,7 @@ classdef syntheticFlow
         timeStepSynData
         tFinData
         meanFnProps
+        minFlowVal
     end
     properties (SetAccess = private)
         gravAccel
@@ -39,6 +40,7 @@ classdef syntheticFlow
             obj.timeStepSynData     = SIM.parameter('Value',1*60,'Unit','s','NoScale',false);
             obj.tFinData            = SIM.parameter('Value',500*60,'Unit','s','NoScale',false);
             obj.meanFnProps         = SIM.parameter('Unit','','Value',1.5);
+            obj.minFlowVal          = SIM.parameter('Unit','m/s','Value',0);
         end
     end
     %% other methods
@@ -56,7 +58,8 @@ classdef syntheticFlow
             rng(obj.rngSeed.Value);
             [synFlow,synAlt] = gp.generateSyntheticFlowData(...
                 obj.zGridPoints.Value,obj.tFinData.Value/60,obj.stdDevSynData.Value,...
-                'timeStep',obj.timeStepSynData.Value/60);
+                'timeStep',obj.timeStepSynData.Value/60,'minFlowVal',...
+                obj.minFlowVal.Value);
             
         end
         
