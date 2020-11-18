@@ -5,7 +5,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(20*60,'s');
+simParams.setDuration(40*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
 thrLength = 1000;
@@ -39,7 +39,7 @@ loadComponent('ayazAirborneVhcl');
 % loadComponent('constBoothLem');
 % hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
 
-loadComponent('gpkfPathOptAirborne');
+loadComponent('gpkfPathOptWithRGPAirborne');
 hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
 hiLvlCtrl.minVal               = 10;
 hiLvlCtrl.maxVal               = 50;
@@ -107,7 +107,7 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg');
 fltCtrl.rudderGain.setValue(0,'');
 fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
-% keyboard
+keyboard
 simWithMonitor('OCTModel');
 
 tscOld = signalcontainer(logsout);
@@ -189,13 +189,13 @@ GG.gifTimeStep = 0.1;
 vhcl.animateSim(tscOld,GG.timeStep,...
     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
-    'GifFile','AirOldGif.gif','plotFlowShearProfile',true,'plotTracer',false);
+    'GifFile','AirOldGif.gif','plotFlowShearProfile',false,'plotTracer',false);
 
 filename = strcat(cd,'\',sprintf('SynFlowRes_Date-'),...
     strrep(datestr(datetime),':','-'),'.mat');
 %%
-save(filename,'tscOld','vhcl','thr','fltCtrl','env','simParams','gndStn',...
-    'hiLvlCtrl');
+% save(filename,'tscOld','vhcl','thr','fltCtrl','env','simParams','gndStn',...
+%     'hiLvlCtrl');
 
 
 
