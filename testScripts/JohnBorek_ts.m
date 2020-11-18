@@ -154,7 +154,7 @@ if simScenario == 0
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
 elseif simScenario > 0 && simScenario < 2
 %     filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_R-%.2f_',dt,'.mat'),simScenario,flwSpd,el*180/pi,vhcl.turb1.diameter.Value,hiLvlCtrl.ELslew.Value);
-    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_Tmax-%d_',dt,'.mat'),simScenario,flwSpd,mean(tsc.elevationAngle.Data),vhcl.turb1.diameter.Value,Tmax);
+    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_Tmax-%d_',dt,'.mat'),simScenario,flwSpd,mean(tsc.basisParams.Data(3,:,:))*180/pi,vhcl.turb1.diameter.Value,Tmax);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
 elseif simScenario == 2
     filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
@@ -180,9 +180,10 @@ if simScenario < 3
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
-% figure; hold on; grid on;
-% plot(tsc.ctrlSurfDeflCmd.Time(ran),squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)))
-% xlabel('Time [s]'); ylabel('Angle [deg]');
+%%
+figure; hold on; grid on;
+plot(tsc.ctrlSurfDeflCmd.Time(ran),squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)))
+xlabel('Time [s]'); ylabel('Angle [deg]');
 %%
 % figure; subplot(1,3,1); hold on; grid on;
 % plot(tsc.basisParams.Time,squeeze(tsc.basisParams.Data(3,:,:))*180/pi,'r-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
