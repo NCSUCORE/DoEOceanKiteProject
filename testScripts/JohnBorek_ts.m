@@ -7,8 +7,8 @@ simScenario = 1.3;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;  altitude = 200;                           %   m - Initial tether length/operating altitude 
-flwSpd = .5;                                                %   m/s - Flow speed
-Tmax = 20;                                                  %   kN - Max tether tension 
+flwSpd = .3;                                                %   m/s - Flow speed
+Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -130,6 +130,10 @@ end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 % vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
 % thr.tether1.setDragEnable(false,'');
+vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');
+vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/4,'1/deg');
+vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/4,'1/deg');
+vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/4,'1/deg');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
@@ -176,6 +180,9 @@ if simScenario < 3
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
+% figure; hold on; grid on;
+% plot(tsc.ctrlSurfDeflCmd.Time(ran),squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)))
+% xlabel('Time [s]'); ylabel('Angle [deg]');
 %%
 % figure; subplot(1,3,1); hold on; grid on;
 % plot(tsc.basisParams.Time,squeeze(tsc.basisParams.Data(3,:,:))*180/pi,'r-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
