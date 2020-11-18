@@ -58,7 +58,7 @@ fltCtrl.controlSigMax.upperLimit.NoScale = false
 fltCtrl.controlSigMax.lowerLimit.Value = -3.0000e+01
 fltCtrl.controlSigMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.lowerLimit.NoScale = false
-fltCtrl.rollGainMultiplierPercentage.Value = 3.3333e+00
+fltCtrl.rollGainMultiplierPercentage.Value = 1.0000e+01
 fltCtrl.rollGainMultiplierPercentage.Unit is unitless or has no unit specified
 fltCtrl.rollGainMultiplierPercentage.NoScale = false
 fltCtrl.rollGainMultiplierPercentage.Description = 'Percentage multiplied to desired tangent roll angle which is equal to the ratio of min. distance of kite from the path to path length'

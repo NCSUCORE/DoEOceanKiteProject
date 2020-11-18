@@ -4,7 +4,7 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 fltCtrl = CTR.guideLawPthFlw;
 
 % guidance law controller parameters
-fltCtrl.rollGainMultiplierPercentage.setValue(100/30,'');
+fltCtrl.rollGainMultiplierPercentage.setValue(100/10,'');
 fltCtrl.maxForwardLookupRatio.setValue(1/50,'');
 fltCtrl.minForwardLookupRatio.setValue(0,'');
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
