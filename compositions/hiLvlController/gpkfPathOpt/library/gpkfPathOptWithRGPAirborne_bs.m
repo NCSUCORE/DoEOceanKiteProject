@@ -22,7 +22,6 @@ spatialLengthScale  = env.water.spatialLengthScale.Value;
 temporalLengthScale = env.water.temporalLengthScale.Value;
 % noise variance
 noiseVar            = env.water.noiseVariance.Value;
-
 % fast state estimate time step in MINUTES
 fastTimeStep  = 10/60;
 % MPC KFGP time step in MINUTES
@@ -50,6 +49,19 @@ hiLvlCtrl.mpckfgpTimeStep      = mpckfgpTimeStep;
 hiLvlCtrl.predictionHorz       = predictionHorz;
 hiLvlCtrl.exploitationConstant = exploitationConstant;
 hiLvlCtrl.explorationConstant  = explorationConstant;
+
+%% inner loop control parameters
+hiLvlCtrl.RGPspatialCovFn       = 'squaredExponential';
+hiLvlCtrl.RGPmeanFn             = 'constantMean';
+hiLvlCtrl.RGPxBasis             = 100*rand(2,20);
+hiLvlCtrl.RGPspatialCovAmp      = 1;
+hiLvlCtrl.RGPspatialLengthScale = 5;
+hiLvlCtrl.RGPnoiseVariance      = 1e-3;
+hiLvlCtrl.RGPmeanFnProps        = 0;
+hiLvlCtrl.RGPdeviationPenalty   = 0.01;
+hiLvlCtrl.initPathShape         = rand(2,1);
+hiLvlCtrl.numLapBetweenRGP      = 8;
+
 
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
