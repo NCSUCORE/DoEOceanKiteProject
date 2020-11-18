@@ -3,12 +3,12 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.0;
+simScenario = 1.3;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;  altitude = 200;                           %   m - Initial tether length/operating altitude 
-flwSpd = .3;                                                %   m/s - Flow speed
-Tmax = 30;                                                  %   kN - Max tether tension 
+flwSpd = .5;                                                %   m/s - Flow speed
+Tmax = 20;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -141,7 +141,7 @@ if simScenario < 2 && simScenario >= 1
     AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-    ten = max([max(airNode(:)) max(gndNode(:))]);
+    ten = max([max(airNode(ran)) max(gndNode(ran))]);
     fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
 end
 dt = datestr(now,'mm-dd_HH-MM');
