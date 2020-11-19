@@ -5,7 +5,7 @@ close all;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(5*60,'s');
+simParams.setDuration(60*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
 thrLength = 1000;

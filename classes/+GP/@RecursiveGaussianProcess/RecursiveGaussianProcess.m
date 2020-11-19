@@ -125,8 +125,9 @@ classdef RecursiveGaussianProcess < GP.GaussianProcess
             % deviation penalty
             devPenalty = exp(-obj.deviationPenalty.*devFromBasis(:));
             postVar = diag(postVarMat);
+            stdDev  = postVar.^0.5;
             % objective function val
-            val = (predMean(:) + postVar(:)).*devPenalty;
+            val = (predMean(:) + stdDev(:)).*devPenalty;
             
         end
         

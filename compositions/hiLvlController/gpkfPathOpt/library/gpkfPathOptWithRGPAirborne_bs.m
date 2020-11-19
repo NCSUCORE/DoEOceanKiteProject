@@ -92,11 +92,11 @@ hiLvlCtrl.RGPxBasis             = rgp.xBasis;
 
 hiLvlCtrl.RGPspatialCovAmp      = rgp.spatialCovAmp;
 hiLvlCtrl.RGPspatialLengthScale = rgp.spatialLengthScale;
-hiLvlCtrl.RGPnoiseVariance      = 1e-3;
+hiLvlCtrl.RGPnoiseVariance      = 1e-1;
 hiLvlCtrl.RGPmeanFnProps        = 0;
 hiLvlCtrl.RGPdeviationPenalty   = 0.01;
 hiLvlCtrl.initPathShape         = rgp.xBasis(:,randi(size(rgp.xBasis,2)));
-hiLvlCtrl.numLapBetweenRGP      = 8;
+hiLvlCtrl.numLapBetweenRGP      = 4;
 
 
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
