@@ -1,19 +1,19 @@
 clear;
 clc;
-% close all;
+close all;
 
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(40*60,'s');
+simParams.setDuration(5*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
 thrLength = 1000;
 % rad - Mean elevation angle
-initElevation = 30*pi/180;    
+initElevation = 20*pi/180;    
 % rad - Path width/height
-w = 40*pi/180;          
-h = 8*pi/180;  
+w = 35*pi/180;          
+h = 12*pi/180;  
 % Path basis parameters
 [a,b] = boothParamConversion(w,h);      
 
@@ -114,76 +114,99 @@ tscOld = signalcontainer(logsout);
 statOld = computeSimLapStats(tscOld);
 trackOld = statOld{2,3}/cIn.pathLength;
 
+%% table headers
+headers = {'Mean elevation','Path width','Path height',...
+    'Path length',...
+    'Lap no.','Lap time','Dist. traveled','Avg. P','(V_app,x)^3',...
+    '(V_app,x/V_w)^3','(V_k/V_w)^3','Avg. V_cm',...
+    'Avg. AoA','Max roll','Tracking'};
+nHeaders = numel(headers);
+% variable types
+varTypes = cell(1,nHeaders);
+varTypes(1:end) = {'double'};
+
+% make the table
+baseTable = table('Size',[1,nHeaders],'VariableTypes',varTypes);
+baseTable.Properties.VariableNames = headers;
+
+baseTable(1,1).("Mean elevation") = cIn.meanElevationInRadians*180/pi;
+baseTable(1,2).("Path width") = cIn.pathWidth;
+baseTable(1,3).("Path height") = cIn.pathHeight;
+baseTable(1,4).("Path length") = cIn.pathLength;
+baseTable(1,5:end) = {statOld{2,:}, trackOld};
+
+writetable(baseTable,'manualMode.xlsx',"WriteMode","append");
+
 %%
-close all
-fn = 1;
-figure(fn)
-pOSP = plot(tscOld.tanRollDes.Time,tscOld.tanRollDes.Data(:)*180/pi,'b-');
-hold on
-plot(tscOld.tanRoll.Time,tscOld.tanRoll.Data*180/pi,'b--');
-ylabel('Tangent roll [deg]');
-legend('Roll SP','Roll');
-
-fn = fn+1;
-figure(fn);
-plot(tscOld.tanRoll.Time,squeeze(vecnorm(tscOld.velCMvec.Data)),'b-');
-hold on;
-ylabel('Speed [m/s]');
-
-fn = fn+1;
-figure(fn);
-plot(tscOld.tanRoll.Time,tscOld.vhclVapp.Data(1,:).^3,'b-');
-hold on;
-ylabel('Apparent vel. in x cubed [$m^3/s^3$]');
-
-fn = fn+1;
-figure(fn);
-plot(tscOld.tanRoll.Time,tscOld.turbPow.Data(:)./1e3,'b-');
-hold on;
-ylabel('Power [kW]');
-
-fn = fn+1;
-figure(fn);
-plot(tscOld.tanRoll.Time,(squeeze(vecnorm(tscOld.velCMvec.Data))./...
-    squeeze(tscOld.vWindFuseGnd.Data(1,1,:))).^3,'b-');
-hold on;
-ylabel('$(V_{k}/V_{w})^3$ [-]');
-
-fn = fn+1;
-figure(fn);
-plot(tscOld.tanRoll.Time,squeeze(tscOld.vWindFuseGnd.Data(1,1,:)),'b-');
-hold on;
-ylabel('Flow speed at kite [m/s]');
-
-fn = fn+1;
-figure(fn);
-plot(tscOld.tanRoll.Time,squeeze(tscOld.elevationAngle.Data(:)),'r');
-hold on;
-plot(tscOld.tanRoll.Time,squeeze(tscOld.basisParams.Data(:,3)*180/pi),'b-');
-ylabel('Path mean elevation angle [m/s]');
-legend('Actual','SP')
-
-allAxes = findall(0,'type','axes');
-allPlots = findall(0,'type','Line');
-xlabel(allAxes,'Time [sec]');
-grid(allAxes,'on');
-
-
-set(allPlots,'linewidth',1);
-set(allAxes,'FontSize',12);
-xlim(allAxes,[0 tscOld.tanRoll.Time(end)]);
-figNames = {'desTanRoll','speed','pSurrog','pTurb','flowAtKite'};
-
-% for ii = 1:fn
-%     figure(ii);
-%     exportgraphics(gca,[figNames{ii},'.png'],'Resolution',600);
-% end
-
-
-
+% close all
+% fn = 1;
+% figure(fn)
+% pOSP = plot(tscOld.tanRollDes.Time,tscOld.tanRollDes.Data(:)*180/pi,'b-');
+% hold on
+% plot(tscOld.tanRoll.Time,tscOld.tanRoll.Data*180/pi,'b--');
+% ylabel('Tangent roll [deg]');
+% legend('Roll SP','Roll');
+% 
+% fn = fn+1;
+% figure(fn);
+% plot(tscOld.tanRoll.Time,squeeze(vecnorm(tscOld.velCMvec.Data)),'b-');
+% hold on;
+% ylabel('Speed [m/s]');
+% 
+% fn = fn+1;
+% figure(fn);
+% plot(tscOld.tanRoll.Time,tscOld.vhclVapp.Data(1,:).^3,'b-');
+% hold on;
+% ylabel('Apparent vel. in x cubed [$m^3/s^3$]');
+% 
+% fn = fn+1;
+% figure(fn);
+% plot(tscOld.tanRoll.Time,tscOld.turbPow.Data(:)./1e3,'b-');
+% hold on;
+% ylabel('Power [kW]');
+% 
+% fn = fn+1;
+% figure(fn);
+% plot(tscOld.tanRoll.Time,(squeeze(vecnorm(tscOld.velCMvec.Data))./...
+%     squeeze(tscOld.vWindFuseGnd.Data(1,1,:))).^3,'b-');
+% hold on;
+% ylabel('$(V_{k}/V_{w})^3$ [-]');
+% 
+% fn = fn+1;
+% figure(fn);
+% plot(tscOld.tanRoll.Time,squeeze(tscOld.vWindFuseGnd.Data(1,1,:)),'b-');
+% hold on;
+% ylabel('Flow speed at kite [m/s]');
+% 
+% fn = fn+1;
+% figure(fn);
+% plot(tscOld.tanRoll.Time,squeeze(tscOld.elevationAngle.Data(:)),'r');
+% hold on;
+% plot(tscOld.tanRoll.Time,squeeze(tscOld.basisParams.Data(:,3)*180/pi),'b-');
+% ylabel('Path mean elevation angle [m/s]');
+% legend('Actual','SP')
+% 
+% allAxes = findall(0,'type','axes');
+% allPlots = findall(0,'type','Line');
+% xlabel(allAxes,'Time [sec]');
+% grid(allAxes,'on');
+% 
+% 
+% set(allPlots,'linewidth',1);
+% set(allAxes,'FontSize',12);
+% xlim(allAxes,[0 tscOld.tanRoll.Time(end)]);
+% figNames = {'desTanRoll','speed','pSurrog','pTurb','flowAtKite'};
+% 
+% % for ii = 1:fn
+% %     figure(ii);
+% %     exportgraphics(gca,[figNames{ii},'.png'],'Resolution',600);
+% % end
+% 
+% 
+% 
 %%
 GG.saveGifs = true;
-GG.timeStep = 1;
+GG.timeStep = 0.5;
 GG.gifTimeStep = 0.1;
 
 vhcl.animateSim(tscOld,GG.timeStep,...

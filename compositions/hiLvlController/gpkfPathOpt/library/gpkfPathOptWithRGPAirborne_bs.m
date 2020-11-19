@@ -51,15 +51,51 @@ hiLvlCtrl.exploitationConstant = exploitationConstant;
 hiLvlCtrl.explorationConstant  = explorationConstant;
 
 %% inner loop control parameters
-hiLvlCtrl.RGPspatialCovFn       = 'squaredExponential';
-hiLvlCtrl.RGPmeanFn             = 'constantMean';
-hiLvlCtrl.RGPxBasis             = 100*rand(2,20);
-hiLvlCtrl.RGPspatialCovAmp      = 1;
-hiLvlCtrl.RGPspatialLengthScale = 5;
+% load data from file
+T = readtable('PowerWithPathShape.xlsx','Sheet','Sheet1');
+tData = T{:,:};
+tData(tData(:,end)>1.1,:) = [];
+xMeasured   = tData(:,2:3)';
+yMeasured   = tData(:,end-4);
+pathWidths  = 15:2.5:45;
+pathHeights = 6:1.5:15;
+[PW,PH] = meshgrid(pathWidths,pathHeights);
+% make an instant of the RGP class to optimize hyperparameters
+rgpSpatialCovaraince = 'squaredExponential';
+rgpMeanFn            = 'constantMean';
+rgp = GP.RecursiveGaussianProcess(rgpSpatialCovaraince,rgpMeanFn,...
+    [PW(:)';PH(:)']);
+
+rgp.meanFnProps         = [0];
+rgp.noiseVariance       = 1e-3;
+optHyp = rgp.findOptSpatialHyperParams(xMeasured,yMeasured,...
+    [1;1;1]);
+rgp.spatialCovAmp       = optHyp.opt_spatialCovAmp;
+rgp.spatialLengthScale  = optHyp.opt_spatialLengthScale;
+
+
+rgp.spatialCovMat = rgp.makeSpatialCovarianceMatrix(rgp.xBasis);
+rgp.meanFnVector  = rgp.meanFunction(rgp.xBasis);
+
+% pick random measurement
+randMeasure = randi(length(yMeasured));
+[predMean,postVarMat] =...
+    rgp.calcPredMeanAndPostVar(rgp.meanFnVector,rgp.spatialCovMat,...
+    xMeasured(:,randMeasure),yMeasured(randMeasure));
+
+scatter3(rgp.xBasis(1,:),rgp.xBasis(2,:),predMean);
+
+hiLvlCtrl.RGPspatialCovFn       = rgpSpatialCovaraince;
+hiLvlCtrl.RGPmeanFn             = rgpMeanFn;
+
+hiLvlCtrl.RGPxBasis             = rgp.xBasis;
+
+hiLvlCtrl.RGPspatialCovAmp      = rgp.spatialCovAmp;
+hiLvlCtrl.RGPspatialLengthScale = rgp.spatialLengthScale;
 hiLvlCtrl.RGPnoiseVariance      = 1e-3;
 hiLvlCtrl.RGPmeanFnProps        = 0;
 hiLvlCtrl.RGPdeviationPenalty   = 0.01;
-hiLvlCtrl.initPathShape         = rand(2,1);
+hiLvlCtrl.initPathShape         = rgp.xBasis(:,randi(size(rgp.xBasis,2)));
 hiLvlCtrl.numLapBetweenRGP      = 8;
 
 

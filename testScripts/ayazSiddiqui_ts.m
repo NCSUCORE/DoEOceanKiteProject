@@ -11,7 +11,7 @@ simParams = SIM.simParams;
 simParams.setDuration(5*60,'s');
 dynamicCalc = '';
 flowSpeed = 1.5;
-thrLength = 40;
+thrLength = 200;
 % rad - Mean elevation angle
 initElevation = 20*pi/180;    
 % rad - Path width/height
