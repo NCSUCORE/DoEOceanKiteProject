@@ -118,14 +118,15 @@ classdef RecursiveGaussianProcess < GP.GaussianProcess
         % acquisition function
         function val = acquisitionFunction(obj,muGt_1,cGt_1,xt,yk)
             % RGP: calculate prediction mean and posterior variance
-            [predMean,~] =...
+            [predMean,postVarMat] =...
                 obj.calcPredMeanAndPostVar(muGt_1,cGt_1,xt,yk);
             % calculate distance between xt and basis vector
             devFromBasis = sqrt(sum((xt - obj.xBasis).^2,1));
             % deviation penalty
             devPenalty = exp(-obj.deviationPenalty.*devFromBasis(:));
+            postVar = diag(postVarMat);
             % objective function val
-            val = predMean(:).*devPenalty;
+            val = (predMean(:) + postVar(:)).*devPenalty;
             
         end
         
@@ -135,7 +136,6 @@ classdef RecursiveGaussianProcess < GP.GaussianProcess
            aqVal = obj.acquisitionFunction(muGt_1,cGt_1,xt,yk);
            % find index that maximizes acquisition function
            [mAq,maxIdx] = max(aqVal);
-           maxIdx = randi(length(aqVal));
            % choose next point based on max value
            val = obj.xBasis(:,maxIdx);
            % optional output
