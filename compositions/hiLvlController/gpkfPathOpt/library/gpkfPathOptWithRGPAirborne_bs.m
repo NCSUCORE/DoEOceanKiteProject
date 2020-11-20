@@ -70,9 +70,11 @@ rgp.meanFnProps         = [0];
 rgp.noiseVariance       = 1e-3;
 optHyp = rgp.findOptSpatialHyperParams(xMeasured,yMeasured,...
     [1;1;1]);
-rgp.spatialCovAmp       = optHyp.opt_spatialCovAmp;
-rgp.spatialLengthScale  = optHyp.opt_spatialLengthScale;
+% rgp.spatialCovAmp       = optHyp.opt_spatialCovAmp;
+% rgp.spatialLengthScale  = optHyp.opt_spatialLengthScale;
 
+rgp.spatialCovAmp       = 1;
+rgp.spatialLengthScale  = [5;5];
 
 rgp.spatialCovMat = rgp.makeSpatialCovarianceMatrix(rgp.xBasis);
 rgp.meanFnVector  = rgp.meanFunction(rgp.xBasis);
@@ -95,7 +97,7 @@ hiLvlCtrl.RGPspatialLengthScale = rgp.spatialLengthScale;
 hiLvlCtrl.RGPnoiseVariance      = 1e-1;
 hiLvlCtrl.RGPmeanFnProps        = 0;
 hiLvlCtrl.RGPdeviationPenalty   = 0.01;
-hiLvlCtrl.initPathShape         = rgp.xBasis(:,randi(size(rgp.xBasis,2)));
+hiLvlCtrl.initPathShape         = [50;12];
 hiLvlCtrl.numLapBetweenRGP      = 4;
 
 
