@@ -114,7 +114,13 @@ lapNum = block.InputPort(5).Data;
     rgp.calcPredMeanAndPostVar(muGt_1,cGt_1,xSamp,yVal);
 
 if mod(lapNum,rgp.numLapBetweenRGP) == 0 && lapNum ~=1 
-    nextPoint = rgp.chooseNextPoint(muGt_1,cGt_1,xSamp,yVal);
+%     nextPoint = rgp.chooseNextPoint(muGt_1,cGt_1,xSamp,yVal);
+    if xSamp(1)-2 >= 18
+    nextPoint(1) = xSamp(1)-2;
+    nextPoint(2) = xSamp(1)/5;
+    else
+    nextPoint = xSamp;        
+    end
 else
     nextPoint = xSamp;
 end
