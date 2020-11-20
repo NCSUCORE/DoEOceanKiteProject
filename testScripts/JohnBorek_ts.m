@@ -7,7 +7,7 @@ simScenario = 1.3;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;  altitude = 200;                           %   m - Initial tether length/operating altitude 
-flwSpd = .3;                                                %   m/s - Flow speed
+flwSpd = .5;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -130,10 +130,7 @@ end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 % vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
 % thr.tether1.setDragEnable(false,'');
-vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');
-vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/4,'1/deg');
-vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/4,'1/deg');
-vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/4,'1/deg');
+
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
@@ -154,7 +151,7 @@ if simScenario == 0
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
 elseif simScenario > 0 && simScenario < 2
 %     filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_R-%.2f_',dt,'.mat'),simScenario,flwSpd,el*180/pi,vhcl.turb1.diameter.Value,hiLvlCtrl.ELslew.Value);
-    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_Tmax-%d_',dt,'.mat'),simScenario,flwSpd,mean(tsc.basisParams.Data(3,:,:))*180/pi,vhcl.turb1.diameter.Value,Tmax);
+    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_Tmax-%d_filt.mat'),simScenario,flwSpd,mean(tsc.basisParams.Data(3,:,:))*180/pi,vhcl.turb1.diameter.Value,Tmax);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
 elseif simScenario == 2
     filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
@@ -181,9 +178,15 @@ else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
 %%
-figure; hold on; grid on;
-plot(tsc.ctrlSurfDeflCmd.Time(ran),squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)))
-xlabel('Time [s]'); ylabel('Angle [deg]');
+figure(23); 
+[Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2-1;
+data = squeeze(tsc.currentPathVar.Data);
+subplot(2,1,1); hold on; grid on;
+plot(data(ran),squeeze(tsc.tanRollDes.Data(:,:,ran)),'r-')
+xlabel('Path Position'); ylabel('Tan Roll Des [deg]');
+subplot(2,1,2); hold on; grid on;
+plot(data(ran),squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)),'r-')
+xlabel('Path Position'); ylabel('Port Aileron [deg]');
 %%
 % figure; subplot(1,3,1); hold on; grid on;
 % plot(tsc.basisParams.Time,squeeze(tsc.basisParams.Data(3,:,:))*180/pi,'r-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
