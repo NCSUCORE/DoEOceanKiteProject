@@ -12,7 +12,7 @@ plot(tsc.ctrlSurfDeflCmd.Time,squeeze(tsc.ctrlSurfDeflCmd.Data(:,4,1)),...
     'LineStyle','-','Color','b','LineWidth',1.5,'DisplayName','Rudder')
 xlabel('Time, [s]')
 ylabel('Deflection [deg]')
-legend('FontSize',16,'Orientation','horizontal','Location','southeast')
+legend('FontSize',16,'Orientation','horizontal','Location','northeast')
 % legend('boxoff')
 % ylim([-10 5])
 
@@ -30,7 +30,7 @@ plot(tsc.pitchSP.Time,squeeze(tsc.pitchSP.Data),...
 plot(tsc.yawSP.Time,squeeze(tsc.yawSP.Data),...
     'LineStyle','--','Color','b','LineWidth',1.5)
 legend('Roll','Pitch','Yaw','FontSize',16,'Orientation','horizontal',...
-    'Location','southeast')
+    'Location','northeast')
 % legend('boxoff')
 xlabel('Time, [s]')
 ylabel('Angle [deg]')
@@ -47,15 +47,15 @@ xlabel('Time, [s]')
 ylabel('Azimuth Angle [deg]')
 
 subplot(2,2,4); hold on; grid on;
-plot(tsc.airTenVecs.Time,squeeze(tsc.airTenVecs.mag.Data),...
+plot(tsc.FThrNetBdy.Time,squeeze(tsc.FThrNetBdy.mag.Data),...
     'LineStyle','-','Color','k','LineWidth',1.5)
 xlabel('Time, [s]')
 ylabel('Tether Tension [N]')
-% ylim([2000 2500])
+% ylim([0 1000])
 
 set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
-xlim([10 tsc.azimuthAngle.Time(end)])
+% xlim([10 tsc.azimuthAngle.Time(end)])
 
 elAng = round(tsc.elevationAngle.Data(end));
 velo = tsc.velocityVec.mag.Data(end);
