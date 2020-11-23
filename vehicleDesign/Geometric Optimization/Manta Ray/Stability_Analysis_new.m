@@ -10,11 +10,11 @@ clc;clear;
 % loadComponent('Manta2RotXFlr_CFD_AR');                                 %   Manta kite with XFlr5
 % loadComponent('Manta2RotXFoil_AR7');                                 %   Manta kite with XFlr5
 % loadComponent('Manta2RotXFoil_AR9_b9');                                 %   Manta kite with XFlr5
-loadComponent('Manta2RotXFoil_AR9_b10');                                 %   Manta kite with XFlr5
-
+loadComponent('Manta2RotXFoil_AR8_b8_expt');                                 %   Manta kite with XFlr5
+vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.15;0;-vhcl.fuse.diameter.Value/2],'m');
 wing.alpha = vhcl.portWing.alpha.Value;             %   Wing alpha vec
 wing.AR = vhcl.portWing.AR.Value;                   %   Wing alpha vec
-wing.b = 8;                                         %   Wing span
+wing.b = vhcl.portWing.halfSpan.Value*2;                                         %   Wing span
 wing.S = vhcl.fluidRefArea.Value;                   %   Reference area for wing
 wing.CL = vhcl.portWing.CL.Value;                   %   Wing lift coefficient at zero alpha
 wing.CD = vhcl.portWing.CD.Value;                   %   Wing drag coefficient at zero alpha
@@ -37,13 +37,13 @@ hStab.gamma = 1;                                    %   Horizontal stabilizer ai
 hStab.eL = 0.9;                                     %   Horizontal stabilizer lift Oswald efficiency factor
 hStab.eD = 0.9;                                     %   Horizontal stabilizer drag Oswald efficiency factor
 hStab.aeroCent = vhcl.hStab.rAeroCent_SurfLE.Value; %   Horizontal stabilizer aero center
-hstab.dCLElevator = 0.08;                           %   change in hstab CL per deg deflection of elevator
+hstab.dCLElevator = 0.0095;                           %   change in hstab CL per deg deflection of elevator
 
 vStab.alpha = vhcl.vStab.alpha.Value;               %   Find index corresponding to 0 AoA
 vStab.CD = vhcl.vStab.CD.Value;                     %   Horizontal stabilizer drag coefficient at zero alpha
 vStab.S = vhcl.fluidRefArea.Value;                  %   Reference area for horizontal stabilizer
 vStab.eD = 0.9;                                     %   Vertical stabilizer drag Oswald efficiency factor
-vStab.aeroCent = [.1175 0 .9389]';                  %   Vertical stabilizer aero center
+vStab.aeroCent = vhcl.vStab.rAeroCent_SurfLE.Value;                  %   Vertical stabilizer aero center
 
 fuse.CD0 = vhcl.fuse.endDragCoeff.Value;            %   Fuselage drag coefficient at 0° AoA
 fuse.CDs = vhcl.fuse.sideDragCoeff.Value;           %   Fuselage drag coefficient at 90° AoA
@@ -87,17 +87,17 @@ LE.xH = Sys.xH-Sys.LE;      LE.xV = Sys.xV-Sys.LE;
 LE.xf = Sys.f-Sys.LE;       LE.xT = Sys.xT-Sys.LE;
 
 Sys.vKite = [0 0 0]';                               %   m/s - Kite velocity 
-Env.vFlow = [1.646 0 0]';                             %   m/s - Flow speed 
+Env.vFlow = [0.5 0 0]';                             %   m/s - Flow speed 
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
 % [Ixx_opt,Fthk,Mtot,Wingdim] = runStructOpt(vhcl,wing,hStab,vStab,fuse,Env);
 %%  Position and Orientation Angles 
-Ang.elevation = 80;                                     %   deg - Elevation angle
+Ang.elevation = 30;                                     %   deg - Elevation angle
 Ang.zenith = 90-Ang.elevation;                          %   deg - Zenith angle 
 Ang.azimuth = 0;                                        %   deg - Azimuth angle 
 Ang.roll = 0;                                           %   deg - Roll angle 
-Ang.pitch = 0;%-10:.1:10;                                          %   deg - Pitch angle 
+Ang.pitch = -10:.1:10;                                          %   deg - Pitch angle 
 Ang.yaw = 0;                                            %   deg - Yaw angle 
 Ang.heading = 0;                                        %   deg - Heading on the sphere; 0 = south; 90 = east; etc.
 % Ang.tanPitch = Ang.pitch-90+Ang.elevation;              %   deg - Tangent pitch angle

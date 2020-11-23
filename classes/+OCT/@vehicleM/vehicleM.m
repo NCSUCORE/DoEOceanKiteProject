@@ -605,7 +605,9 @@ classdef vehicleM < dynamicprops
                     W = load('NACA2412_b8_AR8.mat');
                 elseif obj.portWing.AR.Value == 3.5
                     W = load('NACA2412_b8_AR7.mat');
-                else
+                elseif floor(obj.portWing.AR.Value*10)/10 == 3.7 %&& obj.portWing.Airfoil.Value == 'SG6040.dat'
+                    W = load('SG6040_AR7dot4_EXPT.mat');
+                else  
                     error('No XFoil wing data exists for this combination of span = %.1f and AR = %.1f',obj.portWing.halfSpan.Value,obj.portWing.AR.Value)
                 end
                 aeroStruct(1).CL = W.cl_c/2;    aeroStruct(1).CD = W.CD_c/2;    aeroStruct(1).alpha = W.alfa_c;
@@ -620,13 +622,19 @@ classdef vehicleM < dynamicprops
                     end
                 elseif obj.hStab.halfSpan.Value == 1.95
                     H = load('NACA0015_b1.95_c0.52.mat');
+                elseif obj.hStab.halfSpan.Value == 0.2
+                    H = load('NACA0015_b0.2_c0.055_1ms.mat');
                 else
                     error('No XFoil wing data exists for this combination of span = %.1f and chord = %.2f',obj.hStab.halfSpan.Value,obj.hStab.rootChord.Value)
                 end
                 aeroStruct(3).CL = (H.cl_c-H.cl_c(36))*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).CD = H.CD_c*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
-                V = load('NACA0015_b.95_vStab.mat');
+                if obj.vStab.halfSpan.Value ~= 0.195
+                    V = load('NACA0015_b.95_vStab.mat');
+                else
+                    V = load('NACA0015_b0.195_c_0.052_1ms.mat');
+                end
                 aeroStruct(4).CL = (V.cl_c-V.cl_c(36))*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(4).CD = V.CD_c*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(4).alpha = V.alfa_c;
@@ -770,13 +778,13 @@ classdef vehicleM < dynamicprops
                                   'LineWidth',1.2,'Color','k','LineStyle','-',...
                                   'DisplayName','Fluid Dynamic Surfaces');
             else
-                x=linspace(obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value,obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value,p.Results.fuseRings);
+                x=linspace(obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value/2,obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value/2,p.Results.fuseRings);
                 perSlice = 10;
                 x = reshape(repmat(x,perSlice,1),[1 numel(x)*perSlice]);
                 th=linspace(0,2*pi,perSlice);
                 d=obj.fuse.diameter.Value;
-                y=repmat(d*cos(th),1,p.Results.fuseRings);
-                z=repmat(d*sin(th),1,p.Results.fuseRings);
+                y=repmat(d/2*cos(th),1,p.Results.fuseRings);
+                z=repmat(d/2*sin(th),1,p.Results.fuseRings);
                 numextra=(perSlice-1)*2;
                 xend=x(end);
                 for i = 0:numextra-1
@@ -790,17 +798,17 @@ classdef vehicleM < dynamicprops
                 z(end+1:end+numextra) = reshape(repmat(z(2:perSlice),2,1),[1 numextra]);
                 
                 [sx, sy, sz]=sphere;
-                sx = reshape(obj.fuse.diameter.Value*sx,[1 numel(sx)]);
-                sy = reshape(obj.fuse.diameter.Value*sy,[1 numel(sy)]);
-                sz = reshape(obj.fuse.diameter.Value*sz,[1 numel(sz)]);
-                nosex = sy(1:ceil(numel(sx)/2))+obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value;
+                sx = reshape(obj.fuse.diameter.Value/2*sx,[1 numel(sx)]);
+                sy = reshape(obj.fuse.diameter.Value/2*sy,[1 numel(sy)]);
+                sz = reshape(obj.fuse.diameter.Value/2*sz,[1 numel(sz)]);
+                nosex = sy(1:ceil(numel(sx)/2))+obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value/2;
                 nosey = sx(1:ceil(numel(sx)/2));
                 nosez = sz(1:ceil(numel(sx)/2));
 %                 x(end+1:end+numel(nosex))=nosex;
 %                 y(end+1:end+numel(nosey))=nosey;
 %                 z(end+1:end+numel(nosez))=nosez;
                 
-                endx = sy(ceil(numel(sx)/2):end)+obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value;
+                endx = sy(ceil(numel(sx)/2):end)+obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value/2;
                 endy = sx(ceil(numel(sx)/2):end);
                 endz = sz(ceil(numel(sx)/2):end);
 %                 x(end+1:end+numel(endx))=endx;
