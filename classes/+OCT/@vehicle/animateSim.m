@@ -93,6 +93,8 @@ addParameter(p,'Bedrock',true,@islogical)
 addParameter(p,'LineAngleEst',false,@islogical)
 % 
 addParameter(p,'plotTarget',false,@islogical)
+% plot flow shear vector profile
+addParameter(p,'plotFlowShearProfile',false,@islogical)
 
 % ---Parse the output---
 parse(p,tsc,timeStep,varargin{:})
@@ -291,6 +293,17 @@ if p.Results.plotTarget
         tscTmp.G_rTarget.Data(2,:,1),...
         tscTmp.G_rTarget.Data(3,:,1),...
         'b*');
+end
+
+if p.Results.plotFlowShearProfile
+    h.flowShear = quiver3(...
+        tscTmp.flowAltitudes.Data(:,1,1)*0,...
+        tscTmp.flowAltitudes.Data(:,1,1)*0,...
+        tscTmp.flowAltitudes.Data(:,1,1)*1,...
+        tscTmp.flowShearProfile.Data(:,1,1)*1,...
+        tscTmp.flowShearProfile.Data(:,1,1)*0,...
+        tscTmp.flowShearProfile.Data(:,1,1)*0,...
+        2,'linewidth',2);  
 end
 
 % Plot navigation vectors
@@ -687,6 +700,18 @@ for ii = 1:numel(tscTmp.positionVec.Time)
        h.targetPoint.XData = targPoint(1);
        h.targetPoint.YData = targPoint(2);
        h.targetPoint.ZData = targPoint(3);
+    end
+    
+    if p.Results.plotFlowShearProfile
+        flowAlt = tscTmp.flowAltitudes.getsamples(ii).Data;
+        flowShear = tscTmp.flowShearProfile.getsamples(ii).Data;
+        h.flowShear.XData = flowAlt*0;
+        h.flowShear.YData = flowAlt*0;
+        h.flowShear.ZData = flowAlt*1;
+        h.flowShear.UData = flowShear;
+        h.flowShear.VData = flowShear*0;
+        h.flowShear.WData = flowShear*0;
+        
     end
     
     % Update navigation vectors

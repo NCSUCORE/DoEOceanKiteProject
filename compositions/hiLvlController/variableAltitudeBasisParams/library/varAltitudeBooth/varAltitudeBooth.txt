@@ -1,0 +1,23 @@
+hiLvlCtrl.altRef.Value = [50 100 150 200 250 300]
+hiLvlCtrl.altRef.Unit = 'm'
+hiLvlCtrl.altRef.NoScale = false
+hiLvlCtrl.ELslew.Value = 1.0000e-02
+hiLvlCtrl.ELslew.Unit = 'deg/s'
+hiLvlCtrl.ELslew.NoScale = false
+hiLvlCtrl.altitude.Value = 2.0000e+02
+hiLvlCtrl.altitude.Unit = 'm'
+hiLvlCtrl.altitude.NoScale = false
+hiLvlCtrl.basisParams.Value = [0.3491 0.7999 0.523598775598299 0 400]
+hiLvlCtrl.basisParams.Unit = '[rad rad rad rad m]'
+hiLvlCtrl.basisParams.NoScale = false
+hiLvlCtrl.elevationLookup.Unit = 'deg'
+hiLvlCtrl.elevationLookup.NoScale = false
+hiLvlCtrl.velRef.Value = [0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5]
+hiLvlCtrl.velRef.Unit = 'm/s'
+hiLvlCtrl.velRef.NoScale = false
+hiLvlCtrl.ELctrl.Value = 0.0000e+00
+hiLvlCtrl.ELctrl.Unit is unitless or has no unit specified
+hiLvlCtrl.ELctrl.NoScale = false
+hiLvlCtrl.ThrCtrl.Value = 1.0000e+00
+hiLvlCtrl.ThrCtrl.Unit is unitless or has no unit specified
+hiLvlCtrl.ThrCtrl.NoScale = false
