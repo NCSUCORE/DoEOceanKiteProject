@@ -14,9 +14,9 @@ simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
 thrLength = 20;%[20 35 50];                         % m - Initial tether length
 flwSpd = [0.5];%[0.25:.25:2];                             % m/s - Flow speed
-elevation = [0:10:80];  % elevation angle in degrees for tow controller
+elevation = 30%[0:10:80];  % elevation angle in degrees for tow controller
 yaw = 0;
-flowDirPert = [0];
+flowDirPert = [0.5];
 saveim = 0;
 craftSpeed = -1.54;
 rDes =1% [0.1:.025:0.3];
@@ -32,7 +32,7 @@ end
 desPitch = 2%[-8:4:8];                            % Desired Pitch in degrees
 
 %Sim Time
-simTime = 1000;
+simTime = 7200;
 
 %Exit at SS
 exit = 0;
@@ -59,7 +59,7 @@ angVel = [0 0 0 0 0 0 0 0 0;...
     0 0 0 0 0 0 0 0 0;...
 %     0 0 0 0 0 0 0 0 0]';
     0 0 yaw(ll)/15*pi/180 0 0 0 0 0 0]';
-spiral = 1; %1 for prescribed control 2 for spiral transit
+spiral = 2; %1 for prescribed control 2 for spiral transit
 longloop = 0;
 latLoopPlot = 0;
 animate = 0;
@@ -301,10 +301,10 @@ else
     saveplot = false;
 end
 
-% vhcl.animateSim(tsc,2,...
-%     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%     'ZoomInMove',true,'SaveGIF',true,'GifFile',[filename 'outtop.gif'],...
-%     'View',[0,90],'startTime',100,'GifPath',filepath,'tracerDuration',7200,'timestep',25);
+vhcl.animateSim(tsc,2,...
+    'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+    'ZoomInMove',false,'SaveGIF',true,'GifFile',[filename '.gif'],...
+    'View',[0,90],'startTime',100,'GifPath',filepath,'tracerDuration',7200,'timestep',25);
 % % vhcl.animateSim(tsc,2,...
 % %     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
 % %     'ZoomInMove',true,'SaveGIF',save,'GifFile',[filename 'side.gif'],...
