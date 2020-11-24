@@ -80,7 +80,7 @@ end
 loadComponent('varAltitudeBooth');                             %   High level controller
 hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
 if simScenario == 1.3
-    hiLvlCtrl.ELctrl.setValue(0,'');
+    hiLvlCtrl.ELctrl.setValue(2,'');
 else
     hiLvlCtrl.ELctrl.setValue(1,'');
 end
@@ -167,26 +167,26 @@ if saveSim == 1
     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
 end
 %%  Plot Results
-if simScenario < 3
-    lap = max(tsc.lapNumS.Data)-1;
-    if max(tsc.lapNumS.Data) < 2
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    end
-else
-    tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
-end
+% if simScenario < 3
+%     lap = max(tsc.lapNumS.Data)-1;
+%     if max(tsc.lapNumS.Data) < 2
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     else
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     end
+% else
+%     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
+% end
 %%
-figure(23); 
-[Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2-1;
-data = squeeze(tsc.currentPathVar.Data);
-subplot(2,1,1); hold on; grid on;
-plot(data(ran),squeeze(tsc.tanRollDes.Data(:,:,ran)),'r-')
-xlabel('Path Position'); ylabel('Tan Roll Des [deg]');
-subplot(2,1,2); hold on; grid on;
-plot(data(ran),squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)),'r-')
-xlabel('Path Position'); ylabel('Port Aileron [deg]');
+% figure(23); 
+% [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2-1;
+% data = squeeze(tsc.currentPathVar.Data);
+% subplot(2,1,1); hold on; grid on;
+% plot(data(ran),squeeze(tsc.tanRollDes.Data(:,:,ran)),'r-')
+% xlabel('Path Position'); ylabel('Tan Roll Des [deg]');
+% subplot(2,1,2); hold on; grid on;
+% plot(data(ran),squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)),'r-')
+% xlabel('Path Position'); ylabel('Port Aileron [deg]');
 %%
 % figure; subplot(1,3,1); hold on; grid on;
 % plot(tsc.basisParams.Time,squeeze(tsc.basisParams.Data(3,:,:))*180/pi,'r-'); xlabel('Time [s]'); ylabel('Elevation [deg]');
