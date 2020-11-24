@@ -441,6 +441,44 @@ classdef Manta < handle
             h.colorbar.Label.String = 'Flow Speed [m/s]';
 %             h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
         end
+        function h = velField(obj,varargin)
+            % Parse optional input arguments
+            p = inputParser;
+            addParameter(p,'BinSize',0.1,@(x) x>0)
+            addParameter(p,'NumOfColorBands',20,@(x) mod(x,1)==0);
+            parse(p,varargin{:})
+            % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Loop through every grid point
+            vFlows = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    for kk = 1:size(flowSpeeds,3)
+                        % Get the flow speeds at this grid point
+                        vFlows(ii,jj,kk) = mean(squeeze(flowSpeeds(ii,jj,kk,:)));
+                    end
+                end
+            end
+            vFlows1 = vFlows(:,:,23:27);
+            % Set up meshgrid for plots
+            [x1,y1,z1] = meshgrid(obj.xGridPoints.Value*1e-3,obj.yGridPoints.Value*1e-3,obj.zGridPoints.Value(1:22));
+            [x2,y2,z2] = meshgrid(obj.xGridPoints.Value*1e-3,obj.yGridPoints.Value*1e-3,obj.zGridPoints.Value(28));
+            [x,y,z] = meshgrid(obj.xGridPoints.Value*1e-3,obj.yGridPoints.Value*1e-3,obj.zGridPoints.Value(23:27));
+            % Set the colorbands
+%             colormap([linspace(0,1,p.Results.NumOfColorBands)' zeros(p.Results.NumOfColorBands,1) linspace(1,0,p.Results.NumOfColorBands)'])
+            colormap([zeros(p.Results.NumOfColorBands,1) zeros(p.Results.NumOfColorBands,1) linspace(1,0,p.Results.NumOfColorBands)'])
+            scatter3(x1(:),y1(:),z1(:),40,[.75 .75 .75],'filled'); hold on
+            scatter3(x2(:),y2(:),z2(:),40,[0 0 0],'filled'); hold on
+            scatter3(x(:),y(:),z(:),40,vFlows1(:),'filled');
+%             h.colorbar = colorbar;
+            set(gca,'FontSize',14)
+            xlabel('x [km]')
+            ylabel('y [km]')
+            zlabel('z [m]')
+            zlim([-500 0])
+            h.colorbar.Label.String = 'Flow Speed [m/s]';
+%             h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
+        end
         function h = velPDF(obj,xIdx,yIdx,varargin)
             % Parse optional input arguments
             p = inputParser;
