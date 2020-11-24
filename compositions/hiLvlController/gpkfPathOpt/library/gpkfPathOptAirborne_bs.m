@@ -24,7 +24,7 @@ temporalLengthScale = env.water.temporalLengthScale.Value;
 noiseVar            = env.water.noiseVariance.Value;
 
 % fast state estimate time step in MINUTES
-fastTimeStep  = 10/60;
+fastTimeStep  = 12/60;
 % MPC KFGP time step in MINUTES
 mpckfgpTimeStep = 3;
 % mpc prediction horizon
