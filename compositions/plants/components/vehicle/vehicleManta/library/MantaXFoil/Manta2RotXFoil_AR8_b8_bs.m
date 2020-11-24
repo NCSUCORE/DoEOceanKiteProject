@@ -106,7 +106,10 @@ vhcl.turb2.setStaticArea(0.08,'m^2')
 vhcl.turb2.setStaticCD(1.5,'')
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
-
+vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');
+vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/4,'1/deg');
+vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/4,'1/deg');
+vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/4,'1/deg');
 %% Added Mass/Damping (defaults to zeros)
 Input.wing.Thickness = 12;  Input.wing.Sections = 20; 
 Input.hStab.Thickness = 15; Input.hStab.Sections = 20; 
@@ -114,7 +117,7 @@ Input.vStab.Thickness = 15; Input.vStab.Sections = 10;
 Input.fuse.Sections = 10; 
 [MA] = getAddedMass(Input,vhcl);
 vhcl.setMa6x6_LE(MA,'');
-% vhcl.plot
+vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 
