@@ -14,8 +14,8 @@ simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
 thrLength = 20;%[20 35 50];                         % m - Initial tether length
 flwSpd = [0.5];%[0.25:.25:2];                             % m/s - Flow speed
-elevation = 30%[0:10:80];  % elevation angle in degrees for tow controller
-yaw = 60;
+elevation = [0:10:80];  % elevation angle in degrees for tow controller
+yaw = 0;
 flowDirPert = [0];
 saveim = 0;
 craftSpeed = -1.54;
@@ -32,7 +32,7 @@ end
 desPitch = 2%[-8:4:8];                            % Desired Pitch in degrees
 
 %Sim Time
-simTime = 600;
+simTime = 1000;
 
 %Exit at SS
 exit = 0;
@@ -228,17 +228,17 @@ for ii =1:numel(flwSpd)
 %         fltCtrl.rollMoment.kp.setValue(21,'(N*m)/(rad)');
 %         fltCtrl.rollMoment.kd.setValue(191,'(N*m)/(rad/s)');
     end 
-    fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)');
-    fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
-    fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
-
-    fltCtrl.rollSP.kp.setValue(0,'(deg)/(deg)');
-    fltCtrl.rollSP.ki.setValue(0,'(deg)/(deg*s)');
-    fltCtrl.rollSP.kd.setValue(0,'(deg)/(deg/s)');
-
-    fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');   
-    fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
-    fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
+%     fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)');
+%     fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
+%     fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
+% 
+%     fltCtrl.rollSP.kp.setValue(0,'(deg)/(deg)');
+%     fltCtrl.rollSP.ki.setValue(0,'(deg)/(deg*s)');
+%     fltCtrl.rollSP.kd.setValue(0,'(deg)/(deg/s)');
+% 
+%     fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');   
+%     fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
+%     fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
 %     
 %     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)')
 %     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
@@ -301,18 +301,18 @@ else
     saveplot = false;
 end
 
-vhcl.animateSim(tsc,2,...
-    'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-    'ZoomInMove',true,'SaveGIF',true,'GifFile',[filename 'outtop.gif'],...
-    'View',[0,90],'startTime',100,'GifPath',filepath,'tracerDuration',100);
 % vhcl.animateSim(tsc,2,...
 %     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%     'ZoomInMove',true,'SaveGIF',save,'GifFile',[filename 'side.gif'],...
-%     'View',[0,0],'startTime',100,'GifPath',filepath);
-vhcl.animateSim(tsc,2,...
-    'GifTimeStep',.01,'PlotTracer',false,'FontSize',12,'Pause',1==0,...
-    'ZoomInMove',true,'SaveGIF',saveplot,'GifFile',[filename 'oblique.gif'],...
-    'View',[30,30],'startTime',100,'timeStep',1,'GifPath',filepath,'tracerDuration',100);
+%     'ZoomInMove',true,'SaveGIF',true,'GifFile',[filename 'outtop.gif'],...
+%     'View',[0,90],'startTime',100,'GifPath',filepath,'tracerDuration',7200,'timestep',25);
+% % vhcl.animateSim(tsc,2,...
+% %     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+% %     'ZoomInMove',true,'SaveGIF',save,'GifFile',[filename 'side.gif'],...
+% %     'View',[0,0],'startTime',100,'GifPath',filepath);
+% vhcl.animateSim(tsc,2,...
+%     'GifTimeStep',.01,'PlotTracer',false,'FontSize',12,'Pause',1==0,...
+%     'ZoomInMove',true,'SaveGIF',saveplot,'GifFile',[filename 'oblique.gif'],...
+%     'View',[30,30],'startTime',100,'timeStep',1,'GifPath',filepath,'tracerDuration',100);
 
 % figure
 % plot(elevation,thrTen,'sr','DisplayName','Total Tension');
@@ -439,6 +439,7 @@ hold on;
 yyaxis right
 plot(elevation(2:end-1),pitch(2:end-1),'o','DisplayName','Pitch Angle')
 ax.YAxis(2).Color = 'k';
+grid on
 ylabel('Pitch Angle [deg]')
 xlabel('Elevation Angle [deg]')
 legend
