@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 <?xml version='1.0' encoding='UTF-8'?>
 <Info>
     <Category UUID="FileClassCategory">
         <Label UUID="design" />
     </Category>
+=======
+<?xml version='1.0' encoding='UTF-8'?>
+<Info>
+    <Category UUID="FileClassCategory">
+        <Label UUID="design" />
+    </Category>
+>>>>>>> 23b39522664187af0c12b3cca2a3c49e138519a2
 </Info>
