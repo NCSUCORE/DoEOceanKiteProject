@@ -117,7 +117,7 @@ Input.vStab.Thickness = 15; Input.vStab.Sections = 10;
 Input.fuse.Sections = 10; 
 [MA] = getAddedMass(Input,vhcl);
 vhcl.setMa6x6_LE(MA,'');
-% vhcl.plot
+vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 

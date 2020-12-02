@@ -13,32 +13,33 @@ simScenario = 2.3;
 simScenariosub = (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
 thrLength = 20;%[20 35 50];                         % m - Initial tether length
-flwSpd = [1e-30];%[0.25:.25:2];                             % m/s - Flow speed
-elevation = [20];  % elevation angle in degrees for tow controller
-yaw = 20;
-flowDirPert = [0];
+flwSpd = [0.5];%[0.25:.25:2];                             % m/s - Flow speed
+elevation = 30%[0:10:80];  % elevation angle in degrees for tow controller
+yaw = 0;
+flowDirPert = [0.5];
 saveim = 0;
 craftSpeed = -1.54;
-
+rDes =1% [0.1:.025:0.3];
+for mm = 1:length(rDes)
 for l = 1:length(elevation)
     for ll = 1:length(yaw)
 el = elevation(l)*pi/180;                                 % rad - Mean elevation angle
-
+% rDes(mm)
 
 if simScenario > 2 &&  simScenario < 4
 ctrlPitch = 2; % Controller State 0 - Single Pitch 1 - Lookup Table 2 - Elevator Controller
 end
-desPitch = 0;%[0:2:16];                            % Desired Pitch in degrees
+desPitch = 2%[-8:4:8];                            % Desired Pitch in degrees
 
 %Sim Time
-simTime = 600
+simTime = 7200;
 
 %Exit at SS
-exit = 0
+exit = 0;
 
 %Linearization Inputs
-openLoop = 0 %1 = open loop linearization 0 = closed loop linearization
-linCtrl = 0; %0 - Normal Control; 1 - Freeze Control inputs for linearization
+openLoop = 0; %1 = open loop linearization 0 = closed loop linearization
+linCtrl = 1; %0 - Normal Control; 1 - Freeze Control inputs for linearization
 linearize = 0;%0 - No linearization; 1 - Linearization turned on 
 saveLin = 0;% 1 to save,
 
@@ -58,7 +59,7 @@ angVel = [0 0 0 0 0 0 0 0 0;...
     0 0 0 0 0 0 0 0 0;...
 %     0 0 0 0 0 0 0 0 0]';
     0 0 yaw(ll)/15*pi/180 0 0 0 0 0 0]';
-
+spiral = 2; %1 for prescribed control 2 for spiral transit
 longloop = 0;
 latLoopPlot = 0;
 animate = 0;
@@ -72,15 +73,17 @@ for qq = 1:numel(flowDirPert)
     %%Flow Disturbance
     
     flowAngle =[0 0 flowDirPert(qq)]; %degrees
-    flowDir = flowAngle*pi/180 % rotation direction of flow about body z degrees
+    flowDir = flowAngle*pi/180; % rotation direction of flow about body z degrees
 
 for kk = 1:numel(desPitch)
 for jj = 1:numel(thrLength)
 for ii =1:numel(flwSpd)
     linCtrl = 0; %0 - Normal Control; 1 - Controller Manipulation
     %%  Load components
-    if simScenario >= 3 || simScenario == 2.3
-        loadComponent('slCtrl');                         %   Launch and recovery controller
+    if simScenario == 3.3 || simScenario == 2.3 
+        loadComponent('slCtrl');         
+    elseif simScenario == 3.2 || simScenario == 2.2 
+        loadComponent('exp_slCtrl');                         %   Launch and recovery controller
 %         loadComponent('LaRController');                         %   Launch and recovery controller
     elseif simScenario == 2
         loadComponent('pathFollowingCtrlForILC');
@@ -90,7 +93,7 @@ for ii =1:numel(flwSpd)
     loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
     if simScenario > 2 && simScenario < 3
         loadComponent('prescribedGndStn001')
-%         gndStn.pathVar.setValue(2,'')
+        gndStn.pathVar.setValue(spiral,'')
     else
         loadComponent('pathFollowingGndStn');                       %   Ground station
     end
@@ -117,7 +120,7 @@ for ii =1:numel(flwSpd)
         loadComponent('Manta2RotAVL_Thr075');                               %   Manta kite with AVL
     elseif simScenario == 1.2 || simScenario == 2.2 || simScenario == 3.2 || simScenario == 4.2
         loadComponent('Manta2RotXFoil_AR8_b8_expt');                             %   Manta kite with XFoil
-        vhcl.scale(.1,1);
+%         vhcl.scale(.1,1);
         vhcl.turb1.setDiameter(0,'m');
         vhcl.turb2.setDiameter(0,'m');
         vhcl.setBuoyFactor(1,'');
@@ -142,7 +145,7 @@ for ii =1:numel(flwSpd)
         hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength(jj)],'[rad rad rad rad m]') % Lemniscate of Booth
     end
     %%  Ground Station Properties
-    if simScenario == 2.3
+    if simScenario == 2.3 || simScenario == 2.2
         gndStn.setVelVecTrajectory(vel,time,'m/s');
         gndStn.setAngVelTrajectory(angVel,time,'rad/s');
         gndStn.setInitPosVecGnd([0 0 0],'m');
@@ -157,6 +160,7 @@ for ii =1:numel(flwSpd)
     if simScenario < 3 && simScenario > 2
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.initPosVecGnd.Value,0);
             vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
+            vhcl.setInitVelVecBdy([craftSpeed 0 0],'m/s')
     elseif simScenario > 3
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0);
         vhcl.setInitEulAng([0,desPitch(kk),0]*pi/180,'rad');
@@ -174,14 +178,15 @@ for ii =1:numel(flwSpd)
     end
     thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
         +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-    thr.tether1.initGndNodeVel.setValue([2 0 0]','m/s');
+    thr.tether1.initGndNodeVel.setValue([craftSpeed 0 0]','m/s');
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-    if simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
+    if simScenario == 1.2 || simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
         thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
         thr.tether1.setDiameter(0.0076,thr.tether1.diameter.Unit);
     end
     thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
+%     vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-rDes(mm);0;-vhcl.fuse.diameter.Value/2],'m');
     %%  Winches Properties
     if simScenario >2 && simScenario < 3
         wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,env.water.flowVec.Value);
@@ -217,24 +222,29 @@ for ii =1:numel(flwSpd)
         vhcl.turb1.setPowerCoeff(0,'');
         fltCtrl.initCtrlVec;
         fltCtrl.pitchCtrl.setValue(ctrlPitch,'')
-        fltCtrl.pitchConst.setValue(desPitch,'deg')
+        fltCtrl.pitchConst.setValue(desPitch(kk),'deg')
     end
     if simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
 %         fltCtrl.rollMoment.kp.setValue(21,'(N*m)/(rad)');
 %         fltCtrl.rollMoment.kd.setValue(191,'(N*m)/(rad/s)');
     end 
-    fltCtrl.rudderCmd.kp.setValue(10,'(deg)/(rad)');
-    fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
-    fltCtrl.rudderCmd.kd.setValue(1,'(deg)/(rad/s)');
-
-    fltCtrl.rollSP.kp.setValue(3,'(deg)/(deg)');
-    fltCtrl.rollSP.ki.setValue(.05,'(deg)/(deg*s)');
-    fltCtrl.rollSP.kd.setValue(6,'(deg)/(deg/s)');
-
-    fltCtrl.alrnCmd.kp.setValue(5,'(deg)/(rad)');   
-    fltCtrl.alrnCmd.ki.setValue(.08,'(deg)/(rad*s)');
-    fltCtrl.alrnCmd.kd.setValue(5,'(deg)/(rad/s)');
-%     thr.tether1.dragEnable.setValue(1,'');
+%     fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)');
+%     fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
+%     fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
+% 
+%     fltCtrl.rollSP.kp.setValue(0,'(deg)/(deg)');
+%     fltCtrl.rollSP.ki.setValue(0,'(deg)/(deg*s)');
+%     fltCtrl.rollSP.kd.setValue(0,'(deg)/(deg/s)');
+% 
+%     fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');   
+%     fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
+%     fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
+%     
+%     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)')
+%     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
+%     fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)')
+%     vhcl.hStab.setRSurfLE_WingLEBdy([.345;0;0],'m');
+    thr.tether1.dragEnable.setValue(1,'');
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
     %Turn on elevator control
@@ -270,36 +280,39 @@ end
         linsys.xFinal = xFinal
         varNam = sprintf('%d_%d_%d.mat',100*flwSpd(ii),thrLength(jj),desPitch(kk));
         if saveLin == 1
-            save(varNam,'linsys')
+            saveplot(varNam,'linsys')
             clear linsys
         end
         
         clear trimCtrl
     end
+    pitch(l) = tsc.eulerAngles.Data(2,end)*180/pi;
+    tension(l) = tsc.airTenVecs.mag.Data(end);
 len = length(tsc.airTenVecs.Time);
 thrTen(l,ll) = tsc.airTenVecs.getsamples(len).mag.Data;  
 plotCtrlDeflections;
 fig = get(groot,'CurrentFigure');
 filepath = fullfile(fileparts(which('OCTProject.prj')),'output\Manta\');
-filename = sprintf('%del%dturnstop',elevation(l),yaw(ll));
+filename = sprintf('%del%dturn',elevation(l),yaw(ll));
 if saveim == 1
     saveas(fig,[filepath filename '.png']);
-    save = true;
+    saveplot = true;
 else
-    save = false;
+    saveplot = false;
 end
-% vhcl.animateSim(tsc,2,...
-%     'GifTimeStep',.001,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%     'ZoomInMove',true,'SaveGIF',true,'GifFile',[filename 'outtop.gif'],...
-%     'View',[0,90],'startTime',100,'GifPath',filepath,'timeStep',5,'tracerDuration',7200);
-% vhcl.animateSim(tsc,2,...
-%     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%     'ZoomInMove',true,'SaveGIF',save,'GifFile',[filename 'side.gif'],...
-%     'View',[0,0],'startTime',100,'GifPath',filepath);
+
+vhcl.animateSim(tsc,2,...
+    'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+    'ZoomInMove',false,'SaveGIF',true,'GifFile',[filename '.gif'],...
+    'View',[0,90],'startTime',100,'GifPath',filepath,'tracerDuration',7200,'timestep',25);
+% % vhcl.animateSim(tsc,2,...
+% %     'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+% %     'ZoomInMove',true,'SaveGIF',save,'GifFile',[filename 'side.gif'],...
+% %     'View',[0,0],'startTime',100,'GifPath',filepath);
 % vhcl.animateSim(tsc,2,...
 %     'GifTimeStep',.01,'PlotTracer',false,'FontSize',12,'Pause',1==0,...
-%     'ZoomInMove',true,'SaveGIF',save,'GifFile',[filename 'obliquestop.gif'],...
-%     'View',[30,30],'startTime',100,'timeStep',5,'GifPath',filepath,'tracerDuration',100);
+%     'ZoomInMove',true,'SaveGIF',saveplot,'GifFile',[filename 'oblique.gif'],...
+%     'View',[30,30],'startTime',100,'timeStep',1,'GifPath',filepath,'tracerDuration',100);
 
 % figure
 % plot(elevation,thrTen,'sr','DisplayName','Total Tension');
@@ -410,6 +423,7 @@ end
     
     set(findall(gcf,'Type','axes'),'FontSize',20)
     linkaxes(findall(gcf,'Type','axes'),'x')
+    close all
     end
 end
 end
@@ -417,7 +431,18 @@ end
 end
     end
 end
-
+end
+figure
+plot(elevation(2:end-1),tension(2:end-1),'kx','DisplayName','SS Tether Tension')
+ylabel('Tension [N]')
+hold on;
+yyaxis right
+plot(elevation(2:end-1),pitch(2:end-1),'o','DisplayName','Pitch Angle')
+ax.YAxis(2).Color = 'k';
+grid on
+ylabel('Pitch Angle [deg]')
+xlabel('Elevation Angle [deg]')
+legend
 % figure
 % plotLateral
 % % figure
