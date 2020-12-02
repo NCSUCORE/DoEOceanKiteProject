@@ -1,23 +1,31 @@
 clear;
 clc;
-close all;
 
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(0.1*60*60,'s');
+simParams.setDuration(0.05*60*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
 thrLength = 1000;
 % rad - Mean elevation angle
 initElevation = 30*pi/180;
 % rad - Path width/height
-w = 40*pi/180;
-h = 8*pi/180;
+w = 28*pi/180;
+h = w/5;
+% h = 8*pi/180;
 % Path basis parameters
 [a,b] = boothParamConversion(w,h);
 
 %% simulation scenarioes
+% column description
+% 1 - choose vehicle design. 1 for unrealistic, 2 for realistic
+% 2 - choose high level controller. 1 for constantLem, 2 for upper
+% level MPC GPKF only, 3 for for complete GPKF controller
+% 3 - choose environment. 1 for constant flow, 2 for varying flow.
+% 4 - choose path following controller. 1 for usual, 2 for guidance law one
+% 5 - save simulation results. Figures and such.
+
 simScenario = [2 1 1 1 false];
 
 %% Load components
@@ -39,9 +47,9 @@ loadComponent('idealSensorProcessing');
 % select vehicle based on sim scenario
 switch simScenario(1)
     % Vehicle
-    case 1
+    case 1 % unrealistically light weight
         loadComponent('ayazAirborneVhcl');
-    case 2
+    case 2 % realistic
         loadComponent('realisticAirborneVhcl');
 end
 
@@ -83,13 +91,14 @@ end
 
 % select Environment based on sim scenario
 switch simScenario(3)
-    case 1
+    case 1 % constant flow field
         loadComponent('ayazAirborneFlow.mat');
         env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
-    case 2
+    case 2 % synthetically generated flow field
         loadComponent('ayazAirborneSynFlow');
 end
 
+% plot radius of curvature
 cIn = maneuverabilityAdvanced(vhcl);
 cIn.meanElevationInRadians = initElevation;
 cIn.pathWidth = w*180/pi;
@@ -97,7 +106,6 @@ cIn.pathHeight = h*180/pi;
 cIn.tetherLength = thrLength;
 minCur = cIn.calcMinCurvature;
 pLength = cIn.pathLength;
-
 % figure(10);
 % pR = cIn.plotPathRadiusOfCurvature;
 
@@ -131,20 +139,19 @@ wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[flowSpeed;0;0]);
 %% path following controller
 % select path following controller based on sim scenario
 switch simScenario(4)
-    case 1
+    case 1 % usual path following controller
         loadComponent('ayazPathFollowingAirborne');
+    case 2 % guidance law based path following controller
+        loadComponent('guidanceLawPathFollowingAir');
 end
-fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 
 fltCtrl.elevatorReelInDef.setValue(0,'deg');
-fltCtrl.rudderGain.setValue(0,'');
-fltCtrl.yawMoment.kp.setValue(0,'(N*m)/(rad)');
 
 %% Run Simulation
-keyboard
+% keyboard
 simWithMonitor('OCTModel');
 
 tscOld = signalcontainer(logsout);
@@ -181,7 +188,7 @@ switch simScenario(2)
     case 1
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed',...
-            'Flow at kite','Lap stats'};
+            'Lap stats'};
     case 2
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed',...
@@ -213,31 +220,12 @@ if simScenario(5)
     end
 end
 
-
-%% animations
-GG.saveGifs = true;
-GG.timeStep = 1;
-GG.gifTimeStep = 0.1;
-
-switch simScenario(2)
-    case 1
-        vhcl.animateSim(tscOld,GG.timeStep,...
-            'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
-            'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
-            'GifFile','AirGif.gif','plotFlowShearProfile',false,'plotTracer',false);
-    case 2
-        vhcl.animateSim(tscOld,GG.timeStep,...
-            'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
-            'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
-            'GifFile','AirGifGPKF.gif','plotFlowShearProfile',true,'plotTracer',false);
-end
-
 %% write data to table
 headers = {'Mean elevation','Path width','Path height',...
     'Path length',...
     'Lap no.','Lap time','Dist. traveled','Avg. P','(V_app,x)^3',...
     '(V_app,x/V_w)^3','(V_k/V_w)^3','Avg. V_cm',...
-    'Avg. AoA','Max roll','Tracking'};
+    'Avg. AoA','Max roll','Tracking','Mass'};
 nHeaders = numel(headers);
 % variable types
 varTypes = cell(1,nHeaders);
@@ -251,10 +239,43 @@ baseTable(1,1).("Mean elevation") = cIn.meanElevationInRadians*180/pi;
 baseTable(1,2).("Path width") = cIn.pathWidth;
 baseTable(1,3).("Path height") = cIn.pathHeight;
 baseTable(1,4).("Path length") = cIn.pathLength;
-baseTable(1,5:end) = {statOld{2,:}, trackOld};
+baseTable(1,5:end) = {statOld{2,:}, trackOld, vhcl.mass.Value};
 
 if simScenario(5)
     writetable(baseTable,'manualMode.xlsx',"WriteMode","append");
+end
+
+    writetable(baseTable,'simDat.txt',"WriteMode","append");
+
+%% animations
+GG.saveGifs = true;
+GG.timeStep = 1;
+GG.gifTimeStep = 0.1;
+switch simScenario(4)
+    case 1
+        GG.plotTarget = false;
+    case 2
+        GG.plotTarget = true;
+end
+if GG.timeStep < 5
+    GG.plotTracer = true;
+else
+    GG.plotTracer = false;
+end
+
+switch simScenario(2)
+    case 1
+        vhcl.animateSim(tscOld,GG.timeStep,...
+            'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',GG.plotTarget,...
+            'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
+            'GifFile','AirGif.gif','plotFlowShearProfile',false,...
+            'plotTracer',GG.plotTracer);
+    case 2
+        vhcl.animateSim(tscOld,GG.timeStep,...
+            'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',GG.plotTarget,...
+            'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
+            'GifFile','AirGifGPKF.gif','plotFlowShearProfile',true,...
+            'plotTracer',GG.plotTracer);
 end
 
 %% save the file

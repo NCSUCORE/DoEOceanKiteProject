@@ -13,8 +13,8 @@ loadComponent('ayazAirborneFlow');
 
 vhcl.setFluidDensity(env.water.density.Value,'kg/m^3')
 vhcl.setNumTethers(1,'');
-vhcl.setBuoyFactor(0.1,'');
-vhcl.setFluidCoeffsFileName('realisticAirborneVhclCoeff_v1','');
+vhcl.setBuoyFactor(0.015,'');
+vhcl.setFluidCoeffsFileName('realisticAirborneVhclCoeff_v2','');
 
 %% Volumes and Inertia
 vhcl.setVolume(0.36,'m^3') %From CAD
@@ -65,7 +65,7 @@ vhcl.hStab.setRootChord(.29,'m');
 vhcl.hStab.setTR(1,'');
 vhcl.hStab.setHalfSpanGivenAR(4.65,''); %Span 4, hspan 2
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(-5,'deg');
+vhcl.hStab.setIncidence(-7.5,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-clMax,'');
 vhcl.hStab.setClMax(clMax,'');
@@ -94,10 +94,15 @@ vhcl.calcFluidDynamicCoefffs
 
 %% artificially increase value
 kk = 2;
-vhcl.portWing.CL.setValue(2*vhcl.portWing.CL.Value,'')
-vhcl.stbdWing.CL.setValue(2*vhcl.stbdWing.CL.Value,'')
-vhcl.hStab.CL.setValue(2*vhcl.hStab.CL.Value,'')
-vhcl.vStab.CL.setValue(2*vhcl.vStab.CL.Value,'')
+vhcl.portWing.CL.setValue(kk*vhcl.portWing.CL.Value,'')
+vhcl.stbdWing.CL.setValue(kk*vhcl.stbdWing.CL.Value,'')
+vhcl.hStab.CL.setValue(kk*vhcl.hStab.CL.Value,'')
+vhcl.vStab.CL.setValue(kk*vhcl.vStab.CL.Value,'')
+try
+allAxes = findall(0,'type','axes');
+xlim(allAxes(:),15*[-1 1]);
+catch
+end
 
 %% Turbines
 
@@ -109,7 +114,7 @@ opAoA = 11;
 
 idealTurbCD = 0.5*totalCD(aIdx);
 idealArea   = idealTurbCD*vhcl.fluidRefArea.Value;
-ideaTurbDia = 0*sqrt(4*idealArea/pi);
+ideaTurbDia = 1*sqrt(4*idealArea/pi);
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
