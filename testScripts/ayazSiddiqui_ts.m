@@ -8,15 +8,15 @@ set(groot, 'defaultLegendInterpreter','latex');
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(5*60,'s');
+simParams.setDuration(40*60,'s');
 dynamicCalc = '';
-flowSpeed = 1.5;
-thrLength = 200;
+flowSpeed = 1;
+thrLength = 150;
 % rad - Mean elevation angle
-initElevation = 20*pi/180;    
+el = 20*pi/180;    
 % rad - Path width/height
 w = 40*pi/180;          
-h = 8*pi/180;  
+h = 10*pi/180;  
 % Path basis parameters
 [a,b] = boothParamConversion(w,h);      
 
@@ -26,19 +26,7 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % High level controller
-loadComponent('constBoothLem.mat');
-hiLvlCtrl.basisParams.setValue([a,b,initElevation,0*pi/180,thrLength],'[rad rad rad rad m]');
-% loadComponent('gpkfPathOpt');
-% 
-% hiLvlCtrl.maxStepChange        = (40/thrLength)*180/pi;
-% hiLvlCtrl.minVal               = 5;
-% hiLvlCtrl.maxVal               = 45;
-% hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
-% hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
-% hiLvlCtrl.rateLimit         = 0.1;
-% hiLvlCtrl.kfgpTimeStep      = 5/60;
-% hiLvlCtrl.mpckfgpTimeStep   = 2;
-
+loadComponent('constBoothLem');
 % Ground station
 loadComponent('pathFollowingGndStn');
 % Winches
@@ -55,12 +43,12 @@ loadComponent('ayazOptVhcl');
 
 
 % Environment
-% loadComponent('ayazSynFlow');
-loadComponent('constXYZT');
-env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
+loadComponent('ayazSynFlow');
+% loadComponent('constXYZT');
+% env.water.flowVec.setValue([flowSpeed;0;0],'m/s');
 
 cIn = maneuverabilityAdvanced(vhcl);
-cIn.meanElevationInRadians = initElevation;
+cIn.meanElevationInRadians = el;
 cIn.pathWidth = w*180/pi;
 cIn.pathHeight = h*180/pi;
 cIn.tetherLength = thrLength;
@@ -72,6 +60,10 @@ pR = cIn.plotPathRadiusOfCurvature;
 
 %% Environment IC's and dependant properties
 % env.water.setflowVec([flowSpeed 0 0],'m/s')
+
+%% Set basis parameters for high level controller
+% Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]');
 
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
@@ -121,7 +113,6 @@ statOld = computeSimLapStats(tscOld);
 trackOld = statOld{2,3}/cIn.pathLength;
 
 %%
-keyboard
 loadComponent('guidanceLawPathFollowingWater');
 fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
@@ -182,13 +173,6 @@ plot(tscOld.tanRoll.Time,tscOld.turbPow.Data(:)./1e3,'b-');
 hold on;
 plot(tscNew.tanRoll.Time,tscNew.turbPow.Data(:)./1e3,'r-');
 ylabel('Power [kW]');
-
-fn = fn+1;
-figure(fn);
-plot(tscOld.vWindFuseGnd.Time,squeeze(tscOld.vWindFuseGnd.Data(1,1,:)),'b-');
-hold on;
-plot(tscNew.vWindFuseGnd.Time,squeeze(tscNew.vWindFuseGnd.Data(1,1,:)),'r-');
-ylabel('Flow speed at kite [m/s]');
 
 allAxes = findall(0,'type','axes');
 allPlots = findall(0,'type','Line');
@@ -252,20 +236,20 @@ GG.saveGifs = true;
 GG.timeStep = 0.5;
 GG.gifTimeStep = 0.1;
 
-vhcl.animateSim(tscOld,GG.timeStep,...
-    'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
-    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','oldGif.gif');
-
-oldAx = gca;
-
-try
-vhcl.animateSim(tscNew,GG.timeStep,...
-    'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',true,...
-    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif',...
-    'XLim',oldAx.XLim,'YLim',oldAx.YLim,'ZLim',oldAx.ZLim);
-catch
-    vhcl.animateSim(tscNew,GG.timeStep,...
-    'PathFunc',fltCtrl.fcnName.Value,'pause',true,'plotTarget',true,...
-    'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif');
-end
+% vhcl.animateSim(tscOld,GG.timeStep,...
+%     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',false,...
+%     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','oldGif.gif');
+% 
+% oldAx = gca;
+% 
+% try
+% vhcl.animateSim(tscNew,GG.timeStep,...
+%     'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',true,...
+%     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif',...
+%     'XLim',oldAx.XLim,'YLim',oldAx.YLim,'ZLim',oldAx.ZLim);
+% catch
+%     vhcl.animateSim(tscNew,GG.timeStep,...
+%     'PathFunc',fltCtrl.fcnName.Value,'pause',true,'plotTarget',true,...
+%     'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,'GifFile','newGif.gif');
+% end
 

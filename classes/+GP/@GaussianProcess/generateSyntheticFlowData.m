@@ -6,7 +6,6 @@ addParameter(pp,'timeStep',1,@isnumeric);
 addParameter(pp,'meanFunc',obj.meanFunction);
 addParameter(pp,'spatialLengthScale',obj.spatialLengthScale);
 addParameter(pp,'temporalLengthScale',obj.temporalLengthScale);
-addParameter(pp,'minFlowValue',0);
 
 parse(pp,varargin{:});
 
@@ -40,7 +39,7 @@ Lt = chol(temporalCovMat,'lower');
 samp = stdDev*(randn(numel(altitudes),numel(timeVals)));
 
 % mean functions
-[~,M] = meshgrid(timeVals,pp.Results.meanFunc(altitudes,obj.meanFnProps));
+[~,M] = meshgrid(timeVals,pp.Results.meanFunc(altitudes));
 
 % output
 filterSamp = (Lz*(Lt*samp')') + M;
@@ -50,7 +49,7 @@ timeInSec = timeVals*60;
 
 % select values from 6 to end-5
 filterSamp = filterSamp(6:end-5,6:end-5);
-filterSamp(filterSamp<pp.Results.minFlowValue) = pp.Results.minFlowValue;
+filterSamp(filterSamp<0) = 0;
 timeInSec  = timeInSec(6:end-5);
 altitudes  = altitudes(6:end-5);
 

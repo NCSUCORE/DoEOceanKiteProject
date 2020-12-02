@@ -11,8 +11,7 @@ fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
 % elevation deflection at reel in
 fltCtrl.setElevatorReelInDef(0,'deg')
-% start control at time
-fltCtrl.setStartControl(0,'s')
+fltCtrl.setStartControl(1,'s')
 fltCtrl.firstSpoolLap.setValue(1,'');
 % moment vector calculation gains
 fltCtrl.rollMoment.kp.setValue(47.8526*100,'(N*m)/(rad)')
@@ -29,8 +28,6 @@ fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 % path function
 fltCtrl.setFcnName('lemOfBooth','');
-% pitch gain
-pitchKp = (1e5)/(2*pi/180);
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
