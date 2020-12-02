@@ -14,7 +14,7 @@ fltCtrl.tanRoll.tau.Value = 1.0000e+00
 fltCtrl.tanRoll.tau.Unit = 's'
 fltCtrl.tanRoll.tau.NoScale = false
 fltCtrl.tanRoll.tau.Description = 'Time Constant'
-fltCtrl.yawMoment.kp.Value = 5.7296e+03
+fltCtrl.yawMoment.kp.Value = 0.0000e+00
 fltCtrl.yawMoment.kp.Unit = '(N*m)/(rad)'
 fltCtrl.yawMoment.kp.NoScale = false
 fltCtrl.yawMoment.kp.Description = 'Proportional gain'
@@ -58,11 +58,11 @@ fltCtrl.controlSigMax.upperLimit.NoScale = false
 fltCtrl.controlSigMax.lowerLimit.Value = -3.0000e+01
 fltCtrl.controlSigMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.lowerLimit.NoScale = false
-fltCtrl.rollGainMultiplierPercentage.Value = 1.0000e+01
+fltCtrl.rollGainMultiplierPercentage.Value = 1.0000e+02
 fltCtrl.rollGainMultiplierPercentage.Unit is unitless or has no unit specified
 fltCtrl.rollGainMultiplierPercentage.NoScale = false
 fltCtrl.rollGainMultiplierPercentage.Description = 'Percentage multiplied to desired tangent roll angle which is equal to the ratio of min. distance of kite from the path to path length'
-fltCtrl.maxForwardLookupRatio.Value = 2.0000e-02
+fltCtrl.maxForwardLookupRatio.Value = 3.3333e-02
 fltCtrl.maxForwardLookupRatio.Unit is unitless or has no unit specified
 fltCtrl.maxForwardLookupRatio.NoScale = false
 fltCtrl.maxForwardLookupRatio.Description = 'Max forward lookup distance as a ratio of path length'

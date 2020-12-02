@@ -1,4 +1,4 @@
-fltCtrl.tanRoll.kp.Value = 2.0000e-01
+fltCtrl.tanRoll.kp.Value = 1.5000e+00
 fltCtrl.tanRoll.kp.Unit = '(rad)/(rad)'
 fltCtrl.tanRoll.kp.NoScale = false
 fltCtrl.tanRoll.kp.Description = 'Proportional gain'
@@ -14,7 +14,7 @@ fltCtrl.tanRoll.tau.Value = 1.0000e-03
 fltCtrl.tanRoll.tau.Unit = 's'
 fltCtrl.tanRoll.tau.NoScale = false
 fltCtrl.tanRoll.tau.Description = 'Time Constant'
-fltCtrl.yawMoment.kp.Value = 5.7296e+03
+fltCtrl.yawMoment.kp.Value = 0.0000e+00
 fltCtrl.yawMoment.kp.Unit = '(N*m)/(rad)'
 fltCtrl.yawMoment.kp.NoScale = false
 fltCtrl.yawMoment.kp.Description = 'Proportional gain'
@@ -46,10 +46,10 @@ fltCtrl.rollMoment.tau.Value = 7.2340e-04
 fltCtrl.rollMoment.tau.Unit = 's'
 fltCtrl.rollMoment.tau.NoScale = false
 fltCtrl.rollMoment.tau.Description = 'Time Constant'
-fltCtrl.maxBank.upperLimit.Value = 3.4907e-01
+fltCtrl.maxBank.upperLimit.Value = 4.3633e-01
 fltCtrl.maxBank.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.upperLimit.NoScale = false
-fltCtrl.maxBank.lowerLimit.Value = -3.4907e-01
+fltCtrl.maxBank.lowerLimit.Value = -4.3633e-01
 fltCtrl.maxBank.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.lowerLimit.NoScale = false
 fltCtrl.controlSigMax.upperLimit.Value = 3.0000e+01
@@ -89,7 +89,7 @@ fltCtrl.startControl.Description = 'Time at which we switch the roll controller 
 fltCtrl.outRanges.Unit is unitless or has no unit specified
 fltCtrl.outRanges.NoScale = false
 fltCtrl.outRanges.Description = 'Upper/lower limits of path variable for spooling'
-fltCtrl.elevatorReelInDef.Value = 2.0000e+01
+fltCtrl.elevatorReelInDef.Value = 0.0000e+00
 fltCtrl.elevatorReelInDef.Unit = 'deg'
 fltCtrl.elevatorReelInDef.NoScale = false
 fltCtrl.elevatorReelInDef.Description = 'Deflection angle of elevator used during spool in'
@@ -97,6 +97,7 @@ fltCtrl.maxR.Value = 2.0000e+02
 fltCtrl.maxR.Unit = 'm'
 fltCtrl.maxR.NoScale = false
 fltCtrl.maxR.Description = 'Maximum radius for spooling switching'
+fltCtrl.fcnName.Value = 'lemOfBooth'
 fltCtrl.fcnName.Unit is unitless or has no unit specified
 fltCtrl.fcnName.NoScale = true
 fltCtrl.fcnName.Description = 'Name of the path shape function you want to use.'
@@ -107,7 +108,7 @@ fltCtrl.firstSpoolLap.Value = 1.0000e+00
 fltCtrl.firstSpoolLap.Unit is unitless or has no unit specified
 fltCtrl.firstSpoolLap.NoScale = false
 fltCtrl.firstSpoolLap.Description = 'First Lap to begin spooling'
-fltCtrl.rudderGain.Value = 1.0000e+00
+fltCtrl.rudderGain.Value = 0.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
