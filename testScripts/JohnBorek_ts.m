@@ -3,11 +3,11 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 4.3;
+simScenario = 1.3;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
 thrLength = 400;  altitude = 200;                           %   m - Initial tether length/operating altitude 
-flwSpd = .45;                                                %   m/s - Flow speed
+flwSpd = .5;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -81,7 +81,7 @@ if simScenario >= 1 && simScenario < 2
     loadComponent('varAltitudeBooth');                          %   High level controller
     hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
     if simScenario == 1.3
-        hiLvlCtrl.ELctrl.setValue(2,'');
+        hiLvlCtrl.ELctrl.setValue(1,'');
     else
         hiLvlCtrl.ELctrl.setValue(1,'');
     end
@@ -153,11 +153,8 @@ if simScenario == 0
     filename = sprintf(strcat('Manta_EL-%.1f_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,w*180/pi,h*180/pi);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta\');
 elseif simScenario > 0 && simScenario < 2
-%     filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_R-%.2f_',dt,'.mat'),simScenario,flwSpd,el*180/pi,vhcl.turb1.diameter.Value,hiLvlCtrl.ELslew.Value);
-%     filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_Tmax-%d.mat'),simScenario,flwSpd,mean(tsc.basisParams.Data(3,:,:))*180/pi,vhcl.turb1.diameter.Value,Tmax);
-    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_Vs-%.2f_AoA-%d.mat'),simScenario,flwSpd,mean(tsc.basisParams.Data(3,:,:))*180/pi,vhcl.turb1.diameter.Value,Tmax);
-%     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
-    fpath = 'D:\Results2\';
+    filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_Tmax-%d.mat'),simScenario,flwSpd,mean(tsc.basisParams.Data(3,:,:))*180/pi,vhcl.turb1.diameter.Value,Tmax);
+    fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
 elseif simScenario == 2
     filename = sprintf(strcat('Winch_EL-%.1f_Thr-%d_w-%.1f_h-%.1f_',dt,'.mat'),el*180/pi,thrLength,w*180/pi,h*180/pi);
     fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Winch\');
