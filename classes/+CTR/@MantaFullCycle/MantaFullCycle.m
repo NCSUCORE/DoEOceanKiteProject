@@ -1,231 +1,105 @@
-classdef SLFAndSpoolCtrl < handle
-    %PTHFLWCTRL Summary of this class goes here
-    %   Detailed explanation goes here
+classdef MantaFullCycle < handle
+    %   MantaFullCycle: Class definition for the Manta Ray full-cycle controller 
     
     properties (SetAccess = private)
         % FPID controllers
-        tanRoll
-        yawMoment
-        rollMoment
-        pitchSP
-        pitchSPkpSlope
-        pitchSPkpInt
-        pitchSPkiSlope
-        pitchSPkiInt
-        rollSP
-        rollSPkpSlope
-        rollSPkpInt
-        rollSPkiSlope
-        rollSPkiInt
-        elevCmd
-        rudderCmd
-        alrnCmd
+        SplRoll
+        SplYaw
+        SplPitch
+        SplPitchSP
+        SplPitchSPkpSlope
+        SplPitchSPkpInt
+        SplPitchSPkiSlope
+        SplPitchSPkiInt
+        SplRollSP
+        SplRollSPkpSlope
+        SplRollSPkpInt
+        SplRollSPkiSlope
+        SplRollSPkiInt
+        SplPID
+        PthRoll
+        PthYaw
+        PthPitch
+        PthTanRoll
+        PthAlpha
         % Saturations
         maxBank
         controlSigMax
-        pitchAngleMax
-        % Lower Level
+        SplPitchMax
+        thrLengthMax
+        % Path Following 
         searchSize
-        initPathVar
+        initPathVar 
         fcnName
         perpErrorVal
         startControl
-        elevatorReelInDef
-        firstSpoolLap
         rudderGain
         % Spooling
-        ctrlVecUpdateFcn
-        tetherLengthSetpointFcn
-        winchAndElevCmdFcn
-        initSpdVec
-        initCtrlVec
-        intraDrift
-        dockedTetherLength
-        initTL
-        maxTL
-        switchFilterDuration
-        switchFilterConstant
-        nonXCurrentSpoolInGain
-        spoolCtrlTimeConstant
+        winchSpeedIn
+        winchSpeedOut
+        firstSpoolLap
         nomSpoolSpeed
         shortLeashLength
         LaRelevationSP
         LaRelevationSPErr
-        % Pitch setpoint 
+        % Setpoint method ctrl 
         pitchCtrl
         pitchConst
-        pitchTime
-        pitchLookup
         yawCtrl
         yawConst
     end
     
     methods
-        function obj = SLFAndSpoolCtrl
-            %PTHFLWCTRL 
-            obj.tanRoll             = CTR.FPID('rad','rad');
-            obj.yawMoment           = CTR.FPID('rad','N*m');
-            obj.rollMoment          = CTR.FPID('rad','N*m');
-            obj.pitchSP             = CTR.FPID('deg','deg');
-            obj.pitchSPkpSlope      = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
-            obj.pitchSPkpInt        = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
-            obj.pitchSPkiSlope      = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
-            obj.pitchSPkiInt        = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
-            obj.rollSP               = CTR.FPID('deg','deg');
-            obj.rollSPkpSlope        = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
-            obj.rollSPkpInt          = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
-            obj.rollSPkiSlope        = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
-            obj.rollSPkiInt          = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
-            obj.elevCmd             = CTR.FPID('rad','deg');
-            obj.rudderCmd           = CTR.FPID('rad','deg');
-            obj.alrnCmd             = CTR.FPID('rad','deg');
-            
+        function obj = MantaFullCycle
+            % FPID controllers
+            obj.SplRoll             = CTR.FPID('rad','deg');
+            obj.SplYaw              = CTR.FPID('rad','deg');
+            obj.SplPitch            = CTR.FPID('rad','deg');
+            obj.SplPitchSP          = CTR.FPID('deg','deg');
+            obj.SplPitchSPkpSlope   = SIM.parameter('Unit','','Description','Variable pitch kp slope value','NoScale',true);
+            obj.SplPitchSPkpInt     = SIM.parameter('Unit','','Description','Variable pitch kp y-intercept value','NoScale',true);
+            obj.SplPitchSPkiSlope   = SIM.parameter('Unit','','Description','Variable pitch ki slope value','NoScale',true);
+            obj.SplPitchSPkiInt     = SIM.parameter('Unit','','Description','Variable pitch ki y-intercept value','NoScale',true);
+            obj.SplRollSP           = CTR.FPID('deg','deg');
+            obj.SplRollSPkpSlope    = SIM.parameter('Unit','','Description','Variable roll kp slope value','NoScale',true);
+            obj.SplRollSPkpInt      = SIM.parameter('Unit','','Description','Variable roll kp y-intercept value','NoScale',true);
+            obj.SplRollSPkiSlope    = SIM.parameter('Unit','','Description','Variable roll ki slope value','NoScale',true);
+            obj.SplRollSPkiInt      = SIM.parameter('Unit','','Description','Variable roll ki y-intercept value','NoScale',true);
+            obj.SplPID              = CTR.FPID('m','m/s');
+            obj.PthRoll             = CTR.FPID('rad','N*m');
+            obj.PthYaw              = CTR.FPID('rad','N*m');
+            obj.PthPitch            = CTR.FPID('rad','deg');
+            obj.PthTanRoll          = CTR.FPID('rad','rad');
+            obj.PthAlpha            = CTR.FPID('rad','kN');
+            % Saturations
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
-            obj.pitchAngleMax       = CTR.sat;
-            
+            obj.SplPitchMax         = CTR.sat;
+            obj.thrLengthMax        = CTR.sat;
+            % Path Following 
             obj.searchSize          = SIM.parameter('Unit','','Description','Range of normalized path variable to search','NoScale',true);
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable to begin golden section search around');
+            obj.fcnName             = SIM.parameter('Unit','','Description','Path Style');
             obj.perpErrorVal        = SIM.parameter('Unit','rad','Description','Central angle at which we saturate the desired velocity to the tangent vector');
             obj.startControl        = SIM.parameter('Unit','s','Description','Time at which we switch the roll controller on');
-            obj.elevatorReelInDef   = SIM.parameter('Unit','deg','Description','Deflection angle of elevator used during spool in');
-            obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
             obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
-            obj.fcnName             = SIM.parameter('Unit','','Description','Path Style');
-            
-            obj.ctrlVecUpdateFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
-            obj.tetherLengthSetpointFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
-            obj.winchAndElevCmdFcn  = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
-            obj.initCtrlVec         = SIM.parameter('Unit','','Description','initial control Vec parameter; depends on chosen functions');
-            obj.initSpdVec          = SIM.parameter('Unit','m/s','Description','initial speed Vec parameter; depends on chosen functions');
-            obj.intraDrift          = SIM.parameter('Value',0,'Unit','m','Description','Meters of drift per lap during intracycle');
-            obj.dockedTetherLength  = SIM.parameter('Unit','m','Description','Meters of unspooled tether while kite is docked to groundstation');
-            
-            obj.initTL                  = SIM.parameter('Unit','m','Description','initial/spool-in/pure-intracycle tether length');
-            obj.maxTL                   = SIM.parameter('Unit','m','Description','max tether length for multicycle');
-            obj.switchFilterDuration    = SIM.parameter('Unit','s','Description','length of time to filter ctrlSurfDef after state switch');
-            obj.switchFilterConstant    = SIM.parameter('Unit','s','Description','filter constant to use when filtering ctrlSurfDef after state switch');
-            obj.nonXCurrentSpoolInGain  = SIM.parameter('Unit','','Description','Flow speed multiplier to get glide-in winch speed');
-            obj.spoolCtrlTimeConstant   = SIM.parameter('Unit','s','Description','Time constant for spooling command');
-            obj.nomSpoolSpeed           = SIM.parameter('Unit','m/s','Description','Nominal spooling speed');
-            obj.shortLeashLength        = SIM.parameter('Unit','m','Description','Length of the short leash');
-            obj.LaRelevationSP          = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
-            obj.LaRelevationSPErr       = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint error where spooling is allowed');
-            
-            obj.pitchCtrl               = SIM.parameter('Unit','','Description','Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR');
-            obj.pitchConst              = SIM.parameter('Unit','deg','Description','Constant pitch setpoint');
-            obj.yawCtrl                 = SIM.parameter('Unit','','Description','Flag to decide yaw setpoint source. 0 = contant; 1 = LaR');
-            obj.yawConst                = SIM.parameter('Unit','deg','Description','Constant yaw setpoint');
-            obj.pitchTime               = SIM.parameter('Unit','s','Description','Reference time for pitch setpoint lookup table');
-            obj.pitchLookup             = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
+            % Spooling
+            obj.winchSpeedIn        = SIM.parameter('Unit','m/s','Description','Max tether spool in speed.');
+            obj.winchSpeedOut       = SIM.parameter('Unit','m/s','Description','Max tether spool out speed.');
+            obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
+            obj.nomSpoolSpeed       = SIM.parameter('Unit','m/s','Description','Nominal spooling speed');
+            obj.shortLeashLength    = SIM.parameter('Unit','m','Description','Length of the short leash');
+            obj.LaRelevationSP      = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
+            obj.LaRelevationSPErr   = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint error where spooling is allowed');
+            % Setpoint method ctrl 
+            obj.pitchCtrl           = SIM.parameter('Unit','','Description','Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR');
+            obj.pitchConst          = SIM.parameter('Unit','deg','Description','Constant pitch setpoint');
+            obj.yawCtrl             = SIM.parameter('Unit','','Description','Flag to decide yaw setpoint source. 0 = contant; 1 = LaR');
+            obj.yawConst            = SIM.parameter('Unit','deg','Description','Constant yaw setpoint');
         end
-        
-        function setTanRoll(obj,val,units)
-            obj.tanRoll.setValue(val,units)
-        end
-
-        function setYawMoment(obj,val,units)
-            obj.yawMoment.setValue(val,units)
-        end
-
-        function setRollMoment(obj,val,units)
-            obj.rollMoment.setValue(val,units)
-        end
-
+        %%  Setters
         function setSearchSize(obj,val,units)
             obj.searchSize.setValue(val,units)
-        end
-
-        function setPerpErrorVal(obj,val,units)
-            obj.perpErrorVal.setValue(val,units)
-        end
-
-        function setStartControl(obj,val,units)
-            obj.startControl.setValue(val,units)
-        end
-
-        function setElevatorReelInDef(obj,val,units)
-            obj.elevatorReelInDef.setValue(val,units)
-        end
-        
-        function setFcnName(obj,val,units)
-            obj.fcnName.setValue(val,units)
-        end
-
-        function setFirstSpoolLap(obj,val,units)
-            obj.firstSpoolLap.setValue(val,units)
-        end
-
-        function setRudderGain(obj,val,units)
-            obj.rudderGain.setValue(val,units)
-        end
-
-        function setLaRelevationSP(obj,val,units)
-            obj.LaRelevationSP.setValue(val,units)
-        end
-
-        function setLaRelevationSPErr(obj,val,units)
-            obj.LaRelevationSPErr.setValue(val,units)
-        end
-
-        function setCtrlVecUpdateFcn(obj,val,units)
-            obj.ctrlVecUpdateFcn.setValue(val,units)
-        end
-
-        function setTetherLengthSetpointFcn(obj,val,units)
-            obj.tetherLengthSetpointFcn.setValue(val,units)
-        end
-
-        function setWinchAndElevCmdFcn(obj,val,units)
-            obj.winchAndElevCmdFcn.setValue(val,units)
-        end
-
-        function setInitSpdVec(obj,val,units)
-            obj.initSpdVec.setValue(val,units)
-        end
-
-        function setInitCtrlVec(obj,val,units)
-            obj.initCtrlVec.setValue(val,units)
-        end
-
-        function setIntraDrift(obj,val,units)
-            obj.intraDrift.setValue(val,units)
-        end
-        
-        function setDockedTetherLength(obj,val,units)
-            obj.dockedTetherLength.setValue(val,units)
-        end
-
-        function setInitTL(obj,val,units)
-            obj.initTL.setValue(val,units)
-        end
-
-        function setMaxTL(obj,val,units)
-            obj.maxTL.setValue(val,units)
-        end
-
-        function setSwitchFilterDuration(obj,val,units)
-            obj.switchFilterDuration.setValue(val,units)
-        end
-
-        function setSwitchFilterConstant(obj,val,units)
-            obj.switchFilterConstant.setValue(val,units)
-        end
-
-        function setNonXCurrentSpoolInGain(obj,val,units)
-            obj.nonXCurrentSpoolInGain.setValue(val,units)
-        end
-        
-        function setSpoolCtrlTimeConstant(obj,val,units)
-            obj.spoolCtrlTimeConstant.setValue(val,units)
-        end
-        
-        function setNomSpoolSpeed(obj,val,units)
-            obj.nomSpoolSpeed.setValue(val,units)
-        end
-        
-        function setShortLeashLength(obj,val,units)
-            obj.shortLeashLength.setValue(val,units)
         end
         
         function setInitPathVar(obj,initPosVecGnd,geomParams,pathCntPosVec) %#ok<INUSD>
@@ -237,6 +111,67 @@ classdef SLFAndSpoolCtrl < handle
             obj.initPathVar.setValue(pathVars(idx),'');
         end
 
+        function setFcnName(obj,val,units)
+            obj.fcnName.setValue(val,units)
+        end
+        
+        function setPerpErrorVal(obj,val,units)
+            obj.perpErrorVal.setValue(val,units)
+        end
+
+        function setStartControl(obj,val,units)
+            obj.startControl.setValue(val,units)
+        end
+        
+        function setRudderGain(obj,val,units)
+            obj.rudderGain.setValue(val,units)
+        end
+        
+        function setWinchSpeedIn(obj,val,unit)
+            obj.winchSpeedIn.setValue(val,unit);
+        end
+        
+        function setWinchSpeedOut(obj,val,unit)
+            obj.winchSpeedOut.setValue(val,unit);
+        end
+        
+        function setFirstSpoolLap(obj,val,units)
+            obj.firstSpoolLap.setValue(val,units)
+        end
+        
+        function setNomSpoolSpeed(obj,val,units)
+            obj.nomSpoolSpeed.setValue(val,units)
+        end
+        
+        function setShortLeashLength(obj,val,units)
+            obj.shortLeashLength.setValue(val,units)
+        end
+
+        function setLaRelevationSP(obj,val,units)
+            obj.LaRelevationSP.setValue(val,units)
+        end
+
+        function setLaRelevationSPErr(obj,val,units)
+            obj.LaRelevationSPErr.setValue(val,units)
+        end
+
+        function setPitchCtrl(obj,val,units)
+            obj.pitchCtrl.setValue(val,units)
+        end
+
+        function setPitchConst(obj,val,units)
+            obj.pitchConst.setValue(val,units)
+        end
+
+        function setYawCtrl(obj,val,units)
+            obj.yawCtrl.setValue(val,units)
+        end
+
+        function setYawConst(obj,val,units)
+            obj.yawConst.setValue(val,units)
+        end
+        
+        %%  Scaling
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
 
             props = getPropsByClass(obj,'CTR.sat');
