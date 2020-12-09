@@ -28,7 +28,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([3.5e-02;0;3.1365427e-03],'m')
+vhcl.setRCM_LE([.035;0;3.1365427e-03],'m')
 vhcl.setRB_LE([0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
@@ -37,7 +37,7 @@ vhcl.setAllMaxCtrlDef(30,'deg');
 vhcl.setAllMinCtrlDef(-30,'deg');
 vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 
-vhcl.setOptAlpha(14,'deg');
+vhcl.setOptAlpha(10,'deg');
 %% Wing
 AR = 7.4/2; b = .427; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
 vhcl.setWingRootChord(cR,'m');
@@ -88,22 +88,22 @@ vhcl.turb1.setDiameter(0,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb1.setPowerCoeff(.4,'')
-vhcl.turb1.setDragCoef(.9,'')
+vhcl.turb1.setDragCoef(0,'')
 vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
-vhcl.turb1.setStaticArea(0.08,'m^2')
-vhcl.turb1.setStaticCD(1.5,'')
+vhcl.turb1.setStaticArea(0.0,'m^2')
+vhcl.turb1.setStaticCD(0,'')
 % starboard rotor
 vhcl.turb2.setMass(.6,'kg')
 vhcl.turb2.setDiameter(0,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb2.setPowerCoeff(.4,'')
-vhcl.turb2.setDragCoef(.9,'')
+vhcl.turb2.setDragCoef(0,'')
 vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
-vhcl.turb2.setStaticArea(0.08,'m^2')
-vhcl.turb2.setStaticCD(1.5,'')
+vhcl.turb2.setStaticArea(0.0,'m^2')
+vhcl.turb2.setStaticCD(0,'')
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
 
