@@ -248,6 +248,8 @@ classdef signalcontainer < dynamicprops
                 error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
             end
             ran = Idx1:Idx2;
+            % plot path param
+            plotParam = pathParam(ran) - plotLap + 1;
             % make subplot grid
             spSz = [3,5]; % grid size
             spGrid = reshape(1:15,spSz(2),[])';
@@ -259,86 +261,86 @@ classdef signalcontainer < dynamicprops
             % plot vx
             G_vCM = squeeze(obj.velocityVec.Data);
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),G_vCM(1,ran));
+            pObj(pIdx) = plot(plotParam,G_vCM(1,ran));
             ylabel(['$v_{\mathrm{cm}}$.',uVec('i','O'),' (m/s)']);
             % plot vy
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),G_vCM(2,ran));
+            pObj(pIdx) = plot(plotParam,G_vCM(2,ran));
             ylabel(['$v_{\mathrm{cm}}$.',uVec('j','O'),' (m/s)']);
             % plot vz
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),G_vCM(3,ran));
+            pObj(pIdx) = plot(plotParam,G_vCM(3,ran));
             ylabel(['$v_{\mathrm{cm}}$.',uVec('k','O'),' (m/s)']);
             % plot v_Appx
             B_vApp = squeeze(obj.vhclVapp.Data);
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),B_vApp(1,ran));
+            pObj(pIdx) = plot(plotParam,B_vApp(1,ran));
             ylabel(['$v_{\mathrm{app}}$.',uVec('i','B'),' (m/s)']);
             % plot v_Appy
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),B_vApp(2,ran));
+            pObj(pIdx) = plot(plotParam,B_vApp(2,ran));
             ylabel(['$v_{\mathrm{app}}$.',uVec('j','B'),' (m/s)']);
             % plot v_Appz
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),B_vApp(3,ran));
+            pObj(pIdx) = plot(plotParam,B_vApp(3,ran));
             ylabel(['$v_{\mathrm{app}}$.',uVec('k','B'),' (m/s)']);
             % plot Euler
             euler = squeeze(obj.eulerAngles.Data)*180/pi;
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),euler(1,ran));
+            pObj(pIdx) = plot(plotParam,euler(1,ran));
             ylabel('$\mathrm{\phi}$ (deg)');
             % plot vy
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),euler(2,ran));
+            pObj(pIdx) = plot(plotParam,euler(2,ran));
             ylabel('$\mathrm{\theta}$ (deg)');
             % plot vz
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),euler(3,ran));
+            pObj(pIdx) = plot(plotParam,euler(3,ran));
             ylabel('$\mathrm{\psi}$ (deg)');
             % plot tangent roll
             tanRoll = squeeze(obj.tanRoll.Data)*180/pi;
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),tanRoll(ran));
+            pObj(pIdx) = plot(plotParam,tanRoll(ran));
             ylabel('$\mathrm{\phi_{tan}}$ (deg)');
             % plot tangent pitch
             tanPitch = squeeze(obj.tanPitch.Data)*180/pi;
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),tanPitch(ran));
+            pObj(pIdx) = plot(plotParam,tanPitch(ran));
             ylabel('$\mathrm{\theta_{tan}}$ (deg)');
             % plot speed
            vhclSpeed = squeeze(obj.velocityVec.Data);
             vhclSpeed = vecnorm(vhclSpeed);
              spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),vhclSpeed(ran));
+            pObj(pIdx) = plot(plotParam,vhclSpeed(ran));
             ylabel('Speed (m/s)');
             % plot angle of attack
             AoA = squeeze(obj.vhclAngleOfAttack.Data);
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),AoA(ran));
+            pObj(pIdx) = plot(plotParam,AoA(ran));
             ylabel('AoA (deg)');
             % plot side slip angle
             SSA = squeeze(obj.vhclSideSlipAngle.Data);
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),SSA(ran));
+            pObj(pIdx) = plot(plotParam,SSA(ran));
             ylabel('SSA (deg)');
             % plot elevator deflection
             csDef = squeeze(obj.ctrlSurfDeflCmd.Data);
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(pathParam(ran),csDef(ran,4));
+            pObj(pIdx) = plot(plotParam,csDef(ran,4));
             ylabel('$\mathrm{\delta e}$ (deg)');
             
             stats = computeSimLapStats(obj);
@@ -395,7 +397,8 @@ classdef signalcontainer < dynamicprops
             Pow.avg = mean(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
             Pow.max = max(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
             Pow.min = min(obj.turbPow.Data(1,1,ran)+obj.turbPow.Data(1,2,ran))*1e-3;
-            fprintf('Lap power output:\nMin\t\t Max\t\t Avg\t\t Loyd\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
+            Pow.wnch = mean(obj.winchPower.Data(ran))*1e-3;
+            fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
             fprintf('Avg Charge Time: %.1f days\n',270/Pow.avg/24)
         end
     end
