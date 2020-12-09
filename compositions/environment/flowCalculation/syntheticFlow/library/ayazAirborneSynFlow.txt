@@ -1,0 +1,45 @@
+env.gravAccel.Value = 9.8100e+00
+env.gravAccel.Unit = 'm/s^2'
+env.gravAccel.NoScale = true
+env.water.spatialCovFn = 'squaredExponential'
+env.water.temporalCovFn = 'squaredExponential'
+env.water.meanFn = 'windPowerLaw'
+env.water.spatialCovAmp.Value = 2.6010e+01
+env.water.spatialCovAmp.Unit = 'm^2'
+env.water.spatialCovAmp.NoScale = false
+env.water.spatialLengthScale.Value = 2.2000e+02
+env.water.spatialLengthScale.Unit = 'm'
+env.water.spatialLengthScale.NoScale = false
+env.water.temporalLengthScale.Value = 1.3200e+03
+env.water.temporalLengthScale.Unit = 's'
+env.water.temporalLengthScale.NoScale = false
+env.water.noiseVariance.Value = 1.0000e-03
+env.water.noiseVariance.Unit is unitless or has no unit specified
+env.water.noiseVariance.NoScale = false
+env.water.rngSeed.Value = 8.0000e+00
+env.water.rngSeed.Unit is unitless or has no unit specified
+env.water.rngSeed.NoScale = false
+env.water.zGridPoints.Value = [0 100 200 300 400 500 600 700 800 900 1000]
+env.water.zGridPoints.Unit = 'm'
+env.water.zGridPoints.NoScale = false
+env.water.density.Value = 1.2250e+00
+env.water.density.Unit = 'kg/m^3'
+env.water.density.NoScale = false
+env.water.stdDevSynData.Value = 4.0000e+00
+env.water.stdDevSynData.Unit = 'm/s'
+env.water.stdDevSynData.NoScale = false
+env.water.timeStepSynData.Value = 1.8000e+02
+env.water.timeStepSynData.Unit = 's'
+env.water.timeStepSynData.NoScale = false
+env.water.tFinData.Value = 3.6000e+04
+env.water.tFinData.Unit = 's'
+env.water.tFinData.NoScale = false
+env.water.meanFnProps.Value = [3.77 0.14]
+env.water.meanFnProps.Unit is unitless or has no unit specified
+env.water.meanFnProps.NoScale = false
+env.water.minFlowVal.Value = 2.0000e+00
+env.water.minFlowVal.Unit = 'm/s'
+env.water.minFlowVal.NoScale = false
+env.water.gravAccel.Value = 9.8100e+00
+env.water.gravAccel.Unit = 'm/s^2'
+env.water.gravAccel.NoScale = true
