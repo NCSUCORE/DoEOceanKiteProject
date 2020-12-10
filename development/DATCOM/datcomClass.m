@@ -5,6 +5,7 @@ classdef datcomClass < handle
         machNumbers
         altitudes
         alphas
+        Rnumbers
         loop
         
         % $OPTINS
@@ -61,6 +62,15 @@ classdef datcomClass < handle
         vTlRefChrStn
         vTlNACA
         
+        % ASYFLP
+        alrnLeftDfln
+        alrnRightDfln
+        alrnType
+        alrnIbChrd
+        alrnObChrd
+        alrnIbSpan
+        alrnObSpan
+        alrnPhete
         struct
     end
     methods
@@ -68,6 +78,7 @@ classdef datcomClass < handle
             % $FLTCON
             obj.machNumbers     = SIM.parameter('Value',0,'Unit','','Description','Freestreem mach numbers to charaterize (20 max)');
             obj.altitudes       = SIM.parameter('Unit','m','Description','Altitudes to loop over');
+            obj.Rnumbers         = SIM.parameter('Unit','1/m','Description','Reynolds Number Per Unit Length');
             obj.alphas          = SIM.parameter('Unit','deg','Description','Angles of attack (20 max)');
             obj.loop            = SIM.parameter('Unit','','Description','Loopin condition, 1, 2, 3. See user manual.','NoScale',true);
             
@@ -123,6 +134,15 @@ classdef datcomClass < handle
             obj.vTlRefChrStn    = SIM.parameter('Value',0.25,'Unit','','Description','Wing reference chord station?,user man pg 36');
             obj.vTlNACA         = SIM.parameter('NoScale',true,'Description','Wing airfoil NACA code, 4 or 6 series.');
             
+            % $ASYFLP
+            obj.alrnLeftDfln    = SIM.parameter('Unit','deg','Description','Deflection Angle LH Flap');
+            obj.alrnRightDfln   = SIM.parameter('Unit','deg','Description','Deflection Angle RH Flap');
+            obj.alrnType        = SIM.parameter('Unit','','Description','CTRL Surface Type - 4 = Aileron, 5 = H Stab');
+            obj.alrnIbChrd      = SIM.parameter('Unit','m','Description','Inboard Edge Chord Length measured parallel to long axis');
+            obj.alrnObChrd      = SIM.parameter('Unit','m','Description','Outboard Edge Chord Length measured parallel to long axis');
+            obj.alrnIbSpan      = SIM.parameter('Unit','m','Description','Inboard Edge Span Location measured perpindicular to vertical symmetry plane');
+            obj.alrnObSpan      = SIM.parameter('Unit','m','Description','Outboard Edge Span Location measured perpindicular to vertical symmetry plane');
+            obj.alrnPhete       = SIM.parameter('Unit','','Description','Tangent of airfoil trailing edge angle based on X/C = 0.9 and X/C = 0.99');
             
         end
         
@@ -146,26 +166,35 @@ classdef datcomClass < handle
             
             %             warning('Setting units to feet for debugging, remember to turn this off')
             if ~isempty(obj.machNumbers.Value)
-                str = sprintf(' DIM M\n $FLTCON NMACH=%.1f,MACH(1)=',numel(obj.machNumbers.Value));
-                str = [str sprintf('%.1f,',obj.machNumbers.Value)];
-                str = [str(1:end-1) '$'];
-                str = insertLineBreaks(str,74,',');
+                str = sprintf('DIM M\n $FLTCON NMACH=%.0f,MACH(1)=',numel(obj.machNumbers.Value));
+                str = [str sprintf('%.4f$',obj.machNumbers.Value)];
+%                 str = insertLineBreaks(str,74,',');
                 fwrite(fid,str);
             end
             
             if ~isempty(obj.altitudes.Value)
-                str = sprintf('\n $FLTCON NALT=%.1f,ALT(1)=',numel(obj.altitudes.Value));
-                str = [str sprintf('%.1f,',obj.altitudes.Value)];
-                str = [str(1:end-1) '$'];
-                str = insertLineBreaks(str,74,',');
+                str = sprintf('\n $FLTCON NALT=%.3f,ALT(1)=',numel(obj.altitudes.Value));
+                str = [str sprintf('%.3f$',obj.altitudes.Value)];
+%                 str = insertLineBreaks(str,74,',');
                 fwrite(fid,str);
             end
             
             if ~isempty(obj.alphas.Value)
-                str = sprintf('\n $FLTCON NALPHA=%.1f,ALSCHD(1)=',numel(obj.alphas.Value));
-                str = [str sprintf('%.1f,',obj.alphas.Value)];
-                str = [str sprintf('LOOP=%.1f$',obj.loop.Value)];
-                str = insertLineBreaks(str,74,',');
+                str = sprintf('\n $FLTCON NALPHA=%.3f,ALSCHD(1)=',numel(obj.alphas.Value));
+                str = [str sprintf('%.3f,',obj.alphas.Value)];
+                str = [str sprintf('$')];
+%                 str = insertLineBreaks(str,74,',');
+                fwrite(fid,str);
+            end
+            
+            if ~isempty(obj.loop.Value)
+                str = [str sprintf('\n $FLTCON LOOP=%.0f$',obj.loop.Value)];
+                fwrite(fid,str);
+            end
+            
+            if ~isempty(obj.Rnumbers.Value)
+                str = sprintf('\n $FLTCON RNNUB(1)=%s$',obj.Rnumbers.Value);
+%                 str = insertLineBreaks(str,74,',');
                 fwrite(fid,str);
             end
             
@@ -175,181 +204,201 @@ classdef datcomClass < handle
                     
                 str = sprintf('\n $OPTINS ');
                 if ~isempty(obj.refArea.Value)
-                    str = [str sprintf('SREF=%.1f,',obj.refArea.Value)];
+                    str = [str sprintf('SREF=%.3f,',obj.refArea.Value)];
                 end
                 if ~isempty(obj.longRefLength.Value)
-                    str = [str sprintf('CBARR=%.1f,',obj.longRefLength.Value)];
+                    str = [str sprintf('CBARR=%.3f,',obj.longRefLength.Value)];
                 end
                 if ~isempty(obj.latRefLength.Value)
-                    str = [str sprintf('BLREF=%.1f,',obj.latRefLength.Value)];
+                    str = [str sprintf('BLREF=%.3f,',obj.latRefLength.Value)];
                 end
                 str(end) = '$';
-                str = insertLineBreaks(str,74,',');
+%                 str = insertLineBreaks(str,74,',');
                 fwrite(fid,str);
             end
             
             % $SYNTHS
             str = sprintf('\n $SYNTHS ');
             if ~isempty(obj.xCG.Value)
-                str = [str sprintf('XCG=%.1f,' ,obj.xCG.Value)];
+                str = [str sprintf('XCG=%.3f,' ,obj.xCG.Value)];
             else
                 warning('xCG not specified')
             end
             
-            %             fprintf(fid,'ZCG=%.1f ' ,obj.zCG.Value);
+            %             fprintf(fid,'ZCG=%.3f ' ,obj.zCG.Value);
             if ~isempty(obj.zCG.Value)
-                str = [str sprintf('ZCG=%.1f,' ,obj.zCG.Value)];
+                str = [str sprintf('ZCG=%.3f,' ,obj.zCG.Value)];
             else
                 warning('zCG not specified')
             end
             
-            %             fprintf(fid,'XW=%.1f '  ,obj.xWing.Value);
+            %             fprintf(fid,'XW=%.3f '  ,obj.xWing.Value);
             if ~isempty(obj.xCG.Value)
-                str = [str sprintf('XW=%.1f,' ,obj.xWing.Value)];
+                str = [str sprintf('XW=%.3f,' ,obj.xWing.Value)];
             else
                 warning('xWing not specified')
             end
             
-            %             fprintf(fid,'ZW=%.1f '  ,obj.zWing.Value);
+            %             fprintf(fid,'ZW=%.3f '  ,obj.zWing.Value);
             if ~isempty(obj.zWing.Value)
-                str = [str sprintf('ZW=%.1f,' ,obj.zWing.Value)];
+                str = [str sprintf('ZW=%.3f,' ,obj.zWing.Value)];
             else
                 warning('zWing not specified')
             end
             
-            %             fprintf(fid,'ALIW=%.1f ',obj.incAngWing.Value);
+            %             fprintf(fid,'ALIW=%.3f ',obj.incAngWing.Value);
             if ~isempty(obj.incAngWing.Value)
-                str = [str sprintf('ALIW=%.1f,' ,obj.incAngWing.Value)];
+                str = [str sprintf('ALIW=%.3f,' ,obj.incAngWing.Value)];
             else
                 warning('incAngWing not specified')
             end
             
-            %             fprintf(fid,'XH=%.1f '  ,obj.xHTail.Value);
+            %             fprintf(fid,'XH=%.3f '  ,obj.xHTail.Value);
             if ~isempty(obj.xHTail.Value)
-                str = [str sprintf('XH=%.1f,' ,obj.xHTail.Value)];
+                str = [str sprintf('XH=%.3f,\n    ' ,obj.xHTail.Value)];
             else
                 warning('xHTail not specified')
             end
             
-            %             fprintf(fid,'ZH=%.1f '  ,obj.zHTail.Value);
+            %             fprintf(fid,'ZH=%.3f '  ,obj.zHTail.Value);
             if ~isempty(obj.zHTail.Value)
-                str = [str sprintf('ZH=%.1f,' ,obj.zHTail.Value)];
+                str = [str sprintf('ZH=%.3f,' ,obj.zHTail.Value)];
             else
                 warning('zHTail not specified')
             end
             
-            %             fprintf(fid,'ALIH=%.1f ',obj.incAngHTail.Value);
+            %             fprintf(fid,'ALIH=%.3f ',obj.incAngHTail.Value);
             if ~isempty(obj.incAngHTail.Value)
-                str = [str sprintf('ALIH=%.1f,' ,obj.incAngHTail.Value)];
+                str = [str sprintf('ALIH=%.3f,' ,obj.incAngHTail.Value)];
             else
                 warning('incAngHTail not specified')
             end
             
-            %             fprintf(fid,'XV=%.1f '  ,obj.xVTail.Value);
+            %             fprintf(fid,'XV=%.3f '  ,obj.xVTail.Value);
             if ~isempty(obj.xVTail.Value)
-                str = [str sprintf('XV=%.1f,' ,obj.xVTail.Value)];
+                str = [str sprintf('XV=%.3f,' ,obj.xVTail.Value)];
             else
                 warning('xVTail not specified')
             end
             
-            %             fprintf(fid,'ZV=%.1f '  ,obj.zVTail.Value);
+            %             fprintf(fid,'ZV=%.3f '  ,obj.zVTail.Value);
             if ~isempty(obj.zVTail.Value)
-                str = [str sprintf('ZV=%.1f,' ,obj.zVTail.Value)];
+                str = [str sprintf('ZV=%.3f,' ,obj.zVTail.Value)];
             else
                 warning('zVTail not specified')
             end
             str = [str  sprintf('VERTUP=.TRUE.$')];
-            str = insertLineBreaks(str,74,',');
+%             str = insertLineBreaks(str,74,',');
             fprintf(fid,str);
             
             
             % $BODY
-            str = sprintf('\n $BODY NX=%.1f,',numel(obj.fuselageXPositions.Value)+1);
+            str = sprintf('\n $BODY NX=%.3f,',numel(obj.fuselageXPositions.Value)+1);
             fprintf(fid,str);
             
             str = sprintf('\n    X(1)=');
-            str = [str sprintf('%.1f,',obj.fuselageXPositions.Value)];
-            str = insertLineBreaks(str,74,',');
+            str = [str sprintf('%.3f,',obj.fuselageXPositions.Value)];
+%             str = insertLineBreaks(str,74,',');
             fprintf(fid,str);
             
             str = sprintf('\n    R(1)=');
-            str = [str sprintf('%.1f,',obj.fuselageRadii.Value)];
+            str = [str sprintf('%.3f,',obj.fuselageRadii.Value)];
             str = [str sprintf('\n    METHOD=2.0$')]; % Jorgensen method
 %             str(end) = '$';
-            str = insertLineBreaks(str,74,',');
+%             str = insertLineBreaks(str,74,',');
             fprintf(fid,str);
             
             
             
             % $WGPLNF
             str = sprintf('\n $WGPLNF ');
-            str = [str sprintf('CHRDTP=%.1f,'       ,obj.wngTpChrd.Value)];
-            str = [str sprintf('SSPNE=%.1f,'        ,obj.wngExpHlfSpn.Value)];
-            str = [str sprintf('SSPN=%.1f,'         ,obj.wngHlfSpn.Value)];
-            str = [str sprintf('CHRDR=%.1f,'        ,obj.wngRtChrd.Value)];
-            str = [str sprintf('SAVSI=%.1f,'        ,obj.wngSwpAng.Value)];
-            str = [str sprintf('CHSTAT=%.1f,'       ,obj.wngRefChrStn.Value)];
-            str = [str sprintf('TWISTA=%.1f,'       ,obj.wngTwst.Value)];
-            str = [str sprintf('DHDADI=%.1f,'       ,obj.wngDhdrl.Value)];
+            str = [str sprintf('CHRDTP=%.3f,\n    '       ,obj.wngTpChrd.Value)];
+            str = [str sprintf('SSPNE=%.3f,\n    '        ,obj.wngExpHlfSpn.Value)];
+            str = [str sprintf('SSPN=%.3f,\n    '         ,obj.wngHlfSpn.Value)];
+            str = [str sprintf('CHRDR=%.3f,\n    '        ,obj.wngRtChrd.Value)];
+            str = [str sprintf('SAVSI=%.3f,\n    '        ,obj.wngSwpAng.Value)];
+            str = [str sprintf('CHSTAT=%.3f,\n    '       ,obj.wngRefChrStn.Value)];
+            str = [str sprintf('TWISTA=%.3f,\n    '       ,obj.wngTwst.Value)];
+            str = [str sprintf('DHDADI=%.3f,\n    '       ,obj.wngDhdrl.Value)];
             str = [str sprintf('TYPE=1.0$\nNACA-W-%.0f-%s'  ,numel(obj.wngNACA.Value),upper(obj.wngNACA.Value))];
-            str = insertLineBreaks(str,74,',');
+%             str = insertLineBreaks(str,74,',');
             fprintf(fid,str);
             
             % $HTPLNF
-            str = sprintf('\n $HTPLNF ');
-            str = [str sprintf('CHRDTP=%.1f,'       ,obj.hTlTpChrd.Value)];
-            str = [str sprintf('SSPNE=%.1f,'        ,obj.hTlExpHlfSpn.Value)];
-            str = [str sprintf('SSPN=%.1f,'         ,obj.hTlHlfSpn.Value)];
-            str = [str sprintf('CHRDR=%.1f,'        ,obj.hTlRtChrd.Value)];
-            str = [str sprintf('SAVSI=%.1f,'        ,obj.hTlSwpAng.Value)];
-            str = [str sprintf('CHSTAT=%.1f,'       ,obj.hTlRefChrStn.Value)];
-            str = [str sprintf('TWISTA=%.1f,'       ,obj.hTlTwst.Value)];
-            str = [str sprintf('DHDADI=%.1f,'       ,obj.hTlDhdrl.Value)];
-            str = [str sprintf('TYPE=1.0$\nNACA-H-%.0f-%s'  ,numel(obj.hTlNACA.Value),upper(obj.hTlNACA.Value))];
-            str = insertLineBreaks(str,74,',');
-            fprintf(fid,str);
+            if ~isempty(obj.hTlHlfSpn.Value)
+                str = sprintf('\n $HTPLNF ');
+                str = [str sprintf('CHRDTP=%.3f,\n    '       ,obj.hTlTpChrd.Value)];
+                str = [str sprintf('SSPNE=%.3f,\n    '        ,obj.hTlExpHlfSpn.Value)];
+                str = [str sprintf('SSPN=%.3f,\n    '         ,obj.hTlHlfSpn.Value)];
+                str = [str sprintf('CHRDR=%.3f,\n    '        ,obj.hTlRtChrd.Value)];
+                str = [str sprintf('SAVSI=%.3f,\n    '        ,obj.hTlSwpAng.Value)];
+                str = [str sprintf('CHSTAT=%.3f,\n    '       ,obj.hTlRefChrStn.Value)];
+                str = [str sprintf('TWISTA=%.3f,\n    '       ,obj.hTlTwst.Value)];
+                str = [str sprintf('DHDADI=%.3f,\n    '       ,obj.hTlDhdrl.Value)];
+                str = [str sprintf('TYPE=1.0$\nNACA-H-%.0f-%s'  ,numel(obj.hTlNACA.Value),upper(obj.hTlNACA.Value))];
+                %             str = insertLineBreaks(str,74,',');
+                fprintf(fid,str);
+            end
             
             % $VTPLNF
-            str = sprintf('\n $VTPLNF ');
-            str = [str sprintf('CHRDTP=%.1f,'       ,obj.vTlTpChrd.Value)];
-            str = [str sprintf('SSPNE=%.1f,'        ,obj.vTlExpHlfSpn.Value)];
-            str = [str sprintf('SSPN=%.1f,'         ,obj.vTlHlfSpn.Value)];
-            str = [str sprintf('CHRDR=%.1f,'        ,obj.vTlRtChrd.Value)];
-            str = [str sprintf('SAVSI=%.1f,'        ,obj.vTlSwpAng.Value)];
-            str = [str sprintf('CHSTAT=%.1f,'       ,obj.vTlRefChrStn.Value)];
-            str = [str sprintf('TWISTA=%.1f,'       ,obj.vTlTwst.Value)];
-            str = [str sprintf('DHDADI=%.1f,'       ,obj.vTlDhdrl.Value)];
-            str = [str sprintf('TYPE=1.0$\nNACA-V-%.0f-%s'  ,numel(obj.vTlNACA.Value),upper(obj.vTlNACA.Value))];
-            str = insertLineBreaks(str,74,',');
+            if ~isempty(obj.vTlHlfSpn.Value)
+                str = sprintf('\n $VTPLNF ');
+                str = [str sprintf('CHRDTP=%.3f,\n    '       ,obj.vTlTpChrd.Value)];
+                str = [str sprintf('SSPNE=%.3f,\n    '        ,obj.vTlExpHlfSpn.Value)];
+                str = [str sprintf('SSPN=%.3f,\n    '         ,obj.vTlHlfSpn.Value)];
+                str = [str sprintf('CHRDR=%.3f,\n    '        ,obj.vTlRtChrd.Value)];
+                str = [str sprintf('SAVSI=%.3f,\n    '        ,obj.vTlSwpAng.Value)];
+                str = [str sprintf('CHSTAT=%.3f,\n    '       ,obj.vTlRefChrStn.Value)];
+                str = [str sprintf('TWISTA=%.3f,\n    '       ,obj.vTlTwst.Value)];
+                str = [str sprintf('DHDADI=%.3f,\n    '       ,obj.vTlDhdrl.Value)];
+                str = [str sprintf('TYPE=1.0$\nNACA-V-%.0f-%s'  ,numel(obj.vTlNACA.Value),upper(obj.vTlNACA.Value))];
+                %             str = insertLineBreaks(str,74,',');
+                fprintf(fid,str);
+            end
+            % $ASYFLP
+            str = sprintf('\n $ASYFLP ');
+            str = [str sprintf('CHRDFI=%.3f,\n    '       ,obj.alrnIbChrd.Value)];
+            str = [str sprintf('CHRDFO=%.3f,\n    '       ,obj.alrnObChrd.Value)];
+            str = [str sprintf('SPANFI=%.3f,\n    '       ,obj.alrnIbSpan.Value)];
+            str = [str sprintf('SPANFO=%.3f,\n    '       ,obj.alrnObSpan.Value)];
+            str = [str sprintf('NDELTA=%.1f, DELTAL(1)='       ,numel(obj.alrnLeftDfln.Value))];
+            str = [str sprintf('%.1f,',obj.alrnLeftDfln.Value)];
+            str = [str sprintf('\n                 DELTAR(1)=')];
+            str = [str sprintf('%.1f,',obj.alrnRightDfln.Value)];
+            str = [str sprintf('\n    ')];
+            str = [str sprintf('PHETE=%.3f,\n    '       ,obj.alrnPhete.Value)];
+            str = [str sprintf('STYPE=%.1f,\n    '       ,obj.alrnType.Value)];
             fprintf(fid,str);
             
-            fprintf(fid,'\nCASEID OCT BODY-WING-HORIZONTAL TAIL-VERTICAL TAIL CONFIG \nDAMP\nNEXT CASE');
+            
+            
+            fprintf(fid,'\nCASEID PLAINFLAP ANALYSIS \nSAVE \nNEXT CASE');
             
             fclose(fid);
             
             % Do this
             !datcom &
             % https://stackoverflow.com/questions/15313469/java-keyboard-keycodes-list/31637206
-            rbt = java.awt.Robot;
+            rbt = java.awt.Robot
             % Type DSG.INP
-            rbt.keyPress(68);
-            rbt.keyPress(83);
-            rbt.keyPress(71);
-            rbt.keyPress(46);
-            rbt.keyPress(73);
-            rbt.keyPress(78);
-            rbt.keyPress(80);
-            rbt.keyPress(10);
+            rbt.keyPress(68)
+            rbt.keyPress(83)
+            rbt.keyPress(71)
+            rbt.keyPress(46)
+            rbt.keyPress(73)
+            rbt.keyPress(78)
+            rbt.keyPress(80)
+            rbt.keyPress(10)
             % Type exit
-            rbt.keyPress(69);
-            rbt.keyPress(88);
-            rbt.keyPress(73);
-            rbt.keyPress(84);
-            rbt.keyPress(10);
+            rbt.keyPress(69)
+            rbt.keyPress(88)
+            rbt.keyPress(73)
+            rbt.keyPress(84)
+            rbt.keyPress(10)
             
             % Or possibly this
             %             !datcom<DSG.INP &
-            alldata = datcomimport('datcom.out', true, 0);
+            alldata = datcomimport('datcom.out')%, true, 0);
             obj.struct = alldata{1};
             data = alldata{1};
             
