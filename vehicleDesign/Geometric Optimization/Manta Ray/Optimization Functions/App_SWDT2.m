@@ -26,9 +26,9 @@ in.Voltot = in.Volfuse + in.Volw;
 % Optimization
 J = @(u)costfunc(u,in);
 C = @(u)constraintfunc(u,in);
-u0 = [0.18 0.01 0.01 0.01]';
+u0 = [0.18 0.01 0.01 0.005]';
 lb = [0.001 0 0 0]'; % Lower limits
-ub = 1.0*ones(4,1);   % upper limits
+ub = [1 1 1 0.001]';   % upper limits
 options = optimoptions('fmincon','Display','iter','Algorithm','sqp','MaxFunctionEvaluations',10000000);
 [uopt, ~, exitflag] = fmincon(J,u0,[],[],[],[],lb,ub,C,options);
 
@@ -74,8 +74,8 @@ ineq5 = -eye(4)*u;
 % Constraint type 2 (Dr. Vermillion)
 ineq6 = in.wmassrat - ((in.Volw*in.rhow)/in.rho*(in.Voltot));
 
-eq1 = Ixx_calc - in.Ixx;
+ineq7 = -Ixx_calc + in.Ixx;
 
-c_ineq=[ineq1;ineq2;ineq3;ineq4;ineq5;ineq6];
-c_eq= eq1;
+c_ineq=[ineq1;ineq2;ineq3;ineq4;ineq5;ineq6;ineq7];
+c_eq= [];
 end
