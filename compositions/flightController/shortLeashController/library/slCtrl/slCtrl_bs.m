@@ -29,9 +29,9 @@ fltCtrl.pitchSPkpInt.setValue(.5263,'');
 fltCtrl.pitchSPkiSlope.setValue(7.895e-5,'');
 fltCtrl.pitchSPkiInt.setValue(.008421,'');
 
-fltCtrl.rollSP.kp.setValue(2,'(deg)/(deg)');
-fltCtrl.rollSP.ki.setValue(0.03,'(deg)/(deg*s)');
-fltCtrl.rollSP.kd.setValue(.1,'(deg)/(deg/s)');
+fltCtrl.rollSP.kp.setValue(1,'(deg)/(deg)');
+fltCtrl.rollSP.ki.setValue(0.02,'(deg)/(deg*s)');
+fltCtrl.rollSP.kd.setValue(1,'(deg)/(deg/s)');
 fltCtrl.rollSP.tau.setValue(1,'s');
 fltCtrl.rollSPkpSlope.setValue(.02368,'');
 fltCtrl.rollSPkpInt.setValue(.5263,'');
@@ -43,14 +43,14 @@ fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');
 fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCmd.tau.setValue(.01,'s');
 
-fltCtrl.rudderCmd.kp.setValue(20,'(deg)/(rad)');
+fltCtrl.rudderCmd.kp.setValue(5,'(deg)/(rad)');
 fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
-fltCtrl.rudderCmd.kd.setValue(3,'(deg)/(rad/s)');
-fltCtrl.rudderCmd.tau.setValue(.1,'s');
+fltCtrl.rudderCmd.kd.setValue(5,'(deg)/(rad/s)');
+fltCtrl.rudderCmd.tau.setValue(1,'s');
 
-fltCtrl.alrnCmd.kp.setValue(6,'(deg)/(rad)');
-fltCtrl.alrnCmd.ki.setValue(0.003,'(deg)/(rad*s)');
-fltCtrl.alrnCmd.kd.setValue(2,'(deg)/(rad/s)');
+fltCtrl.alrnCmd.kp.setValue(30,'(deg)/(rad)');
+fltCtrl.alrnCmd.ki.setValue(0.2,'(deg)/(rad*s)');
+fltCtrl.alrnCmd.kd.setValue(20,'(deg)/(rad/s)');
 fltCtrl.alrnCmd.tau.setValue(1,'s');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
@@ -67,6 +67,8 @@ fltCtrl.yawCtrl.setValue(1,'');
 fltCtrl.yawConst.setValue(0,'deg');
 fltCtrl.pitchTime.setValue([0 2000],'s');
 fltCtrl.pitchLookup.setValue([0 0],'deg');
+
+fltCtrl.towCtrlStrat.setValue('rollAzYawSide','');
 %% Spooling
 fltCtrl.setCtrlVecUpdateFcn('combinedCmd','')
 fltCtrl.setTetherLengthSetpointFcn('combinedTLSP','')
