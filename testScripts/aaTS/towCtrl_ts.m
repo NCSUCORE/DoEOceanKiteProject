@@ -1,6 +1,6 @@
 %% Test script for John to control the kite model
 Simulink.sdi.clear
-clear;clc;%close all
+clear;clc;close all
 %%  Select sim scenario
 %   3 = Stationary Ground Frame
 %   2 = Moving Ground Frame
@@ -8,13 +8,13 @@ h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width
 [a,b] = boothParamConversion(w,h);
 simScenario = 2;
 % Simulation Time
-simTime = 1000;
+simTime = 600;
 %%  Configure Test
 thrLength = 20;%[20 35 50];                         % m - Initial tether length
-flwSpd = 1e-30;%[0.25:.25:2];                             % m/s - Flow speed
+flwSpd = 0.5;%[0.25:.25:2];                             % m/s - Flow speed
 craftSpeed = -0.5% Moving Ground Station Velocity Magnitude m/s
 elevation =  30%[0:10:80];  % elevation angle in degrees for tow controller
-yaw = 0; %Moving Ground Station Turning Angle deg
+yaw = 10; %Moving Ground Station Turning Angle deg
 flowDirPert = 0;
 saveim = 0; %0 - dont save images 1 - save images
 
@@ -65,7 +65,7 @@ for ll = 1:length(yaw)
     %     loadComponent('LaRController');
     loadComponent('slCtrl');
     loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-    if simScenario > 2 && simScenario < 3
+    if simScenario >= 2 && simScenario < 3
         loadComponent('prescribedGndStn001')
         gndStn.pathVar.setValue(spiral,'')
     else
@@ -78,7 +78,7 @@ loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 
 
-loadComponent('Manta2RotXFoil_AR8_b8');                              %   Manta kite with XFlr5
+loadComponent('Manta2RotXFoil_AR8_b8'); 
 
 %%  Environment Properties
 loadComponent('constXYZT');                                 %   Environment
@@ -89,7 +89,7 @@ loadComponent('constBoothLem');                             %   High level contr
 hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
 
 %%  Ground Station Properties
-if simScenario == 2.3 || simScenario == 2.2
+if simScenario == 2
     gndStn.setVelVecTrajectory(vel,time,'m/s');
     gndStn.setAngVelTrajectory(angVel,time,'rad/s');
     gndStn.setInitPosVecGnd([0 0 0],'m');
@@ -101,18 +101,16 @@ else
     gndStn.initAngVel.setValue(0,'rad/s');
 end
 %%  Vehicle Properties
-if simScenario < 3 && simScenario > 2
+if simScenario < 3 && simScenario >= 2
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.initPosVecGnd.Value,0);
     vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
     vhcl.setInitVelVecBdy([craftSpeed 0 0],'m/s')
 elseif simScenario > 3
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0);
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad');
-else
-    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
 end
 %%  Tethers Properties
-if simScenario < 3 && simScenario > 2
+if simScenario < 3 && simScenario >= 2
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttach.posVec.Value(:)+gndStn.initPosVecGnd.Value(:),'m');
 else
     thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
@@ -125,7 +123,7 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.setYoungsMod(thr.tether1.youngsMod.Value*1.2,thr.tether1.youngsMod.Unit);
 %                             vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.2;0;-vhcl.fuse.diameter.Value/2],'m');
 %%  Winches Properties
-if simScenario >2 && simScenario < 3
+if simScenario >= 2 && simScenario < 3
     wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,env.water.flowVec.Value);
 else
     wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
@@ -133,7 +131,7 @@ end
 wnch.winch1.LaRspeed.setValue(1,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
-if simScenario > 2 && simScenario <3
+if simScenario >= 2 && simScenario <3
     fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
         hiLvlCtrl.basisParams.Value,gndStn.initPosVecGnd.Value);
 else
@@ -156,25 +154,30 @@ if simScenario >= 2 && simScenario < 4
     fltCtrl.pitchAngleMax.upperLimit.setValue(45,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-45,'');
     fltCtrl.setNomSpoolSpeed(0,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
     wnch.winch1.elevError.setValue(2,'deg');
-    vhcl.turb1.setPowerCoeff(0,'');
+%     vhcl.turb1.setPowerCoeff(0,'');
     fltCtrl.initCtrlVec;
 end
-if simScenario > 2 && ~isequal(FLIGHTCONTROLLER,'LaRController')
-    fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)');
-    fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
-    fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
-    
-    fltCtrl.rollSP.kp.setValue(0,'(deg)/(deg)');
-    fltCtrl.rollSP.ki.setValue(0,'(deg)/(deg*s)');
-    fltCtrl.rollSP.kd.setValue(0,'(deg)/(deg/s)');
-    
-    fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');
-    fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
-    fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
-    
-    %                                 fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)')
-    %                                 fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
-    %                                 fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)')
+if simScenario >= 2 && ~isequal(FLIGHTCONTROLLER,'LaRController')
+%     fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)');
+%     fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)');
+%     fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)');
+%     
+%     fltCtrl.rollSP.kp.setValue(0,'(deg)/(deg)');
+%     fltCtrl.rollSP.ki.setValue(0,'(deg)/(deg*s)');
+%     fltCtrl.rollSP.kd.setValue(0,'(deg)/(deg/s)');
+%     
+%     fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');
+%     fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
+%     fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
+%     
+%     vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value*4,'1/deg');
+%     vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value*4,'1/deg');
+%     vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value*4,'1/deg');
+%     vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value*4,'1/deg');
+%     
+%     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)')
+%     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
+%     fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)')
 end
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
