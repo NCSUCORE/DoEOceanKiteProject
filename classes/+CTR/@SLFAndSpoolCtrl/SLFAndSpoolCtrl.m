@@ -33,6 +33,7 @@ classdef SLFAndSpoolCtrl < handle
         elevatorReelInDef
         firstSpoolLap
         rudderGain
+        towCtrlStrat
         % Spooling
         ctrlVecUpdateFcn
         tetherLengthSetpointFcn
@@ -92,6 +93,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
             obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
             obj.fcnName             = SIM.parameter('Unit','','Description','Path Style');
+            obj.towCtrlStrat        = SIM.parameter('Unit','','Description','Towing Positon Control Variant');
             
             obj.ctrlVecUpdateFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
             obj.tetherLengthSetpointFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
@@ -152,6 +154,10 @@ classdef SLFAndSpoolCtrl < handle
             obj.fcnName.setValue(val,units)
         end
 
+        function setTowCtrlStrat(obj,val,units)
+            obj.towCtrlStrat.setValue(val,units)
+        end
+        
         function setFirstSpoolLap(obj,val,units)
             obj.firstSpoolLap.setValue(val,units)
         end
