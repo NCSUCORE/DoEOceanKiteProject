@@ -5,8 +5,8 @@ Simulink.sdi.clear
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
 simScenario = 1.3;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
-thrLength = 400;  altitude = 200;                           %   m - Initial tether length/operating altitude 
+saveSim = 0;                                                %   Flag to save results
+thrLength = 200;  altitude = 150;                           %   m - Initial tether length/operating altitude 
 flwSpd = .5;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -15,12 +15,13 @@ h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width
 fpath = fullfile(fileparts(which('OCTProject.prj')),...
     'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
-if simScenario == 1.3
-    thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
-    el = interp2(maxT.altitude,maxT.flwSpd,maxT.R.EL,altitude,flwSpd)*pi/180;
-else
-    el = asin(altitude/thrLength);
-end
+% if simScenario == 1.3
+%     thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
+%     el = interp2(maxT.altitude,maxT.flwSpd,maxT.R.EL,altitude,flwSpd)*pi/180;
+% else
+%     el = asin(altitude/thrLength);
+% end
+el = 10*pi/180;
 if simScenario >= 4
     loadComponent('LaRController');                         %   Launch and recovery controller
 elseif simScenario >= 3 && simScenario < 4
@@ -125,9 +126,10 @@ if simScenario >= 3 && simScenario < 4
     fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
     fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
 elseif simScenario >= 1 && simScenario < 2
+    fltCtrl.elevatorReelInDef.setValue(3,'deg');        fltCtrl.AoACtrl.setValue(2,'');
     fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
     fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-    fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+    fltCtrl.elevCtrl.kp.setValue(100,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
     fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
@@ -135,7 +137,7 @@ end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 % vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
@@ -174,7 +176,7 @@ if simScenario < 3
     if max(tsc.lapNumS.Data) < 2
         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     end
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
@@ -200,9 +202,9 @@ end
 % plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,5,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',15,...
+%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'ZoomIn',1==0,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
+%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...

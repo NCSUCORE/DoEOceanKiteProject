@@ -35,6 +35,8 @@ fltCtrl.alphaCtrl.kp.setValue(1,'(kN)/(rad)');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
+fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
+fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
