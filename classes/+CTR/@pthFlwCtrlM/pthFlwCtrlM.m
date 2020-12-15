@@ -12,6 +12,7 @@ classdef pthFlwCtrlM < handle
         % Saturations
         maxBank
         controlSigMax
+        elevCtrlMax
         % SIM.parameters
         winchSpeedIn
         winchSpeedOut
@@ -47,6 +48,7 @@ classdef pthFlwCtrlM < handle
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
+            obj.elevCtrlMax         = CTR.sat;
             
             obj.winchSpeedIn        = SIM.parameter('Unit','m/s','Description','Max tether spool in speed.');
             obj.winchSpeedOut       = SIM.parameter('Unit','m/s','Description','Max tether spool out speed.');

@@ -90,6 +90,12 @@ fltCtrl.controlSigMax.upperLimit.NoScale = false
 fltCtrl.controlSigMax.lowerLimit.Value = -3.0000e+01
 fltCtrl.controlSigMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.lowerLimit.NoScale = false
+fltCtrl.elevCtrlMax.upperLimit.Value = 8.0000e+00
+fltCtrl.elevCtrlMax.upperLimit.Unit is unitless or has no unit specified
+fltCtrl.elevCtrlMax.upperLimit.NoScale = false
+fltCtrl.elevCtrlMax.lowerLimit.Value = -3.0000e+01
+fltCtrl.elevCtrlMax.lowerLimit.Unit is unitless or has no unit specified
+fltCtrl.elevCtrlMax.lowerLimit.NoScale = false
 fltCtrl.winchSpeedIn.Unit = 'm/s'
 fltCtrl.winchSpeedIn.NoScale = false
 fltCtrl.winchSpeedIn.Description = 'Max tether spool in speed.'
