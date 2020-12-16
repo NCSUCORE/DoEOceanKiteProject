@@ -3,10 +3,10 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.3;
+simScenario = 1.4;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
-thrLength = 200;  altitude = 150;                           %   m - Initial tether length/operating altitude 
+thrLength = 200;  altitude = 200;  elev = 10;               %   Initial tether length/operating altitude/elevation angle 
 flwSpd = .5;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -15,13 +15,15 @@ h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width
 fpath = fullfile(fileparts(which('OCTProject.prj')),...
     'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
-% if simScenario == 1.3
-%     thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
-%     el = interp2(maxT.altitude,maxT.flwSpd,maxT.R.EL,altitude,flwSpd)*pi/180;
-% else
-%     el = asin(altitude/thrLength);
-% end
-el = 10*pi/180;
+if simScenario == 1.3
+    thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
+    el = interp2(maxT.altitude,maxT.flwSpd,maxT.R.EL,altitude,flwSpd)*pi/180;
+elseif simScenario == 1.4
+    el = elev*pi/180;
+else
+    el = asin(altitude/thrLength);
+end
+
 if simScenario >= 4
     loadComponent('LaRController');                         %   Launch and recovery controller
 elseif simScenario >= 3 && simScenario < 4
@@ -55,7 +57,7 @@ elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
 elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
     loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
+    loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
@@ -110,7 +112,6 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
 thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
 thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
-% thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -126,11 +127,12 @@ if simScenario >= 3 && simScenario < 4
     fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
     fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
 elseif simScenario >= 1 && simScenario < 2
-    fltCtrl.elevatorReelInDef.setValue(3,'deg');        fltCtrl.AoACtrl.setValue(2,'');
+    fltCtrl.elevatorReelInDef.setValue(3,'deg');        fltCtrl.AoACtrl.setValue(1,'');
     fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
     fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-    fltCtrl.elevCtrl.kp.setValue(100,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+    fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
     fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+    fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
 end
@@ -176,7 +178,7 @@ if simScenario < 3
     if max(tsc.lapNumS.Data) < 2
         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     end
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
