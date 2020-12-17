@@ -46,7 +46,7 @@ fltCtrl.rollMoment.tau.Value = 1.0000e-03
 fltCtrl.rollMoment.tau.Unit = 's'
 fltCtrl.rollMoment.tau.NoScale = false
 fltCtrl.rollMoment.tau.Description = 'Time Constant'
-fltCtrl.elevCtrl.kp.Value = 2.0000e+02
+fltCtrl.elevCtrl.kp.Value = 1.2500e+02
 fltCtrl.elevCtrl.kp.Unit = '(deg)/(rad)'
 fltCtrl.elevCtrl.kp.NoScale = false
 fltCtrl.elevCtrl.kp.Description = 'Proportional gain'
@@ -62,6 +62,22 @@ fltCtrl.elevCtrl.tau.Value = 1.0000e-03
 fltCtrl.elevCtrl.tau.Unit = 's'
 fltCtrl.elevCtrl.tau.NoScale = false
 fltCtrl.elevCtrl.tau.Description = 'Time Constant'
+fltCtrl.rollCtrl.kp.Value = 2.0000e+02
+fltCtrl.rollCtrl.kp.Unit = '(deg)/(rad)'
+fltCtrl.rollCtrl.kp.NoScale = false
+fltCtrl.rollCtrl.kp.Description = 'Proportional gain'
+fltCtrl.rollCtrl.ki.Value = 1.0000e+00
+fltCtrl.rollCtrl.ki.Unit = '(deg)/(rad*s)'
+fltCtrl.rollCtrl.ki.NoScale = false
+fltCtrl.rollCtrl.ki.Description = 'Integral gain'
+fltCtrl.rollCtrl.kd.Value = 0.0000e+00
+fltCtrl.rollCtrl.kd.Unit = '(deg)/(rad/s)'
+fltCtrl.rollCtrl.kd.NoScale = false
+fltCtrl.rollCtrl.kd.Description = 'Derivative gain'
+fltCtrl.rollCtrl.tau.Value = 1.0000e-03
+fltCtrl.rollCtrl.tau.Unit = 's'
+fltCtrl.rollCtrl.tau.NoScale = false
+fltCtrl.rollCtrl.tau.Description = 'Time Constant'
 fltCtrl.alphaCtrl.kp.Value = 1.0000e+00
 fltCtrl.alphaCtrl.kp.Unit = '(kN)/(rad)'
 fltCtrl.alphaCtrl.kp.NoScale = false
@@ -157,6 +173,10 @@ fltCtrl.AoASP.Value = 0.0000e+00
 fltCtrl.AoASP.Unit is unitless or has no unit specified
 fltCtrl.AoASP.NoScale = false
 fltCtrl.AoASP.Description = 'Flag to decide AoA control. 0 = constant; 1 = time-lookup'
+fltCtrl.RCtrl.Value = 1.0000e+00
+fltCtrl.RCtrl.Unit is unitless or has no unit specified
+fltCtrl.RCtrl.NoScale = false
+fltCtrl.RCtrl.Description = 'Flag to decide roll control. 0 = direct; 1 = ctrl allocation matrix'
 fltCtrl.AoAConst.Value = 2.4435e-01
 fltCtrl.AoAConst.Unit = 'deg'
 fltCtrl.AoAConst.NoScale = false

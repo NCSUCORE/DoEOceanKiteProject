@@ -5,9 +5,9 @@ Simulink.sdi.clear
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
 simScenario = 1.4;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
-thrLength = 200;  altitude = 200;  elev = 10;               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = .5;                                                %   m/s - Flow speed
+saveSim = 1;                                                %   Flag to save results
+thrLength = 600;  altitude = 200;  elev = 30;               %   Initial tether length/operating altitude/elevation angle 
+flwSpd = .15;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -127,10 +127,12 @@ if simScenario >= 3 && simScenario < 4
     fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
     fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
 elseif simScenario >= 1 && simScenario < 2
-    fltCtrl.elevatorReelInDef.setValue(3,'deg');        fltCtrl.AoACtrl.setValue(1,'');
+    fltCtrl.elevatorReelInDef.setValue(3,'deg');        
+    fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.RCtrl.setValue(0,'');
     fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
     fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
     fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+    fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
     fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
     fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
 elseif simScenario == 0
@@ -178,7 +180,7 @@ if simScenario < 3
     if max(tsc.lapNumS.Data) < 2
         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     end
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);

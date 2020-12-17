@@ -6,8 +6,8 @@ simScenario = 1.3;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
 thrLength = 400;                                            %   m - Initial tether length
-flwSpd = .315;                                              %   m/s - Flow speed
-thrD = .0075:.0005:.012;
+flwSpd = 0.15:0.05:0.5;                                           %   m/s - Flow speed
+thrD = .0075:.00025:.012;
 el = 30*pi/180;                                             %   rad - Mean elevation angle
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -101,21 +101,22 @@ for kk = 1:numel(flwSpd)
         %%  Controller User Def. Parameters and dependant properties
         fltCtrl.setFcnName(PATHGEOMETRY,'');
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-        fltCtrl.rudderGain.setValue(0,'');        thr.tether1.dragEnable.setValue(1,'');
+        fltCtrl.rudderGain.setValue(0,'');                  thr.tether1.dragEnable.setValue(1,'');
         fltCtrl.elevatorReelInDef.setValue(3,'deg');        fltCtrl.AoACtrl.setValue(1,'');
         fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
         fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(38,'kN');
         fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+        fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
         %%  Set up critical system parameters and run simulation
-        fprintf('Tether Diameter = %.1f mm\n',thrD(ii)*1000);
-        simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+        fprintf('Tether Diameter = %.2f mm\n',thrD(ii)*1000);
+        simParams = SIM.simParams;  simParams.setDuration(20000,'s');  dynamicCalc = '';
         simWithMonitor('OCTModel')
         %%  Log Results
         tsc = signalcontainer(logsout);
         dt = datestr(now,'mm-dd_HH-MM');
-        filename = sprintf(strcat('Turb%.1f_V-%.3f_thrD-%.1f.mat'),simScenario,flwSpd(kk),thrD(ii)*1000);
-        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor','ThrD\');
+        filename = sprintf(strcat('Turb%.1f_V-%.3f_thrD-%.2f.mat'),simScenario,flwSpd(kk),thrD(ii)*1000);
+        fpath = 'D:\Results5\';
         if saveSim == 1
             save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
         end
@@ -130,10 +131,18 @@ for kk = 1:numel(flwSpd)
         CL(ii,kk) = mean(CLtot(ran));   CD(ii,kk) = mean(CDtot(ran));
         Fdrag(ii,kk) = mean(Drag(ran)); Flift(ii,kk) = mean(Lift(ran));
         Ffuse(ii,kk) = mean(Fuse(ran)); Fthr(ii,kk) = mean(Thr(ran));   Fturb(ii,kk) = mean(Turb(ran));
-        o Depth(ii,kk) = 500-mean(tsc.positionVec.Data(3,1,ran));
     end
 end
 %% 
 filename1 = 'TetherDiameterStudy_12-16_.mat';
 fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\');
 save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr','Fturb','thrD')
+%%
+CO(:,:,1) = ones(numel(thrD),numel(flwSpd)); % red
+CO(:,:,2) = zeros(numel(thrD),numel(flwSpd)); % green
+CO(:,:,3) = zeros(numel(thrD),numel(flwSpd)); % bluefigure;
+surf(flwSpd,thrD*1e3,Pavg);  hold on;  set(gca,'View',[-21.5 45])
+surf(flwSpd,thrD*1e3,0.3*ones(numel(thrD),numel(flwSpd)),CO);
+xlabel('Flow Speed [m/s]');  ylabel('Diameter [mm]');  zlabel('Avg. Power [kW]');
+L = legend('Power Curve','Minimum Power Req.');
+L.Position = [0.21567010725141 0.713648503376888 0.122552214209614 0.0521634624350783];
