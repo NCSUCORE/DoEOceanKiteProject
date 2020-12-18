@@ -6,8 +6,8 @@ Simulink.sdi.clear
 simScenario = 1.4;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
-thrLength = 600;  altitude = 200;  elev = 30;               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = .15;                                                %   m/s - Flow speed
+thrLength = 400;  altitude = 200;  elev = 30;               %   Initial tether length/operating altitude/elevation angle 
+flwSpd = .3;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -180,7 +180,7 @@ if simScenario < 3
     if max(tsc.lapNumS.Data) < 2
         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     end
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);

@@ -2,11 +2,11 @@
 Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario
-simScenario = 1.0;
+simScenario = 1.3;
 %%  Set Test Parameters
-fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataNew.mat']);
+fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataFS3.mat']);
 saveSim = 1;                                                %   Flag to save results
-Tmax = 31:33;
+Tmax = 38;
 thrLength = 200:50:600;                                     %   m - Initial tether length
 flwSpd = 0.1:0.05:0.5;                                      %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
@@ -17,9 +17,12 @@ for ll = 1:numel(Tmax)
     for kk = 1:numel(flwSpd)
         for ii = 1:numel(thrLength)
             for jj = 1:numel(altitude)
-                eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',Tmax(ll)))/100;
-                TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax(ll)));
-                young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax(ll)));
+                fpathT = fullfile(fileparts(which('OCTProject.prj')),...
+                    'vehicleDesign\Tether\Tension\');
+                maxT = load([fpathT,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
+                eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',114))/100;
+                TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',114));
+                young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',114));
                 if altitude(jj) >= 0.7071*thrLength(ii) || altitude(jj) <= 0.1736*thrLength(ii)
                     el = NaN;
                 else
@@ -45,7 +48,7 @@ for ll = 1:numel(Tmax)
                 elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
                     loadComponent('Manta2RotXFoil_AR9_b10');                            %   AR = 9; 10m span
                 elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
-                    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
+                    loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
                 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
                     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
                 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
@@ -70,7 +73,19 @@ for ll = 1:numel(Tmax)
                     ENVIRONMENT = 'environmentManta2Rot';                   %   Two turbines
                 end
                 %%  Set basis parameters for high level controller
-                loadComponent('constBoothLem');                             %   High level controller
+                if simScenario >= 1 && simScenario < 2
+                    loadComponent('varAltitudeBooth');                          %   High level controller
+                    hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
+                    if simScenario == 1.3
+                        hiLvlCtrl.ELctrl.setValue(1,'');
+                    else
+                        hiLvlCtrl.ELctrl.setValue(1,'');
+                    end
+                    hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
+                    hiLvlCtrl.ThrCtrl.setValue(1,'');
+                else
+                    loadComponent('constBoothLem');                             %   High level controller
+                end
                 hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength(ii)],'[rad rad rad rad m]') % Lemniscate of Booth
                 %%  Ground Station Properties
                 %%  Vehicle Properties
@@ -91,15 +106,16 @@ for ll = 1:numel(Tmax)
                 %%  Controller User Def. Parameters and dependant properties
                 fltCtrl.setFcnName(PATHGEOMETRY,'');
                 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-                fltCtrl.rudderGain.setValue(0,'')
-                thr.tether1.dragEnable.setValue(1,'');
-                fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.AoASP.setValue(2,'');
-                fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-                fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax(ll),'kN');
-                fltCtrl.AoATime.setValue([0 1000 2000],'s');        fltCtrl.AoALookup.setValue([14 2 14]*pi/180,'deg');
-                fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');            %%  Set up critical system parameters and run simulation
+                fltCtrl.elevatorReelInDef.setValue(3,'deg');
+                fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.RCtrl.setValue(0,'');
+                fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+                fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
+                fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+                fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+                fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+                fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
                 fprintf('\nFlow Speed = %.3f m/s;\tTether Length = %.1f m;\t Altitude = %d m;\t Tmax = %.1f kN\n',flwSpd(kk),thrLength(ii),altitude(jj),Tmax(ll));
-                simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+                simParams = SIM.simParams;  simParams.setDuration(20000,'s');  dynamicCalc = '';
                 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
                 if ~isnan(el)
                     simWithMonitor('OCTModel')
@@ -111,7 +127,7 @@ for ll = 1:numel(Tmax)
                     [Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
                     Turb = squeeze(sqrt(sum(tsc.FTurbBdy.Data.^2,1)));
                     Pow = tsc.rotPowerSummary(vhcl,env);
-                    Pavg(ll,kk,ii,jj) = Pow.avg;    PavgG(ll,kk,ii,jj) = Pow.avg*eff;
+                    Pavg(ll,kk,ii,jj) = Pow.avg;    Pnet(ll,kk,ii,jj) = Pow.avg*eff;
                     AoA(ll,kk,ii,jj) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
                     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
                     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
@@ -121,21 +137,25 @@ for ll = 1:numel(Tmax)
                     Fdrag(ll,kk,ii,jj) = mean(Drag(ran)); Flift(ll,kk,ii,jj) = mean(Lift(ran));
                     Ffuse(ll,kk,ii,jj) = mean(Fuse(ran)); Fthr(ll,kk,ii,jj) = mean(Thr(ran));   Fturb(ll,kk,ii,jj) = mean(Turb(ran));
                     elevation(ll,kk,ii,jj) = el*180/pi;
+                    filename = sprintf(strcat('Turb%.1f_V-%.3f_Alt-%.d_Thr-%d.mat'),simScenario,flwSpd(kk),altitude(jj),thrLength(ii));
+                    fpath = 'D:\Altitude Thr-L Study 12mm\';
+                    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
                 else
                     Pavg(ll,kk,ii,jj) = NaN;  AoA(ll,kk,ii,jj) = NaN;   ten(ll,kk,ii,jj) = NaN;
                     CL(ll,kk,ii,jj) = NaN;    CD(ll,kk,ii,jj) = NaN;    Fdrag(ll,kk,ii,jj) = NaN; 
                     Flift(ll,kk,ii,jj) = NaN; Ffuse(ll,kk,ii,jj) = NaN; Fthr(ll,kk,ii,jj) = NaN;   
                     Fturb(ll,kk,ii,jj) = NaN; elevation(ll,kk,ii,jj) = el*180/pi;
+                    Pnet(ll,kk,ii,jj) = NaN;
                 end
             end
         end
     end
-    filename1 = sprintf('Tmax_Study_AR8b8_Tmax-%d.mat',Tmax(ll));
-    fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-    save([fpath1,filename1],'Pavg','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
-        'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','ii','jj','ll','kk')
 end
 toc
+filename1 = sprintf('Tmax_Study_AR8b8_Tmax-%d.mat',Tmax(ll));
+fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
+save([fpath1,filename1],'Pavg','Pnet','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
+    'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude')
 %%
 % filename1 = sprintf('Tmax_Study_AR8b8.mat');
 % fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');

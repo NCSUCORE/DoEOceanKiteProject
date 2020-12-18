@@ -1,22 +1,24 @@
 %%  Load Results 
 Tmaxx = 38;
-fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataFS3.mat']);
+% fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataFS3.mat']);
+load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\Redundant\Tmax_Study_AR8b8_Tmax-38 - Copy.mat')
+load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
 load(['C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\',sprintf('Tmax_Study_AR8b8_Tmax-%d.mat',Tmaxx)]);
 depth = [300 250 200];
-eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',114))/100;
+eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',38))/100;
 %%  Squeeze Results 
-Pavg = squeeze(Pavg);
-Pnet = squeeze(Pnet);
-AoA = squeeze(AoA);
-CD = squeeze(CD);
-CL = squeeze(CL);
-elevation = squeeze(elevation);
-ten = squeeze(ten);
-Fdrag = squeeze(Fdrag);
-Ffuse = squeeze(Ffuse);
-Flift = squeeze(Flift);
-Fthr = squeeze(Fthr);
-Fturb = squeeze(Fturb);
+Pavg = squeeze(Pavg(1,:,:,:));
+Pnet = squeeze(Pavg)*eff;
+AoA = squeeze(AoA(1,:,:,:));
+CD = squeeze(CD(1,:,:,:));
+CL = squeeze(CL(1,:,:,:));
+elevation = squeeze(elevation(1,:,:,:));
+ten = squeeze(ten(1,:,:,:));
+Fdrag = squeeze(Fdrag(1,:,:,:));
+Ffuse = squeeze(Ffuse(1,:,:,:));
+Flift = squeeze(Flift(1,:,:,:));
+Fthr = squeeze(Fthr(1,:,:,:));
+Fturb = squeeze(Fturb(1,:,:,:));
 %%  Reassign variables 
 for i = 1:numel(flwSpd)
     for j = 1:numel(altitude)
@@ -51,7 +53,9 @@ for i = 1:numel(flwSpd)
         end
     end
 end
-R.Pmax1 = R.Pmax*eff;
+%%  Save
+fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
+save([fpath,sprintf('TmaxStudy_%dkN_old.mat',Tmaxx)],'flwSpd','altitude','thrLength','R','Tmaxx','depth','eff');
 %%  Plotting 
 figure; 
 for alt = 1:6
@@ -70,39 +74,12 @@ for alt = 1:6
     subplot(3,2,4); hold on; grid on
     plot(flwSpd,R.EL(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Elevation [deg]');  xlim([.1 0.5]);
 end
-%%  Determine opt tether tension limit based on average power
-% maxT = 20:31;
-% for i = 1:length(maxT)
-%     fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-%     load([fpath,sprintf('TmaxStudy_%dkN.mat',maxT(i))]);
-%     for j = 1:length(altitude)
-%         Ptemp = 1/(flwSpd(end)-flwSpd(1))*cumtrapz(flwSpd,R.Pmax1(:,j));  Pavg1(i,j) = Ptemp(end);
-%     end
-% end
+
 %%  Determine opt tether tension limit based on flow resource 
 % M1 = ENV.Manta(1);   M2 = ENV.Manta(2);   M3 = ENV.Manta(3);   M4 = ENV.Manta(4);
 % M5 = ENV.Manta(5);   M6 = ENV.Manta(6);   M7 = ENV.Manta(7);   M8 = ENV.Manta(8);
 % M9 = ENV.Manta(9);   M10 = ENV.Manta(10); M11 = ENV.Manta(11); M12 = ENV.Manta(12);
-maxT = 20:38;   %Odepth = 500:-50:350;
-tic
-for i = 1:length(maxT)
-    fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-    load([fpath,sprintf('TmaxStudy_%dkN.mat',maxT(i))]);
-    for j = 1:12
-        [Pavg(i,j),vAvg(i,j),XYopt(:,i,j)] = eval(sprintf('M%d.powOptDepth(Odepth(1),flwSpd,R.Pmax1,altitude);',j));
-        fprintf('i = %d;\tj = %d\n',i,j);
-    end
-end
-toc
-fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath,'Pout_20-38kN_500m.mat'],'maxT','Pavg','vAvg','XYopt');
-%%  Plot 
-fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-D500 = load([fpath,'Pout_20-38kN_500m.mat']);
-D450 = load([fpath,'Pout_20-38kN_450m.mat']);
-D400 = load([fpath,'Pout_20-38kN_400m.mat']);
-D350 = load([fpath,'Pout_20-38kN_350m.mat']);
-% Pavg(Pavg==0) = NaN;
+
 Title = {'January','February','March','April','May','June','July','August','September','October','November','December'};
 figure;
 for i = 1:12
@@ -128,32 +105,8 @@ for i = 1:12
         legend('D = 500 m','D = 450 m','D = 400 m','D = 350 m','location','northwest')
     end
 end
-%%  Save
+%%  Save Power Curve 
+Pnet = R.Pnet;
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath,sprintf('TmaxStudy_%dkN.mat',Tmaxx)],'flwSpd','altitude','thrLength','R','Tmaxx','depth','eff');
-%%
-
-%%  
-maxT = 20:38;
-figure;
-for i = 1:3:numel(maxT)
-    fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-    load([fpath,sprintf('TmaxStudy_%dkN.mat',maxT(i))]);
-    subplot(3,2,1); hold on; grid on;
-    plot(flwSpd,R.Pmax(:,6));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Power [kW]'); 
-    subplot(3,2,6); hold on; grid on;
-    plot(flwSpd,R.Fthr(:,6));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Thr Drag [N]'); 
-    subplot(3,2,2); hold on; grid on;
-    plot(flwSpd,R.alpha(:,6));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('AoA [deg]'); 
-    legend('Tmax = 20 kN','Tmax = 23 kN','Tmax = 26 kN','Tmax = 29 kN','Tmax = 32 kN','Tmax = 35 kN','Tmax = 38 kN')
-    subplot(3,2,3); hold on; grid on;
-    plot(flwSpd,R.Flift(:,6));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Lift [N]'); 
-    subplot(3,2,4); hold on; grid on;
-    plot(flwSpd,R.Fdrag(:,6));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Drag [N]'); 
-end
-%%
-% T20 = load([fpath,sprintf('TmaxStudy_%dkN.mat',20)]);
-% T38 = load([fpath,sprintf('TmaxStudy_%dkN.mat',38)]);
-% Perr = (T38.R.Pmax1)
-
+save([fpath 'PowCurve_11-6.mat'],'Pnet','flwSpd','altitude')
 

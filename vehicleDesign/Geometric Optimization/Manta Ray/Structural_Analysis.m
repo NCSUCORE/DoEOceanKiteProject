@@ -40,15 +40,15 @@ fuse.CM = -vhcl.fuse.rNose_LE.Value(1)+...
     vhcl.rCM_LE.Value(1);
 fuse.rWing = -vhcl.fuse.rNose_LE.Value(1);
 fuse.rStab = fuse.rWing+vhcl.hStab.rSurfLE_WingLEBdy.Value(1);
-
+fuse.rBrid = fuse.rWing+vhcl.rBridle_LE.Value(1);
 Env.vFlow = [0.5 0 0]';                             %   m/s - Flow speed 
 Env.rho = 1000;                                     %   kg/m^3 - density of seawater
 Env.g = 9.81;                                       %   m/s^2 - gravitational acceleration 
 %%
-[Ixx_opt,Ixx_req,Fthk,Mtot,Wingdim] = structOpt(wing,hStab,vStab,fuse,Env,loads);
-
+[Ixx_opt,Ixx_req,thk,Mtot,Wingdim] = structOpt(wing,hStab,vStab,fuse,Env,loads);
+fprintf('\nFuselage Thickness = %.1f mm\nWing Skin Thickness = %.1f mm\nSpar 1 Thickness = %.1f mm\nSpar 2 Thickness = %.1f mm\n',thk*1e3,Wingdim(1)*wing.c*.12e3,Wingdim(2)*wing.c*1e3,Wingdim(3)*wing.c*1e3)
 %%
-function [Ixx_calc,Ixx_req,Fthk,Mtot,Wingdim] = structOpt(wing,hStab,vStab,fuse,Env,loads)
+function [Ixx_calc,Ixx_req,thk,Mtot,Wingdim] = structOpt(wing,hStab,vStab,fuse,Env,loads)
 
 chord = wing.c;
 span = wing.b;
@@ -63,16 +63,16 @@ a = span/4;
 delx = span/2*.05;
 Ixx_req = (39.37^4)*P*a^3*(3*L-a)/(6*wing.E*delx);
 
-Skn = 0.025; Sp1 = 0.04; Sp2 = 0.02; 
+Skn = 0.06; Sp1 = 0.05; Sp2 = 0.03; 
 [Ixx_calc,area_skin,area_spar1,area_spar2] = App_Wing_MoICalc_old(chord,Skn,Sp1,Sp2);
 Ixx_calc = Ixx_calc*(39.37^4);
 area_opt = area_skin+area_spar1+area_spar2;
-% Mwing = area_opt*S_opt*in.rhow;
+Mwing = area_opt*span*Env.rho;
 
-[Mfuse,Fthk,~] = App_SFDT2(Df,Lf,Fmax);
-% Mtot = Mfuse+Mwing;
-% Wingdim = Wopt;
-Fthk = 0;
-Mtot = 0;
-Wingdim = 0;
+[Mfuse,thk,~] = App_SFDT2(Df,Lf,fuse,wing,hStab,vStab,loads);
+Mtot = Mfuse+Mwing;
+Wingdim = [Skn Sp1 Sp2];
+% Fthk = 0;
+% Mtot = 0;
+% Wingdim = 0;
 end
