@@ -72,26 +72,20 @@ end
 
 Ixx_lim = sum(Ixx_skin_arr);
 
-% Plotting I beams
-figure;
-for k = 1:(length(x_ind)-1)
-   xori = x_af(x_ind(k));
-   yori = ls_af(x_ind(k));
-   
-   
-%    if (k >= x_w1_ll && k <= x_w1_ul) 
-%    if (k >= x_w1_ll && k <= x_w1_ul || k >= x_w2_ll && k <= x_w2_ul)
-   if (k >= x_w1_ll && k <= x_w1_ul || k >= x_w2_ll && k <= x_w2_ul) %|| k >= x_w3_ll && k <= x_w3_ul)
-       rectangle('Position',[xori yori B_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-   else
-       %    rectangle('Position',[xori+(0.5*B_arr(k)- 0.5*T1_arr(k)) yori T1_arr(k) A_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-       rectangle('Position',[xori yori B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-       rectangle('Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)],'FaceColor',[0 .5 .5],'Curvature',0.2);
-    
-   end
-
-end
-ylim([-.5 0.5])
+%%  Plotting I beams
+% figure; hold on;
+% for k = 1:(length(x_ind)-1)
+%     xori = x_af(x_ind(k));
+%     yori = ls_af(x_ind(k));
+%     
+%     if (k >= x_w1_ll && k <= x_w1_ul || k >= x_w2_ll && k <= x_w2_ul) %|| k >= x_w3_ll && k <= x_w3_ul)
+%         rectangle('Position',[xori yori B_arr(k) A_arr(k)]*ChrdL,'FaceColor',[0 0 0],'Curvature',0.2);
+%     else
+%         rectangle('Position',[xori yori B_arr(k) T2_arr(k)]*ChrdL,'FaceColor',[0 0 0],'Curvature',0.2);
+%         rectangle('Position',[xori (yori+A_arr(k)-T2_arr(k)) B_arr(k) T2_arr(k)]*ChrdL,'FaceColor',[0 0 0],'Curvature',0.2);
+%     end
+% end
+% ylim([-.5 0.5]);    axis square;
 end
 
 function [Ixx,Iyy] = AMoICalc(A,B,T1,T2)
