@@ -26,15 +26,22 @@ fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
 fltCtrl.yawMoment.kp.setValue(2.3458e3,'(N*m)/(rad)');
 
-fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');
 fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.elevCtrl.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCtrl.tau.setValue(0.001,'s');
+
+fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+fltCtrl.rollCtrl.kd.setValue(0,'(deg)/(rad/s)');
+fltCtrl.rollCtrl.tau.setValue(0.001,'s');
 
 fltCtrl.alphaCtrl.kp.setValue(1,'(kN)/(rad)');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
+fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
+fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
 
