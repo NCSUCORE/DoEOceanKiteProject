@@ -3,11 +3,11 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.3;
+simScenario = 1.4;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
-thrLength = 400;  altitude = 200;                           %   m - Initial tether length/operating altitude 
-flwSpd = .5;                                                %   m/s - Flow speed
+thrLength = 400;  altitude = 200;  elev = 30;               %   Initial tether length/operating altitude/elevation angle 
+flwSpd = .3;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -18,9 +18,12 @@ maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
 if simScenario == 1.3
     thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
     el = interp2(maxT.altitude,maxT.flwSpd,maxT.R.EL,altitude,flwSpd)*pi/180;
+elseif simScenario == 1.4
+    el = elev*pi/180;
 else
     el = asin(altitude/thrLength);
 end
+
 if simScenario >= 4
     loadComponent('LaRController');                         %   Launch and recovery controller
 elseif simScenario >= 3 && simScenario < 4
@@ -54,7 +57,7 @@ elseif simScenario == 1.2 || simScenario == 3.2 || simScenario == 4.2
 elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
     loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
+    loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
@@ -109,7 +112,6 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
 thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
 thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
-% thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -125,17 +127,21 @@ if simScenario >= 3 && simScenario < 4
     fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
     fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
 elseif simScenario >= 1 && simScenario < 2
+    fltCtrl.elevatorReelInDef.setValue(3,'deg');        
+    fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.RCtrl.setValue(0,'');
     fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
     fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-    fltCtrl.elevCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+    fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+    fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
     fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+    fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 % vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(2000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
@@ -200,9 +206,9 @@ end
 % plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,5,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',15,...
+%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'ZoomIn',1==0,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
+%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
 % else
 %     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
 %         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...

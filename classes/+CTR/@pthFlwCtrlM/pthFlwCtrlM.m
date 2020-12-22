@@ -8,10 +8,12 @@ classdef pthFlwCtrlM < handle
         yawMoment
         rollMoment
         elevCtrl
+        rollCtrl
         alphaCtrl
         % Saturations
         maxBank
         controlSigMax
+        elevCtrlMax
         % SIM.parameters
         winchSpeedIn
         winchSpeedOut
@@ -31,6 +33,7 @@ classdef pthFlwCtrlM < handle
         % Setpoint 
         AoACtrl
         AoASP
+        RCtrl
         AoAConst
         Tmax
         optAltitude
@@ -43,10 +46,12 @@ classdef pthFlwCtrlM < handle
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
             obj.elevCtrl            = CTR.FPID('rad','deg');
+            obj.rollCtrl            = CTR.FPID('rad','deg');
             obj.alphaCtrl           = CTR.FPID('rad','kN');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
+            obj.elevCtrlMax         = CTR.sat;
             
             obj.winchSpeedIn        = SIM.parameter('Unit','m/s','Description','Max tether spool in speed.');
             obj.winchSpeedOut       = SIM.parameter('Unit','m/s','Description','Max tether spool out speed.');
@@ -64,6 +69,7 @@ classdef pthFlwCtrlM < handle
             obj.firstSpoolLap       = SIM.parameter('Unit','','Description','First Lap to begin spooling');
             obj.rudderGain          = SIM.parameter('Value',1,'Unit','','Description','0 Turns off rudder');
             
+            obj.RCtrl               = SIM.parameter('Value',1,'Unit','','Description','Flag to decide roll control. 0 = direct; 1 = ctrl allocation matrix');
             obj.AoACtrl             = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = none; 1 = On');
             obj.AoASP               = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = constant; 1 = time-lookup');
             obj.AoAConst            = SIM.parameter('Unit','deg','Description','Constant AoA setpoint');
