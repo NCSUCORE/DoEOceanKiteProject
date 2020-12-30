@@ -1,7 +1,7 @@
 
 %% Test script for John to control the kite model
 Simulink.sdi.clear
-clear;clc;%close all
+clear;clc;close all
 %%  Select sim scenario
 %   0 = fig8;
 %   1 = fig8-2rot DOE-M;  1.1 = fig8-2rot AVL;  1.2 = fig8-2rot XFoil;  1.3 = fig8-2rot XFlr5;
@@ -14,14 +14,14 @@ simScenario = 1.3;
 % Simulation Time
 simTime = 1500;
 %%  Configure Test
-thrLength = 40;%[20 35 50];                         % m - Initial tether length
-flwSpd = 0.25;%[0.25:.25:2];                             % m/s - Flow speed
+thrLength = 300;%[20 35 50];                         % m - Initial tether length
+flwSpd = 0.5;%[0.25:.25:2];                             % m/s - Flow speed
 craftSpeed = -0.0% Moving Ground Station Velocity Magnitude m/s
 elevation =  30%[0:10:80];  % elevation angle in degrees for tow controller
 yaw = 0; %Moving Ground Station Turning Angle deg
 flowDirPert = 0;
-scaleSim = 1;
-lenScale = .1%0.1%[1,0.5,0.1,0.05]
+scaleSim = 0;
+lenScale = 1%0.1%[1,0.5,0.1,0.05]
 saveim = 0; %0 - dont save images 1 - save images
 rDes =0% [0.1:.025:0.3];
 animate = 1;
@@ -127,6 +127,8 @@ for mm = 1:length(lenScale)
                                 vhcl.setBuoyFactor(1,'');
                             elseif simScenario == 1.3 || simScenario == 2.3 || simScenario == 3.3 || simScenario == 3.4 || simScenario == 4.3
                                 loadComponent('Manta2RotXFoil_AR8_b8');                              %   Manta kite with XFlr5
+                                SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
+%                                 VEHICLE = 'vehicleManta2RotBandLin';
 %                                 vhcl.turb1.diameter.setValue(0,'m');
 %                                 vhcl.turb2.diameter.setValue(0,'m');
                             end
@@ -138,7 +140,7 @@ for mm = 1:length(lenScale)
                             elseif simScenario == 2
                                 ENVIRONMENT = 'environmentDOE';                         %   No turbines
                             else
-                                ENVIRONMENT = 'environmentManta2Rot';                   %   Two turbines
+                                ENVIRONMENT = 'environmentManta2RotBandLin';                   %   Two turbines
                             end
                             %%  Set basis parameters for high level controller
                             loadComponent('constBoothLem');                             %   High level controller
@@ -265,14 +267,14 @@ for mm = 1:length(lenScale)
                             end
                             if linAnalysis == 0
                                 %     set_param(bdroot,'SimulationMode','accelerator')
-                                    simWithMonitor('OCTModel')
+                                    simWithMonitor('OCTModel_bandLin')
 %                                 simWithMonitor('OCTModel_for_lin')
                                 tsc = signalcontainer(logsout);
                             end
                             %%
                             if linAnalysis == 1
                                 set_param('OCTModel_bandLin','SimulationMode','accelerator')
-                                sim('OCTModel_bandLin')
+                                simWithMonitor('OCTModel_bandLin')
                                 
                                 snaps = 0.05%:0.1:0.95;
                                 for i = 1 : length(snaps)

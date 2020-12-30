@@ -1,0 +1,164 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 1048576 bytes for AllocateHeap
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (memory/allocation.inline.hpp:61), pid=5212, tid=0x0000000000008408
+#
+# JRE version:  (8.0_202-b08) (build )
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (25.202-b08 mixed mode windows-amd64 compressed oops)
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000000002992800):  JavaThread "Unknown thread" [_thread_in_vm, id=33800, stack(0x0000000002850000,0x0000000002950000)]
+
+Stack: [0x0000000002850000,0x0000000002950000]
+[error occurred during error reporting (printing stack bounds), id 0xc0000005]
+
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+
+Other Threads:
+
+=>0x0000000002992800 (exited) JavaThread "Unknown thread" [_thread_in_vm, id=33800, stack(0x0000000002850000,0x0000000002950000)]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+heap address: 0x00000006c4a00000, size: 4022 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 3
+Compressed class space size: 1073741824 Address: 0x00000007c0000000
+
+Heap:
+ PSYoungGen      total 75264K, used 1290K [0x000000076c380000, 0x0000000771780000, 0x00000007c0000000)
+  eden space 64512K, 2% used [0x000000076c380000,0x000000076c4c2900,0x0000000770280000)
+  from space 10752K, 0% used [0x0000000770d00000,0x0000000770d00000,0x0000000771780000)
+  to   space 10752K, 0% used [0x0000000770280000,0x0000000770280000,0x0000000770d00000)
+ ParOldGen       total 172032K, used 0K [0x00000006c4a00000, 0x00000006cf200000, 0x000000076c380000)
+  object space 172032K, 0% used [0x00000006c4a00000,0x00000006c4a00000,0x00000006cf200000)
+ Metaspace       used 779K, capacity 4480K, committed 4480K, reserved 1056768K
+  class space    used 76K, capacity 384K, committed 384K, reserved 1048576K
+
+Card table byte_map: [0x0000000011e50000,0x0000000012630000] byte_map_base: 0x000000000e82b000
+
+Marking Bits: (ParMarkBitMap*) 0x0000000071ff5ce0
+ Begin Bits: [0x0000000013570000, 0x0000000017448000)
+ End Bits:   [0x0000000017448000, 0x000000001b320000)
+
+Polling page: 0x00000000009e0000
+
+CodeCache: size=245760Kb used=328Kb max_used=328Kb free=245431Kb
+ bounds [0x0000000002a90000, 0x0000000002d00000, 0x0000000011a90000]
+ total_blobs=58 nmethods=0 adapters=38
+ compilation: enabled
+
+Compilation events (0 events):
+No events
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (10 events):
+Event: 0.055 loading class java/lang/Short
+Event: 0.055 loading class java/lang/Short done
+Event: 0.055 loading class java/lang/Integer
+Event: 0.055 loading class java/lang/Integer done
+Event: 0.055 loading class java/lang/Long
+Event: 0.056 loading class java/lang/Long done
+Event: 0.056 loading class java/lang/NullPointerException
+Event: 0.056 loading class java/lang/NullPointerException done
+Event: 0.056 loading class java/lang/ArithmeticException
+Event: 0.056 loading class java/lang/ArithmeticException done
+
+
+Dynamic libraries:
+0x00007ff6ce850000 - 0x00007ff6ce887000 	C:\Program Files\MATLAB\R2020a\sys\java\jre\win64\jre\bin\java.exe
+0x00007ffcc82a0000 - 0x00007ffcc8490000 	C:\Windows\SYSTEM32\ntdll.dll
+0x00007ffcc7ac0000 - 0x00007ffcc7b72000 	C:\Windows\System32\KERNEL32.DLL
+0x00007ffcc56a0000 - 0x00007ffcc5945000 	C:\Windows\System32\KERNELBASE.dll
+0x00007ffcc7430000 - 0x00007ffcc74d3000 	C:\Windows\System32\ADVAPI32.dll
+0x00007ffcc6c30000 - 0x00007ffcc6cce000 	C:\Windows\System32\msvcrt.dll
+0x00007ffcc6350000 - 0x00007ffcc63e7000 	C:\Windows\System32\sechost.dll
+0x00007ffcc6fd0000 - 0x00007ffcc70f0000 	C:\Windows\System32\RPCRT4.dll
+0x00007ffcc6db0000 - 0x00007ffcc6f44000 	C:\Windows\System32\USER32.dll
+0x00007ffcc6320000 - 0x00007ffcc6341000 	C:\Windows\System32\win32u.dll
+0x00007ffcc7250000 - 0x00007ffcc7276000 	C:\Windows\System32\GDI32.dll
+0x00007ffcc5500000 - 0x00007ffcc5696000 	C:\Windows\System32\gdi32full.dll
+0x00007ffcc6280000 - 0x00007ffcc631e000 	C:\Windows\System32\msvcp_win.dll
+0x00007ffcc5950000 - 0x00007ffcc5a4a000 	C:\Windows\System32\ucrtbase.dll
+0x00007ffca9180000 - 0x00007ffca9404000 	C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.18362.1139_none_9e7bf2d3e4605ac6\COMCTL32.dll
+0x00007ffcc7be0000 - 0x00007ffcc7f15000 	C:\Windows\System32\combase.dll
+0x00007ffcc5230000 - 0x00007ffcc52b0000 	C:\Windows\System32\bcryptPrimitives.dll
+0x00007ffcc79d0000 - 0x00007ffcc79fe000 	C:\Windows\System32\IMM32.DLL
+0x00000000716f0000 - 0x00000000717c2000 	C:\Program Files\MATLAB\R2020a\sys\java\jre\win64\jre\bin\msvcr100.dll
+0x00000000717d0000 - 0x0000000072075000 	C:\Program Files\MATLAB\R2020a\sys\java\jre\win64\jre\bin\server\jvm.dll
+0x00007ffcc7a00000 - 0x00007ffcc7a08000 	C:\Windows\System32\PSAPI.DLL
+0x00007ffcc0820000 - 0x00007ffcc0844000 	C:\Windows\SYSTEM32\WINMM.dll
+0x00007ffcbf130000 - 0x00007ffcbf139000 	C:\Windows\SYSTEM32\WSOCK32.dll
+0x00007ffcbccd0000 - 0x00007ffcbccda000 	C:\Windows\SYSTEM32\VERSION.dll
+0x00007ffcc74e0000 - 0x00007ffcc754f000 	C:\Windows\System32\WS2_32.dll
+0x00007ffcc07d0000 - 0x00007ffcc07fd000 	C:\Windows\SYSTEM32\WINMMBASE.dll
+0x00007ffcc5ab0000 - 0x00007ffcc5afa000 	C:\Windows\System32\cfgmgr32.dll
+0x00007ffc8ce90000 - 0x00007ffc8ce9f000 	C:\Program Files\MATLAB\R2020a\sys\java\jre\win64\jre\bin\verify.dll
+0x00007ffc4d280000 - 0x00007ffc4d2a9000 	C:\Program Files\MATLAB\R2020a\sys\java\jre\win64\jre\bin\java.dll
+0x00007ffc4d260000 - 0x00007ffc4d276000 	C:\Program Files\MATLAB\R2020a\sys\java\jre\win64\jre\bin\zip.dll
+
+VM Arguments:
+jvm_args: -Djava.library.path=C:\Program Files\MATLAB\R2020a/bin/win64 
+java_command: com.mathworks.fatalexit.FatalExitFrame C:\Users\andre\AppData\Local\Temp\matlab_crash_dump.18336-1 -segvURL https://udc-service.mathworks.com/udc/service/v1 -mweInstall C:\Program Files\MATLAB\R2020a -desktopOS Microsoft Windows 10 Pro -desktopPlatform win64 -installationId 3d74292b-3e13-49e1-913d-cb20741d3237 -machineHash a8be1996ae471a83e8dd7f2755fbe24c -releaseFamily R2020a -sessionKey 47132950-f832-4541-9616-8c6265e7737b -version 9.8.0.1396136 (R2020a) Update 3 -optIn
+java_class_path (initial): C:\Program Files\MATLAB\R2020a\java\jar/fatalexit.jar;C:\Program Files\MATLAB\R2020a\java\jar/crash_analyzer.jar;C:\Program Files\MATLAB\R2020a\java\jar/mlwebservices.jar;C:\Program Files\MATLAB\R2020a\java\jar/net.jar;C:\Program Files\MATLAB\R2020a\java\jar/webproxy.jar;C:\Program Files\MATLAB\R2020a\java\jarext/webservices/udc_client/udc_client.jar;C:\Program Files\MATLAB\R2020a\java\jarext/webservices/urlmanager/urlmanager.jar;C:\Program Files\MATLAB\R2020a\java\jarext/webservices/ws_client_core/mw-service-client-core.jar;C:\Program Files\MATLAB\R2020a\java\jarext/commons-cli.jar;C:\Program Files\MATLAB\R2020a\java\jarext/commons-codec.jar;C:\Program Files\MATLAB\R2020a\java\jarext/commons-io.jar;C:\Program Files\MATLAB\R2020a\java\jarext/commons-lang.jar;C:\Program Files\MATLAB\R2020a\java\jarext/commons-logging.jar;C:\Program Files\MATLAB\R2020a\java\jarext/jgoodies-looks.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/activation.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/axiom-api.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/axiom-impl.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/axis2-adb.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/axis2-kernel.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/axis2-transport-http.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/axis2-transport-local.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/commons-httpclient.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/geronimo-stax-api.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/httpcore.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/mail.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/neethi.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/wsdl4j.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/wstx-asl.jar;C:\Program Files\MATLAB\R2020a\java\jarext/axis2/XmlSchema.jar;C:\Program Files\MATLAB\R2020a\java\jar/ja_JP/fatalexit_res.jar;C:\Program Files\MATLAB\R2020a\java\
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=C:\Program Files\MATLAB\R2020a\bin\win64;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\MATLAB\R2020a\bin;C:\Program Files\Git\cmd;C:\Program Files\Wolfram Research\WolframScript\;C:\Program Files\TortoiseGit\bin;C:\Users\andre\AppData\Local\Microsoft\WindowsApps;C:\Users\andre\AppData\Local\Programs\MiKTeX 2.9\miktex\bin\x64\;C:\Users\andre\AppData\Local\GitHubDesktop\bin
+USERNAME=andre
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 158 Stepping 13, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 10.0 , 64 bit Build 18362 (10.0.18362.1110)
+
+CPU:total 12 (initial active 12) (6 cores per cpu, 2 threads per core) family 6 model 158 stepping 13, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, 3dnowpref, lzcnt, ht, tsc, tscinvbit, bmi1, bmi2, adx
+
+Memory: 4k page, physical 16466128k(1317092k free), swap 47560908k(5552k free)
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (25.202-b08) for windows-amd64 JRE (1.8.0_202-b08), built on Dec 15 2018 19:54:30 by "java_re" with MS VC++ 10.0 (VS2010)
+
+time: Sat Oct 31 03:22:25 2020
+timezone: Eastern Daylight Time
+elapsed time: 0 seconds (0d 0h 0m 0s)
+

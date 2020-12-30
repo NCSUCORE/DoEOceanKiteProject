@@ -9,22 +9,22 @@ clear;clc;close all
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
 h = 10*pi/180;  w = 40*pi/180;                     % rad - Path width/height
 [a,b] = boothParamConversion(w,h);                 % Build Path
-simScenario = 2.2;
+simScenario = 3.2;
 % Simulation Time
-simTime = 600;
+simTime = 15;
 %%  Configure Test
 thrLength = 300                  % m - Initial tether length
-flwSpd = 1e-30                  % m/s - Flow speed)
+flwSpd = 0.5                 % m/s - Flow speed)
 craftSpeed = -0.1% Moving Ground Station Velocity Magnitude m/s
 elevation =  30%[0:10:80]
-rDes =[-0.1];
+rDes =[0];
 for mm = 1:length(rDes)
     el = elevation*pi/180;                                 % rad - Mean elevation angle
     % rDes(mm)
     
     %Ground Station Trajectory
     time = [0 600 3165 3180 3195 3210 3215 63300  633000];
-    vel = craftSpeed*[0 1 1 1 1 1 1 1 1;...
+    vel = craftSpeed*[1 1 1 1 1 1 1 1 1;...
         0 0 0 0 0 0 0 0 0;...
         0 0 0 0 0 0 0 0 0]';
     angVel = [0 0 0 0 0 0 0 0 0;...
@@ -55,7 +55,13 @@ for mm = 1:length(rDes)
     loadComponent('idealSensorProcessing')                      %   Sensor processing
     
     loadComponent('Manta2RotXFoil_AR8_b8_exp2');                             %   Manta kite with XFoil
-    vhcl.setBuoyFactor(1,'');
+    SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
+vhcl.hStab.CL.setValue(vhcl.hStab.CL.Value/2,'')
+vhcl.hStab.CD.setValue(vhcl.hStab.CD.Value/2,'')
+vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value/2,'')
+vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value/2,'')
+
+vhcl.setBuoyFactor(1,'');
     %%  Environment Properties
     loadComponent('constXYZT');                                 %   Environment
     env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
@@ -102,7 +108,8 @@ for mm = 1:length(rDes)
         thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
         thr.tether1.setDiameter(0.0076,thr.tether1.diameter.Unit);
     end
-    vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)+rDes(mm);0;-vhcl.fuse.diameter.Value/2],'m');
+%     vhcl.setRCM_LE([.0251;0;0],'m');
+    vhcl.setRBridle_LE([vhcl.rBridle_LE.Value(1);0;-0.05],'m');
     %%  Winches Properties
     if simScenario >2 && simScenario < 3
         wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,env.water.flowVec.Value);
@@ -129,10 +136,20 @@ for mm = 1:length(rDes)
         vhcl.turb1.setPowerCoeff(0,'');
         fltCtrl.initCtrlVec;
     end
+%     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)')
+%     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
+    fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)')
+    fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)')
+    fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)')
+    fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)')
+    fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)')
+    fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)')
     thr.tether1.dragEnable.setValue(1,'');
-    
-%     fltCtrl.elevCmd.kp.setValue(20,'(deg)/(rad)'); 
-%     fltCtrl.elevCmd.ki.setValue(fltCtrl.elevCmd.kp.Value/6,'(deg)/(rad*s)');
+    fltCtrl.pitchCtrl.setValue(0,'')
+    fltCtrl.pitchConst.setValue(2,'deg')
+    fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)'); 
+    fltCtrl.elevCmd.ki.setValue(fltCtrl.elevCmd.kp.Value/6,'(deg)/(rad*s)');
+    vhcl.allMaxCtrlDefSpeed.setValue(30,'deg/s')
     thr.scale(0.1,1)
     fltCtrl.scale(0.1,1);
 %     fltCtrl.yawMoment.kp.setValue
@@ -141,15 +158,16 @@ for mm = 1:length(rDes)
 %     hiLvlCtrl.scale(0.1,1);
 %     wnch.scale(0.1,1);
     %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(200,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
 %     simParams.setLengthScaleFactor(0.1,'');
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
-    dir = fullfile(fileparts(which('OCTProject.prj')),'output\ExpDesign\');
-    file = sprintf('deltaL_%.2f.mat',rDes(mm));
-    filename = strcat(dir,file);
-    save(filename,'tsc','vhcl')
+%     dir = fullfile(fileparts(which('OCTProject.prj')),'output\ExpDesign\');
+%     file = sprintf('deltaL_%.2f.mat',rDes(mm));
+%     filename = strcat(dir,file);
+%     save(filename,'tsc','vhcl')
 end
+plotCtrlDeflections
 %     vhcl.animateSim(tsc,2,...
 %         'GifTimeStep',10,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
 %         'ZoomInMove',false,'SaveGIF',true,'GifFile','animation.gif',...
