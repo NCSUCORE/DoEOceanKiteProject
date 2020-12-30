@@ -625,15 +625,17 @@ classdef vehicleM < dynamicprops
                 elseif obj.hStab.halfSpan.Value == 0.2
                     H = load('NACA0015_b0.2_c0.055_1ms.mat');
                 else
-                    error('No XFoil wing data exists for this combination of span = %.1f and chord = %.2f',obj.hStab.halfSpan.Value,obj.hStab.rootChord.Value)
+                    error('No XFoil wing data exists for this combination of span = %.3f and chord = %.3f',obj.hStab.halfSpan.Value,obj.hStab.rootChord.Value)
                 end
                 aeroStruct(3).CL = (H.cl_c-H.cl_c(36))*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).CD = H.CD_c*obj.hStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(3).alpha = H.alfa_c-obj.hStab.incidence.Value;
                 if obj.vStab.halfSpan.Value ~= 0.195
                     V = load('NACA0015_b.95_vStab.mat');
-                else
+                elseif obj.vStab.halfSpan.Value ~= 0.2
                     V = load('NACA0015_b0.195_c_0.052_1ms.mat');
+                else
+                    V = load('NACA0015_b0.2_c0.055_1ms.mat');
                 end
                 aeroStruct(4).CL = (V.cl_c-V.cl_c(36))*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;
                 aeroStruct(4).CD = V.CD_c*obj.vStab.planformArea.Value/obj.fluidRefArea.Value;

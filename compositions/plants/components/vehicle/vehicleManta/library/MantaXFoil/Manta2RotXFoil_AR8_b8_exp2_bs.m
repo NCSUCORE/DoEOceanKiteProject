@@ -57,15 +57,14 @@ vhcl.hStab.setRootChord(.55,'m');
 vhcl.hStab.setTR(1,'');
 vhcl.hStab.setHalfSpan(2,'m');
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(.1,'deg');
-vhcl.hStab.setIncidence(-.25,'deg');
+vhcl.hStab.setIncidence(0,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
 
 vhcl.vStab.setRSurfLE_WingLEBdy([3.45;0;0],'m');
-vhcl.vStab.setRootChord(.52,'m');
-vhcl.vStab.setHalfSpan(1.95,'m');
+vhcl.vStab.setRootChord(.55,'m');
+vhcl.vStab.setHalfSpan(2,'m');
 vhcl.vStab.setTR(1,'');
 vhcl.vStab.setSweep(0,'deg');
 vhcl.vStab.setAirfoil('NACA0015','');
