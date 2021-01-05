@@ -133,14 +133,44 @@ elems(8).Unit = 'm/s';
 elems(8).Description = 'Ocean surface height at the x location of the gnd stn lumped masses';
 
 elems(9) = Simulink.BusElement;
-elems(9).Name = 'velPrim';
-elems(9).Dimensions = [3 4]; 
+elems(9).Name = 'portPrim';
+elems(9).Dimensions = [3 1]; 
 elems(9).DimensionsMode = 'Fixed';
 elems(9).DataType = 'double';
 elems(9).SampleTime = -1;
 elems(9).Complexity = 'real';
 elems(9).Unit = 'm/s';
 elems(9).Description = 'Velocity Primitives at each aerosurface';
+
+elems(10) = Simulink.BusElement;
+elems(10).Name = 'stbdPrim';
+elems(10).Dimensions = [3 1]; 
+elems(10).DimensionsMode = 'Fixed';
+elems(10).DataType = 'double';
+elems(10).SampleTime = -1;
+elems(10).Complexity = 'real';
+elems(10).Unit = 'm/s';
+elems(10).Description = 'Velocity Primitives at each aerosurface';
+
+elems(11) = Simulink.BusElement;
+elems(11).Name = 'hStabPrim';
+elems(11).Dimensions = [3 1]; 
+elems(11).DimensionsMode = 'Fixed';
+elems(11).DataType = 'double';
+elems(11).SampleTime = -1;
+elems(11).Complexity = 'real';
+elems(11).Unit = 'm/s';
+elems(11).Description = 'Velocity Primitives at each aerosurface';
+
+elems(12) = Simulink.BusElement;
+elems(12).Name = 'vStabPrim';
+elems(12).Dimensions = [3 1]; 
+elems(12).DimensionsMode = 'Fixed';
+elems(12).DataType = 'double';
+elems(12).SampleTime = -1;
+elems(12).Complexity = 'real';
+elems(12).Unit = 'm/s';
+elems(12).Description = 'Velocity Primitives at each aerosurface';
 
 envBus = Simulink.Bus;
 envBus.Elements = elems;
