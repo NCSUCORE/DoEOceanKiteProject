@@ -8,13 +8,13 @@ h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width
 [a,b] = boothParamConversion(w,h);
 simScenario = 2;
 % Simulation Time
-simTime = 600;
+simTime = 2000;
 %%  Configure Test
 thrLength = 20;%[20 35 50];                         % m - Initial tether length
 flwSpd = 1e-5;%[0.25:.25:2];                             % m/s - Flow speed
 craftSpeed = -0.5% Moving Ground Station Velocity Magnitude m/s
 elevation =  30%[0:10:80];  % elevation angle in degrees for tow controller
-yaw = 0; %Moving Ground Station Turning Angle deg
+yaw = 10; %Moving Ground Station Turning Angle deg
 flowDirPert = 0;
 saveim = 0; %0 - dont save images 1 - save images
 
@@ -88,7 +88,7 @@ hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]'
 if simScenario == 2
     gndStn.setVelVecTrajectory(vel,time,'m/s');
     gndStn.setAngVelTrajectory(angVel,time,'rad/s');
-    gndStn.setInitPosVecGnd([0 0 0],'m');
+    gndStn.setInitPosVecGnd([-50 0 0],'m');
     gndStn.setInitEulAng([0 0 0]*pi/180,'rad')
 else
     gndStn.setPosVec([0 0 0],'m');
@@ -165,11 +165,13 @@ if simScenario >= 2 && ~isequal(FLIGHTCONTROLLER,'LaRController')
 %     
     fltCtrl.rollSP.kp.setValue(2,'(deg)/(deg)');
     fltCtrl.rollSP.ki.setValue(.1,'(deg)/(deg*s)');
-%     fltCtrl.rollSP.kd.setValue(0,'(deg)/(deg/s)');
+    fltCtrl.rollSP.kd.setValue(0,'(deg)/(deg/s)');
 %     
     fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)');
     fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)');
     fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)');
+    
+    fltCtrl.yawMoment.kp.setValue(100,'(N*m)/(rad)')
 %     
 %     vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value*4,'1/deg');
 %     vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value*4,'1/deg');
@@ -179,7 +181,13 @@ if simScenario >= 2 && ~isequal(FLIGHTCONTROLLER,'LaRController')
 %     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)')
 %     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
 %     fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)')
-    fltCtrl.towCtrlStrat.setValue('yawAz','')
+%     fltCtrl.towCtrlStrat.setValue('NDICtrl','')
+    fltCtrl.towCtrlStrat.setValue('NDICtrl','')
+    fltCtrl.rollMoment.kp.setValue((100)/(11*pi/180),'(N*m)/(rad)')
+    fltCtrl.rollMoment.ki.setValue(.005,'(N*m)/(rad*s)');
+    fltCtrl.rollMoment.kd.setValue((100)/(11*pi/180),'(N*m)/(rad/s)');
+    fltCtrl.rollMoment.tau.setValue(0.001,'s');
+
 end
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
