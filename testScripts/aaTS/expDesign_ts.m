@@ -1,6 +1,6 @@
 %% Test script for John to control the kite model
 Simulink.sdi.clear
-clear;clc;%close all
+clear;clc;close all
 %%  Select sim scenario
 %   0 = fig8;
 %   1 = fig8-2rot DOE-M;  1.1 = fig8-2rot AVL;  1.2 = fig8-2rot XFoil;  1.3 = fig8-2rot XFlr5;
@@ -11,19 +11,19 @@ h = 10*pi/180;  w = 40*pi/180;                     % rad - Path width/height
 [a,b] = boothParamConversion(w,h);                 % Build Path
 simScenario = 3.2;
 % Simulation Time
-simTime = 1000;
+simTime = 15;
 %%  Configure Test
-thrLength = 10                  % m - Initial tether length
-flwSpd = sqrt(0.5)                   % m/s - Flow speed)
-craftSpeed = 0.0% Moving Ground Station Velocity Magnitude m/s
+thrLength = 300                  % m - Initial tether length
+flwSpd = 0.5                 % m/s - Flow speed)
+craftSpeed = -0.1% Moving Ground Station Velocity Magnitude m/s
 elevation =  30%[0:10:80]
-rDes =[-0.3:.01:0.0];
+rDes =[0];
 for mm = 1:length(rDes)
     el = elevation*pi/180;                                 % rad - Mean elevation angle
     % rDes(mm)
     
     %Ground Station Trajectory
-    time = [0 150 165 180 195 210 215 63300  633000];
+    time = [0 600 3165 3180 3195 3210 3215 63300  633000];
     vel = craftSpeed*[1 1 1 1 1 1 1 1 1;...
         0 0 0 0 0 0 0 0 0;...
         0 0 0 0 0 0 0 0 0]';
@@ -36,8 +36,9 @@ for mm = 1:length(rDes)
     
     
     %%  Load components
-    if simScenario > 3
-        loadComponent('LaRController');                         %   Launch and recovery controller
+    if simScenario > 2
+%         loadComponent('LaRController');                         %   Launch and recovery controller
+        loadComponent('slCtrl');                         %   Launch and recovery controller
     else
         loadComponent('pathFollowWithAoACtrl');             %   Path-following controller
     end
@@ -53,10 +54,14 @@ for mm = 1:length(rDes)
     loadComponent('idealSensors')                               %   Sensors
     loadComponent('idealSensorProcessing')                      %   Sensor processing
     
-    loadComponent('Manta2RotXFoil_AR8_b8_expt');                             %   Manta kite with XFoil
-    vhcl.turb1.setDiameter(0,'m');
-    vhcl.turb2.setDiameter(0,'m');
-    vhcl.setBuoyFactor(1,'');
+    loadComponent('Manta2RotXFoil_AR8_b8_exp2');                             %   Manta kite with XFoil
+    SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
+vhcl.hStab.CL.setValue(vhcl.hStab.CL.Value/2,'')
+vhcl.hStab.CD.setValue(vhcl.hStab.CD.Value/2,'')
+vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value/2,'')
+vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value/2,'')
+
+vhcl.setBuoyFactor(1,'');
     %%  Environment Properties
     loadComponent('constXYZT');                                 %   Environment
     env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
@@ -69,7 +74,7 @@ for mm = 1:length(rDes)
     if simScenario == 2.3 || simScenario == 2.2
         gndStn.setVelVecTrajectory(vel,time,'m/s');
         gndStn.setAngVelTrajectory(angVel,time,'rad/s');
-        gndStn.setInitPosVecGnd([0 0 0],'m');
+        gndStn.setInitPosVecGnd([-500 0 0],'m');
         gndStn.setInitEulAng([0 0 0]*pi/180,'rad')
     else
         gndStn.setPosVec([0 0 0],'m');
@@ -81,7 +86,7 @@ for mm = 1:length(rDes)
     if simScenario < 3 && simScenario > 2
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.initPosVecGnd.Value,0);
         vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
-        vhcl.setInitVelVecBdy([craftSpeed 0 0],'m/s')
+        vhcl.setInitVelVecBdy([0 0 0],'m/s')
     elseif simScenario > 3
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0);
         vhcl.setInitEulAng([0,0,0]*pi/180,'rad');
@@ -103,7 +108,8 @@ for mm = 1:length(rDes)
         thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
         thr.tether1.setDiameter(0.0076,thr.tether1.diameter.Unit);
     end
-    %                             vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.2;0;-vhcl.fuse.diameter.Value/2],'m');
+%     vhcl.setRCM_LE([.0251;0;0],'m');
+    vhcl.setRBridle_LE([vhcl.rBridle_LE.Value(1);0;-0.05],'m');
     %%  Winches Properties
     if simScenario >2 && simScenario < 3
         wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,env.water.flowVec.Value);
@@ -122,7 +128,7 @@ for mm = 1:length(rDes)
     end
     fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
     if simScenario >= 2 && simScenario < 4
-        fltCtrl.LaRelevationSP.setValue(elevation,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
+%         fltCtrl.LaRelevationSP.setValue(elevation,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
         fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
         fltCtrl.pitchAngleMax.upperLimit.setValue(45,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-45,'');
         fltCtrl.setNomSpoolSpeed(0,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
@@ -130,22 +136,39 @@ for mm = 1:length(rDes)
         vhcl.turb1.setPowerCoeff(0,'');
         fltCtrl.initCtrlVec;
     end
+%     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)')
+%     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
+    fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)')
+    fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)')
+    fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)')
+    fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)')
+    fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)')
+    fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)')
     thr.tether1.dragEnable.setValue(1,'');
-    vhcl.rBridle_LE.setValue([vhcl.rCM_B.Value(1)+rDes(mm) 0 -vhcl.fuse.diameter.Value/2]','m')
+    fltCtrl.pitchCtrl.setValue(0,'')
+    fltCtrl.pitchConst.setValue(2,'deg')
+    fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)'); 
+    fltCtrl.elevCmd.ki.setValue(fltCtrl.elevCmd.kp.Value/6,'(deg)/(rad*s)');
+    vhcl.allMaxCtrlDefSpeed.setValue(30,'deg/s')
+    thr.scale(0.1,1)
     fltCtrl.scale(0.1,1);
-%     thr.scale(0.1,1);
-    vhcl.turb1.scale(0.1,1);
-    vhcl.turb2.scale(0.1,1);
-    gndStn.scale(0.1,1);
-%     env.scale(0.1,1);
-    hiLvlCtrl.scale(0.1,1);
-    wnch.scale(0.1,1);
+%     fltCtrl.yawMoment.kp.setValue
+%     gndStn.scale(0.1,1);
+    env.scale(0.1,1);
+%     hiLvlCtrl.scale(0.1,1);
+%     wnch.scale(0.1,1);
     %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
+%     simParams.setLengthScaleFactor(0.1,'');
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
-    dir = fullfile(fileparts(which('OCTProject.prj')),'output\ExpDesign\');
-    file = sprintf('deltaL_%.2f.mat',rDes(mm));
-    filename = strcat(dir,file);
-    save(filename,'tsc','vhcl')
+%     dir = fullfile(fileparts(which('OCTProject.prj')),'output\ExpDesign\');
+%     file = sprintf('deltaL_%.2f.mat',rDes(mm));
+%     filename = strcat(dir,file);
+%     save(filename,'tsc','vhcl')
 end
+plotCtrlDeflections
+%     vhcl.animateSim(tsc,2,...
+%         'GifTimeStep',10,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+%         'ZoomInMove',false,'SaveGIF',true,'GifFile','animation.gif',...
+%         'View',[30,30],'timeStep',10);

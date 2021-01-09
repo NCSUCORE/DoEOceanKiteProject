@@ -21,7 +21,7 @@ plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,:,:))*180/pi,...
     'LineStyle','-','Color','k','LineWidth',1.5,'DisplayName','Roll')
 plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(2,:,:))*180/pi,...
     'LineStyle','-','Color','r','LineWidth',1.5,'DisplayName','Pitch')
-plot(tsc.eulerAngles.Time,squeeze(tsc.relEul.Data(3,:,:))*180/pi,...
+plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi,...
     'LineStyle','-','Color','b','LineWidth',1.5,'DisplayName','Yaw')
 % plot(tsc.rollSP.Time,squeeze(tsc.rollSP.Data)*180/pi,...
 %     'LineStyle','--','Color','k','LineWidth',1.5)
@@ -39,9 +39,9 @@ ylabel('Angle [deg]')
 subplot(2,2,3); hold on; grid on;
 plot(tsc.azimuthAngle.Time,squeeze(tsc.azimuthAngle.Data),...
     'LineStyle','-','Color','k','LineWidth',1.5,'DisplayName','Azimuth')
-% plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),...
-%     'LineStyle','-','Color','b','LineWidth',1.5,'DisplayName','Elevation')
-% legend('FontSize',16,'Orientation','horizontal','Location','southeast')
+plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),...
+    'LineStyle','-','Color','b','LineWidth',1.5,'DisplayName','Elevation')
+legend('FontSize',16,'Orientation','horizontal','Location','southeast')
 % legend('boxoff')
 xlabel('Time, [s]')
 ylabel('Azimuth Angle [deg]')
@@ -55,7 +55,7 @@ ylabel('Tether Tension [N]')
 
 set(findall(gcf,'Type','axes'),'FontSize',24)
 linkaxes(findall(gcf,'Type','axes'),'x')
-xlim([0 tsc.azimuthAngle.Time(end)])
+% xlim([0 35])%tsc.azimuthAngle.Time(end)])
 
 elAng = round(tsc.elevationAngle.Data(end));
 velo = tsc.velocityVec.mag.Data(end);
