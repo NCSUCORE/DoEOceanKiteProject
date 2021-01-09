@@ -1,24 +1,24 @@
 %%  Load Results 
 Tmaxx = 38;
-% fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataFS3.mat']);
-load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\Redundant\Tmax_Study_AR8b8_Tmax-38 - Copy.mat')
-load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
-load(['C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\',sprintf('Tmax_Study_AR8b8_Tmax-%d.mat',Tmaxx)]);
+fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign\Tether\');  load([fpath2 'tetherDataFS3.mat']);
+% load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
+load(['C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\',...
+    sprintf('Tmax_Study_AR8b8_Tmax-%d_ThrD-%.1f.mat',Tmaxx,AR8b8.length600.tensionValues190.outerDiam*1e3)]);
 depth = [300 250 200];
-eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',38))/100;
+eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',190))/100;
 %%  Squeeze Results 
-Pavg = squeeze(Pavg(1,:,:,:));
+Pavg = squeeze(Pavg(2,:,:,:));
 Pnet = squeeze(Pavg)*eff;
-AoA = squeeze(AoA(1,:,:,:));
-CD = squeeze(CD(1,:,:,:));
-CL = squeeze(CL(1,:,:,:));
-elevation = squeeze(elevation(1,:,:,:));
-ten = squeeze(ten(1,:,:,:));
-Fdrag = squeeze(Fdrag(1,:,:,:));
-Ffuse = squeeze(Ffuse(1,:,:,:));
-Flift = squeeze(Flift(1,:,:,:));
-Fthr = squeeze(Fthr(1,:,:,:));
-Fturb = squeeze(Fturb(1,:,:,:));
+AoA = squeeze(AoA(2,:,:,:));
+CD = squeeze(CD(2,:,:,:));
+CL = squeeze(CL(2,:,:,:));
+elevation = squeeze(elevation(2,:,:,:));
+ten = squeeze(ten(2,:,:,:));
+Fdrag = squeeze(Fdrag(2,:,:,:));
+Ffuse = squeeze(Ffuse(2,:,:,:));
+Flift = squeeze(Flift(2,:,:,:));
+Fthr = squeeze(Fthr(2,:,:,:));
+Fturb = squeeze(Fturb(2,:,:,:));
 %%  Reassign variables 
 for i = 1:numel(flwSpd)
     for j = 1:numel(altitude)
@@ -55,7 +55,7 @@ for i = 1:numel(flwSpd)
 end
 %%  Save
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath,sprintf('TmaxStudy_%dkN_old.mat',Tmaxx)],'flwSpd','altitude','thrLength','R','Tmaxx','depth','eff');
+save([fpath,sprintf('TmaxStudy_%dkN_FS5.mat',Tmaxx)],'flwSpd','altitude','thrLength','R','Tmaxx','depth','eff');
 %%  Plotting 
 figure; 
 for alt = 1:6
@@ -74,7 +74,23 @@ for alt = 1:6
     subplot(3,2,4); hold on; grid on
     plot(flwSpd,R.EL(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Elevation [deg]');  xlim([.1 0.5]);
 end
-
+%%
+FS1 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS1.mat');
+FS3 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS3.mat');
+FS5 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS5.mat');
+figure;
+for i = 1:6
+    subplot(3,2,i); hold on; grid on;
+    plot(FS1.flwSpd,FS1.Pnet(:,i),'r-');    
+    plot(FS3.flwSpd,FS3.Pnet(:,i),'b-');   
+    plot(FS5.flwSpd,FS5.Pnet(:,i),'g-');   
+%     plot(FS1.flwSpd,FS1.Pmax(:,i),'r-');    
+%     plot(FS3.flwSpd,FS3.Pmax(:,i),'b-');   
+%     plot(FS5.flwSpd,FS5.Pmax(:,i),'g-');   
+    ylim([0 4]);   xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  
+    title(sprintf('Altitude = %d',FS1.altitude(i)));
+end
+legend('Thr D = 7.9 mm','Thr D = 9.5 mm','Thr D = 12 mm')
 %%  Determine opt tether tension limit based on flow resource 
 % M1 = ENV.Manta(1);   M2 = ENV.Manta(2);   M3 = ENV.Manta(3);   M4 = ENV.Manta(4);
 % M5 = ENV.Manta(5);   M6 = ENV.Manta(6);   M7 = ENV.Manta(7);   M8 = ENV.Manta(8);
@@ -107,6 +123,7 @@ for i = 1:12
 end
 %%  Save Power Curve 
 Pnet = R.Pnet;
+Pmax = R.Pmax;
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath 'PowCurve_11-6.mat'],'Pnet','flwSpd','altitude')
+save([fpath 'PowCurve_FS5.mat'],'Pnet','Pmax','flwSpd','altitude')
 

@@ -4,7 +4,7 @@ clear;clc;%close all
 %%  Select sim scenario
 simScenario = 1.3;
 %%  Set Test Parameters
-fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataFS3.mat']);
+fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  
 saveSim = 1;                                                %   Flag to save results
 Tmax = 38;
 thrLength = 200:50:600;                                     %   m - Initial tether length
@@ -13,16 +13,23 @@ altitude = [50 100 150 200 250 300];
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 tic
-for ll = 1:numel(Tmax)
+for ll = 1:2
     for kk = 1:numel(flwSpd)
         for ii = 1:numel(thrLength)
             for jj = 1:numel(altitude)
+                if ll == 1
+                    load([fpath2 'tetherDataNew.mat']);
+                    Tref = 38;
+                else
+                    load([fpath2 'tetherDataFS5.mat']);
+                    Tref = 190;
+                end
                 fpathT = fullfile(fileparts(which('OCTProject.prj')),...
                     'vehicleDesign\Tether\Tension\');
                 maxT = load([fpathT,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
-                eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',114))/100;
-                TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',114));
-                young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',114));
+                eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',Tref))/100;
+                TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tref));
+                young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tref));
                 if altitude(jj) >= 0.7071*thrLength(ii) || altitude(jj) <= 0.1736*thrLength(ii)
                     el = NaN;
                 else
@@ -114,7 +121,7 @@ for ll = 1:numel(Tmax)
                 fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
                 fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
                 fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
-                fprintf('\nFlow Speed = %.3f m/s;\tTether Length = %.1f m;\t Altitude = %d m;\t Tmax = %.1f kN\n',flwSpd(kk),thrLength(ii),altitude(jj),Tmax(ll));
+                fprintf('\nFlow Speed = %.3f m/s;\tTether Length = %.1f m;\t Altitude = %d m;\t ThrD = %.1f mm\n',flwSpd(kk),thrLength(ii),altitude(jj),TDiam*1e3);
                 simParams = SIM.simParams;  simParams.setDuration(20000,'s');  dynamicCalc = '';
                 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
                 if ~isnan(el)
@@ -137,8 +144,8 @@ for ll = 1:numel(Tmax)
                     Fdrag(ll,kk,ii,jj) = mean(Drag(ran)); Flift(ll,kk,ii,jj) = mean(Lift(ran));
                     Ffuse(ll,kk,ii,jj) = mean(Fuse(ran)); Fthr(ll,kk,ii,jj) = mean(Thr(ran));   Fturb(ll,kk,ii,jj) = mean(Turb(ran));
                     elevation(ll,kk,ii,jj) = el*180/pi;
-                    filename = sprintf(strcat('Turb%.1f_V-%.3f_Alt-%.d_Thr-%d.mat'),simScenario,flwSpd(kk),altitude(jj),thrLength(ii));
-                    fpath = 'D:\Altitude Thr-L Study 12mm\';
+                    filename = sprintf(strcat('Turb%.1f_V-%.3f_Alt-%.d_ThrL-%d_ThrD-%.1f.mat'),simScenario,flwSpd(kk),altitude(jj),thrLength(ii),TDiam*1e3);
+                    fpath = 'D:\Altitude Thr-L Study\';
                     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
                 else
                     Pavg(ll,kk,ii,jj) = NaN;  AoA(ll,kk,ii,jj) = NaN;   ten(ll,kk,ii,jj) = NaN;
@@ -150,12 +157,12 @@ for ll = 1:numel(Tmax)
             end
         end
     end
+    filename1 = sprintf('Tmax_Study_AR8b8_Tmax-%d_ThrD-%.1f.mat',Tmax,TDiam*1e3);
+    fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\Tmax Study\');
+    save([fpath1,filename1],'Pavg','Pnet','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
+        'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude')
 end
 toc
-filename1 = sprintf('Tmax_Study_AR8b8_Tmax-%d.mat',Tmax(ll));
-fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath1,filename1],'Pavg','Pnet','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
-    'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude')
 %%
 % filename1 = sprintf('Tmax_Study_AR8b8.mat');
 % fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');

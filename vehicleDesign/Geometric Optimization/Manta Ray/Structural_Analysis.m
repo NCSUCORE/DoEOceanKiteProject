@@ -18,7 +18,7 @@ wing.CL = vhcl.portWing.CL.Value;                   %   Wing lift coefficient at
 wing.CD = vhcl.portWing.CD.Value;                   %   Wing drag coefficient at zero alpha
 wing.aeroCent = ...                                 %   Wing aerodynamic center 
     [vhcl.portWing.rAeroCent_SurfLE.Value(1) 0 0]';
-wing.E = 69e9;                                      %   Wing modulus of elasticity 
+wing.E = 181e9;                                     %   Wing modulus of elasticity 
 
 hStab.alpha = vhcl.hStab.alpha.Value;               %   Horizontal stabilizer alpha vec
 hStab.CL = vhcl.hStab.CL.Value;                     %   Horizontal stabilizer lift coefficient

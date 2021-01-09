@@ -5,9 +5,9 @@ Simulink.sdi.clear
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
 simScenario = 1.4;
 %%  Set Test Parameters
-saveSim = 1;                                                %   Flag to save results
+saveSim = 0;                                                %   Flag to save results
 thrLength = 400;  altitude = 200;  elev = 30;               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = .3;                                                %   m/s - Flow speed
+flwSpd = .5;                                                %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
