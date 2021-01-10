@@ -7,8 +7,8 @@ simScenario = 1.4;
 %%  Set Test Parameters
 saveSim = 0;                                                %   Flag to save results
 thrLength = 400;  altitude = 200;  elev = 30;               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = .5;                                                %   m/s - Flow speed
-Tmax = 38;                                                  %   kN - Max tether tension 
+flwSpd = .1;                                                %   m/s - Flow speed
+Tmax = 29;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -59,7 +59,7 @@ elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
     loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
-    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
+    loadComponent('Manta2RotXFoil_PDR');                                %   AR = 8; 8m span
 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.7 || simScenario == 3.7 || simScenario == 4.7
@@ -111,7 +111,8 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
 thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
-thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
+% thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
+thr.tether1.setDiameter(0.01,'m');
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -134,7 +135,7 @@ elseif simScenario >= 1 && simScenario < 2
     fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
     fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
     fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
-    fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
+    fltCtrl.elevCtrlMax.upperLimit.setValue(30,'');     fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'');
 elseif simScenario == 0
     vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
 end

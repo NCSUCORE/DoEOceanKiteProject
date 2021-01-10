@@ -4,7 +4,7 @@
 VEHICLE               = "vehicleManta2Rot";
 PLANT                 = "plantManta2Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
-LIBRARY               = "Manta2RotXFoil_AR8_b8";
+LIBRARY               = "Manta2RotXFoil_PDR";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -15,12 +15,12 @@ vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR8_b8','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
-vhcl.setVolume(1.5995184,'m^3');
-Ixx = 3.3181109e+03;
-Iyy = 4.0407857e+03;
-Izz = 7.2456248e+03;
-Ixy = 7.6635270e-02;
-Ixz = 1.0686861e+02;
+vhcl.setVolume(1.9221295,'m^3');
+Ixx = 3.5029729e+03;
+Iyy = 4.3128607e+03;
+Izz = 7.6728947e+03;
+Ixy = 4.7462191e-03;
+Ixz = 1.1926731e+02;
 Iyz = 0;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
@@ -28,7 +28,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([8.8444775e-01;0;3.1365427e-02],'m')
+vhcl.setRCM_LE([6.8542933e-01;0;2.6430106e-02],'m')
 vhcl.setRB_LE([0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
@@ -57,8 +57,7 @@ vhcl.hStab.setRootChord(.55,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpan(2,'m');
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(.1,'deg');
-vhcl.hStab.setIncidence(-.25,'deg');
+vhcl.hStab.setIncidence(-1,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
@@ -73,7 +72,7 @@ vhcl.vStab.setClMin(-1.7,'');
 vhcl.vStab.setClMax(1.7,'');
 
 %% Fuselage (could use more realistic numbers)
-vhcl.fuse.setDiameter(0.4,'m');
+vhcl.fuse.setDiameter(0.52,'m');
 vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
@@ -84,7 +83,7 @@ vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
 vhcl.turb1.setMass(6,'kg')
-vhcl.turb1.setDiameter(.7,'m')
+vhcl.turb1.setDiameter(.775,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb1.setPowerCoeff(.4,'')
@@ -95,7 +94,7 @@ vhcl.turb1.setStaticArea(0.08,'m^2')
 vhcl.turb1.setStaticCD(1.5,'')
 % starboard rotor
 vhcl.turb2.setMass(6,'kg')
-vhcl.turb2.setDiameter(.7,'m')
+vhcl.turb2.setDiameter(.775,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb2.setPowerCoeff(.4,'')
@@ -117,7 +116,7 @@ Input.vStab.Thickness = 15; Input.vStab.Sections = 10;
 Input.fuse.Sections = 10; 
 [MA] = getAddedMass(Input,vhcl);
 vhcl.setMa6x6_LE(MA,'');
-vhcl.plot
+% vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 
