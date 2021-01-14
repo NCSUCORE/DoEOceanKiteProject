@@ -25,8 +25,8 @@ Inp.tarBuoy = 1;
 
 %% 
 lb = 0.01; 
-ub = .5;
-u0 = 0.02; 
+ub = 0.03;
+u0 = 0.01; 
 
 J = @(u)DLCalc_cost(DecVar,u);
 C = @(u)DLCalc_constraint(u,Forces,DecVar,Inp,pos);
