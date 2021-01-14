@@ -59,15 +59,17 @@ end
 %%  Save
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
 % save([fpath,sprintf('TmaxStudy_%dkN_FS5.mat',Tmaxx)],'flwSpd','altitude','thrLength','R','Tmaxx','depth','eff');
-save([fpath,sprintf('TmaxStudy_PDR.mat')],'flwSpd','altitude','thrLength','R','Tmax','eff');
+save([fpath,sprintf('TmaxStudy_PDR_1.mat')],'flwSpd','altitude','thrLength','R','Tmax','eff');
 %%  Plotting 
 figure; 
 for alt = 1:6
     subplot(3,2,1); hold on; grid on
     plot(flwSpd,R.Pmax(:,alt)*eff);  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Power [kW]');  xlim([.1 0.5]);
+    subplot(3,2,3); hold on; grid on
+    plot(flwSpd,R.Vavg(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('$V_\mathrm{kite}$ [m/s]');  xlim([.1 0.5]);
     subplot(3,2,6); hold on; grid on
     plot(flwSpd,R.alpha(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('AoA [deg]');  xlim([.1 0.5]);
-    subplot(3,2,3); hold on; grid on
+    subplot(3,2,5); hold on; grid on
     plot(flwSpd,R.ten(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Tension [kN]');  xlim([.1 0.5]);
     if alt == 6
         plot(flwSpd,Tmax*ones(1,numel(flwSpd)),'k--')
@@ -82,13 +84,13 @@ end
 FS1 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS1.mat');
 FS3 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS3.mat');
 FS5 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS5.mat');
-PDR = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_PDR.mat');
+PDR = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_PDR_1.mat');
 figure;
 for i = 1:6
     subplot(3,2,i); hold on; grid on;
 %     plot(FS1.flwSpd,FS1.Pnet(:,i),'r-');    
-    plot(FS3.flwSpd,FS3.Pnet(:,i),'b-');   
-    plot(FS5.flwSpd,FS5.Pnet(:,i),'g-');   
+%     plot(FS3.flwSpd,FS3.Pnet(:,i),'b-');   
+    plot(FS5.flwSpd,FS5.Pnet(:,i),'b-');   
     plot(PDR.flwSpd,PDR.Pnet(:,i),'r-');   
 %     plot(FS1.flwSpd,FS1.Pmax(:,i),'r-');    
 %     plot(FS3.flwSpd,FS3.Pmax(:,i),'b-');   
@@ -131,11 +133,11 @@ end
 Pnet = R.Pnet;
 Pmax = R.Pmax;
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath 'PowCurve_PDR.mat'],'Pnet','Pmax','flwSpd','altitude')
+save([fpath 'PowCurve_PDR_1.mat'],'Pnet','Pmax','flwSpd','altitude')
 %%  Extract Results 
-simScenario = 1.4;  TDiam = 0.01;   eff = 0.99;
+simScenario = 1.3;  TDiam = 0.0125;   eff = 0.95;
 fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');
-Tmax = 29;
+Tmax = 20;
 thrLength = 200:50:600;                                     %   m - Initial tether length
 flwSpd = 0.1:0.05:0.5;                                      %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
@@ -148,7 +150,7 @@ for kk = 1:numel(flwSpd)
                 el = asind(altitude(jj)/thrLength(ii))*pi/180;
             end
             if ~isnan(el)
-                filename = sprintf(strcat('Turb%.1f_V-%.3f_Alt-%.d_ThrL-%d_ThrD-%.1f.mat'),simScenario,flwSpd(kk),altitude(jj),thrLength(ii),TDiam*1e3);
+                filename = sprintf(strcat('Turb%.1f_V-%.3f_Alt-%.d_ThrL-%d_Tmax-%d.mat'),simScenario,flwSpd(kk),altitude(jj),thrLength(ii),Tmax);
                 fpath = 'D:\Altitude Thr-L Study\';
                 load(strcat(fpath,filename))
                 [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;

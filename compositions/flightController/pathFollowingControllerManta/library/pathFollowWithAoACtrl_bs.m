@@ -38,6 +38,11 @@ fltCtrl.rollCtrl.tau.setValue(0.001,'s');
 
 fltCtrl.alphaCtrl.kp.setValue(1,'(kN)/(rad)');
 
+fltCtrl.yawCtrl.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.yawCtrl.ki.setValue(1,'(deg)/(rad*s)');
+fltCtrl.yawCtrl.kd.setValue(0,'(deg)/(rad/s)');
+fltCtrl.yawCtrl.tau.setValue(0.001,'s');
+
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
