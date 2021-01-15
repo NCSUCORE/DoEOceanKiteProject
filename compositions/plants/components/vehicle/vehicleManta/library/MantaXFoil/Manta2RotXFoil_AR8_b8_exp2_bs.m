@@ -5,7 +5,7 @@ VEHICLE               = "vehicleManta2Rot";
 PLANT                 = "plantManta2Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
 LIBRARY               = "Manta2RotXFoil_AR8_b8";
-
+% Vehicle is scaled at the end.
 %% Essential Values
 vhcl = OCT.vehicleM;
 
@@ -16,12 +16,12 @@ vhcl.setFluidCoeffsFileName('Manta_AR8_b8_exp2','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
 vhcl.setVolume(2.77,'m^3');
-Ixx = 3.3181109e+03;
-Iyy = 4.0407857e+03;
-Izz = 7.2456248e+03;
-Ixy = 7.6635270e-02;
-Ixz = 1.0686861e+02;
-Iyz = 0;
+Ixx = 2.804660e+03;
+Iyy = 10.880974e+03;
+Izz = 13.504912e+03;
+Ixy = -0.057487+03;
+Ixz = -0.025665e+03;
+Iyz = 0.001656e+03;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixy Iyy -Iyz;...
@@ -103,6 +103,7 @@ vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
 vhcl.turb2.setStaticArea(0.08,'m^2')
 vhcl.turb2.setStaticCD(1.5,'')
+%Scale the Vehicle
 vhcl.scale(.1,1)
 vhcl.turb1.scale(.1,1)
 vhcl.turb2.scale(.1,1)
@@ -113,6 +114,7 @@ vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/4,'1/deg');
 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/4,'1/deg');
 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/4,'1/deg');
 %% Added Mass/Damping (defaults to zeros)
+% vhcl.hStab.setHalfSpan(.1,'m');
 Input.wing.Thickness = 12;  Input.wing.Sections = 20; 
 Input.hStab.Thickness = 15; Input.hStab.Sections = 20; 
 Input.vStab.Thickness = 15; Input.vStab.Sections = 10; 

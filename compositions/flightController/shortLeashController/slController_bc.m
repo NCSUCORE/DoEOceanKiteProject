@@ -20,7 +20,7 @@ elems(2).Complexity = 'real';
 elems(2).Unit = 'm/s';
 
 elems(3) = Simulink.BusElement;
-elems(3).Name = 'centralAngle';
+elems(3).Name = 'elevation';
 elems(3).Dimensions = 1;
 elems(3).DimensionsMode = 'Fixed';
 elems(3).DataType = 'double';
@@ -29,13 +29,13 @@ elems(3).Complexity = 'real';
 elems(3).Unit = 'rad';
 
 elems(4) = Simulink.BusElement;
-elems(4).Name = 'closestPathVariable';
+elems(4).Name = 'azimuth';
 elems(4).Dimensions = 1;
 elems(4).DimensionsMode = 'Fixed';
 elems(4).DataType = 'double';
 elems(4).SampleTime = -1;
 elems(4).Complexity = 'real';
-elems(4).Unit = 'm/s';
+elems(4).Unit = 'rad';
 
 elems(5) = Simulink.BusElement;
 elems(5).Name = 'turbOnOff';
