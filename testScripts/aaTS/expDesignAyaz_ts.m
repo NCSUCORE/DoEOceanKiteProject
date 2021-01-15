@@ -18,14 +18,6 @@ flwSpd = 0.1  ;            % m/s - Flow speed)
 craftSpeed = -0.25;% Moving Ground Station Velocity Magnitude m/s
 elevation =  30;%[0:10:80]
 
-
-rTethZ = 0%linspace(-0.3,-0.075,9);
-rTethX = 0%[-.2:.05:.2];
-
-% rCG = rCG(3)
-% rTethX = rTethX(7);
-% rTethZ = rTethZ(7);
- rStabX = 2
     el = elevation*pi/180;                                 % rad - Mean elevation angle
     % rDes(mm)
     
@@ -45,7 +37,7 @@ rTethX = 0%[-.2:.05:.2];
     %%  Load components
     if simScenario > 2
 %         loadComponent('LaRController');                         %   Launch and recovery controller
-        loadComponent('slCtrl');                         %   Launch and recovery controller
+        loadComponent('exp_slCtrl');                         %   Launch and recovery controller
     else
         loadComponent('pathFollowWithAoACtrl');             %   Path-following controller
     end
@@ -70,13 +62,9 @@ vhcl.hStab.CL.setValue(vhcl.hStab.CL.Value,'')
 vhcl.hStab.CD.setValue(vhcl.hStab.CD.Value,'')
 vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value,'')
 vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value,'')
-% vhcl.hStab.rSurfLE_WingLEBdy.setValue(vhcl.hStab.rSurfLE_WingLEBdy.Value+[0 0 0]','m')
-% rCG = vhcl.rCentOfBuoy_LE.Value(1);%linspace(0.03,0.13,11);
 vhcl.hStab.setIncidence(1.6225,'deg');   
-%     vhcl.setRCM_LE(vhcl.rCentOfBuoy_LE.Value-[.04 0 0]','m')
-    vhcl.setBuoyFactor(1,'')
-% vhcl.setAllMaxCtrlDefSpeed(10000,'deg/s')
-% vhcl.hStab.setMaxCtrlDefSpeed(10000,'deg/s')
+vhcl.setBuoyFactor(1,'')
+
     %%  Environment Properties
     loadComponent('constXYZT');                                 %   Environment
     env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
@@ -164,51 +152,21 @@ vhcl.hStab.setIncidence(1.6225,'deg');
     fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)')
     fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)')
     fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)')
-%     fltCtrl.alrnCmd.kp.setValue(-fltCtrl.alrnCmd.kp.Value,'(deg)/(rad)')
-%     fltCtrl.alrnCmd.ki.setValue(-fltCtrl.alrnCmd.ki.Value,'(deg)/(rad*s)')
-%     fltCtrl.alrnCmd.kd.setValue(-fltCtrl.alrnCmd.kd.Value,'(deg)/(rad/s)')
-%     fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)')
-%     fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)')
-%     fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)')
     thr.tether1.dragEnable.setValue(0,'');
-%     fltCtrl.pitchCtrl.setValue(0,'')
-%     fltCtrl.pitchConst.setValue(2,'deg')
-%     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)'); 
-%     fltCtrl.elevCmd.ki.setValue(fltCtrl.elevCmd.kp.Value/20,'(deg)/(rad*s)');
-%     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-%     fltCtrl.elevCmd.kd.setValue(-200,'(deg)/(rad/s)');
     vhcl.allMaxCtrlDefSpeed.setValue(30,'deg/s')
     
     
 %Scale Components    
-%     thr.scale(0.1,1)
+    thr.scale(0.1,1);
     fltCtrl.scale(0.1,1);
-%     fltCtrl.yawMoment.kp.setValue
-%     gndStn.scale(0.1,1);
     env.scale(0.1,1);
-%     hiLvlCtrl.scale(0.1,1);
-%     wnch.scale(0.1,1);
     %%  Set up critical system parameters and run simulation
-%     tEnd = zeros(length(rCG),length(rTethX),length(rTethZ));
-    tEnd = zeros(1,length(rTethX),length(rTethZ));
-for i = 1%:length(rCG)
-    for ii = 1%:length(rTethX)
-        for iii = 1%:length(rTethZ)
             Simulink.sdi.clear
-%             vhcl.setRCM_LE([vhcl.rBridle_LE.Value(1)-.03;0;vhcl.rCM_LE.Value(3)],'m');
-%             vhcl.setRBridle_LE([vhcl.rCentOfBuoy_LE.Value(1)+rTethX(ii);0;rTethZ(iii)],'m');
             simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
-            %     simParams.setLengthScaleFactor(0.1,'');
             simWithMonitor('OCTModel')
             tsc = signalcontainer(logsout);
-            tEnd(i,ii,iii) = tsc.FNetBdy.Time(end);
-%     dir = fullfile(fileparts(which('OCTProject.prj')),'output\ExpDesign\');
-%     file = sprintf('deltaL_%.2f.mat',rDes(mm));
-%     filename = strcat(dir,file);
-%     save(filename,'tsc','vhcl')
-        end
-    end
-end
+            
+
 plotCtrlDeflections
 figure; plot(tsc.hStabMoment)
 figure; plot(tsc.wingTotalMoment)
