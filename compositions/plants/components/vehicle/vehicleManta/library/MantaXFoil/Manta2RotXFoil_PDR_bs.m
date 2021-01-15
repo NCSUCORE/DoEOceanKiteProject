@@ -4,7 +4,7 @@
 VEHICLE               = "vehicleManta2Rot";
 PLANT                 = "plantManta2Rot";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
-LIBRARY               = "Manta2RotXFoil_AR8_b8";
+LIBRARY               = "Manta2RotXFoil_PDR";
 
 %% Essential Values
 vhcl = OCT.vehicleM;
@@ -15,12 +15,12 @@ vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR8_b8','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
-vhcl.setVolume(1.5995184,'m^3');
-Ixx = 3.3181109e+03;
-Iyy = 4.0407857e+03;
-Izz = 7.2456248e+03;
-Ixy = 7.6635270e-02;
-Ixz = 1.0686861e+02;
+vhcl.setVolume(1.9221295,'m^3');
+Ixx = 3.5029729e+03;
+Iyy = 4.3128607e+03;
+Izz = 7.6728947e+03;
+Ixy = 4.7462191e-03;
+Ixz = 1.1926731e+02;
 Iyz = 0;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
@@ -28,7 +28,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([8.8444775e-01;0;3.1365427e-02],'m')
+vhcl.setRCM_LE([6.8542933e-01;0;2.6430106e-02],'m')
 vhcl.setRB_LE([0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
@@ -116,7 +116,7 @@ Input.vStab.Thickness = 15; Input.vStab.Sections = 10;
 Input.fuse.Sections = 10; 
 [MA] = getAddedMass(Input,vhcl);
 vhcl.setMa6x6_LE(MA,'');
-vhcl.plot
+% vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 

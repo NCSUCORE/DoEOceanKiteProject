@@ -10,6 +10,7 @@ classdef pthFlwCtrlM < handle
         elevCtrl
         rollCtrl
         alphaCtrl
+        yawCtrl
         % Saturations
         maxBank
         controlSigMax
@@ -48,6 +49,7 @@ classdef pthFlwCtrlM < handle
             obj.elevCtrl            = CTR.FPID('rad','deg');
             obj.rollCtrl            = CTR.FPID('rad','deg');
             obj.alphaCtrl           = CTR.FPID('rad','kN');
+            obj.yawCtrl             = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;

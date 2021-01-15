@@ -1,4 +1,4 @@
-function [Mfuse,thk,exitflag] = App_SFDT2(D,L,fuse,wing,hStab,vStab,loads)
+function [Mfuse,thk,exitflag] = App_SFDT2(D,L,fuse,~,~,~,loads)
 DecVar.L = L;  % shear stress calc
 DecVar.D = D; %decision variable 
 
@@ -11,7 +11,7 @@ pos.T = fuse.rBrid;
 
 %% Input parameters 
 Inp.fos = 5;              %factor of safety 
-Inp.Syield = 2.7*(10^8);         %yield stress 
+Inp.Syield = 2.068427e+9;         %yield stress 
 
 % Internal, external and dynamic pressures
 Inp.IntP = 10^5; 
@@ -20,13 +20,13 @@ Inp.DynP = 5e4;
 
 % Densities  
 Inp.rhow = 1000; 
-Inp.rhoAl = 2710; 
+Inp.rhoAl = 1800; 
 Inp.tarBuoy = 1; 
 
 %% 
 lb = 0.01; 
-ub = .5;
-u0 = 0.02; 
+ub = 0.03;
+u0 = 0.01; 
 
 J = @(u)DLCalc_cost(DecVar,u);
 C = @(u)DLCalc_constraint(u,Forces,DecVar,Inp,pos);
