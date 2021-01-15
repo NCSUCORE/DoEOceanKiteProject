@@ -2,12 +2,12 @@
 Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario
-simScenario = 1.3;
+simScenario = 1.4;
 %%  Set Test Parameters
 fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataNew.mat']);
 saveSim = 1;                                                %   Flag to save results
-Tmax = 38;
-flwSpd = 0.4:0.05:0.5;                                     %   m/s - Flow speed
+Tmax = 29;
+flwSpd = 0.1:0.05:0.5;                                     %   m/s - Flow speed
 thrLength = 200:50:400;
 elev = (10:5:40)*pi/180;
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -18,7 +18,8 @@ for ii = 1:numel(flwSpd)
     for jj = 1:numel(elev)
         for kk = 1:numel(thrLength)
             eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',Tmax))/100;
-            TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax));
+%             TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax));
+            TDiam = 0.01;
             young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax));
             fpath = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign\Tether\Tension\');
             maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
@@ -50,7 +51,7 @@ for ii = 1:numel(flwSpd)
             elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
                 loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
             elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-                error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
+                loadComponent('Manta2RotXFoil_PDR');                                %   AR = 8; 8m span
             elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
                 error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
             elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
@@ -116,7 +117,7 @@ for ii = 1:numel(flwSpd)
             fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
             fltCtrl.elevCtrl.kp.setValue(100,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');            %%  Set up critical system parameters and run simulation
             fltCtrl.firstSpoolLap.setValue(25,'');              fltCtrl.winchSpeedIn.setValue(0,'m/s');
-            fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
+            fltCtrl.elevCtrlMax.upperLimit.setValue(30,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'');
             fprintf('\nFlow Speed = %.3f m/s;\tElevation = %.2f deg;\t ThrLength = %d m\n',flwSpd(ii),elev(jj)*180/pi,thrLength(kk));
             vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
             %%  Simulate 
@@ -142,7 +143,7 @@ for ii = 1:numel(flwSpd)
                 Ffuse(ii,jj,kk) = mean(Fuse(ran)); Fthr(ii,jj,kk) = mean(Thr(ran));   Fturb(ii,jj,kk) = mean(Turb(ran));
                 elevation(ii,jj,kk) = el*180/pi;
                 filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.2f_Thr-%d.mat'),simScenario,flwSpd(ii),elev(jj)*180/pi,thrLength(kk));
-                fpath = 'D:\Results4\';
+                fpath = 'D:\Thr-L EL Study\';
                 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
             else
                 Pavg(ii,jj,kk) = NaN;  AoA(ii,jj,kk) = NaN;   ten(ii,jj,kk) = NaN;  Pnet = NaN;
@@ -155,8 +156,8 @@ for ii = 1:numel(flwSpd)
 end
 toc
 %%
-% filename1 = sprintf('ThrEL_Study3.mat');
-% fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\');
-% save([fpath1,filename1],'Pavg','Pnet','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
-%     'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','elev')
+filename1 = sprintf('ThrEL_Study_PDR.mat');
+fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\');
+save([fpath1,filename1],'Pavg','Pnet','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
+    'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','elev')
 
