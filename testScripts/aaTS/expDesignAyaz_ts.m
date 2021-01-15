@@ -13,12 +13,19 @@ simScenario = 3.2;
 % Simulation Time
 simTime = 200;
 %%  Configure Test
-thrLength = 300                  % m - Initial tether length
-flwSpd = 0.5                 % m/s - Flow speed)
-craftSpeed = -0.1% Moving Ground Station Velocity Magnitude m/s
-elevation =  30%[0:10:80]
-rDes =[0];
-for mm = 1:length(rDes)
+thrLength = 4 ;                % m - Initial tether length
+flwSpd = 0.1  ;            % m/s - Flow speed)
+craftSpeed = -0.25;% Moving Ground Station Velocity Magnitude m/s
+elevation =  30;%[0:10:80]
+
+
+rTethZ = 0%linspace(-0.3,-0.075,9);
+rTethX = 0%[-.2:.05:.2];
+
+% rCG = rCG(3)
+% rTethX = rTethX(7);
+% rTethZ = rTethZ(7);
+ rStabX = 2
     el = elevation*pi/180;                                 % rad - Mean elevation angle
     % rDes(mm)
     
@@ -55,18 +62,21 @@ for mm = 1:length(rDes)
     loadComponent('idealSensorProcessing')                      %   Sensor processing
     
     loadComponent('Manta2RotXFoil_AR8_b8_exp2');                             %   Manta kite with XFoil
-    SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen';
+    VEHICLE = 'vehicleManta2RotPool';
+    SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
     
     %Vehicle Parameters
-% vhcl.hStab.CL.setValue(vhcl.hStab.CL.Value/2,'')
-% vhcl.hStab.CD.setValue(vhcl.hStab.CD.Value/2,'')
-% vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value/2,'')
-% vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value/2,'')
-%     vhcl.setRCM_LE([.0251;0;0],'m');
-    vhcl.setRBridle_LE([vhcl.rBridle_LE.Value(1);0;-0.05],'m');
-    vhcl.setRCM_LE([.092;0;.031365427],'m')
-    
-vhcl.setBuoyFactor(1,'');
+vhcl.hStab.CL.setValue(vhcl.hStab.CL.Value,'')
+vhcl.hStab.CD.setValue(vhcl.hStab.CD.Value,'')
+vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value,'')
+vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value,'')
+% vhcl.hStab.rSurfLE_WingLEBdy.setValue(vhcl.hStab.rSurfLE_WingLEBdy.Value+[0 0 0]','m')
+% rCG = vhcl.rCentOfBuoy_LE.Value(1);%linspace(0.03,0.13,11);
+vhcl.hStab.setIncidence(1.6225,'deg');   
+%     vhcl.setRCM_LE(vhcl.rCentOfBuoy_LE.Value-[.04 0 0]','m')
+    vhcl.setBuoyFactor(1,'')
+% vhcl.setAllMaxCtrlDefSpeed(10000,'deg/s')
+% vhcl.hStab.setMaxCtrlDefSpeed(10000,'deg/s')
     %%  Environment Properties
     loadComponent('constXYZT');                                 %   Environment
     env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
@@ -90,8 +100,8 @@ vhcl.setBuoyFactor(1,'');
     %%  Vehicle Properties
     if simScenario < 3 && simScenario > 2
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.initPosVecGnd.Value,0);
-        vhcl.setInitEulAng([0 2 0]*pi/180,'rad');
-        vhcl.setInitVelVecBdy([0 0 0],'m/s')
+        vhcl.setInitEulAng([0 5 0]*pi/180,'rad');
+        vhcl.setInitVelVecBdy([craftSpeed 0 0],'m/s')
     elseif simScenario > 3
         vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0);
         vhcl.setInitEulAng([0,0,0]*pi/180,'rad');
@@ -101,19 +111,23 @@ vhcl.setBuoyFactor(1,'');
     %%  Tethers Properties
     if simScenario < 3 && simScenario > 2
         thr.tether1.initGndNodePos.setValue(gndStn.thrAttach.posVec.Value(:)+gndStn.initPosVecGnd.Value(:),'m');
+        thr.tether1.initGndNodeVel.setValue([craftSpeed 0 0]','m/s');
+        thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     else
         thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
+        thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+        thr.tether1.initAirNodeVel.setValue([0 0 0]','m/s');
     end
     thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
         +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-    thr.tether1.initGndNodeVel.setValue([craftSpeed 0 0]','m/s');
-    thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     if simScenario == 1.2 || simScenario == 2.2 || simScenario == 3.2 || simScenario == 4.2
         thr.tether1.setDensity(env.water.density.Value,thr.tether1.density.Unit);
         thr.tether1.setDiameter(0.0076,thr.tether1.diameter.Unit);
     end
-
+        thr.tether1.setDiameter(0.0076,thr.tether1.diameter.Unit);
+        thr.tether1.dragEnable.setValue(0,'')
     %%  Winches Properties
     if simScenario >2 && simScenario < 3
         wnch.setTetherInitLength(vhcl,gndStn.initPosVecGnd.Value,env,thr,env.water.flowVec.Value);
@@ -139,6 +153,8 @@ vhcl.setBuoyFactor(1,'');
         wnch.winch1.elevError.setValue(2,'deg');
         vhcl.turb1.setPowerCoeff(0,'');
         fltCtrl.initCtrlVec;
+        fltCtrl.pitchCtrl.setValue(0,'')
+        fltCtrl.pitchConst.setValue(0,'deg')
     end
     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)')
     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
@@ -148,16 +164,24 @@ vhcl.setBuoyFactor(1,'');
     fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)')
     fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)')
     fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)')
+%     fltCtrl.alrnCmd.kp.setValue(-fltCtrl.alrnCmd.kp.Value,'(deg)/(rad)')
+%     fltCtrl.alrnCmd.ki.setValue(-fltCtrl.alrnCmd.ki.Value,'(deg)/(rad*s)')
+%     fltCtrl.alrnCmd.kd.setValue(-fltCtrl.alrnCmd.kd.Value,'(deg)/(rad/s)')
+%     fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)')
+%     fltCtrl.rudderCmd.ki.setValue(0,'(deg)/(rad*s)')
+%     fltCtrl.rudderCmd.kd.setValue(0,'(deg)/(rad/s)')
     thr.tether1.dragEnable.setValue(0,'');
 %     fltCtrl.pitchCtrl.setValue(0,'')
 %     fltCtrl.pitchConst.setValue(2,'deg')
-%     fltCtrl.elevCmd.kp.setValue(5,'(deg)/(rad)'); 
-%     fltCtrl.elevCmd.ki.setValue(fltCtrl.elevCmd.kp.Value/6,'(deg)/(rad*s)');
+%     fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)'); 
+%     fltCtrl.elevCmd.ki.setValue(fltCtrl.elevCmd.kp.Value/20,'(deg)/(rad*s)');
+%     fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
+%     fltCtrl.elevCmd.kd.setValue(-200,'(deg)/(rad/s)');
     vhcl.allMaxCtrlDefSpeed.setValue(30,'deg/s')
     
     
 %Scale Components    
-    thr.scale(0.1,1)
+%     thr.scale(0.1,1)
     fltCtrl.scale(0.1,1);
 %     fltCtrl.yawMoment.kp.setValue
 %     gndStn.scale(0.1,1);
@@ -165,17 +189,31 @@ vhcl.setBuoyFactor(1,'');
 %     hiLvlCtrl.scale(0.1,1);
 %     wnch.scale(0.1,1);
     %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
-%     simParams.setLengthScaleFactor(0.1,'');
-    simWithMonitor('OCTModel')
-    tsc = signalcontainer(logsout);
+%     tEnd = zeros(length(rCG),length(rTethX),length(rTethZ));
+    tEnd = zeros(1,length(rTethX),length(rTethZ));
+for i = 1%:length(rCG)
+    for ii = 1%:length(rTethX)
+        for iii = 1%:length(rTethZ)
+            Simulink.sdi.clear
+%             vhcl.setRCM_LE([vhcl.rBridle_LE.Value(1)-.03;0;vhcl.rCM_LE.Value(3)],'m');
+%             vhcl.setRBridle_LE([vhcl.rCentOfBuoy_LE.Value(1)+rTethX(ii);0;rTethZ(iii)],'m');
+            simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
+            %     simParams.setLengthScaleFactor(0.1,'');
+            simWithMonitor('OCTModel')
+            tsc = signalcontainer(logsout);
+            tEnd(i,ii,iii) = tsc.FNetBdy.Time(end);
 %     dir = fullfile(fileparts(which('OCTProject.prj')),'output\ExpDesign\');
 %     file = sprintf('deltaL_%.2f.mat',rDes(mm));
 %     filename = strcat(dir,file);
 %     save(filename,'tsc','vhcl')
+        end
+    end
 end
 plotCtrlDeflections
-%     vhcl.animateSim(tsc,2,...
-%         'GifTimeStep',10,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'ZoomInMove',false,'SaveGIF',true,'GifFile','animation.gif',...
-%         'View',[30,30],'timeStep',10);
+figure; plot(tsc.hStabMoment)
+figure; plot(tsc.wingTotalMoment)
+
+    vhcl.animateSim(tsc,2,...
+        'GifTimeStep',0,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+        'ZoomInMove',false,'SaveGIF',true,'GifFile','animation.gif',...
+        'View',[0,0],'timeStep',.01);
