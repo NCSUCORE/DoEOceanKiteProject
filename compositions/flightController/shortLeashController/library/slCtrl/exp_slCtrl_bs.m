@@ -67,6 +67,7 @@ fltCtrl.yawCtrl.setValue(1,'');
 fltCtrl.yawConst.setValue(0,'deg');
 fltCtrl.pitchTime.setValue([0 2000],'s');
 fltCtrl.pitchLookup.setValue([0 0],'deg');
+fltCtrl.towCtrlStrat.setValue('rollAzYawSide','');
 %% Spooling
 fltCtrl.setCtrlVecUpdateFcn('combinedCmd','')
 fltCtrl.setTetherLengthSetpointFcn('combinedTLSP','')
