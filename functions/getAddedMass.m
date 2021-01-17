@@ -54,7 +54,7 @@ cv.fuse.RNose_LE = vhcl.fuse.rNose_LE.Value;
 runname = 'fullSizeKiteComp';
 savefigs = false;
 MA = addedMassKiteVehicle(cv,runname,savefigs);
-MA = round(MA);
+% MA = round(MA);
 
 if false % checks with previous baseline. Change to true if check is needed 
 oldMA = [130           0           0           0           9           0;...
