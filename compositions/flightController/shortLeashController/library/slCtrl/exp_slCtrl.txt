@@ -205,6 +205,10 @@ fltCtrl.rudderGain.Value = 1.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
+fltCtrl.towCtrlStrat.Value = 'rollAzYawSide'
+fltCtrl.towCtrlStrat.Unit is unitless or has no unit specified
+fltCtrl.towCtrlStrat.NoScale = false
+fltCtrl.towCtrlStrat.Description = 'Towing Positon Control Variant'
 fltCtrl.ctrlVecUpdateFcn.Value = 'combinedCmd'
 fltCtrl.ctrlVecUpdateFcn.Unit is unitless or has no unit specified
 fltCtrl.ctrlVecUpdateFcn.NoScale = false
