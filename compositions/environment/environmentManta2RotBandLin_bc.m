@@ -172,6 +172,16 @@ elems(12).Complexity = 'real';
 elems(12).Unit = 'm/s';
 elems(12).Description = 'Velocity Primitives at each aerosurface';
 
+elems(13) = Simulink.BusElement;
+elems(13).Name = 'velPrim';
+elems(13).Dimensions = [3 1]; 
+elems(13).DimensionsMode = 'Fixed';
+elems(13).DataType = 'double';
+elems(13).SampleTime = -1;
+elems(13).Complexity = 'real';
+elems(13).Unit = 'm/s';
+elems(13).Description = 'Velocity Primitives';
+
 envBus = Simulink.Bus;
 envBus.Elements = elems;
 envBus.Description = 'Bus containing signals produced by the environment';

@@ -5,9 +5,18 @@ Simulink.sdi.clear
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
 
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
-thrLength = 400;  altitude = 200;  elev = 30;               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = .3;                                                %   m/s - Flow speed
+saveSim = 0;              %   Flag to save results
+runLin = 1;                %   Flag to run linearization
+thrArray = 200;%[200:400:600];%:25:600];
+altitudeArray = 100;%[100:200:300];%150:25:300];
+flwSpdArray = 0.5;%[0.1:0.1:.5]; 
+distFreq = 0;
+distAmp = 0;
+pertVec = [0 1 0];
+for j = 1:length(thrArray)
+    for k = 1:length(flwSpdArray)
+thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
+flwSpd = flwSpdArray(k) ;                                              %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -32,7 +41,7 @@ loadComponent('ConstXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
     ENVIRONMENT = 'environmentManta2RotBandLin';                   %   Two turbines
 %%  Set basis parameters for high level controller
-loadComponent('varAltitudeBooth');                          %   High level controller
+loadComponent('varAltitudeBooth');                             %   High level controller
 hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
 
 hiLvlCtrl.ELctrl.setValue(1,'');
@@ -68,151 +77,331 @@ fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vh
 fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
 fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
-fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+fltCtrl.firstSpoolLap.setValue(100,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
 fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
+% fltCtrl.setPerpErrorVal(.0,'rad')
 % vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
+
 %%  Set up critical system parameters and run simulation
+if runLin == 1
+    simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+    set_param('OCTModel','SimulationMode','accelerator');
+    simWithMonitor('OCTModel')
+
+    %%
+    snaps = 0.025:0.025:0.975;
+    cPV = logsout.getElement('closestPathVariable');
+    tic
+    x = zeros(length(snaps),1);
+    for i = 1 : length(snaps)
+        x(i) = find(cPV.Values.Data >= snaps(i)-.001 & cPV.Values.Data <= snaps(i)+0.001, 1, 'last');
+    end
+    toc
+    tsnaps = cPV.Values.Time(x)';
+
+
+    io(1) = linio('OCTModel/flightController',1,'output',[],...
+        'betaErr');
+    io(2) = linio('OCTModel/flightController',1,'output',[],...
+        'centralAngle');
+    io(3) = linio('OCTModel/flightController',1,'output',[],...
+        'tanRollErr');
+    io(4) = linio('OCTModel/flightController',1,'output',[],...
+        'velAngleErr');
+    io(5) = linio('OCTModel/environment',1,'input',[],...
+        'velPrim');
+    toc
+    fprintf('Finding Operation Points')
+    tic
+    op = findop('OCTModel',tsnaps);
+    toc
+    % stateorder = {'y';'z';'roll';'pitch';'yaw';'u';'v';'w';'p';'q';'r'}
+    options = linearizeOptions('IgnoreDiscreteStates','on');
+    opts = bodeoptions('cstprefs');
+    opts.PhaseVisible = 'off';
+    opts.FreqUnits = 'Hz';
+    opts.Grid = 'on';
+    opts.Xlim = [0.05,5];
+    dispName = cell(length(snaps),1);
+    tic
+    linsys = linearize('OCTModel',io,op,options);
+    toc
+    %%
+        snaps = 0.025:0.025:0.975;
+
+    for i = 1:length(snaps)
+        dispName{i} = sprintf('Path Parameter = %.2f',snaps(i));
+    end
+    magdb = cell(4,1,length(snaps)); wHz = cell(4,1,length(snaps));
+    mag = cell(4,1,length(snaps));
+    for i = 1:4
+        for ii = 1
+            for iii = 1:length(snaps)
+                [mag{i,ii,iii},phase,wout] = bode(linsys(i,3*(ii-1)+[1:3],iii,:),{0.001*2*pi 2*pi});
+                magdb{i,ii,iii} = 20*log10(mag{i,ii,iii}.*flwSpd);
+                wHz{i,ii,iii} = wout/(2*pi);
+                a(i,ii,iii) = find(mag{i,ii,iii}(:,2,:)==max(mag{i,ii,iii}(:,2,:)));
+                magPertMat(i,ii,iii) = mag{i,ii,iii}(:,2,a(i,ii,iii))
+                wHzPertMat(i,ii,iii) = wHz{i,ii,iii}(a(i,ii,iii));
+                toc
+            end
+        end
+    end
+    
+    for i = 1:length(a)
+%     wHzPert(i) = wHzPertMat(r(i),c(i),:)
+    end
+    
+    h = figure; hold on;
+    clear serNameCell
+    ax = gca;
+    offset = 0
+    numEnt = ceil(length(snaps))
+    a=hsv(numEnt);
+    colororder(ax,a);
+    colormap(ax,jet)
+    for i = 1:numEnt
+        serName = sprintf('s = %.3f',snaps(i+offset));
+        serNameCell(i) = {serName};
+        [p{:,i}.pole,z] = pzmap(linsys(:,:,i+offset,:));
+        clear z
+        scatter(real(p{:,i}.pole),imag(p{:,i}.pole),[],ones(length(p{:,i}.pole),1)*snaps(i),'x')
+    end
+    h = colorbar;
+    ylabel(h, 'Path Parameter','Interpreter','latex')
+%     scatter(real(p),imag(p))
+    line(xlim(),[0,0],'Color',[.5 .5 .5])
+    line([0,0],ylim(),'Color',[.5 .5 .5])
+    xlabel('Real Axis [$s^{-1}$]')
+    ylabel('Imaginary Axis [$s^{-1}$]')
+%     legend(serNameCell,'NumColumns',4','Location','NorthWest')
+
+
+for i =1:length(snaps)
+    pPlot(i) = max(real(p{:,i}.pole));
+end
+    
+h = figure
+ax = gca; colormap(ax,jet);
+scatter(snaps,pPlot,[],pPlot,'filled')
+h = colorbar;
+
+ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+xlabel('Path Position')
+ylabel('Real Component of Slowest Pole [$s^{-1}$]')
+
+
+% figure
+% semilogy(snaps,1./pPlot,'kx')
+% xlabel('Path Position')
+% ylabel('Time Constants of Slowest Pole [s]')
+
+%%
+    
+    titleCellIn = {'Ground X Component','Ground Y Component','Ground Z Component'};
+    titleCellOut = {' Side Slip Error [rad]',' Central Angle Error [rad]',...
+        ' Tangent Roll Error [rad]',' Velocity Angle Error [rad]'};
+    subTitleCellIn = {'Frequency Response: Turbulence Intensity [$\%$]'};;
+    yLabelIn = 'Magnitude [dB]';
+    xLabelIn = 'Frequency [Hz]';
+       
+    for i = 1:4
+        for ii = 1:1
+            h = figure('Units','inches','Position',[1 1 12 8])
+            r = 1; c = 3;
+            a=lines(5);
+            ax1 =subplot(r,c,1); hold on; xlabel(xLabelIn); ylabel(yLabelIn); title(titleCellIn{1});
+            ax2 = subplot(r,c,2); hold on; xlabel(xLabelIn); ylabel(yLabelIn); title(titleCellIn{2});
+            ax3 = subplot(r,c,3); hold on; xlabel(xLabelIn); ylabel(yLabelIn); title(titleCellIn{3});
+            colororder(ax1,a); colororder(ax2,a); colororder(ax3,a);
+            ax1.LineStyleOrder = {'-','--',':'}; ax2.LineStyleOrder = {'-','--',':'}; ax3.LineStyleOrder = {'-','--',':'};
+            set(ax1,'xscale','log'); set(ax2,'xscale','log');  set(ax3,'xscale','log');
+            sgtitle({strcat('Frequency Response: ',subTitleCellIn{ii},' disturbance'),...
+                strcat(' to ',titleCellOut{i})})
+            for iii = [1:4:18]%:length(snaps)
+                    serName = sprintf('s = %.3f',snaps(iii));
+                    semilogx(ax1,wHz{i,1,iii},squeeze(magdb{i,1,iii}(:,1,:)));
+                    semilogx(ax2,wHz{i,1,iii},squeeze(magdb{i,1,iii}(:,2,:)),'DisplayName',serName);
+                    semilogx(ax3,wHz{i,1,iii},squeeze(magdb{i,1,iii}(:,3,:)),'DisplayName',serName);
+                legend(ax2,'Location','southwest','NumColumns',2)
+                xlabel('Frequency [Hz]')
+                ylabel('Magnitude [dB]')
+            end
+        end
+    end
+end
+
+%%  Log Results
+distAmp = 0;
+distFreq = 0;
+pertVec = [1 0 0];
 simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
-snaps = 0.05:0.1:0.95;
-for i = 1 : length(snaps)
-    x(i) = find(logsout{12}.Values.Data >= snaps(i)-.01 & logsout{12}.Values.Data <= snaps(i)+0.01, 1, 'last');
-end
-tsnaps = logsout{12}.Values.Time(x);
-io = getlinio('OCTModel');
-op = findop('OCTModel',tsnaps);
-% stateorder = {'y';'z';'roll';'pitch';'yaw';'u';'v';'w';'p';'q';'r'}
-options = linearizeOptions('IgnoreDiscreteStates','on');
-opts = bodeoptions('cstprefs');
-opts.PhaseVisible = 'off';
-opts.FreqUnits = 'Hz';
-opts.Grid = 'on';
-opts.Xlim = [0.05,5];
-dispName = {};
-for i = 1:length(snaps)
-    dispName{i} = sprintf('Path Parameter = %.2f',snaps(i));
-end
-magdb = cell(4,4,length(snaps)); wHz = cell(4,4,length(snaps))
-for i = 1:4
-    for ii = 1:4
-        for iii = 1:length(snaps)
-            tic
-            linsys = linearize('OCTModel',[io(i) io(4+ii)],op(iii),options);
-            [mag,phase,wout] = bode(linsys,{0.001*2*pi 2*pi});
-            magdb{i,ii,iii} = 20*log10(mag*[flwSpd 1 1]);
-            wHz{i,ii,iii} = wout/(2*pi);
-            toc
-        end
-    end
-end
-titleCellIn = {' Horizontal Stabilizer',' Port Wing',...
-    ' Starboard Wing',' Vertical Stabilizer'};
-titleCellOut = {' Side Slip Error',' Central Angle Error',...
-    ' Tangent Roll Error',' Velocity Angle Error'};
-subTitleCellIn = {' Normalized Velocity Magnitude',' Angle of Attack',' Side Slip Angle'};
-yLabelIn = 'Magnitude [dB]';
-xLabelIn = 'Frequency [Hz]';
-for i = 1:4
-    for ii = 1:4
-        figure
-        sgtitle({strcat('Frequency Response:',titleCellIn{i},' local flow disturbance'),...
-            strcat(' to ',titleCellOut{ii})})
-        for iii = 1:length(snaps)
-            if iii <= 7
-                serName = sprintf('Path Parameter = %.2f',snaps(iii));
-                subplot(1,3,1); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(subTitleCellIn{1})
-                semilogx(wHz{i,ii,iii},squeeze(magdb{i,ii,iii}(:,1,:))); hold on;
-                subplot(1,3,2); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(subTitleCellIn{2})
-                semilogx(wHz{i,ii,iii},squeeze(magdb{i,ii,iii}(:,2,:))); hold on;
-                subplot(1,3,3); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(subTitleCellIn{3})
-                semilogx(wHz{i,ii,iii},squeeze(magdb{i,ii,iii}(:,3,:)),'DisplayName',serName); hold on;
-            else
-                serName = sprintf('Path Parameter = %.2f',snaps(iii));
-                subplot(1,3,1)
-                semilogx(wHz{i,ii,iii},squeeze(magdb{i,ii,iii}(:,1,:)),'--','DisplayName',serName);hold on;
-                subplot(1,3,2)
-                semilogx(wHz{i,ii,iii},squeeze(magdb{i,ii,iii}(:,2,:)),'--');hold on;
-                subplot(1,3,3)
-                semilogx(wHz{i,ii,iii},squeeze(magdb{i,ii,iii}(:,3,:)),'--','DisplayName',serName);hold on;
-            end
-            legend
-            xlabel('Frequency [Hz]')
-            ylabel('Magnitude [dB]')
-        end
-    end
-end
-
-for i = 1:3
-    for ii = 1:4
-        figure
-        sgtitle({strcat('Frequency Response: Local ',subTitleCellIn{i},' disturbance'),...
-            strcat(' to ',titleCellOut{ii})})
-        for iii = 1:length(snaps)
-            if iii <= 7
-                serName = sprintf('Path Parameter = %.2f',snaps(iii));
-                subplot(1,4,3); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{1})
-                semilogx(wHz{1,ii,iii},squeeze(magdb{1,ii,iii}(:,i,:))); hold on;
-                subplot(1,4,1); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{2})
-                semilogx(wHz{2,ii,iii},squeeze(magdb{2,ii,iii}(:,i,:))); hold on;
-                subplot(1,4,2); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{3})
-                semilogx(wHz{3,ii,iii},squeeze(magdb{3,ii,iii}(:,i,:))); hold on;
-                subplot(1,4,4); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{4})
-                semilogx(wHz{4,ii,iii},squeeze(magdb{4,ii,iii}(:,i,:)),'DisplayName',serName); hold on;
-            else
-                serName = sprintf('Path Parameter = %.2f',snaps(iii));
-                subplot(1,4,3); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{1})
-                semilogx(wHz{1,ii,iii},squeeze(magdb{1,ii,iii}(:,i,:)),'--'); hold on;
-                subplot(1,4,1); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{2})
-                semilogx(wHz{2,ii,iii},squeeze(magdb{2,ii,iii}(:,i,:)),'--'); hold on;
-                subplot(1,4,2); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{3})
-                semilogx(wHz{3,ii,iii},squeeze(magdb{3,ii,iii}(:,i,:)),'--'); hold on;
-                subplot(1,4,4); xlabel(xLabelIn); ylabel(yLabelIn);
-                title(titleCellIn{4})
-                semilogx(wHz{4,ii,iii},squeeze(magdb{4,ii,iii}(:,i,:)),'--','DisplayName',serName); hold on;
-            end
-            legend
-            xlabel('Frequency [Hz]')
-            ylabel('Magnitude [dB]')
-        end
-    end
-end
-
 tsc = signalcontainer(logsout);
-%%  Log Results
-tsc = signalcontainer(logsout);
+% distAmp = .25;
+% distFreq = .1866;
+% pertVec = [1 0 0];
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+% simWithMonitor('OCTModel')
+% tsc1 = signalcontainer(logsout);  
+% 
+% distAmp = .25;
+% distFreq = .1866;
+% pertVec = [0 1 0];
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+% simWithMonitor('OCTModel')
+% tsc2 = signalcontainer(logsout);  
 
-    Pow = tsc.rotPowerSummary(vhcl,env);
-    [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-    AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-    airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
-    gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-    ten = max([max(airNode(ran)) max(gndNode(ran))]);
-    fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
+distAmp = .25;
+distFreq = .18662;
+pertVec = [0 0 1];
+simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+simWithMonitor('OCTModel')
+tsc2 = signalcontainer(logsout);    
+%%
+lap = max(tsc.lapNumS.Data)-2;
+    [Idx1,Idx2] = getLapIdxs(tsc,lap);
+    ran = Idx1:Idx2-1;
+    for i = 1:1000-2
+        ind(i)=find(tsc.closestPathVariable.Data(ran) > i/1000,1);
+    end
+    tanRollErrBase = squeeze(tsc.tanRollError.Data(Idx1+ind));
+    cenAngleErrBase = squeeze(tsc.centralAngle.Data(Idx1+ind));
+    betaErrBase = squeeze(tsc.betaErr.Data(Idx1+ind));
+    velAngErrBase = squeeze(tsc.velAngleError.Data(Idx1+ind));
+    pathVar = tsc.closestPathVariable.Data(Idx1+ind);
+    figure
+    plot(pathVar,tanRollErrBase)
+ 
 
-dt = datestr(now,'mm-dd_HH-MM');
 
-%     filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.1f_D-%.2f_Tmax-%d.mat'),simScenario,flwSpd,mean(tsc.basisParams.Data(3,:,:))*180/pi,vhcl.turb1.diameter.Value,Tmax);
-    fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
+    lap = max(tsc2.lapNumS.Data)-2;
+    [Idx1,Idx2] = getLapIdxs(tsc2,lap);
+    ran = Idx1:Idx2-1;
+    for i = 1:1000-2
+        ind(i)=find(tsc2.closestPathVariable.Data(ran) > i/1000,1);
+    end
+    tanRollErr = squeeze(tsc2.tanRollError.Data(Idx1+ind));
+    cenAngleErr = squeeze(tsc2.centralAngle.Data(Idx1+ind));
+    betaErr = squeeze(tsc2.betaErr.Data(Idx1+ind));
+    velAngErr = squeeze(tsc2.velAngleError.Data(Idx1+ind));
+for ii = 1:4
+    for i = 1:length(snaps)
+        x(ii,i)=find(wHz{ii,1,i} > distFreq,1);
+        wHzPlot(ii,i)=wHz{ii,1,i}(x(ii,i))
+        magPlot(ii,i,:) = mag{ii,1,i}(1,:,x(ii,i));
+    end
+end
+
+figure; hold on;
+ax = gca;
+plot(pathVar,betaErr-betaErrBase)
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(1,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(1,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Side Slip [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on;
+plot(pathVar,cenAngleErr-cenAngleErrBase)
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(2,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(2,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Central Angle Error [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on;
+plot(pathVar,tanRollErr-tanRollErrBase,'k--')
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(3,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(3,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Tangent Roll Error [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on
+
+plot(pathVar,velAngErr-velAngErrBase,'k--')
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(4,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(4,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Velocity Angle Error [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on;
+subplot (2,2,1); hold on;
+plot(pathVar,betaErr)
+plot(pathVar,betaErrBase,'k')
+ylabel('Error [rad]'); title('Side Slip Error')
+
+subplot (2,2,2); hold on;
+plot(pathVar,cenAngleErr)
+plot(pathVar,cenAngleErrBase,'k')
+ylabel('Error [rad]'); title('Central Angle Error')
+
+subplot (2,2,3); hold on;
+plot(pathVar,tanRollErr)
+plot(pathVar,tanRollErrBase,'k')
+ylabel('Error [rad]'); title('Tangent Roll Angle Error'); xlabel('Path Position')
+
+subplot (2,2,4); hold on;
+plot(pathVar,velAngErr)
+plot(pathVar,velAngErrBase,'k')
+ylabel('Error [rad]'); title('Velocity Angle Error'); xlabel('Path Position')
+legend('Base Case','Perturbed Flow')
+% 
+%     Pow = tsc.rotPowerSummary(vhcl,env);
+%     [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+%     AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
+%     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
+%     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
+%     ten = max([max(airNode(ran)) max(gndNode(ran))]);
+%     fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
+% 
+% dt = datestr(now,'mm-dd_HH-MM');
+%%
+
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+% simWithMonitor('OCTModel');
+% tsc = signalcontainer(logsout);   
+% lap = max(tsc.lapNumS.Data)-1;
+% tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+    filename = sprintf(strcat('V-%.3f_EL-%.1f_THR-%d.mat'),flwSpd,el*180/pi,thrLength);
+    fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Manta\');
 if saveSim == 1
-    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+    if max(tsc.lapNumS.Data) > 1
+    save(strcat(fpath,filename),'vhcl','thr','fltCtrl','env','linsys','simParams','LIBRARY','gndStn','tsc','tsc1','tsc2','tsc3')
+    end
+end
+    end
 end
 %%  Plot Results
     lap = max(tsc.lapNumS.Data)-1;
     if max(tsc.lapNumS.Data) < 2
         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc2.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     end
 %%
 % figure(23); 
@@ -235,13 +424,13 @@ end
 % plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
-%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+        'GifTimeStep',.00001,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+        'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'),...
+        'startTime',5000);
 % else
-%     vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
-%         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-%         'SaveGif',1==1,'GifFile',strrep(filename,'.mat','zoom.gif'));
+    vhcl.animateSim(tsc,2,'View',[90,0],'Pause',1==0,...
+        'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0);
 % end
 %%  Compare to old results
 % Res = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\Results\Manta 2.0\Rotor\Turb1.0_V-0.300_EL-30.0_D-0.70_AoA-13.98_10-22_12-29.mat');
