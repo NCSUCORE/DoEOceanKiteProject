@@ -44,6 +44,8 @@ classdef Manta < handle
             % Get the name of the .mat file that should contain this data
             if p.Results.DataSel == 1
                 fName = fullfile(dataPath,['NewTS_FlowData_2017_',mnthString '.mat']);
+            elseif p.Results.DataSel == 2
+                fName = fullfile(dataPath,['NewTS_FlowData_2017a_',mnthString '.mat']);
             else
                 fName = fullfile(dataPath,['TS_FlowData_2017_',mnthString '.mat']);
             end
@@ -52,6 +54,8 @@ classdef Manta < handle
                 % Check if the folder for that data exists
                 if p.Results.DataSel == 1
                     folder = folders(contains({folders.name},[mnthString '-2017']));
+                elseif p.Results.DataSel == 2
+                    folder = folders(contains({folders.name},[mnthString 'a-2017']));
                 else
                     folder = folders(contains({folders.name},['2017' mnthString '_hourly']));
                 end
@@ -70,14 +74,17 @@ classdef Manta < handle
                     error('Unknown day')
                 end
                 % Build the .mat file
-%                 [data,xBreak,yBreak,zBreak] = obj.buildMantaMAT(files);
-                [data,xBreak,yBreak,zBreak] = obj.buildMantaMAT2(files);
+                if p.Results.DataSel == 2
+                    [data,xBreak,yBreak,zBreak] = obj.buildMantaMAT3(files);
+                else
+                    [data,xBreak,yBreak,zBreak] = obj.buildMantaMAT2(files);
+                end
                 save(fName,'data','xBreak','yBreak','zBreak');
             else
                 load(fName);
             end
             % Build the vector of timestamps
-            timeVec = 0:size(data,5)-1;
+            timeVec = 0:3:3*size(data,5)-1;
             obj.density                 = SIM.parameter('Unit','kg/m^3');
             obj.allFlowVecTimeseries    = SIM.parameter('Value',timeseries(data,3600*timeVec),'Unit','m/s');
             obj.startTime               = SIM.parameter('Value',3600*timeVec(1),'Unit','s');
@@ -696,58 +703,110 @@ classdef Manta < handle
                 end
             end
         end
-        function [h,Dopt] = powPDFdepth(obj,z,Odepth,vC,pC,aC,varargin)
+        function [h,dOpt] = powPDFconstDepth(obj,vC,pC,aC,dC,varargin)
             p = inputParser;
             addParameter(p,'xLim',[0 inf],@isnumeric);
             addParameter(p,'yLim',[0 1],@isnumeric);
             addParameter(p,'mon',1,@isnumeric);
             parse(p,varargin{:})
+            N = numel(obj.flowVecTimeseries.Value.Data(1,1,1,1,:));
              % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
             % Loop through every grid point
-            vFlows = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
+            pow = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3),N);
+            vel = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3),N);
+            pAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
+            pMax = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            dOpt = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
             for ii = 1:size(flowSpeeds,1)
                 for jj = 1:size(flowSpeeds,2)
                     for kk = 1:size(flowSpeeds,3)
-                        % Get the flow speeds at this grid point
-                        vFlows(ii,jj,kk) = mean(squeeze(flowSpeeds(ii,jj,kk,:)));
-                    end
-                end
-            end
-            vPlane = vFlows(:,:,23:25);
-            P = zeros(size(flowSpeeds,1),size(flowSpeeds,2),3);
-            z = flip(z);
-            for ii = 1:size(flowSpeeds,1)
-                for jj = 1:size(flowSpeeds,2)
-                    for kk = 1:3
-                        v = vPlane(ii,jj,kk);
-                        alt = Odepth-z(kk);
-                        if v < 0.1
-                            P(ii,jj,kk) = 0;
-                        elseif v > 0.5
-                            P(ii,jj,kk) = max(pC(:,aC==alt));
+                        alt = dC(ii,jj)+obj.zGridPoints.Value(kk);
+                        if alt > 0 && alt <= 300 && obj.zGridPoints.Value(kk) <= -200 && dC(ii,jj) 
+                            for ll = 1:N
+                                vel(ii,jj,kk,ll) = sqrt(sum(obj.flowVecTimeseries.Value.Data(ii,jj,kk,:,ll).^2));
+                                pow(ii,jj,kk,ll) = interp1(vC,pC(:,aC==alt),vel(ii,jj,kk,ll),'linear','extrap');
+                            end
+                            pAvg(ii,jj,kk) = mean(pow(ii,jj,kk,:));
                         else
-                            P(ii,jj,kk) = interp1(vC,pC(:,aC==alt),v,'linear','extrap');
+                            vel(ii,jj,kk,:) = NaN;
+                            pow(ii,jj,kk,:) = NaN;
+                            pAvg(ii,jj,kk) = NaN;
                         end
                     end
+                    pMax(ii,jj) = max(pAvg(ii,jj,:));
+                    dOpt(ii,jj) = -obj.zGridPoints.Value(pAvg(ii,jj,:)==pMax(ii,jj));
                 end
             end
-            for ii =  1:3
-                pc(ii) = prctile(P(:,:,ii),50,'all');
-            end
-            Dopt = z(pc==max(pc));
-            p50 = prctile(P(:,:,pc==max(pc)),50,'all');
-            p75 = prctile(P(:,:,pc==max(pc)),75,'all');
-            p95 = prctile(P(:,:,pc==max(pc)),95,'all');
+            p25 = prctile(pMax,25,'all');
+            p50 = prctile(pMax,50,'all');
+            p75 = prctile(pMax,75,'all');
+            p95 = prctile(pMax,95,'all');
             hold on; grid on;
-            h = histogram(P(:,:,pc==max(pc)),'Normalization','probability');  h.FaceColor = [0,0,1];
+            h = histogram(pMax,'Normalization','probability');  h.FaceColor = [0,0,1];
+            plot([p25 p25],[0 1],'r-')
             plot([p50 p50],[0 1],'r-')
             plot([p75 p75],[0 1],'r-')
             plot([p95 p95],[0 1],'r-')
             xlabel('Power [kW]');  ylabel('Probability');  xlim(p.Results.xLim);  ylim(p.Results.yLim);
             Title = {'January','February','March','April','May','June','July','August','September','October','November','December'};
             mon = Title{p.Results.mon};
-            title(sprintf('%s: Opt. Depth = %d m',mon,Dopt));
+            title(sprintf('%s',mon));
+        end
+        function [h,vMax,dMax,aMax,pMax,Pct] = powPDFinstDepth(obj,vC,pC,aC,dC,varargin)
+            p = inputParser;
+            addParameter(p,'xLim',[0 inf],@isnumeric);
+            addParameter(p,'yLim',[0 1],@isnumeric);
+            addParameter(p,'mon',1,@isnumeric);
+            parse(p,varargin{:})
+            N = numel(obj.flowVecTimeseries.Value.Data(1,1,1,1,:));
+             % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Loop through every grid point
+            pow = zeros(size(flowSpeeds,1),size(flowSpeeds,2),N,size(flowSpeeds,3));
+            vel = zeros(size(flowSpeeds,1),size(flowSpeeds,2),N,size(flowSpeeds,3));
+            pAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            pMax = zeros(size(flowSpeeds,1),size(flowSpeeds,2),N);
+            vMax = zeros(size(flowSpeeds,1),size(flowSpeeds,2),N);
+            dMax = zeros(size(flowSpeeds,1),size(flowSpeeds,2),N);
+            aMax = zeros(size(flowSpeeds,1),size(flowSpeeds,2),N);
+            for ii = 1:7
+                for jj = 1:7
+                    for ll = 1:336
+                        for kk = 1:numel(obj.zGridPoints.Value)
+                            alt = dC(ii,jj)+obj.zGridPoints.Value(kk);
+                            if alt > 0 && alt <= 300 && obj.zGridPoints.Value(kk) <= -200
+                                vel(ii,jj,ll,kk) = sqrt(sum(obj.flowVecTimeseries.Value.Data(ii,jj,kk,:,ll).^2));
+                                pow(ii,jj,ll,kk) = interp1(vC,pC(:,aC==alt),vel(ii,jj,ll,kk),'linear','extrap');
+                            else
+                                vel(ii,jj,ll,kk) = NaN;
+                                pow(ii,jj,ll,kk) = NaN;
+                            end
+                        end
+                        pMax(ii,jj,ll) = max(pow(ii,jj,ll,:));
+                        vMax(ii,jj,ll) = vel(ii,jj,ll,pMax(ii,jj,ll)==pow(ii,jj,ll,:));
+                        dMax(ii,jj,ll) = -obj.zGridPoints.Value(pMax(ii,jj,ll)==pow(ii,jj,ll,:));
+                        aMax(ii,jj,ll) = dC(ii,jj)-dMax(ii,jj,ll);
+                    end
+                    pAvg(ii,jj) = squeeze(mean(pMax(ii,jj,:)));
+                end
+            end
+            p25 = prctile(pAvg,25,'all');
+            p50 = prctile(pAvg,50,'all');
+            p75 = prctile(pAvg,75,'all');
+            p95 = prctile(pAvg,95,'all');
+            Pct = [p25;p50;p75;p95];
+            h = 0;
+%             hold on; grid on;
+%             h = histogram(pAvg,'Normalization','probability');  h.FaceColor = [0,0,1];
+%             plot([p25 p25],[0 1],'r-')
+%             plot([p50 p50],[0 1],'r-')
+%             plot([p75 p75],[0 1],'r-')
+%             plot([p95 p95],[0 1],'r-')
+%             xlabel('Power [kW]');  ylabel('Probability');  xlim(p.Results.xLim);  ylim(p.Results.yLim);
+%             Title = {'January','February','March','April','May','June','July','August','September','October','November','December'};
+%             mon = Title{p.Results.mon};
+%             title(sprintf('%s',mon));
         end
         function h = powPDFoptDepth(obj,Odepth,vC,pC,aC,varargin)
             p = inputParser;
