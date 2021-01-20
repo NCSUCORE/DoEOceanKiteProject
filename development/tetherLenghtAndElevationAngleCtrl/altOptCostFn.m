@@ -9,7 +9,7 @@ function [jVal,varargout] = altOptCostFn(sKp1_Kp1,sigKp1_Kp1,zTraj,...
 
 % calculate acquisition function
 jVal = sum(predMean(:)) + (2^tradeOffCons)*sum(postVar(:));
-
+jVal = -jVal;
 % other outputs
 varargout{1} = predMean(:);
 varargout{2} = postVar(:);
