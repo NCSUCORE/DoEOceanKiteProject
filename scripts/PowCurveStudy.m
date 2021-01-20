@@ -59,7 +59,7 @@ end
 %%  Save
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
 % save([fpath,sprintf('TmaxStudy_%dkN_FS5.mat',Tmaxx)],'flwSpd','altitude','thrLength','R','Tmaxx','depth','eff');
-save([fpath,sprintf('TmaxStudy_PDR_1.mat')],'flwSpd','altitude','thrLength','R','Tmax','eff');
+save([fpath,sprintf('TmaxStudy_PDR_SF3a.mat')],'flwSpd','altitude','thrLength','R','Tmax','eff');
 %%  Plotting 
 figure; 
 for alt = 1:6
@@ -81,24 +81,19 @@ for alt = 1:6
     plot(flwSpd,R.EL(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Elevation [deg]');  xlim([.1 0.5]);
 end
 %%
-FS1 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS1.mat');
-FS3 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS3.mat');
-FS5 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_FS5.mat');
-PDR = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_PDR_1.mat');
+PDR3 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_PDR_SF3.mat');
+PDR2 = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_PDR_SF2.mat');
+PDR3a = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\PowCurve_PDR_SF3a.mat');
 figure;
 for i = 1:6
     subplot(3,2,i); hold on; grid on;
-%     plot(FS1.flwSpd,FS1.Pnet(:,i),'r-');    
-%     plot(FS3.flwSpd,FS3.Pnet(:,i),'b-');   
-    plot(FS5.flwSpd,FS5.Pnet(:,i),'b-');   
-    plot(PDR.flwSpd,PDR.Pnet(:,i),'r-');   
-%     plot(FS1.flwSpd,FS1.Pmax(:,i),'r-');    
-%     plot(FS3.flwSpd,FS3.Pmax(:,i),'b-');   
-%     plot(FS5.flwSpd,FS5.Pmax(:,i),'g-');   
-    ylim([0 4]);   xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  
-    title(sprintf('Altitude = %d',FS1.altitude(i)));
+    plot(PDR3.flwSpd,PDR3.Pnet(:,i),'r-');   
+    plot(PDR2.flwSpd,PDR2.Pnet(:,i),'g-');   
+    plot(PDR3a.flwSpd,PDR3a.Pnet(:,i),'b-');   
+    ylim([0 2.5]);   xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  
+    title(sprintf('Altitude = %d',PDR3.altitude(i)));
 end
-legend('Old','New')
+legend('FS = 3','FS = 2','FS = 3a')
 %%  Determine opt tether tension limit based on flow resource 
 % M1 = ENV.Manta(1);   M2 = ENV.Manta(2);   M3 = ENV.Manta(3);   M4 = ENV.Manta(4);
 % M5 = ENV.Manta(5);   M6 = ENV.Manta(6);   M7 = ENV.Manta(7);   M8 = ENV.Manta(8);
@@ -133,7 +128,7 @@ end
 Pnet = R.Pnet;
 Pmax = R.Pmax;
 fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Tmax Study\');
-save([fpath 'PowCurve_PDR_1.mat'],'Pnet','Pmax','flwSpd','altitude')
+save([fpath 'PowCurve_PDR_SF3a.mat'],'Pnet','Pmax','flwSpd','altitude','depth')
 %%  Extract Results 
 simScenario = 1.3;  TDiam = 0.0125;   eff = 0.95;
 fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');
