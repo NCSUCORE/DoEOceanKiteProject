@@ -7,12 +7,14 @@ function [jVal,varargout] = altOptCostFn(sKp1_Kp1,sigKp1_Kp1,zTraj,...
     sigKp1_Kp1,zTraj,zDiscrete,Amat,Qmat,Hmat,R,Ks,Ks12,covAmp,altScale,...
     powerLawParams);
 
-% calculate acquisition function
-jVal = sum(predMean(:)) + (2^tradeOffCons)*sum(postVar(:));
+% calculate cost function
+jExploit = predMean(:).^3;
+jExplore = postVar(:).^(3/2);
+jVal = sum(jExploit) + (2^tradeOffCons)*sum(jExplore);
 jVal = -jVal;
 % other outputs
-varargout{1} = predMean(:);
-varargout{2} = postVar(:);
+varargout{1} = jExploit(:);
+varargout{2} = jExplore(:);
 
 end
 
