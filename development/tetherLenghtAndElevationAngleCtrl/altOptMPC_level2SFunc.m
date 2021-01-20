@@ -154,8 +154,8 @@ A = [fsBoundsA;Astep];
 lb = zMin*ones(1,nPred);
 ub = zMax*ones(1,nPred);
 % make the b matrix
-fsBoundsB(1,1) = zCurrent + duMax;
-fsBoundsB(2,1) = -(zCurrent - duMax);
+fsBoundsB(1,1) = min(zCurrent + duMax,zMax);
+fsBoundsB(2,1) = min(-(zCurrent - duMax),-zMin);
 b = [fsBoundsB;bstep];
 
 % optimize
@@ -164,15 +164,15 @@ optTraj = fmincon(@(u) altOptCostFn(sKp1_Kp1,sigKp1_Kp1,u,...
    powerLawParams),zCurrent*ones(nPred,1),A,b,[],[],lb,ub,[],options);
 
 % get other values
-[~,predMean,postVar] = ...
+[~,jExploit,jExplore] = ...
     altOptCostFn(sKp1_Kp1,sigKp1_Kp1,optTraj,...
    zDiscrete,Amat,Qmat,Hmat,Rmat,Ks,Ks12,covAmp,altScale,tradeOffCons,...
    powerLawParams);
 
 % begin outputs 
 block.OutputPort(1).Data = real(optTraj);
-block.OutputPort(2).Data = real(predMean);
-block.OutputPort(3).Data = real(postVar);
+block.OutputPort(2).Data = real(jExploit);
+block.OutputPort(3).Data = real(jExplore);
 
 %end Outputs
 
