@@ -17,8 +17,8 @@ a = kfgp_init(xMeasure,covAmp,...
 %% MPC parameters
 mpctimeStep = 2*60;
 nPred       = 6;
-maxAlt      = 1000;
-minAlt      = 100;
+maxAlt      = max(xMeasure);
+minAlt      = min(xMeasure);
 zStepMax    = 1000;
 tradeOffCon = 20;
 
@@ -36,12 +36,13 @@ altTau  = 1;
 %% synthetic flow
 finalTime      = 9*60*60;
 sampleTimeStep = 1*60;
-stdDev         = 1;
+stdDev         = 2;
 minFlowValue   = 5;
 rngSeed        = 8;
 
 %% simulate
 simTime = 3*60*60;
+keyboard
 tsc = sim('altOptMPC_th');
 
 %% plot
