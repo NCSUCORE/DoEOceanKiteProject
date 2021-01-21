@@ -39,7 +39,7 @@ vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 
 vhcl.setOptAlpha(14,'deg');
 %% Wing
-AR = 8/2; b = 4; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
+AR = 7.4/2; b = 4.27; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
 vhcl.setWingRootChord(cR,'m');
 vhcl.setWingAR(AR*2,'');
 vhcl.setWingTR(0.8,'');
@@ -109,10 +109,10 @@ vhcl.turb1.scale(.1,1)
 vhcl.turb2.scale(.1,1)
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
-vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');
-vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/4,'1/deg');
-vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/4,'1/deg');
-vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/4,'1/deg');
+vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value,'1/deg');
+vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value,'1/deg');
+vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value,'1/deg');
+vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value,'1/deg');
 %% Added Mass/Damping (defaults to zeros)
 % vhcl.hStab.setHalfSpan(.1,'m');
 Input.wing.Thickness = 12;  Input.wing.Sections = 20; 
