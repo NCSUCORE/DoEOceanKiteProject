@@ -11,10 +11,10 @@ h = 10*pi/180;  w = 40*pi/180;                     % rad - Path width/height
 [a,b] = boothParamConversion(w,h);                 % Build Path
 simScenario = 3.2;
 % Simulation Time
-simTime = 200;
+simTime = 500;
 %%  Configure Test
 thrLength = 4 ;                % m - Initial tether length
-flwSpd = 0.1  ;            % m/s - Flow speed)
+flwSpd = 0.5  ;            % m/s - Flow speed)
 craftSpeed = -0.25;% Moving Ground Station Velocity Magnitude m/s
 elevation =  30;%[0:10:80]
 
@@ -57,7 +57,7 @@ vhcl.hStab.CL.setValue(vhcl.hStab.CL.Value,'')
 vhcl.hStab.CD.setValue(vhcl.hStab.CD.Value,'')
 vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value,'')
 vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value,'')
-vhcl.hStab.setIncidence(1.6225,'deg');
+vhcl.hStab.setIncidence(0,'deg');
 vhcl.setBuoyFactor(1,'')
 
 %%  Environment Properties
@@ -129,19 +129,22 @@ else
 end
 fltCtrl.tanRoll.setKp(fltCtrl.tanRoll.kp.Value*1,fltCtrl.tanRoll.kp.Unit);
 if simScenario >= 2 && simScenario < 4
-    %         fltCtrl.LaRelevationSP.setValue(elevation,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
-    fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');    %   Elevation angle outer-loop controller
+    fltCtrl.LaRelevationSP.setValue(elevation,'deg');          fltCtrl.LaRelevationSPErr.setValue(1,'deg');        %   Elevation setpoints
+    fltCtrl.pitchCtrl.setValue(0,'')
+    fltCtrl.pitchConst.setValue(0,'deg')
+    fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');      fltCtrl.pitchSP.ki.setValue(1,'(deg)/(deg*s)');  
+%     fltCtrl.pitchSP.kd.setValue(40,'(deg)/(deg/s)'); %   Elevation angle outer-loop controller
     fltCtrl.pitchAngleMax.upperLimit.setValue(45,'');   fltCtrl.pitchAngleMax.lowerLimit.setValue(-45,'');
     fltCtrl.setNomSpoolSpeed(0,'m/s');                fltCtrl.setSpoolCtrlTimeConstant(5,'s');
     wnch.winch1.elevError.setValue(2,'deg');
     vhcl.turb1.setPowerCoeff(0,'');
     fltCtrl.initCtrlVec;
-    fltCtrl.pitchCtrl.setValue(0,'')
-    fltCtrl.pitchConst.setValue(0,'deg')
 end
-fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)')
+fltCtrl.elevCmd.kp.setValue(2000,'(deg)/(rad)')
 fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)')
-fltCtrl.alrnCmd.kp.setValue(0,'(deg)/(rad)')
+% fltCtrl.controlSigMax.lowerLimit.setValue(-10,'')
+% fltCtrl.controlSigMax.upperLimit.setValue(10,'')
+% fltCtrl.alrnCmd.kp.setValue(10,'(deg)/(rad)')
 fltCtrl.alrnCmd.ki.setValue(0,'(deg)/(rad*s)')
 fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)')
 fltCtrl.rudderCmd.kp.setValue(0,'(deg)/(rad)')
@@ -151,8 +154,13 @@ thr.tether1.dragEnable.setValue(0,'');
 vhcl.allMaxCtrlDefSpeed.setValue(30,'deg/s')
 
 %Scale Components
-thr.scale(0.1,1);
+% thr.scale(0.1,1);
 fltCtrl.scale(0.1,1);
+fltCtrl.rollSP.kp.setValue(2,'(deg)/(deg)')
+fltCtrl.rollSP.ki.setValue(0.01,'(deg)/(deg*s)')
+fltCtrl.alrnCmd.kp.setValue(2,'(deg)/(rad)')
+fltCtrl.alrnCmd.kd.setValue(0,'(deg)/(rad/s)')
+fltCtrl.alrnCmd.ki.setValue(.002,'(deg)/(rad*s)')
 env.scale(0.1,1);
 
 %%  Set up critical system parameters and run simulation
@@ -160,7 +168,6 @@ Simulink.sdi.clear
 simParams = SIM.simParams;  simParams.setDuration(simTime,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
-
 
 plotCtrlDeflections
 figure; plot(tsc.hStabMoment)

@@ -1,14 +1,14 @@
 %% Test script for John to control the kite model
-clear;clc;close all;
+clear;clc;%close all;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
 
 %%  Set Test Parameters
 saveSim = 0;              %   Flag to save results
-runLin = 1;                %   Flag to run linearization
-thrArray = 200;%[200:400:600];%:25:600];
-altitudeArray = 100;%[100:200:300];%150:25:300];
+runLin = 0;                %   Flag to run linearization
+thrArray = 100;%[200:400:600];%:25:600];
+altitudeArray = 20;%[100:200:300];%150:25:300];
 flwSpdArray = 0.5;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
@@ -82,7 +82,7 @@ fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLim
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 % fltCtrl.setPerpErrorVal(.0,'rad')
 % vhcl.turb1.setDiameter(.72,'m');     vhcl.turb2.setDiameter(.72,'m')
-
+% vhcl.setMa6x6_LE(zeros(6),'')
 %%  Set up critical system parameters and run simulation
 if runLin == 1
     simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
@@ -246,33 +246,35 @@ tsc = signalcontainer(logsout);
 % simWithMonitor('OCTModel')
 % tsc1 = signalcontainer(logsout);  
 % 
-% distAmp = .25;
-% distFreq = .1866;
+% distAmp = .1;
+% distFreq = .12;
 % pertVec = [0 1 0];
 % simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
 % simWithMonitor('OCTModel')
 % tsc2 = signalcontainer(logsout);  
 
-distAmp = .25;
-distFreq = .18662;
-pertVec = [0 0 1];
-simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
-simWithMonitor('OCTModel')
-tsc2 = signalcontainer(logsout);    
+% distAmp = .25;
+% distFreq = .18662;
+% pertVec = [0 0 1];
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+% simWithMonitor('OCTModel')
+% tsc2 = signalcontainer(logsout);    
 %%
-lap = max(tsc.lapNumS.Data)-2;
+lap = max(tsc.lapNumS.Data)-1;
+tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     [Idx1,Idx2] = getLapIdxs(tsc,lap);
     ran = Idx1:Idx2-1;
     for i = 1:1000-2
         ind(i)=find(tsc.closestPathVariable.Data(ran) > i/1000,1);
     end
+        tanRoll = squeeze(tsc.tanRollDes.Data(Idx1+ind));
     tanRollErrBase = squeeze(tsc.tanRollError.Data(Idx1+ind));
     cenAngleErrBase = squeeze(tsc.centralAngle.Data(Idx1+ind));
     betaErrBase = squeeze(tsc.betaErr.Data(Idx1+ind));
     velAngErrBase = squeeze(tsc.velAngleError.Data(Idx1+ind));
     pathVar = tsc.closestPathVariable.Data(Idx1+ind);
     figure
-    plot(pathVar,tanRollErrBase)
+    plot(pathVar,tanRoll*180/pi)
  
 
 
@@ -339,10 +341,10 @@ figure; hold on
 plot(pathVar,velAngErr-velAngErrBase,'k--')
 if runLin == 1
     ax = gca; colormap(ax,jet);
-    scatter(snaps,magPlot(4,:,2)*distAmp*flwSpd,[],pPlot,'filled')
-    scatter(snaps,-magPlot(4,:,2)*distAmp*flwSpd,[],pPlot,'filled')
-    h = colorbar;
-    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+    plot(snaps,magPlot(4,:,2)*distAmp*flwSpd,'ob','MarkerFaceColor','b')
+    plot(snaps,-magPlot(4,:,2)*distAmp*flwSpd,'ob','MarkerFaceColor','b')
+%     h = colorbar;
+%     ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
 end
 xlabel('Path Position')
 ylabel('Residual Velocity Angle Error [rad]')
@@ -400,7 +402,7 @@ end
     if max(tsc.lapNumS.Data) < 2
         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     else
-        tsc2.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
         tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
     end
 %%
@@ -429,7 +431,7 @@ end
         'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'),...
         'startTime',5000);
 % else
-    vhcl.animateSim(tsc,2,'View',[90,0],'Pause',1==0,...
+    vhcl.animateSim(tsc,2,'Pause',1==1,'PathFunc',fltCtrl.fcnName.Value,...
         'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0);
 % end
 %%  Compare to old results
