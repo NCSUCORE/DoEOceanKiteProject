@@ -43,7 +43,7 @@ thr.tether1.initNodePos.Unit = 'm'
 thr.tether1.initNodePos.NoScale = false
 thr.tether1.initNodeVel.Unit = 'm/s'
 thr.tether1.initNodeVel.NoScale = false
-thr.tether1.dragEnable.Value = false
+thr.tether1.dragEnable.Value = true
 thr.tether1.dragEnable.Unit is unitless or has no unit specified
 thr.tether1.dragEnable.NoScale = true
 thr.tether1.springDamperEnable.Value = true
