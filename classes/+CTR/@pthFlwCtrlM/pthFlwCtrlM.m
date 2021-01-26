@@ -6,6 +6,7 @@ classdef pthFlwCtrlM < handle
         % FPID controllers
         tanRoll
         yawMoment
+        pitchMoment
         rollMoment
         elevCtrl
         rollCtrl
@@ -25,7 +26,7 @@ classdef pthFlwCtrlM < handle
         perpErrorVal
         startControl
         outRanges
-        elevatorReelInDef
+        elevatorConst
         maxR
         fcnName
         initPathVar
@@ -45,6 +46,7 @@ classdef pthFlwCtrlM < handle
             %PTHFLWCTRL 
             obj.tanRoll             = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
+            obj.pitchMoment         = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
             obj.elevCtrl            = CTR.FPID('rad','deg');
             obj.rollCtrl            = CTR.FPID('rad','deg');
@@ -64,7 +66,7 @@ classdef pthFlwCtrlM < handle
             obj.perpErrorVal        = SIM.parameter('Unit','rad','Description','Central angle at which we saturate the desired velocity to the tangent vector');
             obj.startControl        = SIM.parameter('Unit','s','Description','Time at which we switch the roll controller on');
             obj.outRanges           = SIM.parameter('Unit','','Description','Upper/lower limits of path variable for spooling');
-            obj.elevatorReelInDef   = SIM.parameter('Unit','deg','Description','Deflection angle of elevator used during spool in');
+            obj.elevatorConst       = SIM.parameter('Unit','deg','Description','Deflection angle of elevator used during spool in');
             obj.maxR                = SIM.parameter('Unit','m','Description','Maximum radius for spooling switching');
             obj.fcnName             = SIM.parameter('Unit','','Description','Name of the path shape function you want to use.','NoScale',true);
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable');
@@ -109,8 +111,8 @@ classdef pthFlwCtrlM < handle
         function setOutRanges(obj,val,unit)
             obj.outRanges.setValue(val,unit);
         end
-        function setElevatorReelInDef(obj,val,unit)
-            obj.elevatorReelInDef.setValue(val,unit);
+        function setElevatorConst(obj,val,unit)
+            obj.elevatorConst.setValue(val,unit);
         end
         function setMaxR(obj,val,unit)
             obj.maxR.setValue(val,unit) ;

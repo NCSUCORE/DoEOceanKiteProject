@@ -171,33 +171,27 @@ else
         plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
     end
 end
-%%  Plot CL^3/CD^2
-subplot(R,C,5); hold on; grid on
-yyaxis left
-if lap
-    if con
-        plot(data(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Path Position');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);
-    else
-        plot(time(ran),CLsurf(ran).^3./CDtot(ran).^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
-    end
-else
-    plot(time,CLsurf.^3./CDtot.^2,'b-');  xlabel('Time [s]');  ylabel('$\mathrm{CL^3/CD^2}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
-end
-yyaxis right
-if lap
-    if con
-        plot(data(ran),CLsurf(ran)./CDtot(ran),'r-');  xlabel('Path Position');  set(gca,'YColor',[0 0 0])
-        plot(data(ran),LiftDrag(ran),'k-');   xlabel('Path Position');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
-    else
-        plot(time(ran),CLsurf(ran)./CDtot(ran),'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
-        plot(time(ran),LiftDrag(ran),'k-');   xlabel('Time [s]');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
-    end
-else
-    plot(time,CLsurf./CDtot,'r--');  xlabel('Time [s]');  ylabel('$\mathrm{CL/CD}$');  set(gca,'YColor',[0 0 0]);  xlim(lim)
-    plot(time,LiftDrag,'k-');   xlabel('Time [s]');  ylabel('Ratio');  legend('$\mathrm{CL^3/CD^2}$','CL/CD','L/D','location','southeast');  ylim([0,inf])
-end
-%%  Plot Lift-Drag ratio
+
+%%  Plot Ctrl Surface Deflection 
 subplot(R,C,6); hold on; grid on
+if lap
+    if con
+        plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'b-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+        plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,3)),'r-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+        plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,4)),'g-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+    else
+        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
+        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
+        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
+    end
+else
+    plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+    plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+    plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+end
+legend('P-Aileron','Elevator','Rudder')
+%%  Plot Lift-Drag ratio
+subplot(R,C,5); hold on; grid on
 yyaxis left
 if lap
     if con

@@ -15,12 +15,12 @@ vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR8_b8','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
-vhcl.setVolume(1.9221295,'m^3');
-Ixx = 3.5029729e+03;
-Iyy = 4.3128607e+03;
-Izz = 7.6728947e+03;
-Ixy = 4.7462191e-03;
-Ixz = 1.1926731e+02;
+vhcl.setVolume(1.6370709,'m^3');
+Ixx = 4.8410560e+03;
+Iyy = 4.9062044e+03;
+Izz = 9.6240143e+03;
+Ixy = 2.9420567e-03;
+Ixz = 1.5460080e+02;
 Iyz = 0;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
@@ -28,7 +28,7 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([6.8542933e-01;0;2.6430106e-02],'m')
+vhcl.setRCM_LE([8.5293191e-01;0;3.2027764e-02],'m')
 vhcl.setRB_LE([0;0;0],'m');
 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
 
@@ -39,7 +39,7 @@ vhcl.setAllMaxCtrlDefSpeed(67.082,'deg/s');
 
 vhcl.setOptAlpha(14,'deg');
 %% Wing
-AR = 8/2; b = 4; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
+AR = 10/2; b = 4.5; tr = 0.8; cR = 2*(b/(AR))/(1+tr);
 vhcl.setWingRootChord(cR,'m');
 vhcl.setWingAR(AR*2,'');
 vhcl.setWingTR(0.8,'');

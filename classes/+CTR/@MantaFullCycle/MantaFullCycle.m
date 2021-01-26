@@ -2,6 +2,9 @@ classdef MantaFullCycle < handle
     %   MantaFullCycle: Class definition for the Manta Ray full-cycle controller 
     
     properties (SetAccess = private)
+        % State machine 
+        nonXCurrentSpoolInGain
+        maxTL
         % FPID controllers
         SplRoll
         SplYaw
@@ -26,7 +29,9 @@ classdef MantaFullCycle < handle
         maxBank
         controlSigMax
         SplPitchMax
+        PitchMomMax
         thrLengthMax
+        Tmax
         % Path Following 
         searchSize
         initPathVar 
@@ -43,14 +48,22 @@ classdef MantaFullCycle < handle
         LaRelevationSP
         LaRelevationSPErr
         % Setpoint method ctrl 
+        elevatorConst
         pitchCtrl
         pitchConst
         yawCtrl
         yawConst
+        AoACtrl
+        AoASP
+        AoAConst
+        optAltitude
     end
     
     methods
         function obj = MantaFullCycle
+            % State machine 
+            obj.nonXCurrentSpoolInGain = SIM.parameter('Unit','','Description','Gain used in switching logic','NoScale',true);
+            obj.maxTL                  = SIM.parameter('Unit','m','Description','Maximum tether length');
             % FPID controllers
             obj.SplRoll             = CTR.FPID('rad','deg');
             obj.SplYaw              = CTR.FPID('rad','deg');
@@ -68,14 +81,16 @@ classdef MantaFullCycle < handle
             obj.SplPID              = CTR.FPID('m','m/s');
             obj.PthRoll             = CTR.FPID('rad','N*m');
             obj.PthYaw              = CTR.FPID('rad','N*m');
-            obj.PthPitch            = CTR.FPID('rad','deg');
+            obj.PthPitch            = CTR.FPID('rad','N*m');
             obj.PthTanRoll          = CTR.FPID('rad','rad');
             obj.PthAlpha            = CTR.FPID('rad','kN');
             % Saturations
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
             obj.SplPitchMax         = CTR.sat;
+            obj.PitchMomMax         = CTR.sat;
             obj.thrLengthMax        = CTR.sat;
+            obj.Tmax                = SIM.parameter('Unit','kN','Description','Maximum tether tension limit');
             % Path Following 
             obj.searchSize          = SIM.parameter('Unit','','Description','Range of normalized path variable to search','NoScale',true);
             obj.initPathVar         = SIM.parameter('Unit','','Description','Initial path variable to begin golden section search around');
@@ -92,10 +107,15 @@ classdef MantaFullCycle < handle
             obj.LaRelevationSP      = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
             obj.LaRelevationSPErr   = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint error where spooling is allowed');
             % Setpoint method ctrl 
+            obj.elevatorConst       = SIM.parameter('Unit','deg','Description','Deflection angle of elevator used during spool in');
+            obj.AoACtrl             = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = none; 1 = On');
+            obj.AoASP               = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = constant; 1 = time-lookup');
+            obj.AoAConst            = SIM.parameter('Unit','deg','Description','Constant AoA setpoint');
             obj.pitchCtrl           = SIM.parameter('Unit','','Description','Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR');
             obj.pitchConst          = SIM.parameter('Unit','deg','Description','Constant pitch setpoint');
             obj.yawCtrl             = SIM.parameter('Unit','','Description','Flag to decide yaw setpoint source. 0 = contant; 1 = LaR');
             obj.yawConst            = SIM.parameter('Unit','deg','Description','Constant yaw setpoint');
+            obj.optAltitude         = SIM.parameter('Unit','m','Description','Mean operating altitude');
         end
         %%  Setters
         function setSearchSize(obj,val,units)
