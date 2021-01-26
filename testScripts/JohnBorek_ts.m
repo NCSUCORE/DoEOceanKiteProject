@@ -3,12 +3,12 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.0;
+simScenario = 1.4;
 %%  Set Test Parameters
-saveSim = 0;                                                %   Flag to save results
-thrLength = 200;  altitude = 50;  elev = 14.5;               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = .5;                                                %   m/s - Flow speed
-Tmax = 11;                                                  %   kN - Max tether tension 
+saveSim = 1;                                                %   Flag to save results
+thrLength = 200;  altitude = 50;  elev = 10;               %   Initial tether length/operating altitude/elevation angle 
+flwSpd = .25;                                                %   m/s - Flow speed
+Tmax = 20;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -16,9 +16,6 @@ fpath = fullfile(fileparts(which('OCTProject.prj')),...
     'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',20)]);
 if simScenario == 1.3
-    thrLength = interp2(maxT.altitude,maxT.flwSpd,maxT.R.thrL,altitude,flwSpd);
-    el = interp2(maxT.altitude,maxT.flwSpd,maxT.R.EL,altitude,flwSpd)*pi/180;
-elseif simScenario == 1.4
     el = elev*pi/180;
 else
     el = asin(altitude/thrLength);
@@ -30,6 +27,8 @@ elseif simScenario >= 3 && simScenario < 4
     loadComponent('SteadyController');                      %   Steady-flight controller
 elseif simScenario == 2
     loadComponent('pathFollowingCtrlForILC');               %   Path-following controller with spooling
+elseif simScenario == 1.4
+    loadComponent('MantaFSController');                     %   Path-following controller with AoA control
 else
     loadComponent('pathFollowWithAoACtrl');                 %   Path-following controller with AoA control
 end
@@ -59,7 +58,7 @@ elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
 elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
     loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
 elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
-    loadComponent('Manta2RotXFoil_PDR');                                %   AR = 8; 8m span
+    error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
     error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
 elseif simScenario == 1.7 || simScenario == 3.7 || simScenario == 4.7
@@ -109,19 +108,15 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-% thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
-% thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
-% thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
-thr.tether1.youngsMod.setValue(2.6e10,'Pa');
+thr.tether1.youngsMod.setValue(3.7e10,'Pa');
 thr.tether1.density.setValue(2226,'kg/m^3');
-thr.tether1.setDiameter(0.01,'m');
+thr.tether1.setDiameter(0.0125,'m');
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-fltCtrl.rudderGain.setValue(0,'')
 if simScenario >= 4
     fltCtrl.LaRelevationSP.setValue(26,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
 end
@@ -129,18 +124,29 @@ if simScenario >= 3 && simScenario < 4
     fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
     fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
     fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
+elseif simScenario == 1.4
+    fltCtrl.maxTL.setValue(thrLength,'m');
+    fltCtrl.firstSpoolLap.setValue(10,'');                  fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+    fltCtrl.AoASP.setValue(0,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+    fltCtrl.AoACtrl.setValue(0,'');                         fltCtrl.elevatorConst.setValue(2,'deg');        
+    fltCtrl.PthAlpha.kp.setValue(.3,'(kN)/(rad)');          fltCtrl.Tmax.setValue(Tmax,'kN');
+    fltCtrl.PthPitch.kp.setValue(0,'(N*m)/(rad)');          fltCtrl.PthPitch.ki.setValue(0,'(N*m)/(rad*s)');
+    fltCtrl.PthRoll.kp.setValue(3e5,'(N*m)/(rad)');         fltCtrl.PthRoll.ki.setValue(00,'(N*m)/(rad*s)');
+    fltCtrl.PthRoll.kd.setValue(2.2e5,'(N*m)/(rad/s)');     fltCtrl.PthRoll.tau.setValue(0.001,'s');
+    fltCtrl.PthYaw.kp.setValue(00,'(N*m)/(rad)');           fltCtrl.rudderGain.setValue(0,'');
+    fltCtrl.PitchMomMax.upperLimit.setValue(1e3,'');        fltCtrl.PitchMomMax.lowerLimit.setValue(-1e3,'');
 elseif simScenario >= 1 && simScenario < 2
-    fltCtrl.elevatorReelInDef.setValue(3,'deg');        
-    fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.RCtrl.setValue(0,'');
-    fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-    fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-    fltCtrl.elevCtrl.kp.setValue(100,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
-    fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
-    fltCtrl.yawCtrl.kp.setValue(50,'(deg)/(rad)');      fltCtrl.rudderGain.setValue(0,'');
-    fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
-    fltCtrl.elevCtrlMax.upperLimit.setValue(30,'');     fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'');
+    fltCtrl.firstSpoolLap.setValue(10,'');                  fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+    fltCtrl.AoASP.setValue(0,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+    fltCtrl.AoACtrl.setValue(0,'');                         fltCtrl.elevatorConst.setValue(2,'deg');        
+    fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');         fltCtrl.Tmax.setValue(Tmax,'kN');
+    fltCtrl.pitchMoment.kp.setValue(0,'(N*m)/(rad)');       fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
+    fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');      fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
+    fltCtrl.rollMoment.kd.setValue(2.2e5,'(N*m)/(rad/s)');  fltCtrl.rollMoment.tau.setValue(0.001,'s');
+    fltCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        fltCtrl.rudderGain.setValue(0,'');
+    fltCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        fltCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
 elseif simScenario == 0
-    vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m')
+    vhcl.turb1.setDiameter(.0,'m');     vhcl.turb2.setDiameter(.0,'m');
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 % vhcl.turb1.setDiameter(.7,'m');     vhcl.turb2.setDiameter(.7,'m')
@@ -189,6 +195,7 @@ if simScenario < 3
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
 end
+set(gcf,'OuterPosition',[-773.4000   34.6000  780.8000  830.4000]);
 %%
 % figure(23); 
 % [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2-1;
@@ -210,7 +217,7 @@ end
 % plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'View',[-45,20],'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
 %         'ZoomIn',1==0,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
 % else

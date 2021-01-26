@@ -2,29 +2,25 @@
 Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario
-simScenario = 1.4;
+simScenario = 1.3;
 %%  Set Test Parameters
-fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');  load([fpath2 'tetherDataNew.mat']);
 saveSim = 1;                                                %   Flag to save results
-Tmax = 29;
-flwSpd = 0.1:0.05:0.5;                                     %   m/s - Flow speed
-thrLength = 200:50:400;
+Tmax = 1e10;
+flwSpd = .5:0.25:4;                                     %   m/s - Flow speed
+thrLength = 200:100:2000;
 elev = (10:5:40)*pi/180;
-h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
+h = 8*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%
 tic
 for ii = 1:numel(flwSpd)
     for jj = 1:numel(elev)
         for kk = 1:numel(thrLength)
-            eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',Tmax))/100;
-%             TDiam = eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax));
-            TDiam = 0.01;
-            young = eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax));
+            eff = .95;   TDiam = 0.0125;   young = 37e9;
             fpath = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign\Tether\Tension\');
-            maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
+            maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',20)]);
             altitude(ii,jj,kk) = thrLength(kk)*sin(elev(jj));   sw = thrLength(kk)*sind(5);
-            if altitude(ii,jj,kk) - sw <= 0
+            if altitude(ii,jj,kk) - sw <= 0 || altitude(ii,jj,kk) > 650
                 el = NaN;
             else
                 el = elev(jj);
@@ -102,7 +98,7 @@ for ii = 1:numel(flwSpd)
             thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
             thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
             thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-            thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
+            thr.tether1.density.setValue(2226,'kg/m^3');
             thr.tether1.setDiameter(TDiam,thr.tether1.diameter.Unit);
             thr.tether1.setYoungsMod(young,thr.tether1.youngsMod.Unit);
             thr.tether1.dragCoeff.setValue(1,'');
@@ -111,13 +107,15 @@ for ii = 1:numel(flwSpd)
             %%  Controller User Def. Parameters and dependant properties
             fltCtrl.setFcnName(PATHGEOMETRY,'');
             fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-            fltCtrl.elevatorReelInDef.setValue(3,'deg');        fltCtrl.rudderGain.setValue(0,'');         
-            fltCtrl.AoACtrl.setValue(2,'');                     fltCtrl.AoASP.setValue(1,'');
-            fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+            fltCtrl.elevatorReelInDef.setValue(3,'deg');
+            fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.RCtrl.setValue(0,'');
+            fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
             fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-            fltCtrl.elevCtrl.kp.setValue(100,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');            %%  Set up critical system parameters and run simulation
-            fltCtrl.firstSpoolLap.setValue(25,'');              fltCtrl.winchSpeedIn.setValue(0,'m/s');
-            fltCtrl.elevCtrlMax.upperLimit.setValue(30,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'');
+            fltCtrl.elevCtrl.kp.setValue(100,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+            fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+            fltCtrl.yawCtrl.kp.setValue(50,'(deg)/(rad)');      fltCtrl.rudderGain.setValue(0,'');
+            fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+            fltCtrl.elevCtrlMax.upperLimit.setValue(20,'');     fltCtrl.elevCtrlMax.lowerLimit.setValue(-10,'');
             fprintf('\nFlow Speed = %.3f m/s;\tElevation = %.2f deg;\t ThrLength = %d m\n',flwSpd(ii),elev(jj)*180/pi,thrLength(kk));
             vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
             %%  Simulate 
@@ -133,6 +131,8 @@ for ii = 1:numel(flwSpd)
                 Turb = squeeze(sqrt(sum(tsc.FTurbBdy.Data.^2,1)));
                 Pow = tsc.rotPowerSummary(vhcl,env);
                 Pavg(ii,jj,kk) = Pow.avg;    Pnet(ii,jj,kk) = Pow.avg*eff;
+                V = squeeze(sqrt(sum(tsc.velCMvec.Data.^2,1)));
+                Vavg(ii,jj,kk) = mean(V(ran));
                 AoA(ii,jj,kk) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
                 airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
                 gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
@@ -144,7 +144,7 @@ for ii = 1:numel(flwSpd)
                 elevation(ii,jj,kk) = el*180/pi;
                 filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.2f_Thr-%d.mat'),simScenario,flwSpd(ii),elev(jj)*180/pi,thrLength(kk));
                 fpath = 'D:\Thr-L EL Study\';
-                save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+               save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
             else
                 Pavg(ii,jj,kk) = NaN;  AoA(ii,jj,kk) = NaN;   ten(ii,jj,kk) = NaN;  Pnet = NaN;
                 CL(ii,jj,kk) = NaN;    CD(ii,jj,kk) = NaN;    Fdrag(ii,jj,kk) = NaN;
