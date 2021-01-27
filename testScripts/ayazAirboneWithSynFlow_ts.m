@@ -187,8 +187,7 @@ end
 switch simScenario(2)
     case 1
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
-            'Turbine power','Kite speed by flow speed cubed',...
-            'Lap stats'};
+            'Turbine power','Kite speed by flow speed cubed'};
     case 2
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed',...
@@ -196,7 +195,7 @@ switch simScenario(2)
 end
 
 for ii = 1:length(plotFigs)
-    plotSomething(tscOld,plotFigs{ii},1);
+    plotSomething(tscOld,plotFigs{ii},'s');
 end
 
 if ismember(simScenario(2),[2,3])
