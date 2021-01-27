@@ -33,7 +33,7 @@ switch figName
         data = squeeze(vecnorm(tsc.vWindFuseGnd.Data));       
         yLab = '[m/s]';
     case 'Path elevation angle'
-        data = tsc.elevationAngle.Data;
+        data = tsc.basisParams.Data(:,3)*180/pi;
         yLab = '[deg]';
         
 end

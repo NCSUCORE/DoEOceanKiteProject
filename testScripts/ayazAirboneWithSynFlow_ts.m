@@ -4,7 +4,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(0.05*60*60,'s');
+simParams.setDuration(0.2*60*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
 thrLength = 1000;
@@ -26,7 +26,7 @@ h = w/5;
 % 4 - choose path following controller. 1 for usual, 2 for guidance law one
 % 5 - save simulation results. Figures and such.
 
-simScenario = [2 1 1 1 false];
+simScenario = [2 2 2 1 false];
 
 %% Load components
 % Spooling controller

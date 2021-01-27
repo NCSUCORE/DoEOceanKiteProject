@@ -56,6 +56,9 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
                 case 'squaredExponential'
                     val = initializeKFGPForSquaredExponentialKernel(obj);
             end
+            val.meanFnVec = obj.meanFunction(obj.xMeasure,...
+                obj.meanFnProps(1),obj.meanFnProps(2));
+            
         end
         
         % calculate square root of spatial covariance matrix
@@ -153,7 +156,8 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
                 end
                 kxstar_xstar(ii) = obj.calcSpatialCovariance(...
                     xPredict(:,ii),xPredict(:,ii));
-                mXstar(ii) = obj.meanFunction(xPredict(:,ii));
+                mXstar(ii) = obj.meanFunction(xPredict(:,ii),...
+                    obj.meanFnProps(1),obj.meanFnProps(2));
                 
             end
             % local variables to minimie matrix inverse
@@ -175,7 +179,8 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             xPredict = obj.convertMeanElevToAlt(meanElevation);
             % calculate prediction mean and posterior variance
             [flowPred,flowVar] = obj.calcPredMeanAndPostVar(xPredict,F_t,sigF_t);
-            flowPred = obj.meanFunction(xPredict) - flowPred;
+            flowPred = obj.meanFunction(xPredict,obj.meanFnProps(1),...
+                obj.meanFnProps(2)) - flowPred;
             % exploitation incentive
             jExploit = obj.exploitationConstant*...
                 cosineFlowCubed(flowPred,cosd(meanElevation));
