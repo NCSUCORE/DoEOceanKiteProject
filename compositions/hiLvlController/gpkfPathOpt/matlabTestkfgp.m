@@ -89,6 +89,7 @@ mpckfgp.spatialLengthScale  = kfgp.spatialLengthScale;
 mpckfgp.temporalCovAmp      = kfgp.temporalCovAmp;
 mpckfgp.temporalLengthScale = kfgp.temporalLengthScale;
 mpckfgp.noiseVariance       = kfgp.noiseVariance;
+mpckfgp.meanFnProps         = kfgp.meanFnProps;
 
 mpckfgp.initVals            = mpckfgp.initializeKFGP;
 mpckfgp.spatialCovMat       = mpckfgp.makeSpatialCovarianceMatrix(altitudes);
@@ -148,7 +149,8 @@ omniElev       = nan(1,nSamp);
 elevsAtAllAlts = min(max(minElev,asin(altitudes/mpckfgp.tetherLength)*180/pi),maxElev);
 omniAlts = mpckfgp.convertMeanElevToAlt(elevsAtAllAlts);
 cosElevAtAllAlts = cosd(elevsAtAllAlts);
-meanFnVec = kfgp.meanFunction(altitudes);
+meanFnVec = kfgp.meanFunction(altitudes,kfgp.meanFnProps(1),...
+    kfgp.meanFnProps(2));
 
 % baseline contoller
 fValBaseline   = nan(1,nSamp);
@@ -198,7 +200,8 @@ for ii = 1:nSamp
     fData = resample(synFlow,tSamp(ii)*60).Data;
     hData = resample(synAlt,tSamp(ii)*60).Data;
     flowVal(ii) = interp1(hData,fData,xSamp(ii));
-    ySamp(ii) =  kfgp.meanFunction(xSamp(ii)) - flowVal(ii);
+    ySamp(ii) =  kfgp.meanFunction(xSamp(ii),kfgp.meanFnProps(1),...
+        kfgp.meanFnProps(2)) - flowVal(ii);
     % calculate pseudo power
     % KFGP
     KFGPElev(ii)  = asin(xSamp(ii)/mpckfgp.tetherLength)*180/pi;

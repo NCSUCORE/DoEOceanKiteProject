@@ -16,6 +16,11 @@ classdef GaussianProcess
         noiseVariance
     end
     
+    % mean function properties
+    properties
+       meanFnProps 
+    end
+    
     % class parameters
     properties (SetAccess = protected)
         kernelChoices = {'exponential','squaredExponential','alwaysOne'};
@@ -69,6 +74,7 @@ classdef GaussianProcess
             obj.spatialLengthScale = value(:);
         end
         
+        
     end
     
     %% getters
@@ -81,42 +87,38 @@ classdef GaussianProcess
         % check kernel choice validity
         function val = checkKernelValidity(obj,ipKernel)
             if ismember(lower(ipKernel),lower(obj.kernelChoices))
-                tval = ipKernel;
+                val = ipKernel;
             else
                 error(['Only ',repmat('%s, ',1,numel(obj.kernelChoices)-1),...
                     'and %s are valid entries for kernels.',...
                     ' You entered %s.'],obj.kernelChoices{:},ipKernel);
             end
             % set values
-            switch lower(tval)
+            switch lower(ipKernel)
                 case 'exponential'
                     val = @ExponentialKernel;
                 case 'squaredexponential'
                     val = @SquaredExponentialKernel;
                 case 'alwaysone'
                     val = @alwaysOneCovarianceKernel;
-                otherwise
-                    error('Invalid covariance function entered');
             end
         end
         
         % check mean function choice validity
         function val = checkMeanFnValidity(obj,ipMeanFn)
             if ismember(ipMeanFn,obj.meanFnChoices)
-                tval = ipMeanFn;
+                val = ipMeanFn;
             else
                 error(['Only ',repmat('%s, ',1,numel(obj.meanFnChoices)-1),...
                     'and %s are valid entries for kernels.',...
                     ' You entered %s.'],obj.meanFnChoices{:},ipMeanFn);
             end
             % set values
-            switch tval
+            switch ipMeanFn
                 case 'constantMean'
                     val = @constantMeanFn;
                 case 'windPowerLaw'
                     val = @windPowerLawMeanFn;
-                otherwise
-                    error('Invalid mean function entered');
             end
         end
         
@@ -338,8 +340,8 @@ classdef GaussianProcess
             Ky = covMat + obj.noiseVariance*eye(nTrainPoints);
             kInvK = kx_xstar'/Ky;
             % prediction mean
-            mXstar = obj.meanFunction(xStar(1:end-1,:)');
-            mX = obj.meanFunction(XT(1:end-1,:)');
+            mXstar = obj.meanFunction(xStar(1:end-1,:)',obj.meanFnProps);
+            mX = obj.meanFunction(XT(1:end-1,:)',obj.meanFnProps);
             predMean = mXstar + kInvK*(y-mX);
             % posterior variance
             postVar = kxstar_xstar - diag(kInvK*kx_xstar);
@@ -373,6 +375,3 @@ classdef GaussianProcess
     
     
 end
-
-
-

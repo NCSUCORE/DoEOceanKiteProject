@@ -45,6 +45,7 @@ hiLvlCtrl.temporalCovAmp       = 1;
 hiLvlCtrl.temporalLengthScale  = temporalLengthScale;
 hiLvlCtrl.noiseVariance        = noiseVar;
 hiLvlCtrl.meanFnProps          = env.water.meanFnProps.Value;
+
 %%
 hiLvlCtrl.mpckfgpTimeStep      = mpckfgpTimeStep;
 hiLvlCtrl.predictionHorz       = predictionHorz;
