@@ -4,7 +4,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(0.2*60*60,'s');
+simParams.setDuration(1*60*60,'s');
 dynamicCalc = '';
 flowSpeed = 10;
 thrLength = 1000;
