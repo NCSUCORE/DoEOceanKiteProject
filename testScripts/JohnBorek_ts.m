@@ -3,11 +3,11 @@ clear;%clc;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-simScenario = 1.4;
+simScenario = 1.0;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
 thrLength = 200;  altitude = 50;  elev = 10;               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = .25;                                                %   m/s - Flow speed
+flwSpd = .5;                                                %   m/s - Flow speed
 Tmax = 20;                                                  %   kN - Max tether tension 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -130,6 +130,7 @@ elseif simScenario == 1.4
     fltCtrl.AoASP.setValue(0,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
     fltCtrl.AoACtrl.setValue(0,'');                         fltCtrl.elevatorConst.setValue(2,'deg');        
     fltCtrl.PthAlpha.kp.setValue(.3,'(kN)/(rad)');          fltCtrl.Tmax.setValue(Tmax,'kN');
+    fltCtrl.PthTanRoll.kp.setValue(0.2,'(rad)/(rad)');      fltCtrl.PthTanRoll.ki.setValue(.1,'(rad)/(rad*s)');
     fltCtrl.PthPitch.kp.setValue(0,'(N*m)/(rad)');          fltCtrl.PthPitch.ki.setValue(0,'(N*m)/(rad*s)');
     fltCtrl.PthRoll.kp.setValue(3e5,'(N*m)/(rad)');         fltCtrl.PthRoll.ki.setValue(00,'(N*m)/(rad*s)');
     fltCtrl.PthRoll.kd.setValue(2.2e5,'(N*m)/(rad/s)');     fltCtrl.PthRoll.tau.setValue(0.001,'s');
@@ -140,6 +141,7 @@ elseif simScenario >= 1 && simScenario < 2
     fltCtrl.AoASP.setValue(0,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
     fltCtrl.AoACtrl.setValue(0,'');                         fltCtrl.elevatorConst.setValue(2,'deg');        
     fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');         fltCtrl.Tmax.setValue(Tmax,'kN');
+    fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
     fltCtrl.pitchMoment.kp.setValue(0,'(N*m)/(rad)');       fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
     fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');      fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
     fltCtrl.rollMoment.kd.setValue(2.2e5,'(N*m)/(rad/s)');  fltCtrl.rollMoment.tau.setValue(0.001,'s');
@@ -188,9 +190,9 @@ end
 if simScenario < 3
     lap = max(tsc.lapNumS.Data)-1;
     if max(tsc.lapNumS.Data) < 2
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==1)
     else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==1)
     end
 else
     tsc.plotLaR(fltCtrl,'Steady',simScenario >= 3 && simScenario < 4);
@@ -217,7 +219,7 @@ set(gcf,'OuterPosition',[-773.4000   34.6000  780.8000  830.4000]);
 % plot(tsc.positionVec.Time,squeeze(tsc.positionVec.Data(3,1,:)),'b-'); xlabel('Time [s]'); ylabel('Altitude [m]');
 %%  Animate Simulation
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+%     vhcl.animateSim(tsc,.25,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
 %         'ZoomIn',1==0,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
 % else

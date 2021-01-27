@@ -14,7 +14,7 @@ fltCtrl.setStartControl(1,'s')
 fltCtrl.firstSpoolLap.setValue(1000,'');
 
 % Control surface parameters
-fltCtrl.tanRoll.kp.setValue(0.8,'(rad)/(rad)');
+fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.tanRoll.tau.setValue(1e-3,'s');
