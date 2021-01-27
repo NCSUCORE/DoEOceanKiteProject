@@ -195,7 +195,7 @@ switch simScenario(2)
 end
 
 for ii = 1:length(plotFigs)
-    plotSomething(tscOld,plotFigs{ii},'s');
+    plotSomethingAyaz(tscOld,plotFigs{ii},'s');
 end
 
 if ismember(simScenario(2),[2,3])
