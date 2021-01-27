@@ -6,7 +6,7 @@ simScenario = 1.3;
 %%  Set Test Parameters
 saveSim = 1;                                                %   Flag to save results
 Tmax = 1e10;
-flwSpd = .5:0.25:4;                                     %   m/s - Flow speed
+flwSpd = .25:0.25:2.5;                                     %   m/s - Flow speed
 thrLength = 200:100:2000;
 elev = (10:5:40)*pi/180;
 h = 8*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -47,7 +47,7 @@ for ii = 1:numel(flwSpd)
             elseif simScenario == 1.3 || simScenario == 3.3 || simScenario == 4.3
                 loadComponent('Manta2RotXFoil_AR8_b8');                             %   AR = 8; 8m span
             elseif simScenario == 1.4 || simScenario == 3.4 || simScenario == 4.4
-                loadComponent('Manta2RotXFoil_PDR');                                %   AR = 8; 8m span
+                error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
             elseif simScenario == 1.5 || simScenario == 3.5 || simScenario == 4.5
                 error('Kite doesn''t exist for simScenario %.1f\n',simScenario)
             elseif simScenario == 1.6 || simScenario == 3.6 || simScenario == 4.6
@@ -107,15 +107,16 @@ for ii = 1:numel(flwSpd)
             %%  Controller User Def. Parameters and dependant properties
             fltCtrl.setFcnName(PATHGEOMETRY,'');
             fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-            fltCtrl.elevatorReelInDef.setValue(3,'deg');
-            fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.RCtrl.setValue(0,'');
-            fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-            fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-            fltCtrl.elevCtrl.kp.setValue(100,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
-            fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
-            fltCtrl.yawCtrl.kp.setValue(50,'(deg)/(rad)');      fltCtrl.rudderGain.setValue(0,'');
-            fltCtrl.firstSpoolLap.setValue(10,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
-            fltCtrl.elevCtrlMax.upperLimit.setValue(20,'');     fltCtrl.elevCtrlMax.lowerLimit.setValue(-10,'');
+            fltCtrl.firstSpoolLap.setValue(10,'');                  fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+            fltCtrl.AoASP.setValue(0,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+            fltCtrl.AoACtrl.setValue(0,'');                         fltCtrl.elevatorConst.setValue(2,'deg');        
+            fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');         fltCtrl.Tmax.setValue(Tmax,'kN');
+            fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
+            fltCtrl.pitchMoment.kp.setValue(0,'(N*m)/(rad)');       fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
+            fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');      fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
+            fltCtrl.rollMoment.kd.setValue(2.2e5,'(N*m)/(rad/s)');  fltCtrl.rollMoment.tau.setValue(0.001,'s');
+            fltCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        fltCtrl.rudderGain.setValue(0,'');
+            fltCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        fltCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
             fprintf('\nFlow Speed = %.3f m/s;\tElevation = %.2f deg;\t ThrLength = %d m\n',flwSpd(ii),elev(jj)*180/pi,thrLength(kk));
             vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
             %%  Simulate 
@@ -144,7 +145,7 @@ for ii = 1:numel(flwSpd)
                 elevation(ii,jj,kk) = el*180/pi;
                 filename = sprintf(strcat('Turb%.1f_V-%.3f_EL-%.2f_Thr-%d.mat'),simScenario,flwSpd(ii),elev(jj)*180/pi,thrLength(kk));
                 fpath = 'D:\Thr-L EL Study\';
-               save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+                save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
             else
                 Pavg(ii,jj,kk) = NaN;  AoA(ii,jj,kk) = NaN;   ten(ii,jj,kk) = NaN;  Pnet = NaN;
                 CL(ii,jj,kk) = NaN;    CD(ii,jj,kk) = NaN;    Fdrag(ii,jj,kk) = NaN;
@@ -156,7 +157,7 @@ for ii = 1:numel(flwSpd)
 end
 toc
 %%
-filename1 = sprintf('ThrEL_Study_PDR.mat');
+filename1 = sprintf('ThrEL_Study_Underwater.mat');
 fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\');
 save([fpath1,filename1],'Pavg','Pnet','AoA','CL','CD','Fdrag','Flift','Ffuse','Fthr',...
     'Fturb','thrLength','elevation','flwSpd','ten','Tmax','altitude','elev')

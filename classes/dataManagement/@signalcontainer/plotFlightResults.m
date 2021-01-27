@@ -4,7 +4,7 @@ p = inputParser;
 addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
-addOptional(p,'Vapp',false,@islogical);
+addOptional(p,'cross',false,@islogical);
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'dragChar',false,@islogical);
@@ -236,18 +236,34 @@ if turb && p.Results.dragChar && con
     plot(time,totDrag,'k-');
     xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
 end
-%%  Assess wing tips
-if p.Results.Vapp
+%%  Assess cross-current flight performance 
+if p.Results.cross
     figure;
-    subplot(3,1,1); hold on; grid on
-    plot(data(ran),squeeze(obj.vAppLclBdy.Data(1,2,ran)),'b-'); ylabel('$\mathrm{V_{app}}$ X [m/s]')
-    plot(data(ran),squeeze(obj.vAppWingTip.Data(1,2,ran)),'r--');
-    legend('Aero Center','Wing Tip')
-    subplot(3,1,2); hold on; grid on
-    plot(data(ran),squeeze(obj.vAppLclBdy.Data(2,2,ran)),'b-'); ylabel('$\mathrm{V_{app}}$ Y [m/s]')
-    plot(data(ran),squeeze(obj.vAppWingTip.Data(2,2,ran)),'r--');
-    subplot(3,1,3); hold on; grid on
-    plot(data(ran),squeeze(obj.vAppLclBdy.Data(3,2,ran)),'b-'); xlabel('Path Position'); ylabel('$\mathrm{V_{app}}$ Z [m/s]')
-    plot(data(ran),squeeze(obj.vAppWingTip.Data(3,2,ran)),'r--');
+    subplot(2,1,1); hold on; grid on
+    if lap
+        if con
+            plot(data(ran),squeeze(obj.velAngleError.Data(1,1,ran))*180/pi,'r-');    xlabel('Path Position');  ylabel('Angle Error [deg]');
+            plot(data(ran),squeeze(obj.tanRollError.Data(ran))*180/pi,'b-');   xlabel('Path Position');  ylabel('Angle Error [deg]');  legend('Velocity','Tan Roll');
+        else
+            plot(time(ran),squeeze(obj.velAngleError.Data(1,1,ran))*180/pi,'r-');    xlabel('Time [s]');  ylabel('Angle Error [deg]');
+            plot(time(ran),squeeze(obj.tanRollError.Data(ran))*180/pi,'b-');   xlabel('Time [s]');  ylabel('Angle Error [deg]');  legend('Velocity','Tan Roll');  xlim(lim);
+        end
+    else
+        plot(time,squeeze(obj.velAngleError.Data(1,1,:))*180/pi,'r-');    xlabel('Time [s]');  ylabel('Angle Error [deg]');
+        plot(time,squeeze(obj.tanRollError.Data(:))*180/pi,'b-');   xlabel('Time [s]');  ylabel('Angle Error [deg]');  legend('Velocity','Tan Roll');  xlim(lim);
+    end
+    subplot(2,1,2); hold on; grid on
+    if lap
+        if con
+            plot(data(ran),squeeze(obj.desiredMoment.Data(ran,1)),'r-');    xlabel('Path Position');  ylabel('Roll Moment [N]');
+            plot(data(ran),squeeze(obj.MFluidBdy.Data(1,1,ran)),'b-');   xlabel('Path Position');  ylabel('Roll Moment [N]');  legend('Desired','Actual');
+        else
+            plot(time(ran),squeeze(obj.desiredMoment.Data(ran,1)),'r-');    xlabel('Time [s]');  ylabel('Roll Moment [N]');
+            plot(time(ran),squeeze(obj.MFluidBdy.Data(1,1,ran)),'b-');   xlabel('Time [s]');  ylabel('Roll Moment [N]');  legend('Desired','Actual');  xlim(lim);
+        end
+    else
+        plot(time,squeeze(obj.desiredMoment.Data(:,1)),'r-');    xlabel('Time [s]');  ylabel('Roll Moment [N]');
+        plot(time,squeeze(obj.MFluidBdy.Data(1,1,:)),'b-');   xlabel('Time [s]');  ylabel('Roll Moment [N]');  legend('Desired','Actual');  xlim(lim);
+    end
 end
 end

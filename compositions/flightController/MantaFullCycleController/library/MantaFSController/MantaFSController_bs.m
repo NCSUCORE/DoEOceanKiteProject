@@ -56,7 +56,7 @@ fltCtrl.PthPitch.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.PthPitch.kd.setValue(0,'(N*m)/(rad/s)');
 fltCtrl.PthPitch.tau.setValue(0.001,'s');
 
-fltCtrl.PthTanRoll.kp.setValue(0.8,'(rad)/(rad)');
+fltCtrl.PthTanRoll.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.PthTanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.PthTanRoll.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.PthTanRoll.tau.setValue(1e-3,'s');

@@ -4,9 +4,8 @@ clear;clc;%close all
 %%  Select sim scenario
 simScenario = 1.3;
 %%  Set Test Parameters
-fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign','Tether\');
 saveSim = 1;                                                %   Flag to save results
-Tmax = 13;
+Tmax = 20;                                                  %   kN - Max allowable tether tension 
 thrLength = 200:50:600;                                     %   m - Initial tether length
 flwSpd = 0.1:0.05:0.5;                                      %   m/s - Flow speed
 altitude = [50 100 150 200 250 300];
