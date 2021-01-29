@@ -7,7 +7,11 @@ hiLvlCtrl.add('GainNames',...
     'GainUnits',...
     {'[rad rad rad rad m]'});
 
+
 hiLvlCtrl.basisParams.setValue([.73,.6,.36,0,125],'[rad rad rad rad m]');
+
+hiLvlCtrl.add('GainNames',{'maxNumberOfSimulatedLaps'},'GainUnits',{''});
+hiLvlCtrl.maxNumberOfSimulatedLaps.setValue(inf,'');
 
 
 %% save file in its respective directory
