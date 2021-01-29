@@ -4,12 +4,12 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(1*60*60,'s');
+simParams.setDuration(2*60*60,'s');
 dynamicCalc = '';
-flowSpeed = 10;
-thrLength = 1000;
+flowSpeed = 6;
+thrLength = 400;
 % rad - Mean elevation angle
-initElevation = 30*pi/180;
+initElevation = 10*pi/180;
 % rad - Path width/height
 w = 28*pi/180;
 h = w/5;
@@ -27,6 +27,7 @@ h = w/5;
 % 5 - save simulation results. Figures and such.
 
 simScenario = [2 2 2 1 false];
+thrDrag = false;
 
 %% Load components
 % Spooling controller
@@ -59,6 +60,7 @@ switch simScenario(2)
         loadComponent('constBoothLem');
         hiLvlCtrl.basisParams.setValue([a,b,initElevation,...
             0*pi/180,thrLength],'[rad rad rad rad m]');
+        hiLvlCtrl.maxNumberOfSimulatedLaps.setValue(5,'');
     case 2 % only the high level control of mean elevation angle
         loadComponent('gpkfPathOptAirborne');
         % hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
@@ -133,6 +135,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
+thr.tether1.dragEnable.setValue(thrDrag,'');
 %% Winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[flowSpeed;0;0]);
 

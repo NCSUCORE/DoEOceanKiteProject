@@ -13,10 +13,12 @@ fltCtrl.setStartControl(1,'s')
 fltCtrl.firstSpoolLap.setValue(1,'');
 
 % velocity angle to tangent roll angle parameters
-fltCtrl.tanRoll.kp.setValue(1.5,'(rad)/(rad)');
+fltCtrl.tanRoll.kp.setValue(1,'(rad)/(rad)');
+% these three (ki,kd,tau) are irrelevant cause the path following controller only uses
+% the proportional gain
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
-fltCtrl.tanRoll.tau.setValue(1e-3,'s');
+fltCtrl.tanRoll.tau.setValue(0,'s');
 
 % moment vector calculation gains
 fltCtrl.rollMoment.kp.setValue(47.8526*100,'(N*m)/(rad)')
@@ -40,6 +42,9 @@ fltCtrl.setFcnName('lemOfBooth','');
 fltCtrl.startControl.setValue(0,'s');
 
 pitchKp = (1e5)/(2*pi/180);
+
+fltCtrl.scale(1,1);
+
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
