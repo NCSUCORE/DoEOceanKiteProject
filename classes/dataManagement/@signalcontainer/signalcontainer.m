@@ -401,6 +401,20 @@ classdef signalcontainer < dynamicprops
             fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
             fprintf('Avg Charge Time: %.1f days\n',270/Pow.avg/24)
         end
+        function Pow = rotPowerSummaryAir(obj,vhcl,env)
+            [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
+            ran = Idx1:Idx2-1;
+            [CLsurf,CDtot] = getCLCD(obj,vhcl);
+            C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+            Pow.loyd = mean(PLoyd)*1e-3;
+            Pow.avg = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.max = max(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.min = min(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.wnch = mean(obj.winchPower.Data(ran))*1e-3;
+            fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
+            fprintf('Avg Charge Time: %.1f days\n',270/Pow.avg/24)
+        end
     end
 end
 
