@@ -6,10 +6,10 @@ cd(fileparts(mfilename('fullpath')));
 simParams = SIM.simParams;
 simParams.setDuration(2*60*60,'s');
 dynamicCalc = '';
-flowSpeed = 6;
-thrLength = 400;
+flowSpeed = 14;
+thrLength = 1500;
 % rad - Mean elevation angle
-initElevation = 10*pi/180;
+initElevation = 5*pi/180;
 % rad - Path width/height
 w = 28*pi/180;
 h = w/5;
@@ -26,8 +26,8 @@ h = w/5;
 % 4 - choose path following controller. 1 for usual, 2 for guidance law one
 % 5 - save simulation results. Figures and such.
 
-simScenario = [2 2 2 1 false];
-thrDrag = false;
+simScenario = [2 1 1 1 false];
+thrDrag = true;
 
 %% Load components
 % Spooling controller
