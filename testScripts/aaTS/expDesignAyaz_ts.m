@@ -59,7 +59,7 @@ vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value,'')
 vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value,'')
 vhcl.hStab.setIncidence(0,'deg');
 vhcl.setBuoyFactor(1,'')
-
+vhcl.rBridle_LE.setValue([0.03;0; -0.2],'m')     
 %%  Environment Properties
 loadComponent('constXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector

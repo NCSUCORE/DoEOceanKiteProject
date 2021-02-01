@@ -6,7 +6,7 @@ vhcl.numTethers.Value = 1.0000e+00
 vhcl.numTethers.Unit is unitless or has no unit specified
 vhcl.numTethers.NoScale = true
 vhcl.numTethers.Description = 'Number of tethers'
-vhcl.buoyFactor.Value = 1.0000e+00
+vhcl.buoyFactor.Value = 9.8000e-01
 vhcl.buoyFactor.Unit is unitless or has no unit specified
 vhcl.buoyFactor.NoScale = true
 vhcl.buoyFactor.Description = 'Buoyancy Factor = (Kite Density)/(Water Density)'
@@ -596,7 +596,7 @@ vhcl.optAlpha.Value = 1.4000e+01
 vhcl.optAlpha.Unit = 'deg'
 vhcl.optAlpha.NoScale = false
 vhcl.optAlpha.Description = 'Optimal constant angle of attack'
-vhcl.mass.Value = 2.7700e+00
+vhcl.mass.Value = 2.8265e+00
 vhcl.mass.Unit = 'kg'
 vhcl.mass.NoScale = false
 vhcl.mass.Description = 'Vehicle mass'
@@ -626,7 +626,7 @@ vhcl.fluidRefArea.Value = 9.8556e-02
 vhcl.fluidRefArea.Unit = 'm^2'
 vhcl.fluidRefArea.NoScale = false
 vhcl.fluidRefArea.Description = 'Reference area for aerodynamic calculations'
-vhcl.M6x6_B.Value = [2.77 0 0 0 0.008688223279 0;0 2.77 0 -0.008688223279 0 0.24499202675;0 0 2.77 0 -0.24499202675 0;0 -0.008688223279 0 0.0280738509833017 -2.942513e-05 -0.000511777953060918;0.008688223279 0 -0.24499202675 -2.942513e-05 0.130505255665999 -1.656e-05;0 0.24499202675 0 -0.000511777953060918 -1.656e-05 0.156717384682698]
+vhcl.M6x6_B.Value = [2.8265306122449 0 0 0 0.00886553395816327 0;0 2.8265306122449 0 -0.00886553395816327 0 0.249991864030612;0 0 2.8265306122449 0 -0.249991864030612 0;0 -0.00886553395816327 0 0.0280744071258181 -2.942513e-05 -0.00052746015618461;0.00886553395816327 0 -0.249991864030612 -2.942513e-05 0.130948021291836 -1.656e-05;0 0.249991864030612 0 -0.00052746015618461 -1.656e-05 0.157159594166018]
 vhcl.M6x6_B.Unit is unitless or has no unit specified
 vhcl.M6x6_B.NoScale = false
 vhcl.M6x6_B.Description = '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span'
@@ -642,55 +642,6 @@ vhcl.contactPoints.Value = [0 0 0.4 0.4 -0.25 0.41;-0.427 0.427 0.2 -0.2 0 0;0 0
 vhcl.contactPoints.Unit = 'm'
 vhcl.contactPoints.NoScale = false
 vhcl.contactPoints.Description = 'Points where contact forces are modeled'
-vhcl.turb2.mass.Value = 0.0000e+00
-vhcl.turb2.mass.Unit = 'kg'
-vhcl.turb2.mass.NoScale = false
-vhcl.turb2.mass.Description = 'Rotor mass'
-vhcl.turb2.diameter.Value = 0.0000e+00
-vhcl.turb2.diameter.Unit = 'm'
-vhcl.turb2.diameter.NoScale = false
-vhcl.turb2.diameter.Description = 'Diameter of the rotor'
-vhcl.turb2.axisUnitVec.Value = [-1;0;0]
-vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
-vhcl.turb2.axisUnitVec.NoScale = false
-vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
-vhcl.turb2.attachPtVec.Value = [0;0.142333333333333;0]
-vhcl.turb2.attachPtVec.Unit = 'm'
-vhcl.turb2.attachPtVec.NoScale = false
-vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
-vhcl.turb2.powerCoeff.Value = 4.0000e-01
-vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
-vhcl.turb2.powerCoeff.NoScale = false
-vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
-vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
-vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
-vhcl.turb2.axialInductionFactor.NoScale = false
-vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
-vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
-vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
-vhcl.turb2.tipSpeepRatio.NoScale = false
-vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
-vhcl.turb2.dragCoef.Value = 9.0000e-01
-vhcl.turb2.dragCoef.Unit is unitless or has no unit specified
-vhcl.turb2.dragCoef.NoScale = false
-vhcl.turb2.dragCoef.Description = 'Coefficient used in drag calculation'
-vhcl.turb2.staticArea.Value = 8.0000e-04
-vhcl.turb2.staticArea.Unit = 'm^2'
-vhcl.turb2.staticArea.NoScale = false
-vhcl.turb2.staticArea.Description = 'Projected area of the static turbine'
-vhcl.turb2.staticCD.Value = 1.5000e+00
-vhcl.turb2.staticCD.Unit is unitless or has no unit specified
-vhcl.turb2.staticCD.NoScale = false
-vhcl.turb2.staticCD.Description = 'Turbine drag coefficient while static'
-vhcl.turb2.dragCoeff.Value = 6.0000e-01
-vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
-vhcl.turb2.dragCoeff.NoScale = false
-vhcl.turb2.momentArm.Value = [0;0.142333333333333;0]
-vhcl.turb2.momentArm.Unit = 'm'
-vhcl.turb2.momentArm.NoScale = false
-vhcl.turb2.momentOfInertia.Value = 0.0000e+00
-vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
-vhcl.turb2.momentOfInertia.NoScale = false
 vhcl.turb1.mass.Value = 0.0000e+00
 vhcl.turb1.mass.Unit = 'kg'
 vhcl.turb1.mass.NoScale = false
@@ -740,3 +691,52 @@ vhcl.turb1.momentArm.NoScale = false
 vhcl.turb1.momentOfInertia.Value = 0.0000e+00
 vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb1.momentOfInertia.NoScale = false
+vhcl.turb2.mass.Value = 0.0000e+00
+vhcl.turb2.mass.Unit = 'kg'
+vhcl.turb2.mass.NoScale = false
+vhcl.turb2.mass.Description = 'Rotor mass'
+vhcl.turb2.diameter.Value = 0.0000e+00
+vhcl.turb2.diameter.Unit = 'm'
+vhcl.turb2.diameter.NoScale = false
+vhcl.turb2.diameter.Description = 'Diameter of the rotor'
+vhcl.turb2.axisUnitVec.Value = [-1;0;0]
+vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
+vhcl.turb2.axisUnitVec.NoScale = false
+vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
+vhcl.turb2.attachPtVec.Value = [0;0.142333333333333;0]
+vhcl.turb2.attachPtVec.Unit = 'm'
+vhcl.turb2.attachPtVec.NoScale = false
+vhcl.turb2.attachPtVec.Description = 'Vector from CoM to turbine center, in body frame'
+vhcl.turb2.powerCoeff.Value = 4.0000e-01
+vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.powerCoeff.NoScale = false
+vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
+vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
+vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
+vhcl.turb2.axialInductionFactor.NoScale = false
+vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
+vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
+vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
+vhcl.turb2.tipSpeepRatio.NoScale = false
+vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
+vhcl.turb2.dragCoef.Value = 9.0000e-01
+vhcl.turb2.dragCoef.Unit is unitless or has no unit specified
+vhcl.turb2.dragCoef.NoScale = false
+vhcl.turb2.dragCoef.Description = 'Coefficient used in drag calculation'
+vhcl.turb2.staticArea.Value = 8.0000e-04
+vhcl.turb2.staticArea.Unit = 'm^2'
+vhcl.turb2.staticArea.NoScale = false
+vhcl.turb2.staticArea.Description = 'Projected area of the static turbine'
+vhcl.turb2.staticCD.Value = 1.5000e+00
+vhcl.turb2.staticCD.Unit is unitless or has no unit specified
+vhcl.turb2.staticCD.NoScale = false
+vhcl.turb2.staticCD.Description = 'Turbine drag coefficient while static'
+vhcl.turb2.dragCoeff.Value = 6.0000e-01
+vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
+vhcl.turb2.dragCoeff.NoScale = false
+vhcl.turb2.momentArm.Value = [0;0.142333333333333;0]
+vhcl.turb2.momentArm.Unit = 'm'
+vhcl.turb2.momentArm.NoScale = false
+vhcl.turb2.momentOfInertia.Value = 0.0000e+00
+vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
+vhcl.turb2.momentOfInertia.NoScale = false

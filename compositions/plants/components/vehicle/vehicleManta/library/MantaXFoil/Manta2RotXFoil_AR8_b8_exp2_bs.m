@@ -11,7 +11,7 @@ vhcl = OCT.vehicleM;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
-vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
+vhcl.setBuoyFactor(0.98,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR8_b8_exp2','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia

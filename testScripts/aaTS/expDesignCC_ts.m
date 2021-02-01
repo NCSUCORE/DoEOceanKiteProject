@@ -7,9 +7,9 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
-thrArray = 4;%[200:400:600];%:25:600];
-altitudeArray = 2;%[100:200:300];%150:25:300];
-flwSpdArray = .15;%[0.1:0.1:.5]; 
+thrArray = 3;%[200:400:600];%:25:600];
+altitudeArray = 1.5;%[100:200:300];%150:25:300];
+flwSpdArray = .25%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -18,15 +18,15 @@ for j = 1:length(thrArray)
 thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
 flwSpd = flwSpdArray(k) ;                                              %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
-h = 20*pi/180;  w = 90*pi/180;                              %   rad - Path width/height
+h = 25*pi/180;  w = 100*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
 fpath = fullfile(fileparts(which('OCTProject.prj')),...
     'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
 el = asin(altitude/thrLength);
-loadComponent('pathFollowWithAoACtrl');                 %   Path-following controller with AoA control
-FLIGHTCONTROLLER = 'pathFollowingControllerMantaBandLin';
+loadComponent('pathFollowCtrlExp');                 %   Path-following controller with AoA control
+FLIGHTCONTROLLER = 'pathFollowingControllerExp';
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
 loadComponent('MantaGndStn');                               %   Ground station
 loadComponent('winchManta');                                %   Winches
@@ -41,29 +41,19 @@ loadComponent('ConstXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
     ENVIRONMENT = 'environmentManta2RotBandLin';                   %   Two turbines
 %%  Set basis parameters for high level controller
-loadComponent('varAltitudeBooth');                             %   High level controller
+loadComponent('varAltitudeBooth');         %   High level controller
+% PATHGEOMETRY = 'lemOfBoothInv'
 hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
 
 hiLvlCtrl.ELctrl.setValue(1,'');
 hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
 hiLvlCtrl.ThrCtrl.setValue(1,'');
 
-hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
 %%  Vehicle Properties
-vhcl.setICsOnPath(.0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,4*flwSpd*norm([1;0;0]))
-% vhcl.setVolume(2.77e-3,'m^3');
-% Ixx = 2.804660e-2;
-% Iyy = 6.2e-2;
-% Izz = 8.4e-2;
-% Ixy = -0.057487e-2;
-% Ixz = -0.025665e-2;
-% Iyz = 0.001656e-2;
-% 
-% vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
-%                     -Ixy Iyy -Iyz;...
-%                     -Ixz -Iyz Izz],'kg*m^2')
-% vhcl.setMa6x6_LE(vhcl.Ma6x6_LE.Value*1,'')
+vhcl.setICsOnPath(.0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
+
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
@@ -74,64 +64,112 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
 thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
-thr.tether1.setDiameter(eval(sprintf('AR8b8.length600.tensionValues%d.outerDiam',Tmax)),'m');
+thr.tether1.setDiameter(.0076,'m');
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-fltCtrl.rudderGain.setValue(0,'')
-fltCtrl.elevatorReelInDef.setValue(3,'deg');
-fltCtrl.AoACtrl.setValue(1,'');              fltCtrl.RCtrl.setValue(1,'');
-fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(6,'deg');
-fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
-fltCtrl.rollCtrl.kp.setValue(400,'(deg)/(rad)');    fltCtrl.rollCtrl.kd.setValue(4,'(deg)/(rad/s)');
-fltCtrl.rollCtrl.ki.setValue(00,'(deg)/(rad*s)');
-fltCtrl.firstSpoolLap.setValue(400,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
-fltCtrl.elevCtrlMax.upperLimit.setValue(30,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'');
-fltCtrl.setPerpErrorVal(.05,'rad')
-fltCtrl.rudderGain.setValue(.2,'')
-vhcl.hStab.setIncidence(0,'deg');
-vhcl.setBuoyFactor(.98,'')
-fltCtrl.scale(0.1,1);
-fltCtrl.tanRoll.kp.setValue(0.25,'(rad)/(rad)')
-fltCtrl.tanRoll.kd.setValue(0.25,'(rad)/(rad/s)')
-fltCtrl.maxBank.lowerLimit.setValue(-.78,'')
-fltCtrl.maxBank.upperLimit.setValue(.78,'')
-thr.tether1.dragEnable.setValue(1,'')
-% fltCtrl.setFcnName(PATHGEOMETRY,'');
-% fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-% fltCtrl.rudderGain.setValue(0,'')
 % fltCtrl.elevatorReelInDef.setValue(3,'deg');
-% fltCtrl.AoACtrl.setValue(1,'');                     fltCtrl.RCtrl.setValue(0,'');
-% fltCtrl.AoASP.setValue(1,'');                       fltCtrl.AoAConst.setValue(6*pi/180,'deg');
-% fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');     fltCtrl.Tmax.setValue(Tmax,'kN');
-% fltCtrl.elevCtrl.kp.setValue(0,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(0,'(deg)/(rad*s)');
-% fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');    fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
-% fltCtrl.firstSpoolLap.setValue(100,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
-% fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(0,'');
-% vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
+% fltCtrl.elevCtrl.kp.setValue(0.0,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(0,'(deg)/(rad*s)');
+% fltCtrl.firstSpoolLap.setValue(400,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+% fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(-4,'');
+% fltCtrl.setPerpErrorVal(.125,'rad')
+% fltCtrl.rudderGain.setValue(0,'')
+vhcl.hStab.setIncidence(-3,'deg');
+% vhcl.setBuoyFactor(.98,'')
 % fltCtrl.scale(0.1,1);
-% env.scale(0.1,1);
-vhcl.rBridle_LE.setValue([0.05;0; -0.2],'m')     
+% fltCtrl.rollMoment.kp.setValue(40,'(N*m)/(rad)')
+% fltCtrl.rollMoment.kd.setValue(20,'(N*m)/(rad/s)')
+% fltCtrl.tanRoll.kp.setValue(.33,'(rad)/(rad)')
+% fltCtrl.rollMoment.kp.setValue(45,'(N*m)/(rad)')
+% fltCtrl.rollMoment.ki.setValue(10,'(N*m)/(rad*s)')
+% fltCtrl.rollMoment.kd.setValue(8,'(N*m)/(rad/s)')
+% fltCtrl.rollMoment.tau.setValue(.01,'s')
+% fltCtrl.maxBank.lowerLimit.setValue(-.8,'')
+% fltCtrl.maxBank.upperLimit.setValue(.8,'')
+% fltCtrl.yawMoment.tau.setValue(.01,'s')
+% fltCtrl.yawMoment.kd.setValue(0.0,'(N*m)/(rad/s)')
+thr.tether1.dragEnable.setValue(1,'')
+vhcl.rBridle_LE.setValue([0.029;0; -0.07],'m')    
+% vhcl.rCM_LE.setValue(vhcl.rCM_LE.Value+[-0.005;0;0],'m')  
+vhcl.vStab.setSpanUnitVec([0;0;-1],'');
+vhcl.vStab.setIncAlphaUnitVecSurf([0;-1;0],'');
+
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(200,'s');  dynamicCalc = '';
-    set_param('OCTModel','SimulationMode','accelerator');
+    simParams = SIM.simParams;  simParams.setDuration(500,'s');  dynamicCalc = '';
+%     open_system('OCTModel')
+%     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
     %%
    
 % 
 %     Pow = tsc.rotPowerSummary(vhcl,env);
-    [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+    [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-2);  ran = [Idx1:Idx2]';
     AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-    airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
+    airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)));
     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
     ten = max([max(airNode(ran)) max(gndNode(ran))]);
-    fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
-plot(tsc.closestPathVariable.Data(ran),tsc.ctrlSurfDeflCmd.Data(ran,1))
+    fprintf('Average AoA = %.3f;\t Max Tension = %.1f N\n\n',AoA,ten);
+    path = squeeze(tsc.closestPathVariable.Data(ran));
+    figure; 
+    subplot(3,1,1); grid on; hold on;
+    plot(path,squeeze(tsc.MFluidBdy.Data(1,1,ran)))
+    plot(path,squeeze(tsc.MThrNetBdy.Data(1,1,ran)))
+      subplot(3,1,2); grid on; hold on;
+    plot(path,squeeze(tsc.MFluidBdy.Data(2,1,ran)))
+    plot(path,squeeze(tsc.MThrNetBdy.Data(2,1,ran)))
+    subplot(3,1,3); grid on; hold on;
+    plot(path,squeeze(tsc.MFluidBdy.Data(3,1,ran)))
+    plot(path,squeeze(tsc.MThrNetBdy.Data(3,1,ran)))
+
+    xlabel('Path Position (s)')
+    ylabel('Z Moment [Nm]')
+    legend('Fluid','Tether')
+    
+    
+    figure; 
+    subplot(3,1,1); grid on; hold on; sgtitle('Ctrl Deflection [deg]')
+    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)))
+    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,2)))
+    ylabel('Aileron'); legend('Port','Starboard')
+      subplot(3,1,2); grid on; hold on;
+    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,3)))
+    ylabel('Elevator')
+    subplot(3,1,3); grid on; hold on;
+    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,4)))
+
+    xlabel('Path Position (s)')
+    ylabel('Rudder')
+    
+        figure; 
+    grid on; hold on;
+    plot(path,squeeze(tsc.tanRoll.Data(ran)))
+    plot(path,squeeze(tsc.tanRollDes.Data(ran)),'k')
+    legend('Tan Roll','Tan Roll SP')
+   
+        figure; 
+    subplot(3,1,1); grid on; hold on; ylabel('X-Moment [Nm]');
+    plot(path,squeeze(tsc.MNetBdy.Data(1,1,ran)))
+    plot(path,squeeze(tsc.MFluidBdy.Data(1,1,ran)))
+    plot(path,squeeze(tsc.desiredMoment.Data(ran,1)))
+    
+    subplot(3,1,2); grid on; hold on; ylabel('Y-Moment [Nm]');
+    plot(path,squeeze(tsc.MNetBdy.Data(2,1,ran)))
+    plot(path,squeeze(tsc.MFluidBdy.Data(2,1,ran)))
+    plot(path,squeeze(tsc.desiredMoment.Data(ran,2)))
+    
+    subplot(3,1,3); grid on; hold on; ylabel('Z-Moment [Nm]');
+    plot(path,squeeze(tsc.MNetBdy.Data(3,1,ran)))
+    plot(path,squeeze(tsc.MFluidBdy.Data(3,1,ran)))
+    plot(path,squeeze(tsc.desiredMoment.Data(ran,3)))
+
+    xlabel('Path Position (s)')
+
+    legend('Net','Fluid','Desired')
+    
 dt = datestr(now,'mm-dd_HH-MM');
 %%
 
@@ -165,11 +203,11 @@ end
 %         'SaveGif',1==1,'GifFile','expCross.gif',...
 %         'timestep',0.05);
 % else
-figure; plot(tsc.tanRoll);
-figure; plot(tsc.tanRollDes);
-    vhcl.animateSim(tsc,.5,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
+    vhcl.animateSim(tsc,.25,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-        'PathPosition',true,'SaveGif',1==0,'GifFile','awwSnap.gif');
+        'PathPosition',true,'SaveGif',1==1,'GifFile','awwSnap.gif',...
+        'TracerDuration',200);
+
 % end
 %%  Compare to old results
 % Res = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\Results\Manta 2.0\Rotor\Turb1.0_V-0.300_EL-30.0_D-0.70_AoA-13.98_10-22_12-29.mat');

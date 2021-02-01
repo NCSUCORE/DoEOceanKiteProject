@@ -7,8 +7,8 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;              %   Flag to save results
 runLin = 0;                %   Flag to run linearization
-thrArray = 100;%[200:400:600];%:25:600];
-altitudeArray = 20;%[100:200:300];%150:25:300];
+thrArray = 400;%[200:400:600];%:25:600];
+altitudeArray = 200;%[100:200:300];%150:25:300];
 flwSpdArray = 0.5;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
@@ -127,6 +127,7 @@ if runLin == 1
     tic
     linsys = linearize('OCTModel',io,op,options);
     toc
+    %%tic
     %%
         snaps = 0.025:0.025:0.975;
 
@@ -141,10 +142,10 @@ if runLin == 1
                 [mag{i,ii,iii},phase,wout] = bode(linsys(i,3*(ii-1)+[1:3],iii,:),{0.001*2*pi 2*pi});
                 magdb{i,ii,iii} = 20*log10(mag{i,ii,iii}.*flwSpd);
                 wHz{i,ii,iii} = wout/(2*pi);
-                a(i,ii,iii) = find(mag{i,ii,iii}(:,2,:)==max(mag{i,ii,iii}(:,2,:)));
-                magPertMat(i,ii,iii) = mag{i,ii,iii}(:,2,a(i,ii,iii))
-                wHzPertMat(i,ii,iii) = wHz{i,ii,iii}(a(i,ii,iii));
-                toc
+%                 a(i,ii,iii) = find(mag{i,ii,iii}(:,2,:)==max(mag{i,ii,iii}(:,2,:)));
+%                 magPertMat(i,ii,iii) = mag{i,ii,iii}(:,2,a(i,ii,iii))
+%                 wHzPertMat(i,ii,iii) = wHz{i,ii,iii}(a(i,ii,iii));
+%                 toc
             end
         end
     end
@@ -152,6 +153,7 @@ if runLin == 1
     for i = 1:length(a)
 %     wHzPert(i) = wHzPertMat(r(i),c(i),:)
     end
+    %%
     
     h = figure; hold on;
     clear serNameCell
@@ -198,7 +200,7 @@ ylabel('Real Component of Slowest Pole [$s^{-1}$]')
 % ylabel('Time Constants of Slowest Pole [s]')
 
 %%
-    
+    snaps = 0.025:0.025:0.975;
     titleCellIn = {'Ground X Component','Ground Y Component','Ground Z Component'};
     titleCellOut = {' Side Slip Error [rad]',' Central Angle Error [rad]',...
         ' Tangent Roll Error [rad]',' Velocity Angle Error [rad]'};
