@@ -4,12 +4,12 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(2*60*60,'s');
+simParams.setDuration(1*60*60,'s');
 dynamicCalc = '';
-flowSpeed = 14;
-thrLength = 1500;
+flowSpeed = 6.2;
+thrLength = 800;
 % rad - Mean elevation angle
-initElevation = 5*pi/180;
+initElevation = 30*pi/180;
 % rad - Path width/height
 w = 28*pi/180;
 h = w/5;
@@ -26,8 +26,8 @@ h = w/5;
 % 4 - choose path following controller. 1 for usual, 2 for guidance law one
 % 5 - save simulation results. Figures and such.
 
-simScenario = [2 1 1 1 false];
-thrDrag = true;
+simScenario = [2 2 2 1 false];
+thrDrag = false;
 
 %% Load components
 % Spooling controller
@@ -72,9 +72,9 @@ switch simScenario(2)
         hiLvlCtrl.rateLimit         = 1*0.15;
         hiLvlCtrl.kfgpTimeStep      = 10/60;
         hiLvlCtrl.mpckfgpTimeStep   = 3;
-        predictionHorz  = 6;
-        exploitationConstant = 1;
-        explorationConstant  = 2^6;
+        predictionHorz              = 6;
+        exploitationConstant        = 1;
+        explorationConstant         = 2^6;
     case 3 % both mean elevation angle and path shape optimization
         loadComponent('gpkfPathOptWithRGPAirborne');
         % hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
@@ -86,9 +86,9 @@ switch simScenario(2)
         hiLvlCtrl.rateLimit         = 1*0.15;
         hiLvlCtrl.kfgpTimeStep      = 10/60;
         hiLvlCtrl.mpckfgpTimeStep   = 3;
-        predictionHorz  = 6;
-        exploitationConstant = 1;
-        explorationConstant  = 2^6;
+        predictionHorz              = 6;
+        exploitationConstant        = 1;
+        explorationConstant         = 2^6;
 end
 
 % select Environment based on sim scenario

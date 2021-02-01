@@ -235,8 +235,63 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             eTraj = eTraj(:);
             val = eTraj - [e0;eTraj(1:end-1)];
         end
+        
+        % calculate aquistion function for altitude optimization
+        function [val,varargout] = calcAquisitionFunctionForAltOpt(obj,...
+                altitude,F_t,sigF_t,hiLvlCtrl)
+            % calculate prediction mean and posterior variance
+            [flowPred,flowVar] = obj.calcPredMeanAndPostVar(altitude,F_t,sigF_t);
+            flowPred = obj.meanFunction(altitude,obj.meanFnProps(1),...
+                obj.meanFnProps(2)) - flowPred;
+            % power, altitude, and flow values
+            pVals = hiLvlCtrl.pMaxVals;
+            zVals = hiLvlCtrl.altVals;
+            fVals = hiLvlCtrl.flowVals;
+            estPower = interp2(fVals,zVals,pVals,flowPred,altitude);
+            
+            % exploitation incentive
+            jExploit = obj.exploitationConstant*estPower;
+            % exploration incentive
+            jExplore = 0*obj.explorationConstant*flowVar.^(3/2);
+            % sum
+            val = jExploit + jExplore;
+            % other outputs
+            varargout{1} = jExploit;
+            varargout{2} = jExplore;
+        end
+        
+        % calculate MPC objective function for altitude optimization
+        function [val,varargout] = ...
+                calcMpcObjectiveFnForAltOpt(obj,F_t,sigF_t,skp1_kp1,...
+                ckp1_kp1,altTraj,hiLvlCtrl)
+            % local variables
+            predHorz = obj.predictionHorizon;
+            aqVal    = nan(1,predHorz);
+            jExploit = nan(1,predHorz);
+            jExplore = nan(1,predHorz);
+            % calculate acquisition function at each mean elevation angle
+            for ii = 1:predHorz
+                % calculate acquistion function
+                [aqVal(ii),jExploit(ii),jExplore(ii)] = ...
+                    obj.calcAquisitionFunctionForAltOpt(altTraj(ii),F_t,sigF_t,...
+                    hiLvlCtrl);
+                % update kalman states
+                sk_k = skp1_kp1;
+                ck_k = ckp1_kp1;
+                % perform kalman state estimation
+                [F_t,sigF_t,skp1_kp1,ckp1_kp1] = ...
+                    obj.calcKalmanStateEstimates(sk_k,ck_k,altTraj(ii),[]);
+                
+            end
+            % mpc objective function val
+            val = sum(aqVal);
+            varargout{1} = jExploit;
+            varargout{2} = jExplore;
+            
+        end
     end
     
+       
     %% brute force trajectory optizimation
     methods
         % optimize mean elevation angle trajectory using brute force
