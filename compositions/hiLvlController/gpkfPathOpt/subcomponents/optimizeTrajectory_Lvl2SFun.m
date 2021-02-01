@@ -67,7 +67,7 @@ block.NumDialogPrms     = 2;
 %
 %  [-1, 0]               : Inherited sample time
 %  [-2, 0]               : Variable sample time
-block.SampleTimes = [0 0];
+block.SampleTimes = [-1 0];
 
 % Specify the block simStateCompliance. The allowed values are:
 %    'UnknownSimState', < The default setting; warn and assume DefaultSimState
@@ -118,7 +118,8 @@ predictionHorz = mpckfgp.predictionHorizon;
 mpckfgp.tetherLength = thrLength;
 
 
-ySamp =  mpckfgp.meanFunction(xSamp,mpckfgp.meanFnProps) - flowVal;
+ySamp =  mpckfgp.meanFunction(xSamp,mpckfgp.meanFnProps(1),...
+    mpckfgp.meanFnProps(2)) - flowVal;
 
 % mpc kalman estimate
 [F_t_mpc,sigF_t_mpc,skp1_kp1_mpc,ckp1_kp1_mpc] = ...

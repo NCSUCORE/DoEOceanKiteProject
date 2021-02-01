@@ -1,4 +1,4 @@
-fltCtrl.tanRoll.kp.Value = 1.5000e+00
+fltCtrl.tanRoll.kp.Value = 1.0000e+00
 fltCtrl.tanRoll.kp.Unit = '(rad)/(rad)'
 fltCtrl.tanRoll.kp.NoScale = false
 fltCtrl.tanRoll.kp.Description = 'Proportional gain'
@@ -10,7 +10,7 @@ fltCtrl.tanRoll.kd.Value = 0.0000e+00
 fltCtrl.tanRoll.kd.Unit = '(rad)/(rad/s)'
 fltCtrl.tanRoll.kd.NoScale = false
 fltCtrl.tanRoll.kd.Description = 'Derivative gain'
-fltCtrl.tanRoll.tau.Value = 1.0000e-03
+fltCtrl.tanRoll.tau.Value = 0.0000e+00
 fltCtrl.tanRoll.tau.Unit = 's'
 fltCtrl.tanRoll.tau.NoScale = false
 fltCtrl.tanRoll.tau.Description = 'Time Constant'

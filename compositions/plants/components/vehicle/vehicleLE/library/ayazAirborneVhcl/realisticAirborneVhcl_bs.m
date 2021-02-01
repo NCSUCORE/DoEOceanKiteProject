@@ -114,12 +114,12 @@ opAoA = 11;
 
 idealTurbCD = 0.5*totalCD(aIdx);
 idealArea   = idealTurbCD*vhcl.fluidRefArea.Value;
-ideaTurbDia = 1*sqrt(4*idealArea/pi);
+idealTurbDia = 1*sqrt(4*idealArea/pi);
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
 vhcl.turb1.setMass(0.001,'kg');
-vhcl.turb1.setDiameter(ideaTurbDia/2,'m');
+vhcl.turb1.setDiameter(idealTurbDia/2,'m');
 vhcl.turb1.setAxisUnitVec([1;0;0],'');
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/3,'m');
 vhcl.turb1.setPowerCoeff(.4,'');
@@ -130,7 +130,7 @@ vhcl.turb1.setStaticArea(0.08,'m^2');
 vhcl.turb1.setStaticCD(1.5,'');
 % starboard rotor
 vhcl.turb2.setMass(0.001,'kg');
-vhcl.turb2.setDiameter(ideaTurbDia/2,'m');
+vhcl.turb2.setDiameter(idealTurbDia/2,'m');
 vhcl.turb2.setAxisUnitVec([1;0;0],'');
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/3,'m');
 vhcl.turb2.setPowerCoeff(.4,'');
@@ -140,6 +140,7 @@ vhcl.turb2.setTipSpeedRatio(6,'');
 vhcl.turb2.setStaticArea(0.08,'m^2');
 vhcl.turb2.setStaticCD(1.5,'');
 
+vhcl.scale(1,1);
 
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS"]);

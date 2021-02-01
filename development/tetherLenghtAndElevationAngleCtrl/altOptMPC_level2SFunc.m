@@ -29,7 +29,7 @@ setup(block);
 function setup(block)
 
 % Register number of ports
-block.NumInputPorts  = 3;
+block.NumInputPorts  = 5;
 block.NumOutputPorts = 3;
 
 % Setup port properties to be inherited or dynamic
@@ -37,11 +37,14 @@ block.NumOutputPorts = 3;
 % block.SetPreCompOutPortInfoToDynamic;
 
 % Override input port properties
-Amat = block.DialogPrm(1).Data;
-nPred = block.DialogPrm(11).Data;
-nS   = length(Amat);
-IPsizes = [1 nS nS^2];
-OPsizes = nPred*[1 1 1];
+Amat      = block.DialogPrm(1).Data;
+zDiscrete = block.DialogPrm(9).Data;
+nPred     = block.DialogPrm(11).Data;
+% input and outputs sizes
+nKalman   = length(Amat);
+nxM       = numel(zDiscrete);
+IPsizes   = [1 nKalman nKalman^2 nxM nxM^2];
+OPsizes   = nPred*[1 1 1];
 
 for ii = 1:numel(IPsizes)
 block.InputPort(ii).Dimensions        = IPsizes(ii);
@@ -126,7 +129,8 @@ tradeOffCons    = block.DialogPrm(15).Data;
 zCurrent     = block.InputPort(1).Data;
 sKp1_Kp1     = block.InputPort(2).Data;
 sigKp1_Kp1   = reshape(block.InputPort(3).Data,length(sKp1_Kp1),[]);
-
+fHat         = block.InputPort(4).Data;
+sigF         = reshape(block.InputPort(5).Data,length(zDiscrete),[]);
 % use fmincon to solve for best trajectory subject to constraints
 % set solver and display options
 options = optimoptions('fmincon','algorithm','sqp','display','off');
@@ -159,13 +163,13 @@ fsBoundsB(2,1) = min(-(zCurrent - duMax),-zMin);
 b = [fsBoundsB;bstep];
 
 % optimize
-optTraj = fmincon(@(u) altOptCostFn(sKp1_Kp1,sigKp1_Kp1,u,...
+optTraj = fmincon(@(u) altOptCostFn(sKp1_Kp1,sigKp1_Kp1,fHat,sigF,u,...
    zDiscrete,Amat,Qmat,Hmat,Rmat,Ks,Ks12,covAmp,altScale,tradeOffCons,...
-   powerLawParams),zCurrent*ones(nPred,1),[],[],[],[],lb,ub,[],options);
+   powerLawParams),zCurrent*ones(nPred,1),A,b,[],[],lb,ub,[],options);
 
 % get other values
 [~,jExploit,jExplore] = ...
-    altOptCostFn(sKp1_Kp1,sigKp1_Kp1,optTraj,...
+    altOptCostFn(sKp1_Kp1,sigKp1_Kp1,fHat,sigF,optTraj,...
    zDiscrete,Amat,Qmat,Hmat,Rmat,Ks,Ks12,covAmp,altScale,tradeOffCons,...
    powerLawParams);
 

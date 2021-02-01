@@ -1,6 +1,6 @@
 function [predMean,postVar] = altitudeOptMPC_FlowPredictions(sKp1_Kp1,...
-    sigKp1_Kp1,zTraj,zDiscrete,Amat,Qmat,Hmat,R,Ks,Ks12,covAmp,altScale,...
-    powerLawParams)
+    sigKp1_Kp1,fHat,sigF,zTraj,zDiscrete,Amat,Qmat,Hmat,R,Ks,Ks12,...
+    covAmp,altScale,powerLawParams)
 
 % prediction horizon
 nP = numel(zTraj);
@@ -9,15 +9,30 @@ nZ = numel(zDiscrete);
 % preallocate output matrices
 predMean = zeros(nP,1);
 postVar  = zeros(nP,1);
+% initialize some recursive variables
+skp1_kp1 = sKp1_Kp1;
+ckp1_kp1 = sigKp1_Kp1;
+fk       = fHat;
+sigFk    = sigF;
+
 % loop over z trajectory
 for ii = 1:nP
-    if ii == 1
-        sk_k = sKp1_Kp1;
-        ck_k = sigKp1_Kp1;
-    else
-        sk_k = skp1_kp1;
-        ck_k = ckp1_kp1;
-    end
+    % calculate relevant spatial covariaces
+    kxM_xstar = spatialCovariance(zDiscrete(:),zTraj(ii),...
+        covAmp,altScale);
+    kxstar_xstar = spatialCovariance(zTraj(ii),zTraj(ii),...
+        covAmp,altScale);
+    
+    % regression over zTraj
+    kInvK = kxM_xstar'/Ks;
+    mX    = powerLaw(zTraj(ii),powerLawParams(1),powerLawParams(2));
+    predMean(ii) = mX - kInvK*fk;
+    postVar(ii) = kxstar_xstar - diag(kInvK*(eye(nZ)*kxM_xstar -...
+        sigFk*kInvK'));
+    
+    % update kalman states and error covariance
+    sk_k = skp1_kp1;
+    ck_k = ckp1_kp1;
     % kalman state update
     skp1_k = Amat*sk_k;
     % error covaraince update
@@ -35,19 +50,6 @@ for ii = 1:nP
     % regression over measurement space
     fk = Ks12*Hmat*skp1_kp1;
     sigFk = Ks12*Hmat*ckp1_kp1*Hmat'*Ks12;
-    
-    % calculate relevant spatial covariaces
-    kxM_xstar = spatialCovariance(zDiscrete(:),zTraj(ii),...
-        covAmp,altScale);
-    kxstar_xstar = spatialCovariance(zTraj(ii),zTraj(ii),...
-        covAmp,altScale);
-    
-    % regression over zTraj
-    kInvK = kxM_xstar'/Ks;
-    mX    = powerLaw(zTraj(ii),powerLawParams(1),powerLawParams(2));
-    predMean(ii) = mX - kInvK*fk;
-    postVar(ii) = kxstar_xstar - diag(kInvK*(eye(nZ)*kxM_xstar -...
-        sigFk*kInvK'));
     
 end
 
