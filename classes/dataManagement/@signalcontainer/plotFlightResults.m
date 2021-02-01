@@ -5,6 +5,7 @@ addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'Vapp',false,@islogical);
+addOptional(p,'AoASP',false,@islogical);
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'dragChar',false,@islogical);
@@ -15,6 +16,7 @@ data = squeeze(obj.currentPathVar.Data);
 time = obj.lapNumS.Time;
 lap = p.Results.plot1Lap;
 con = p.Results.plotS;
+AoA = p.Results.AoASP;
 turb = isprop(obj,'turbPow');
 %%  Determine Single Lap Indices
 if lap
@@ -149,19 +151,23 @@ end
 subplot(R,C,4); hold on; grid on
 if lap
     if con
-        plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-');  
-        plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-'); 
-        ylabel('Angle [deg]');  legend('Setpoint','AoA');
-        if p.Results.plotBeta
-            plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta')
+        if p.Results.AoASP
+        plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');  
         end
+        plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA'); 
+        ylabel('Angle [deg]');
+        if p.Results.plotBeta
+            plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');  
+        end
+        legend;
     else
-        plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-');  
-        plot(time(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-'); 
-        ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
+        plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');  
+        plot(time(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA'); 
+        ylabel('Angle [deg]');  xlim(lim);
         if p.Results.plotBeta
-            plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
+            plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');   xlim(lim)
         end
+        legend; 
     end
 else
     plot(time,obj.AoASP.Data*180/pi,'r-');  
