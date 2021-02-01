@@ -4,7 +4,7 @@ function constantBasisParameters_bc()
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'basisParams';
 try
-elems(1).Dimensions = [numel(evalin('base',get_param(gcb,'basisParams'))) 1];
+elems(1).Dimensions = 5;
 catch
 end
 elems(1).DimensionsMode = 'Fixed';

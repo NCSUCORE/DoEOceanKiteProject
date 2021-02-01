@@ -432,6 +432,7 @@ classdef Manta < handle
                     end
                 end
             end
+            vFlows(vFlows > 1) = NaN;
             % Set up meshgrid for plots
             [x,y,z] = meshgrid(...
                 obj.xGridPoints.Value*1e-3,...
@@ -446,6 +447,9 @@ classdef Manta < handle
             ylabel('y [km]')
             zlabel('z [m]')
             h.colorbar.Label.String = 'Flow Speed [m/s]';
+            caxis([0 0.5]);
+            h.color.limits = [0 0.5];
+            set(gca,'View',[-7 30])
 %             h.title = title(['Average Flow Speeds $-$ ',sprintf('Month %d',obj.month.Value)]);
         end
         function h = velField(obj,varargin)

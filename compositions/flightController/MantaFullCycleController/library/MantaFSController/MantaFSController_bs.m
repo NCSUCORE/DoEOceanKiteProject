@@ -3,6 +3,10 @@ SPOOLINGCONTROLLER = 'universalSpoolingController';
 
 fltCtrl = CTR.MantaFullCycle;
 
+%%  State Machine parameters 
+fltCtrl.nonXCurrentSpoolInGain.setValue(1.5,'');
+fltCtrl.maxTL.setValue(400,'m');
+
 %%  Controller parameters
 fltCtrl.SplRoll.kp.setValue(6,'(deg)/(rad)');
 fltCtrl.SplRoll.ki.setValue(0.003,'(deg)/(rad*s)');
@@ -37,27 +41,27 @@ fltCtrl.SplRollSPkpInt.setValue(.5263,'');
 fltCtrl.SplRollSPkiSlope.setValue(7.895e-5,'');
 fltCtrl.SplRollSPkiInt.setValue(.008421,'');
 
-fltCtrl.PthRoll.kp.setValue(213400,'(N*m)/(rad)');
+fltCtrl.PthRoll.kp.setValue(3e5,'(N*m)/(rad)');
 fltCtrl.PthRoll.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.PthRoll.kd.setValue(0,'(N*m)/(rad/s)');
+fltCtrl.PthRoll.kd.setValue(2.2e5,'(N*m)/(rad/s)');
 fltCtrl.PthRoll.tau.setValue(1e-3,'s');
 
-fltCtrl.PthYaw.kp.setValue(2345.8,'(N*m)/(rad)');
+fltCtrl.PthYaw.kp.setValue(0,'(N*m)/(rad)');
 fltCtrl.PthYaw.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.PthYaw.kd.setValue(0,'(N*m)/(rad/s)');
 fltCtrl.PthYaw.tau.setValue(1e-3,'s');
 
-fltCtrl.PthPitch.kp.setValue(200,'(deg)/(rad)');
-fltCtrl.PthPitch.ki.setValue(1,'(deg)/(rad*s)');
-fltCtrl.PthPitch.kd.setValue(0,'(deg)/(rad/s)');
+fltCtrl.PthPitch.kp.setValue(00,'(N*m)/(rad)');
+fltCtrl.PthPitch.ki.setValue(0,'(N*m)/(rad*s)');
+fltCtrl.PthPitch.kd.setValue(0,'(N*m)/(rad/s)');
 fltCtrl.PthPitch.tau.setValue(0.001,'s');
 
-fltCtrl.PthTanRoll.kp.setValue(0.08,'(rad)/(rad)');
+fltCtrl.PthTanRoll.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.PthTanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.PthTanRoll.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.PthTanRoll.tau.setValue(1e-3,'s');
 
-fltCtrl.PthAlpha.kp.setValue(1,'(kN)/(rad)');
+fltCtrl.PthAlpha.kp.setValue(.3,'(kN)/(rad)');
 fltCtrl.PthAlpha.ki.setValue(0,'(kN)/(rad*s)');
 fltCtrl.PthAlpha.kd.setValue(0,'(kN)/(rad/s)');
 fltCtrl.PthAlpha.tau.setValue(1e-3,'s');
@@ -72,8 +76,13 @@ fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 fltCtrl.SplPitchMax.upperLimit.setValue(45,'')
 fltCtrl.SplPitchMax.lowerLimit.setValue(-45,'')
 
+fltCtrl.PitchMomMax.upperLimit.setValue(1e3,'')
+fltCtrl.PitchMomMax.lowerLimit.setValue(-1e3,'')
+
 fltCtrl.thrLengthMax.upperLimit.setValue(600,'')
 fltCtrl.thrLengthMax.lowerLimit.setValue(0,'')
+
+fltCtrl.Tmax.setValue(30,'kN');
 
 %%  Path Following 
 fltCtrl.searchSize.setValue(.5,'');
@@ -91,10 +100,14 @@ fltCtrl.LaRelevationSP.setValue(45,'deg');
 fltCtrl.LaRelevationSPErr.setValue(1,'deg');
 
 %%  Setpoint method ctrl 
+fltCtrl.AoACtrl.setValue(1,'');                   
+fltCtrl.AoASP.setValue(0,'');                   
+fltCtrl.AoAConst.setValue(14*pi/180,'deg');
 fltCtrl.pitchCtrl.setValue(2,'');
 fltCtrl.pitchConst.setValue(0,'deg');
 fltCtrl.yawCtrl.setValue(1,'');
 fltCtrl.yawConst.setValue(0,'deg');
+fltCtrl.optAltitude.setValue(200,'m');
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

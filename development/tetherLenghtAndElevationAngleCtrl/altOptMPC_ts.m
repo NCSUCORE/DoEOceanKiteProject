@@ -2,9 +2,9 @@ clear
 close all
 
 %% KFGP parameters
-kfgptimeStep  = 10;
+kfgptimeStep  = 30;
 timeScale     = 22*60;
-altScale      = 220;
+altScale      = 270;
 covAmp        = 5.1;
 xMeasure      = 100:100:1000;
 noiseVar      = 0.01;
@@ -16,11 +16,11 @@ a = kfgp_init(xMeasure,covAmp,...
 
 %% MPC parameters
 mpctimeStep = 2*60;
-nPred       = 6;
+nPred       = 10;
 maxAlt      = max(xMeasure);
 minAlt      = min(xMeasure);
-zStepMax    = 1000;
-tradeOffCon = 20;
+zStepMax    = 200;
+tradeOffCon = 15;
 
 %% balloon parameters
 rhoEnv  = 1.225;
@@ -29,16 +29,16 @@ rBall   = 10;
 cdBall  = 0.5;
 kThr    = 5e6;
 iniAlt  = 600;
-altKp   = 1;
-altKi   = 0.1;
+altKp   = 0.1;
+altKi   = 0*altKp/10;
 altTau  = 1;
 
 %% synthetic flow
 finalTime      = 9*60*60;
 sampleTimeStep = 1*60;
-stdDev         = 2;
+stdDev         = 0.5;
 minFlowValue   = 5;
-rngSeed        = 8;
+rngSeed        = 30;
 
 %% simulate
 simTime = 3*60*60;
@@ -47,7 +47,7 @@ tsc = sim('altOptMPC_th');
 
 %% plot
 % extract values from time series container
-plotTimeStep = sampleTimeStep/10;
+plotTimeStep = sampleTimeStep/5;
 for ii = 1:numel(tsc.logsout.getElementNames)
     outVal.(tsc.logsout.getElementNames{ii}) =  resample(...
         tsc.logsout.getElement(tsc.logsout.getElementNames{ii}).Values,...

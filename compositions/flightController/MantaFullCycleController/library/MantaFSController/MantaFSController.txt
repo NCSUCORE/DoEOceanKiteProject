@@ -1,3 +1,11 @@
+fltCtrl.nonXCurrentSpoolInGain.Value = 1.5000e+00
+fltCtrl.nonXCurrentSpoolInGain.Unit is unitless or has no unit specified
+fltCtrl.nonXCurrentSpoolInGain.NoScale = true
+fltCtrl.nonXCurrentSpoolInGain.Description = 'Gain used in switching logic'
+fltCtrl.maxTL.Value = 4.0000e+02
+fltCtrl.maxTL.Unit = 'm'
+fltCtrl.maxTL.NoScale = false
+fltCtrl.maxTL.Description = 'Maximum tether length'
 fltCtrl.SplRoll.kp.Value = 6.0000e+00
 fltCtrl.SplRoll.kp.Unit = '(deg)/(rad)'
 fltCtrl.SplRoll.kp.NoScale = false
@@ -126,7 +134,7 @@ fltCtrl.SplPID.tau.Value = 1.0000e+00
 fltCtrl.SplPID.tau.Unit = 's'
 fltCtrl.SplPID.tau.NoScale = false
 fltCtrl.SplPID.tau.Description = 'Time Constant'
-fltCtrl.PthRoll.kp.Value = 2.1340e+05
+fltCtrl.PthRoll.kp.Value = 3.0000e+05
 fltCtrl.PthRoll.kp.Unit = '(N*m)/(rad)'
 fltCtrl.PthRoll.kp.NoScale = false
 fltCtrl.PthRoll.kp.Description = 'Proportional gain'
@@ -134,7 +142,7 @@ fltCtrl.PthRoll.ki.Value = 0.0000e+00
 fltCtrl.PthRoll.ki.Unit = '(N*m)/(rad*s)'
 fltCtrl.PthRoll.ki.NoScale = false
 fltCtrl.PthRoll.ki.Description = 'Integral gain'
-fltCtrl.PthRoll.kd.Value = 0.0000e+00
+fltCtrl.PthRoll.kd.Value = 2.2000e+05
 fltCtrl.PthRoll.kd.Unit = '(N*m)/(rad/s)'
 fltCtrl.PthRoll.kd.NoScale = false
 fltCtrl.PthRoll.kd.Description = 'Derivative gain'
@@ -142,7 +150,7 @@ fltCtrl.PthRoll.tau.Value = 1.0000e-03
 fltCtrl.PthRoll.tau.Unit = 's'
 fltCtrl.PthRoll.tau.NoScale = false
 fltCtrl.PthRoll.tau.Description = 'Time Constant'
-fltCtrl.PthYaw.kp.Value = 2.3458e+03
+fltCtrl.PthYaw.kp.Value = 0.0000e+00
 fltCtrl.PthYaw.kp.Unit = '(N*m)/(rad)'
 fltCtrl.PthYaw.kp.NoScale = false
 fltCtrl.PthYaw.kp.Description = 'Proportional gain'
@@ -158,23 +166,23 @@ fltCtrl.PthYaw.tau.Value = 1.0000e-03
 fltCtrl.PthYaw.tau.Unit = 's'
 fltCtrl.PthYaw.tau.NoScale = false
 fltCtrl.PthYaw.tau.Description = 'Time Constant'
-fltCtrl.PthPitch.kp.Value = 2.0000e+02
-fltCtrl.PthPitch.kp.Unit = '(deg)/(rad)'
+fltCtrl.PthPitch.kp.Value = 0.0000e+00
+fltCtrl.PthPitch.kp.Unit = '(N*m)/(rad)'
 fltCtrl.PthPitch.kp.NoScale = false
 fltCtrl.PthPitch.kp.Description = 'Proportional gain'
-fltCtrl.PthPitch.ki.Value = 1.0000e+00
-fltCtrl.PthPitch.ki.Unit = '(deg)/(rad*s)'
+fltCtrl.PthPitch.ki.Value = 0.0000e+00
+fltCtrl.PthPitch.ki.Unit = '(N*m)/(rad*s)'
 fltCtrl.PthPitch.ki.NoScale = false
 fltCtrl.PthPitch.ki.Description = 'Integral gain'
 fltCtrl.PthPitch.kd.Value = 0.0000e+00
-fltCtrl.PthPitch.kd.Unit = '(deg)/(rad/s)'
+fltCtrl.PthPitch.kd.Unit = '(N*m)/(rad/s)'
 fltCtrl.PthPitch.kd.NoScale = false
 fltCtrl.PthPitch.kd.Description = 'Derivative gain'
 fltCtrl.PthPitch.tau.Value = 1.0000e-03
 fltCtrl.PthPitch.tau.Unit = 's'
 fltCtrl.PthPitch.tau.NoScale = false
 fltCtrl.PthPitch.tau.Description = 'Time Constant'
-fltCtrl.PthTanRoll.kp.Value = 8.0000e-02
+fltCtrl.PthTanRoll.kp.Value = 2.0000e-01
 fltCtrl.PthTanRoll.kp.Unit = '(rad)/(rad)'
 fltCtrl.PthTanRoll.kp.NoScale = false
 fltCtrl.PthTanRoll.kp.Description = 'Proportional gain'
@@ -190,7 +198,7 @@ fltCtrl.PthTanRoll.tau.Value = 1.0000e-03
 fltCtrl.PthTanRoll.tau.Unit = 's'
 fltCtrl.PthTanRoll.tau.NoScale = false
 fltCtrl.PthTanRoll.tau.Description = 'Time Constant'
-fltCtrl.PthAlpha.kp.Value = 1.0000e+00
+fltCtrl.PthAlpha.kp.Value = 3.0000e-01
 fltCtrl.PthAlpha.kp.Unit = '(kN)/(rad)'
 fltCtrl.PthAlpha.kp.NoScale = false
 fltCtrl.PthAlpha.kp.Description = 'Proportional gain'
@@ -224,12 +232,22 @@ fltCtrl.SplPitchMax.upperLimit.NoScale = false
 fltCtrl.SplPitchMax.lowerLimit.Value = -4.5000e+01
 fltCtrl.SplPitchMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.SplPitchMax.lowerLimit.NoScale = false
+fltCtrl.PitchMomMax.upperLimit.Value = 1.0000e+03
+fltCtrl.PitchMomMax.upperLimit.Unit is unitless or has no unit specified
+fltCtrl.PitchMomMax.upperLimit.NoScale = false
+fltCtrl.PitchMomMax.lowerLimit.Value = -1.0000e+03
+fltCtrl.PitchMomMax.lowerLimit.Unit is unitless or has no unit specified
+fltCtrl.PitchMomMax.lowerLimit.NoScale = false
 fltCtrl.thrLengthMax.upperLimit.Value = 6.0000e+02
 fltCtrl.thrLengthMax.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.thrLengthMax.upperLimit.NoScale = false
 fltCtrl.thrLengthMax.lowerLimit.Value = 0.0000e+00
 fltCtrl.thrLengthMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.thrLengthMax.lowerLimit.NoScale = false
+fltCtrl.Tmax.Value = 3.0000e+01
+fltCtrl.Tmax.Unit = 'kN'
+fltCtrl.Tmax.NoScale = false
+fltCtrl.Tmax.Description = 'Maximum tether tension limit'
 fltCtrl.searchSize.Value = 5.0000e-01
 fltCtrl.searchSize.Unit is unitless or has no unit specified
 fltCtrl.searchSize.NoScale = true
@@ -280,6 +298,9 @@ fltCtrl.LaRelevationSPErr.Value = 1.0000e+00
 fltCtrl.LaRelevationSPErr.Unit = 'deg'
 fltCtrl.LaRelevationSPErr.NoScale = false
 fltCtrl.LaRelevationSPErr.Description = 'Reel-in elevation angle setpoint error where spooling is allowed'
+fltCtrl.elevatorConst.Unit = 'deg'
+fltCtrl.elevatorConst.NoScale = false
+fltCtrl.elevatorConst.Description = 'Deflection angle of elevator used during spool in'
 fltCtrl.pitchCtrl.Value = 2.0000e+00
 fltCtrl.pitchCtrl.Unit is unitless or has no unit specified
 fltCtrl.pitchCtrl.NoScale = false
@@ -296,3 +317,19 @@ fltCtrl.yawConst.Value = 0.0000e+00
 fltCtrl.yawConst.Unit = 'deg'
 fltCtrl.yawConst.NoScale = false
 fltCtrl.yawConst.Description = 'Constant yaw setpoint'
+fltCtrl.AoACtrl.Value = 1.0000e+00
+fltCtrl.AoACtrl.Unit is unitless or has no unit specified
+fltCtrl.AoACtrl.NoScale = false
+fltCtrl.AoACtrl.Description = 'Flag to decide AoA control. 0 = none; 1 = On'
+fltCtrl.AoASP.Value = 0.0000e+00
+fltCtrl.AoASP.Unit is unitless or has no unit specified
+fltCtrl.AoASP.NoScale = false
+fltCtrl.AoASP.Description = 'Flag to decide AoA control. 0 = constant; 1 = time-lookup'
+fltCtrl.AoAConst.Value = 2.4435e-01
+fltCtrl.AoAConst.Unit = 'deg'
+fltCtrl.AoAConst.NoScale = false
+fltCtrl.AoAConst.Description = 'Constant AoA setpoint'
+fltCtrl.optAltitude.Value = 2.0000e+02
+fltCtrl.optAltitude.Unit = 'm'
+fltCtrl.optAltitude.NoScale = false
+fltCtrl.optAltitude.Description = 'Mean operating altitude'

@@ -28,6 +28,9 @@ hiLvlCtrl.maxStepChange        = duMax;
 hiLvlCtrl.minVal               = minElev;
 hiLvlCtrl.maxVal               = maxElev;
 hiLvlCtrl.initVals             = (180/pi)*asin(zTraj.Data(1,1,1)/mpckfgp.tetherLength);
+hiLvlCtrl.basisParams.Value    = ones(5,1);
+hiLvlCtrl.rateLimit    = 5;
+
 
 sss = sim('gpkfPathOpt_th');
 

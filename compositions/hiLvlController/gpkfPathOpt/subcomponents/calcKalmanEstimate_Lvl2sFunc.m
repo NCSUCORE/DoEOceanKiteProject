@@ -68,7 +68,7 @@ block.NumDialogPrms     = 1;
 %
 %  [-1, 0]               : Inherited sample time
 %  [-2, 0]               : Variable sample time
-block.SampleTimes = [0 0];
+block.SampleTimes = [-1 0];
 
 % Specify the block simStateCompliance. The allowed values are:
 %    'UnknownSimState', < The default setting; warn and assume DefaultSimState
@@ -110,7 +110,8 @@ ck_k    = reshape(block.InputPort(2).Data,length(sk_k),[]);
 xSamp   = block.InputPort(3).Data;
 flowVal = block.InputPort(4).Data;
 
-ySamp =  kfgp.meanFunction(xSamp,kfgp.meanFnProps) - flowVal;
+ySamp =  kfgp.meanFunction(xSamp,kfgp.meanFnProps(1),kfgp.meanFnProps(2))...
+    - flowVal;
 
 [F_t,sigF_t,skp1_kp1,ckp1_kp1] = ...
     kfgp.calcKalmanStateEstimates(sk_k,ck_k,xSamp,ySamp);

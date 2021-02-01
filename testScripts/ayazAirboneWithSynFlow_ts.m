@@ -4,10 +4,10 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(0.05*60*60,'s');
+simParams.setDuration(1*60*60,'s');
 dynamicCalc = '';
-flowSpeed = 10;
-thrLength = 1000;
+flowSpeed = 6.2;
+thrLength = 800;
 % rad - Mean elevation angle
 initElevation = 30*pi/180;
 % rad - Path width/height
@@ -26,7 +26,8 @@ h = w/5;
 % 4 - choose path following controller. 1 for usual, 2 for guidance law one
 % 5 - save simulation results. Figures and such.
 
-simScenario = [2 1 1 1 false];
+simScenario = [2 2 2 1 false];
+thrDrag = false;
 
 %% Load components
 % Spooling controller
@@ -59,6 +60,7 @@ switch simScenario(2)
         loadComponent('constBoothLem');
         hiLvlCtrl.basisParams.setValue([a,b,initElevation,...
             0*pi/180,thrLength],'[rad rad rad rad m]');
+        hiLvlCtrl.maxNumberOfSimulatedLaps.setValue(5,'');
     case 2 % only the high level control of mean elevation angle
         loadComponent('gpkfPathOptAirborne');
         % hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
@@ -70,9 +72,9 @@ switch simScenario(2)
         hiLvlCtrl.rateLimit         = 1*0.15;
         hiLvlCtrl.kfgpTimeStep      = 10/60;
         hiLvlCtrl.mpckfgpTimeStep   = 3;
-        predictionHorz  = 6;
-        exploitationConstant = 1;
-        explorationConstant  = 2^6;
+        predictionHorz              = 6;
+        exploitationConstant        = 1;
+        explorationConstant         = 2^6;
     case 3 % both mean elevation angle and path shape optimization
         loadComponent('gpkfPathOptWithRGPAirborne');
         % hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
@@ -84,9 +86,9 @@ switch simScenario(2)
         hiLvlCtrl.rateLimit         = 1*0.15;
         hiLvlCtrl.kfgpTimeStep      = 10/60;
         hiLvlCtrl.mpckfgpTimeStep   = 3;
-        predictionHorz  = 6;
-        exploitationConstant = 1;
-        explorationConstant  = 2^6;
+        predictionHorz              = 6;
+        exploitationConstant        = 1;
+        explorationConstant         = 2^6;
 end
 
 % select Environment based on sim scenario
@@ -133,6 +135,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 
+thr.tether1.dragEnable.setValue(thrDrag,'');
 %% Winches IC's and dependant properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,[flowSpeed;0;0]);
 
@@ -187,8 +190,7 @@ end
 switch simScenario(2)
     case 1
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
-            'Turbine power','Kite speed by flow speed cubed',...
-            'Lap stats'};
+            'Turbine power','Kite speed by flow speed cubed'};
     case 2
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed',...
@@ -196,7 +198,7 @@ switch simScenario(2)
 end
 
 for ii = 1:length(plotFigs)
-    plotSomething(tscOld,plotFigs{ii},1);
+    plotSomethingAyaz(tscOld,plotFigs{ii},'s');
 end
 
 if ismember(simScenario(2),[2,3])
