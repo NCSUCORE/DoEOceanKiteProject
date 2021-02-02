@@ -1,7 +1,7 @@
 clear
 clc
 
-HILVLCONTROLLER = 'gpkfPathOpt';
+HILVLCONTROLLER = 'gpkfAltitudeOpt';
 PATHGEOMETRY = 'lemOfBooth';
 
 loadComponent('ayazAirborneSynFlow');
@@ -31,7 +31,7 @@ mpckfgpTimeStep = 3;
 predictionHorz  = 6;
 % MPC constants
 exploitationConstant = 1;
-explorationConstant  = 2^6;
+explorationConstant  = 0;
 
 
 hiLvlCtrl.spatialCovFn         = spatialCovFn;
@@ -54,11 +54,12 @@ hiLvlCtrl.explorationConstant  = explorationConstant;
 
 %% extract values from power map
 load('PowStudyAir.mat');
+R.Pmax(isnan(R.Pmax)) = -100;
 hiLvlCtrl.pMaxVals  = R.Pmax;
 [A,F] = meshgrid(altitude,flwSpd);
 hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
-
+hiLvlCtrl.powFunc   = griddedInterpolant(F,A,R.Pmax);
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
 
