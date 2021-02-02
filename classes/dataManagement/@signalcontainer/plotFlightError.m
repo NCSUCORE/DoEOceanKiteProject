@@ -19,7 +19,7 @@ turb = isprop(obj,'turbPow');
 %%  Determine Single Lap Indices
 if lap
     [Idx1,Idx2] = getLapIdxs(obj,p.Results.lapNum);
-    ran = Idx1:Idx2-1
+    ran = Idx1:Idx2-1;
     lim = [time(Idx1) time(Idx2)];
 else
     lim = [time(1) time(end)];
@@ -36,13 +36,12 @@ subplot(R,C,1);
 hold on; grid on
 if lap
         plot(data(ran),tanRollErr(ran)*180/pi,'b-');  ylabel('Tangent Roll Error [deg]');  
-        ylim([-4,4])
 end  
 %%  Plot Power Output
 subplot(R,C,2);
 hold on; grid on
 if lap
-        plot(data(ran),cenAngleErr(ran)*180/pi,'b-');  ylabel('Central Angle Error [deg]');  
+        plot(data(ran),cenAngleErr(ran)*180/pi,'b-');  ylabel('Central Angle Error [deg]');
 end  
 
 %%  Plot Power Output
@@ -57,7 +56,6 @@ subplot(R,C,4);
 hold on; grid on
 if lap
         plot(data(ran),velAngErr(ran)*180/pi,'b-');  ylabel('Velocity Angle Error [deg]');  
-        ylim([-2.5,2.5])
 end  
 xlabel('Path Position')
 %%  Plot Tether Tension
