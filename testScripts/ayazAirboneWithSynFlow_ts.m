@@ -189,11 +189,18 @@ switch simScenario(2)
         
     case 3
         
+        omniFunc = @(z,hl,zD,fD) hl.powerFunc(interp1(zD,fD,z),z);
+        options = optimoptions('fmincon','algorithm','sqp');
+
+        
         [synFlow,synAlt] = env.water.generateData();
         omniAlts = unique(hiLvlCtrl.altVals);
         
         tSamp = 0:hiLvlCtrl.mpckfgpTimeStep:simParams.duration.Value/60;
         
+        fValOmni = nan(1,length(tSamp));
+        omniAlt = nan(1,length(tSamp));
+        runAvgOmni = nan(1,length(tSamp));
         for ii = 1:length(tSamp)
             % measure flow at xSamp(ii) at tSamp(ii)
             fData = resample(synFlow,tSamp(ii)*60).Data;
@@ -202,14 +209,29 @@ switch simScenario(2)
             % omniscient, uncontrained controller
             omnifData = interp1(hData,fData,omniAlts);
             
-            for jj = 1:numel(omnifData)
-            omniPow(jj) = interp2(hiLvlCtrl.altVals,hiLvlCtrl.flowVals,...
-                hiLvlCtrl.pMaxVals,omniAlts(jj),omnifData(jj));
-            
+            if ii == 1
+                [~,omniIdx] = min((hiLvlCtrl.initVals-omniAlts).^2);
+                fValOmni(ii) = interp2(hiLvlCtrl.altVals,hiLvlCtrl.flowVals,...
+                    hiLvlCtrl.pMaxVals,omniAlts(omniIdx),omnifData(omniIdx));
+                omniAlt(ii) = omniAlts(omniIdx);
+                
+            else
+                for jj = 1:numel(omnifData)
+                    omniPow(jj) = interp2(hiLvlCtrl.altVals,hiLvlCtrl.flowVals,...
+                        hiLvlCtrl.pMaxVals,omniAlts(jj),omnifData(jj));
+
+                end
+                [fValOmniT(ii),omniIdx] = max(omniPow);
+                [omniAlt(ii),fValOmni(ii)] = fmincon(...
+                    @(z)-omniFunc(z,hiLvlCtrl,hData,...
+                    fData),omniAlt(ii-1),[],[],[],[],...
+                    max(omniAlt(ii-1)-hiLvlCtrl.maxStepChange,hiLvlCtrl.minVal),...
+                    min(omniAlt(ii-1)+hiLvlCtrl.maxStepChange,hiLvlCtrl.maxVal),...
+                    [],options);
+                omniAltT(ii) = omniAlts(omniIdx);
+                
             end
-            [fValOmni(ii),omniIdx] = max(omniPow);
             runAvgOmni(ii) = mean(fValOmni(1:ii));
-            omniAlt(ii) = omniAlts(omniIdx);
         end
         
     otherwise
@@ -244,7 +266,7 @@ switch simScenario(2)
         fh = findobj('Type','Figure','Name','Altitude SP');
         figure(fh);
         plot(tSamp*60,omniAlt,'r-');
-        legend('Simulation','Omniscient offline');
+        legend('Simulation','Omniscient offline','location','best');
 end
 
 allAxes = findall(0,'type','axes');
