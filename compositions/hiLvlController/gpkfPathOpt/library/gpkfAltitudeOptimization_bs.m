@@ -53,13 +53,35 @@ hiLvlCtrl.exploitationConstant = exploitationConstant;
 hiLvlCtrl.explorationConstant  = explorationConstant;
 
 %% extract values from power map
-load('PowStudyAir.mat');
-R.Pmax(isnan(R.Pmax)) = -100;
-hiLvlCtrl.pMaxVals  = R.Pmax;
+load('PowStudyAir_V6-22.mat');
 [A,F] = meshgrid(altitude,flwSpd);
+ppmax = R.Pmax(:);
+zz    = A(:);
+ff    = F(:);
+locateNan = isnan(ppmax);
+ppmax(locateNan) = [];
+ff(locateNan) = [];
+zz(locateNan) = [];
+
+hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly23');
+hiLvlCtrl.pMaxVals  = R.Pmax;
+hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = -100;
 hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
-hiLvlCtrl.powFunc   = griddedInterpolant(F,A,R.Pmax);
+hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
+    hiLvlCtrl.altVals,hiLvlCtrl.pMaxVals);
+
+
+%% plot
+testZ = linspace(altitude(1),altitude(end),50);
+testF = linspace(flwSpd(1),flwSpd(end)*1.5,30);
+[ZZ,FF] = meshgrid(testZ,testF);PP = hiLvlCtrl.powerFunc(FF(:),ZZ(:));
+
+scatter3(ff,zz,ppmax)
+hold on
+surf(F,A,R.Pmax)
+scatter3(FF(:),ZZ(:),PP(:))
+
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
 

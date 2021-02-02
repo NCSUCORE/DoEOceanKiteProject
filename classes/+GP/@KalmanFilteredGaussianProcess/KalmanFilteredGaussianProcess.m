@@ -247,10 +247,12 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             pVals = hiLvlCtrl.pMaxVals;
             zVals = hiLvlCtrl.altVals;
             fVals = hiLvlCtrl.flowVals;
-            
-            estPowerT = interp2(zVals,fVals,pVals,altitude,flowPred);
-            estPower = hiLvlCtrl.powFunc(flowPred,altitude);
-           
+            % estimate power output
+            estPower1 = interp2(zVals,fVals,pVals,altitude,flowPred);
+            estPower2 = hiLvlCtrl.powerGrid(flowPred,altitude);
+            estPower3 = hiLvlCtrl.powerFunc(flowPred,altitude);
+            % pick one
+            estPower = estPower2;
             % exploitation incentive
             jExploit = obj.exploitationConstant*estPower;
             % exploration incentive
