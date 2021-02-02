@@ -7,9 +7,9 @@ simParams = SIM.simParams;
 simParams.setDuration(1*60*60,'s');
 dynamicCalc = '';
 flowSpeed = 6.2;
-thrLength = 800;
+thrLength = 1000;
 % rad - Mean elevation angle
-initElevation = 30*pi/180;
+initElev = 30*pi/180;
 % rad - Path width/height
 w = 28*pi/180;
 h = w/5;
@@ -20,13 +20,15 @@ h = w/5;
 %% simulation scenarioes
 % column description
 % 1 - choose vehicle design. 1 for unrealistic, 2 for realistic
-% 2 - choose high level controller. 1 for constantLem, 2 for upper
-% level MPC GPKF only, 3 for for complete GPKF controller
+% 2 - choose high level controller.
+%       1 for constantLem,
+%       2 for elevation angle optimization,
+%       3 for for GPKF altitude optimization controller
 % 3 - choose environment. 1 for constant flow, 2 for varying flow.
 % 4 - choose path following controller. 1 for usual, 2 for guidance law one
 % 5 - save simulation results. Figures and such.
 
-simScenario = [2 2 2 1 false];
+simScenario = [2 3 2 1 false];
 thrDrag = false;
 
 %% Load components
@@ -58,37 +60,36 @@ end
 switch simScenario(2)
     case 1 % constant path shape
         loadComponent('constBoothLem');
-        hiLvlCtrl.basisParams.setValue([a,b,initElevation,...
+        hiLvlCtrl.basisParams.setValue([a,b,initElev,...
             0*pi/180,thrLength],'[rad rad rad rad m]');
         hiLvlCtrl.maxNumberOfSimulatedLaps.setValue(5,'');
     case 2 % only the high level control of mean elevation angle
         loadComponent('gpkfPathOptAirborne');
         % hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
-        hiLvlCtrl.maxStepChange        = 6;
-        hiLvlCtrl.minVal               = 5;
-        hiLvlCtrl.maxVal               = 50;
-        hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
-        hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
-        hiLvlCtrl.rateLimit         = 1*0.15;
-        hiLvlCtrl.kfgpTimeStep      = 10/60;
-        hiLvlCtrl.mpckfgpTimeStep   = 3;
-        predictionHorz              = 6;
-        exploitationConstant        = 1;
-        explorationConstant         = 2^6;
-    case 3 % both mean elevation angle and path shape optimization
-        loadComponent('gpkfPathOptWithRGPAirborne');
-        % hiLvlCtrl.maxStepChange        = (800/thrLength)*180/pi;
-        hiLvlCtrl.maxStepChange        = 6;
-        hiLvlCtrl.minVal               = 5;
-        hiLvlCtrl.maxVal               = 50;
-        hiLvlCtrl.basisParams.Value = [a,b,initElevation,0*pi/180,thrLength]';
-        hiLvlCtrl.initVals          = hiLvlCtrl.basisParams.Value(3)*180/pi;
-        hiLvlCtrl.rateLimit         = 1*0.15;
-        hiLvlCtrl.kfgpTimeStep      = 10/60;
-        hiLvlCtrl.mpckfgpTimeStep   = 3;
-        predictionHorz              = 6;
-        exploitationConstant        = 1;
-        explorationConstant         = 2^6;
+        hiLvlCtrl.maxStepChange         = 6;
+        hiLvlCtrl.minVal                = 5;
+        hiLvlCtrl.maxVal                = 50;
+        hiLvlCtrl.basisParams.Value     = [a,b,initElev,0*pi/180,thrLength]';
+        hiLvlCtrl.initVals              = hiLvlCtrl.basisParams.Value(3)*180/pi;
+        hiLvlCtrl.rateLimit             = 1*0.15;
+        hiLvlCtrl.kfgpTimeStep          = 10/60;
+        hiLvlCtrl.mpckfgpTimeStep       = 3;
+        hiLvlCtrl.predictionHorz        = 6;
+        hiLvlCtrl.exploitationConstant  = 1;
+        hiLvlCtrl.explorationConstant   = 2^6;
+    case 3 % altitude optimization
+        loadComponent('gpkfAltitudeOptimization');
+        hiLvlCtrl.maxStepChange         = 200;
+        hiLvlCtrl.minVal                = 100;
+        hiLvlCtrl.maxVal                = 1000;
+        hiLvlCtrl.basisParams.Value     = [a,b,initElev,0*pi/180,thrLength]';
+        hiLvlCtrl.initVals              = thrLength*sin(initElev);
+        hiLvlCtrl.rateLimit             = 1*0.15;
+        hiLvlCtrl.kfgpTimeStep          = 10/60;
+        hiLvlCtrl.mpckfgpTimeStep       = 1;
+        hiLvlCtrl.predictionHorz        = 6;
+        hiLvlCtrl.exploitationConstant  = 1;
+        hiLvlCtrl.explorationConstant   = 0;
 end
 
 % select Environment based on sim scenario
@@ -102,7 +103,7 @@ end
 
 % plot radius of curvature
 cIn = maneuverabilityAdvanced(vhcl);
-cIn.meanElevationInRadians = initElevation;
+cIn.meanElevationInRadians = initElev;
 cIn.pathWidth = w*180/pi;
 cIn.pathHeight = h*180/pi;
 cIn.tetherLength = thrLength;
@@ -155,35 +156,64 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg');
 
 %% Run Simulation
 % keyboard
-simWithMonitor('OCTModel');
+simWithMonitor('OCTModel','minRate',0);
 
 tscOld = signalcontainer(logsout);
 statOld = computeSimLapStats(tscOld);
 trackOld = statOld{2,3}/cIn.pathLength;
 
 %% omniscient
-if ismember(simScenario(2),[2,3])
-    [synFlow,synAlt] = env.water.generateData();
-    elevsAtAllAlts = min(max(hiLvlCtrl.minVal,...
-        asin(env.water.zGridPoints.Value/thrLength)*180/pi),hiLvlCtrl.maxVal);
-    omniAlts = thrLength*sind(elevsAtAllAlts);
-    cosElevAtAllAlts = cosd(elevsAtAllAlts);
+switch simScenario(2)
     
-    tSamp = 0:hiLvlCtrl.mpckfgpTimeStep:simParams.duration.Value/60;
-    
-    for ii = 1:length(tSamp)
-        % measure flow at xSamp(ii) at tSamp(ii)
-        fData = resample(synFlow,tSamp(ii)*60).Data;
-        hData = resample(synAlt,tSamp(ii)*60).Data;
-        % calculate pseudo power
-        % omniscient, uncontrained controller
-        omnifData = interp1(hData,fData,omniAlts);
-        [fValOmni(ii),omniIdx] = max(cosineFlowCubed(omnifData,...
-            cosElevAtAllAlts));
-        runAvgOmni(ii) = mean(fValOmni(1:ii));
-        omniElev(ii) = elevsAtAllAlts(omniIdx);
-    end
-    
+    case 2
+        [synFlow,synAlt] = env.water.generateData();
+        elevsAtAllAlts = min(max(hiLvlCtrl.minVal,...
+            asin(env.water.zGridPoints.Value/thrLength)*180/pi),hiLvlCtrl.maxVal);
+        omniAlts = thrLength*sind(elevsAtAllAlts);
+        cosElevAtAllAlts = cosd(elevsAtAllAlts);
+        
+        tSamp = 0:hiLvlCtrl.mpckfgpTimeStep:simParams.duration.Value/60;
+        
+        for ii = 1:length(tSamp)
+            % measure flow at xSamp(ii) at tSamp(ii)
+            fData = resample(synFlow,tSamp(ii)*60).Data;
+            hData = resample(synAlt,tSamp(ii)*60).Data;
+            % calculate pseudo power
+            % omniscient, uncontrained controller
+            omnifData = interp1(hData,fData,omniAlts);
+            [fValOmni(ii),omniIdx] = max(cosineFlowCubed(omnifData,...
+                cosElevAtAllAlts));
+            runAvgOmni(ii) = mean(fValOmni(1:ii));
+            omniElev(ii) = elevsAtAllAlts(omniIdx);
+        end
+        
+    case 3
+        
+        [synFlow,synAlt] = env.water.generateData();
+        omniAlts = unique(hiLvlCtrl.altVals);
+        
+        tSamp = 0:hiLvlCtrl.mpckfgpTimeStep:simParams.duration.Value/60;
+        
+        for ii = 1:length(tSamp)
+            % measure flow at xSamp(ii) at tSamp(ii)
+            fData = resample(synFlow,tSamp(ii)*60).Data;
+            hData = resample(synAlt,tSamp(ii)*60).Data;
+            % calculate pseudo power
+            % omniscient, uncontrained controller
+            omnifData = interp1(hData,fData,omniAlts);
+            
+            for jj = 1:numel(omnifData)
+            omniPow(jj) = interp2(hiLvlCtrl.altVals,hiLvlCtrl.flowVals,...
+                hiLvlCtrl.pMaxVals,omniAlts(jj),omnifData(jj));
+            
+            end
+            [fValOmni(ii),omniIdx] = max(omniPow);
+            runAvgOmni(ii) = mean(fValOmni(1:ii));
+            omniAlt(ii) = omniAlts(omniIdx);
+        end
+        
+    otherwise
+        
 end
 
 %% plot figures
@@ -195,17 +225,26 @@ switch simScenario(2)
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed',...
             'Flow at kite','Path elevation angle'};
+    case 3
+        plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
+            'Turbine power','Kite speed by flow speed cubed','Altitude SP'};
 end
 
 for ii = 1:length(plotFigs)
     plotSomethingAyaz(tscOld,plotFigs{ii},'s');
 end
 
-if ismember(simScenario(2),[2,3])
-    fh = findobj('Type','Figure','Name','Path elevation angle');
-    figure(fh);
-    plot(tSamp*60,omniElev,'r-');
-    legend('Simulation','Omniscient offline');
+switch simScenario(2)
+    case 2
+        fh = findobj('Type','Figure','Name','Path elevation angle');
+        figure(fh);
+        plot(tSamp*60,omniElev,'r-');
+        legend('Simulation','Omniscient offline');
+    case 3
+        fh = findobj('Type','Figure','Name','Altitude SP');
+        figure(fh);
+        plot(tSamp*60,omniAlt,'r-');
+        legend('Simulation','Omniscient offline');
 end
 
 allAxes = findall(0,'type','axes');
@@ -247,7 +286,7 @@ if simScenario(5)
     writetable(baseTable,'manualMode.xlsx',"WriteMode","append");
 end
 
-    writetable(baseTable,'simDat.txt',"WriteMode","append");
+writetable(baseTable,'simDat.txt',"WriteMode","append");
 
 %% animations
 GG.saveGifs = true;
@@ -273,6 +312,12 @@ switch simScenario(2)
             'GifFile','AirGif.gif','plotFlowShearProfile',false,...
             'plotTracer',GG.plotTracer);
     case 2
+        vhcl.animateSim(tscOld,GG.timeStep,...
+            'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',GG.plotTarget,...
+            'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
+            'GifFile','AirGifGPKF.gif','plotFlowShearProfile',true,...
+            'plotTracer',GG.plotTracer);
+    case 3
         vhcl.animateSim(tscOld,GG.timeStep,...
             'PathFunc',fltCtrl.fcnName.Value,'pause',false,'plotTarget',GG.plotTarget,...
             'SaveGif',GG.saveGifs,'GifTimeStep',GG.gifTimeStep,...
