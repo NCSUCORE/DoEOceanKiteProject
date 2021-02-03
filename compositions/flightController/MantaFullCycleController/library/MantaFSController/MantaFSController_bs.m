@@ -41,31 +41,6 @@ fltCtrl.SplRollSPkpInt.setValue(.5263,'');
 fltCtrl.SplRollSPkiSlope.setValue(7.895e-5,'');
 fltCtrl.SplRollSPkiInt.setValue(.008421,'');
 
-fltCtrl.PthRoll.kp.setValue(3e5,'(N*m)/(rad)');
-fltCtrl.PthRoll.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.PthRoll.kd.setValue(2.2e5,'(N*m)/(rad/s)');
-fltCtrl.PthRoll.tau.setValue(1e-3,'s');
-
-fltCtrl.PthYaw.kp.setValue(0,'(N*m)/(rad)');
-fltCtrl.PthYaw.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.PthYaw.kd.setValue(0,'(N*m)/(rad/s)');
-fltCtrl.PthYaw.tau.setValue(1e-3,'s');
-
-fltCtrl.PthPitch.kp.setValue(00,'(N*m)/(rad)');
-fltCtrl.PthPitch.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.PthPitch.kd.setValue(0,'(N*m)/(rad/s)');
-fltCtrl.PthPitch.tau.setValue(0.001,'s');
-
-fltCtrl.PthTanRoll.kp.setValue(0.2,'(rad)/(rad)');
-fltCtrl.PthTanRoll.ki.setValue(0,'(rad)/(rad*s)');
-fltCtrl.PthTanRoll.kd.setValue(0,'(rad)/(rad/s)');
-fltCtrl.PthTanRoll.tau.setValue(1e-3,'s');
-
-fltCtrl.PthAlpha.kp.setValue(.3,'(kN)/(rad)');
-fltCtrl.PthAlpha.ki.setValue(0,'(kN)/(rad*s)');
-fltCtrl.PthAlpha.kd.setValue(0,'(kN)/(rad/s)');
-fltCtrl.PthAlpha.tau.setValue(1e-3,'s');
-
 %%  Saturations
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
