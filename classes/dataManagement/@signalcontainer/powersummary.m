@@ -32,6 +32,6 @@ if isprop(obj,'winchPower')
     if nargout == 1
         varargout{1}=powAvg;
     end
-    save('pow.mat','powAvg')
+%     save('pow.mat','powAvg')
 end
 end
