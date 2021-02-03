@@ -37,7 +37,7 @@ env.water.tFinData.NoScale = false
 env.water.meanFnProps.Value = [3.77 0.14]
 env.water.meanFnProps.Unit is unitless or has no unit specified
 env.water.meanFnProps.NoScale = false
-env.water.minFlowVal.Value = 4.0000e+00
+env.water.minFlowVal.Value = 6.0000e+00
 env.water.minFlowVal.Unit = 'm/s'
 env.water.minFlowVal.NoScale = false
 env.water.gravAccel.Value = 9.8100e+00

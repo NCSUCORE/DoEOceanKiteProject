@@ -35,6 +35,9 @@ switch figName
     case 'Path elevation angle'
         data = tsc.basisParams.Data(:,3)*180/pi;
         yLab = '[deg]';
+    case 'Altitude SP'
+        data = tsc.altitudeSP.Data(:);
+        yLab = '[m]';
         
 end
 
