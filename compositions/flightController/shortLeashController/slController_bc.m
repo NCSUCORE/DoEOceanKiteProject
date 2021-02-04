@@ -46,6 +46,15 @@ elems(5).SampleTime = -1;
 elems(5).Complexity = 'real';
 elems(5).Unit = '';
 
+elems(6) = Simulink.BusElement;
+elems(6).Name = 'lapNumS';
+elems(6).Dimensions = 1;
+elems(6).DimensionsMode = 'Fixed';
+elems(6).DataType = 'double';
+elems(6).SampleTime = -1;
+elems(6).Complexity = 'real';
+elems(6).Unit = '';
+
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the combined moment motor controller';
