@@ -110,27 +110,37 @@ for kk = 1:numel(flwSpd)
                 simWithMonitor('OCTModel')
                 %%  Log Results
                 tsc = signalcontainer(logsout);
-                dt = datestr(now,'mm-dd_HH-MM');
-                [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-                [CLtot,CDtot] = tsc.getCLCD(vhcl);
-                [Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
-                Turb = squeeze(sqrt(sum(tsc.FTurbBdy.Data.^2,1)));
-                Pow = tsc.rotPowerSummaryAir(vhcl,env);
-                Pavg(kk,ii,jj) = Pow.avg;    Pnet(kk,ii,jj) = Pow.avg;
-                V = squeeze(sqrt(sum(tsc.velCMvec.Data.^2,1)));
-                Vavg(kk,ii,jj) = mean(V(ran));
-                AoA(kk,ii,jj) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-                airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
-                gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-                ten(kk,ii,jj) = max([max(airNode(ran)) max(gndNode(ran))]);
-                fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN;\t Elevation = %.1f\n',AoA(kk,ii,jj),ten(kk,ii,jj),el*180/pi);
-                CL(kk,ii,jj) = mean(CLtot(ran));   CD(kk,ii,jj) = mean(CDtot(ran));
-                Fdrag(kk,ii,jj) = mean(Drag(ran)); Flift(kk,ii,jj) = mean(Lift(ran));
-                Ffuse(kk,ii,jj) = mean(Fuse(ran)); Fthr(kk,ii,jj) = mean(Thr(ran));   Fturb(kk,ii,jj) = mean(Turb(ran));
-                elevation(kk,ii,jj) = el*180/pi;
-                filename = sprintf(strcat('Air%.1f_V-%.3f_Alt-%.d_ThrL-%d_Tmax-%d_SF3a.mat'),simScenario,flwSpd(kk),altitude(jj),thrLength(ii),Tmax);
-                fpath = 'D:\Power Study\';
-                save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+                if tsc.lapNumS.Data(end) > 1
+                    [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+                    [CLtot,CDtot] = tsc.getCLCD(vhcl);
+                    [Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
+                    Turb = squeeze(sqrt(sum(tsc.FTurbBdy.Data.^2,1)));
+                    Pow = tsc.rotPowerSummaryAir(vhcl,env);
+                    Pavg(kk,ii,jj) = Pow.avg;    Pnet(kk,ii,jj) = Pow.avg;
+                    V = squeeze(sqrt(sum(tsc.velCMvec.Data.^2,1)));
+                    Vavg(kk,ii,jj) = mean(V(ran));
+                    AoA(kk,ii,jj) = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
+                    airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
+                    gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
+                    ten(kk,ii,jj) = max([max(airNode(ran)) max(gndNode(ran))]);
+                    fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN;\t Elevation = %.1f\n',AoA(kk,ii,jj),ten(kk,ii,jj),el*180/pi);
+                    CL(kk,ii,jj) = mean(CLtot(ran));   CD(kk,ii,jj) = mean(CDtot(ran));
+                    Fdrag(kk,ii,jj) = mean(Drag(ran)); Flift(kk,ii,jj) = mean(Lift(ran));
+                    Ffuse(kk,ii,jj) = mean(Fuse(ran)); Fthr(kk,ii,jj) = mean(Thr(ran));   Fturb(kk,ii,jj) = mean(Turb(ran));
+                    elevation(kk,ii,jj) = el*180/pi;
+                    filename = sprintf(strcat('Air_V-%d_Alt-%.d_ThrL-%d.mat'),flwSpd(kk),altitude(jj),thrLength(ii));
+                    fpath = 'D:\Power Study\';
+                    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','gndStn')
+                else
+                    Pavg(kk,ii,jj) = NaN;  AoA(kk,ii,jj) = NaN;   ten(kk,ii,jj) = NaN;
+                    CL(kk,ii,jj) = NaN;    CD(kk,ii,jj) = NaN;    Fdrag(kk,ii,jj) = NaN;
+                    Flift(kk,ii,jj) = NaN; Ffuse(kk,ii,jj) = NaN; Fthr(kk,ii,jj) = NaN;
+                    Fturb(kk,ii,jj) = NaN; elevation(kk,ii,jj) = el*180/pi;
+                    Pnet(kk,ii,jj) = NaN;  Vavg(kk,ii,jj) = NaN;
+                    filename = sprintf(strcat('Air_V-%d_Alt-%.d_ThrL-%d.mat'),flwSpd(kk),altitude(jj),thrLength(ii));
+                    fpath = 'D:\Power Study\';
+                    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','gndStn')
+                end
             else
                 Pavg(kk,ii,jj) = NaN;  AoA(kk,ii,jj) = NaN;   ten(kk,ii,jj) = NaN;
                 CL(kk,ii,jj) = NaN;    CD(kk,ii,jj) = NaN;    Fdrag(kk,ii,jj) = NaN;
