@@ -144,6 +144,7 @@ fltCtrl.elevCtrlMax.upperLimit.NoScale = false
 fltCtrl.elevCtrlMax.lowerLimit.Value = -3.0000e+01
 fltCtrl.elevCtrlMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.elevCtrlMax.lowerLimit.NoScale = false
+fltCtrl.winchSpeedIn.Value = -2.5000e-01
 fltCtrl.winchSpeedIn.Unit = 'm/s'
 fltCtrl.winchSpeedIn.NoScale = false
 fltCtrl.winchSpeedIn.Description = 'Max tether spool in speed.'
