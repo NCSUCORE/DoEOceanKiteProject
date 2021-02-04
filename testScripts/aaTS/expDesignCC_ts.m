@@ -9,7 +9,7 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = .25%[0.1:0.1:.5]; 
+flwSpdArray = 0.25%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -34,8 +34,6 @@ loadComponent('MantaTether');                           %   Manta Ray tether
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 loadComponent('Manta2RotXFoil_AR8_b8_exp2');                             %   AR = 8; 8m span
-SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
-VEHICLE = 'vehicleManta2RotPool';
 %%  Environment Properties
 loadComponent('ConstXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
@@ -52,7 +50,7 @@ hiLvlCtrl.ThrCtrl.setValue(1,'');
 hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
 %%  Vehicle Properties
-vhcl.setICsOnPath(.0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
+vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
 
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
@@ -71,32 +69,15 @@ wnch.winch1.LaRspeed.setValue(1,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-% fltCtrl.elevatorReelInDef.setValue(3,'deg');
-% fltCtrl.elevCtrl.kp.setValue(0.0,'(deg)/(rad)');    fltCtrl.elevCtrl.ki.setValue(0,'(deg)/(rad*s)');
-% fltCtrl.firstSpoolLap.setValue(400,'');              fltCtrl.winchSpeedIn.setValue(.1,'m/s');
-% fltCtrl.elevCtrlMax.upperLimit.setValue(8,'');      fltCtrl.elevCtrlMax.lowerLimit.setValue(-4,'');
-% fltCtrl.setPerpErrorVal(.125,'rad')
-% fltCtrl.rudderGain.setValue(0,'')
-vhcl.hStab.setIncidence(-3,'deg');
-% vhcl.setBuoyFactor(.98,'')
-% fltCtrl.scale(0.1,1);
-% fltCtrl.rollMoment.kp.setValue(40,'(N*m)/(rad)')
-% fltCtrl.rollMoment.kd.setValue(20,'(N*m)/(rad/s)')
-% fltCtrl.tanRoll.kp.setValue(.33,'(rad)/(rad)')
-% fltCtrl.rollMoment.kp.setValue(45,'(N*m)/(rad)')
-% fltCtrl.rollMoment.ki.setValue(10,'(N*m)/(rad*s)')
-% fltCtrl.rollMoment.kd.setValue(8,'(N*m)/(rad/s)')
-% fltCtrl.rollMoment.tau.setValue(.01,'s')
-% fltCtrl.maxBank.lowerLimit.setValue(-.8,'')
-% fltCtrl.maxBank.upperLimit.setValue(.8,'')
-% fltCtrl.yawMoment.tau.setValue(.01,'s')
-% fltCtrl.yawMoment.kd.setValue(0.0,'(N*m)/(rad/s)')
+fltCtrl.setPerpErrorVal(.25,'rad')
+fltCtrl.rudderGain.setValue(0,'')
+fltCtrl.rollMoment.kp.setValue(50,'(N*m)/(rad)')
+fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
+fltCtrl.tanRoll.kp.setValue(.45,'(rad)/(rad)')
 thr.tether1.dragEnable.setValue(1,'')
-vhcl.rBridle_LE.setValue([0.029;0; -0.07],'m')    
-% vhcl.rCM_LE.setValue(vhcl.rCM_LE.Value+[-0.005;0;0],'m')  
-vhcl.vStab.setSpanUnitVec([0;0;-1],'');
-vhcl.vStab.setIncAlphaUnitVecSurf([0;-1;0],'');
-
+vhcl.hStab.setIncidence(-1.5,'deg');
+vhcl.setBuoyFactor(.98,'')
+vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(500,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
@@ -206,7 +187,7 @@ end
     vhcl.animateSim(tsc,.25,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
         'PathPosition',true,'SaveGif',1==1,'GifFile','awwSnap.gif',...
-        'TracerDuration',200);
+        'TracerDuration',200)%,'starttime',350);
 
 % end
 %%  Compare to old results
@@ -218,3 +199,25 @@ end
 % gndNode = squeeze(sqrt(sum(Res.tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
 % ten = max([max(airNode(ran)) max(gndNode(ran))]);
 % fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n',AoA,ten);
+        
+    figure; 
+    subplot(3,1,1); grid on; hold on; ylabel('Roll [deg]');
+    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(1,1,:)))
+           xlabel('Time [s]')
+    subplot(3,1,2); grid on; hold on; ylabel('Pitch [deg]');
+    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(2,1,:)))
+          xlabel('Time [s]')  
+    subplot(3,1,3); grid on; hold on; ylabel('Yaw [deg]');
+    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(3,1,:)))
+        xlabel('Time [s]')
+    figure; 
+    subplot(3,1,1); grid on; hold on; ylabel('Roll Rate [deg/s]');
+    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(1,1,:)))
+          xlabel('Time [s]') 
+    subplot(3,1,2); grid on; hold on; ylabel('Pitch Rate [deg/s]');
+    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(2,1,:)))
+         xlabel('Time [s]')   
+    subplot(3,1,3); grid on; hold on; ylabel('Yaw Rate [deg/s]');
+    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(3,1,:)))
+    xlabel('Time [s]')
+
