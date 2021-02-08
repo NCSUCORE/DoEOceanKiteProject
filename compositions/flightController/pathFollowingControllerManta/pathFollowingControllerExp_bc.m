@@ -46,33 +46,6 @@ elems(5).SampleTime = -1;
 elems(5).Complexity = 'real';
 elems(5).Unit = '';
 
-elems(6) = Simulink.BusElement;
-elems(6).Name = 'tanRollErr';
-elems(6).Dimensions = 1;
-elems(6).DimensionsMode = 'Fixed';
-elems(6).DataType = 'double';
-elems(6).SampleTime = -1;
-elems(6).Complexity = 'real';
-elems(6).Unit = 'rad';
-
-elems(7) = Simulink.BusElement;
-elems(7).Name = 'betaErr';
-elems(7).Dimensions = 1;
-elems(7).DimensionsMode = 'Fixed';
-elems(7).DataType = 'double';
-elems(7).SampleTime = -1;
-elems(7).Complexity = 'real';
-elems(7).Unit = 'rad';
-
-elems(8) = Simulink.BusElement;
-elems(8).Name = 'velAngleErr';
-elems(8).Dimensions = 1;
-elems(8).DimensionsMode = 'Fixed';
-elems(8).DataType = 'double';
-elems(8).SampleTime = -1;
-elems(8).Complexity = 'real';
-elems(8).Unit = 'rad';
-
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the combined moment motor controller';
