@@ -77,9 +77,9 @@ fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
 fltCtrl.setPerpErrorVal(.25,'rad')
 fltCtrl.rudderGain.setValue(0,'')
-fltCtrl.rollMoment.kp.setValue(50,'(N*m)/(rad)')
-fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
-fltCtrl.tanRoll.kp.setValue(.45,'(rad)/(rad)')
+% fltCtrl.rollMoment.kp.setValue(50/10,'(N*m)/(rad)')
+% fltCtrl.rollMoment.kd.setValue(25/10,'(N*m)/(rad/s)')
+
 thr.tether1.dragEnable.setValue(1,'')
 vhcl.hStab.setIncidence(-1.5,'deg');
 vhcl.setBuoyFactor(.98,'')
@@ -87,10 +87,17 @@ vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 %% Transition gains
 gain4to1 = 1; 
 gain2to3 = 1; 
+% fltCtrl.rollMoment.kp.setValue(50,'(N*m)/(rad)')
+% fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
+% fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
+% fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
+% fltCtrl.rollMoment.kd.setValue(0,'(N*m)/(rad/s)')
+% fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)')
+elSP = 5; 
 %% Start Control
 fltCtrl.startControl.setValue(150,'s')
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(250,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(300,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
@@ -100,7 +107,7 @@ fltCtrl.startControl.setValue(150,'s')
 %     figure;
 %     tsc.elError.plot
 %     figure; 
-%     tsc.elA.plot
+    tsc.elA.plot
 %     plotsq(tsc.winchPower.Time, tsc.positionVec.Data(3,1,:))
      vhcl.animateSim(tsc,2)
     

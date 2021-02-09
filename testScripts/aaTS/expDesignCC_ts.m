@@ -72,6 +72,7 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndS
 fltCtrl.setPerpErrorVal(.25,'rad')
 fltCtrl.rudderGain.setValue(0,'')
 fltCtrl.rollMoment.kp.setValue(50,'(N*m)/(rad)')
+fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
 fltCtrl.tanRoll.kp.setValue(.45,'(rad)/(rad)')
 thr.tether1.dragEnable.setValue(1,'')
@@ -79,7 +80,7 @@ vhcl.hStab.setIncidence(-1.5,'deg');
 vhcl.setBuoyFactor(.98,'')
 vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(500,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(20,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
