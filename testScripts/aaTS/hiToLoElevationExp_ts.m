@@ -87,6 +87,7 @@ vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 
 %% Start Control
 fltCtrl.startControl.setValue(150,'s')
+elSP = 20; 
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(250,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
@@ -98,9 +99,9 @@ fltCtrl.startControl.setValue(150,'s')
     figure;
     tsc.elError.plot
     figure; 
-    tsc.elA.plot
+    tsc.elAn.plot
 %     plotsq(tsc.winchPower.Time, tsc.positionVec.Data(3,1,:))
-     vhcl.animateSim(tsc,2)
+     vhcl.animateSim(tsc,2,'GifTimeStep',0.05,'SaveGif',1==1)
     
     %%
    
