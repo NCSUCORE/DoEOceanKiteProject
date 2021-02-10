@@ -97,7 +97,7 @@ elSP = 5;
 %% Start Control
 fltCtrl.startControl.setValue(150,'s')
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(300,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(350,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
