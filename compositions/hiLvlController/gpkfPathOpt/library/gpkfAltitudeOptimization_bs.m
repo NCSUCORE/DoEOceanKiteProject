@@ -66,7 +66,7 @@ zz(locateNan) = [];
 
 hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly21');
 hiLvlCtrl.pMaxVals  = R.Pmax;
-hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = -100;
+% hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = -100;
 hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
 hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
@@ -77,9 +77,14 @@ fNew = linspace(0.5*F(1,2),1.5*F(end,2),101);
 pNew = polyval(testFit,fNew);
 
 %% plot
-testZ = linspace(altitude(1),altitude(end),50);
-testF = linspace(flwSpd(1),flwSpd(end)*1.5,30);
-[ZZ,FF] = meshgrid(testZ,testF);PP = hiLvlCtrl.powerFunc(FF(:),ZZ(:));
+testZ = linspace(altitude(1),altitude(end),30);
+testF = linspace(flwSpd(1),flwSpd(end)*1.5,20);
+[ZZ,FF] = meshgrid(testZ,testF);
+PP = hiLvlCtrl.powerGrid(FF(:),ZZ(:));
+for ii = 1:numel(FF(:))
+[PP2(ii),~] = convertWindStatsToPowerStats(F,A,R.Pmax,...
+    ZZ(ii),FF(ii),0);
+end
 
 scatter3(ff,zz,ppmax)
 hold on

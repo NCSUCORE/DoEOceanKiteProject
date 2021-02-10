@@ -251,12 +251,19 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             estPower1 = interp2(zVals,fVals,pVals,altitude,flowPred);
             estPower2 = hiLvlCtrl.powerGrid(flowPred,altitude);
             estPower3 = hiLvlCtrl.powerFunc(flowPred,altitude);
+            [expP,varP] = convertWindStatsToPowerStats(fVals,zVals,pVals,...
+    altitude,flowPred,flowVar);
+            if isnan(expP)
+                expP = -1e6;
+                varP = 0;
+            end
             % pick one
-            estPower = estPower2;
+            estPower = expP;
+            varPower = varP;
             % exploitation incentive
             jExploit = obj.exploitationConstant*estPower;
             % exploration incentive
-            jExplore = obj.explorationConstant*flowVar.^(3/2);
+            jExplore = obj.explorationConstant*varPower.^(1/2);
             % sum
             val = jExploit + jExplore;
             % other outputs
