@@ -54,8 +54,8 @@ plot(time,data,'linewidth',1);
 grid on;
 hold on;
 xlabel(['Time [',sMinHr,']']);
-ylabel(yLab);
-title(figName);
+ylabel([figName,' ',yLab]);
+% title(figName);
 
 
 end

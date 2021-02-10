@@ -63,7 +63,7 @@ ppmax(locateNan) = [];
 ff(locateNan) = [];
 zz(locateNan) = [];
 
-hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly23');
+hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly32');
 hiLvlCtrl.pMaxVals  = R.Pmax;
 hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = -100;
 hiLvlCtrl.altVals   = A;

@@ -86,7 +86,7 @@ switch simScenario(2)
         hiLvlCtrl.initVals              = thrLength*sin(initElev);
         hiLvlCtrl.rateLimit             = 1*0.15;
         hiLvlCtrl.kfgpTimeStep          = 10/60;
-        hiLvlCtrl.mpckfgpTimeStep       = 1;
+        hiLvlCtrl.mpckfgpTimeStep       = 2;
         hiLvlCtrl.predictionHorz        = 6;
         hiLvlCtrl.exploitationConstant  = 1;
         hiLvlCtrl.explorationConstant   = 0;
@@ -189,7 +189,7 @@ switch simScenario(2)
         
     case 3
         
-        omniFunc = @(z,hl,zD,fD) hl.powerFunc(interp1(zD,fD,z),z);
+        omniFunc = @(z,hl,zD,fD) hl.powerGrid(interp1(zD,fD,z),z);
         options = optimoptions('fmincon','algorithm','sqp');
 
         
@@ -197,7 +197,8 @@ switch simScenario(2)
         omniAlts = unique(hiLvlCtrl.altVals);
         
         tSamp = 0:hiLvlCtrl.mpckfgpTimeStep:simParams.duration.Value/60;
-        
+        altSimSP = resample(tscOld.altitudeSP,tSamp*60);
+
         fValOmni = nan(1,length(tSamp));
         omniAlt = nan(1,length(tSamp));
         runAvgOmni = nan(1,length(tSamp));
@@ -213,6 +214,7 @@ switch simScenario(2)
                 [~,omniIdx] = min((hiLvlCtrl.initVals-omniAlts).^2);
                 fValOmni(ii) = interp2(hiLvlCtrl.altVals,hiLvlCtrl.flowVals,...
                     hiLvlCtrl.pMaxVals,omniAlts(omniIdx),omnifData(omniIdx));
+                fValOmni(ii) = -hiLvlCtrl.powerGrid(omnifData(omniIdx),omniAlts(omniIdx));
                 omniAlt(ii) = omniAlts(omniIdx);
                 
             else
@@ -231,7 +233,15 @@ switch simScenario(2)
                 omniAltT(ii) = omniAlts(omniIdx);
                 
             end
+            fValOmni(ii) = min(0,fValOmni(ii));
+
             runAvgOmni(ii) = mean(fValOmni(1:ii));
+            
+            % simulation
+            
+            simPower(ii) = omniFunc(altSimSP.Data(ii),hiLvlCtrl,hData,fData);
+            simPower(ii) = max(simPower(ii),0);
+            simMean(ii)  = mean(simPower(1:ii));
         end
         
     otherwise
@@ -267,6 +277,15 @@ switch simScenario(2)
         figure(fh);
         plot(tSamp*60,omniAlt,'r-');
         legend('Simulation','Omniscient offline','location','best');
+        
+        figure;
+        plot(tSamp*60,simMean,'b-');        
+        hold on;
+        plot(tSamp*60,-runAvgOmni,'r-');
+        legend('Simulation','Omniscient offline','location','best');
+        xlabel('Time [s]');
+        ylabel('Power [kW]');
+        grid on;
 end
 
 allAxes = findall(0,'type','axes');
