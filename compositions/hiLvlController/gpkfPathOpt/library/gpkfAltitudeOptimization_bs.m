@@ -1,5 +1,6 @@
 clear
 clc
+close all
 
 HILVLCONTROLLER = 'gpkfAltitudeOpt';
 PATHGEOMETRY = 'lemOfBooth';
@@ -63,7 +64,7 @@ ppmax(locateNan) = [];
 ff(locateNan) = [];
 zz(locateNan) = [];
 
-hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly32');
+hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly21');
 hiLvlCtrl.pMaxVals  = R.Pmax;
 hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = -100;
 hiLvlCtrl.altVals   = A;
@@ -71,6 +72,9 @@ hiLvlCtrl.flowVals  = F;
 hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,hiLvlCtrl.pMaxVals);
 
+testFit = polyfit(F(:,2),R.Pmax(:,2),3);
+fNew = linspace(0.5*F(1,2),1.5*F(end,2),101);
+pNew = polyval(testFit,fNew);
 
 %% plot
 testZ = linspace(altitude(1),altitude(end),50);
@@ -81,6 +85,19 @@ scatter3(ff,zz,ppmax)
 hold on
 surf(F,A,R.Pmax)
 scatter3(FF(:),ZZ(:),PP(:))
+
+figure
+contourf(F,A,R.Pmax)
+xlabel('Flow [m/s]');
+ylabel('Altitude [m]');
+cc = colorbar;
+cc.Label.String = 'Power [kW]';
+cc.Label.Interpreter = 'latex';
+
+figure
+plot(F(:,2),R.Pmax(:,2),'-o');
+hold on
+plot(fNew,pNew);
 
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
