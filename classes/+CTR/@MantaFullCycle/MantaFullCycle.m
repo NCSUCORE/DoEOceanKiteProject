@@ -20,11 +20,6 @@ classdef MantaFullCycle < handle
         SplRollSPkiSlope
         SplRollSPkiInt
         SplPID
-        PthRoll
-        PthYaw
-        PthPitch
-        PthTanRoll
-        PthAlpha
         % Saturations
         maxBank
         controlSigMax
@@ -79,11 +74,6 @@ classdef MantaFullCycle < handle
             obj.SplRollSPkiSlope    = SIM.parameter('Unit','','Description','Variable roll ki slope value','NoScale',true);
             obj.SplRollSPkiInt      = SIM.parameter('Unit','','Description','Variable roll ki y-intercept value','NoScale',true);
             obj.SplPID              = CTR.FPID('m','m/s');
-            obj.PthRoll             = CTR.FPID('rad','N*m');
-            obj.PthYaw              = CTR.FPID('rad','N*m');
-            obj.PthPitch            = CTR.FPID('rad','N*m');
-            obj.PthTanRoll          = CTR.FPID('rad','rad');
-            obj.PthAlpha            = CTR.FPID('rad','kN');
             % Saturations
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
