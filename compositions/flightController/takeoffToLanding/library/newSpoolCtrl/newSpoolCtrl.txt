@@ -160,3 +160,21 @@ fltCtrl.nonXCurrentSpoolInGain.Value = 1.5000e+00
 fltCtrl.nonXCurrentSpoolInGain.Unit is unitless or has no unit specified
 fltCtrl.nonXCurrentSpoolInGain.NoScale = false
 fltCtrl.nonXCurrentSpoolInGain.Description = 'Flow speed multiplier to get glide-in winch speed'
+fltCtrl.elvAll.Unit = 'deg'
+fltCtrl.elvAll.NoScale = false
+fltCtrl.elvAll.Description = 'elevation angle control discretizations'
+fltCtrl.timeAll.Unit = 's'
+fltCtrl.timeAll.NoScale = false
+fltCtrl.timeAll.Description = 'mean spool out discretizations'
+fltCtrl.numStage.Unit is unitless or has no unit specified
+fltCtrl.numStage.NoScale = false
+fltCtrl.numStage.Description = 'mean spool out discretizations'
+fltCtrl.finalElv.Unit = 'deg'
+fltCtrl.finalElv.NoScale = false
+fltCtrl.finalElv.Description = 'final elevation angle for elv DP'
+fltCtrl.finalTime.Unit = 's'
+fltCtrl.finalTime.NoScale = false
+fltCtrl.finalTime.Description = 'final time for elv DP'
+fltCtrl.maxElvChange.Unit = 'deg'
+fltCtrl.maxElvChange.NoScale = false
+fltCtrl.maxElvChange.Description = 'maximum change in elevation'

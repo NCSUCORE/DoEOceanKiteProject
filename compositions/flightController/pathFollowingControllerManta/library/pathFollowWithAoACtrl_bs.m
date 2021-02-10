@@ -54,6 +54,7 @@ fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
 fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.startControl.setValue(0,'s');
+fltCtrl.winchSpeedIn.setValue(-0.25,'m/s');
 
 fltCtrl.AoACtrl.setValue(1,'');                   
 fltCtrl.AoASP.setValue(0,'');                   
