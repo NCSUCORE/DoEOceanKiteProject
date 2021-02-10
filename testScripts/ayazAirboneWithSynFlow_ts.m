@@ -9,7 +9,7 @@ dynamicCalc = '';
 flowSpeed = 6.2;
 thrLength = 1000;
 % rad - Mean elevation angle
-initElev = 30*pi/180;
+initElev = 15*pi/180;
 % rad - Path width/height
 w = 28*pi/180;
 h = w/5;
@@ -86,10 +86,10 @@ switch simScenario(2)
         hiLvlCtrl.initVals              = thrLength*sin(initElev);
         hiLvlCtrl.rateLimit             = 1*0.15;
         hiLvlCtrl.kfgpTimeStep          = 10/60;
-        hiLvlCtrl.mpckfgpTimeStep       = 2;
+        hiLvlCtrl.mpckfgpTimeStep       = 1;
         hiLvlCtrl.predictionHorz        = 6;
         hiLvlCtrl.exploitationConstant  = 1;
-        hiLvlCtrl.explorationConstant   = 0;
+        hiLvlCtrl.explorationConstant   = 1;
 end
 
 % select Environment based on sim scenario
