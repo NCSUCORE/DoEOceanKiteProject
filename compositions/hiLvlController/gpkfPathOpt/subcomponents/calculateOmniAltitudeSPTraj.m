@@ -1,4 +1,5 @@
-function altSPTraj = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
+function [altSPTraj,elevSPTraj,thrSPTraj] = ...
+    calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
     initVal,simTime)
 
 
@@ -31,10 +32,14 @@ ub      = hiLvlCtrl.maxVal*ones(1,nP);
 
 tVals = 0:hiLvlCtrl.mpckfgpTimeStep:simTime/60;
 optAlt = 0*tVals;
+optEl  = 0*tVals;
+optThr  = 0*tVals;
 
 for ii = 1:numel(tVals)
     if ii == 1
-        optAlt(ii) = initVal;
+        optAlt(ii) = initVal(1);
+        optEl(ii)  = initVal(2);
+        optThr(ii) = initVal(3);
     else
         fsBoundsB(1,1) = optAlt(ii-1) + duMax;
         fsBoundsB(2,1) = -(optAlt(ii-1) - duMax);
@@ -47,10 +52,18 @@ for ii = 1:numel(tVals)
             ,lb,ub,[],options);
         
         optAlt(ii) = optTraj(1);
+        
+        [~,elTraj,thrTraj] = calcObjectiveForOmniscientAlt(optTraj,tVals(ii),...
+            synFlow,synAlt,hiLvlCtrl);
+        
+        optEl(ii)  = elTraj(1);
+        optThr(ii) = thrTraj(1);
     end
     
 end
 
-altSPTraj = timeseries(optAlt,tVals*60);
+altSPTraj  = timeseries(optAlt,tVals*60);
+elevSPTraj = timeseries(optEl,tVals*60);
+thrSPTraj  = timeseries(optThr,tVals*60);
 
 end

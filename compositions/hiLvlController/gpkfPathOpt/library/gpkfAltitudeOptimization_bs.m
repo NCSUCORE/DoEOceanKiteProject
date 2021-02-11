@@ -1,6 +1,6 @@
 clear
 clc
-close all
+% close all
 
 HILVLCONTROLLER = 'gpkfAltitudeOpt';
 PATHGEOMETRY = 'lemOfBooth';
@@ -75,6 +75,10 @@ hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
 hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,hiLvlCtrl.pMaxVals);
+hiLvlCtrl.elevationGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
+    hiLvlCtrl.altVals,R.EL);
+hiLvlCtrl.thrLenGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
+    hiLvlCtrl.altVals,R.thrL);
 
 testFit = polyfit(F(:,2),R.Pmax(:,2),3);
 fNew = linspace(0.5*F(1,2),1.5*F(end,2),101);
