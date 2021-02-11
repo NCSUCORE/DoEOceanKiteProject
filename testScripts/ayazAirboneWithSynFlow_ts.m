@@ -29,7 +29,7 @@ h = w/5;
 % 5 - save simulation results. Figures and such.
 
 simScenario = [2 3 2 1 false];
-thrDrag = false;
+thrDrag = true;
 
 %% Load components
 % Spooling controller
@@ -80,7 +80,9 @@ switch simScenario(2)
     case 3 % altitude optimization
         loadComponent('gpkfAltitudeOptimization');
         hiLvlCtrl.basisParams.Value     = [a,b,initElev,0*pi/180,thrLength]';
-        hiLvlCtrl.initVals              = thrLength*sin(initElev);
+        hiLvlCtrl.initVals(1)              = thrLength*sin(initElev);
+        hiLvlCtrl.initVals(2)              = initElev*180/pi;
+        hiLvlCtrl.initVals(3)              = thrLength;
 
 end
 
@@ -154,13 +156,16 @@ tscKFGP = signalcontainer(logsout);
 statKFGP = computeSimLapStats(tscKFGP);
 trackKFGP = statKFGP{2,3}/cIn.pathLength;
 
-% run omniscient simulation
+%% run omniscient simulation
 [synFlow,synAlt] = env.water.generateData();
 keyboard
-altSPTraj = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
+[altSPTraj,elevSPTraj,thrSPTraj] = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
     hiLvlCtrl.initVals,simParams.duration.Value);
 
 hiLvlCtrl.altSPTraj = altSPTraj;
+hiLvlCtrl.elevSPTraj = elevSPTraj;
+hiLvlCtrl.thrSPTraj = thrSPTraj;
+
 HILVLCONTROLLER = 'omniscientAltitudeOpt';
 
 simWithMonitor('OCTModel','minRate',0);

@@ -30,7 +30,7 @@ function setup(block)
 
 % Register number of ports
 block.NumInputPorts  = 4;
-block.NumOutputPorts = 3;
+block.NumOutputPorts = 5;
 
 % Setup port properties to be inherited or dynamic
 block.SetPreCompInpPortInfoToDynamic;
@@ -40,7 +40,7 @@ block.SetPreCompOutPortInfoToDynamic;
 mpckfgp = block.DialogPrm(1).Data;
 nP   = length(mpckfgp.initVals.s0);
 IPsizes = [nP nP^2 1 1];
-OPsizes = mpckfgp.predictionHorizon*[1 1 1];
+OPsizes = mpckfgp.predictionHorizon*[1 1 1 1 1];
 
 for ii = 1:4
 block.InputPort(ii).Dimensions         = IPsizes(ii);
@@ -51,7 +51,7 @@ block.InputPort(ii).SamplingMode      = 'Sample';
 end
 
 % Override output port properties
-for ii = 1:3
+for ii = 1:5
 block.OutputPort(ii).Dimensions    = OPsizes(ii);
 block.OutputPort(ii).DatatypeID   = 0;
 block.OutputPort(ii).Complexity   = 'Real';
@@ -157,13 +157,18 @@ b = [fsBoundsB;bstep];
     ,lb,ub,[],options);
 
 % get other values
-[~,jExploitFmin,jExploreFmin] = ...
+[~,jExploitFmin,jExploreFmin,flowPred] = ...
     mpckfgp.calcMpcObjectiveFnForAltOpt(F_t_mpc,sigF_t_mpc,skp1_kp1_mpc,...
     ckp1_kp1_mpc,optTraj,hiLvlCtrl);
+
+elTraj = hiLvlCtrl.elevationGrid(flowPred(:),optTraj(:));
+thrLTraj = hiLvlCtrl.thrLenGrid(flowPred(:),optTraj(:));
 
 block.OutputPort(1).Data = real(optTraj);
 block.OutputPort(2).Data = real(jExploitFmin);
 block.OutputPort(3).Data = real(jExploreFmin);
+block.OutputPort(4).Data = real(elTraj);
+block.OutputPort(5).Data = real(thrLTraj);
 
 %end Outputs
 

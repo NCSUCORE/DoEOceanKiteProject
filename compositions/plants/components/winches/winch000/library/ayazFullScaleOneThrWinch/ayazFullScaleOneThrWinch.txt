@@ -3,7 +3,7 @@ wnch.numWinches.Unit is unitless or has no unit specified
 wnch.numWinches.NoScale = true
 wnch.winch1.initLength.Unit = 'm'
 wnch.winch1.initLength.NoScale = false
-wnch.winch1.maxSpeed.Value = 0.0000e+00
+wnch.winch1.maxSpeed.Value = 3.0000e+00
 wnch.winch1.maxSpeed.Unit = 'm/s'
 wnch.winch1.maxSpeed.NoScale = false
 wnch.winch1.timeConst.Value = 1.0000e+00
