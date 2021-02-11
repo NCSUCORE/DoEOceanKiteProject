@@ -38,6 +38,9 @@ switch figName
     case 'Altitude SP'
         data = tsc.altitudeSP.Data(:);
         yLab = '[m]';
+    case 'Turbine energy'
+        data = tsc.turbEnrg.Data(:)./1e3;
+        yLab = '[kJ]';
         
 end
 
