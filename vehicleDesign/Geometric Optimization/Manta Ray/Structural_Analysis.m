@@ -2,7 +2,7 @@
 clc;clear;
 
 %%  Input definitions 
-loadComponent('Manta2RotXFoil_PDR');             %   AR = 8; 8m span
+loadComponent('Manta2RotXFoil_AR8_b8');            %   AR = 8; 8m span
 
 loads.Wp = 15e3;
 loads.Ws = 15e3;
