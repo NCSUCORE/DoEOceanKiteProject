@@ -251,17 +251,26 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             estPower1 = interp2(zVals,fVals,pVals,altitude,flowPred);
             estPower2 = hiLvlCtrl.powerGrid(flowPred,altitude);
             estPower3 = hiLvlCtrl.powerFunc(flowPred,altitude);
+            [expP,varP] = convertWindStatsToPowerStats(fVals,zVals,pVals,...
+                altitude,flowPred,flowVar);
+            if isnan(expP)
+                expP = -1e6;
+                varP = 0;
+            end
             % pick one
-            estPower = estPower2;
+            estPower = expP;
+            varPower = varP;
             % exploitation incentive
             jExploit = obj.exploitationConstant*estPower;
             % exploration incentive
-            jExplore = obj.explorationConstant*flowVar.^(3/2);
+            jExplore = obj.explorationConstant*varPower.^(1/2);
             % sum
             val = jExploit + jExplore;
             % other outputs
             varargout{1} = jExploit;
             varargout{2} = jExplore;
+            varargout{3} = flowPred;
+            
         end
         
         % calculate MPC objective function for altitude optimization
@@ -273,10 +282,11 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             aqVal    = nan(1,predHorz);
             jExploit = nan(1,predHorz);
             jExplore = nan(1,predHorz);
+            flowPred = nan(1,predHorz);
             % calculate acquisition function at each mean elevation angle
             for ii = 1:predHorz
                 % calculate acquistion function
-                [aqVal(ii),jExploit(ii),jExplore(ii)] = ...
+                [aqVal(ii),jExploit(ii),jExplore(ii),flowPred(ii)] = ...
                     obj.calcAquisitionFunctionForAltOpt(altTraj(ii),F_t,sigF_t,...
                     hiLvlCtrl);
                 % update kalman states
@@ -291,7 +301,7 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             val = sum(aqVal);
             varargout{1} = jExploit;
             varargout{2} = jExplore;
-            
+            varargout{3} = flowPred;
         end
     end
     

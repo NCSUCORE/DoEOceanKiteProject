@@ -15,7 +15,7 @@ wnch.numWinches.setValue(1,'');
 wnch.build;
 
 % Set values
-wnch.winch1.maxSpeed.setValue(0.0,'m/s');
+wnch.winch1.maxSpeed.setValue(3,'m/s');
 wnch.winch1.timeConst.setValue(1,'s');
 wnch.winch1.maxAccel.setValue(1e6,'m/s^2');
 wnch.winch1.motorEfficiency.setValue(1,'')

@@ -25,7 +25,7 @@ env.water.zGridPoints.NoScale = false
 env.water.density.Value = 1.2250e+00
 env.water.density.Unit = 'kg/m^3'
 env.water.density.NoScale = false
-env.water.stdDevSynData.Value = 4.0000e+00
+env.water.stdDevSynData.Value = 2.0000e+00
 env.water.stdDevSynData.Unit = 'm/s'
 env.water.stdDevSynData.NoScale = false
 env.water.timeStepSynData.Value = 1.8000e+02
@@ -37,7 +37,7 @@ env.water.tFinData.NoScale = false
 env.water.meanFnProps.Value = [3.77 0.14]
 env.water.meanFnProps.Unit is unitless or has no unit specified
 env.water.meanFnProps.NoScale = false
-env.water.minFlowVal.Value = 6.0000e+00
+env.water.minFlowVal.Value = 7.0000e+00
 env.water.minFlowVal.Unit = 'm/s'
 env.water.minFlowVal.NoScale = false
 env.water.gravAccel.Value = 9.8100e+00
