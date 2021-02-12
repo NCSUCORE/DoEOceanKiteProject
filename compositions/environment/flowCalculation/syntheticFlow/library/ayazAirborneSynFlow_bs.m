@@ -14,11 +14,11 @@ env.water.meanFn = 'windPowerLaw';
 env.water.noiseVariance.setValue(1e-3,'');
 env.water.rngSeed.setValue(8,'');
 env.water.zGridPoints.setValue(0:100:1000,'m');
-env.water.stdDevSynData.setValue(4,'m/s');
+env.water.stdDevSynData.setValue(2,'m/s');
 env.water.timeStepSynData.setValue(3*60,'s');
 env.water.tFinData.setValue(600*60,'s');
 env.water.meanFnProps.setValue([3.77,0.14],'');
-env.water.minFlowVal.setValue(6,'m/s');
+env.water.minFlowVal.setValue(7,'m/s');
 
 [synFlow,synAlt] = env.water.generateData();
 

@@ -38,6 +38,9 @@ switch figName
     case 'Altitude SP'
         data = tsc.altitudeSP.Data(:);
         yLab = '[m]';
+    case 'Turbine energy'
+        data = tsc.turbEnrg.Data(:)./1e3;
+        yLab = '[kJ]';
         
 end
 
@@ -54,8 +57,8 @@ plot(time,data,'linewidth',1);
 grid on;
 hold on;
 xlabel(['Time [',sMinHr,']']);
-ylabel(yLab);
-title(figName);
+ylabel([figName,' ',yLab]);
+% title(figName);
 
 
 end

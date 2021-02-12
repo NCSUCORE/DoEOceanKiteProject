@@ -37,9 +37,19 @@ elems(4).SampleTime = -1;
 elems(4).Complexity = 'real';
 elems(4).Unit = 'm/s';
 
+elems(5) = Simulink.BusElement;
+elems(5).Name = 'turbOnOff';
+elems(5).Dimensions = 1;
+elems(5).DimensionsMode = 'Fixed';
+elems(5).DataType = 'double';
+elems(5).SampleTime = -1;
+elems(5).Complexity = 'real';
+elems(5).Unit = '';
+
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the combined moment motor controller';
 
 assignin('base','fltCtrlBus',CONTROL)
+
 end
