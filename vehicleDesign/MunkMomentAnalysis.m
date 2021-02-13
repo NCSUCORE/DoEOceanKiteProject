@@ -1,5 +1,5 @@
 %%  Script to generate static Munk Moment lookup table
-loadComponent('Manta2RotXFoil_AR8_b8_expt');                         %   Load new vehicle with 2 rotors
+loadComponent('Manta2RotXFoil_AR8_b8');                         %   Load new vehicle with 2 rotors
 pitch = -20:20;
 flwSpd = 0.05:0.1:4;
 tic
