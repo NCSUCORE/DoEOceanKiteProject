@@ -10,9 +10,9 @@ Simulink.sdi.clear
 % 6 - save simulation results     
 % 7 - animate    
 % 8 - plotting 
-simScenario = [1 2 2 1 1 1==0 false false];
-thrLength = 200;  altitude = 50;                            %   m/m - Initial tether length/operating altitude
-flwSpd = .5;                                                %   m/s - Flow speed
+simScenario = [1 2 2 1 1 1==0 false true];
+thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
+flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0125;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -46,6 +46,8 @@ switch simScenario(3)                                   %   Flight Controller
     case 2
         loadComponent('pathFollowWithAoACtrl');             %   Path-following controller with AoA control
         pthCtrl = fltCtrl;
+        loadComponent('LaRController');                     %   Launch and recovery controller
+        slfCtrl = fltCtrl;
         loadComponent('MantaFSController');                 %   Path-following controller with AoA control
     case 3
         loadComponent('SteadyController');                  %   Steady-flight controller
@@ -55,7 +57,7 @@ end
 switch simScenario(4)                                   %   Tether model 
     case 1
         loadComponent('MantaTether');                       %   Manta Ray tether
-    case 2
+    otherwise
         loadComponent('shortTether');                       %   Tether for reeling
         thr.tether1.setInitTetherLength(thrLength,'m');     %   Initialize tether length 
 end
@@ -99,10 +101,10 @@ switch simScenario(3)
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
         fltCtrl.firstSpoolLap.setValue(10,'');                  fltCtrl.winchSpeedIn.setValue(.1,'m/s');
         fltCtrl.AoASP.setValue(0,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-        fltCtrl.AoACtrl.setValue(0,'');                         fltCtrl.elevatorConst.setValue(2,'deg');
+        fltCtrl.AoACtrl.setValue(0,'');                         fltCtrl.elevatorConst.setValue(-3,'deg');
         fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');         fltCtrl.Tmax.setValue(Tmax,'kN');
-        fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
-        fltCtrl.pitchMoment.kp.setValue(0,'(N*m)/(rad)');       fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
+        fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
+        fltCtrl.pitchMoment.kp.setValue(100,'(N*m)/(rad)');     fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
         fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');      fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
         fltCtrl.rollMoment.kd.setValue(2.2e5,'(N*m)/(rad/s)');  fltCtrl.rollMoment.tau.setValue(0.001,'s');
         fltCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        fltCtrl.rudderGain.setValue(0,'');
@@ -130,7 +132,7 @@ switch simScenario(3)
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
@@ -180,7 +182,7 @@ end
 %%  Animate Simulation
 if simScenario(7)
     if simScenario(3) == 1
-        vhcl.animateSim(tsc,.25,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+        vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
             'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
             'ZoomIn',1==0,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
     else
