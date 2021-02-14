@@ -11,9 +11,9 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 2 1 1 1 1==0 false true];
+simScenario = [1 2 1 1 2 1==0 false true];
 thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .15;                                               %   m/s - Flow speed
+flwSpd = .5;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0125;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -66,9 +66,11 @@ switch simScenario(5)                                   %   Environment
     case 1
         loadComponent('ConstXYZT');                         %   Constant flow 
         ENVIRONMENT = 'environmentManta2Rot';               %   Two turbines
-        env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
+        env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
     case 2
-        
+        loadComponent('ConstYZTvarX');                      %   Variable X
+        ENVIRONMENT = 'environmentManta2Rot';               %   Two turbines
+        env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
 end
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
 loadComponent('MantaGndStn');                               %   Ground station
@@ -101,7 +103,7 @@ switch simScenario(3)
         fltCtrl.setFcnName(PATHGEOMETRY,'');                    fltCtrl.winchSpeedIn.setValue(.1,'m/s');
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
         fltCtrl.firstSpoolLap.setValue(10,'');                  fltCtrl.RCtrl.setValue(1,'');
-        fltCtrl.AoASP.setValue(0,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+        fltCtrl.AoASP.setValue(1,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
         fltCtrl.AoACtrl.setValue(2,'');                         fltCtrl.elevatorConst.setValue(-3,'deg');
         fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');         fltCtrl.Tmax.setValue(Tmax,'kN');
         fltCtrl.tanRoll.kp.setValue(0.8,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
@@ -169,9 +171,9 @@ if simScenario(8)
         case 1
             lap = max(tsc.lapNumS.Data)-1;
             if max(tsc.lapNumS.Data) < 2
-                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==1)
+                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             else
-                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==1)
+                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             end
         case 3
             tsc.plotLaR(fltCtrl,'Steady',false);
