@@ -1,6 +1,6 @@
 clear
 clc
-% close all
+close all
 
 HILVLCONTROLLER = 'gpkfAltitudeOpt';
 PATHGEOMETRY = 'lemOfBooth';
@@ -68,6 +68,15 @@ ppmax(locateNan) = [];
 ff(locateNan) = [];
 zz(locateNan) = [];
 
+%% fit curve to power data
+% structure of the function
+funcStruct = fittype( @(c0,c1,z,vw) (c0 + c1.*z).*vw.^3, ...
+    'coefficients',{'c0','c1'}, 'independent', {'z', 'vw'}, ...
+    'dependent', 'P' );
+
+hiLvlCtrl.customFit = fit( [zz, ff], ppmax, funcStruct );
+
+
 hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly31');
 hiLvlCtrl.pMaxVals  = R.Pmax;
 hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = 0;
@@ -86,31 +95,42 @@ pNew = polyval(testFit,fNew);
 
 %% plot
 testZ = linspace(altitude(1),altitude(end),30);
-testF = linspace(flwSpd(1),flwSpd(end)*1.5,20);
+testF = linspace(flwSpd(1),flwSpd(end)*1.0,20);
 [ZZ,FF] = meshgrid(testZ,testF);
-PP = hiLvlCtrl.powerGrid(FF(:),ZZ(:));
+PP = hiLvlCtrl.customFit(ZZ,FF);
+residual = R.Pmax - hiLvlCtrl.customFit(A,F);
+rmsePow = sqrt(sum(residual(~isnan(residual)).^2,'All')/sum(~isnan(residual),'All'));
 for ii = 1:numel(FF(:))
 [PP2(ii),~] = convertWindStatsToPowerStats(F,A,R.Pmax,...
     ZZ(ii),FF(ii),0);
 end
 
-scatter3(ff,zz,ppmax)
-hold on
 surf(F,A,R.Pmax)
+hold on
 scatter3(FF(:),ZZ(:),PP(:))
 
 figure
+contourf(F,A,abs(residual));
+hold on;grid on;
+xlabel('Flow speed [m/s]')
+ylabel('Altitude [m]')
+cc = colorbar;
+cc.Label.String = 'Absolute Residual [kW]';
+cc.Label.Interpreter = 'latex';
+
+figure
 contourf(F,A,R.Pmax)
+hold on;grid on;
 xlabel('Flow [m/s]');
 ylabel('Altitude [m]');
 cc = colorbar;
 cc.Label.String = 'Power [kW]';
 cc.Label.Interpreter = 'latex';
 
-figure
-plot(F(:,2),R.Pmax(:,2),'-o');
-hold on
-plot(fNew,pNew);
+% figure
+% plot(F(:,2),R.Pmax(:,2),'-o');
+% hold on
+% plot(fNew,pNew);
 
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
