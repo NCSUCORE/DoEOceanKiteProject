@@ -245,7 +245,7 @@ end
 %%  Assess cross-current flight performance 
 if p.Results.cross
     figure;
-    subplot(2,1,1); hold on; grid on
+    subplot(3,1,1); hold on; grid on
     if lap
         if con
             plot(data(ran),squeeze(obj.velAngleError.Data(1,1,ran))*180/pi,'r-');    xlabel('Path Position');  ylabel('Angle Error [deg]');
@@ -258,7 +258,20 @@ if p.Results.cross
         plot(time,squeeze(obj.velAngleError.Data(1,1,:))*180/pi,'r-');    xlabel('Time [s]');  ylabel('Angle Error [deg]');
         plot(time,squeeze(obj.tanRollError.Data(:))*180/pi,'b-');   xlabel('Time [s]');  ylabel('Angle Error [deg]');  legend('Velocity','Tan Roll');  xlim(lim);
     end
-    subplot(2,1,2); hold on; grid on
+    subplot(3,1,2); hold on; grid on
+    if lap
+        if con
+            plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'r-');    xlabel('Path Position');  ylabel('Angle [deg]');
+            plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,2)),'b-');    xlabel('Path Position');  ylabel('Angle [deg]');  legend('Port','Stbd');
+        else
+            plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
+            plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
+        end
+    else
+        plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
+        plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
+    end
+    subplot(3,1,3); hold on; grid on
     if lap
         if con
             plot(data(ran),squeeze(obj.desiredMoment.Data(ran,1)),'r-');    xlabel('Path Position');  ylabel('Roll Moment [N]');
