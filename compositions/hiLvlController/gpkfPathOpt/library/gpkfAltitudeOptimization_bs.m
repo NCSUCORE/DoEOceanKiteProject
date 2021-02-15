@@ -70,7 +70,7 @@ zz(locateNan) = [];
 
 %% get equations for expectation and variance for power
 
-
+% see expectationAndVarianceDerivation
 hiLvlCtrl.expectedPow = @(c0,c1,mu,sig,z) mu*(mu^2 + 3*sig^2)*(c0 + c1*z);
 hiLvlCtrl.VariancePow = @(c0,c1,mu,sig,z) 3*(3*mu^4*sig^2 + 12*mu^2*sig^4 + 5*sig^6)*(c0 + c1*z)^2;
 
