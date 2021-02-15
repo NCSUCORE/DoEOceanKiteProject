@@ -68,42 +68,38 @@ ppmax(locateNan) = [];
 ff(locateNan) = [];
 zz(locateNan) = [];
 
+%% get equations for expectation and variance for power
+
+
+hiLvlCtrl.expectedPow = @(c0,c1,mu,sig,z) mu*(mu^2 + 3*sig^2)*(c0 + c1*z);
+hiLvlCtrl.VariancePow = @(c0,c1,mu,sig,z) 3*(3*mu^4*sig^2 + 12*mu^2*sig^4 + 5*sig^6)*(c0 + c1*z)^2;
+
 %% fit curve to power data
 % structure of the function
 funcStruct = fittype( @(c0,c1,z,vw) (c0 + c1.*z).*vw.^3, ...
     'coefficients',{'c0','c1'}, 'independent', {'z', 'vw'}, ...
     'dependent', 'P' );
+hiLvlCtrl.powerFunc = fit( [zz, ff], ppmax, funcStruct );
 
-hiLvlCtrl.customFit = fit( [zz, ff], ppmax, funcStruct );
-
-
-hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly31');
+% store values of the power map
 hiLvlCtrl.pMaxVals  = R.Pmax;
 hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = 0;
 hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
-hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
-    hiLvlCtrl.altVals,hiLvlCtrl.pMaxVals);
+% sotre vales of the elevation and tether lenght grid
 hiLvlCtrl.elevationGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.EL);
 hiLvlCtrl.thrLenGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.thrL);
 
-testFit = polyfit(F(:,2),R.Pmax(:,2),3);
-fNew = linspace(0.5*F(1,2),1.5*F(end,2),101);
-pNew = polyval(testFit,fNew);
 
 %% plot
 testZ = linspace(altitude(1),altitude(end),30);
 testF = linspace(flwSpd(1),flwSpd(end)*1.0,20);
 [ZZ,FF] = meshgrid(testZ,testF);
-PP = hiLvlCtrl.customFit(ZZ,FF);
-residual = R.Pmax - hiLvlCtrl.customFit(A,F);
+PP = hiLvlCtrl.powerFunc(ZZ,FF);
+residual = R.Pmax - hiLvlCtrl.powerFunc(A,F);
 rmsePow = sqrt(sum(residual(~isnan(residual)).^2,'All')/sum(~isnan(residual),'All'));
-for ii = 1:numel(FF(:))
-[PP2(ii),~] = convertWindStatsToPowerStats(F,A,R.Pmax,...
-    ZZ(ii),FF(ii),0);
-end
 
 surf(F,A,R.Pmax)
 hold on
@@ -127,11 +123,7 @@ cc = colorbar;
 cc.Label.String = 'Power [kW]';
 cc.Label.Interpreter = 'latex';
 
-% figure
-% plot(F(:,2),R.Pmax(:,2),'-o');
-% hold on
-% plot(fNew,pNew);
-
+%% save file
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
 
