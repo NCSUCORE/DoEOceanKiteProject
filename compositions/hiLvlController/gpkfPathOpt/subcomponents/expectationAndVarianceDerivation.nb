@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      8910,        248]
-NotebookOptionsPosition[      7728,        219]
-NotebookOutlinePosition[      8075,        234]
-CellTagsIndexPosition[      8032,        231]
+NotebookDataLength[      9257,        260]
+NotebookOptionsPosition[      8033,        230]
+NotebookOutlinePosition[      8422,        246]
+CellTagsIndexPosition[      8379,        243]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -162,8 +162,17 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{
   RowBox[{"(*", " ", 
-   RowBox[{"equation", " ", "for", " ", "power", " ", "variance"}], " ", 
-   "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"equation", " ", "for", " ", "power", " ", 
+     RowBox[{"variance", ":", " ", 
+      RowBox[{"Var", "[", "x", "]"}]}]}], " ", "=", " ", 
+    RowBox[{
+     RowBox[{"E", "[", 
+      RowBox[{"x", "^", "2"}], "]"}], " ", "-", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"E", "[", "x", "]"}], ")"}], "^", "2"}]}]}], "*)"}], 
+  "\[IndentingNewLine]", 
   RowBox[{"varVal", " ", "=", " ", 
    RowBox[{"Simplify", "[", 
     RowBox[{
@@ -191,8 +200,10 @@ Cell[BoxData[
   3.8224106891276846`*^9, 3.822410692326438*^9}, {3.822410882349124*^9, 
   3.8224108866096306`*^9}, {3.822411149639614*^9, 3.822411150660256*^9}, {
   3.8224112013882475`*^9, 3.8224112234266825`*^9}, {3.8224126860572395`*^9, 
-  3.8224127004134674`*^9}, {3.822412970211605*^9, 3.8224129704459643`*^9}},
- CellLabel->"In[41]:=",ExpressionUUID->"5fc92a3b-c2bf-4b36-8b72-6ca177a61cc4"],
+  3.8224127004134674`*^9}, {3.822412970211605*^9, 3.8224129704459643`*^9}, {
+  3.822420098909049*^9, 
+  3.8224201226831865`*^9}},ExpressionUUID->"5fc92a3b-c2bf-4b36-8b72-\
+6ca177a61cc4"],
 
 Cell[BoxData[
  RowBox[{"3", " ", 
@@ -217,8 +228,9 @@ Cell[BoxData[
  CellLabel->"Out[41]=",ExpressionUUID->"63d9ba7d-71f8-4328-875b-599dc533c3b9"]
 }, Open  ]]
 },
-WindowSize->{1236, 978},
-WindowMargins->{{Automatic, -1269}, {-35, Automatic}},
+WindowSize->{1149, 978},
+WindowMargins->{{Automatic, -1160}, {-2, Automatic}},
+PrintingPageRange->{Automatic, Automatic},
 FrontEndVersion->"11.3 for Microsoft Windows (64-bit) (March 6, 2018)",
 StyleDefinitions->"Default.nb"
 ]
@@ -247,8 +259,8 @@ Cell[3390, 108, 1483, 30, 48, "Input",ExpressionUUID->"3bfcd787-e721-4ddc-a45a-4
 Cell[4876, 140, 621, 16, 36, "Output",ExpressionUUID->"f4d43146-6827-4985-b121-b029d89e807f"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5534, 161, 1432, 33, 86, "Input",ExpressionUUID->"5fc92a3b-c2bf-4b36-8b72-6ca177a61cc4"],
-Cell[6969, 196, 743, 20, 36, "Output",ExpressionUUID->"63d9ba7d-71f8-4328-875b-599dc533c3b9"]
+Cell[5534, 161, 1737, 44, 67, "Input",ExpressionUUID->"5fc92a3b-c2bf-4b36-8b72-6ca177a61cc4"],
+Cell[7274, 207, 743, 20, 36, "Output",ExpressionUUID->"63d9ba7d-71f8-4328-875b-599dc533c3b9"]
 }, Open  ]]
 }
 ]
