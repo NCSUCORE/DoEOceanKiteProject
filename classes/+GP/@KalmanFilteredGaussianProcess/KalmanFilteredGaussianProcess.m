@@ -243,29 +243,24 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             [flowPred,flowVar] = obj.calcPredMeanAndPostVar(altitude,F_t,sigF_t);
             flowPred = obj.meanFunction(altitude,obj.meanFnProps(1),...
                 obj.meanFnProps(2)) - flowPred;
-            % power, altitude, and flow values
-            pVals = hiLvlCtrl.pMaxVals;
-            zVals = hiLvlCtrl.altVals;
-            fVals = hiLvlCtrl.flowVals;
-            % estimate power output
-            estPower1 = interp2(zVals,fVals,pVals,altitude,flowPred);
-            estPower2 = hiLvlCtrl.powerGrid(flowPred,altitude);
-            estPower3 = hiLvlCtrl.powerFunc(flowPred,altitude);
-            [expP,varP] = convertWindStatsToPowerStats(fVals,zVals,pVals,...
-                altitude,flowPred,flowVar);
-            if isnan(expP)
-                expP = -1e6;
-                varP = 0;
-            end
-            % pick one
-            estPower = expP;
-            varPower = varP;
+            % extract constants from power function
+            c0 =  hiLvlCtrl.powerFunc.c0;
+            c1 =  hiLvlCtrl.powerFunc.c1;
+            % calculate standard deviation
+            sig = real(sqrt(flowVar));
+            % estimate power statistics
+            expP = hiLvlCtrl.expectedPow(c0,c1,flowPred,sig,altitude);
+            varP = hiLvlCtrl.VariancePow(c0,c1,flowPred,sig,altitude);
             % exploitation incentive
-            jExploit = obj.exploitationConstant*estPower;
+            jExploit = obj.exploitationConstant*expP;
             % exploration incentive
-            jExplore = obj.explorationConstant*varPower.^(1/2);
+            jExplore = obj.explorationConstant*varP.^(1/2);
+            % imaginary line beyond which kite doesn;t fly
+            imagLine = @(x) -750 + (700/4)*x;
+            % penalty for crossing said line
+            penalty = -0.0*(max(0,imagLine(flowPred)-altitude));
             % sum
-            val = jExploit + jExplore;
+            val = jExploit + jExplore + penalty;
             % other outputs
             varargout{1} = jExploit;
             varargout{2} = jExplore;

@@ -1,4 +1,4 @@
-clear
+% clear
 clc
 close all
 
@@ -69,7 +69,6 @@ ff(locateNan) = [];
 zz(locateNan) = [];
 
 %% get equations for expectation and variance for power
-
 % see expectationAndVarianceDerivation
 hiLvlCtrl.expectedPow = @(c0,c1,mu,sig,z) mu*(mu^2 + 3*sig^2)*(c0 + c1*z);
 hiLvlCtrl.VariancePow = @(c0,c1,mu,sig,z) 3*(3*mu^4*sig^2 + 12*mu^2*sig^4 + 5*sig^6)*(c0 + c1*z)^2;
@@ -86,6 +85,10 @@ hiLvlCtrl.pMaxVals  = R.Pmax;
 hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = 0;
 hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
+
+% add grid for omniscient
+hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
+    hiLvlCtrl.altVals,hiLvlCtrl.pMaxVals);
 % sotre vales of the elevation and tether lenght grid
 hiLvlCtrl.elevationGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.EL);

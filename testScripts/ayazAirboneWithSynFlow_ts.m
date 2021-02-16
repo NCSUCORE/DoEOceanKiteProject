@@ -159,20 +159,22 @@ trackKFGP = statKFGP{2,3}/cIn.pathLength;
 %% run omniscient simulation
 [synFlow,synAlt] = env.water.generateData();
 keyboard
-[altSPTraj,elevSPTraj,thrSPTraj] = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
-    hiLvlCtrl.initVals,simParams.duration.Value);
+% [altSPTraj,elevSPTraj,thrSPTraj] = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
+%     hiLvlCtrl.initVals,simParams.duration.Value);
+% 
+% hiLvlCtrl.altSPTraj = altSPTraj;
+% hiLvlCtrl.elevSPTraj = elevSPTraj;
+% hiLvlCtrl.thrSPTraj = thrSPTraj;
+% 
+% HILVLCONTROLLER = 'omniscientAltitudeOpt';
+% 
+% simWithMonitor('OCTModel','minRate',0);
+% 
+% tscOmni = signalcontainer(logsout);
+% statOmni = computeSimLapStats(tscOmni);
+% trackOmni = statOmni{2,3}/cIn.pathLength;
 
-hiLvlCtrl.altSPTraj = altSPTraj;
-hiLvlCtrl.elevSPTraj = elevSPTraj;
-hiLvlCtrl.thrSPTraj = thrSPTraj;
-
-HILVLCONTROLLER = 'omniscientAltitudeOpt';
-
-simWithMonitor('OCTModel','minRate',0);
-
-tscOmni = signalcontainer(logsout);
-statOmni = computeSimLapStats(tscOmni);
-trackOmni = statOmni{2,3}/cIn.pathLength;
+load('omniRes');
 
 %% omniscient
 switch simScenario(2)
