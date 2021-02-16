@@ -5,7 +5,7 @@ addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'cross',false,@islogical);
-addOptional(p,'AoASP',false,@islogical);
+addOptional(p,'AoASP',true,@islogical);
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'dragChar',false,@islogical);
@@ -82,15 +82,15 @@ yyaxis left
 if lap
     if con
         plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
-        plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
+%         plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
 %         text(0.04,310,sprintf('P = %.3f kW',mean(powAvg)*1e-3))
     else
         plot(time(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
-        plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
+%         plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
     end
 else
     plot(time,power*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
-    plot(time,PLoyd*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
+%     plot(time,PLoyd*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
 end
 yyaxis right
 if lap
@@ -104,14 +104,19 @@ else
 end
 %%  Plot Tether Tension
 subplot(R,C,2); hold on; grid on
+if numel(obj.maxTension.Data) == 1
+    Tmax = (obj.maxTension.Data+0.5)*ones(numel(time),1);
 if lap
     if con
-        plot(data(ran),airNode(ran),'b-');  plot(data(ran),gndNode(ran),'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Glider')
+        plot(data(ran),Tmax(ran),'r--');    plot(data(ran),airNode(ran),'b-');  
+        plot(data(ran),gndNode(ran),'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider')
     else
-        plot(time(ran),airNode(ran),'b-');  plot(time(ran),gndNode(ran),'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Glider');  xlim(lim)
+        plot(time(ran),Tmax(ran),'r--');    plot(time(ran),airNode(ran),'b-');  
+        plot(time(ran),gndNode(ran),'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
     end
 else
-    plot(time,airNode,'b-');  plot(time,gndNode,'r--');  ylabel('Thr Tension [kN]');  legend('Kite','Glider');  xlim(lim)
+    plot(time,Tmax,'r--');  plot(time,airNode,'b-');  plot(time,gndNode,'g-');  
+    ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
 end
 %%  Plot Speed
 subplot(R,C,3); hold on; grid on
@@ -119,32 +124,32 @@ if lap
     if con
         if turb
             plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  ylim([0,inf])
-            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
+            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  legend('Turb','Kite','location','southeast');
+%             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
 %             text(0.05,1,sprintf('V = %.3f m/s',mean(speed(ran))))
 %             text(0.05,3,['$\mathrm{V_f}$',sprintf(' = %.3f m/s',env.water.speed.Value)])
         else
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
-            plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
+%             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     else
         if turb
             plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim);  ylim([0,inf])
-            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');
-            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
+            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  legend('Turb','Kite','location','southeast');
+%             plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
         else
             plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
-            plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
+%             plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     end
 else
     if turb
         plot(time,speed,'g-');  ylabel('Speed [m/s]');  xlim(lim)
-        plot(time,vKite,'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
-        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
+        plot(time,vKite,'b-');  ylabel('Speed [m/s]');  ylim([0,inf]);  legend('Turb','Kite','location','southeast');
+%         plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
     else
         plot(time,vKite,'b-');  ylabel('Speed [m/s]');
-        plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
+%         plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
     end
 end
 %%  Plot Angle of attack
@@ -186,9 +191,9 @@ if lap
         plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,3)),'r-');  xlabel('Path Position');  ylabel('Deflection [deg]');
         plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,4)),'g-');  xlabel('Path Position');  ylabel('Deflection [deg]');
     else
-        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
-        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
-        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
+        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
     end
 else
     plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)

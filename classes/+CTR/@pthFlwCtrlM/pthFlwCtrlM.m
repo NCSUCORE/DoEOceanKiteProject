@@ -37,6 +37,7 @@ classdef pthFlwCtrlM < handle
         AoASP
         RCtrl
         AoAConst
+        AoAmin
         Tmax
         optAltitude
     end
@@ -50,7 +51,7 @@ classdef pthFlwCtrlM < handle
             obj.rollMoment          = CTR.FPID('rad','N*m');
             obj.elevCtrl            = CTR.FPID('rad','deg');
             obj.rollCtrl            = CTR.FPID('rad','deg');
-            obj.alphaCtrl           = CTR.FPID('rad','kN');
+            obj.alphaCtrl           = CTR.FPID('kN','rad');
             obj.yawCtrl             = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;
@@ -77,6 +78,7 @@ classdef pthFlwCtrlM < handle
             obj.AoACtrl             = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = none; 1 = On');
             obj.AoASP               = SIM.parameter('Unit','','Description','Flag to decide AoA control. 0 = constant; 1 = time-lookup');
             obj.AoAConst            = SIM.parameter('Unit','deg','Description','Constant AoA setpoint');
+            obj.AoAmin              = SIM.parameter('Unit','deg','Description','Minimum AoA setpoint');
             obj.Tmax                = SIM.parameter('Unit','kN','Description','Maximum tether tension limit');
             obj.optAltitude         = SIM.parameter('Unit','m','Description','Mean operating altitude');
         end
