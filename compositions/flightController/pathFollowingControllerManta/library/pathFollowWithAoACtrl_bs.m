@@ -41,7 +41,7 @@ fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.rollCtrl.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.rollCtrl.tau.setValue(0.001,'s');
 
-fltCtrl.alphaCtrl.kp.setValue(1,'(kN)/(rad)');
+fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');
 
 fltCtrl.yawCtrl.kp.setValue(200,'(deg)/(rad)');
 fltCtrl.yawCtrl.ki.setValue(1,'(deg)/(rad*s)');
@@ -59,6 +59,7 @@ fltCtrl.winchSpeedIn.setValue(-0.25,'m/s');
 fltCtrl.AoACtrl.setValue(1,'');                   
 fltCtrl.AoASP.setValue(0,'');                   
 fltCtrl.AoAConst.setValue(14*pi/180,'deg');
+fltCtrl.AoAmin.setValue(-5*pi/180,'deg');
 
 fltCtrl.Tmax.setValue(30,'kN');
 fltCtrl.optAltitude.setValue(200,'m');

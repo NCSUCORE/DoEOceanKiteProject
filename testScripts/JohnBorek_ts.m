@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear;clc;
+clear; %clc;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10, 4 = DOE
@@ -11,12 +11,13 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 2 1 1 2 1==0 false true];
-thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .5;                                               %   m/s - Flow speed
+simScenario = [1 2 1 1 1 1==1 false true];
+thrLength = 200;  altitude = 100;                           %   m/m - Initial tether length/operating altitude
+flwSpd = .15;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0125;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
+amp = 0.10;  freq = 0.05*2*pi;   
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -105,11 +106,11 @@ switch simScenario(3)
         fltCtrl.firstSpoolLap.setValue(10,'');                  fltCtrl.RCtrl.setValue(1,'');
         fltCtrl.AoASP.setValue(1,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
         fltCtrl.AoACtrl.setValue(2,'');                         fltCtrl.elevatorConst.setValue(-3,'deg');
-        fltCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');         fltCtrl.Tmax.setValue(Tmax,'kN');
+        fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         fltCtrl.Tmax.setValue(Tmax-0.5,'kN');
+        fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
         fltCtrl.tanRoll.kp.setValue(0.8,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
-        fltCtrl.pitchMoment.kp.setValue(100,'(N*m)/(rad)');     fltCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
-        fltCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');      fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
-        fltCtrl.rollMoment.kd.setValue(2.2e5,'(N*m)/(rad/s)');  fltCtrl.rollMoment.tau.setValue(0.001,'s');
+        fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        fltCtrl.rudderGain.setValue(0,'');
         fltCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        fltCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
     case 2
@@ -119,7 +120,7 @@ switch simScenario(3)
         pthCtrl.firstSpoolLap.setValue(10,'');                  pthCtrl.RCtrl.setValue(1,'');
         pthCtrl.AoASP.setValue(0,'');                           pthCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
         pthCtrl.AoACtrl.setValue(2,'');                         pthCtrl.elevatorConst.setValue(2,'deg');
-        pthCtrl.alphaCtrl.kp.setValue(.3,'(kN)/(rad)');         pthCtrl.Tmax.setValue(Tmax,'kN');
+        pthCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl.Tmax.setValue(Tmax,'kN');
         pthCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         pthCtrl.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
         pthCtrl.pitchMoment.kp.setValue(0,'(N*m)/(rad)');       pthCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
         pthCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');      pthCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
@@ -171,9 +172,9 @@ if simScenario(8)
         case 1
             lap = max(tsc.lapNumS.Data)-1;
             if max(tsc.lapNumS.Data) < 2
-                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             else
-                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             end
         case 3
             tsc.plotLaR(fltCtrl,'Steady',false);
