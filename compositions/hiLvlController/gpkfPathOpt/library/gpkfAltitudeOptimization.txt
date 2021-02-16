@@ -1,9 +1,1 @@
-<<<<<<< HEAD
-hiLvlCtrl is too big to display and takes up 1.6081e+04 bytes
-=======
-<<<<<<< HEAD
-hiLvlCtrl is too big to display and takes up 2.0617e+04 bytes
-=======
-hiLvlCtrl is too big to display and takes up 2.1522e+04 bytes
->>>>>>> 22f9af1b55b0f3ca47baf68c7de84a67e8d59e59
->>>>>>> 5ead37037e61b46135b7d09b9bed4c598f94a0b1
+hiLvlCtrl is too big to display and takes up 1.9993e+04 bytes
