@@ -41,7 +41,12 @@ switch figName
     case 'Turbine energy'
         data = tsc.turbEnrg.Data(:)./1e3;
         yLab = '[kJ]';
-        
+    case 'Tether length SP'
+        data = tsc.thrLSP.Data(:);
+        yLab = '[m]';
+    case 'Tether length'
+        data = tsc.tetherLengths.Data(:);
+        yLab = '[m]';
 end
 
 fh = findobj( 'Type', 'Figure', 'Name', figName);

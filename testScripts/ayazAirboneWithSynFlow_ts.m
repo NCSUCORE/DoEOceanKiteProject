@@ -32,8 +32,6 @@ simScenario = [2 3 2 1 false];
 thrDrag = true;
 
 %% Load components
-% Spooling controller
-SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % Ground station
@@ -148,8 +146,12 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 fltCtrl.elevatorReelInDef.setValue(0,'deg');
 
+% Spooling controller
+SPOOLINGCONTROLLER = 'spoolingSpeedTrackingCtrl';
+
+
 %% Run Simulation
-keyboard
+% keyboard
 simWithMonitor('OCTModel','minRate',0);
 
 tscKFGP = signalcontainer(logsout);
@@ -158,23 +160,23 @@ trackKFGP = statKFGP{2,3}/cIn.pathLength;
 
 %% run omniscient simulation
 [synFlow,synAlt] = env.water.generateData();
-keyboard
-% [altSPTraj,elevSPTraj,thrSPTraj] = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
-%     hiLvlCtrl.initVals,simParams.duration.Value);
-% 
-% hiLvlCtrl.altSPTraj = altSPTraj;
-% hiLvlCtrl.elevSPTraj = elevSPTraj;
-% hiLvlCtrl.thrSPTraj = thrSPTraj;
-% 
-% HILVLCONTROLLER = 'omniscientAltitudeOpt';
-% 
-% simWithMonitor('OCTModel','minRate',0);
-% 
-% tscOmni = signalcontainer(logsout);
-% statOmni = computeSimLapStats(tscOmni);
-% trackOmni = statOmni{2,3}/cIn.pathLength;
+% keyboard
+[altSPTraj,elevSPTraj,thrSPTraj] = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
+    hiLvlCtrl.initVals,simParams.duration.Value);
 
-load('omniRes');
+hiLvlCtrl.altSPTraj = altSPTraj;
+hiLvlCtrl.elevSPTraj = elevSPTraj;
+hiLvlCtrl.thrSPTraj = thrSPTraj;
+
+HILVLCONTROLLER = 'omniscientAltitudeOpt';
+
+simWithMonitor('OCTModel','minRate',0);
+
+tscOmni = signalcontainer(logsout);
+statOmni = computeSimLapStats(tscOmni);
+trackOmni = statOmni{2,3}/cIn.pathLength;
+
+save('omniRes','tscOmni');
 
 %% omniscient
 switch simScenario(2)
@@ -249,7 +251,7 @@ switch simScenario(2)
     case 3
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed','Altitude SP',...
-            'Turbine energy'};
+            'Turbine energy','Tether length','Tether length SP'};
 end
 
 for ii = 1:length(plotFigs)
