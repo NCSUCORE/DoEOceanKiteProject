@@ -95,6 +95,20 @@ hiLvlCtrl.elevationGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
 hiLvlCtrl.thrLenGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.thrL);
 
+%% mid level control for tether length and elevation angle trajectory opt
+hiLvlCtrl.midLvlCtrl.dLMax = 5;
+hiLvlCtrl.midLvlCtrl.dLMin = -1;
+hiLvlCtrl.midLvlCtrl.dTMax = 2;
+hiLvlCtrl.midLvlCtrl.dTMin = -2;
+hiLvlCtrl.midLvlCtrl.LMax  = 1500;
+hiLvlCtrl.midLvlCtrl.LMin  = 400;
+hiLvlCtrl.midLvlCtrl.TMax  = 40;
+hiLvlCtrl.midLvlCtrl.TMin  = 10;
+hiLvlCtrl.midLvlCtrl.predHorz  = 4;
+hiLvlCtrl.midLvlCtrl.dt  = hiLvlCtrl.mpckfgpTimeStep/hiLvlCtrl.midLvlCtrl.predHorz;
+hiLvlCtrl.midLvlCtrl.pFunc = @(Lthr,elev,z) 0;
+hiLvlCtrl.midLvlCtrl.LthrPenaltyWeight = 1;
+hiLvlCtrl.midLvlCtrl.TPenaltyWeight    = 1;
 
 %% plot
 testZ = linspace(altitude(1),altitude(end),30);
