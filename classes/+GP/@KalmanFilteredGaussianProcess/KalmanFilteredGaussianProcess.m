@@ -236,6 +236,9 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             val = eTraj - [e0;eTraj(1:end-1)];
         end
         
+    end
+    %% altitude optimization methods
+    methods
         % calculate aquistion function for altitude optimization
         function [val,varargout] = calcAquisitionFunctionForAltOpt(obj,...
                 altitude,F_t,sigF_t,hiLvlCtrl)
@@ -297,7 +300,68 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             varargout{1} = jExploit;
             varargout{2} = jExplore;
             varargout{3} = flowPred;
+        end        
+    end
+    
+    %% tether length and elevation angle optimization methods
+    methods
+        
+        % calculate MPC objective function for altitude optimization
+        function [val,varargout] = ...
+                calcMpcObjectiveFnThrLengthAndElvOpt(obj,F_t,sigF_t,skp1_kp1,...
+                ckp1_kp1,LthrSP,elevSP,Lthr,elev,dLdT,hiLvlCtrl)
+            % prediction horizon
+            predHorz = obj.predictionHorizon;
+            % separate spooling and elevation rates
+            dL = dLdT(1:predHorz);
+            dT = dLdT(predHorz+1:end);
+            % local variables
+            LthrTraj = nan(predHorz,1);
+            elevTraj = nan(predHorz,1);
+            % changes in tether length and elevation angle
+            LthrChanged = dL*obj.kfgpTimeStep*60;
+            elevChanged = dT*obj.kfgpTimeStep*60;
+            % dynamics
+            LthrTraj(1) = Lthr + LthrChanged(1);
+            elevTraj(1) = elev + elevChanged(1);
+            for ii = 2:predHorz
+                LthrTraj(ii) = LthrTraj(ii-1) + LthrChanged(ii);
+                elevTraj(ii) = elevTraj(ii-1) + elevChanged(ii);                
+            end
+            % altitude trajectory
+            zTraj = LthrTraj.*sind(elevTraj);
+            % preallocate
+            powTraj   = nan(predHorz,1);
+            flowPred  = nan(predHorz,1);
+            % calculate acquisition function at each mean elevation angle
+            for ii = 1:predHorz
+                % calculate flow predictions
+                [flowPred(ii),~] = ...
+                calcPredMeanAndPostVar(obj,zTraj(ii),F_t,sigF_t);
+                % correct flow prediction
+                flowPred(ii) = obj.meanFunction(zTraj(ii),obj.meanFnProps(1),...
+                    obj.meanFnProps(2)) - flowPred(ii);
+                % calculate power estimate
+                powTraj(ii) = hiLvlCtrl.midLvlCtrl.pFunc(LthrTraj(ii),...
+                    elevTraj(ii),zTraj(ii));
+                % update kalman states
+                sk_k = skp1_kp1;
+                ck_k = ckp1_kp1;
+                % perform kalman state estimation
+                [F_t,sigF_t,skp1_kp1,ckp1_kp1] = ...
+                    obj.calcKalmanStateEstimates(sk_k,ck_k,zTraj(ii),[]);
+                
+            end
+            % calculate terminal penalties
+            LthrPen = -hiLvlCtrl.midLvlCtrl.LthrPenaltyWeight*norm(LthrSP - LthrTraj(end));
+            elevPen = -hiLvlCtrl.midLvlCtrl.TPenaltyWeight*norm(elevSP - elevTraj(end));
+            % mpc objective function val
+            val = sum(powTraj) + LthrPen + elevPen;
+            varargout{1} = powTraj;
+            varargout{2} = LthrTraj;
+            varargout{3} = elevTraj;
         end
+        
     end
     
        

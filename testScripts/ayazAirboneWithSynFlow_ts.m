@@ -158,6 +158,9 @@ tscKFGP = signalcontainer(logsout);
 statKFGP = computeSimLapStats(tscKFGP);
 trackKFGP = statKFGP{2,3}/cIn.pathLength;
 
+save('testRes1','tscKFGP');
+
+
 %% run omniscient simulation
 [synFlow,synAlt] = env.water.generateData();
 % keyboard
@@ -176,7 +179,8 @@ tscOmni = signalcontainer(logsout);
 statOmni = computeSimLapStats(tscOmni);
 trackOmni = statOmni{2,3}/cIn.pathLength;
 
-save('omniRes','tscOmni');
+save('omniRes2','tscOmni');
+% load('omniRes');
 
 %% omniscient
 switch simScenario(2)

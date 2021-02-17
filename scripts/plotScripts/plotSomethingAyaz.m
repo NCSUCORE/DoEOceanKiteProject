@@ -1,4 +1,4 @@
-function plotSomething(tsc,figName,sMinHr)
+function plotSomethingAyaz(tsc,figName,sMinHr)
 
 switch sMinHr
     case 's'
