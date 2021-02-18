@@ -32,8 +32,6 @@ simScenario = [2 3 2 1 false];
 thrDrag = true;
 
 %% Load components
-% Spooling controller
-SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % Ground station
@@ -148,17 +146,24 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 fltCtrl.elevatorReelInDef.setValue(0,'deg');
 
+% Spooling controller
+SPOOLINGCONTROLLER = 'spoolingSpeedTrackingCtrl';
+
+
 %% Run Simulation
-keyboard
+% keyboard
 simWithMonitor('OCTModel','minRate',0);
 
 tscKFGP = signalcontainer(logsout);
 statKFGP = computeSimLapStats(tscKFGP);
 trackKFGP = statKFGP{2,3}/cIn.pathLength;
 
+save('testRes1','tscKFGP');
+
+
 %% run omniscient simulation
 [synFlow,synAlt] = env.water.generateData();
-keyboard
+% keyboard
 [altSPTraj,elevSPTraj,thrSPTraj] = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
     hiLvlCtrl.initVals,simParams.duration.Value);
 
@@ -173,6 +178,9 @@ simWithMonitor('OCTModel','minRate',0);
 tscOmni = signalcontainer(logsout);
 statOmni = computeSimLapStats(tscOmni);
 trackOmni = statOmni{2,3}/cIn.pathLength;
+
+save('omniRes2','tscOmni');
+% load('omniRes');
 
 %% omniscient
 switch simScenario(2)
@@ -247,7 +255,7 @@ switch simScenario(2)
     case 3
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed','Altitude SP',...
-            'Turbine energy'};
+            'Turbine energy','Tether length','Tether length SP'};
 end
 
 for ii = 1:length(plotFigs)

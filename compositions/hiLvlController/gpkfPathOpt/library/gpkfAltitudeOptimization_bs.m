@@ -1,6 +1,6 @@
-clear
+% clear
 clc
-% close all
+close all
 
 HILVLCONTROLLER = 'gpkfAltitudeOpt';
 PATHGEOMETRY = 'lemOfBooth';
@@ -68,50 +68,79 @@ ppmax(locateNan) = [];
 ff(locateNan) = [];
 zz(locateNan) = [];
 
-hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly31');
+%% get equations for expectation and variance for power
+% see expectationAndVarianceDerivation
+hiLvlCtrl.expectedPow = @(c0,c1,mu,sig,z) mu*(mu^2 + 3*sig^2)*(c0 + c1*z);
+hiLvlCtrl.VariancePow = @(c0,c1,mu,sig,z) 3*(3*mu^4*sig^2 + 12*mu^2*sig^4 + 5*sig^6)*(c0 + c1*z)^2;
+
+%% fit curve to power data
+% structure of the function
+funcStruct = fittype( @(c0,c1,z,vw) (c0 + c1.*z).*vw.^3, ...
+    'coefficients',{'c0','c1'}, 'independent', {'z', 'vw'}, ...
+    'dependent', 'P' );
+hiLvlCtrl.powerFunc = fit( [zz, ff], ppmax, funcStruct );
+
+% store values of the power map
 hiLvlCtrl.pMaxVals  = R.Pmax;
 hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = 0;
 hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
+
+% add grid for omniscient
 hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,hiLvlCtrl.pMaxVals);
+% sotre vales of the elevation and tether lenght grid
 hiLvlCtrl.elevationGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.EL);
 hiLvlCtrl.thrLenGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.thrL);
 
-testFit = polyfit(F(:,2),R.Pmax(:,2),3);
-fNew = linspace(0.5*F(1,2),1.5*F(end,2),101);
-pNew = polyval(testFit,fNew);
+%% mid level control for tether length and elevation angle trajectory opt
+hiLvlCtrl.midLvlCtrl.dLMax = 5;
+hiLvlCtrl.midLvlCtrl.dLMin = -1;
+hiLvlCtrl.midLvlCtrl.dTMax = 2;
+hiLvlCtrl.midLvlCtrl.dTMin = -2;
+hiLvlCtrl.midLvlCtrl.LMax  = 1500;
+hiLvlCtrl.midLvlCtrl.LMin  = 400;
+hiLvlCtrl.midLvlCtrl.TMax  = 40;
+hiLvlCtrl.midLvlCtrl.TMin  = 10;
+hiLvlCtrl.midLvlCtrl.predHorz  = 4;
+hiLvlCtrl.midLvlCtrl.dt  = hiLvlCtrl.mpckfgpTimeStep/hiLvlCtrl.midLvlCtrl.predHorz;
+hiLvlCtrl.midLvlCtrl.pFunc = @(Lthr,elev,z) 0;
+hiLvlCtrl.midLvlCtrl.LthrPenaltyWeight = 1;
+hiLvlCtrl.midLvlCtrl.TPenaltyWeight    = 1;
 
 %% plot
 testZ = linspace(altitude(1),altitude(end),30);
-testF = linspace(flwSpd(1),flwSpd(end)*1.5,20);
+testF = linspace(flwSpd(1),flwSpd(end)*1.0,20);
 [ZZ,FF] = meshgrid(testZ,testF);
-PP = hiLvlCtrl.powerGrid(FF(:),ZZ(:));
-for ii = 1:numel(FF(:))
-[PP2(ii),~] = convertWindStatsToPowerStats(F,A,R.Pmax,...
-    ZZ(ii),FF(ii),0);
-end
+PP = hiLvlCtrl.powerFunc(ZZ,FF);
+residual = R.Pmax - hiLvlCtrl.powerFunc(A,F);
+rmsePow = sqrt(sum(residual(~isnan(residual)).^2,'All')/sum(~isnan(residual),'All'));
 
-scatter3(ff,zz,ppmax)
-hold on
 surf(F,A,R.Pmax)
+hold on
 scatter3(FF(:),ZZ(:),PP(:))
 
 figure
+contourf(F,A,abs(residual));
+hold on;grid on;
+xlabel('Flow speed [m/s]')
+ylabel('Altitude [m]')
+cc = colorbar;
+cc.Label.String = 'Absolute Residual [kW]';
+cc.Label.Interpreter = 'latex';
+
+figure
 contourf(F,A,R.Pmax)
+hold on;grid on;
 xlabel('Flow [m/s]');
 ylabel('Altitude [m]');
 cc = colorbar;
 cc.Label.String = 'Power [kW]';
 cc.Label.Interpreter = 'latex';
 
-figure
-plot(F(:,2),R.Pmax(:,2),'-o');
-hold on
-plot(fNew,pNew);
-
+%% save file
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
 

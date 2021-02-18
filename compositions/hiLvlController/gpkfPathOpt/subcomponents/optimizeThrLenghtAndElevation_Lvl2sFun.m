@@ -1,4 +1,4 @@
-function optimizeAltitude_Lvl2SFun(block)
+function optimizeThrLenghtAndElevation_Lvl2sFun(block)
 %MSFUNTMPL_BASIC A Template for a Level-2 MATLAB S-Function
 %   The MATLAB S-function is written as a MATLAB function with the
 %   same name as the S-function. Replace 'msfuntmpl_basic' with the 
@@ -29,7 +29,7 @@ setup(block);
 function setup(block)
 
 % Register number of ports
-block.NumInputPorts  = 4;
+block.NumInputPorts  = 8;
 block.NumOutputPorts = 5;
 
 % Setup port properties to be inherited or dynamic
@@ -37,13 +37,13 @@ block.SetPreCompInpPortInfoToDynamic;
 block.SetPreCompOutPortInfoToDynamic;
 
 % Override input port properties
-mpckfgp = block.DialogPrm(1).Data;
-nP   = length(mpckfgp.initVals.s0);
-IPsizes = [nP nP^2 1 1];
-OPsizes = mpckfgp.predictionHorizon*[1 1 1 1 1];
+midLvlKfgp = block.DialogPrm(1).Data;
+nP   = length(midLvlKfgp.initVals.s0);
+IPsizes = [nP nP^2 ones(1,6)];
+OPsizes = midLvlKfgp.predictionHorizon*ones(1,5);
 
-for ii = 1:4
-block.InputPort(ii).Dimensions         = IPsizes(ii);
+for ii = 1:block.NumInputPorts
+block.InputPort(ii).Dimensions        = IPsizes(ii);
 block.InputPort(ii).DatatypeID        = 0; 
 block.InputPort(ii).Complexity        = 'Real';
 block.InputPort(ii).DirectFeedthrough = true;
@@ -51,8 +51,8 @@ block.InputPort(ii).SamplingMode      = 'Sample';
 end
 
 % Override output port properties
-for ii = 1:5
-block.OutputPort(ii).Dimensions    = OPsizes(ii);
+for ii = 1:block.NumOutputPorts
+block.OutputPort(ii).Dimensions   = OPsizes(ii);
 block.OutputPort(ii).DatatypeID   = 0;
 block.OutputPort(ii).Complexity   = 'Real';
 block.OutputPort(ii).SamplingMode = 'Sample';
@@ -102,53 +102,77 @@ block.RegBlockMethod('Terminate', @Terminate); % Required
 %%   C MEX counterpart: mdlOutputs
 %%
 function Outputs(block)
-mpckfgp = block.DialogPrm(1).Data;
+% parameters
+midLvlKfgp = block.DialogPrm(1).Data;
 hiLvlCtrl = block.DialogPrm(2).Data;
+% inputs
+sk_k     = block.InputPort(1).Data;
+ck_k     = reshape(block.InputPort(2).Data,length(sk_k),[]);
+zCurrent = block.InputPort(3).Data;
+flowVal  = block.InputPort(4).Data;
+LthrSP   = block.InputPort(5).Data;
+elevSP   = block.InputPort(6).Data;
+Lthr     = block.InputPort(7).Data;
+elev     = block.InputPort(8).Data;
 
-sk_k    = block.InputPort(1).Data;
-ck_k    = reshape(block.InputPort(2).Data,length(sk_k),[]);
-zCurrent   = block.InputPort(3).Data;
-flowVal = block.InputPort(4).Data;
+% y value passed to kfgp
+ySamp =  midLvlKfgp.meanFunction(zCurrent,midLvlKfgp.meanFnProps(1),...
+    midLvlKfgp.meanFnProps(2)) - flowVal;
 
+% fmincon options
 options = optimoptions('fmincon','algorithm','sqp','display','off');
 
-predictionHorz = mpckfgp.predictionHorizon;
-
-ySamp =  mpckfgp.meanFunction(zCurrent,mpckfgp.meanFnProps(1),...
-    mpckfgp.meanFnProps(2)) - flowVal;
-
-% mpc kalman estimate
+% mid-lvel kalman estimate
 [F_t_mpc,sigF_t_mpc,skp1_kp1_mpc,ckp1_kp1_mpc] = ...
-    mpckfgp.calcKalmanStateEstimates(sk_k,ck_k,zCurrent,ySamp);
+    midLvlKfgp.calcKalmanStateEstimates(sk_k,ck_k,zCurrent,ySamp);
 
 %% use fminc to solve for best trajectory
-% step wise constraints
-duMax = hiLvlCtrl.maxStepChange;
-[A,b] = makeAandBmatrices(duMax,-duMax,zCurrent,predictionHorz);
-% upper and lower bounds
-lb      = hiLvlCtrl.minVal*ones(1,predictionHorz);
-ub      = hiLvlCtrl.maxVal*ones(1,predictionHorz);
+% mpc parameters
+dLMax = hiLvlCtrl.midLvlCtrl.dLMax;
+dLMin = hiLvlCtrl.midLvlCtrl.dLMin;
+dTMax = hiLvlCtrl.midLvlCtrl.dTMax;
+dTMin = hiLvlCtrl.midLvlCtrl.dTMin;
+LMax  = hiLvlCtrl.midLvlCtrl.LMax;
+LMin  = hiLvlCtrl.midLvlCtrl.LMin;
+TMax  = hiLvlCtrl.midLvlCtrl.TMax;
+TMin  = hiLvlCtrl.midLvlCtrl.TMin;
+nPred = midLvlKfgp.predictionHorizon;
+dt = hiLvlCtrl.midLvlCtrl.dt;
 
-% optimize
+% upper and lower bounds
+lbdL = dLMin*ones(nPred,1);
+ubdL = dLMax*ones(nPred,1);
+lbdT = dTMin*ones(nPred,1);
+ubdT = dTMax*ones(nPred,1);
+lb   = [lbdL;lbdT];
+ub   = [ubdL;ubdT];
+
+% initial value
+x0 = zeros(2*nPred,1);
+
+% optimize          
 [optTraj,~] = ...
-    fmincon(@(u) -mpckfgp.calcMpcObjectiveFnForAltOpt(...
+    fmincon(@(dLdT) -midLvlKfgp.calcMpcObjectiveFnThrLengthAndElvOpt(...
     F_t_mpc,sigF_t_mpc,skp1_kp1_mpc,ckp1_kp1_mpc...
-    ,u,hiLvlCtrl),zCurrent*ones(predictionHorz,1),A,b,[],[]...
-    ,lb,ub,[],options);
+    ,LthrSP,elevSP,Lthr,elev,dLdT,hiLvlCtrl),...
+    x0,[],[],[],[],lb,ub,...
+    @(dLdT)midLvlCtrl_nonlincon(dLdT,nPred,dt,LMax,LMin,TMax,TMin,Lthr,elev),...
+    options);
 
 % get other values
-[~,jExploitFmin,jExploreFmin,flowPred] = ...
-    mpckfgp.calcMpcObjectiveFnForAltOpt(F_t_mpc,sigF_t_mpc,skp1_kp1_mpc,...
-    ckp1_kp1_mpc,optTraj,hiLvlCtrl);
+[~,powTraj,LthrTraj,elevTraj] = ...
+    midLvlKfgp.calcMpcObjectiveFnThrLengthAndElvOpt(...
+    F_t_mpc,sigF_t_mpc,skp1_kp1_mpc,ckp1_kp1_mpc...
+    ,LthrSP,elevSP,Lthr,elev,optTraj,hiLvlCtrl);
 
-elTraj = hiLvlCtrl.elevationGrid(flowPred(:),optTraj(:));
-thrLTraj = hiLvlCtrl.thrLenGrid(flowPred(:),optTraj(:));
-
-block.OutputPort(1).Data = real(optTraj);
-block.OutputPort(2).Data = real(jExploitFmin);
-block.OutputPort(3).Data = real(jExploreFmin);
-block.OutputPort(4).Data = real(elTraj);
-block.OutputPort(5).Data = real(thrLTraj);
+dLTraj = optTraj(1:nPred);
+dTtraj = optTraj(nPred+1:end);
+            
+block.OutputPort(1).Data = real(dLTraj);
+block.OutputPort(2).Data = real(dTtraj);
+block.OutputPort(3).Data = real(LthrTraj);
+block.OutputPort(4).Data = real(elevTraj);
+block.OutputPort(5).Data = real(powTraj);
 
 %end Outputs
 
