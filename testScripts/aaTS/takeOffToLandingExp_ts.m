@@ -9,7 +9,7 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = .25;%[0.1:0.1:.5]; 
+flwSpdArray = .5;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -107,7 +107,7 @@ fltCtrl.startControl.setValue(150,'s')
 %     figure;
 %     tsc.elError.plot
 %     figure; 
-    tsc.elA.plot
+%     tsc.elA.plot
 %     plotsq(tsc.winchPower.Time, tsc.positionVec.Data(3,1,:))
      vhcl.animateSim(tsc,2)
     
