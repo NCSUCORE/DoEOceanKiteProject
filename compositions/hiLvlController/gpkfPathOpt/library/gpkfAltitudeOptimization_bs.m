@@ -27,7 +27,7 @@ noiseVar            = env.water.noiseVariance.Value;
 % fast state estimate time step in MINUTES
 fastTimeStep  = 10/60;
 % MPC KFGP time step in MINUTES
-mpckfgpTimeStep = 5;
+mpckfgpTimeStep = 4;
 % mpc prediction horizon
 predictionHorz  = 6;
 % MPC constants
@@ -78,6 +78,10 @@ hiLvlCtrl.VariancePow = @(c0,c1,mu,sig,z) 3*(3*mu^4*sig^2 + 12*mu^2*sig^4 + 5*si
 funcStruct = fittype( @(c0,c1,z,vw) (c0 + c1.*z).*vw.^3, ...
     'coefficients',{'c0','c1'}, 'independent', {'z', 'vw'}, ...
     'dependent', 'P' );
+% funcStruct = fittype( @(c0,c1,z,vw) (c0*exp(-c1*z)).*vw.^3, ...
+%     'coefficients',{'c0','c1'}, 'independent', {'z', 'vw'}, ...
+%     'dependent', 'P' );
+
 hiLvlCtrl.powerFunc = fit( [zz, ff], ppmax, funcStruct );
 
 % store values of the power map
@@ -106,9 +110,21 @@ hiLvlCtrl.midLvlCtrl.TMax  = 40;
 hiLvlCtrl.midLvlCtrl.TMin  = 10;
 hiLvlCtrl.midLvlCtrl.predHorz  = 4;
 hiLvlCtrl.midLvlCtrl.dt  = hiLvlCtrl.mpckfgpTimeStep/hiLvlCtrl.midLvlCtrl.predHorz;
-hiLvlCtrl.midLvlCtrl.pFunc = @(Lthr,elev,z) 0;
-hiLvlCtrl.midLvlCtrl.LthrPenaltyWeight = 1;
-hiLvlCtrl.midLvlCtrl.TPenaltyWeight    = 1;
+hiLvlCtrl.midLvlCtrl.LthrPenaltyWeight = 0.1;  % kW/m
+hiLvlCtrl.midLvlCtrl.TPenaltyWeight    = 1;    % kW/deg
+
+% make 3d interpolation table for power
+load('ThrEL_Power_Study_Air.mat');
+[THR,FLW,ELE] = meshgrid(thrLength,flwSpd,elev);
+P = [2 1 3];
+X = permute(THR, P);
+Y = permute(FLW, P);
+Z = permute(ELE, P);
+V = permute(Pavg, P);
+hiLvlCtrl.midLvlCtrl.pFunc = griddedInterpolant(X,Y,Z,V);
+
+
+
 
 %% plot
 testZ = linspace(altitude(1),altitude(end),30);
