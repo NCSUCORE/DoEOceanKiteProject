@@ -258,7 +258,7 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
             jExploit = obj.exploitationConstant*expP;
             % exploration incentive
             jExplore = obj.explorationConstant*varP.^(1/2);
-            % imaginary line beyond which kite doesn;t fly
+            % imaginary line beyond which kite doesn't fly
             imagLine = @(x) -750 + (700/4)*x;
             % penalty for crossing said line
             penalty = -0.0*(max(0,imagLine(flowPred)-altitude));
@@ -312,6 +312,8 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
                 ckp1_kp1,LthrSP,elevSP,Lthr,elev,dLdT,hiLvlCtrl)
             % prediction horizon
             predHorz = obj.predictionHorizon;
+            % imaginary line beyond which kite doesn't fly
+            imagLine = @(x) -750 + (700/4)*x;
             % separate spooling and elevation rates
             dL = dLdT(1:predHorz);
             dT = dLdT(predHorz+1:end);
@@ -343,7 +345,10 @@ classdef KalmanFilteredGaussianProcess < GP.GaussianProcess
                     obj.meanFnProps(2)) - flowPred(ii);
                 % calculate power estimate
                 powTraj(ii) = hiLvlCtrl.midLvlCtrl.pFunc(LthrTraj(ii),...
-                    elevTraj(ii),zTraj(ii));
+                    flowPred(ii),elevTraj(ii)*pi/180);
+                if isnan(powTraj(ii))
+                    powTraj(ii) = -norm(imagLine(zTraj(ii))-zTraj(ii));
+                end
                 % update kalman states
                 sk_k = skp1_kp1;
                 ck_k = ckp1_kp1;

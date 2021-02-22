@@ -49,6 +49,13 @@ switch figName
         yLab = '[m]';
 end
 
+if strcmp(figName,'Tether length SP')
+    figName = 'Tether length';
+    linStyle = '--';
+else
+    linStyle = '-';
+end
+
 fh = findobj( 'Type', 'Figure', 'Name', figName);
 
 if isempty(fh)
@@ -58,12 +65,15 @@ else
     figure(fh);
 end
 
-plot(time,data,'linewidth',1);
+plot(time,data,'linewidth',1,'linestyle',linStyle);
 grid on;
 hold on;
 xlabel(['Time [',sMinHr,']']);
 ylabel([figName,' ',yLab]);
 % title(figName);
 
+if strcmp(figName,'Tether length')
+colororder((1/255)*[0 114 189; 217 83 25]);
+end
 
 end
