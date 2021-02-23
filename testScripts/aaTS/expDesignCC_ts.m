@@ -54,7 +54,7 @@ hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad r
 
 gndStn.posVec.setValue([0 0 3],'m')
 %%  Vehicle Properties
-vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*.25*norm([1;0;0]))
+vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*abs(flwSpd)*norm([1;0;0]))
 
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
