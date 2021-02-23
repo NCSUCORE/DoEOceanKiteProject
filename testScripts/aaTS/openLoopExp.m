@@ -91,7 +91,7 @@ fltCtrl.startControl.setValue(300,'s')
 elSP = -5; 
 
 %% Open Loop Flow Speed
-flowSpeedOpenLoop = .25; 
+flowSpeedOpenLoop = .03; 
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(200,'s');  dynamicCalc = '';
 %     open_system('OCTModel')

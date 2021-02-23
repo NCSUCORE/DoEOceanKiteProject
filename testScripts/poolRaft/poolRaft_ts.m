@@ -9,7 +9,7 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = 0.03;%[0.1:0.1:.5]; 
+flwSpdArray = -0.03;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -42,15 +42,16 @@ loadComponent('ConstXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
     ENVIRONMENT = 'environmentManta2RotBandLin';                   %   Two turbines
 %%  Set basis parameters for high level controller
-loadComponent('varAltitudeBooth');         %   High level controller
+
+loadComponent('constBoothLem');        %   High level controller
 % PATHGEOMETRY = 'lemOfBoothInv'
-hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
+% hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
+% 
+% hiLvlCtrl.ELctrl.setValue(1,'');
+% hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
+% hiLvlCtrl.ThrCtrl.setValue(1,'');
 
-hiLvlCtrl.ELctrl.setValue(1,'');
-hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
-hiLvlCtrl.ThrCtrl.setValue(1,'');
-
-hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
 %% Set up pool raft parameters
 theta = 30*pi/180;
@@ -67,11 +68,11 @@ y_init = 0;
 y_dot_init = 0;
 psi_init = 0;
 psi_dot_init = 0;
-initGndStnPos = [x_init;y_init;0];
+initGndStnPos = [x_init;y_init;3];
 
 thrAttachInit = initGndStnPos;
 %%  Vehicle Properties
-vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*flwSpd*norm([1;0;0]))
+vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
 
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
