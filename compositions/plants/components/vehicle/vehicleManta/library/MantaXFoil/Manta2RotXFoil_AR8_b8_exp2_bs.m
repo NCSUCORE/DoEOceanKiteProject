@@ -3,7 +3,7 @@
 
 VEHICLE               = "vehicleManta2RotPool";
 PLANT                 = "plantManta2Rot";
-SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12Int";
+SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen";
 LIBRARY               = "Manta2RotXFoil_AR8_b8";
 % Vehicle is scaled at the end.
 %% Essential Values
