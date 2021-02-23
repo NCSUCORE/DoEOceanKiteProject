@@ -158,7 +158,7 @@ tscKFGP = signalcontainer(logsout);
 statKFGP = computeSimLapStats(tscKFGP);
 trackKFGP = statKFGP{2,3}/cIn.pathLength;
 
-save('testRes4','tscKFGP');
+save('testRes6','tscKFGP');
 
 
 %% run omniscient simulation
@@ -179,7 +179,7 @@ tscOmni = signalcontainer(logsout);
 statOmni = computeSimLapStats(tscOmni);
 trackOmni = statOmni{2,3}/cIn.pathLength;
 
-save('omniRes4','tscOmni');
+save('omniRes6','tscOmni');
 % load('omniRes');
 
 %% omniscient
@@ -303,11 +303,11 @@ switch simScenario(2)
         grid on;
         
         figure;
-        p1 = plot(tscKFGP.elevationAngle.Time,tscKFGP.basisParams.Data(:,5)*180/pi,'b-');
+        p1 = plot(tscKFGP.elevationAngle.Time,tscKFGP.basisParams.Data(:,3)*180/pi,'b-');
         hold on;
         plot(tscKFGP.elevationSP.Time,tscKFGP.elevationSP.Data(:),'b--');
-        p2 = plot(tscOmni.elevationAngle.Time,tscOmni.basisParams.Data(:,5)*180/pi,'r-');
-        plot(tscOmni.elevationSP.Time,elevationSP.Data(:),'r--');
+        p2 = plot(tscOmni.elevationAngle.Time,tscOmni.basisParams.Data(:,3)*180/pi,'r-');
+        plot(tscOmni.elevationSP.Time,tscOmni.elevationSP.Data(:),'r--');
         legend([p1,p2],{'Simulation','Omniscient offline'},'location','best');
         xlabel('Time [s]');
         ylabel('Elevation angle [deg]');
