@@ -1,4 +1,4 @@
-clear
+% clear
 clc
 close all
 
@@ -27,7 +27,7 @@ noiseVar            = env.water.noiseVariance.Value;
 % fast state estimate time step in MINUTES
 fastTimeStep  = 10/60;
 % MPC KFGP time step in MINUTES
-mpckfgpTimeStep = 5;
+mpckfgpTimeStep = 4;
 % mpc prediction horizon
 predictionHorz  = 6;
 % MPC constants
@@ -68,42 +68,71 @@ ppmax(locateNan) = [];
 ff(locateNan) = [];
 zz(locateNan) = [];
 
+%% get equations for expectation and variance for power
+% see expectationAndVarianceDerivation
+hiLvlCtrl.expectedPow = @(c0,c1,mu,sig,z) mu*(mu^2 + 3*sig^2)*(c0 + c1*z);
+hiLvlCtrl.VariancePow = @(c0,c1,mu,sig,z) 3*(3*mu^4*sig^2 + 12*mu^2*sig^4 + 5*sig^6)*(c0 + c1*z)^2;
+
 %% fit curve to power data
 % structure of the function
 funcStruct = fittype( @(c0,c1,z,vw) (c0 + c1.*z).*vw.^3, ...
     'coefficients',{'c0','c1'}, 'independent', {'z', 'vw'}, ...
     'dependent', 'P' );
+% funcStruct = fittype( @(c0,c1,z,vw) (c0*exp(-c1*z)).*vw.^3, ...
+%     'coefficients',{'c0','c1'}, 'independent', {'z', 'vw'}, ...
+%     'dependent', 'P' );
 
-hiLvlCtrl.customFit = fit( [zz, ff], ppmax, funcStruct );
+hiLvlCtrl.powerFunc = fit( [zz, ff], ppmax, funcStruct );
 
-
-hiLvlCtrl.powerFunc = fit([ff, zz],ppmax,'poly31');
+% store values of the power map
 hiLvlCtrl.pMaxVals  = R.Pmax;
 hiLvlCtrl.pMaxVals(isnan(R.Pmax))  = 0;
 hiLvlCtrl.altVals   = A;
 hiLvlCtrl.flowVals  = F;
+
+% add grid for omniscient
 hiLvlCtrl.powerGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,hiLvlCtrl.pMaxVals);
+% sotre vales of the elevation and tether lenght grid
 hiLvlCtrl.elevationGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.EL);
 hiLvlCtrl.thrLenGrid   = griddedInterpolant(hiLvlCtrl.flowVals,...
     hiLvlCtrl.altVals,R.thrL);
 
-testFit = polyfit(F(:,2),R.Pmax(:,2),3);
-fNew = linspace(0.5*F(1,2),1.5*F(end,2),101);
-pNew = polyval(testFit,fNew);
+%% mid level control for tether length and elevation angle trajectory opt
+hiLvlCtrl.midLvlCtrl.dLMax = 5;
+hiLvlCtrl.midLvlCtrl.dLMin = -1;
+hiLvlCtrl.midLvlCtrl.dTMax = 2;
+hiLvlCtrl.midLvlCtrl.dTMin = -2;
+hiLvlCtrl.midLvlCtrl.LMax  = 1500;
+hiLvlCtrl.midLvlCtrl.LMin  = 400;
+hiLvlCtrl.midLvlCtrl.TMax  = 40;
+hiLvlCtrl.midLvlCtrl.TMin  = 10;
+hiLvlCtrl.midLvlCtrl.predHorz  = 4;
+hiLvlCtrl.midLvlCtrl.dt  = hiLvlCtrl.mpckfgpTimeStep/hiLvlCtrl.midLvlCtrl.predHorz;
+hiLvlCtrl.midLvlCtrl.LthrPenaltyWeight = 0.1;  % kW/m
+hiLvlCtrl.midLvlCtrl.TPenaltyWeight    = 1;    % kW/deg
+
+% make 3d interpolation table for power
+load('ThrEL_Power_Study_Air.mat');
+[THR,FLW,ELE] = meshgrid(thrLength,flwSpd,elev);
+P = [2 1 3];
+X = permute(THR, P);
+Y = permute(FLW, P);
+Z = permute(ELE, P);
+V = permute(Pavg, P);
+hiLvlCtrl.midLvlCtrl.pFunc = griddedInterpolant(X,Y,Z,V);
+
+
+
 
 %% plot
 testZ = linspace(altitude(1),altitude(end),30);
 testF = linspace(flwSpd(1),flwSpd(end)*1.0,20);
 [ZZ,FF] = meshgrid(testZ,testF);
-PP = hiLvlCtrl.customFit(ZZ,FF);
-residual = R.Pmax - hiLvlCtrl.customFit(A,F);
+PP = hiLvlCtrl.powerFunc(ZZ,FF);
+residual = R.Pmax - hiLvlCtrl.powerFunc(A,F);
 rmsePow = sqrt(sum(residual(~isnan(residual)).^2,'All')/sum(~isnan(residual),'All'));
-for ii = 1:numel(FF(:))
-[PP2(ii),~] = convertWindStatsToPowerStats(F,A,R.Pmax,...
-    ZZ(ii),FF(ii),0);
-end
 
 surf(F,A,R.Pmax)
 hold on
@@ -127,11 +156,7 @@ cc = colorbar;
 cc.Label.String = 'Power [kW]';
 cc.Label.Interpreter = 'latex';
 
-% figure
-% plot(F(:,2),R.Pmax(:,2),'-o');
-% hold on
-% plot(fNew,pNew);
-
+%% save file
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')
 

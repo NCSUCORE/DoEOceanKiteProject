@@ -9,7 +9,7 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = 0.25;%[0.1:0.1:.5]; 
+flwSpdArray = -.5;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -34,23 +34,27 @@ loadComponent('MantaTether');                           %   Manta Ray tether
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 loadComponent('Manta2RotXFoil_AR8_b8_exp2');                             %   AR = 8; 8m span
+SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12Int";
 %%  Environment Properties
 loadComponent('ConstXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
     ENVIRONMENT = 'environmentManta2RotBandLin';                   %   Two turbines
 %%  Set basis parameters for high level controller
-loadComponent('varAltitudeBooth');         %   High level controller
+
+loadComponent('constBoothLem');        %   High level controller
 % PATHGEOMETRY = 'lemOfBoothInv'
-hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
+% hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
+% 
+% hiLvlCtrl.ELctrl.setValue(1,'');
+% hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
+% hiLvlCtrl.ThrCtrl.setValue(1,'');
 
-hiLvlCtrl.ELctrl.setValue(1,'');
-hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
-hiLvlCtrl.ThrCtrl.setValue(1,'');
-
-hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
+
+gndStn.posVec.setValue([0 0 3],'m')
 %%  Vehicle Properties
-vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
+vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*abs(flwSpd)*norm([1;0;0]))
 
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
@@ -86,109 +90,112 @@ vhcl.setRBridle_LE([0.029;0;-0.1],'m')
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
     %%
-   
+    vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
+     'PlotTracer',true,'FontSize',18)
+    end
+end
 % 
-%     Pow = tsc.rotPowerSummary(vhcl,env);
-    [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-2);  ran = [Idx1:Idx2]';
-    AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-    airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)));
-    gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-    ten = max([max(airNode(ran)) max(gndNode(ran))]);
-    fprintf('Average AoA = %.3f;\t Max Tension = %.1f N\n\n',AoA,ten);
-    path = squeeze(tsc.closestPathVariable.Data(ran));
-    figure; 
-    subplot(3,1,1); grid on; hold on;
-    plot(path,squeeze(tsc.MFluidBdy.Data(1,1,ran)))
-    plot(path,squeeze(tsc.MThrNetBdy.Data(1,1,ran)))
-      subplot(3,1,2); grid on; hold on;
-    plot(path,squeeze(tsc.MFluidBdy.Data(2,1,ran)))
-    plot(path,squeeze(tsc.MThrNetBdy.Data(2,1,ran)))
-    subplot(3,1,3); grid on; hold on;
-    plot(path,squeeze(tsc.MFluidBdy.Data(3,1,ran)))
-    plot(path,squeeze(tsc.MThrNetBdy.Data(3,1,ran)))
-
-    xlabel('Path Position (s)')
-    ylabel('Z Moment [Nm]')
-    legend('Fluid','Tether')
-    
-    
-    figure; 
-    subplot(3,1,1); grid on; hold on; sgtitle('Ctrl Deflection [deg]')
-    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)))
-    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,2)))
-    ylabel('Aileron'); legend('Port','Starboard')
-      subplot(3,1,2); grid on; hold on;
-    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,3)))
-    ylabel('Elevator')
-    subplot(3,1,3); grid on; hold on;
-    plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,4)))
-
-    xlabel('Path Position (s)')
-    ylabel('Rudder')
-    
-        figure; 
-    grid on; hold on;
-    plot(path,squeeze(tsc.tanRoll.Data(ran)))
-    plot(path,squeeze(tsc.tanRollDes.Data(ran)),'k')
-    legend('Tan Roll','Tan Roll SP')
-   
-        figure; 
-    subplot(3,1,1); grid on; hold on; ylabel('X-Moment [Nm]');
-    plot(path,squeeze(tsc.MNetBdy.Data(1,1,ran)))
-    plot(path,squeeze(tsc.MFluidBdy.Data(1,1,ran)))
-    plot(path,squeeze(tsc.desiredMoment.Data(ran,1)))
-    
-    subplot(3,1,2); grid on; hold on; ylabel('Y-Moment [Nm]');
-    plot(path,squeeze(tsc.MNetBdy.Data(2,1,ran)))
-    plot(path,squeeze(tsc.MFluidBdy.Data(2,1,ran)))
-    plot(path,squeeze(tsc.desiredMoment.Data(ran,2)))
-    
-    subplot(3,1,3); grid on; hold on; ylabel('Z-Moment [Nm]');
-    plot(path,squeeze(tsc.MNetBdy.Data(3,1,ran)))
-    plot(path,squeeze(tsc.MFluidBdy.Data(3,1,ran)))
-    plot(path,squeeze(tsc.desiredMoment.Data(ran,3)))
-
-    xlabel('Path Position (s)')
-
-    legend('Net','Fluid','Desired')
-    
-dt = datestr(now,'mm-dd_HH-MM');
-%%
-
-% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
-% simWithMonitor('OCTModel');
-% tsc = signalcontainer(logsout);   
-% lap = max(tsc.lapNumS.Data)-1;
-% tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-    filename = sprintf(strcat('V-%.3f_EL-%.1f_THR-%d.mat'),flwSpd,el*180/pi,thrLength);
-    fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Manta\');
-if saveSim == 1
-    if max(tsc.lapNumS.Data) > 1
-    save(strcat(fpath,filename),'vhcl','thr','fltCtrl','env','linsys','simParams','LIBRARY','gndStn','tsc','tsc1','tsc2','tsc3')
-    end
-end
-    end
-end
-%%  Plot Results
-    lap = max(tsc.lapNumS.Data)-1;
-    if max(tsc.lapNumS.Data) < 2
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
-    else
-        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
-        tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
-    end
+% %     Pow = tsc.rotPowerSummary(vhcl,env);
+%     [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-2);  ran = [Idx1:Idx2]';
+%     AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
+%     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)));
+%     gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
+%     ten = max([max(airNode(ran)) max(gndNode(ran))]);
+%     fprintf('Average AoA = %.3f;\t Max Tension = %.1f N\n\n',AoA,ten);
+%     path = squeeze(tsc.closestPathVariable.Data(ran));
+%     figure; 
+%     subplot(3,1,1); grid on; hold on;
+%     plot(path,squeeze(tsc.MFluidBdy.Data(1,1,ran)))
+%     plot(path,squeeze(tsc.MThrNetBdy.Data(1,1,ran)))
+%       subplot(3,1,2); grid on; hold on;
+%     plot(path,squeeze(tsc.MFluidBdy.Data(2,1,ran)))
+%     plot(path,squeeze(tsc.MThrNetBdy.Data(2,1,ran)))
+%     subplot(3,1,3); grid on; hold on;
+%     plot(path,squeeze(tsc.MFluidBdy.Data(3,1,ran)))
+%     plot(path,squeeze(tsc.MThrNetBdy.Data(3,1,ran)))
+% 
+%     xlabel('Path Position (s)')
+%     ylabel('Z Moment [Nm]')
+%     legend('Fluid','Tether')
+%     
+%     
+%     figure; 
+%     subplot(3,1,1); grid on; hold on; sgtitle('Ctrl Deflection [deg]')
+%     plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,1)))
+%     plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,2)))
+%     ylabel('Aileron'); legend('Port','Starboard')
+%       subplot(3,1,2); grid on; hold on;
+%     plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,3)))
+%     ylabel('Elevator')
+%     subplot(3,1,3); grid on; hold on;
+%     plot(path,squeeze(tsc.ctrlSurfDeflCmd.Data(ran,4)))
+% 
+%     xlabel('Path Position (s)')
+%     ylabel('Rudder')
+%     
+%         figure; 
+%     grid on; hold on;
+%     plot(path,squeeze(tsc.tanRoll.Data(ran)))
+%     plot(path,squeeze(tsc.tanRollDes.Data(ran)),'k')
+%     legend('Tan Roll','Tan Roll SP')
+%    
+%         figure; 
+%     subplot(3,1,1); grid on; hold on; ylabel('X-Moment [Nm]');
+%     plot(path,squeeze(tsc.MNetBdy.Data(1,1,ran)))
+%     plot(path,squeeze(tsc.MFluidBdy.Data(1,1,ran)))
+%     plot(path,squeeze(tsc.desiredMoment.Data(ran,1)))
+%     
+%     subplot(3,1,2); grid on; hold on; ylabel('Y-Moment [Nm]');
+%     plot(path,squeeze(tsc.MNetBdy.Data(2,1,ran)))
+%     plot(path,squeeze(tsc.MFluidBdy.Data(2,1,ran)))
+%     plot(path,squeeze(tsc.desiredMoment.Data(ran,2)))
+%     
+%     subplot(3,1,3); grid on; hold on; ylabel('Z-Moment [Nm]');
+%     plot(path,squeeze(tsc.MNetBdy.Data(3,1,ran)))
+%     plot(path,squeeze(tsc.MFluidBdy.Data(3,1,ran)))
+%     plot(path,squeeze(tsc.desiredMoment.Data(ran,3)))
+% 
+%     xlabel('Path Position (s)')
+% 
+%     legend('Net','Fluid','Desired')
+%     
+% dt = datestr(now,'mm-dd_HH-MM');
+% %%
+% 
+% % simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+% % simWithMonitor('OCTModel');
+% % tsc = signalcontainer(logsout);   
+% % lap = max(tsc.lapNumS.Data)-1;
+% % tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
+%     filename = sprintf(strcat('V-%.3f_EL-%.1f_THR-%d.mat'),flwSpd,el*180/pi,thrLength);
+%     fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Manta\');
+% if saveSim == 1
+%     if max(tsc.lapNumS.Data) > 1
+%     save(strcat(fpath,filename),'vhcl','thr','fltCtrl','env','linsys','simParams','LIBRARY','gndStn','tsc','tsc1','tsc2','tsc3')
+%     end
+% end
+%     end
+% end
+% %%  Plot Results
+%     lap = max(tsc.lapNumS.Data)-1;
+%     if max(tsc.lapNumS.Data) < 2
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
+%     else
+%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
+%         tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
+%     end
 
 %%  Animate Simulation
 % if simScenario <= 2
-%     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
-%         'GifTimeStep',0,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%         'SaveGif',1==1,'GifFile','expCross.gif',...
-%         'timestep',0.05);
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+        'GifTimeStep',0,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+        'SaveGif',1==1,'GifFile','expCross.gif',...
+        'timestep',0.5);
 % else
-    vhcl.animateSim(tsc,.25,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
-        'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-        'PathPosition',true,'SaveGif',1==1,'GifFile','awwSnap.gif',...
-        'TracerDuration',200)%,'starttime',350);
+%     vhcl.animateSim(tsc,.25,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
+%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
+%         'PathPosition',true,'SaveGif',1==3,'GifFile','awwSnap.gif',...
+%         'TracerDuration',200)%,'starttime',350);
 
 % end
 %%  Compare to old results
@@ -201,24 +208,24 @@ end
 % ten = max([max(airNode(ran)) max(gndNode(ran))]);
 % fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n',AoA,ten);
         
-    figure; 
-    subplot(3,1,1); grid on; hold on; ylabel('Roll [deg]');
-    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(1,1,:)))
-           xlabel('Time [s]')
-    subplot(3,1,2); grid on; hold on; ylabel('Pitch [deg]');
-    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(2,1,:)))
-          xlabel('Time [s]')  
-    subplot(3,1,3); grid on; hold on; ylabel('Yaw [deg]');
-    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(3,1,:)))
-        xlabel('Time [s]')
-    figure; 
-    subplot(3,1,1); grid on; hold on; ylabel('Roll Rate [deg/s]');
-    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(1,1,:)))
-          xlabel('Time [s]') 
-    subplot(3,1,2); grid on; hold on; ylabel('Pitch Rate [deg/s]');
-    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(2,1,:)))
-         xlabel('Time [s]')   
-    subplot(3,1,3); grid on; hold on; ylabel('Yaw Rate [deg/s]');
-    plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(3,1,:)))
-    xlabel('Time [s]')
+%     figure; 
+%     subplot(3,1,1); grid on; hold on; ylabel('Roll [deg]');
+%     plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(1,1,:)))
+%            xlabel('Time [s]')
+%     subplot(3,1,2); grid on; hold on; ylabel('Pitch [deg]');
+%     plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(2,1,:)))
+%           xlabel('Time [s]')  
+%     subplot(3,1,3); grid on; hold on; ylabel('Yaw [deg]');
+%     plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.eulerAngles.Data(3,1,:)))
+%         xlabel('Time [s]')
+%     figure; 
+%     subplot(3,1,1); grid on; hold on; ylabel('Roll Rate [deg/s]');
+%     plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(1,1,:)))
+%           xlabel('Time [s]') 
+%     subplot(3,1,2); grid on; hold on; ylabel('Pitch Rate [deg/s]');
+%     plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(2,1,:)))
+%          xlabel('Time [s]')   
+%     subplot(3,1,3); grid on; hold on; ylabel('Yaw Rate [deg/s]');
+%     plot(tsc.eulerAngles.Time,180/pi*squeeze(tsc.angularVel.Data(3,1,:)))
+%     xlabel('Time [s]')
 

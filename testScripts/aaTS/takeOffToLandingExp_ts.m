@@ -42,19 +42,17 @@ env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vec
     FLOWCALCULATION = 'rampSaturatedXYZT';
     rampSlope = .05; %flow speed ramp rate
 %%  Set basis parameters for high level controller
-loadComponent('varAltitudeBooth');         %   High level controller
-% PATHGEOMETRY = 'lemOfBoothInv'
-hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
 
-hiLvlCtrl.ELctrl.setValue(1,'');
-hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
-hiLvlCtrl.ThrCtrl.setValue(1,'');
 
-hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
+loadComponent('constBoothLem');        %   High level controller
+
+hiLvlCtrl.basisParams.setValue([a,b,-el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
+
+gndStn.posVec.setValue([0 0 3],'m')
 %%  Vehicle Properties
 % vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
-vhcl.initPosVecGnd.setValue([0;0;3],'m')
+vhcl.initPosVecGnd.setValue([0;0;0],'m')
 vhcl.initAngVelVec.setValue([0;0;0],'rad/s')
 vhcl.initVelVecBdy.setValue([0;0;0],'m/s')
 vhcl.initEulAng.setValue([0;0;0],'rad')
@@ -93,11 +91,11 @@ gain2to3 = 1;
 % fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
 % fltCtrl.rollMoment.kd.setValue(0,'(N*m)/(rad/s)')
 % fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)')
-elSP = 5; 
+elSP = -5; 
 %% Start Control
 fltCtrl.startControl.setValue(150,'s')
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(350,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(300,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
@@ -107,7 +105,7 @@ fltCtrl.startControl.setValue(150,'s')
 %     figure;
 %     tsc.elError.plot
 %     figure; 
-    tsc.elA.plot
+%     tsc.elA.plot
 %     plotsq(tsc.winchPower.Time, tsc.positionVec.Data(3,1,:))
      vhcl.animateSim(tsc,2)
     

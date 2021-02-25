@@ -122,32 +122,12 @@ ySamp =  mpckfgp.meanFunction(zCurrent,mpckfgp.meanFnProps(1),...
     mpckfgp.calcKalmanStateEstimates(sk_k,ck_k,zCurrent,ySamp);
 
 %% use fminc to solve for best trajectory
-% constraints
+% step wise constraints
 duMax = hiLvlCtrl.maxStepChange;
-Astep = zeros(predictionHorz-1,predictionHorz);
-bstep = duMax*ones(2*(predictionHorz-1),1);
-for ii = 1:predictionHorz-1
-    for jj = 1:predictionHorz
-        if ii == jj
-            Astep(ii,jj) = -1;
-            Astep(ii,jj+1) = 1;
-        end
-        
-    end
-end
-Astep = [Astep;-Astep];
-% bounds on first step
-fsBoundsA = zeros(2,predictionHorz);
-fsBoundsA(1,1) = 1;
-fsBoundsA(2,1) = -1;
-A = [fsBoundsA;Astep];
+[A,b] = makeAandBmatrices(duMax,-duMax,zCurrent,predictionHorz);
 % upper and lower bounds
 lb      = hiLvlCtrl.minVal*ones(1,predictionHorz);
 ub      = hiLvlCtrl.maxVal*ones(1,predictionHorz);
-%
-fsBoundsB(1,1) = zCurrent + duMax;
-fsBoundsB(2,1) = -(zCurrent - duMax);
-b = [fsBoundsB;bstep];
 
 % optimize
 [optTraj,~] = ...
