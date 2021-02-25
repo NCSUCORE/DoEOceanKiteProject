@@ -47,6 +47,10 @@ switch figName
     case 'Tether length'
         data = tsc.tetherLengths.Data(:);
         yLab = '[m]';
+    case 'Tether tension'
+        data = squeeze(tsc.FThrNetBdy.Data);
+        data = vecnorm(data);
+        yLab = '[N]';
 end
 
 if strcmp(figName,'Tether length SP')
