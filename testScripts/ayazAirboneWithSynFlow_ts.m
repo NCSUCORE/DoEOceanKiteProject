@@ -32,8 +32,6 @@ simScenario = [2 3 2 1 false];
 thrDrag = true;
 
 %% Load components
-% Spooling controller
-SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
 loadComponent('oneDoFGSCtrlBasic');
 % Ground station
@@ -83,7 +81,7 @@ switch simScenario(2)
         hiLvlCtrl.initVals(1)              = thrLength*sin(initElev);
         hiLvlCtrl.initVals(2)              = initElev*180/pi;
         hiLvlCtrl.initVals(3)              = thrLength;
-
+        
 end
 
 % select Environment based on sim scenario
@@ -148,17 +146,24 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 fltCtrl.elevatorReelInDef.setValue(0,'deg');
 
+% Spooling controller
+SPOOLINGCONTROLLER = 'spoolingSpeedTrackingCtrl';
+
+
 %% Run Simulation
-keyboard
+% keyboard
 simWithMonitor('OCTModel','minRate',0);
 
 tscKFGP = signalcontainer(logsout);
 statKFGP = computeSimLapStats(tscKFGP);
 trackKFGP = statKFGP{2,3}/cIn.pathLength;
 
+save('testRes6','tscKFGP');
+
+
 %% run omniscient simulation
 [synFlow,synAlt] = env.water.generateData();
-keyboard
+% keyboard
 [altSPTraj,elevSPTraj,thrSPTraj] = calculateOmniAltitudeSPTraj(synAlt,synFlow,hiLvlCtrl,...
     hiLvlCtrl.initVals,simParams.duration.Value);
 
@@ -173,6 +178,9 @@ simWithMonitor('OCTModel','minRate',0);
 tscOmni = signalcontainer(logsout);
 statOmni = computeSimLapStats(tscOmni);
 trackOmni = statOmni{2,3}/cIn.pathLength;
+
+save('omniRes6','tscOmni');
+% load('omniRes');
 
 %% omniscient
 switch simScenario(2)
@@ -203,7 +211,7 @@ switch simScenario(2)
         
         omniFunc = @(z,hl,zD,fD) hl.powerGrid(interp1(zD,fD,z),z);
         options = optimoptions('fmincon','algorithm','sqp');
-
+        
         
         [synFlow,synAlt] = env.water.generateData();
         omniAlts = unique(hiLvlCtrl.altVals);
@@ -211,7 +219,7 @@ switch simScenario(2)
         tSamp = 0:hiLvlCtrl.mpckfgpTimeStep:simParams.duration.Value/60;
         altSimSP = resample(tscKFGP.altitudeSP,tSamp*60);
         omniSP   = resample(tscOmni.altitudeSP,tSamp*60);
-
+        
         fValOmni = nan(1,length(tSamp));
         omniAlt = nan(1,length(tSamp));
         runAvgOmni = nan(1,length(tSamp));
@@ -220,7 +228,7 @@ switch simScenario(2)
             fData = resample(synFlow,tSamp(ii)*60).Data;
             hData = resample(synAlt,tSamp(ii)*60).Data;
             
-            % simulation           
+            % simulation
             simPower(ii) = omniFunc(altSimSP.Data(ii),hiLvlCtrl,hData,fData);
             simPower(ii) = max(simPower(ii),0);
             simMean(ii)  = mean(simPower(1:ii));
@@ -266,7 +274,7 @@ switch simScenario(2)
         legend('Simulation','Omniscient offline');
     case 3
         figure;
-        stairs(tSamp*60,altSimSP.Data(:),'b-');        
+        stairs(tSamp*60,altSimSP.Data(:),'b-');
         hold on;
         stairs(tSamp*60,omniSP.Data(:),'r-');
         legend('Simulation','Omniscient offline','location','best');
@@ -274,14 +282,35 @@ switch simScenario(2)
         ylabel('Altitude [m]');
         grid on;
         
-        
         figure;
-        plot(tSamp*60,simMean,'b-');        
+        plot(tSamp*60,simMean,'b-');
         hold on;
         plot(tSamp*60,omniMean,'r-');
         legend('Simulation','Omniscient offline','location','best');
         xlabel('Time [s]');
         ylabel('Power [kW]');
+        grid on;
+        
+        figure;
+        p1 = plot(tscKFGP.tetherLengths.Time,tscKFGP.tetherLengths.Data(:),'b-');
+        hold on;
+        plot(tscKFGP.tetherLengths.Time,tscKFGP.thrLSP.Data(:),'b--');
+        p2 = plot(tscOmni.tetherLengths.Time,tscOmni.tetherLengths.Data(:),'r-');
+        plot(tscOmni.tetherLengths.Time,tscOmni.thrLSP.Data(:),'r--');
+        legend([p1,p2],{'Simulation','Omniscient offline'},'location','best');
+        xlabel('Time [s]');
+        ylabel('Tether length [m]');
+        grid on;
+        
+        figure;
+        p1 = plot(tscKFGP.elevationAngle.Time,tscKFGP.basisParams.Data(:,3)*180/pi,'b-');
+        hold on;
+        plot(tscKFGP.elevationSP.Time,tscKFGP.elevationSP.Data(:),'b--');
+        p2 = plot(tscOmni.elevationAngle.Time,tscOmni.basisParams.Data(:,3)*180/pi,'r-');
+        plot(tscOmni.elevationSP.Time,tscOmni.elevationSP.Data(:),'r--');
+        legend([p1,p2],{'Simulation','Omniscient offline'},'location','best');
+        xlabel('Time [s]');
+        ylabel('Elevation angle [deg]');
         grid on;
 end
 

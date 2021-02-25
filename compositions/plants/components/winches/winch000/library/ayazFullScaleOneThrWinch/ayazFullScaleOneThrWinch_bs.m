@@ -18,8 +18,8 @@ wnch.build;
 wnch.winch1.maxSpeed.setValue(3,'m/s');
 wnch.winch1.timeConst.setValue(1,'s');
 wnch.winch1.maxAccel.setValue(1e6,'m/s^2');
-wnch.winch1.motorEfficiency.setValue(1,'')
-wnch.winch1.generatorEfficiency.setValue(1,'')
+wnch.winch1.motorEfficiency.setValue(0.8,'')
+wnch.winch1.generatorEfficiency.setValue(1.2,'')
 
 %% save file in its respective directory
 saveBuildFile('wnch',mfilename,'variant','WINCH');

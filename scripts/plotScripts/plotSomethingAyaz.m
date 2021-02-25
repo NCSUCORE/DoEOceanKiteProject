@@ -1,4 +1,4 @@
-function plotSomething(tsc,figName,sMinHr)
+function plotSomethingAyaz(tsc,figName,sMinHr)
 
 switch sMinHr
     case 's'
@@ -41,7 +41,19 @@ switch figName
     case 'Turbine energy'
         data = tsc.turbEnrg.Data(:)./1e3;
         yLab = '[kJ]';
-        
+    case 'Tether length SP'
+        data = tsc.thrLSP.Data(:);
+        yLab = '[m]';
+    case 'Tether length'
+        data = tsc.tetherLengths.Data(:);
+        yLab = '[m]';
+end
+
+if strcmp(figName,'Tether length SP')
+    figName = 'Tether length';
+    linStyle = '--';
+else
+    linStyle = '-';
 end
 
 fh = findobj( 'Type', 'Figure', 'Name', figName);
@@ -53,12 +65,15 @@ else
     figure(fh);
 end
 
-plot(time,data,'linewidth',1);
+plot(time,data,'linewidth',1,'linestyle',linStyle);
 grid on;
 hold on;
 xlabel(['Time [',sMinHr,']']);
 ylabel([figName,' ',yLab]);
 % title(figName);
 
+if strcmp(figName,'Tether length')
+colororder((1/255)*[0 114 189; 217 83 25]);
+end
 
 end

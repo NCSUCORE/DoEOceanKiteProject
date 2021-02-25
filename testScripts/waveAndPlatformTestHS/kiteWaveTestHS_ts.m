@@ -13,15 +13,15 @@ waveNumber  =  (Frequencies.^2)/9.81;
 tetherL = [125,200];
 flowSpeeds = [1,2];
 
-for kk = 1:2
-    for jj = 1:12
+for kk = 1:1
+    for jj = 1:1
         for ii = 1:1
             
             % %% Script to run ILC path optimization
             clearvars -except 'Amplitudes' 'Frequencies' 'waveNumber' 'ii' 'jj'  'powerMatSaverKiteBigStationHS' 'kk' 'tetherL'  'flowSpeeds'
             clc;close all
             simParams = SIM.simParams;
-            simParams.setDuration(1000,'s');
+            simParams.setDuration(300,'s');
             dynamicCalc = '';
             
             %% Load components
@@ -103,6 +103,7 @@ for kk = 1:2
             fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
                 hiLvlCtrl.basisParams.Value,...
                 gndStn.posVec.Value);
+            ENVIRONMENT= 'environmentDOE';
             simWithMonitor('OCTModel')
             tsc = signalcontainer(logsout);
             
