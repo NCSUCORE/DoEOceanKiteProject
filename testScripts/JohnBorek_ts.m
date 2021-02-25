@@ -11,9 +11,9 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 2 1 1 1 1==1 false true];
-thrLength = 200;  altitude = 100;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .5;                                               %   m/s - Flow speed
+simScenario = [1 2 2 1 1 1==0 false true];
+thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
+flwSpd = .50;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0125;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -47,7 +47,7 @@ switch simScenario(3)                                   %   Flight Controller
         loadComponent('pathFollowWithAoACtrl');             %   Path-following controller with AoA control
     case 2
         loadComponent('pathFollowWithAoACtrl');             %   Path-following controller with AoA control
-        pthCtrl = fltCtrl;
+        pthCtrl1 = fltCtrl;
         loadComponent('LaRController');                     %   Launch and recovery controller
         slfCtrl = fltCtrl;
         loadComponent('MantaFSController');                 %   Path-following controller with AoA control
@@ -115,18 +115,18 @@ switch simScenario(3)
         fltCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        fltCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
     case 2
         fltCtrl.maxTL.setValue(thrLength,'m');
-        pthCtrl.setFcnName(PATHGEOMETRY,'');                    pthCtrl.winchSpeedIn.setValue(.1,'m/s');
-        pthCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-        pthCtrl.firstSpoolLap.setValue(10,'');                  pthCtrl.RCtrl.setValue(1,'');
-        pthCtrl.AoASP.setValue(0,'');                           pthCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-        pthCtrl.AoACtrl.setValue(2,'');                         pthCtrl.elevatorConst.setValue(2,'deg');
-        pthCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl.Tmax.setValue(Tmax,'kN');
-        pthCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         pthCtrl.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
-        pthCtrl.pitchMoment.kp.setValue(0,'(N*m)/(rad)');       pthCtrl.pitchMoment.ki.setValue(0,'(N*m)/(rad*s)');
-        pthCtrl.rollMoment.kp.setValue(3e5,'(N*m)/(rad)');      pthCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
-        pthCtrl.rollMoment.kd.setValue(2.2e5,'(N*m)/(rad/s)');  pthCtrl.rollMoment.tau.setValue(0.001,'s');
-        pthCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        pthCtrl.rudderGain.setValue(0,'');
-        pthCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        pthCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
+        pthCtrl1.setFcnName(PATHGEOMETRY,'');                    pthCtrl1.winchSpeedIn.setValue(.1,'m/s');
+        pthCtrl1.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
+        pthCtrl1.firstSpoolLap.setValue(10,'');                  pthCtrl1.RCtrl.setValue(1,'');
+        pthCtrl1.AoASP.setValue(1,'');                           pthCtrl1.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+        pthCtrl1.AoACtrl.setValue(2,'');                         pthCtrl1.elevatorConst.setValue(-3,'deg');
+        pthCtrl1.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl1.Tmax.setValue(Tmax-.5,'kN');
+        pthCtrl1.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         pthCtrl1.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
+        pthCtrl1.elevCtrl.kp.setValue(125,'(deg)/(rad)');        pthCtrl1.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        pthCtrl1.rollCtrl.kp.setValue(200,'(deg)/(rad)');        pthCtrl1.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        pthCtrl1.yawMoment.kp.setValue(00,'(N*m)/(rad)');        pthCtrl1.rudderGain.setValue(0,'');
+        pthCtrl1.elevCtrlMax.upperLimit.setValue(1e4,'');        pthCtrl1.elevCtrlMax.lowerLimit.setValue(-1e4,'');
+        pthCtrl2 = pthCtrl1;                                     pthCtrl2.setFcnName('ellipse','');
     case 3
         fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
@@ -169,7 +169,7 @@ end
 %%  Plot Results
 if simScenario(8)
     switch simScenario(3)
-        case 1
+        case {1,2}
             lap = max(tsc.lapNumS.Data)-1;
             if max(tsc.lapNumS.Data) < 2
                 tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
@@ -187,8 +187,12 @@ end
 if simScenario(7)
     if simScenario(3) == 1
         vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
-            'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
+            'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
             'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+    elseif simScenario(3) == 2
+        vhcl.animateSim(tsc,2,'PathFunc',pthCtrl2.fcnName.Value,'TracerDuration',20,...
+            'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
+            'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
     else
         vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
             'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
