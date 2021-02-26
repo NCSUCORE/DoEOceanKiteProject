@@ -61,9 +61,9 @@ omega_kite = 2*pi/5; %rad/s
 m_raft = 50; %kg
 J_raft = 30;
 tow_length = 16;
-tow_speed = 0.5;    
+tow_speed = 0.25;    
 end_time = tow_length/tow_speed;
-x_init = -4;
+x_init = 4;
 y_init = 0;
 y_dot_init = 0;
 psi_init = 0;
@@ -107,7 +107,7 @@ vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 
 
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(20,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
