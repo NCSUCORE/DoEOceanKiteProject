@@ -1,11 +1,11 @@
-%% Test script for John to control the kite model
+%% Test script for pool test simulation of the kite model
 clear;clc;close all;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
 
 %%  Set Test Parameters
-saveSim = 0;              %   Flag to save results
+saveSim = 0;               %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
@@ -16,31 +16,31 @@ pertVec = [0 1 0];
 for j = 1:length(thrArray)
     for k = 1:length(flwSpdArray)
 thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = flwSpdArray(k) ;                                              %   m/s - Flow speed
+flwSpd = flwSpdArray(k) ;                                   %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
-h = 25*pi/180;  w = 100*pi/180;                              %   rad - Path width/height
+h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
 fpath = fullfile(fileparts(which('OCTProject.prj')),...
     'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
 el = asin(altitude/thrLength);
-loadComponent('pathFollowCtrlExp');                 %   Path-following controller with AoA control
+loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
 FLIGHTCONTROLLER = 'pathFollowingControllerExp';
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-% loadComponent('MantaGndStn');                               %   Ground station
+% loadComponent('MantaGndStn');                             %   Ground station
 loadComponent('raftGroundStation'); 
 
 
 loadComponent('winchManta');                                %   Winches
-loadComponent('MantaTether');                           %   Manta Ray tether
+loadComponent('MantaTether');                               %   Manta Ray tether
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
-loadComponent('Manta2RotXFoil_AR8_b8_exp2');                             %   AR = 8; 8m span
+loadComponent('Manta2RotXFoil_AR8_b8_exp2');                %   AR = 8; 8m span
 %%  Environment Properties
 loadComponent('ConstXYZT');                                 %   Environment
-env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
-    ENVIRONMENT = 'environmentManta2RotBandLin';                   %   Two turbines
+env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
+    ENVIRONMENT = 'environmentManta2RotBandLin';            %   Two turbines
 %%  Set basis parameters for high level controller
 
 loadComponent('constBoothLem');        %   High level controller
