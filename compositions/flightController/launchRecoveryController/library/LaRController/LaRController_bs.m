@@ -29,8 +29,8 @@ fltCtrl.pitchSPkpInt.setValue(.5263,'');
 fltCtrl.pitchSPkiSlope.setValue(7.895e-5,'');
 fltCtrl.pitchSPkiInt.setValue(.008421,'');
 
-fltCtrl.elevCmd.kp.setValue(200,'(deg)/(rad)');
-fltCtrl.elevCmd.ki.setValue(10,'(deg)/(rad*s)');
+fltCtrl.elevCmd.kp.setValue(125,'(deg)/(rad)');
+fltCtrl.elevCmd.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCmd.tau.setValue(.01,'s');
 
