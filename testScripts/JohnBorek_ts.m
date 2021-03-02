@@ -131,6 +131,7 @@ switch simScenario(3)
         pthCtrl1.elevCtrlMax.upperLimit.setValue(1e4,'');        pthCtrl1.elevCtrlMax.lowerLimit.setValue(-1e4,'');
         pthCtrl2 = pthCtrl1;                                     pthCtrl2.setFcnName('ellipse','');
     case 3
+        fltCtrl.LaRelevationSP.setValue(45,'deg');
         fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
         elevatorCtrl = 1;   tRef = 0:500:2000;    elevCommand = -2:2;
     case 4
