@@ -4,7 +4,7 @@ clc;
 cd(fileparts(mfilename('fullpath')));
 
 simParams = SIM.simParams;
-simParams.setDuration(1*60*60,'s');
+simParams.setDuration(0.5*60*60,'s');
 dynamicCalc = '';
 flowSpeed = 6.2;
 thrLength = 1000;
@@ -151,14 +151,14 @@ SPOOLINGCONTROLLER = 'spoolingSpeedTrackingCtrl';
 
 
 %% Run Simulation
-% keyboard
+keyboard
 simWithMonitor('OCTModel','minRate',0);
 
 tscKFGP = signalcontainer(logsout);
 statKFGP = computeSimLapStats(tscKFGP);
 trackKFGP = statKFGP{2,3}/cIn.pathLength;
 
-save('testRes6','tscKFGP');
+save('testRes7','tscKFGP');
 
 
 %% run omniscient simulation
@@ -179,7 +179,7 @@ tscOmni = signalcontainer(logsout);
 statOmni = computeSimLapStats(tscOmni);
 trackOmni = statOmni{2,3}/cIn.pathLength;
 
-save('omniRes6','tscOmni');
+save('omniRes7','tscOmni');
 % load('omniRes');
 
 %% omniscient
@@ -255,7 +255,7 @@ switch simScenario(2)
     case 3
         plotFigs = {'Tangent roll','Speed','Apparent vel. in x cubed',...
             'Turbine power','Kite speed by flow speed cubed','Altitude SP',...
-            'Turbine energy'};
+            'Tether tension'};
 end
 
 for ii = 1:length(plotFigs)
@@ -312,6 +312,22 @@ switch simScenario(2)
         xlabel('Time [s]');
         ylabel('Elevation angle [deg]');
         grid on;
+        
+        figure;
+        subplot(3,1,1);
+        plot(tscKFGP.winchEnergy.Time,tscKFGP.winchEnergy.Data(:)./1e3,'b-');
+        hold on;grid on;xlabel('Time [s]');ylabel('Winch energy [kJ]');
+        plot(tscOmni.winchEnergy.Time,tscOmni.winchEnergy.Data(:)./1e3,'r-');
+
+        subplot(3,1,2);
+        plot(tscKFGP.turbEnrg.Time,tscKFGP.turbEnrg.Data(:)./1e3,'b-');
+        hold on;grid on;xlabel('Time [s]');ylabel('Turbine energy [kJ]');
+        plot(tscOmni.turbEnrg.Time,tscOmni.turbEnrg.Data(:)./1e3,'r-');
+   
+        subplot(3,1,3);
+        plot(tscKFGP.turbEnrg.Time,tscKFGP.turbEnrg.Data(:)./1e3 + tscKFGP.winchEnergy.Data(:)./1e3,'b-');
+        hold on;grid on;xlabel('Time [s]');ylabel('Net energy [kJ]');
+        plot(tscOmni.turbEnrg.Time,tscOmni.turbEnrg.Data(:)./1e3 + tscOmni.winchEnergy.Data(:)./1e3,'r-');
 end
 
 allAxes = findall(0,'type','axes');
