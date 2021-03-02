@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear; %clc;
+clear; clc;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10, 4 = DOE
@@ -11,9 +11,9 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 2 2 1 1 1==0 false true];
-thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .50;                                               %   m/s - Flow speed
+simScenario = [1 1 3 1 1 1==0 false true];
+thrLength = 400;  altitude = 300;                           %   m/m - Initial tether length/operating altitude
+flwSpd = .250;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0125;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -52,6 +52,7 @@ switch simScenario(3)                                   %   Flight Controller
         slfCtrl = fltCtrl;
         loadComponent('MantaFSController');                 %   Path-following controller with AoA control
     case 3
+%         loadComponent('LaRController');                     %   Launch and recovery controller
         loadComponent('SteadyController');                  %   Steady-flight controller
     case 4
         loadComponent('LaRController');                     %   Launch and recovery controller
@@ -110,7 +111,8 @@ switch simScenario(3)
         fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
         fltCtrl.tanRoll.kp.setValue(0.8,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
         fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
-        fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');        fltCtrl.rollCtrl.tau.setValue(0.001,'s');
         fltCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        fltCtrl.rudderGain.setValue(0,'');
         fltCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        fltCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
     case 2
@@ -123,20 +125,20 @@ switch simScenario(3)
         pthCtrl1.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl1.Tmax.setValue(Tmax-.5,'kN');
         pthCtrl1.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         pthCtrl1.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
         pthCtrl1.elevCtrl.kp.setValue(125,'(deg)/(rad)');        pthCtrl1.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
-        pthCtrl1.rollCtrl.kp.setValue(200,'(deg)/(rad)');        pthCtrl1.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        pthCtrl1.rollCtrl.kp.setValue(200,'(deg)/(rad)');        pthCtrl1.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
+        pthCtrl1.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl1.rollCtrl.tau.setValue(0.001,'s');
         pthCtrl1.yawMoment.kp.setValue(00,'(N*m)/(rad)');        pthCtrl1.rudderGain.setValue(0,'');
         pthCtrl1.elevCtrlMax.upperLimit.setValue(1e4,'');        pthCtrl1.elevCtrlMax.lowerLimit.setValue(-1e4,'');
         pthCtrl2 = pthCtrl1;                                     pthCtrl2.setFcnName('ellipse','');
     case 3
-        fltCtrl.elevCmd.kp.setValue(0,'(deg)/(rad)');       fltCtrl.elevCmd.ki.setValue(0,'(deg)/(rad*s)');
-        fltCtrl.pitchCtrl.setValue(0,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
-        fltCtrl.pitchTime.setValue(0:500:2000,'s');         fltCtrl.pitchLookup.setValue(-10:5:10,'deg');
+        fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
+        elevatorCtrl = 1;   tRef = 0:500:2000;    elevCommand = -2:2;
     case 4
-        fltCtrl.LaRelevationSP.setValue(26,'deg');          fltCtrl.setNomSpoolSpeed(.25,'m/s');
+        fltCtrl.LaRelevationSP.setValue(60,'deg');          fltCtrl.setNomSpoolSpeed(.0,'m/s');
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(2500,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
@@ -177,7 +179,7 @@ if simScenario(8)
                 tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             end
         case 3
-            tsc.plotLaR(fltCtrl,'Steady',false);
+            tsc.plotLaR(fltCtrl,'Steady',true);
         case 4
             tsc.plotLaR(fltCtrl,'Steady',true);
     end

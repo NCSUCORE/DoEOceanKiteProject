@@ -78,11 +78,39 @@ fltCtrl.pitchSPkiInt.Value = 8.4210e-03
 fltCtrl.pitchSPkiInt.Unit is unitless or has no unit specified
 fltCtrl.pitchSPkiInt.NoScale = true
 fltCtrl.pitchSPkiInt.Description = 'Variable ki y-intercept value'
-fltCtrl.elevCmd.kp.Value = 2.0000e+02
+fltCtrl.rollSP.kp.Value = 0.0000e+00
+fltCtrl.rollSP.kp.Unit = '(deg)/(deg)'
+fltCtrl.rollSP.kp.NoScale = false
+fltCtrl.rollSP.kp.Description = 'Proportional gain'
+fltCtrl.rollSP.ki.Value = 0.0000e+00
+fltCtrl.rollSP.ki.Unit = '(deg)/(deg*s)'
+fltCtrl.rollSP.ki.NoScale = false
+fltCtrl.rollSP.ki.Description = 'Integral gain'
+fltCtrl.rollSP.kd.Value = 0.0000e+00
+fltCtrl.rollSP.kd.Unit = '(deg)/(deg/s)'
+fltCtrl.rollSP.kd.NoScale = false
+fltCtrl.rollSP.kd.Description = 'Derivative gain'
+fltCtrl.rollSP.tau.Value = 1.0000e+00
+fltCtrl.rollSP.tau.Unit = 's'
+fltCtrl.rollSP.tau.NoScale = false
+fltCtrl.rollSP.tau.Description = 'Time Constant'
+fltCtrl.rollSPkpSlope.Unit is unitless or has no unit specified
+fltCtrl.rollSPkpSlope.NoScale = true
+fltCtrl.rollSPkpSlope.Description = 'Variable kp slope value'
+fltCtrl.rollSPkpInt.Unit is unitless or has no unit specified
+fltCtrl.rollSPkpInt.NoScale = true
+fltCtrl.rollSPkpInt.Description = 'Variable kp y-intercept value'
+fltCtrl.rollSPkiSlope.Unit is unitless or has no unit specified
+fltCtrl.rollSPkiSlope.NoScale = true
+fltCtrl.rollSPkiSlope.Description = 'Variable ki slope value'
+fltCtrl.rollSPkiInt.Unit is unitless or has no unit specified
+fltCtrl.rollSPkiInt.NoScale = true
+fltCtrl.rollSPkiInt.Description = 'Variable ki y-intercept value'
+fltCtrl.elevCmd.kp.Value = 1.2500e+02
 fltCtrl.elevCmd.kp.Unit = '(deg)/(rad)'
 fltCtrl.elevCmd.kp.NoScale = false
 fltCtrl.elevCmd.kp.Description = 'Proportional gain'
-fltCtrl.elevCmd.ki.Value = 1.0000e+01
+fltCtrl.elevCmd.ki.Value = 1.0000e+00
 fltCtrl.elevCmd.ki.Unit = '(deg)/(rad*s)'
 fltCtrl.elevCmd.ki.NoScale = false
 fltCtrl.elevCmd.ki.Description = 'Integral gain'
@@ -94,6 +122,38 @@ fltCtrl.elevCmd.tau.Value = 1.0000e-02
 fltCtrl.elevCmd.tau.Unit = 's'
 fltCtrl.elevCmd.tau.NoScale = false
 fltCtrl.elevCmd.tau.Description = 'Time Constant'
+fltCtrl.rudderCmd.kp.Value = 0.0000e+00
+fltCtrl.rudderCmd.kp.Unit = '(deg)/(rad)'
+fltCtrl.rudderCmd.kp.NoScale = false
+fltCtrl.rudderCmd.kp.Description = 'Proportional gain'
+fltCtrl.rudderCmd.ki.Value = 0.0000e+00
+fltCtrl.rudderCmd.ki.Unit = '(deg)/(rad*s)'
+fltCtrl.rudderCmd.ki.NoScale = false
+fltCtrl.rudderCmd.ki.Description = 'Integral gain'
+fltCtrl.rudderCmd.kd.Value = 0.0000e+00
+fltCtrl.rudderCmd.kd.Unit = '(deg)/(rad/s)'
+fltCtrl.rudderCmd.kd.NoScale = false
+fltCtrl.rudderCmd.kd.Description = 'Derivative gain'
+fltCtrl.rudderCmd.tau.Value = 1.0000e+00
+fltCtrl.rudderCmd.tau.Unit = 's'
+fltCtrl.rudderCmd.tau.NoScale = false
+fltCtrl.rudderCmd.tau.Description = 'Time Constant'
+fltCtrl.alrnCmd.kp.Value = 0.0000e+00
+fltCtrl.alrnCmd.kp.Unit = '(deg)/(rad)'
+fltCtrl.alrnCmd.kp.NoScale = false
+fltCtrl.alrnCmd.kp.Description = 'Proportional gain'
+fltCtrl.alrnCmd.ki.Value = 0.0000e+00
+fltCtrl.alrnCmd.ki.Unit = '(deg)/(rad*s)'
+fltCtrl.alrnCmd.ki.NoScale = false
+fltCtrl.alrnCmd.ki.Description = 'Integral gain'
+fltCtrl.alrnCmd.kd.Value = 0.0000e+00
+fltCtrl.alrnCmd.kd.Unit = '(deg)/(rad/s)'
+fltCtrl.alrnCmd.kd.NoScale = false
+fltCtrl.alrnCmd.kd.Description = 'Derivative gain'
+fltCtrl.alrnCmd.tau.Value = 1.0000e+00
+fltCtrl.alrnCmd.tau.Unit = 's'
+fltCtrl.alrnCmd.tau.NoScale = false
+fltCtrl.alrnCmd.tau.Description = 'Time Constant'
 fltCtrl.maxBank.upperLimit.Value = Inf
 fltCtrl.maxBank.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.maxBank.upperLimit.NoScale = false
@@ -141,6 +201,9 @@ fltCtrl.rudderGain.Value = 1.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
+fltCtrl.towCtrlStrat.Unit is unitless or has no unit specified
+fltCtrl.towCtrlStrat.NoScale = false
+fltCtrl.towCtrlStrat.Description = 'Towing Positon Control Variant'
 fltCtrl.ctrlVecUpdateFcn.Value = 'combinedCmd'
 fltCtrl.ctrlVecUpdateFcn.Unit is unitless or has no unit specified
 fltCtrl.ctrlVecUpdateFcn.NoScale = false
@@ -224,3 +287,9 @@ fltCtrl.pitchLookup.Value = [0 0]
 fltCtrl.pitchLookup.Unit = 'deg'
 fltCtrl.pitchLookup.NoScale = false
 fltCtrl.pitchLookup.Description = 'Pitch setpoint lookup values'
+fltCtrl.yawCtrl.Unit is unitless or has no unit specified
+fltCtrl.yawCtrl.NoScale = false
+fltCtrl.yawCtrl.Description = 'Flag to decide yaw setpoint source. 0 = contant; 1 = LaR'
+fltCtrl.yawConst.Unit = 'deg'
+fltCtrl.yawConst.NoScale = false
+fltCtrl.yawConst.Description = 'Constant yaw setpoint'
