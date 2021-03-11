@@ -875,33 +875,137 @@ classdef Manta < handle
 %             title(sprintf('%s',mon));
 
         end
-        function [Pout,vout,Dout] = powOptDepth(obj,Odepth,vC,pC,aC,varargin)
+        function [Pout,vout,Dout] = powOptDepth(obj,vC,pC,aC,varargin)
             p = inputParser;
             addParameter(p,'pct',95,@isnumeric);
             parse(p,varargin{:})
              % Calculate flow speed at every point in the grid
             flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
             % Loop through every grid point
-            D = [200 250 300];  
+            vFlows1 = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    for kk = 1:size(flowSpeeds,3)
+                        % Get the flow speeds at this grid point
+                        vFlows1(ii,jj,kk) = mean(squeeze(flowSpeeds(ii,jj,kk,:)));
+                    end
+                end
+            end
+            vFlows1(vFlows1 > 1) = NaN;
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    vCol = squeeze(vFlows1(ii,jj,:));
+                    if isempty(find(isnan(vCol),1,'first'))
+                        iBot(ii,jj) = length(obj.zGridPoints.Value)+1;
+                        Odepth(ii,jj) = min(obj.zGridPoints.Value);
+                    else
+                        iBot(ii,jj) = find(isnan(vCol),1,'first');
+                        Odepth(ii,jj) = obj.zGridPoints.Value(iBot(ii,jj));
+                    end
+                end
+            end
+            % Loop through every grid point
             vFlows = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
             Dopt = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
             Popt = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
+            altMax = find(obj.zGridPoints.Value==-200);
             for ii = 1:size(flowSpeeds,1)
                 for jj = 1:size(flowSpeeds,2)
                     for kk = 1:size(flowSpeeds,4)
-                        vD = squeeze(flowSpeeds(ii,jj,23:25,kk));
-                        for ll = 1:3
-                            alt0 = Odepth+obj.zGridPoints.Value(22+ll);
+                        ran = altMax:iBot(ii,jj)-1;
+                        vD = squeeze(flowSpeeds(ii,jj,ran,kk));
+                        for ll = 1:length(vD)
+                            alt0(ll) = obj.zGridPoints.Value(altMax-1+ll)-Odepth(ii,jj);
                             v = vD(ll);
-                            if v < 0.1
+                            if v < 0.1 || alt0(ll)<aC(1)
                                 Pt(ll) = 0;
                             elseif v > 0.5
-                                Pt(ll) = max(pC(:,aC==alt0));
+                                Pt(ll) = max(pC(:,aC==alt0(ll)));
                             else
-                                Pt(ll) = interp1(vC,pC(:,aC==alt0),v,'linear','extrap');
+                                Pt(ll) = interp1(vC,pC(:,aC==alt0(ll)),v,'linear','extrap');
                             end
                         end
-                        Dopt(ii,jj,kk) = min(D(max(Pt)==Pt));
+                        
+                        Dopt(ii,jj,kk) = min(alt0(max(Pt)==Pt));
+                        vFlows(ii,jj,kk) = min(vD(max(Pt)==Pt));
+                        Popt(ii,jj,kk) = min(Pt(max(Pt)==Pt));
+                    end
+                end
+            end
+            vAvg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            Pavg = zeros(size(flowSpeeds,1),size(flowSpeeds,2));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    vAvg(ii,jj) = mean(vFlows(ii,jj,:));
+                    Pavg(ii,jj) = mean(Popt(ii,jj,:));
+                end
+            end
+            
+            Pout = prctile(Pavg,p.Results.pct,'all');
+            row = [];   thresh = 0.0001;
+            while isempty(row)
+                [row,col] = find(abs(Pavg-Pout)<=thresh,1,'first');
+                if thresh <= 0.01
+                    thresh = thresh*10;
+                else
+                    thresh = thresh+.01;
+                end
+            end
+            vout = vAvg(row,col);
+            Dout = [row;col];
+        end
+        function [Pavg,vAvg] = powOptInstDepth(obj,vC,pC,aC,varargin)
+            p = inputParser;
+            addParameter(p,'pct',95,@isnumeric);
+            parse(p,varargin{:})
+             % Calculate flow speed at every point in the grid
+            flowSpeeds = squeeze(sqrt(sum(obj.flowVecTimeseries.Value.Data.^2,4)));
+            % Loop through every grid point
+            vFlows1 = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,3));
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    for kk = 1:size(flowSpeeds,3)
+                        % Get the flow speeds at this grid point
+                        vFlows1(ii,jj,kk) = mean(squeeze(flowSpeeds(ii,jj,kk,:)));
+                    end
+                end
+            end
+            vFlows1(vFlows1 > 1) = NaN;
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    vCol = squeeze(vFlows1(ii,jj,:));
+                    if isempty(find(isnan(vCol),1,'first'))
+                        iBot(ii,jj) = length(obj.zGridPoints.Value)+1;
+                        Odepth(ii,jj) = min(obj.zGridPoints.Value);
+                    else
+                        iBot(ii,jj) = find(isnan(vCol),1,'first');
+                        Odepth(ii,jj) = obj.zGridPoints.Value(iBot(ii,jj));
+                    end
+                end
+            end
+            % Loop through every grid point
+            vFlows = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
+            Dopt = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
+            Popt = zeros(size(flowSpeeds,1),size(flowSpeeds,2),size(flowSpeeds,4));
+            altMax = find(obj.zGridPoints.Value==-200);
+            for ii = 1:size(flowSpeeds,1)
+                for jj = 1:size(flowSpeeds,2)
+                    for kk = 1:size(flowSpeeds,4)
+                        ran = altMax:iBot(ii,jj)-1;
+                        vD = squeeze(flowSpeeds(ii,jj,ran,kk));
+                        for ll = 1:length(vD)
+                            alt0(ll) = obj.zGridPoints.Value(altMax-1+ll)-Odepth(ii,jj);
+                            v = vD(ll);
+                            if v < 0.1 || alt0(ll)<aC(1)
+                                Pt(ll) = 0;
+                            elseif v > 0.5
+                                Pt(ll) = max(pC(:,aC==alt0(ll)));
+                            else
+                                Pt(ll) = interp1(vC,pC(:,aC==alt0(ll)),v,'linear','extrap');
+                            end
+                        end
+                        
+                        Dopt(ii,jj,kk) = min(alt0(max(Pt)==Pt));
                         vFlows(ii,jj,kk) = min(vD(max(Pt)==Pt));
                         Popt(ii,jj,kk) = min(Pt(max(Pt)==Pt));
                     end
