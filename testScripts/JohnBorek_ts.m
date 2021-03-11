@@ -12,8 +12,8 @@ Simulink.sdi.clear
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
 simScenario = [1 2 1 1 1 false false true];
-thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .15;                                               %   m/s - Flow speed
+thrLength = 400;  altitude = 300;                           %   m/m - Initial tether length/operating altitude
+flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0125;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
