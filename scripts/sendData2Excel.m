@@ -20,7 +20,8 @@ FAddMass = squeeze(tsc.FAddedBdy.Data(:,1,ran))';
 MAddMass = squeeze(tsc.MAddedBdy.Data(:,1,ran))';
 Fbuoy = squeeze(tsc.FBuoyBdy.Data(:,1,ran))';
 Fgrav = squeeze(tsc.FGravBdy.Data(:,1,ran))';
-T1 = table(Time,Velocity,Azimuth,Elevation,PortAileron,StbdAileron,Elevator,Rudder,Fgrav,Fbuoy,PortWingLoad,StbdWingLoad,HorStabLoad,VerStabLoad,TetherLoad,PTurbDrag,STurbDrag,FuseDrag,FAddMass,MAddMass);
+Accel = squeeze(tsc.caccel.Data(1:3,1,ran))';
+T1 = table(Time,Velocity,Azimuth,Elevation,PortAileron,StbdAileron,Elevator,Rudder,Fgrav,Fbuoy,PortWingLoad,StbdWingLoad,HorStabLoad,VerStabLoad,TetherLoad,PTurbDrag,STurbDrag,FuseDrag,FAddMass,MAddMass, Accel);
 
 Location = {'Center of Mass';'Center of Buoyancy';'Tether Attachment';'Port Wing Aero Center';'Stbd Wing Aero Center';'Hor Stab Aero Center';'Vert Stab Aero Center';'Port Turb Center';'Stbd Turbine Center';'Fuselage Aero Center';'Wing Leading Edge'};
 LE = -vhcl.fuse.rNose_LE.Value;
@@ -39,5 +40,5 @@ Z = [CM(3),CB(3),ThrAttach(3),PortWingAC(3),StbdWingAC(3),HorStabAC(3),VerStabAC
 T2 = table(Location,X,Y,Z);
 %%
 fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0\');
-writetable(T1,[fpath 'Load_Profiles_and_Locations.xlsx'],'Sheet',3,'Range',sprintf('A1:AT%d',numel(Time)+2))
-writetable(T2,[fpath 'Load_Profiles_and_Locations.xlsx'],'Sheet',4,'Range','A1:D12')
+writetable(T1,[fpath 'Load_Profiles_and_Locations.xlsx'],'Sheet',1,'Range',sprintf('A1:AW%d',numel(Time)+2))
+% writetable(T2,[fpath 'Load_Profiles_and_Locations.xlsx'],'Sheet',4,'Range','A1:D12')
