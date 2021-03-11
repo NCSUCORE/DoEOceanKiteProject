@@ -9,7 +9,7 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = .25;%[0.1:0.1:.5]; 
+flwSpdArray = -.25;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -46,7 +46,7 @@ env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vec
 
 loadComponent('constBoothLem');        %   High level controller
 
-hiLvlCtrl.basisParams.setValue([a,b,-el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
 
 gndStn.posVec.setValue([0 0 3],'m')
@@ -55,7 +55,7 @@ gndStn.posVec.setValue([0 0 3],'m')
 vhcl.initPosVecGnd.setValue([0;0;0],'m')
 vhcl.initAngVelVec.setValue([0;0;0],'rad/s')
 vhcl.initVelVecBdy.setValue([0;0;0],'m/s')
-vhcl.initEulAng.setValue([0;0;0],'rad')
+vhcl.initEulAng.setValue([0;0;-pi],'rad')
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
@@ -93,7 +93,10 @@ gain2to3 = 1;
 % fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)')
 elSP = -5; 
 %% Start Control
+flowSpeedOpenLoop = -.03;
 fltCtrl.startControl.setValue(150,'s')
+
+SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(300,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
@@ -209,10 +212,10 @@ end
 %         'SaveGif',1==1,'GifFile','expCross.gif',...
 %         'timestep',0.05);
 % % else
-%     vhcl.animateSim(tsc,.25,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
-%         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-%         'PathPosition',true,'SaveGif',1==1,'GifFile','awwSnap.gif',...
-%         'TracerDuration',200)%,'starttime',350);
+    vhcl.animateSim(tsc,1,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
+        'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,...
+        'SaveGif',1==1,'GifFile','awwSnap.gif',...
+        'TracerDuration',200,'starttime',150);
 
 % end
 %%
