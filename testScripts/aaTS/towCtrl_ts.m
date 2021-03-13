@@ -64,6 +64,7 @@ for ll = 1:length(yaw)
     
     %     loadComponent('LaRController');
     loadComponent('slCtrl');
+    
     loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
     if simScenario >= 2 && simScenario < 3
         loadComponent('prescribedGndStn001')
@@ -76,7 +77,8 @@ for ll = 1:length(yaw)
 end
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
-loadComponent('Manta2RotXFoil_AR8_b8'); 
+loadComponent('Manta2RotXFoil_AR8_b8_50'); 
+fltCtrl.
 %%  Environment Properties
 loadComponent('constXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector

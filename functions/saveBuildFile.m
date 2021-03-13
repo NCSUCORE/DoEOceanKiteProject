@@ -17,13 +17,14 @@ addParameter(p,'variant','',@(x) ischar(x) || isstring(x));
 
 parse(p,object,BSfileName,varargin{:});
 
-[currentMfileLoc,currentMfileName,~] = fileparts(which(p.Results.BSfileName));
+[currentMfileLoc,currentMfileName,~] = fileparts(which(p.Results.BSfileName))
 
 if endsWith(currentMfileName,'_bs')
     saveFileName = strcat('\',erase(currentMfileName,'_bs'),'.mat');
     txtFileName = strcat('\',erase(currentMfileName,'_bs'),'.txt');
 else
-    saveFileName = currentMfileName;
+    saveFileName = strcat('\',currentMfileName,'.mat');
+    txtFileName = strcat('\',currentMfileName,'.txt');
 end
 
 props = properties(p.Results.object);
