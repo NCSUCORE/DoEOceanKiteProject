@@ -9,7 +9,7 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = -.5;%[0.1:0.1:.5]; 
+flwSpdArray = -.25;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -83,8 +83,10 @@ thr.tether1.dragEnable.setValue(1,'')
 vhcl.hStab.setIncidence(-1.5,'deg');
 vhcl.setBuoyFactor(.98,'')
 vhcl.setRBridle_LE([0.029;0;-0.1],'m')
+vhcl.setRCentOfBuoy_LE([.080;0;0.003],'m')
+vhcl.setRCM_LE([0.091,0,0],'m')
 %%  Set up critical system parameters and run simulation
-    simParams = SIM.simParams;  simParams.setDuration(20,'s');  dynamicCalc = '';
+    simParams = SIM.simParams;  simParams.setDuration(50    ,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
@@ -190,7 +192,7 @@ end
     vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
         'GifTimeStep',0,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
         'SaveGif',1==1,'GifFile','expCross.gif',...
-        'timestep',0.5);
+        'timestep',0.1);
 % else
 %     vhcl.animateSim(tsc,.25,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...

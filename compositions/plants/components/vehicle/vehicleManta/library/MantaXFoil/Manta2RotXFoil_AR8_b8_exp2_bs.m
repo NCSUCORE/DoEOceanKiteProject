@@ -15,22 +15,22 @@ vhcl.setBuoyFactor(0.98,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('Manta_AR8_b8_exp2','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
-vhcl.setVolume(3.29,'m^3');
-Ixx = 3.234251e+03;
-Iyy = 12.797736e+03;
-Izz = 15.838516e+03;
-Ixy = -0.012667+03;
-Ixz = -0.017670e+03;
-Iyz = -0.000211e+03;
+vhcl.setVolume(3.27,'m^3');
+Ixx = 3.79e+03;
+Iyy = 8.99e+03;
+Izz = 12.42e+03;
+Ixy = -0.017+03;
+Ixz = -0.061e+03;
+Iyz = 0.0075e+03;
 
 vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixy Iyy -Iyz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([8.8444775e-01;0;3.1365427e-02],'m')
+vhcl.setRCM_LE([8.2e-01;0;0],'m')
 vhcl.setRB_LE([0;0;0],'m');
-vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
+vhcl.setRCentOfBuoy_LE([8.086e-01;0;3.01e-02],'m');
 
 %% Control Surfaces
 vhcl.setAllMaxCtrlDef(30,'deg');

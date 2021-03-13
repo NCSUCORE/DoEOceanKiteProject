@@ -11,12 +11,12 @@ h = 10*pi/180;  w = 40*pi/180;                     % rad - Path width/height
 [a,b] = boothParamConversion(w,h);                 % Build Path
 simScenario = 3.2;
 % Simulation Time
-simTime = 200;
+simTime = 500;
 %%  Configure Test
 thrLength = 3 ;                % m - Initial tether length
 flwSpd = 0.25  ;            % m/s - Flow speed)
 craftSpeed = -0.25;% Moving Ground Station Velocity Magnitude m/s
-elevation =  90;%[0:10:80]
+elevation =  45;%[0:10:80]
 
 el = elevation*pi/180;                                 % rad - Mean elevation angle
 % rDes(mm)
