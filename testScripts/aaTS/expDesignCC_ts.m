@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear;clc;close all;
+clear;clc;%close all;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
@@ -9,22 +9,23 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = -.25;%[0.1:0.1:.5]; 
+flwSpdArray = -1;%[0.1:0.1:.5]; 
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
-for j = 1:length(thrArray)
-    for k = 1:length(flwSpdArray)
-thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = flwSpdArray(k) ;                                              %   m/s - Flow speed
+h = 5*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
+for j = 1:length(h)
+    for k = 1:length(w)
+thrLength = 15;  altitude = 7.5;  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
+flwSpd = flwSpdArray ;                                              %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
-h = 25*pi/180;  w = 100*pi/180;                              %   rad - Path width/height
-[a,b] = boothParamConversion(w,h);                          %   Path basis parameters
+
+[a,b] = boothParamConversion(w(k),h(j));                          %   Path basis parameters
 %%  Load components
 fpath = fullfile(fileparts(which('OCTProject.prj')),...
     'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
-el = asin(altitude/thrLength);
+el = -asin(altitude/thrLength);
 loadComponent('pathFollowCtrlExp');                 %   Path-following controller with AoA control
 FLIGHTCONTROLLER = 'pathFollowingControllerExp';
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
@@ -67,6 +68,8 @@ thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
 thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
 thr.tether1.setDiameter(.0076,'m');
+thr.setNumNodes(5,'');
+thr.tether1.setDragCoeff(1.8,'');
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -80,7 +83,7 @@ fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
 fltCtrl.tanRoll.kp.setValue(.45,'(rad)/(rad)')
 thr.tether1.dragEnable.setValue(1,'')
-vhcl.hStab.setIncidence(-1.5,'deg');
+vhcl.hStab.setIncidence(-2,'deg');
 vhcl.setBuoyFactor(.98,'')
 vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 vhcl.setRCentOfBuoy_LE([.080;0;0.003],'m')
@@ -90,10 +93,12 @@ vhcl.setRCM_LE([0.091,0,0],'m')
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
-    tsc = signalcontainer(logsout);
+    tsc{j,k} = signalcontainer(logsout);
     %%
-    vhcl.animateSim(tsc,1,'PathFunc',fltCtrl.fcnName.Value,...
-     'PlotTracer',true,'FontSize',18)
+%     vhcl.animateSim(tsc{j,k},1,'PathFunc',fltCtrl.fcnName.Value,...
+%      'PlotTracer',true,'FontSize',18)
+    lap = max(tsc{j,k}.lapNumS.Data)-1;
+    tsc{j,k}.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
     end
 end
 % 
@@ -169,8 +174,8 @@ end
 % % tsc = signalcontainer(logsout);   
 % % lap = max(tsc.lapNumS.Data)-1;
 % % tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0)
-%     filename = sprintf(strcat('V-%.3f_EL-%.1f_THR-%d.mat'),flwSpd,el*180/pi,thrLength);
-%     fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Manta\');
+    filename = sprintf('forDeba.mat');
+    fpath = fullfile(fileparts(which('OCTProject.prj')),'output','Manta\');
 % if saveSim == 1
 %     if max(tsc.lapNumS.Data) > 1
 %     save(strcat(fpath,filename),'vhcl','thr','fltCtrl','env','linsys','simParams','LIBRARY','gndStn','tsc','tsc1','tsc2','tsc3')
@@ -178,21 +183,20 @@ end
 % end
 %     end
 % end
-% %%  Plot Results
-%     lap = max(tsc.lapNumS.Data)-1;
-%     if max(tsc.lapNumS.Data) < 2
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
-%     else
-%         tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
-%         tsc.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
-%     end
+%%  Plot Results
+    lap = max(tsc{1,1}.lapNumS.Data)-1;
+    if max(tsc.lapNumS.Data) < 2
+        tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
+    else
+        tsc{1,1}.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
+        tsc{1,1}.plotFlightError(vhcl,env,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0);
+    end
 
 %%  Animate Simulation
 % if simScenario <= 2
-    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+    vhcl.animateSim(tsc1{1,1},2,'TracerDuration',20,...
         'GifTimeStep',0,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-        'SaveGif',1==1,'GifFile','expCross.gif',...
-        'timestep',0.1);
+        'GifFile','expCross.gif','timestep',0.1,'View',[0,0]);
 % else
 %     vhcl.animateSim(tsc,.25,'Pause',1==0,'PathFunc',fltCtrl.fcnName.Value,...
 %         'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...

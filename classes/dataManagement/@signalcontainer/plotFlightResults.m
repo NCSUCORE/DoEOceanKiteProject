@@ -5,7 +5,8 @@ addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'cross',false,@islogical);
-addOptional(p,'AoASP',true,@islogical);
+addOptional(p,'AoASP',false,@islogical);
+addOptional(p,'maxTension',false,@islogical)
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'dragChar',false,@islogical);
@@ -104,8 +105,10 @@ else
 end
 %%  Plot Tether Tension
 subplot(R,C,2); hold on; grid on
-if numel(obj.maxTension.Data) == 1
+if p.Results.maxTension
     Tmax = (obj.maxTension.Data+0.5)*ones(numel(time),1);
+else
+    Tmax = (0*ones(numel(time),1));
 end
 if lap
     if con
