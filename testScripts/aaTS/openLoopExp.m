@@ -3,21 +3,20 @@ clear;clc;close all;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-
 %%  Set Test Parameters
 saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = .25;%[0.1:0.1:.5]; 
+flwSpdArray = -.25;%[0.1:0.1:.5];
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
 for j = 1:length(thrArray)
     for k = 1:length(flwSpdArray)
-thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
+thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle
 flwSpd = flwSpdArray(k) ;                                              %   m/s - Flow speed
-Tmax = 38;                                                  %   kN - Max tether tension 
+Tmax = 38;                                                  %   kN - Max tether tension
 h = 25*pi/180;  w = 100*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
@@ -45,11 +44,10 @@ env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vec
 loadComponent('constBoothLem');        %   High level controller
 % PATHGEOMETRY = 'lemOfBoothInv'
 % hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
-% 
+%
 % hiLvlCtrl.ELctrl.setValue(1,'');
 % hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
 % hiLvlCtrl.ThrCtrl.setValue(1,'');
-
 hiLvlCtrl.basisParams.setValue([a,b,-el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
 gndStn.posVec.setValue([0 0 3],'m')
@@ -58,7 +56,7 @@ gndStn.posVec.setValue([0 0 3],'m')
 vhcl.initPosVecGnd.setValue([0;0;0],'m')
 vhcl.initAngVelVec.setValue([0;0;0],'rad/s')
 vhcl.initVelVecBdy.setValue([0;0;0],'m/s')
-vhcl.initEulAng.setValue([0;0;0],'rad')
+vhcl.initEulAng.setValue([0;0;-pi],'rad')
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
 thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
@@ -85,22 +83,18 @@ thr.tether1.dragEnable.setValue(1,'')
 vhcl.hStab.setIncidence(-1.5,'deg');
 vhcl.setBuoyFactor(.98,'')
 vhcl.setRBridle_LE([0.029;0;-0.1],'m')%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %% Start Control
 fltCtrl.startControl.setValue(300,'s')
-elSP = -5; 
-
+elSP = -5;
 %% Open Loop Flow Speed
-flowSpeedOpenLoop = .03; 
+flowSpeedOpenLoop = -.03;
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(200,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
-    
 %     plotsq(tsc.winchPower.Time, tsc.positionVec.Data(3,1,:))
      vhcl.animateSim(tsc,2,'GifTimeStep',0.05,'SaveGif',1==1)
-    
-    end 
+    end
 end
