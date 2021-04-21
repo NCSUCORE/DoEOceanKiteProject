@@ -1,0 +1,46 @@
+Wing
+#Mach
+0.00
+#IYsym   IZsym   Zsym
+0 		 0		 0
+#Sref    Cref    Bref
+9.00 	 0.90 	 10.00
+#Xref    Yref    Zref
+0.00 	 0.00 	 0.00
+#-------------------------------------------------------------
+SURFACE
+Wing
+#Nchord 	Cspace 	Nspan 	Sspace
+10 			1.00 	50 		1.00
+
+ANGLE
+0.0
+#-------------------------------------------------------------
+SECTION
+#Xle 	 Yle 	 Zle 	 Chord 	 Ainc 	 Nspanwise 	 Sspace
+0.00 	 0.00 	 0.00 	 1.00 	 0.00 	 0 			 0
+
+NACA
+2412
+
+CONTROL
+#Cname 		Cgain 	x/c 	xHinge 	yHinge 	zHinge 	SgnDup
+aileron 	1.00 	0.75 	0.0 	0.0 	0.0 	1.0
+
+CLAF
+1.00
+#-------------------------------------------------------------
+SECTION
+#Xle 	 Yle 	 Zle 	 Chord 	 Ainc 	 Nspanwise 	 Sspace
+0.20 	 5.00 	 0.17 	 0.80 	 0.00 	 0 			 0
+
+NACA
+2412
+
+CONTROL
+#Cname 		Cgain 	x/c 	xHinge 	yHinge 	zHinge 	SgnDup
+aileron 	1.00 	0.75 	0.0 	0.0 	0.0 	1.0
+
+CLAF
+1.00
+#-------------------------------------------------------------
