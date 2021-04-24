@@ -53,3 +53,7 @@ las.initAngVel.Value = [0 0]
 las.initAngVel.Unit = 'rad/s'
 las.initAngVel.NoScale = false
 las.initAngVel.Description = 'Initial Angular Velocities'
+las.r_RP.Value = [-0.0717 0 -0.06785]
+las.r_RP.Unit = 'm'
+las.r_RP.NoScale = false
+las.r_RP.Description = 'Position Vector from pivot roller to center of rotation'

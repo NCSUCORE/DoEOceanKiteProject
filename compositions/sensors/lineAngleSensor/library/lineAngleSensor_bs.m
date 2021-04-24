@@ -12,4 +12,5 @@ las.setL_CM(norm([0.000157 0.006502 -0.071464]),'m');
 las.setIxx(2.72154e-04,'kg*m^2');
 las.setIyy(0.01587,'kg*m^2');
 las.setIzz(0.01587,'kg*m^2');
+las.setR_RP(-[0.0717 0 0.06785],'m');
 saveBuildFile('las',mfilename);
