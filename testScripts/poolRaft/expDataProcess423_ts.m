@@ -53,7 +53,7 @@ for i = 1:length(inc)
             % hiLvlCtrl.ThrCtrl.setValue(1,'');
             
             hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
-            las.setInitAng([el 0],'rad');
+            las.setInitAng([-el 0],'rad');
 %             las.tetherLoadDisable;
 %             las.dragDisable;
             las.setCD(1.3,'')
@@ -261,11 +261,11 @@ for j = 1:numel(dataSeg)
         plot([5 20],[predElevNeg predElevNeg],'LineStyle','--','DisplayName','Predicted Lower Bound')
     else
         for i = dataSeg{j}
-            windowSize = 100;
-            b = (1/windowSize)*ones(1,windowSize);
-            a = 1;
-            elDot{i} = diff(lowpass(tscData{i}.kite_elev.Data(tscData{i}.a:end),2,2000))./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1));
-            elDot{i} = filter(b,a,elDot{i});
+%             windowSize = 100;
+%             b = (1/windowSize)*ones(1,windowSize);
+%             a = 1;
+            elDot{i} = diff(filter((tscData{i}.kite_elev.Data(tscData{i}.a:end)))./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1));
+%             elDot{i} = filter(b,a,elDot{i});
             elDotT{i} = tscData{i}.kite_elev.Time(tscData{i}.a:end-1)-tscData{i}.kite_elev.Time(tscData{i}.a);
             if tscData{i}.linSpeed > 1.66 && tscData{i}.linSpeed < 1.68
 %                 subplot(1,2,1); hold on; grid on;
@@ -300,7 +300,7 @@ for j = 1:numel(dataSeg)
                     '-','DisplayName',sprintf('Run %d',qqq));
                 qqq = qqq+1;
                 ylim([0,90])
-                xlim([0,10])
+                xlim([0,20])
                 xlabel 'Time [s]' 
                 ylabel 'Elevation Angle [deg]' 
                 title(sprintf('%.2f m/s',towArray(3)))
@@ -309,7 +309,7 @@ for j = 1:numel(dataSeg)
             end
         end
         for i = 2
-            subplot(1,1,1)
+            subplot(1,1,1); hold on;
             alignment = [0 0;1 1; 2 1; 1 1; 2 2];
             imEl = squeeze(atan2(tsc1{alignment(j,2),i,alignment(j,1)}.thrNodePosVecs.Data(3,1,:)-...
                 tsc1{alignment(j,2),i,alignment(j,1)}.thrNodePosVecs.Data(3,2,:),...
@@ -317,9 +317,12 @@ for j = 1:numel(dataSeg)
                 tsc1{alignment(j,2),i,alignment(j,1)}.thrNodePosVecs.Data(1,2,:)))*180/pi;
             imEld{i,j} = diff(imEl)./(tsc1{alignment(j,2),i,alignment(j,1)}.thrNodePosVecs.Time(2:end)-tsc1{alignment(j,2),i,alignment(j,1)}.thrNodePosVecs.Time(1:end-1));
             imEldotT{i,j} = tsc1{alignment(j,2),i,alignment(j,1)}.thrNodePosVecs.Time(1:end-1);
+            elDotLAS{i,j} = tsc1{alignment(j,2),i,alignment(j,1)}.lasElevRateDeg.Data(1:end-1);
             plot(tsc1{alignment(j,2),i,alignment(j,1)}.elevationAngle.Time,imEl...
                 ,'k','DisplayName','Simulation','LineWidth',2)
-            
+            plot(tsc1{alignment(j,2),i,alignment(j,1)}.lasElevDeg.Time,...
+                -tsc1{alignment(j,2),i,alignment(j,1)}.lasElevDeg.Data,...
+                'r','DisplayName','Simulation LAS','LineWidth',2)
 %             plot(tsc1{alignment(j,2),i,alignment(j,1)}.elevationAngle.Time,squeeze(tsc1{alignment(j,2),i,alignment(j,1)}.lasElevDeg.Data)...
 %                 ,'b--','DisplayName','Simulation')
             %         plot(tsc1{j,i}.elevationAngle.Time,-squeeze(tsc1{j,i}.elevationAngle.Data)...
@@ -341,6 +344,7 @@ figure('Position',[100 100 900 400]); hold on; grid on;
 for i = 2%
     for j = 3
         plot(imEldotT{i,j},imEld{i,j},'k','LineWidth',2)
+        plot(imEldotT{i,j},-elDotLAS{i,j},'r','LineWidth',2)
     end
 end
 for i = [4:6]
@@ -348,7 +352,7 @@ plot(elDotT{19+i}-4,elDot{19+i})
 end
 xlim([.1 10])
 ylim([-5 50])
-legend('Simulation','Run 7','Run 8','Run 9')
+legend('Simulation','Simulation LAS','Run 7','Run 8','Run 9')
 xlabel 'Time [s]'
 ylabel 'Elevation Rate [deg/s]'
 % figure; hold on; grid on;

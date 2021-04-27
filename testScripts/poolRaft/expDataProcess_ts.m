@@ -6,17 +6,17 @@ saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
 thrArray = 3;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = -0.0001;%[0.1:0.1:.5]; 
-inc = -4%[-6:2:-2];
-towArray = .8%[0.5:.15:.8];
+flwSpdArray = -1e-9;%[0.1:0.1:.5]; 
+inc = [-10:1:0];
+towArray = [.25:.05:1];
+elevArray = [10:5:40]*pi/180
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
 for i = 1:length(inc)
     for j = 1:length(towArray)
-thrLength = 3;  altitude = thrLength*sin(90/180*pi);                 %   Initial tether length/operating altitude/elevation angle 
-flwSpd = -.0001 ;                                   %   m/s - Flow speed
-Tmax = 38;                                                  %   kN - Max tether tension 
+thrLength = 2.63;  altitude = thrLength*sin(90/180*pi);                 %   Initial tether length/operating altitude/elevation angle 
+flwSpd = -1e-9 ;                                   %   m/s - Flow speed                                              %   kN - Max tether tension 
 h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components

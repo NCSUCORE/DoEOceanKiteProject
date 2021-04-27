@@ -185,6 +185,7 @@ mLAS = .632 %mass of LAS boom kg
 gammaLAS = .0985/mLAS
 g = 9.81; %acc due to grav m/s^2
 rho = 1000; %kg/m^3 density of water
+mLAS = .573%las.mass.Value; %mass of LAS boom kg
 A = .012*.47624; %frontal cylinder area m^2
 l = .47624; %cylinder length m
 

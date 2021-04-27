@@ -18,6 +18,7 @@ classdef lineAngleSensor < dynamicprops
     initAng
     initAngVel
     r_RP
+    r_PT
     end
     
     methods
@@ -37,6 +38,7 @@ classdef lineAngleSensor < dynamicprops
             obj.initAng         = SIM.parameter('Unit','rad','Description','Initial Angles');
             obj.initAngVel      = SIM.parameter('Value',[0 0],'Unit','rad/s','Description','Initial Angular Velocities');
             obj.r_RP            = SIM.parameter('Unit','m','Description','Position Vector from pivot roller to center of rotation');
+            obj.r_PT            = SIM.parameter('Unit','m','Description','Position Vector from tether pass through at the end effector to the pivot');
         end
         
         function obj = setMass(obj,val,unit)
@@ -105,6 +107,10 @@ classdef lineAngleSensor < dynamicprops
         
         function obj = setR_RP(obj,val,unit)
             obj.r_RP.setValue(val,unit);
+        end
+        
+        function obj = setR_PT(obj,val,unit)
+            obj.r_PT.setValue(val,unit);
         end
     end
 end
