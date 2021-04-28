@@ -36,7 +36,7 @@ for i = 1:length(inc)
             loadComponent('realisticSensors')  ;                             %   Sensors
             loadComponent('lineAngleSensor');
             loadComponent('idealSensorProcessing')                      %   Sensor processing
-            loadComponent('Manta2RotXFoil_AR8_b8_exp_3dPrinted');                %   AR = 8; 8m span
+            loadComponent('Manta2RotXFoil_AR8_b8_exp');                %   AR = 8; 8m span
             SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
             %%  Environment Properties
             loadComponent('ConstXYZT');                                 %   Environment
