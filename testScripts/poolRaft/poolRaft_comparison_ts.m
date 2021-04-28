@@ -9,7 +9,7 @@ altitudeArray = 1.5;%[100:200:300];%150:25:300];
 flwSpdArray = 1e-9;%[0.1:0.1:.5]; 
 inc = -4;%[-8:1:0];
 towArray = 1%[.4:.1:1];
-elevArray = 30*pi/180% 10 20]*pi/180
+elevArray = [20]*pi/180
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -192,18 +192,41 @@ figure
 for k = 1:numel(elevArray)
     
     for j = 1:length(towArray)
-           subplot(3,3,k); hold on; grid on;
+%         subplot(3,3,k); hold on; grid on;
         for i = 1:2:length(inc)
+            imElGnd = squeeze(atan2(tsc1{i,j,k}.thrNodePosVecs.Data(3,1,:)-...
+                tsc1{i,j,k}.thrNodePosVecs.Data(3,2,:),...
+                tsc1{i,j,k}.thrNodePosVecs.Data(1,1,:)-...
+                tsc1{i,j,k}.thrNodePosVecs.Data(1,2,:)))*180/pi;
+            
+            imElKite = squeeze(atan2(tsc1{i,j,k}.thrNodePosVecs.Data(3,end-1,:)-...
+                tsc1{i,j,k}.thrNodePosVecs.Data(3,end,:),...
+                tsc1{i,j,k}.thrNodePosVecs.Data(1,end-1,:)-...
+                tsc1{i,j,k}.thrNodePosVecs.Data(1,end,:)))*180/pi;
+            
+
+            
             plot(tsc1{i,j,k}.lasElevDeg.Time,...
-                -squeeze(tsc1{i,j,k}.lasElevDeg.Data),...
-                'DisplayName','LAS Elev')
+                squeeze(tsc1{i,j,k}.lasElevDeg.Data),...
+                'DisplayName','LAS Elevation')
+            
             plot(tsc1{i,j,k}.elevationAngle.Time,...
                 squeeze(tsc1{i,j,k}.elevationAngle.Data),...
-                'DisplayName','Elev')
+                'DisplayName','Simulation Gross Elevation')
+            
+            plot(tsc1{i,j,k}.lasElevDeg.Time,...
+                -imElKite,...
+                'DisplayName','Simulated Kite Tether Angle')
+            
+            plot(tsc1{i,j,k}.lasElevDeg.Time,...
+                -imElGnd,...
+                'DisplayName','Simulated Ground Station Tether Angle')
         end
 %         title(sprintf('%.2f m/s Tow Velocity',...
 %             towArray(j)))
+if k == 1
         legend
+end
         xlabel 'Time [s]'
         ylabel 'Elevation [deg]'
     end
