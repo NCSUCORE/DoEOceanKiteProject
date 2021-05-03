@@ -3,8 +3,11 @@ classdef turb < handle
     %   Detailed explanation goes here
     
     properties
-        mass
+        numBlades
+        hubMass
+        bladeMass
         diameter
+        hubDiameter
         axisUnitVec
         attachPtVec
         powerCoeff
@@ -15,14 +18,18 @@ classdef turb < handle
         staticCD
     end
     properties (Dependent)
+        mass
         dragCoeff
         momentArm
         momentOfInertia
     end
     methods
         function obj = turb
-            obj.mass                 = SIM.parameter('Unit','kg','Description','Rotor mass');
-            obj.diameter             = SIM.parameter('Unit','m','Description','Diameter of the rotor');
+            obj.numBlades            = SIM.parameter('Unit','','Description','Number of blades');
+            obj.hubMass              = SIM.parameter('Unit','kg','Description','Hub mass');
+            obj.bladeMass            = SIM.parameter('Unit','kg','Description','Blade mass');
+            obj.diameter             = SIM.parameter('Unit','m','Description','Total diameter of the rotor');
+            obj.hubDiameter          = SIM.parameter('Unit','m','Description','Diameter of the hub');
             obj.axisUnitVec          = SIM.parameter('Description','Vector defining axis of rotation in body frame, should be close to [1 0 0]');
             obj.attachPtVec          = SIM.parameter('Unit','m','Description','Vector from CoM to turbine center, in body frame');
             obj.powerCoeff           = SIM.parameter('Unit','','Description','Coefficient used in power calculation');
@@ -33,8 +40,12 @@ classdef turb < handle
             obj.staticCD             = SIM.parameter('Unit','','Description','Turbine drag coefficient while static');
         end
         
-        function setMass(obj,val,units)
-            obj.mass.setValue(val,units)
+        function setHubMass(obj,val,units)
+            obj.hubMass.setValue(val,units)
+        end
+
+        function setBladeMass(obj,val,units)
+            obj.bladeMass.setValue(val,units)
         end
         
         function setDiameter(obj,val,units)
@@ -76,6 +87,10 @@ classdef turb < handle
         function val = get.dragCoeff(obj)
             val = SIM.parameter('Value',obj.powerCoeff.Value*obj.axialInductionFactor.Value,'Unit','');
         end
+
+        function val = get.mass(obj)
+            val = SIM.parameter('Value',obj.numBlades.Value*obj.bladeMass.Value+obj.hubMass.Value,'Unit','kg','Description','Total turbine mass');
+        end
         
         function val = get.momentArm(obj)
             veh = OCT.vehicleM;
@@ -83,7 +98,9 @@ classdef turb < handle
         end        
         
         function val = get.momentOfInertia(obj)
-            val = SIM.parameter('Value',(obj.diameter.Value/2)^2*obj.mass.Value,'Unit','kg*m^2');
+            Jhub = 1/2*obj.hubMass.Value*(obj.hubDiameter.Value/2)^2;
+            Jblade = 1/3*obj.bladeMass.Value*((obj.diameter.Value-obj.hubDiameter.Value)/2)^2;
+            val = SIM.parameter('Value',Jhub+Jblade*obj.numBlades.Value,'Unit','kg*m^2');
         end     
         
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
