@@ -79,6 +79,8 @@ vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
 vhcl.fuse.setREnd_LE([4.1;0;0],'m');
 vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
 %% Turbines
+T1 = readtable('ct_0_7mdia_5_4_21.txt'); T1 = table2array(T1);
+T2 = readtable('cp_0_7mdia_5_4_21.txt'); T2 = table2array(T2);
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
@@ -95,9 +97,9 @@ vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
 vhcl.turb1.setStaticArea(0.08,'m^2')
 vhcl.turb1.setStaticCD(1.5,'')
-vhcl.turb1.CpLookup.setValue([0.4;0.4],'')
-vhcl.turb1.CtLookup.setValue([0.9;0.9],'')
-vhcl.turb1.RPMref.setValue([0;500],'rad/s')
+vhcl.turb1.CpLookup.setValue(T2(:,2),'')
+vhcl.turb1.CtLookup.setValue(T1(:,2),'')
+vhcl.turb1.RPMref.setValue(T1(:,1),'')
 % starboard rotor
 vhcl.turb2.numBlades.setValue(3,'')
 vhcl.turb2.setHubMass(3.5,'kg')
@@ -112,9 +114,9 @@ vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
 vhcl.turb2.setStaticArea(0.08,'m^2')
 vhcl.turb2.setStaticCD(1.5,'')
-vhcl.turb2.CpLookup.setValue([0.4;0.4],'')
-vhcl.turb2.CtLookup.setValue([0.9;0.9],'')
-vhcl.turb2.RPMref.setValue([0;500],'rad/s')
+vhcl.turb2.CpLookup.setValue(T2(:,2),'')
+vhcl.turb2.CtLookup.setValue(T1(:,2),'')
+vhcl.turb2.RPMref.setValue(T1(:,1),'')
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');

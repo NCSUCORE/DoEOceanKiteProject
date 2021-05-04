@@ -43,7 +43,7 @@ classdef turb < handle
             obj.staticCD             = SIM.parameter('Unit','','Description','Turbine drag coefficient while static');
             obj.CpLookup             = SIM.parameter('Unit','','Description','Turbine power coefficient lookup');
             obj.CtLookup             = SIM.parameter('Unit','','Description','Turbine thrust coefficient lookup');
-            obj.RPMref               = SIM.parameter('Unit','rad/s','Description','Turbine lookup table reference vector');
+            obj.RPMref               = SIM.parameter('Unit','','Description','Turbine lookup table reference vector for tip-speed-ratio');
         end
         
         function setHubMass(obj,val,units)
