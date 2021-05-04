@@ -95,9 +95,9 @@ vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
 vhcl.turb1.setStaticArea(0.08,'m^2')
 vhcl.turb1.setStaticCD(1.5,'')
-vhcl.turb1.CpLookup.setValue([0.4 0.4],'')
-vhcl.turb1.CtLookup.setValue([0.9 0.9],'')
-vhcl.turb1.RPMref.setValue([0 500],'rad/s')
+vhcl.turb1.CpLookup.setValue([0.4;0.4],'')
+vhcl.turb1.CtLookup.setValue([0.9;0.9],'')
+vhcl.turb1.RPMref.setValue([0;500],'rad/s')
 % starboard rotor
 vhcl.turb2.numBlades.setValue(3,'')
 vhcl.turb2.setHubMass(3.5,'kg')
@@ -112,9 +112,9 @@ vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
 vhcl.turb2.setStaticArea(0.08,'m^2')
 vhcl.turb2.setStaticCD(1.5,'')
-vhcl.turb2.CpLookup.setValue([0.4 0.4],'')
-vhcl.turb2.CtLookup.setValue([0.9 0.9],'')
-vhcl.turb2.RPMref.setValue([0 500],'rad/s')
+vhcl.turb2.CpLookup.setValue([0.4;0.4],'')
+vhcl.turb2.CtLookup.setValue([0.9;0.9],'')
+vhcl.turb2.RPMref.setValue([0;500],'rad/s')
 %% load/generate fluid dynamic datan
 vhcl.calcFluidDynamicCoefffs
 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');
@@ -128,7 +128,7 @@ Input.vStab.Thickness = 15; Input.vStab.Sections = 10;
 Input.fuse.Sections = 10; 
 [MA] = getAddedMass(Input,vhcl);
 vhcl.setMa6x6_LE(MA,'');
-vhcl.plot
+% vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 
