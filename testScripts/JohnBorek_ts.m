@@ -112,9 +112,11 @@ switch simScenario(3)
         fltCtrl.tanRoll.kp.setValue(0.8,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
         fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
-        fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');        fltCtrl.rollCtrl.tau.setValue(0.001,'s');
+        fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      fltCtrl.rollCtrl.tau.setValue(0.001,'s');
         fltCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        fltCtrl.rudderGain.setValue(0,'');
         fltCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        fltCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
+        fltCtrl.RPMCtrl.kp.setValue(100,'()/(kN)');
+        fltCtrl.RPMConst.setValue(4.188,'');                      fltCtrl.RPMmax.setValue(8,'');
     case 2
         fltCtrl.maxTL.setValue(thrLength,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');                    pthCtrl1.winchSpeedIn.setValue(.1,'m/s');

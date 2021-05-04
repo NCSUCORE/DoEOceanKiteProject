@@ -43,7 +43,7 @@ fltCtrl.rollCtrl.tau.setValue(0.001,'s');
 
 fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');
 % RPM PID gains
-fltCtrl.RPMCtrl.kp.setValue(100,'(rad/s)/(kN)');
+fltCtrl.RPMCtrl.kp.setValue(100,'()/(kN)');
 
 fltCtrl.yawCtrl.kp.setValue(200,'(deg)/(rad)');
 fltCtrl.yawCtrl.ki.setValue(1,'(deg)/(rad*s)');
@@ -63,8 +63,8 @@ fltCtrl.AoASP.setValue(0,'');
 fltCtrl.AoAConst.setValue(14*pi/180,'deg');
 fltCtrl.AoAmin.setValue(-5*pi/180,'deg');
 % RPM control constant Parameters
-fltCtrl.RPMConst.setValue(100,'rad/s');
-fltCtrl.RPMmax.setValue(200,'rad/s');
+fltCtrl.RPMConst.setValue(3.7,'');
+fltCtrl.RPMmax.setValue(8,'');
 
 fltCtrl.Tmax.setValue(30,'kN');
 fltCtrl.TmaxCtrl.setValue(1,'');
