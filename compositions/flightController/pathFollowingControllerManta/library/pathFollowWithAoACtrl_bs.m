@@ -63,8 +63,8 @@ fltCtrl.AoASP.setValue(0,'');
 fltCtrl.AoAConst.setValue(14*pi/180,'deg');
 fltCtrl.AoAmin.setValue(-5*pi/180,'deg');
 % RPM control constant Parameters
-fltCtrl.RPMConst.setValue(100*pi/30,'rad/s');
-fltCtrl.RPMmax.setValue(200*pi/30,'rad/s');
+fltCtrl.RPMConst.setValue(100,'rad/s');
+fltCtrl.RPMmax.setValue(200,'rad/s');
 
 fltCtrl.Tmax.setValue(30,'kN');
 fltCtrl.TmaxCtrl.setValue(1,'');

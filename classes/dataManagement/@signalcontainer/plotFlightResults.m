@@ -34,9 +34,9 @@ if turb
         power = squeeze(obj.turbPow.Data(1,1,:));
         energy = cumtrapz(time,power)/1000/3600;
     else
-        power = squeeze((obj.turbPow.Data(1,1,:)))+squeeze((obj.turbPow.Data(1,2,:)));
+        power = squeeze(obj.turbPow.Data(1,1,:));
         energy = cumtrapz(time,power)/1000/3600;
-        speed = (squeeze(obj.turbVel.Data(1,1,:))+squeeze(obj.turbVel.Data(1,2,:)))/2;
+        speed = (squeeze(obj.turbVelP.Data(1,1,:))+squeeze(obj.turbVelS.Data(1,1,:)))/2;
     end
 else
     power = squeeze(obj.winchPower.Data(:,1));
