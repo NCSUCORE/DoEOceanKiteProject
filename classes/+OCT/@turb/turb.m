@@ -16,6 +16,9 @@ classdef turb < handle
         dragCoef
         staticArea
         staticCD
+        CpLookup
+        CtLookup
+        RPMref
     end
     properties (Dependent)
         mass
@@ -38,6 +41,9 @@ classdef turb < handle
             obj.tipSpeepRatio        = SIM.parameter('Unit','','Description','Relationship between flow speed and rotor tip speed');
             obj.staticArea           = SIM.parameter('Unit','m^2','Description','Projected area of the static turbine');
             obj.staticCD             = SIM.parameter('Unit','','Description','Turbine drag coefficient while static');
+            obj.CpLookup             = SIM.parameter('Unit','','Description','Turbine power coefficient lookup');
+            obj.CtLookup             = SIM.parameter('Unit','','Description','Turbine thrust coefficient lookup');
+            obj.RPMref               = SIM.parameter('Unit','rad/s','Description','Turbine lookup table reference vector');
         end
         
         function setHubMass(obj,val,units)
