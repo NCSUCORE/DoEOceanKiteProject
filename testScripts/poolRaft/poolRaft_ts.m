@@ -1,9 +1,6 @@
 %% Test script for pool test simulation of the kite model
 clear;clc;close all;
 Simulink.sdi.clear
-%%  Select sim scenario
-%   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
-
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 1;                %   Flag to run linearization
@@ -31,15 +28,16 @@ loadComponent('oneDoFGSCtrlBasic');                         %   Ground station c
 loadComponent('raftGroundStation');                         %   Ground station
 loadComponent('winchManta');                                %   Winches
 loadComponent('MantaTether');                               %   Manta Ray tether
-loadComponent('idealSensors')                               %   Sensors
-loadComponent('idealSensorProcessing')                      %   Sensor processing
+loadComponent('realisticSensors')                               %   Sensors
+loadComponent('realisticSensorProcessing')                      %   Sensor processing
 loadComponent('Manta2RotXFoil_AR8_b8_exp2');                %   AR = 8; 8m span
 %%  Environment Properties
 loadComponent('ConstXYZT');                                 %   Environment
 env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
     ENVIRONMENT = 'environmentManta2RotBandLin';            %   Two turbines
 %%  Set basis parameters for high level controller
-
+load('lineAngleSensor');
+las.setInitAng([-el 0],'rad');
 loadComponent('constBoothLem');        %   High level controller
 % PATHGEOMETRY = 'lemOfBoothInv'
 % hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
