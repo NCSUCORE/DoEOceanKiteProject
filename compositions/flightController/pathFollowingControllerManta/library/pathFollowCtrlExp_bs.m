@@ -9,7 +9,7 @@ fltCtrl.setPerpErrorVal(.125,'rad');
 fltCtrl.setSearchSize(.5,'');
 fltCtrl.setMinR(8,'m')
 fltCtrl.setMaxR(16,'m')
-fltCtrl.setElevatorReelInDef(0,'deg')
+fltCtrl.setElevatorConst(0,'deg')
 fltCtrl.setStartControl(1,'s')
 fltCtrl.firstSpoolLap.setValue(1000,'');
 fltCtrl.winchSpeedIn.setValue(.1,'m/s');
@@ -47,6 +47,8 @@ fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
 fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'')
 
 fltCtrl.rudderGain.setValue(0,'')
+fltCtrl.RPMConst.setValue(3.7,'');
+fltCtrl.RPMmax.setValue(8,'');
 
 fltCtrl.startControl.setValue(0,'s');
 %% Save
