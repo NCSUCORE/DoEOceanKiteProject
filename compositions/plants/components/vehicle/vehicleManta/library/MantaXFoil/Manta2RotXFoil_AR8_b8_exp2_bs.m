@@ -83,6 +83,8 @@ vhcl.setRBridle_LE([0.29;0; -0.5],'m')
 %% Turbines
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
+T1 = readtable('ct_0_7mdia_5_4_21.txt'); T1 = table2array(T1);
+T2 = readtable('cp_0_7mdia_5_4_21.txt'); T2 = table2array(T2);
 % port rotor
 vhcl.turb1.numBlades.setValue(3,'')
 vhcl.turb1.setHubMass(0,'kg')
@@ -97,6 +99,9 @@ vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
 vhcl.turb1.setStaticArea(0.08,'m^2')
 vhcl.turb1.setStaticCD(1.5,'')
+vhcl.turb1.CpLookup.setValue(T2(:,2),'')
+vhcl.turb1.CtLookup.setValue(T1(:,2),'')
+vhcl.turb1.RPMref.setValue(T1(:,1),'')
 % starboard rotor
 vhcl.turb2.numBlades.setValue(3,'')
 vhcl.turb2.setHubMass(0,'kg')
@@ -111,6 +116,9 @@ vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
 vhcl.turb2.setStaticArea(0.08,'m^2')
 vhcl.turb2.setStaticCD(1.5,'')
+vhcl.turb2.CpLookup.setValue(T2(:,2),'')
+vhcl.turb2.CtLookup.setValue(T1(:,2),'')
+vhcl.turb2.RPMref.setValue(T1(:,1),'')
 %Scale the Vehicle
 vhcl.scale(.1,1)
 vhcl.turb1.scale(.1,1)
@@ -125,7 +133,7 @@ Input.vStab.Thickness = 15; Input.vStab.Sections = 10;
 Input.fuse.Sections = 10; 
 [MA] = getAddedMass(Input,vhcl);
 vhcl.setMa6x6_LE(MA,'');
-vhcl.plot
+% vhcl.plot
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS","LIBRARY"]);
 
