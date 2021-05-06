@@ -10,10 +10,8 @@ flwSpdArray = -0.5;%-0.03;
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
-for j = 1:length(thrArray)
-    for k = 1:length(flwSpdArray)
-thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = flwSpdArray(k) ;                                   %   m/s - Flow speed
+thrLength = thrArray(1);  altitude = altitudeArray(1);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
+flwSpd = flwSpdArray(1);                                    %   m/s - Flow speed
 Tmax = 38;                                                  %   kN - Max tether tension 
 h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -28,8 +26,8 @@ loadComponent('oneDoFGSCtrlBasic');                         %   Ground station c
 loadComponent('raftGroundStation');                         %   Ground station
 loadComponent('winchManta');                                %   Winches
 loadComponent('MantaTether');                               %   Manta Ray tether
-loadComponent('realisticSensors')                               %   Sensors
-loadComponent('realisticSensorProcessing')                      %   Sensor processing
+loadComponent('realisticSensors')                           %   Sensors
+loadComponent('realisticSensorProcessing')                  %   Sensor processing
 loadComponent('Manta2RotXFoil_AR8_b8_exp2');                %   AR = 8; 8m span
 %%  Environment Properties
 loadComponent('ConstXYZT');                                 %   Environment
@@ -103,6 +101,6 @@ vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 %     set_param('OCTModel','SimulationMode','accelerator');
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
-    %%
-    end 
-end
+%%  Gif script
+vhcl.animateSim(tsc,0.2,'GifTimeStep',0.05,'SaveGif',1==1)
+
