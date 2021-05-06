@@ -264,7 +264,7 @@ for j = 1:numel(dataSeg)
 %             windowSize = 100;
 %             b = (1/windowSize)*ones(1,windowSize);
 %             a = 1;
-            elDot{i} = diff(filter((tscData{i}.kite_elev.Data(tscData{i}.a:end)))./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1));
+            elDot{i} = diff(filter((tscData{i}.kite_elev.Data(tscData{i}.a:end)))./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1)));
 %             elDot{i} = filter(b,a,elDot{i});
             elDotT{i} = tscData{i}.kite_elev.Time(tscData{i}.a:end-1)-tscData{i}.kite_elev.Time(tscData{i}.a);
             if tscData{i}.linSpeed > 1.66 && tscData{i}.linSpeed < 1.68
