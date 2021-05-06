@@ -118,6 +118,24 @@ elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';
 elems(13).Unit = 'm/s';
 
+elems(14) = Simulink.BusElement;
+elems(14).Name = 'LASpositionVec';
+elems(14).Dimensions = [2 1];
+elems(14).DimensionsMode = 'Fixed';
+elems(14).DataType = 'double';
+elems(14).SampleTime = -1;
+elems(14).Complexity = 'real';
+elems(14).Unit = 'rad';
+
+elems(15) = Simulink.BusElement;
+elems(15).Name = 'LASvelocityVec';
+elems(15).Dimensions = [2 1];
+elems(15).DimensionsMode = 'Fixed';
+elems(15).DataType = 'double';
+elems(15).SampleTime = -1;
+elems(15).Complexity = 'real';
+elems(15).Unit = 'rad/s';
+
 BUS = Simulink.Bus;
 BUS.Elements = elems;
 BUS.Description = 'Bus containing signals from the sensors model';
