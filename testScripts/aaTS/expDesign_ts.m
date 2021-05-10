@@ -7,7 +7,7 @@ clear;clc;close all
 %   2 = fig8-winch DOE;
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5      3.4 = Steady XFlr5 Passive ;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5
-h = 10*pi/180;  w = 40*pi/180;                     % rad - Path width/height
+h = 10*pi/180;  w = 30*pi/180;                     % rad - Path width/height
 [a,b] = boothParamConversion(w,h);                 % Build Path
 simScenario = 3.2;
 % Simulation Time

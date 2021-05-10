@@ -300,3 +300,7 @@ fltCtrl.yawConst.Value = 0.0000e+00
 fltCtrl.yawConst.Unit = 'deg'
 fltCtrl.yawConst.NoScale = false
 fltCtrl.yawConst.Description = 'Constant yaw setpoint'
+fltCtrl.ctrlOff.Value = 1.0000e+00
+fltCtrl.ctrlOff.Unit is unitless or has no unit specified
+fltCtrl.ctrlOff.NoScale = false
+fltCtrl.ctrlOff.Description = 'Switch to turn off control. 1 = On, 0 = Off'

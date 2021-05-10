@@ -1,4 +1,4 @@
-function constantBasisParameters_bc()
+function mantaFSHiLvl_bc()
 
 % Creates output bus used by 
 elems(1) = Simulink.BusElement;
@@ -15,7 +15,7 @@ elems(1).Unit = '';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
-CONTROL.Description = 'Bus constant basis parameters';
+CONTROL.Description = 'Basis parameters';
 
 assignin('base','hiLvlCtrlBus',CONTROL)
 

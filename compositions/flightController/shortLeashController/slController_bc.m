@@ -39,7 +39,7 @@ elems(4).Unit = 'rad';
 
 elems(5) = Simulink.BusElement;
 elems(5).Name = 'turbOnOff';
-elems(5).Dimensions = 1;
+elems(5).Dimensions = 2;
 elems(5).DimensionsMode = 'Fixed';
 elems(5).DataType = 'double';
 elems(5).SampleTime = -1;
