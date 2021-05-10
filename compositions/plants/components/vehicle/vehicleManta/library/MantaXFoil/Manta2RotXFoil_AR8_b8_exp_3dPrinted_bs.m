@@ -83,9 +83,14 @@ vhcl.setRBridle_LE([0.19;0; -0.72],'m')
 %% Turbines
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
+T1 = readtable('ct_0_7mdia_5_4_21.txt'); T1 = table2array(T1);
+T2 = readtable('cp_0_7mdia_5_4_21.txt'); T2 = table2array(T2);
 % port rotor
-vhcl.turb1.setMass(0,'kg')
+vhcl.turb1.numBlades.setValue(3,'')
+vhcl.turb1.setHubMass(0,'kg')
+vhcl.turb1.setBladeMass(0,'kg')
 vhcl.turb1.setDiameter(0,'m')
+vhcl.turb1.hubDiameter.setValue(0,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb1.setPowerCoeff(.4,'')
@@ -94,9 +99,15 @@ vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
 vhcl.turb1.setStaticArea(0.08,'m^2')
 vhcl.turb1.setStaticCD(1.5,'')
+vhcl.turb1.CpLookup.setValue(T2(:,2),'')
+vhcl.turb1.CtLookup.setValue(T1(:,2),'')
+vhcl.turb1.RPMref.setValue(T1(:,1),'')
 % starboard rotor
-vhcl.turb2.setMass(0,'kg')
+vhcl.turb2.numBlades.setValue(3,'')
+vhcl.turb2.setHubMass(0,'kg')
+vhcl.turb2.setBladeMass(0,'kg')
 vhcl.turb2.setDiameter(0,'m')
+vhcl.turb2.hubDiameter.setValue(0,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2)*1/3,'m')
 vhcl.turb2.setPowerCoeff(.4,'')
@@ -105,6 +116,9 @@ vhcl.turb2.setAxalInductionFactor(1.5,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
 vhcl.turb2.setStaticArea(0.08,'m^2')
 vhcl.turb2.setStaticCD(1.5,'')
+vhcl.turb2.CpLookup.setValue(T2(:,2),'')
+vhcl.turb2.CtLookup.setValue(T1(:,2),'')
+vhcl.turb2.RPMref.setValue(T1(:,1),'')
 %Scale the Vehicle
 vhcl.scale(.1,1)
 vhcl.turb1.scale(.1,1)

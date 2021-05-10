@@ -70,8 +70,8 @@ vhcl.vStab.setSweep(0,'deg');
 vhcl.vStab.setAirfoil('NACA0015','');
 vhcl.vStab.setClMin(-1.7,'');
 vhcl.vStab.setClMax(1.7,'');
-vhcl.vStab.setSpanUnitVec([0;0;-1],'');
-vhcl.vStab.setIncAlphaUnitVecSurf([0;-1;0],'');
+% vhcl.vStab.setSpanUnitVec([0;0;-1],'');
+% vhcl.vStab.setIncAlphaUnitVecSurf([0;-1;0],'');
 
 %% Fuselage (could use more realistic numbers)
 vhcl.fuse.setDiameter(0.635,'m');

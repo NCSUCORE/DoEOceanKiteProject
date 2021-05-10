@@ -274,7 +274,7 @@ vhcl.vStab.minCtrlDef.NoScale = false
 vhcl.vStab.maxCtrlDefSpeed.Value = 2.1213e+02
 vhcl.vStab.maxCtrlDefSpeed.Unit = 'deg/s'
 vhcl.vStab.maxCtrlDefSpeed.NoScale = false
-vhcl.vStab.spanUnitVec.Value = [0;0;-1]
+vhcl.vStab.spanUnitVec.Value = [0;0;1]
 vhcl.vStab.spanUnitVec.Unit is unitless or has no unit specified
 vhcl.vStab.spanUnitVec.NoScale = false
 vhcl.vStab.spanUnitVec.Description = 'Body frame unit vector for the span before dihedral/incidence'
@@ -313,7 +313,7 @@ vhcl.vStab.planformArea.Value = 1.1000e-02
 vhcl.vStab.planformArea.Unit is unitless or has no unit specified
 vhcl.vStab.planformArea.NoScale = false
 vhcl.vStab.planformArea.Description = 'Planform area of entire surface 1 or 2 traps'
-vhcl.vStab.RSurf2Bdy.Value = [1 0 0;0 0 1;0 -1 0]
+vhcl.vStab.RSurf2Bdy.Value = [1 0 0;0 0 -1;0 1 0]
 vhcl.vStab.RSurf2Bdy.Unit is unitless or has no unit specified
 vhcl.vStab.RSurf2Bdy.NoScale = false
 vhcl.vStab.RSurf2Bdy.Description = 'rotation matrix from the surface coordinates to the body coordinates'
@@ -325,7 +325,7 @@ vhcl.vStab.rTipLE.Value = [0.01375;0.2;0]
 vhcl.vStab.rTipLE.Unit = 'm'
 vhcl.vStab.rTipLE.NoScale = false
 vhcl.vStab.rTipLE.Description = 'vector from the surface origin (leading-edge, inside corner) to the tip areodynamic center in surface coordinates'
-vhcl.vStab.outlinePtsBdy.Value = [0.345 0.345 0.4 0.4 0.345;0 0 0 0 0;0 -0.2 -0.2 0 0]
+vhcl.vStab.outlinePtsBdy.Value = [0.345 0.345 0.4 0.4 0.345;0 0 0 0 0;0 0.2 0.2 0 0]
 vhcl.vStab.outlinePtsBdy.Unit is unitless or has no unit specified
 vhcl.vStab.outlinePtsBdy.NoScale = false
 vhcl.vStab.MACLength.Value = 5.5000e-02
@@ -604,7 +604,7 @@ vhcl.thrAttchPts_B.posVec.Value = [0.029;0;-0.05]
 vhcl.thrAttchPts_B.posVec.Unit = 'm'
 vhcl.thrAttchPts_B.posVec.NoScale = false
 vhcl.thrAttchPts_B.posVec.Description = 'Position vector of the tether attachment point. Add frame name/origin info here'
-vhcl.fluidMomentArms.Value = [0.0289700811923034 0.0289700811923034 0.35875 0.35875;-0.205592592592593 0.205592592592593 0 0;0 0 0 -0.1]
+vhcl.fluidMomentArms.Value = [0.0289700811923034 0.0289700811923034 0.35875 0.35875;-0.205592592592593 0.205592592592593 0 0;0 0 0 0.1]
 vhcl.fluidMomentArms.Unit = 'm'
 vhcl.fluidMomentArms.NoScale = false
 vhcl.fuseMomentArm.Value = [0.08;0;0]
@@ -619,7 +619,7 @@ vhcl.turbMomentArms.NoScale = false
 vhcl.rCM_B.Value = [0.082;0;0]
 vhcl.rCM_B.Unit = 'm'
 vhcl.rCM_B.NoScale = false
-vhcl.wingTipPositions.Value = [0.0256456456456456 0.0256456456456456 0.35875 0.35875;-0.427 0.427 0 0;0 0 0 -0.2]
+vhcl.wingTipPositions.Value = [0.0256456456456456 0.0256456456456456 0.35875 0.35875;-0.427 0.427 0 0;0 0 0 0.2]
 vhcl.wingTipPositions.Unit = 'm'
 vhcl.wingTipPositions.NoScale = false
 vhcl.fluidRefArea.Value = 9.8556e-02

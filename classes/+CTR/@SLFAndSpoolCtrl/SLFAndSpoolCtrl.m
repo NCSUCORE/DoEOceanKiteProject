@@ -59,6 +59,7 @@ classdef SLFAndSpoolCtrl < handle
         pitchLookup
         yawCtrl
         yawConst
+        ctrlOff
     end
     
     methods
@@ -120,6 +121,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.yawConst                = SIM.parameter('Unit','deg','Description','Constant yaw setpoint');
             obj.pitchTime               = SIM.parameter('Unit','s','Description','Reference time for pitch setpoint lookup table');
             obj.pitchLookup             = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
+            obj.ctrlOff                 = SIM.parameter('Value',1,'Description','Switch to turn off control. 1 = On, 0 = Off');
         end
         
         function setTanRoll(obj,val,units)

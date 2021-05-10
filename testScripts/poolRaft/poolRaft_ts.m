@@ -4,7 +4,7 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 1;                %   Flag to run linearization
-thrArray = 3;
+thrArray = 15;
 altitudeArray = 1.5;
 flwSpdArray = -0.5;%-0.03;
 distFreq = 0;

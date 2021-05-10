@@ -9,7 +9,7 @@ altitudeArray = 1.5;%[100:200:300];%150:25:300];
 flwSpdArray = -0.0001;%[0.1:0.1:.5];
 inc = [-8 -2];
 elevArray = [40 15]*pi/180;
-towArray = [.47 .77];%rpm2speed([50 65 80]);%[0.5:.15:.8];
+towArray = [0.47 .77];%rpm2speed([50 65 80]);%[0.5:.15:.8];
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -27,15 +27,16 @@ for i = 1:length(inc)
             %%  Load components
             el = elevArray(k);
             loadComponent('exp_slCtrl');
+            fltCtrl.ctrlOff.setValue(0,'')
             % loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
             % FLIGHTCONTROLLER = 'pathFollowingControllerExp';
             loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller                           %   Ground station
             loadComponent('raftGroundStation');         
             loadComponent('winchManta');                                %   Winches
             loadComponent('MantaTether');                               %   Manta Ray tether
-            loadComponent('realisticSensors')  ;                             %   Sensors
+            loadComponent('realisticSensors');                             %   Sensors
             loadComponent('lineAngleSensor');
-            loadComponent('idealSensorProcessing')                      %   Sensor processing
+            loadComponent('idealSensorProcessing');                      %   Sensor processing
             loadComponent('Manta2RotXFoil_AR8_b8_exp_3dPrinted');                %   AR = 8; 8m span
             SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
             %%  Environment Properties
@@ -166,7 +167,11 @@ xCB = .106 %axial location of center of buoyancy m
 mLAS = .573%las.mass.Value; %mass of LAS boom kg
 vLAS = las.volume.Value; %las volume
 gammaLAS = rho*vLAS/mLAS
-
+fLowPass = 2*2*pi; %low pass frequency in rad/s
+tau = 1/fLowPass; %time constant in 1/s
+tauRate = 1/(2*2*pi);
+lowFiltRaw = tf(1,[tau 1]);
+lowFiltRate = tf(1,[tauRate 1]);
 A = .012*.47624; %frontal cylinder area m^2
 l = .47624; %cylinder length m
 
@@ -264,9 +269,11 @@ for j = 1:numel(dataSeg)
 %             windowSize = 100;
 %             b = (1/windowSize)*ones(1,windowSize);
 %             a = 1;
-            elDot{i} = diff(filter((tscData{i}.kite_elev.Data(tscData{i}.a:end)))./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1)));
-%             elDot{i} = filter(b,a,elDot{i});
+            elFilt{i} = lsim(lowFiltRaw,tscData{i}.kite_elev.Data(tscData{i}.a:end),tscData{i}.kite_elev.Time(tscData{i}.a:end));
+            elDot{i} = diff(elFilt{i})./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1));
+%             
             elDotT{i} = tscData{i}.kite_elev.Time(tscData{i}.a:end-1)-tscData{i}.kite_elev.Time(tscData{i}.a);
+            elDot{i} = lsim(lowFiltRate,elDot{i},elDotT{i});
             if tscData{i}.linSpeed > 1.66 && tscData{i}.linSpeed < 1.68
 %                 subplot(1,2,1); hold on; grid on;
 %                 plot(tscData{i}.kite_elev.Time(tscData{i}.a:end)...

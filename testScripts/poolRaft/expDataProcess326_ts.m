@@ -6,8 +6,8 @@ saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
 thrArray = .47624;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = -0.0001;%[0.1:0.1:.5];
-inc = [-6:2:-2];
+flwSpdArray = -1;%[0.1:0.1:.5];
+inc = [-6];
 towArray = rpm2speed([50 65 80]);%[0.5:.15:.8];
 distFreq = 0;
 distAmp = 0;
@@ -24,12 +24,12 @@ for i = 1:length(inc)
             'vehicleDesign\Tether\Tension\');
         maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
         el = asin(altitude/thrLength);
-        loadComponent('exp_slCtrl');
-        % loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
-        % FLIGHTCONTROLLER = 'pathFollowingControllerExp';
+%         loadComponent('exp_slCtrl');
+        loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
+        FLIGHTCONTROLLER = 'pathFollowingControllerExp';
         loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-        % loadComponent('MantaGndStn');                             %   Ground station
-        loadComponent('raftGroundStation');
+        loadComponent('MantaGndStn');                             %   Ground station
+%         loadComponent('raftGroundStation');
         
         
         loadComponent('winchManta');                                %   Winches

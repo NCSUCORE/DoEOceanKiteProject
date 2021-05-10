@@ -15,7 +15,7 @@ pertVec = [0 1 0];
 
 for i = 1:length(inc)
     for j = 1:length(towArray)
-        thrLength = 3;  altitude = thrLength*sin(40/180*pi);                 %   Initial tether length/operating altitude/elevation angle
+        thrLength = 2.63;  altitude = thrLength*sin(40/180*pi);                 %   Initial tether length/operating altitude/elevation angle
         flwSpd = -.0001 ;                                   %   m/s - Flow speed
         Tmax = 38;                                                  %   kN - Max tether tension
         h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
