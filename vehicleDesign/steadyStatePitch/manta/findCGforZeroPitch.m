@@ -13,13 +13,13 @@ totalLength     = 400;
 tetherDiameter  = .012;
 tetherDensity   = 2226;
 desiredFlow     = .25;
-CM_SearchVector          =  linspace(-.4,-.1,200);
+CM_SearchVector          =  linspace(-.32,-.31,2000);
 
 pitchVector = 0;%-20:5:20;
 flwSpdVector = [.001,.1,.25,.5,.75,1];
 elevatorTrim = 0;%[-30,0,30];
 
-runMunkTable = 1;
+runMunkTable = 0;
 % fun this if pitch or flow vector is changed!!
 if runMunkTable == 1
     MunkMomentAnalysisManta(pitchVector,flwSpdVector)
@@ -46,11 +46,11 @@ body_r_wingAero_LE    = B_c_S*surface_r_wingAero_LE;
 body_r_tethAttach_CM = body_r_tethAttach_LE + body_r_LE_CM;
 % Vector from tether attachmet point to center of mass
 body_r_CM_tethAttach = -body_r_tethAttach_CM;
-% Vector from center of mass to turbine attachment in body frame
-body_r_turbineAttach_CM = vhcl.turb1.attachPtVec.Value;
+% Vector from center of mass to turbine attachment in body frame (LE wing)
+body_r_turbineAttach_CM = -body_r_tethAttach_LE + body_r_tethAttach_CM;
 
 % Vector from center of mass to center of boyancy
-body_r_CenterBoyancy_CM         = -vhcl.rCM_B.Value;
+body_r_CenterBoyancy_CM   = -vhcl.rCM_B.Value;
 % Vector from center of mass to h-stab aero center
 body_r_hStabAeroCenter_CM = body_r_LE_CM + body_r_hStabLE_LE + body_r_hStabAeroCenter_hStabLE;
 % Vector from center of mass to wing aerodynamic center
@@ -61,7 +61,8 @@ body_r_wingAero_CM        = body_r_LE_CM + body_r_wingAero_LE;
 % (Weight)  Vector from tether attachment point to center of mass
 body_r_CM_tetherAttach = body_r_CM_tethAttach;
 % (Boyancy) Vector from tether attachment point to center of boyancy
-body_r_CenterBoyancy_tetherAttach = -body_r_tethAttach_CM;%body_r_CenterBoyancy_CM + body_r_CM_tethAttach;
+% (-body_r_tethAttach_CM) 
+body_r_CenterBoyancy_tetherAttach = body_r_CenterBoyancy_CM + body_r_CM_tethAttach;
 % (Wing)    Vector from tether attachment point to wing aerodynamic center
 body_r_wingAero_tetherAttach = body_r_wingAero_CM + body_r_CM_tethAttach;
 % (H-Stab)  Vector from tether attachment point to h-stab aero center
@@ -69,16 +70,36 @@ body_r_hStabAeroCenter_tetherAttach = body_r_hStabAeroCenter_CM + body_r_CM_teth
 % (Tether)  Vector from tether attachment point to wing aerodynamic center
 body_r_tetherAttach_tetherAttach = [0;0;0];
 % (Turbine) Vector from tether attachment to turbine attachment in body frame
-body_r_turbineAttach_tetherAttach = body_r_turbineAttach_CM + body_r_CM_tetherAttach;
+body_r_turbineAttach_tetherAttach = body_r_turbineAttach_CM + body_r_CM_tethAttach;
+
+%% Vectors to check kite body
+% Vector from leading edge to front of kite
+body_r_front_LE = vhcl.fuse.rNose_LE.Value;
+% Vector from tether attach to front of kite
+body_r_front_tetherAttach = body_r_front_LE + body_r_LE_CM + body_r_CM_tethAttach;
+% Vector from leading edge to back of kite
+body_r_back_LE   = vhcl.fuse.rEnd_LE.Value ;
+% Vector from tether attach to back of kite
+body_r_back_tetherAttach = body_r_back_LE + body_r_LE_CM + body_r_CM_tethAttach;
 
 %%
 TIMER = 1/length(flwSpdVector)/length(reeledOutLength)/length(elevatorTrim)/length(CM_SearchVector);
 OUT = 0;
+densityWater = 1023;
 for  ii = 1:length(flwSpdVector)
     for jj = 1:length(reeledOutLength)
         for kk = 1:length(elevatorTrim)
             for ll = 1:length(CM_SearchVector)
-
+                
+                %%
+                CM_Correct = .011730865432716;
+                vhcl.setRCM_LE([8.8444775e-01 + CM_Correct;...
+                    0             ;...
+                    3.1365427e-02 ],'m')
+                vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value - [CM_Correct;0;0],'m');
+                vhcl.setRB_LE(vhcl.rCentOfBuoy_LE.Value + [0;0;0],'m');
+                vhcl.setRBridle_LE([vhcl.rB_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
+                
                 %% define constants
                 % flow speed
                 flowSpeed           = flwSpdVector(ii);
@@ -116,10 +137,16 @@ for  ii = 1:length(flwSpdVector)
                 % fluid density
                 density             = 1e3;
                 % factor of buoyancy (=1 is neutrally buoyant) (>1 Float) (<1 Sink)
-                buoyFactor          = 1.2;%(mass - ...
-                                          %(tetherDensity*reeledOutLength(jj)*(pi/4)*tetherDiameter^2 - ...
-                                          %tetherDensity*(totalLength      )*(pi/4)*tetherDiameter^2))/...
-                                          %mass;
+                volumeKite   = vhcl.volume.Value       ;
+                volumeWater  = volumeKite              ; 
+                massWater    = densityWater*volumeWater;
+                massKite     = 1023*volumeWater/1.0391 ;
+                buoyFactor   = massWater/massKite      ;
+                %buoyFactor          = 1.0391;%(mass+(tetherDensity*(totalLength)*(pi/4)*tetherDiameter^2))/mass;
+                                      %(mass - ...
+                                      %(tetherDensity*reeledOutLength(jj)*(pi/4)*tetherDiameter^2 - ...
+                                      %tetherDensity*(totalLength      )*(pi/4)*tetherDiameter^2))/...
+                                      %mass;
                 
                 % wing
                 wing.span = 9;                  % span
@@ -186,6 +213,7 @@ legend('Pitch Value (  .001 m/s Flow )',...
     'Pitch Value ( 1     m/s Flow )');
 
 format long
-CM_for_Zero = CM_SearchVector(ix)'
+CM_SearchVector(ix)'
+CM_for_Zero = CM_SearchVector(ix)'+body_r_CenterBoyancy_tetherAttach(1)
 format short
 
