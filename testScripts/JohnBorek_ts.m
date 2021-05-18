@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear; %clc;
+clear; clc;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10, 4 = DOE
@@ -13,7 +13,7 @@ Simulink.sdi.clear
 %%             1 2 3 4 5  6    7     8
 simScenario = [1 2 1 1 1 false false true];
 thrLength = 400;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .35;                                               %   m/s - Flow speed
+flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0095;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -142,6 +142,9 @@ end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(2500,'s');  dynamicCalc = '';
+if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
+    error('Elevation angle is out of range')
+end
 simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
@@ -189,7 +192,7 @@ if simScenario(8)
 end
 % set(gcf,'OuterPosition',[-773.4000   34.6000  780.8000  830.4000]);
 %%  Animate Simulation
-if simScenario(7)
+if 5 == 6
     if simScenario(3) == 1
         vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
             'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
