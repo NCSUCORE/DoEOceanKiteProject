@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear; clc;
+clear; %clc;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10, 4 = DOE
@@ -12,7 +12,7 @@ Simulink.sdi.clear
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
 simScenario = [1 2 1 1 1 false false true];
-thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
+thrLength = 400;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
 flwSpd = .35;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 0.0095;                           %   kN/m - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
