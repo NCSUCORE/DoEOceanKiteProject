@@ -1,28 +1,40 @@
 
 clear
-close 'All'
+%close 'All'
 
 loadComponent('Manta2RotXFoil_AR8_b8')
 
 % Scaling
-LFactor = .08;      %Length Scale Factor 
-DFactor = 1;        %Density Scale Factor 
-vhcl.scale(LFactor,DFactor);
+% LFactor = 1;      %Length Scale Factor 
+% DFactor = 1;      %Density Scale Factor 
+% vhcl.scale(LFactor,DFactor);
 
 
 set(groot,'defaulttextinterpreter','latex');
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 
-reeledOutLength = [50,310];
+CM_Correct = .011730865432716;
+vhcl.setRCM_LE([8.8444775e-01 + CM_Correct;...
+                0             ;...
+                3.1365427e-02 ],'m')
+vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value - [CM_Correct;0;0],'m');
+vhcl.setRBridle_LE([vhcl.rCentOfBuoy_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
+
+%BAD%%%%% (-.3 tether)
+%vhcl.setRB_LE(vhcl.rCentOfBuoy_LE.Value + [0;0;0],'m');
+%vhcl.setRBridle_LE([vhcl.rB_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
+%%%%%%%%%
+
 totalLength     = 400;
 tetherDiameter  = .012;
 tetherDensity   = 2226;
 desiredFlow     = .25;
+reeledOutLength = totalLength;
 
 pitchVector = 0;%-90:10:90;
-flwSpdVector = 0.001:0.01:1;
-elevatorTrim = [-30,-20,-10,0,10,20,30];
+flwSpdVector = 0.001:0.001:.3;
+elevatorTrim = [-30,0,30];
 
 runMunkTable = 0;
 % fun this if pitch or flow vector is changed!!
@@ -51,11 +63,11 @@ body_r_wingAero_LE    = B_c_S*surface_r_wingAero_LE;
 body_r_tethAttach_CM = body_r_tethAttach_LE + body_r_LE_CM;
 % Vector from tether attachmet point to center of mass
 body_r_CM_tethAttach = -body_r_tethAttach_CM;
-% Vector from center of mass to turbine attachment in body frame
-body_r_turbineAttach_CM = vhcl.turb1.attachPtVec.Value;
+% Vector from center of mass to turbine attachment in body frame (LE wing)
+body_r_turbineAttach_CM = -body_r_tethAttach_LE + body_r_tethAttach_CM;
 
 % Vector from center of mass to center of boyancy
-body_r_CenterBoyancy_CM         = -vhcl.rCM_B.Value;
+body_r_CenterBoyancy_CM   = vhcl.rCentOfBuoy_LE.Value+body_r_LE_CM;
 % Vector from center of mass to h-stab aero center
 body_r_hStabAeroCenter_CM = body_r_LE_CM + body_r_hStabLE_LE + body_r_hStabAeroCenter_hStabLE;
 % Vector from center of mass to wing aerodynamic center
@@ -66,7 +78,8 @@ body_r_wingAero_CM        = body_r_LE_CM + body_r_wingAero_LE;
 % (Weight)  Vector from tether attachment point to center of mass
 body_r_CM_tetherAttach = body_r_CM_tethAttach;
 % (Boyancy) Vector from tether attachment point to center of boyancy
-body_r_CenterBoyancy_tetherAttach = -body_r_tethAttach_CM;%body_r_CenterBoyancy_CM + body_r_CM_tethAttach;
+% (-body_r_tethAttach_CM) 
+body_r_CenterBoyancy_tetherAttach = body_r_CenterBoyancy_CM + body_r_CM_tethAttach;
 % (Wing)    Vector from tether attachment point to wing aerodynamic center
 body_r_wingAero_tetherAttach = body_r_wingAero_CM + body_r_CM_tethAttach;
 % (H-Stab)  Vector from tether attachment point to h-stab aero center
@@ -74,12 +87,22 @@ body_r_hStabAeroCenter_tetherAttach = body_r_hStabAeroCenter_CM + body_r_CM_teth
 % (Tether)  Vector from tether attachment point to wing aerodynamic center
 body_r_tetherAttach_tetherAttach = [0;0;0];
 % (Turbine) Vector from tether attachment to turbine attachment in body frame
-body_r_turbineAttach_tetherAttach = body_r_turbineAttach_CM + body_r_CM_tetherAttach;
+body_r_turbineAttach_tetherAttach = body_r_turbineAttach_CM + body_r_CM_tethAttach;
 
+%% Vectors to check kite body
+% Vector from leading edge to front of kite
+body_r_front_LE = vhcl.fuse.rNose_LE.Value;
+% Vector from tether attach to front of kite
+body_r_front_tetherAttach = body_r_front_LE + body_r_LE_CM + body_r_CM_tethAttach;
+% Vector from leading edge to back of kite
+body_r_back_LE   = vhcl.fuse.rEnd_LE.Value ;
+% Vector from tether attach to back of kite
+body_r_back_tetherAttach = body_r_back_LE + body_r_LE_CM + body_r_CM_tethAttach;
 
-%%
+%% Run Loop
 TIMER = 1/length(flwSpdVector)/length(reeledOutLength)/length(elevatorTrim);
 OUT = 0;
+densityWater = 1023;
 for  ii = 1:length(flwSpdVector)
     for jj = 1:length(reeledOutLength)
         for kk = 1:length(elevatorTrim)
@@ -100,8 +123,9 @@ for  ii = 1:length(flwSpdVector)
             hstabAeroCenterZLoc = -body_r_hStabAeroCenter_tetherAttach(3);
             % tether attachment location
             bridleXLoc          = -body_r_tetherAttach_tetherAttach(1);
-            % center of mass location (-0.3165)
-            centerOfMassXLoc    = (-0.359296482412060);%-body_r_CM_tetherAttach(1);
+            % center of mass location (-0.311755877938969)
+            % (-0.313256628314157) (-0.311730865432716)
+            centerOfMassXLoc    = -body_r_CM_tetherAttach(1);
             centerOfMassZLoc    = -body_r_CM_tetherAttach(3);
             % Trubine location
             turbineXLoc         = -body_r_turbineAttach_tetherAttach(1);
@@ -121,11 +145,17 @@ for  ii = 1:length(flwSpdVector)
             % fluid density
             density             = 1e3;
             % factor of buoyancy (=1 is neutrally buoyant) (>1 Float) (<1 Sink)
-            buoyFactor          = 1.2;%(mass - ...
+              volumeKite   = vhcl.volume.Value       ;
+                volumeWater  = volumeKite              ; 
+                massWater    = densityWater*volumeWater;
+                massKite     = 1023*volumeWater/1.0391 ;
+                buoyFactor   = massWater/massKite      ;
+            %buoyFactor          = 1.0391;%(mass+(tetherDensity*(totalLength)*(pi/4)*tetherDiameter^2))/mass;
+                                      %(mass - ...
                                       %(tetherDensity*reeledOutLength(jj)*(pi/4)*tetherDiameter^2 - ...
                                       %tetherDensity*(totalLength      )*(pi/4)*tetherDiameter^2))/...
                                       %mass;
-            
+                                      
             % wing
             wing.span = 9;                  % span
             wing.aspectRatio = 10;          % aspect ratio
@@ -143,14 +173,7 @@ for  ii = 1:length(flwSpdVector)
             
             % elevator deflection in degrees (Elevator Trim)
             elevatorDeflection = elevatorTrim(kk);
-            
-            % test the function
-%             [op,PITCHOUT(ii,jj,kk),ELEVATIONOUT(ii,jj,kk)] = pitchStatibilityAnalysisManta(flowSpeed,kiteSpeedInX,...
-%                 centerOfBuoyXLoc,centerOfBuoyZLoc,wingAeroCenterXLoc,wingAeroCenterZLoc,hstabAeroCenterXLoc,hstabAeroCenterZLoc,...
-%                 bridleXLoc,centerOfMassXLoc,centerOfMassZLoc,elevation,azimuth,pitch,heading,...
-%                 mass,gravAcc,density,buoyFactor,wing,hstab,...
-%                 elevatorDeflection,pitchVector,flwSpdVector,turbineXLoc,turbineZLoc);
-            
+
             [op,PITCHOUT(ii,jj,kk),ELEVATIONOUT(ii,jj,kk)] = pitchStatibilityAnalysisManta(flowSpeed,kiteSpeedInX,...
                 centerOfBuoyXLoc,centerOfBuoyZLoc,wingAeroCenterXLoc,wingAeroCenterZLoc,hstabAeroCenterXLoc,hstabAeroCenterZLoc,...
                 bridleXLoc,centerOfMassXLoc,centerOfMassZLoc,elevation,azimuth,pitch,heading,...
@@ -158,6 +181,7 @@ for  ii = 1:length(flwSpdVector)
                 elevatorDeflection,pitchVector,flwSpdVector,turbineXLoc,turbineZLoc);
 
             pitchMoment(ii,jj,kk) = op.sumPitchMoments;
+            pitchDifference(ii,jj,kk) = op.weightPitchMoment + op.buoyPitchMoment; 
             OUT = (OUT) + TIMER*100
         end
     end
@@ -165,31 +189,60 @@ for  ii = 1:length(flwSpdVector)
 end
 
 %% Turbine force to balance
-tetherIndex = 2;
-fillPlot = false;
+tetherIndex = 1;
+fillPlot = true;
 figure(1)
 hold on
-reactionForce = pitchMoment./turbineZLoc;
+reactionForce = pitchDifference./turbineZLoc;
 for ii = 1:length(elevatorTrim)
 plot(flwSpdVector,reactionForce(:,tetherIndex,ii))
 end
 if fillPlot == true
     x1 = [flwSpdVector, fliplr(flwSpdVector)];
-    inBetween = [squeeze(reactionForce(:,tetherIndex,2)); fliplr(squeeze(reactionForce(:,tetherIndex,3))')'];
+    inBetween = [squeeze(reactionForce(:,tetherIndex,1)); fliplr(squeeze(reactionForce(:,tetherIndex,3))')'];
     h1 = fill(x1, inBetween,'b'); 
     set(h1,'facealpha',.5)
 end
+yline(0,'r--','LineWidth',1.5)
 xlabel('Flow Speed (m/s)')
 ylabel('Turbine Force to Pitch to Zero (N)')
-title(sprintf('Turbine Pitch vs Flow Speed (Tether Length = %dm)',reeledOutLength(tetherIndex)))
-%legend('Elevator -30','Elevator  0 ','Elevator  30');
-legend('-30','-20','-10','0','10','20','30')
+title('Turbine Force vs Flow Speed (Tether Length = %dm)')
+legend('Elevator -30','Elevator  0 ','Elevator  30');
+%legend('-30','-20','-10','0','10','20','30')
+hold off
+xlim([0,.01])
+
+%% Tail Turbine force to balance
+tetherIndex = 1;
+fillPlot = true;
+figure(2)
+hold on
+reactionForce = pitchDifference./hstabAeroCenterXLoc;
+for ii = 1:length(elevatorTrim)
+plot(flwSpdVector,reactionForce(:,tetherIndex,ii))
+end
+if fillPlot == true
+    x1 = [flwSpdVector, fliplr(flwSpdVector)];
+    inBetween = [squeeze(reactionForce(:,tetherIndex,1)); fliplr(squeeze(reactionForce(:,tetherIndex,3))')'];
+    h1 = fill(x1, inBetween,'b'); 
+    set(h1,'facealpha',.5)
+end
+yline(0,'r--','LineWidth',1.5)
+xlabel('Flow Speed (m/s)')
+ylabel('Tail Turbine Force to Pitch to Zero (N)')
+title(sprintf('Tail Turbine Force vs Flow Speed (Tether Length = %dm)',reeledOutLength(tetherIndex)))
+legend('Elevator -30','Elevator  0 ','Elevator  30');
+%legend('-30','-20','-10','0','10','20','30')
 hold off
 xlim([0,.1])
 
-%% Pitch Bounds Short Tether
-figure(2)
+%% Pitch Bounds for Tether
+figure(3)
 hold on 
+
+%flwSpdVector = flwSpdVector*1.94384;
+%desiredFlow  = desiredFlow *1.94384;
+
 [~,ix] = min( abs( flwSpdVector-desiredFlow ) );
 plot(flwSpdVector,squeeze(PITCHOUT(:,1,2)),'--')
 x1 = [flwSpdVector, fliplr(flwSpdVector)];
@@ -202,45 +255,49 @@ plot(linspace(0,desiredFlow,100),PITCHOUT(ix,1,end)*ones(100),'r--')
 legend('Zero Elevator Deflection','Pitch From Elevator Deflection Bounds')
 grid on
 ylim([-90,90])
-title(sprintf('Attainable Pitch vs. Flow Speed for %dm of Tether',reeledOutLength(1)))
-xlabel('Flow Speed (m/s)')
-ylabel('Pitch (deg)')
-hold off
-
-%% Pitch Bounds Full Tether
-figure(3)
-hold on 
-[~,ix] = min( abs( flwSpdVector-desiredFlow ) );
-plot(flwSpdVector,squeeze(PITCHOUT(:,2,2)),'--')
-x2 = [flwSpdVector, fliplr(flwSpdVector)];
-inBetween = [squeeze(PITCHOUT(:,2,1)); fliplr(squeeze(PITCHOUT(:,2,end))')'];
-h2 = fill(x2, inBetween,'g');  
-set(h2,'facealpha',.5)
-plot(desiredFlow*ones(100),linspace(PITCHOUT(ix,2,1),PITCHOUT(ix,2,end),100),'r')
-plot(linspace(0,desiredFlow,100),PITCHOUT(ix,2,1)*ones(100),'r--')
-plot(linspace(0,desiredFlow,100),PITCHOUT(ix,2,end)*ones(100),'r--')
-legend('Zero Elevator Deflection','Pitch From Elevator Deflection Bounds')
-ylim([-90,90])
-title(sprintf('Attainable Pitch vs. Flow Speed for %dm of Tether',reeledOutLength(end)))
-xlabel('Flow Speed (m/s)')
+title('Attainable Pitch vs. Flow Speed')
+xlabel('Flow Speed (knots)')
 ylabel('Pitch (deg)')
 hold off
 
 %% Location Check
 figure(4)
-plot(centerOfBuoyXLoc,3,'*')
+xline(-body_r_front_tetherAttach(1),'r--')
 hold on
+plot(centerOfBuoyXLoc,3,'*')
 plot(centerOfMassXLoc,2,'*')
 plot(wingAeroCenterXLoc,1,'*')
 plot(hstabAeroCenterXLoc,0,'*')
 plot(turbineXLoc,-1,'*')
 xline(0)
-legend('Center of Buoy','Center of Mass','Wing Aero Center','Hor Stab Aero Center','Turbine Location','Tether Attachment')
+xline(-body_r_back_tetherAttach(1),'b--')
+legend('Kite Front','Center of Buoy','Center of Mass','Wing Aero Center','Hor Stab Aero Center','Turbine Location','Tether Attachment','Kite Back')
 hold off
-ylim([-2.5,5.5])
-xlim([-10,4])
+ylim([-3.5,6.5])
+xlim([-4,4])
 
 %% EXTRA
+
+% Pitch Bounds Full Tether %%
+% figure(4)
+% hold on 
+% [~,ix] = min( abs( flwSpdVector-desiredFlow ) );
+% plot(flwSpdVector,squeeze(PITCHOUT(:,2,2)),'--')
+% x2 = [flwSpdVector, fliplr(flwSpdVector)];
+% inBetween = [squeeze(PITCHOUT(:,2,1)); fliplr(squeeze(PITCHOUT(:,2,end))')'];
+% h2 = fill(x2, inBetween,'g');  
+% set(h2,'facealpha',.5)
+% plot(desiredFlow*ones(100),linspace(PITCHOUT(ix,2,1),PITCHOUT(ix,2,end),100),'r')
+% plot(linspace(0,desiredFlow,100),PITCHOUT(ix,2,1)*ones(100),'r--')
+% plot(linspace(0,desiredFlow,100),PITCHOUT(ix,2,end)*ones(100),'r--')
+% legend('Zero Elevator Deflection','Pitch From Elevator Deflection Bounds')
+% ylim([-90,90])
+% title(sprintf('Attainable Pitch vs. Flow Speed for %dm of Tether',reeledOutLength(end)))
+% xlabel('Flow Speed (m/s)')
+% ylabel('Pitch (deg)')
+% hold off
+
+
 % 
 % for ii = 1:size(pitchMoment,1)
 %     [momentWithPitch(ii,1,:),Index(ii,:)] = min(abs(squeeze(pitchMoment(ii,:,:))-0));

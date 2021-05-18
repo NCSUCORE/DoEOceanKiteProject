@@ -83,13 +83,15 @@ L = (0.5*(ClWing_m*pitchRad+ClWing_b                         )*density*wingArea*
 D = (0.5*(CdWing_M*(ClWing_m *pitchRad+ClWing_b )^2+CdWing_B )*density*wingArea*norm(G_vFlow)^2);
 elevation = tan(L/D);
 
+pitchRad = pitch;
+
 % rotation matrix from ground to tangent frame
-TcG = Ry(-elevation-pi/2)*Rz(azimuth); %Done Done
+TcG = Ry(-elevation)*Rz(azimuth+pi); %Done Done
 % inetermediate frame between tangent and body frame
 % velocity is defined in this frame, ie, B1
-B1cT = Rz(heading+pi);
+B1cT = Rz(heading);
 % rotation from intermediate frame to body frame
-BcB1 = Ry(-(pitchRad+pi/2)-elevation);
+BcB1 = Ry(-(pitchRad)+elevation);
 % rotation matrix from tangent to body frame
 BcT = BcB1*B1cT;
 TcB = transpose(BcT);
@@ -98,14 +100,14 @@ BcG = BcT*TcG;
 GcB = BcG';
 
 %% Refrecne Frame PLOT CHECK
-ORIG = [1;0;0];AAA = BcG*ORIG;quiver3(0,0,0,ORIG(1),ORIG(2),ORIG(3),'r');hold on;quiver3(0,0,0,AAA(1),AAA(2),AAA(3),'g');hold off;%xlim([-1,1]);ylim([-1,1]);zlim([-1,1]);set ( gca, 'ydir', 'reverse' );set ( gca, 'zdir', 'reverse' )
-hold on
-ORIG = [0;1;0];AAA = BcG*ORIG;quiver3(0,0,0,ORIG(1),ORIG(2),ORIG(3),'r');hold on;quiver3(0,0,0,AAA(1),AAA(2),AAA(3),'b');hold off;%xlim([-1,1]);ylim([-1,1]);zlim([-1,1]);set ( gca, 'ydir', 'reverse' );set ( gca, 'zdir', 'reverse' )
-hold on
-ORIG = [0;0;1];AAA = BcG*ORIG;quiver3(0,0,0,ORIG(1),ORIG(2),ORIG(3),'r');hold on;quiver3(0,0,0,AAA(1),AAA(2),AAA(3),'b');hold off;%xlim([-1,1]);ylim([-1,1]);zlim([-1,1]);set ( gca, 'ydir', 'reverse' );set ( gca, 'zdir', 'reverse' )
-xlabel('X')
-ylabel('Y')
-zlabel('Z')
+% ORIG = [1;0;0];AA1 = BcG*ORIG;quiver3(0,0,0,ORIG(1),ORIG(2),ORIG(3),'k');hold on;quiver3(0,0,0,AA1(1),AA1(2),AA1(3),'g');hold off;xlim([-1,1]);ylim([-1,1]);zlim([-1,1]);set ( gca, 'ydir', 'reverse' );set ( gca, 'zdir', 'reverse' )
+% hold on
+% ORIG = [0;1;0];AA2 = BcG*ORIG;quiver3(0,0,0,ORIG(1),ORIG(2),ORIG(3),'r');hold on;quiver3(0,0,0,AA2(1),AA2(2),AA2(3),'b');hold off;xlim([-1,1]);ylim([-1,1]);zlim([-1,1]);set ( gca, 'ydir', 'reverse' );set ( gca, 'zdir', 'reverse' )
+% hold on
+% ORIG = [0;0;1];AA3 = BcG*ORIG;quiver3(0,0,0,ORIG(1),ORIG(2),ORIG(3),'r');hold on;quiver3(0,0,0,AA3(1),AA3(2),AA3(3),'b');hold off;xlim([-1,1]);ylim([-1,1]);zlim([-1,1]);set ( gca, 'ydir', 'reverse' );set ( gca, 'zdir', 'reverse' )
+% xlabel('X')
+% ylabel('Y')
+% zlabel('Z')
 
 
 %% Forces and Moments
@@ -126,7 +128,7 @@ B_mWeight = cross(B_rCM,B_fWeight);
 % apparent velocity in the body frame
 B_vApp = BcG*G_vFlow - BcB1*B1_vKite;
 % angle of attack
-AoA = pitch;%atan2(B_vApp(3),B_vApp(1));
+AoA = atan2(B_vApp(3),B_vApp(1));
 % drag direction in body frame
 B_uDrag = B_vApp./max(eps,norm(B_vApp));
 % lift direction in body frame

@@ -13,7 +13,7 @@ totalLength     = 400;
 tetherDiameter  = .012;
 tetherDensity   = 2226;
 desiredFlow     = .25;
-CM_SearchVector          =  linspace(-.32,-.31,2000);
+CM_SearchVector =  linspace(-.4,-.1,500);
 
 pitchVector = 0;%-20:5:20;
 flwSpdVector = [.001,.1,.25,.5,.75,1];
@@ -25,80 +25,85 @@ if runMunkTable == 1
     MunkMomentAnalysisManta(pitchVector,flwSpdVector)
 end
 
-%% Vectors from Kite
-
-% Rotation matrix from surface to body frame
-B_c_S = vhcl.stbdWing.RSurf2Bdy.Value;
-
-% Vector from Center of Mass to Wing Leading Edge
-body_r_LE_CM      = -vhcl.rCM_LE.Value;
-% Vector from wing leading edge to h-Stab leading edge
-body_r_hStabLE_LE = vhcl.hStab.rSurfLE_WingLEBdy.Value;
-% Vector from Hor Stab Leading Edge to horizontal stabilizer aero center
-surface_r_hStabAeroCenter_hStabLE = vhcl.hStab.rAeroCent_SurfLE.Value;
-body_r_hStabAeroCenter_hStabLE    = B_c_S*surface_r_hStabAeroCenter_hStabLE;
-% Vector form wing leading edge to tether attachment
-body_r_tethAttach_LE = vhcl.rBridle_LE.Value;
-% Vector from wing leading edge to wing aerodynamic center
-surface_r_wingAero_LE = vhcl.stbdWing.rAeroCent_SurfLE.Value;
-body_r_wingAero_LE    = B_c_S*surface_r_wingAero_LE;
-% Vectro from center of mass to tether attachmet point
-body_r_tethAttach_CM = body_r_tethAttach_LE + body_r_LE_CM;
-% Vector from tether attachmet point to center of mass
-body_r_CM_tethAttach = -body_r_tethAttach_CM;
-% Vector from center of mass to turbine attachment in body frame (LE wing)
-body_r_turbineAttach_CM = -body_r_tethAttach_LE + body_r_tethAttach_CM;
-
-% Vector from center of mass to center of boyancy
-body_r_CenterBoyancy_CM   = -vhcl.rCM_B.Value;
-% Vector from center of mass to h-stab aero center
-body_r_hStabAeroCenter_CM = body_r_LE_CM + body_r_hStabLE_LE + body_r_hStabAeroCenter_hStabLE;
-% Vector from center of mass to wing aerodynamic center
-body_r_wingAero_CM        = body_r_LE_CM + body_r_wingAero_LE;
-
-%% Vectors required for sum of moments at tether attachment point
-
-% (Weight)  Vector from tether attachment point to center of mass
-body_r_CM_tetherAttach = body_r_CM_tethAttach;
-% (Boyancy) Vector from tether attachment point to center of boyancy
-% (-body_r_tethAttach_CM) 
-body_r_CenterBoyancy_tetherAttach = body_r_CenterBoyancy_CM + body_r_CM_tethAttach;
-% (Wing)    Vector from tether attachment point to wing aerodynamic center
-body_r_wingAero_tetherAttach = body_r_wingAero_CM + body_r_CM_tethAttach;
-% (H-Stab)  Vector from tether attachment point to h-stab aero center
-body_r_hStabAeroCenter_tetherAttach = body_r_hStabAeroCenter_CM + body_r_CM_tethAttach;
-% (Tether)  Vector from tether attachment point to wing aerodynamic center
-body_r_tetherAttach_tetherAttach = [0;0;0];
-% (Turbine) Vector from tether attachment to turbine attachment in body frame
-body_r_turbineAttach_tetherAttach = body_r_turbineAttach_CM + body_r_CM_tethAttach;
-
-%% Vectors to check kite body
-% Vector from leading edge to front of kite
-body_r_front_LE = vhcl.fuse.rNose_LE.Value;
-% Vector from tether attach to front of kite
-body_r_front_tetherAttach = body_r_front_LE + body_r_LE_CM + body_r_CM_tethAttach;
-% Vector from leading edge to back of kite
-body_r_back_LE   = vhcl.fuse.rEnd_LE.Value ;
-% Vector from tether attach to back of kite
-body_r_back_tetherAttach = body_r_back_LE + body_r_LE_CM + body_r_CM_tethAttach;
-
 %%
 TIMER = 1/length(flwSpdVector)/length(reeledOutLength)/length(elevatorTrim)/length(CM_SearchVector);
 OUT = 0;
 densityWater = 1023;
+
 for  ii = 1:length(flwSpdVector)
     for jj = 1:length(reeledOutLength)
         for kk = 1:length(elevatorTrim)
             for ll = 1:length(CM_SearchVector)
                 
                 %%
-                CM_Correct = .011730865432716;
+                CM_Correct = -(CM_SearchVector(ll)+.3);
                 vhcl.setRCM_LE([8.8444775e-01 + CM_Correct;...
                     0             ;...
                     3.1365427e-02 ],'m')
                 vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value - [CM_Correct;0;0],'m');
-                vhcl.setRB_LE(vhcl.rCentOfBuoy_LE.Value + [0;0;0],'m');
-                vhcl.setRBridle_LE([vhcl.rB_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
+                %BAD%%%%%
+                %vhcl.setRB_LE(vhcl.rCentOfBuoy_LE.Value + [0;0;0],'m');
+                %vhcl.setRBridle_LE([vhcl.rB_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
+                %%%%%%%%%
+                
+                %% Vectors from Kite
+                
+                % Rotation matrix from surface to body frame
+                B_c_S = vhcl.stbdWing.RSurf2Bdy.Value;
+                
+                % Vector from Center of Mass to Wing Leading Edge
+                body_r_LE_CM      = -vhcl.rCM_LE.Value;
+                % Vector from wing leading edge to h-Stab leading edge
+                body_r_hStabLE_LE = vhcl.hStab.rSurfLE_WingLEBdy.Value;
+                % Vector from Hor Stab Leading Edge to horizontal stabilizer aero center
+                surface_r_hStabAeroCenter_hStabLE = vhcl.hStab.rAeroCent_SurfLE.Value;
+                body_r_hStabAeroCenter_hStabLE    = B_c_S*surface_r_hStabAeroCenter_hStabLE;
+                % Vector form wing leading edge to tether attachment
+                body_r_tethAttach_LE = vhcl.rBridle_LE.Value;
+                % Vector from wing leading edge to wing aerodynamic center
+                surface_r_wingAero_LE = vhcl.stbdWing.rAeroCent_SurfLE.Value;
+                body_r_wingAero_LE    = B_c_S*surface_r_wingAero_LE;
+                % Vectro from center of mass to tether attachmet point
+                body_r_tethAttach_CM = body_r_tethAttach_LE + body_r_LE_CM;
+                % Vector from tether attachmet point to center of mass
+                body_r_CM_tethAttach = -body_r_tethAttach_CM;
+                % Vector from center of mass to turbine attachment in body frame (LE wing)
+                body_r_turbineAttach_CM = -body_r_tethAttach_LE + body_r_tethAttach_CM;
+                
+                % Vector from center of mass to center of boyancy
+                body_r_CenterBoyancy_CM   = vhcl.rCentOfBuoy_LE.Value+body_r_LE_CM;
+                % Vector from center of mass to h-stab aero center
+                body_r_hStabAeroCenter_CM = body_r_LE_CM + body_r_hStabLE_LE + body_r_hStabAeroCenter_hStabLE;
+                % Vector from center of mass to wing aerodynamic center
+                body_r_wingAero_CM        = body_r_LE_CM + body_r_wingAero_LE;
+                
+                %% Vectors required for sum of moments at tether attachment point
+                
+                % (Weight)  Vector from tether attachment point to center of mass
+                body_r_CM_tetherAttach = body_r_CM_tethAttach;
+                % (Boyancy) Vector from tether attachment point to center of boyancy
+                % (-body_r_tethAttach_CM)
+                body_r_CenterBoyancy_tetherAttach = body_r_CenterBoyancy_CM + body_r_CM_tethAttach;
+                % (Wing)    Vector from tether attachment point to wing aerodynamic center
+                body_r_wingAero_tetherAttach = body_r_wingAero_CM + body_r_CM_tethAttach;
+                % (H-Stab)  Vector from tether attachment point to h-stab aero center
+                body_r_hStabAeroCenter_tetherAttach = body_r_hStabAeroCenter_CM + body_r_CM_tethAttach;
+                % (Tether)  Vector from tether attachment point to wing aerodynamic center
+                body_r_tetherAttach_tetherAttach = [0;0;0];
+                % (Turbine) Vector from tether attachment to turbine attachment in body frame
+                body_r_turbineAttach_tetherAttach = body_r_turbineAttach_CM + body_r_CM_tethAttach;
+                
+                %% Vectors to check kite body
+                % Vector from leading edge to front of kite
+                body_r_front_LE = vhcl.fuse.rNose_LE.Value;
+                % Vector from tether attach to front of kite
+                body_r_front_tetherAttach = body_r_front_LE + body_r_LE_CM + body_r_CM_tethAttach;
+                % Vector from leading edge to back of kite
+                body_r_back_LE   = vhcl.fuse.rEnd_LE.Value ;
+                % Vector from tether attach to back of kite
+                body_r_back_tetherAttach = body_r_back_LE + body_r_LE_CM + body_r_CM_tethAttach;
+                
+                
                 
                 %% define constants
                 % flow speed
@@ -117,7 +122,7 @@ for  ii = 1:length(flwSpdVector)
                 % tether attachment location
                 bridleXLoc          = -body_r_tetherAttach_tetherAttach(1);
                 % center of mass location
-                centerOfMassXLoc    = CM_SearchVector(ll);
+                centerOfMassXLoc    = -body_r_CM_tetherAttach(1);
                 centerOfMassZLoc    = -body_r_CM_tetherAttach(3);
                 % Trubine location
                 turbineXLoc         = -body_r_turbineAttach_tetherAttach(1);
@@ -138,15 +143,15 @@ for  ii = 1:length(flwSpdVector)
                 density             = 1e3;
                 % factor of buoyancy (=1 is neutrally buoyant) (>1 Float) (<1 Sink)
                 volumeKite   = vhcl.volume.Value       ;
-                volumeWater  = volumeKite              ; 
+                volumeWater  = volumeKite              ;
                 massWater    = densityWater*volumeWater;
                 massKite     = 1023*volumeWater/1.0391 ;
                 buoyFactor   = massWater/massKite      ;
                 %buoyFactor          = 1.0391;%(mass+(tetherDensity*(totalLength)*(pi/4)*tetherDiameter^2))/mass;
-                                      %(mass - ...
-                                      %(tetherDensity*reeledOutLength(jj)*(pi/4)*tetherDiameter^2 - ...
-                                      %tetherDensity*(totalLength      )*(pi/4)*tetherDiameter^2))/...
-                                      %mass;
+                %(mass - ...
+                %(tetherDensity*reeledOutLength(jj)*(pi/4)*tetherDiameter^2 - ...
+                %tetherDensity*(totalLength      )*(pi/4)*tetherDiameter^2))/...
+                %mass;
                 
                 % wing
                 wing.span = 9;                  % span
@@ -217,3 +222,18 @@ CM_SearchVector(ix)'
 CM_for_Zero = CM_SearchVector(ix)'+body_r_CenterBoyancy_tetherAttach(1)
 format short
 
+%% Location Check
+figure(4)
+xline(-body_r_front_tetherAttach(1),'r--')
+hold on
+plot(centerOfBuoyXLoc,3,'*')
+plot(centerOfMassXLoc,2,'*')
+plot(wingAeroCenterXLoc,1,'*')
+plot(hstabAeroCenterXLoc,0,'*')
+plot(turbineXLoc,-1,'*')
+xline(0)
+xline(-body_r_back_tetherAttach(1),'b--')
+legend('Kite Front','Center of Buoy','Center of Mass','Wing Aero Center','Hor Stab Aero Center','Turbine Location','Tether Attachment','Kite Back')
+hold off
+ylim([-3.5,6.5])
+xlim([-4,4])

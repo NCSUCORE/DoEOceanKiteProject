@@ -28,9 +28,9 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([8.8444775e-01;0;3.1365427e-02],'m')
+vhcl.setRCM_LE([8.977e-01;0;3.1365427e-02],'m')
 vhcl.setRB_LE([0;0;0],'m');
-vhcl.setRCentOfBuoy_LE(vhcl.rCM_LE.Value + [0;0;0],'m');
+vhcl.setRCentOfBuoy_LE([8.8444775e-01;0;3.1365427e-02],'m');
 
 %% Control Surfaces
 vhcl.setAllMaxCtrlDef(30,'deg');
