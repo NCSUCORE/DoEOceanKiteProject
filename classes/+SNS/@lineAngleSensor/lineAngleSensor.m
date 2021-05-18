@@ -19,6 +19,8 @@ classdef lineAngleSensor < dynamicprops
     initAngVel
     r_RP
     r_PT
+    tetherAngleTable
+    tetherLengthPoly
     end
     
     methods
@@ -39,6 +41,8 @@ classdef lineAngleSensor < dynamicprops
             obj.initAngVel      = SIM.parameter('Value',[0 0],'Unit','rad/s','Description','Initial Angular Velocities');
             obj.r_RP            = SIM.parameter('Unit','m','Description','Position Vector from pivot roller to center of rotation');
             obj.r_PT            = SIM.parameter('Unit','m','Description','Position Vector from tether pass through at the end effector to the pivot');
+            obj.tetherAngleTable = SIM.parameter('Value',[-0.0014,1.1256,.4256],'Description','Coefficients for quadratic relationship between LAS angle and tether angle');
+            obj.tetherLengthPoly = SIM.parameter('Value',[1.5831 444.73],'Description','Coefficients for linear relationship between LAS and tether payout');
         end
         
         function obj = setMass(obj,val,unit)

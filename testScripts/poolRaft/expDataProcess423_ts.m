@@ -7,9 +7,9 @@ runLin = 0;                %   Flag to run linearization
 thrArray = .47624;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
 flwSpdArray = -0.0001;%[0.1:0.1:.5];
-inc = [-8 -2];
-elevArray = [40 15]*pi/180;
-towArray = [0.47 .77];%rpm2speed([50 65 80]);%[0.5:.15:.8];
+inc = -8;[-8 -2];
+elevArray = 90*pi/180;[40 15]*pi/180;
+towArray = [0.47 .62 .77];%rpm2speed([50 65 80]);%[0.5:.15:.8];
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -55,7 +55,7 @@ for i = 1:length(inc)
             
             hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
             las.setInitAng([-el 0],'rad');
-%             las.tetherLoadDisable;
+            las.tetherLoadDisable;
 %             las.dragDisable;
             las.setCD(1.3,'')
             %%  Ground Station Properties
@@ -162,20 +162,24 @@ towArray = [0.47 0.62 0.77]*1
 load('lineAngleSensor')
 g = 9.81; %acc due to grav m/s^2
 rho = 1000; %kg/m^3 density of water
-xCG = .07 %axial location of center of mass m
-xCB = .106 %axial location of center of buoyancy m
-mLAS = .573%las.mass.Value; %mass of LAS boom kg
+xCG = las.L_CM.Value %axial location of center of mass m
+xCB = las.L_CB.Value %axial location of center of buoyancy m
+mLAS = las.mass.Value; %mass of LAS boom kg
 vLAS = las.volume.Value; %las volume
 gammaLAS = rho*vLAS/mLAS
+l = las.length.Value;
+d = las.diameter.Value;
+A = l*d; %frontal cylinder area m^2
+
+CDconst = 4*mLAS*g*(xCG-gammaLAS*xCB)/(rho*A*l);
+
+%Data Filtering
 fLowPass = 2*2*pi; %low pass frequency in rad/s
 tau = 1/fLowPass; %time constant in 1/s
 tauRate = 1/(2*2*pi);
 lowFiltRaw = tf(1,[tau 1]);
 lowFiltRate = tf(1,[tauRate 1]);
-A = .012*.47624; %frontal cylinder area m^2
-l = .47624; %cylinder length m
 
-CDconst = 4*mLAS*g*(xCG-gammaLAS*xCB)/(rho*A*l);
 
 dataSeg = {[5:13],[14:19],[20:25],[26:31],[32:37]};
 % dataSeg = {[11:20],[21:29],[30:38]};
