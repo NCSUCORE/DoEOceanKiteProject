@@ -3,7 +3,7 @@ clear; clc;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10, 4 = DOE
-% 2 - choose high level controller: 1 = const basis, 2 = variable alt
+% 2 - choose high level controller: 1 = const basis, 2 = variable alt, 3 = const basis/state flow
 % 3 - choose flight controller:     1 = pathFlow, 2 = full cycle, 3 = steady, 4 = reel-in
 % 4 - choose tether:                1 = Manta, 2 = Reel-in
 % 5 - choose environment:           1 = const flow, 2 = variable flow.
@@ -11,13 +11,13 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 2 1 1 1 false false true];
-thrLength = 400;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
+simScenario = [1 3 2 1 1 false true true];
+thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
-Tmax = 20;        Tdiam = 0.0095;                           %   kN/m - Max tether tension/tether diameter 
+Tmax = 20;        Tdiam = 10.5;                             %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-amp = 0.10;  freq = 0.05*2*pi;   
+% amp = 0.10;  freq = 0.05*2*pi;   
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -38,9 +38,18 @@ switch simScenario(2)                                   %   Flight Controller
     case 2
         loadComponent('varAltitudeBooth');                  %   Variable altitude controller
         el = asin(altitude/thrLength);                      %   rad - Initial elevation angle 
+        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
+            thrLength],'[rad rad rad rad m]');
         hiLvlCtrl.ELctrl.setValue(1,'');
         hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
         hiLvlCtrl.ThrCtrl.setValue(1,'');
+    case 3
+        loadComponent('mantaFSHiLvl');                     %   Constant basis parameters
+        el = asin(altitude/thrLength);                      %   rad - Initial elevation angle 
+        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
+            thrLength],'[rad rad rad rad m]');
+        hiLvlCtrl.stateCtrl.setValue(0,'');
+        hiLvlCtrl.stateConst.setValue(1,'');
 end
 switch simScenario(3)                                   %   Flight Controller 
     case 1
@@ -81,7 +90,7 @@ loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 %%  Vehicle Initial Conditions 
 if simScenario(3) == 1 || simScenario(3) == 2
-    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
+    vhcl.setICsOnPath(0.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
 else
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
@@ -95,7 +104,7 @@ thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(3.7e10,'Pa');
 thr.tether1.density.setValue(2226,'kg/m^3');
-thr.tether1.setDiameter(Tdiam,'m');
+thr.tether1.setDiameter(Tdiam*1e-3,'m');
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -192,11 +201,11 @@ if simScenario(8)
 end
 % set(gcf,'OuterPosition',[-773.4000   34.6000  780.8000  830.4000]);
 %%  Animate Simulation
-if 5 == 6
+if simScenario(7)
     if simScenario(3) == 1
         vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
-            'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-            'ZoomIn',1==1,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
+            'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
+            'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
     elseif simScenario(3) == 2
         vhcl.animateSim(tsc,2,'PathFunc',pthCtrl2.fcnName.Value,'TracerDuration',20,...
             'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
