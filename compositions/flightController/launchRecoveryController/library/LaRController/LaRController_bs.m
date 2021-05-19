@@ -47,6 +47,7 @@ fltCtrl.pitchConst.setValue(0,'deg');
 fltCtrl.pitchTime.setValue([0 2000],'s');
 fltCtrl.pitchLookup.setValue([0 0],'deg');
 %% Spooling
+fltCtrl.winchActive.setValue(0,'');
 fltCtrl.setCtrlVecUpdateFcn('combinedCmd','')
 fltCtrl.setTetherLengthSetpointFcn('combinedTLSP','')
 fltCtrl.setWinchAndElevCmdFcn('combinedCmd','')
