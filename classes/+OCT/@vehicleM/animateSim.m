@@ -373,7 +373,7 @@ end
 % Plot local aerodynamic force vectors
 if p.Results.LocalAero
     % Get the surface names
-    [aeroStruct,surfNames] = obj.struct('OCT.aeroSurf');
+    [~,surfNames] = obj.struct('OCT.aeroSurf');
     
     % Get the aerodynamic vectors in the ground frames
     FLiftPart = rotation_sequence(tscTmp.eulerAngles.Data(:,:,1))*tscTmp.FLiftBdyPart.Data(:,:,1);
