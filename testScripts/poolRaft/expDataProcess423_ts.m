@@ -4,12 +4,10 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
-thrArray = .47624;%[200:400:600];%:25:600];
-altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = -0.0001;%[0.1:0.1:.5];
-inc = -8;[-8 -2];
-elevArray = 90*pi/180;[40 15]*pi/180;
-towArray = [0.47 .62 .77];%rpm2speed([50 65 80]);%[0.5:.15:.8];
+flwSpdArray = -0.0001;
+inc = [-8 -2];
+elevArray = [40 15]*pi/180;
+towArray = [0.47 .77];
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -55,9 +53,10 @@ for i = 1:length(inc)
             
             hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
             las.setInitAng([-el 0],'rad');
-            las.tetherLoadDisable;
+            las.setInitAngVel([2*pi/180 0],'rad/s');
+%             las.tetherLoadDisable;
 %             las.dragDisable;
-            las.setCD(1.3,'')
+%             las.setCD(1.3,'')
             %%  Ground Station Properties
             %% Set up pool raft parameters
             theta = 30*pi/180;
@@ -74,8 +73,7 @@ for i = 1:length(inc)
             y_dot_init = 0;
             psi_init = 0;
             psi_dot_init = 0;
-            initGndStnPos = [x_init;y_init;3];
-            
+            initGndStnPos = [x_init;y_init;0];
             thrAttachInit = initGndStnPos;
             %%  Vehicle Properties
             % vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
@@ -366,23 +364,3 @@ ylim([-5 50])
 legend('Simulation','Simulation LAS','Run 7','Run 8','Run 9')
 xlabel 'Time [s]'
 ylabel 'Elevation Rate [deg/s]'
-% figure; hold on; grid on;
-% plot(tscData{11}.speedCMD1.Time(tscData{11}.a:end)-tscData{11}.speedCMD1.Time(tscData{11}.a),...
-%     tscData{11}.speedCMD1.Data(tscData{11}.a:end)*30,'DisplayName','Commanded')
-% plot(tscData{11}.rpm_w1.Time(tscData{11}.a:end)-tscData{11}.rpm_w1.Time(tscData{11}.a),...
-%     tscData{11}.rpm_w1.Data(tscData{11}.a:end)/(2*pi),'DisplayName','Encoder Measurement')
-% xlabel('Time [s]')
-% ylabel('Winch Speed [rpm]')
-% ylim([0 1000])
-% legend
-% vhcl.animateSim(tsc1{1,1},2,'TracerDuration',20,...
-%     'GifTimeStep',0,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%     'GifFile','expCross.gif','timestep',0.1,'View',[0,0]);
-% 
-% function [linSpeed] = rpm2speed(rpm)
-% 
-% p1 =    0.008441;  %(-0.01554, 0.03243)
-% p2 =      0.2241;  %(-1.362, 1.811)
-% 
-% linSpeed = p1*rpm + p2;
-% end
