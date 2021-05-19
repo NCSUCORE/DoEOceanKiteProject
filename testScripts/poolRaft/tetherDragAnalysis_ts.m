@@ -118,7 +118,7 @@ distAmp = 0;
 pertVec = [0 1 0];
 inc = -8;
 elevArray = 90*pi/180;
-cdteth = [1.57 1.67 1.77]
+cdteth = [1.66 1.81]
 towArray = [.47 .62 .77];%rpm2speed([50 65 80]);%[0.5:.15:.8];
 for i = 1:length(cdteth)
     i
@@ -127,7 +127,7 @@ for i = 1:length(cdteth)
         for k = 1:numel(elevArray)
             tic
             k
-            thrLength = 2.63;  altitude = thrLength*sin(elevArray(k));                 %   Initial tether length/operating altitude/elevation angle
+            thrLength = 2.63-.52;  altitude = thrLength*sin(elevArray(k));                 %   Initial tether length/operating altitude/elevation angle
             flwSpd = -1e-9 ;                                   %   m/s - Flow speed                                              %   kN - Max tether tension
             h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
             [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -224,9 +224,8 @@ end
 
 figure; hold on; grid on;
 plot(towArray,lasDegPlot,'x','DisplayName','Experimental Data')
-plot(towArray,lasDegSim(1:3),'o','DisplayName','Simulation CD = 1.46')
-plot(towArray,lasDegSim(4:6),'*','DisplayName','Simulation CD = 1.56')
-plot(towArray,lasDegSim(7:9),'s','DisplayName','Simulation CD = 1.66')
+plot(towArray,lasDegSim(1:3),'o','DisplayName','Simulation CD = 1.66')
+plot(towArray,lasDegSim(4:6),'*','DisplayName','Simulation CD = 1.81')
 xlabel('Tow Velocity [m/s]')
 ylabel('Elevation Angle')
 legend
