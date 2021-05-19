@@ -11,7 +11,7 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 1 1 false true true];
+simScenario = [1 3 2 1 1 false false true];
 thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 10.5;                             %   kN/mm - Max tether tension/tether diameter 

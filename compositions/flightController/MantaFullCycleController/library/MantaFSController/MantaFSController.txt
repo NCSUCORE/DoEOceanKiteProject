@@ -190,6 +190,10 @@ fltCtrl.rudderGain.Value = 0.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
+fltCtrl.winchActive.Value = 0.0000e+00
+fltCtrl.winchActive.Unit is unitless or has no unit specified
+fltCtrl.winchActive.NoScale = false
+fltCtrl.winchActive.Description = 'Winch active flag'
 fltCtrl.winchSpeedIn.Value = -2.5000e-01
 fltCtrl.winchSpeedIn.Unit = 'm/s'
 fltCtrl.winchSpeedIn.NoScale = false
