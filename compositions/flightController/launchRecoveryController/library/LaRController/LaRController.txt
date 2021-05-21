@@ -204,6 +204,10 @@ fltCtrl.rudderGain.Description = '0 Turns off rudder'
 fltCtrl.towCtrlStrat.Unit is unitless or has no unit specified
 fltCtrl.towCtrlStrat.NoScale = false
 fltCtrl.towCtrlStrat.Description = 'Towing Positon Control Variant'
+fltCtrl.winchActive.Value = 0.0000e+00
+fltCtrl.winchActive.Unit is unitless or has no unit specified
+fltCtrl.winchActive.NoScale = false
+fltCtrl.winchActive.Description = 'Winch active flag'
 fltCtrl.ctrlVecUpdateFcn.Value = 'combinedCmd'
 fltCtrl.ctrlVecUpdateFcn.Unit is unitless or has no unit specified
 fltCtrl.ctrlVecUpdateFcn.NoScale = false
@@ -293,3 +297,7 @@ fltCtrl.yawCtrl.Description = 'Flag to decide yaw setpoint source. 0 = contant; 
 fltCtrl.yawConst.Unit = 'deg'
 fltCtrl.yawConst.NoScale = false
 fltCtrl.yawConst.Description = 'Constant yaw setpoint'
+fltCtrl.ctrlOff.Value = 1.0000e+00
+fltCtrl.ctrlOff.Unit is unitless or has no unit specified
+fltCtrl.ctrlOff.NoScale = false
+fltCtrl.ctrlOff.Description = 'Switch to turn off control. 1 = On, 0 = Off'

@@ -43,7 +43,7 @@ plot(obj.pitch.Time,squeeze(obj.pitch.Data)*180/pi,'b-');  xlabel('Time [s]');  
 legend('Setpoint','AutoUpdate','off','location','northwest')
 %%  Plot Elevator Command
 subplot(R,C,I2); hold on; grid on;
-plot(obj.ctrlSurfDeflCmd.Time,squeeze(obj.ctrlSurfDeflCmd.Data(:,3)),'b-');  xlabel('Time [s]');  ylabel('Elevator [deg]');
+plot(obj.ctrlSurfDeflCmdN.Time,squeeze(obj.ctrlSurfDeflCmdN.Data(:,3)),'b-');  xlabel('Time [s]');  ylabel('Elevator [deg]');
 if ~p.Results.Steady
     %%  Tether Length
     subplot(R,C,2); hold on; grid on;
