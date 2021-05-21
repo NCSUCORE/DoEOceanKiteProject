@@ -14,4 +14,8 @@ las.setIyy(0.01389,'kg*m^2');
 las.setIzz(0.01389,'kg*m^2');
 las.setR_RP(-[0.0717 0 0.06785]','m');
 las.setR_PT([las.length.Value 0 0.030]','m');
+
+load('thrAngLAS.mat');
+las.thrAngLookup.setValue(thrAng,'rad');
+
 saveBuildFile('las',mfilename);
