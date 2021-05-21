@@ -35,6 +35,7 @@ classdef SLFAndSpoolCtrl < handle
         rudderGain
         towCtrlStrat
         % Spooling
+        winchActive
         ctrlVecUpdateFcn
         tetherLengthSetpointFcn
         winchAndElevCmdFcn
@@ -96,6 +97,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.fcnName             = SIM.parameter('Unit','','Description','Path Style');
             obj.towCtrlStrat        = SIM.parameter('Unit','','Description','Towing Positon Control Variant');
             
+            obj.winchActive         = SIM.parameter('Unit','','Description','Winch active flag');
             obj.ctrlVecUpdateFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
             obj.tetherLengthSetpointFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
             obj.winchAndElevCmdFcn  = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
