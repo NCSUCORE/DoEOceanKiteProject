@@ -46,9 +46,6 @@ las.tetherEnable.Value = 1.0000e+00
 las.tetherEnable.Unit is unitless or has no unit specified
 las.tetherEnable.NoScale = false
 las.tetherEnable.Description = 'Enable Tether Loading'
-las.initAng.Unit = 'rad'
-las.initAng.NoScale = false
-las.initAng.Description = 'Initial Angles'
 las.initAngVel.Value = [0 0]
 las.initAngVel.Unit = 'rad/s'
 las.initAngVel.NoScale = false
@@ -61,11 +58,23 @@ las.r_PT.Value = [0.51724;0;0.03]
 las.r_PT.Unit = 'm'
 las.r_PT.NoScale = false
 las.r_PT.Description = 'Position Vector from tether pass through at the end effector to the pivot'
-las.tetherAngleTable.Value = [-0.0014 1.1256 0.4256]
-las.tetherAngleTable.Unit is unitless or has no unit specified
-las.tetherAngleTable.NoScale = false
-las.tetherAngleTable.Description = 'Coefficients for quadratic relationship between LAS angle and tether angle'
-las.tetherLengthPoly.Value = [1.5831 444.73]
-las.tetherLengthPoly.Unit is unitless or has no unit specified
-las.tetherLengthPoly.NoScale = false
-las.tetherLengthPoly.Description = 'Coefficients for linear relationship between LAS and tether payout'
+las.thrAngPoly.Value = [-0.0014 1.1256 0.4256]
+las.thrAngPoly.Unit is unitless or has no unit specified
+las.thrAngPoly.NoScale = false
+las.thrAngPoly.Description = 'Quadratic coefficients to go from LAS angle to tether angle'
+las.thrAngPolyInv.Value = [0.0015 0.8567 -0.0449]
+las.thrAngPolyInv.Unit is unitless or has no unit specified
+las.thrAngPolyInv.NoScale = false
+las.thrAngPolyInv.Description = 'Quadratic coefficients to go from tether angle to LAS angle'
+las.thrLengthPoly.Value = [1.5831 444.73]
+las.thrLengthPoly.Unit is unitless or has no unit specified
+las.thrLengthPoly.NoScale = false
+las.thrLengthPoly.Description = 'Coefficients for linear relationship between LAS and tether payout'
+las.thrInitAng.Unit = 'rad'
+las.thrInitAng.NoScale = false
+las.thrInitAng.Description = 'Tether Initial Angle'
+las.thrAngLookup.Value is too big to display and takes up 4.8160e+03 bytes
+las.thrAngLookup.Unit = 'rad'
+las.thrAngLookup.NoScale = false
+las.thrAngLookup.Description = 'Lookup table for tether angle vs LAS inclination, Row 1 Tether, Row 2 LAS'
+las.initAng is too big to display and takes up 4.9690e+03 bytes
