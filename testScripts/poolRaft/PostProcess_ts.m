@@ -6,7 +6,7 @@ saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
 inc = [-8]% -2];
 elevArray = 15*pi/180%[40 15]*pi/180;
-towArray = 0.77%[0.47 .77];
+towArray = 0.47%[0.47 .77];
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -23,8 +23,9 @@ for i = 1:length(inc)
             [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
             %%  Load components
             el = elevArray(k);
-            loadComponent('exp_slCtrl');
-            fltCtrl.ctrlOff.setValue(0,'')
+%             loadComponent('exp_slCtrl');
+            loadComponent('periodicCtrlExp');
+%             fltCtrl.ctrlOff.setValue(0,'')
             % loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
             % FLIGHTCONTROLLER = 'pathFollowingControllerExp';
             loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller                           %   Ground station
@@ -44,17 +45,12 @@ for i = 1:length(inc)
             
             loadComponent('constBoothLem');        %   High level controller
             % PATHGEOMETRY = 'lemOfBoothInv'
-            % hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
-            %
-            % hiLvlCtrl.ELctrl.setValue(1,'');
-            % hiLvlCtrl.ELslew.setValue(0.25,'deg/s');
-            % hiLvlCtrl.ThrCtrl.setValue(1,'');
+
             hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
             las.setThrInitAng([-el 0],'rad');
             las.setInitAngVel([-0 0],'rad/s');
 %             las.tetherLoadDisable;
 %             las.dragDisable;
-%             las.setCD(1.3,'')
             %%  Ground Station Properties
             %% Set up pool raft parameters
             theta = 30*pi/180;
@@ -79,6 +75,10 @@ for i = 1:length(inc)
             vhcl.setInitEulAng([180 0 180]*pi/180,'rad');
 %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
             vhcl.setInitVelVecBdy([0 0 0],'m/s');
+            vhcl.setBuoyFactor(0.81,'');
+            vhcl.setRCM_LE([0.077 0 0],'m');
+            vhcl.rCentOfBuoy_LE.setValue([0.0809 0 0.003]'+[0.012 0 0]','m')
+            vhcl.rBridle_LE.setValue([-0.019+2*0.00635 0 -0.072]','m');
             %%  Tethers Properties
             load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
             thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
@@ -113,6 +113,8 @@ for i = 1:length(inc)
             thr.tether1.dragEnable.setValue(1,'')
             vhcl.hStab.setIncidence(inc(i),'deg');
             
+            fltCtrl.rollAmp.setValue(20,'deg');
+            fltCtrl.period.setValue(10,'s');
             
             %%  Set up critical system parameters and run simulation
             simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
@@ -127,23 +129,23 @@ end
 
 
 %% Process Test Data
-selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\04 23 21\Data';
+selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\05 20 21\data';
 listing = dir(selPath);
 
 figure; hold on; grid on;
-for i = 28:30
+for i = 18
     load(strcat(selPath,'\',listing(i).name));
-    tscData{i-27} = tsc;
+    tscData{i-17} = tsc;
     if i > 4
         a = find(tsc.speedCMD1.Data> 1,1);
-        speed(i-27) = tsc.speedCMD1.Data(a);
-        tscData{i-27}.linSpeed = tsc.speedCMD1.Data(a);
+        speed(i-17) = tsc.speedCMD1.Data(a);
+        tscData{i-17}.linSpeed = tsc.speedCMD1.Data(a);
     else
         a = 1;
         speed(i-2) = 0;
         tscData{i-2}.linSpeed = 0;
     end
-    tscData{i-27}.a = a;
+    tscData{i-17}.a = a;
     plot(tsc.speedCMD1.Time(a:end),tsc.speedCMD1.Data(a:end))
 end
 
