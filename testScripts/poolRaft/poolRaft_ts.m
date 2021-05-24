@@ -102,5 +102,5 @@ vhcl.setRBridle_LE([0.029;0;-0.1],'m')
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
 %%  Gif script
-vhcl.animateSim(tsc,0.2,'GifTimeStep',0.05,'SaveGif',1==1)
+vhcl.animateSim(tsc1,0.2,'GifTimeStep',0.05,'SaveGif',1==0)%,'View',[0 0])
 

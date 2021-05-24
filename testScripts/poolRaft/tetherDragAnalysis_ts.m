@@ -3,10 +3,10 @@ clear;clc;close all;
 Simulink.sdi.clear
 
 % Import and Process Data
-selPath = 'C:\Users\andre\Documents\MHK\04092021';
+selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\04 09 21\Data';
 listing = dir(selPath);
 
-selPath2 = 'C:\Users\andre\Documents\MHK\04162021';
+selPath2 = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\04 16 21\Data';
 listing2 = dir(selPath2);
 for i = 1:9
     load(strcat(selPath2,'\',listing2(i+3).name));
@@ -127,7 +127,7 @@ for i = 1:length(cdteth)
         for k = 1:numel(elevArray)
             tic
             k
-            thrLength = 2.63-.52;  altitude = thrLength*sin(elevArray(k));                 %   Initial tether length/operating altitude/elevation angle
+            thrLength = 2.63;  altitude = thrLength*sin(elevArray(k));                 %   Initial tether length/operating altitude/elevation angle
             flwSpd = -1e-9 ;                                   %   m/s - Flow speed                                              %   kN - Max tether tension
             h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
             [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -152,7 +152,6 @@ for i = 1:length(cdteth)
             %%  Set basis parameters for high level controller           
             loadComponent('constBoothLem');        %   High level controller
             hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
-            las.setInitAng([-el 0],'rad');
 %             las.tetherLoadDisable;
 %            las.dragDisable;
             %%  Ground Station Properties
@@ -185,6 +184,11 @@ for i = 1:length(cdteth)
                 +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
             thr.tether1.initGndNodeVel.setValue([-tow_speed 0 0]','m/s');
             thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+            x = thr.tether1.initGndNodePos.Value(1)-thr.tether1.initAirNodePos.Value(1);
+            y = thr.tether1.initGndNodePos.Value(2)-thr.tether1.initAirNodePos.Value(2);
+            z = thr.tether1.initGndNodePos.Value(3)-thr.tether1.initAirNodePos.Value(3);
+            initThrAng = atan2(z,sqrt(x^2+y^2));
+            las.setThrInitAng([-initThrAng 0],'rad');
             thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
             thr.tether1.youngsMod.setValue(50e9,'Pa');
             thr.tether1.density.setValue(1000,'kg/m^3');
