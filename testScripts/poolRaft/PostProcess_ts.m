@@ -4,8 +4,8 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
-inc = [-8]% -2];
-elevArray = 15*pi/180%[40 15]*pi/180;
+inc = [0]% -2];
+elevArray = 20*pi/180%[40 15]*pi/180;
 towArray = 0.47%[0.47 .77];
 distFreq = 0;
 distAmp = 0;
@@ -78,7 +78,7 @@ for i = 1:length(inc)
             vhcl.setBuoyFactor(0.81,'');
             vhcl.setRCM_LE([0.077 0 0],'m');
             vhcl.rCentOfBuoy_LE.setValue([0.0809 0 0.003]'+[0.012 0 0]','m')
-            vhcl.rBridle_LE.setValue([-0.019+2*0.00635 0 -0.072]','m');
+            vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
             %%  Tethers Properties
             load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
             thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
@@ -111,11 +111,21 @@ for i = 1:length(inc)
             fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
             fltCtrl.tanRoll.kp.setValue(.45,'(rad)/(rad)')
             thr.tether1.dragEnable.setValue(1,'')
-            vhcl.hStab.setIncidence(inc(i),'deg');
+            vhcl.hStab.setIncidence(0,'deg');
             
-            fltCtrl.rollAmp.setValue(20,'deg');
+            fltCtrl.rollAmp.setValue(72,'deg');
+            fltCtrl.yawAmp.setValue(103,'deg');
             fltCtrl.period.setValue(10,'s');
-            
+            fltCtrl.startCtrl.setValue(3,'s')
+            fltCtrl.rollCtrl.kp.setValue(1,'(deg)/(deg)');
+            fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
+            fltCtrl.rollCtrl.kd.setValue(.5,'(deg)/(deg/s)');
+            fltCtrl.rollCtrl.tau.setValue(0.02,'s');
+
+fltCtrl.yawCtrl.kp.setValue(1,'(deg)/(deg)');
+fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
+fltCtrl.yawCtrl.kd.setValue(.7,'(deg)/(deg/s)');
+fltCtrl.yawCtrl.tau.setValue(0.00,'s');
             %%  Set up critical system parameters and run simulation
             simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
             %     open_system('OCTModel')
@@ -127,6 +137,16 @@ for i = 1:length(inc)
     end
 end
 
+vhcl.animateSim(tsc1,0.2,'GifTimeStep',0.05,'SaveGif',1==0)%,'View',[0 0])
+figure; hold on; grid on;
+plot(tsc1.rollSP)
+plot(tsc1.rollDeg)
+legend('SP','Response')
+
+figure; hold on; grid on;
+plot(tsc1.yawSP)
+plot(tsc1.yawDeg)
+legend('SP','Response')
 
 %% Process Test Data
 selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\05 20 21\data';

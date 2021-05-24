@@ -23,9 +23,9 @@ fltCtrl.rollAmp.setValue(30,'deg');
 fltCtrl.yawAmp.setValue(180,'deg');
 fltCtrl.period.setValue(10,'s')
 
-fltCtrl.ccElevator.setValue(8,'deg');
-fltCtrl.trimElevator.setValue(8,'deg');
-fltCtrl.startCtrl.setValue(2,'s');
+fltCtrl.ccElevator.setValue(2,'deg');
+fltCtrl.trimElevator.setValue(-3,'deg');
+fltCtrl.startCtrl.setValue(3,'s');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 save(saveFile,'SPOOLINGCONTROLLER','-append')
