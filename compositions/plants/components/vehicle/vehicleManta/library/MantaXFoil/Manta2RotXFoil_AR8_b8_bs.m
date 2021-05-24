@@ -12,7 +12,7 @@ vhcl = OCT.vehicleM;
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
 vhcl.setBuoyFactor(1.0,''); %Should this be slightly positively buoyant?
-vhcl.setFluidCoeffsFileName('Manta_AR8_b8','');
+vhcl.setFluidCoeffsFileName('Manta_AR8_b8_opt','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
 vhcl.setVolume(1.5995184,'m^3');
@@ -57,7 +57,7 @@ vhcl.hStab.setRootChord(.55,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpan(2,'m');
 vhcl.hStab.setSweep(0,'deg');
-vhcl.hStab.setIncidence(-.25,'deg');
+vhcl.hStab.setIncidence(2,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');
@@ -77,7 +77,7 @@ vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
 vhcl.fuse.setREnd_LE([4.1;0;0],'m');
-vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
+vhcl.setRBridle_LE([.4;0;-vhcl.fuse.diameter.Value/2],'m');
 %% Turbines
 T1 = readtable('ct_0_7mdia_5_4_21.txt'); T1 = table2array(T1);
 T2 = readtable('cp_0_7mdia_5_4_21.txt'); T2 = table2array(T2);

@@ -11,13 +11,13 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 1 1 false false true];
-thrLength = 400;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .25;                                               %   m/s - Flow speed
-Tmax = 20;        Tdiam = 10.5;                             %   kN/mm - Max tether tension/tether diameter 
+simScenario = [1 3 2 1 1 false false false];
+thrLength = 400;  altitude = 100;                           %   m/m - Initial tether length/operating altitude
+flwSpd = .5;                                               %   m/s - Flow speed
+Tmax = 100;        Tdiam = 10.5;                             %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-% amp = 0.10;  freq = 0.05*2*pi;   
+subCtrl = 1;    sC = 1;
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -48,15 +48,19 @@ switch simScenario(2)                                   %   Flight Controller
         el = asin(altitude/thrLength);                      %   rad - Initial elevation angle 
         hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
             thrLength],'[rad rad rad rad m]');
-        hiLvlCtrl.stateCtrl.setValue(0,'');
-        hiLvlCtrl.stateConst.setValue(1,'');
+        hiLvlCtrl.stateCtrl.setValue(sC,'');
+        hiLvlCtrl.stateConst.setValue(subCtrl,'');
+        hiLvlCtrl.preXelevation.setValue(el*.5,'rad')
 end
 switch simScenario(3)                                   %   Flight Controller 
     case 1
         loadComponent('pathFollowWithAoACtrl');             %   Path-following controller with AoA control
     case 2
         loadComponent('pathFollowWithAoACtrl');             %   Path-following controller with AoA control
-        pthCtrl1 = fltCtrl;
+        pthCtrl1 = fltCtrl;   
+        pthCtrl1.fcnName.setValue('lemOfBooth','');       
+        pthCtrl2 = fltCtrl;
+%         pthCtrl2.fcnName.setValue('ellipse','');       
         loadComponent('LaRController');                     %   Launch and recovery controller
         slfCtrl = fltCtrl;
         loadComponent('MantaFSController');                 %   Path-following controller with AoA control
@@ -89,7 +93,7 @@ loadComponent('winchManta');                                %   Winches
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 %%  Vehicle Initial Conditions 
-if simScenario(3) == 1 || simScenario(3) == 2
+if simScenario(3) == 1 
     vhcl.setICsOnPath(0.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
 else
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
@@ -111,36 +115,32 @@ wnch.winch1.LaRspeed.setValue(1,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 switch simScenario(3)
     case 1
-        fltCtrl.setFcnName(PATHGEOMETRY,'');                    fltCtrl.winchSpeedIn.setValue(.1,'m/s');
+        fltCtrl.setFcnName(PATHGEOMETRY,'');
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-        fltCtrl.firstSpoolLap.setValue(10,'');                  fltCtrl.RCtrl.setValue(1,'');
         fltCtrl.AoASP.setValue(1,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-        fltCtrl.AoACtrl.setValue(2,'');                         fltCtrl.elevatorConst.setValue(-3,'deg');
-        fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         fltCtrl.Tmax.setValue(Tmax-0.5,'kN');
-        fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
-        fltCtrl.tanRoll.kp.setValue(0.8,'(rad)/(rad)');         fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
+        fltCtrl.AoACtrl.setValue(1,'');                         fltCtrl.Tmax.setValue(Tmax-0.5,'kN');
+        fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
         fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      fltCtrl.rollCtrl.tau.setValue(0.001,'s');
-        fltCtrl.yawMoment.kp.setValue(00,'(N*m)/(rad)');        fltCtrl.rudderGain.setValue(0,'');
-        fltCtrl.elevCtrlMax.upperLimit.setValue(1e4,'');        fltCtrl.elevCtrlMax.lowerLimit.setValue(-1e4,'');
-        fltCtrl.RPMCtrl.kp.setValue(100,'()/(kN)');
-        fltCtrl.RPMConst.setValue(4.188,'');                      fltCtrl.RPMmax.setValue(8,'');
     case 2
         fltCtrl.maxTL.setValue(thrLength,'m');
-        pthCtrl1.setFcnName(PATHGEOMETRY,'');                    pthCtrl1.winchSpeedIn.setValue(.1,'m/s');
+        pthCtrl1.setFcnName(PATHGEOMETRY,'');
         pthCtrl1.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-        pthCtrl1.firstSpoolLap.setValue(10,'');                  pthCtrl1.RCtrl.setValue(1,'');
         pthCtrl1.AoASP.setValue(1,'');                           pthCtrl1.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
-        pthCtrl1.AoACtrl.setValue(2,'');                         pthCtrl1.elevatorConst.setValue(-3,'deg');
-        pthCtrl1.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl1.Tmax.setValue(Tmax-.5,'kN');
-        pthCtrl1.tanRoll.kp.setValue(0.2,'(rad)/(rad)');         pthCtrl1.tanRoll.ki.setValue(.1,'(rad)/(rad*s)');
+        pthCtrl1.AoACtrl.setValue(1,'');                         pthCtrl1.Tmax.setValue(Tmax-.5,'kN');
+        pthCtrl1.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl1.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
         pthCtrl1.elevCtrl.kp.setValue(125,'(deg)/(rad)');        pthCtrl1.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
         pthCtrl1.rollCtrl.kp.setValue(200,'(deg)/(rad)');        pthCtrl1.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
         pthCtrl1.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl1.rollCtrl.tau.setValue(0.001,'s');
-        pthCtrl1.yawMoment.kp.setValue(00,'(N*m)/(rad)');        pthCtrl1.rudderGain.setValue(0,'');
-        pthCtrl1.elevCtrlMax.upperLimit.setValue(1e4,'');        pthCtrl1.elevCtrlMax.lowerLimit.setValue(-1e4,'');
-        pthCtrl2 = pthCtrl1;                                     pthCtrl2.setFcnName('ellipse','');
+        pthCtrl2.setFcnName(PATHGEOMETRY,'');
+        pthCtrl2.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
+        pthCtrl2.AoASP.setValue(1,'');                           pthCtrl2.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+        pthCtrl2.AoACtrl.setValue(1,'');                         pthCtrl2.Tmax.setValue(Tmax-.5,'kN');
+        pthCtrl2.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl2.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
+        pthCtrl2.elevCtrl.kp.setValue(125,'(deg)/(rad)');        pthCtrl2.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        pthCtrl2.rollCtrl.kp.setValue(200,'(deg)/(rad)');        pthCtrl2.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
+        pthCtrl2.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl2.rollCtrl.tau.setValue(0.001,'s');
     case 3
         fltCtrl.LaRelevationSP.setValue(45,'deg');
         fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
@@ -150,7 +150,7 @@ switch simScenario(3)
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(2500,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
 if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
     error('Elevation angle is out of range')
 end
@@ -166,6 +166,12 @@ if simScenario(3) == 1
     ten = max([max(airNode(ran)) max(gndNode(ran))]);
     fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
 end
+Pow = tsc.rotPowerSummary(vhcl,env);
+[Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
+Turb = squeeze(tsc.FTurbBdy.Data(1,1,:));
+[Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+Fdrag = mean(Drag(ran));    Fthr = mean(Thr(ran));    Fturb = mean(Turb(ran));
+fprintf('Pow = %.3f kW;\t Drag = %.2f N;\t Thr = %.2f N;\t Turb = %.2f N\n\n',Pow.avg,Fdrag,Fthr,Fturb);
 switch simScenario(3)
     case 1
         filename = sprintf(strcat('Turb_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
@@ -186,13 +192,15 @@ end
 %%  Plot Results
 if simScenario(8)
     switch simScenario(3)
-        case {1,2}
+        case 1
             lap = max(tsc.lapNumS.Data)-1;
             if max(tsc.lapNumS.Data) < 2
                 tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             else
                 tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             end
+        case 2
+            tsc.plotFSslf(fltCtrl,'Steady',true);
         case 3
             tsc.plotLaR(fltCtrl,'Steady',true);
         case 4
