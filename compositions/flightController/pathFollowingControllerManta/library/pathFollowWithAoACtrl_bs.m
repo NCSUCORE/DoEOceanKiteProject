@@ -3,17 +3,7 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
 fltCtrl = CTR.pthFlwCtrlM;
 
-fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
-fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
-fltCtrl.setPerpErrorVal(6*pi/180,'rad');
-fltCtrl.setSearchSize(.5,'');
-fltCtrl.setMinR(80,'m')
-fltCtrl.setMaxR(160,'m')
-fltCtrl.setElevatorConst(0,'deg')
-fltCtrl.setStartControl(1,'s')
-fltCtrl.firstSpoolLap.setValue(1000,'');
-
-% Control surface parameters
+%% FPID Controller parameters
 fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
@@ -36,13 +26,14 @@ fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.elevCtrl.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCtrl.tau.setValue(0.001,'s');
 
-fltCtrl.rollCtrl.kp.setValue(200,'(deg)/(rad)');
+fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');
 fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
-fltCtrl.rollCtrl.kd.setValue(0,'(deg)/(rad/s)');
+fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');
 fltCtrl.rollCtrl.tau.setValue(0.001,'s');
 
 fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');
-% RPM PID gains
+fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');
+
 fltCtrl.RPMCtrl.kp.setValue(100,'()/(kN)');
 
 fltCtrl.yawCtrl.kp.setValue(200,'(deg)/(rad)');
@@ -50,22 +41,35 @@ fltCtrl.yawCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.yawCtrl.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.yawCtrl.tau.setValue(0.001,'s');
 
+%%  Saturations
+fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
+fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
-fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
+fltCtrl.elevCtrlMax.upperLimit.setValue(30,'')
 fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'')
 
+%%  Path following parameters
+fltCtrl.winchSpeedIn.setValue(0.25,'m/s');
+fltCtrl.winchSpeedOut.setValue(0.25,'m/s');
+fltCtrl.setSearchSize(.5,'');
+fltCtrl.setPerpErrorVal(6*pi/180,'rad');
+fltCtrl.setMinR(80,'m')
+fltCtrl.setMaxR(160,'m')
 fltCtrl.startControl.setValue(0,'s');
-fltCtrl.winchSpeedIn.setValue(-0.25,'m/s');
+fltCtrl.setElevatorConst(-3,'deg')
+fltCtrl.setStartControl(1,'s')
+fltCtrl.firstSpoolLap.setValue(1000,'');
+fltCtrl.rudderGain.setValue(0,'');
 
+%%  Various control flags and set values
+fltCtrl.RCtrl.setValue(0,'');
 fltCtrl.AoACtrl.setValue(1,'');                   
-fltCtrl.AoASP.setValue(0,'');                   
+fltCtrl.AoASP.setValue(1,'');                   
 fltCtrl.AoAConst.setValue(14*pi/180,'deg');
 fltCtrl.AoAmin.setValue(-5*pi/180,'deg');
-% RPM control constant Parameters
-fltCtrl.RPMConst.setValue(3.7,'');
-fltCtrl.RPMmax.setValue(8,'');
-
+fltCtrl.RPMConst.setValue(4.188,'');
+fltCtrl.RPMmax.setValue(6,'');
 fltCtrl.Tmax.setValue(30,'kN');
 fltCtrl.TmaxCtrl.setValue(1,'');
 fltCtrl.optAltitude.setValue(200,'m');
