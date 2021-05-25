@@ -75,10 +75,12 @@ for i = 1:length(inc)
             vhcl.setInitEulAng([180 0 180]*pi/180,'rad');
 %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
             vhcl.setInitVelVecBdy([0 0 0],'m/s');
-            vhcl.setBuoyFactor(0.81,'');
-            vhcl.setRCM_LE([0.077 0 0],'m');
-            vhcl.rCentOfBuoy_LE.setValue([0.0809 0 0.003]'+[0.012 0 0]','m')
-            vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
+            vhcl.setBuoyFactor(0.97,'');
+            vhcl.setRCM_LE([0.097 0 0],'m');
+            vhcl.rCentOfBuoy_LE.setValue([0.0929 0 0.003]','m')
+%             vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
+%             
+%             vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
             %%  Tethers Properties
             load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
             thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
@@ -116,7 +118,7 @@ for i = 1:length(inc)
             fltCtrl.rollAmp.setValue(72,'deg');
             fltCtrl.yawAmp.setValue(103,'deg');
             fltCtrl.period.setValue(10,'s');
-            fltCtrl.startCtrl.setValue(3,'s')
+            fltCtrl.startCtrl.setValue(2,'s')
             fltCtrl.rollCtrl.kp.setValue(1,'(deg)/(deg)');
             fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
             fltCtrl.rollCtrl.kd.setValue(.5,'(deg)/(deg/s)');
@@ -126,6 +128,9 @@ fltCtrl.yawCtrl.kp.setValue(1,'(deg)/(deg)');
 fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
 fltCtrl.yawCtrl.kd.setValue(.7,'(deg)/(deg/s)');
 fltCtrl.yawCtrl.tau.setValue(0.00,'s');
+
+fltCtrl.ccElevator.setValue(1,'deg');
+fltCtrl.trimElevator.setValue(-6,'deg');
             %%  Set up critical system parameters and run simulation
             simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
             %     open_system('OCTModel')
@@ -137,16 +142,19 @@ fltCtrl.yawCtrl.tau.setValue(0.00,'s');
     end
 end
 
-vhcl.animateSim(tsc1,0.2,'GifTimeStep',0.05,'SaveGif',1==0)%,'View',[0 0])
-figure; hold on; grid on;
-plot(tsc1.rollSP)
-plot(tsc1.rollDeg)
+vhcl.animateSim(tsc1,0.2,'GifTimeStep',0.05,'SaveGif',1==1)%,'View',[0 0])
+figure('Position',[100 100 700 250]); hold on; grid on;
+plot(tsc1.rollSP,'-b','LineWidth',1.5)
+plot(tsc1.rollDeg,'--b','LineWidth',1.5)
+plot(tsc1.yawSP,'-r','LineWidth',1.5)
+plot(tsc1.yawDeg,'--r','LineWidth',1.5)
 legend('SP','Response')
-
-figure; hold on; grid on;
-plot(tsc1.yawSP)
-plot(tsc1.yawDeg)
-legend('SP','Response')
+ylabel 'Attitude [deg]'
+xlabel 'Time [s]'
+title 'Cross Current Tracking - Well Timed Initiation'
+legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
+set(gca,'FontSize',15)
+ylim([50 350])
 
 %% Process Test Data
 selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\05 20 21\data';
