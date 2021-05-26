@@ -4,7 +4,8 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
-inc = [0]% -2];
+inc = [-6]% -2];
+startTime = [0:.5:4]
 elevArray = 20*pi/180%[40 15]*pi/180;
 towArray = 0.47%[0.47 .77];
 distFreq = 0;
@@ -35,7 +36,7 @@ for i = 1:length(inc)
             loadComponent('realisticSensors');                             %   Sensors
             loadComponent('lineAngleSensor');
             loadComponent('idealSensorProcessing');                      %   Sensor processing
-            loadComponent('Manta2RotXFoil_AR8_b8_exp2');                %   AR = 8; 8m span
+            loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
             SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
             %%  Environment Properties
             loadComponent('ConstXYZT');                                 %   Environment
@@ -75,9 +76,9 @@ for i = 1:length(inc)
             vhcl.setInitEulAng([180 0 180]*pi/180,'rad');
 %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
             vhcl.setInitVelVecBdy([0 0 0],'m/s');
-            vhcl.setBuoyFactor(0.97,'');
-            vhcl.setRCM_LE([0.097 0 0],'m');
-            vhcl.rCentOfBuoy_LE.setValue([0.0929 0 0.003]','m')
+%             vhcl.setBuoyFactor(0.97,'');
+%             vhcl.setRCM_LE([0.097 0 0],'m');
+%             vhcl.rCentOfBuoy_LE.setValue([0.0929 0 0.003]','m')
 %             vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
 %             
 %             vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
@@ -115,7 +116,7 @@ for i = 1:length(inc)
             thr.tether1.dragEnable.setValue(1,'')
             vhcl.hStab.setIncidence(0,'deg');
             
-            fltCtrl.rollAmp.setValue(72,'deg');
+            fltCtrl.rollAmp.setValue(60,'deg');
             fltCtrl.yawAmp.setValue(103,'deg');
             fltCtrl.period.setValue(10,'s');
             fltCtrl.startCtrl.setValue(2,'s')
@@ -129,25 +130,51 @@ fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
 fltCtrl.yawCtrl.kd.setValue(.7,'(deg)/(deg/s)');
 fltCtrl.yawCtrl.tau.setValue(0.00,'s');
 
-fltCtrl.ccElevator.setValue(1,'deg');
+fltCtrl.ccElevator.setValue(2,'deg');
 fltCtrl.trimElevator.setValue(-6,'deg');
             %%  Set up critical system parameters and run simulation
             simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
             %     open_system('OCTModel')
             %     set_param('OCTModel','SimulationMode','accelerator');
             simWithMonitor('OCTModel')
-            tsc1 = signalcontainer(logsout);
+            tsc1{i} = signalcontainer(logsout);
+            vhcl.animateSim(tsc1{i},0.2,'GifTimeStep',0.05,'SaveGif',1==1)
+            figure('Position',[100 100 700 250]); hold on; grid on;
+            plot(tsc1{i}.rollSP,'-b','LineWidth',1.5)
+            plot(tsc1{i}.rollDeg,'--b','LineWidth',1.5)
+            plot(tsc1{i}.yawSP,'-r','LineWidth',1.5)
+            plot(tsc1{i}.yawDeg,'--r','LineWidth',1.5)
+            legend('SP','Response')
+            ylabel 'Attitude [deg]'
+            xlabel 'Time [s]'
+            title(sprintf('Cross Current Tracking - %.d Deg Elevator',inc(i)))
+            legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
+            set(gca,'FontSize',15)
+            ylim([50 350])
+            
+            figure('Position',[100 100 700 250]); hold on; grid on;
+            plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,1),'-b','LineWidth',1.5)
+%             plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,2),'-g','LineWidth',1.5)
+            plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,3),'-r','LineWidth',1.5)
+            plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,4),'-k','LineWidth',1.5)
+            legend('Aileron','Elevator','Rudder')
+            ylabel 'Attitude [deg]'
+            xlabel 'Time [s]'
+            title(sprintf('Cross Current Tracking - %.d Deg Elevator',inc(i)))
+%             legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
+            set(gca,'FontSize',15)
+            ylim([-30 30])
             toc
         end
     end
 end
 
-vhcl.animateSim(tsc1,0.2,'GifTimeStep',0.05,'SaveGif',1==1)%,'View',[0 0])
+%,'View',[0 0])
 figure('Position',[100 100 700 250]); hold on; grid on;
-plot(tsc1.rollSP,'-b','LineWidth',1.5)
-plot(tsc1.rollDeg,'--b','LineWidth',1.5)
-plot(tsc1.yawSP,'-r','LineWidth',1.5)
-plot(tsc1.yawDeg,'--r','LineWidth',1.5)
+plot(tsc1{i}.rollSP,'-b','LineWidth',1.5)
+plot(tsc1{i}.rollDeg,'--b','LineWidth',1.5)
+plot(tsc1{i}.yawSP,'-r','LineWidth',1.5)
+plot(tsc1{i}.yawDeg,'--r','LineWidth',1.5)
 legend('SP','Response')
 ylabel 'Attitude [deg]'
 xlabel 'Time [s]'
@@ -177,7 +204,38 @@ for i = 18
     plot(tsc.speedCMD1.Time(a:end),tsc.speedCMD1.Data(a:end))
 end
 
+figure; hold on; grid on;
+plotsq(tsc1{1,1}.velCMvec.Time,sqrt(dot(tsc1{1,1}.velCMvec.Data,tsc1{1,1}.velCMvec.Data)))
+plotsq(tsc1{1,1}.velEst.Time,sqrt(dot(tsc1{1,1}.velEst.Data',tsc1{1,1}.velEst.Data')))
+ylim([0 2])
+legend('Velocity','Velocity Estimation')
 
+figure; hold on; grid on;
+subplot(3,1,1); hold on; grid on;
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(1,:,:))
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(1,:,:))
+subplot(3,1,2); hold on; grid on;
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(2,:,:))
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(2,:,:))
+subplot(3,1,3); hold on; grid on;
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(3,:,:))
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(3,:,:))
+legend('Pos','Pos Estimation')
+
+figure; hold on; grid on;
+subplot(3,1,1); hold on; grid on;
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(1,:,:))
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,1,:))
+ylim([0,2])
+subplot(3,1,2); hold on; grid on;
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(2,:,:))
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,2,:))
+ylim([-2,2])
+subplot(3,1,3); hold on; grid on;
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(3,:,:))
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,3,:))
+ylim([-2,2])
+legend('Pos','Pos Estimation')
 
 %% March 26 Data
 towArray = [0.47 0.62 0.77]*1

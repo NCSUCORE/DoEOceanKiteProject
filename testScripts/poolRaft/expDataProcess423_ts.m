@@ -52,8 +52,8 @@ for i = 1:length(inc)
             % hiLvlCtrl.ThrCtrl.setValue(1,'');
             
             hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
-            las.setInitAng([-el 0],'rad');
-            las.setInitAngVel([2*pi/180 0],'rad/s');
+%             las.setInitAng([-el 0],'rad');
+            las.setInitAngVel([0 0],'rad/s');
 %             las.tetherLoadDisable;
 %             las.dragDisable;
 %             las.setCD(1.3,'')
@@ -94,6 +94,12 @@ for i = 1:length(inc)
             thr.tether1.setDiameter(.0076,'m');
             thr.setNumNodes(6,'');
             thr.tether1.setDragCoeff(1.8,'');
+            x = thr.tether1.initGndNodePos.Value(1)-thr.tether1.initAirNodePos.Value(1);
+            y = thr.tether1.initGndNodePos.Value(2)-thr.tether1.initAirNodePos.Value(2);
+            z = thr.tether1.initGndNodePos.Value(3)-thr.tether1.initAirNodePos.Value(3);
+            initThrAng = atan2(z,sqrt(x^2+y^2));
+            las.setThrInitAng([-initThrAng 0],'rad');
+
             %%  Winches Properties
             wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
             wnch.winch1.LaRspeed.setValue(1,'m/s');
