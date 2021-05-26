@@ -35,7 +35,7 @@ for i = 1:length(inc)
             loadComponent('MantaTether');                               %   Manta Ray tether
             loadComponent('realisticSensors');                             %   Sensors
             loadComponent('lineAngleSensor');
-            loadComponent('idealSensorProcessing');                      %   Sensor processing
+            loadComponent('realisticSensorProcessing');                      %   Sensor processing
             loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
             SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
             %%  Environment Properties
@@ -204,6 +204,15 @@ for i = 18
     plot(tsc.speedCMD1.Time(a:end),tsc.speedCMD1.Data(a:end))
 end
 
+a = squeeze(diff(sqrt(dot(tsc1{1,1}.velCMvec.Data,tsc1{1,1}.velCMvec.Data))))...
+    ./(tsc1{1,1}.azAng.Time(2:end)-tsc1{1,1}.azAng.Time(1:end-1));
+T = tsc1{1,1}.airTenVecs.Time(1:end-1)
+
+figure
+plot(T,a)
+ylim([-3 3])
+
+
 figure; hold on; grid on;
 plotsq(tsc1{1,1}.velCMvec.Time,sqrt(dot(tsc1{1,1}.velCMvec.Data,tsc1{1,1}.velCMvec.Data)))
 plotsq(tsc1{1,1}.velEst.Time,sqrt(dot(tsc1{1,1}.velEst.Data',tsc1{1,1}.velEst.Data')))
@@ -235,7 +244,7 @@ subplot(3,1,3); hold on; grid on;
 plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(3,:,:))
 plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,3,:))
 ylim([-2,2])
-legend('Pos','Pos Estimation')
+legend('Velocity','Velocity Estimation')
 
 %% March 26 Data
 towArray = [0.47 0.62 0.77]*1
