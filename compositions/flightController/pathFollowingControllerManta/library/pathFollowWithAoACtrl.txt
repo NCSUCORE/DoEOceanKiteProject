@@ -78,7 +78,7 @@ fltCtrl.elevCtrl.tau.Value = 1.0000e-03
 fltCtrl.elevCtrl.tau.Unit = 's'
 fltCtrl.elevCtrl.tau.NoScale = false
 fltCtrl.elevCtrl.tau.Description = 'Time Constant'
-fltCtrl.rollCtrl.kp.Value = 1.5000e+02
+fltCtrl.rollCtrl.kp.Value = 2.0000e+02
 fltCtrl.rollCtrl.kp.Unit = '(deg)/(rad)'
 fltCtrl.rollCtrl.kp.NoScale = false
 fltCtrl.rollCtrl.kp.Description = 'Proportional gain'
@@ -86,7 +86,7 @@ fltCtrl.rollCtrl.ki.Value = 1.0000e+00
 fltCtrl.rollCtrl.ki.Unit = '(deg)/(rad*s)'
 fltCtrl.rollCtrl.ki.NoScale = false
 fltCtrl.rollCtrl.ki.Description = 'Integral gain'
-fltCtrl.rollCtrl.kd.Value = 1.5000e+02
+fltCtrl.rollCtrl.kd.Value = 0.0000e+00
 fltCtrl.rollCtrl.kd.Unit = '(deg)/(rad/s)'
 fltCtrl.rollCtrl.kd.NoScale = false
 fltCtrl.rollCtrl.kd.Description = 'Derivative gain'
@@ -98,7 +98,7 @@ fltCtrl.alphaCtrl.kp.Value = 2.0000e-01
 fltCtrl.alphaCtrl.kp.Unit = '(rad)/(kN)'
 fltCtrl.alphaCtrl.kp.NoScale = false
 fltCtrl.alphaCtrl.kp.Description = 'Proportional gain'
-fltCtrl.alphaCtrl.ki.Value = 8.0000e-02
+fltCtrl.alphaCtrl.ki.Value = 0.0000e+00
 fltCtrl.alphaCtrl.ki.Unit = '(rad)/(kN*s)'
 fltCtrl.alphaCtrl.ki.NoScale = false
 fltCtrl.alphaCtrl.ki.Description = 'Integral gain'
@@ -160,11 +160,10 @@ fltCtrl.elevCtrlMax.upperLimit.NoScale = false
 fltCtrl.elevCtrlMax.lowerLimit.Value = -3.0000e+01
 fltCtrl.elevCtrlMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.elevCtrlMax.lowerLimit.NoScale = false
-fltCtrl.winchSpeedIn.Value = 2.5000e-01
+fltCtrl.winchSpeedIn.Value = -2.5000e-01
 fltCtrl.winchSpeedIn.Unit = 'm/s'
 fltCtrl.winchSpeedIn.NoScale = false
 fltCtrl.winchSpeedIn.Description = 'Max tether spool in speed.'
-fltCtrl.winchSpeedOut.Value = 2.5000e-01
 fltCtrl.winchSpeedOut.Unit = 'm/s'
 fltCtrl.winchSpeedOut.NoScale = false
 fltCtrl.winchSpeedOut.Description = 'Max tether spool out speed.'
@@ -186,14 +185,14 @@ fltCtrl.perpErrorVal.Value = 1.0472e-01
 fltCtrl.perpErrorVal.Unit = 'rad'
 fltCtrl.perpErrorVal.NoScale = false
 fltCtrl.perpErrorVal.Description = 'Central angle at which we saturate the desired velocity to the tangent vector'
-fltCtrl.startControl.Value = 1.0000e+00
+fltCtrl.startControl.Value = 0.0000e+00
 fltCtrl.startControl.Unit = 's'
 fltCtrl.startControl.NoScale = false
 fltCtrl.startControl.Description = 'Time at which we switch the roll controller on'
 fltCtrl.outRanges.Unit is unitless or has no unit specified
 fltCtrl.outRanges.NoScale = false
 fltCtrl.outRanges.Description = 'Upper/lower limits of path variable for spooling'
-fltCtrl.elevatorConst.Value = -3.0000e+00
+fltCtrl.elevatorConst.Value = 0.0000e+00
 fltCtrl.elevatorConst.Unit = 'deg'
 fltCtrl.elevatorConst.NoScale = false
 fltCtrl.elevatorConst.Description = 'Deflection angle of elevator used during spool in'
@@ -211,7 +210,7 @@ fltCtrl.firstSpoolLap.Value = 1.0000e+03
 fltCtrl.firstSpoolLap.Unit is unitless or has no unit specified
 fltCtrl.firstSpoolLap.NoScale = false
 fltCtrl.firstSpoolLap.Description = 'First Lap to begin spooling'
-fltCtrl.rudderGain.Value = 0.0000e+00
+fltCtrl.rudderGain.Value = 1.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
@@ -219,11 +218,11 @@ fltCtrl.AoACtrl.Value = 1.0000e+00
 fltCtrl.AoACtrl.Unit is unitless or has no unit specified
 fltCtrl.AoACtrl.NoScale = false
 fltCtrl.AoACtrl.Description = 'Flag to decide AoA control. 0 = none; 1 = On'
-fltCtrl.AoASP.Value = 1.0000e+00
+fltCtrl.AoASP.Value = 0.0000e+00
 fltCtrl.AoASP.Unit is unitless or has no unit specified
 fltCtrl.AoASP.NoScale = false
 fltCtrl.AoASP.Description = 'Flag to decide AoA control. 0 = constant; 1 = time-lookup'
-fltCtrl.RCtrl.Value = 0.0000e+00
+fltCtrl.RCtrl.Value = 1.0000e+00
 fltCtrl.RCtrl.Unit is unitless or has no unit specified
 fltCtrl.RCtrl.NoScale = false
 fltCtrl.RCtrl.Description = 'Flag to decide roll control. 0 = direct; 1 = ctrl allocation matrix'
