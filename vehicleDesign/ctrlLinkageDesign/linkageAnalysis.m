@@ -13,8 +13,8 @@ for linkage = 1:2; %1 for el 2 for vStab
 % end
 %Old Tailcone
 if linkage == 1 %Elevator
-    X =   [9.2 22.9 19.8+9.2 30.3 0 0];
-    offset = 130.85;
+    X =   [9.2 23.2 23.6+9.2 33.1 0 0];
+    offset = 135.49;
 elseif linkage == 2 %Vertical Stabilizer
     X = [22 26.9 34.1 29.5 0 0];
     offset = 114.22; 
