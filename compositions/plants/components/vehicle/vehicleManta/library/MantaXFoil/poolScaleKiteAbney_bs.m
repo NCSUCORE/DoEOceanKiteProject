@@ -15,7 +15,7 @@ vhcl.setBuoyFactor(0.97,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('poolScaleKiteAbney_fluid','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
-vhcl.setVolume(3.37,'m^3');
+vhcl.setVolume(3.27,'m^3');
 Ixx = 5.79e+03;
 Iyy = 7.83e+03;
 Izz = 13.3e+03;
