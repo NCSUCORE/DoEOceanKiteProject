@@ -415,41 +415,6 @@ classdef signalcontainer < dynamicprops
             fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
             fprintf('Avg Charge Time: %.1f days\n',270/Pow.avg/24)
         end
-        function plotFSslf(obj,ctrl,varargin)
-            p = inputParser;
-            addOptional(p,'Steady',false,@islogical);
-            parse(p,varargin{:})
-            
-            R = 3;  C = 1;
-%             time = obj.MNetBdy.Time;
-%             airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
-%             gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
-%             coneWidth = ctrl.LaRelevationSPErr.Value;
-            figure();
-            %%  Plot Elevation Angle
-            subplot(R,C,1); hold on; grid on;
-            plot(obj.elevationSP.Time,squeeze(obj.elevationSP.Data),'r-');
-            plot(obj.elevationAngle.Time,squeeze(obj.elevationAngle.Data),'b-');  xlabel('Time [s]');  ylabel('Elevation [deg]');  %xlim([1900 2100])
-            %%  Plot Pitch Angle
-            subplot(R,C,2); hold on; grid on;
-            plot(obj.pitchSP.Time,squeeze(obj.pitchSP.Data),'r-');
-            plot(obj.eulerAngles.Time,squeeze(obj.eulerAngles.Data(2,1,:))*180/pi,'b-');  xlabel('Time [s]');  ylabel('Pitch [deg]');
-            legend('Setpoint','AutoUpdate','off','location','northwest')
-            %%  Plot Elevator Command
-            subplot(R,C,3); hold on; grid on;
-            plot(obj.ctrlSurfDefl_slf.Time,squeeze(obj.ctrlSurfDefl_slf.Data(3,1,:)),'b-');  xlabel('Time [s]');  ylabel('Elevator [deg]');
-%             %%  Tether Length
-%             subplot(R,C,2); hold on; grid on;
-%             plot(obj.tetherLengths.Time,squeeze(obj.tetherLengths.Data),'b-');  xlabel('Time [s]');  ylabel('Length [m]');  %xlim([1900 2100])
-%             %%  Plot Spool Command
-%             subplot(R,C,4); hold on; grid on;
-%             plot(time,squeeze(obj.wnchCmd.Data),'b-');
-%             xlabel('Time [s]');  ylabel('Winch [m/s]');  %xlim([1900 2100])
-%             %%  Plot Tether Tension
-%             subplot(R,C,6); hold on; grid on;
-%             plot(time,airNode,'b-');  plot(time,gndNode,'r--');  %ylim([0 .5]);
-%             xlabel('Time [s]');  ylabel('Tension [kN]');  legend('Kite','Glider');  %xlim([1900 2100])
-        end
     end
 end
 
