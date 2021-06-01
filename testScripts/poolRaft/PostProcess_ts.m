@@ -4,26 +4,31 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
-inc = [-6]% -2];
+inc = -6%[-10:-2]% -2];
 startTime = [0:.5:4]
 elevArray = 20*pi/180%[40 15]*pi/180;
-towArray = 0.47%[0.47 .77];
+towArray = 0.47%[0.62 .77]%[0.47 .77];
+rCM = 0.010%[0 0.005 0.010 0.015 0.020 0.025];
+buoy = .9375%[97.5 95.4 93.75 92 90.4 88.8]/100;
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
+for q = 2
 for i = 1:length(inc)
     i
     for j = 1:length(towArray)
         j
-        for k = 1:numel(elevArray)
+        for k = 1:numel(rCM)
             tic
+            Simulink.sdi.clear
+
             k
             thrLength = 2.63%-.52;  altitude = thrLength*sin(elevArray(k));                 %   Initial tether length/operating altitude/elevation angle
             flwSpd = -1e-9 ;                                   %   m/s - Flow speed                                              %   kN - Max tether tension
             h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
             [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
             %%  Load components
-            el = elevArray(k);
+            el = elevArray;
 %             loadComponent('exp_slCtrl');
             loadComponent('periodicCtrlExp');
 %             fltCtrl.ctrlOff.setValue(0,'')
@@ -77,20 +82,21 @@ for i = 1:length(inc)
 %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
             vhcl.setInitVelVecBdy([0 0 0],'m/s');
 %             vhcl.setBuoyFactor(0.97,'');
-%             vhcl.setRCM_LE([0.097 0 0],'m');
+            vhcl.setRCM_LE([0.097-rCM(k) 0 0],'m');
+            vhcl.setBuoyFactor(buoy(k),''); %Should this be slightly positively buoyant?
 %             vhcl.rCentOfBuoy_LE.setValue([0.0929 0 0.003]','m')
 %             vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
 %             
-%             vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
+%             vhcl.rBridle_LE.setValue([0.019 0 -0.079]','m');
             %%  Tethers Properties
             load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
             thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
             thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
                 +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-            x = thr.tether1.initGndNodePos.Value(1)-thr.tether1.initAirNodePos.Value(1)
-            y = thr.tether1.initGndNodePos.Value(2)-thr.tether1.initAirNodePos.Value(2)
-            z = thr.tether1.initGndNodePos.Value(3)-thr.tether1.initAirNodePos.Value(3)
-            initThrAng = atan2(z,sqrt(x^2+y^2))
+            x = thr.tether1.initGndNodePos.Value(1)-thr.tether1.initAirNodePos.Value(1);
+            y = thr.tether1.initGndNodePos.Value(2)-thr.tether1.initAirNodePos.Value(2);
+            z = thr.tether1.initGndNodePos.Value(3)-thr.tether1.initAirNodePos.Value(3);
+            initThrAng = atan2(z,sqrt(x^2+y^2));
 
             las.setThrInitAng([-initThrAng 0],'rad');
             thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
@@ -116,10 +122,14 @@ for i = 1:length(inc)
             thr.tether1.dragEnable.setValue(1,'')
             vhcl.hStab.setIncidence(0,'deg');
             
-            fltCtrl.rollAmp.setValue(60,'deg');
+            fltCtrl.rollAmp.setValue(72,'deg');
             fltCtrl.yawAmp.setValue(103,'deg');
             fltCtrl.period.setValue(10,'s');
-            fltCtrl.startCtrl.setValue(2,'s')
+            if q == 1
+                fltCtrl.startCtrl.setValue(42,'s')
+            else
+                fltCtrl.startCtrl.setValue(2,'s')
+            end
             fltCtrl.rollCtrl.kp.setValue(1,'(deg)/(deg)');
             fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
             fltCtrl.rollCtrl.kd.setValue(.5,'(deg)/(deg/s)');
@@ -130,193 +140,314 @@ fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
 fltCtrl.yawCtrl.kd.setValue(.7,'(deg)/(deg/s)');
 fltCtrl.yawCtrl.tau.setValue(0.00,'s');
 
-fltCtrl.ccElevator.setValue(2,'deg');
-fltCtrl.trimElevator.setValue(-6,'deg');
+fltCtrl.ccElevator.setValue(3,'deg');
+fltCtrl.trimElevator.setValue(inc(i),'deg');
             %%  Set up critical system parameters and run simulation
             simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
             %     open_system('OCTModel')
             %     set_param('OCTModel','SimulationMode','accelerator');
             simWithMonitor('OCTModel')
-            tsc1{i} = signalcontainer(logsout);
-            vhcl.animateSim(tsc1{i},0.2,'GifTimeStep',0.05,'SaveGif',1==1)
+            tsc1{i,j,k,q} = signalcontainer(logsout);
+            if q == 2
+            vhcl.animateSim(tsc1{i,j,k,q},0.2,'GifTimeStep',0.2,'SaveGif',1==1)%,'View',[0 0])
             figure('Position',[100 100 700 250]); hold on; grid on;
-            plot(tsc1{i}.rollSP,'-b','LineWidth',1.5)
-            plot(tsc1{i}.rollDeg,'--b','LineWidth',1.5)
-            plot(tsc1{i}.yawSP,'-r','LineWidth',1.5)
-            plot(tsc1{i}.yawDeg,'--r','LineWidth',1.5)
+            plot(tsc1{i,j,k,q}.rollSP,'-b','LineWidth',1.5)
+            plot(tsc1{i,j,k,q}.rollDeg,'--b','LineWidth',1.5)
+            plot(tsc1{i,j,k,q}.yawSP,'-r','LineWidth',1.5)
+            plot(tsc1{i,j,k,q}.yawDeg,'--r','LineWidth',1.5)
             legend('SP','Response')
             ylabel 'Attitude [deg]'
             xlabel 'Time [s]'
-            title(sprintf('Cross Current Tracking - %.d Deg Elevator',inc(i)))
+            title(sprintf('Cross Current Tracking - %.d Deg Elevator',3))
             legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
             set(gca,'FontSize',15)
             ylim([50 350])
             
             figure('Position',[100 100 700 250]); hold on; grid on;
-            plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,1),'-b','LineWidth',1.5)
+            plot(tsc1{i,j,k,q}.ctrlSurfDefl.Time,tsc1{i,j,k,q}.ctrlSurfDefl.Data(:,1),'-b','LineWidth',1.5)
 %             plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,2),'-g','LineWidth',1.5)
-            plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,3),'-r','LineWidth',1.5)
-            plot(tsc1{i}.ctrlSurfDefl.Time,tsc1{i}.ctrlSurfDefl.Data(:,4),'-k','LineWidth',1.5)
+            plot(tsc1{i,j,k,q}.ctrlSurfDefl.Time,tsc1{i,j,k,q}.ctrlSurfDefl.Data(:,3),'-r','LineWidth',1.5)
+            plot(tsc1{i,j,k,q}.ctrlSurfDefl.Time,tsc1{i,j,k,q}.ctrlSurfDefl.Data(:,4),'-k','LineWidth',1.5)
             legend('Aileron','Elevator','Rudder')
             ylabel 'Attitude [deg]'
             xlabel 'Time [s]'
-            title(sprintf('Cross Current Tracking - %.d Deg Elevator',inc(i)))
+            title(sprintf('Cross Current Tracking - %.d Deg Elevator',3))
 %             legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
             set(gca,'FontSize',15)
             ylim([-30 30])
+            end
             toc
+        end
         end
     end
 end
 
 %,'View',[0 0])
-figure('Position',[100 100 700 250]); hold on; grid on;
-plot(tsc1{i}.rollSP,'-b','LineWidth',1.5)
-plot(tsc1{i}.rollDeg,'--b','LineWidth',1.5)
-plot(tsc1{i}.yawSP,'-r','LineWidth',1.5)
-plot(tsc1{i}.yawDeg,'--r','LineWidth',1.5)
-legend('SP','Response')
-ylabel 'Attitude [deg]'
-xlabel 'Time [s]'
-title 'Cross Current Tracking - Well Timed Initiation'
-legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
-set(gca,'FontSize',15)
-ylim([50 350])
+% figure('Position',[100 100 700 250]); hold on; grid on;
+% plot(tsc1{i}.rollSP,'-b','LineWidth',1.5)
+% plot(tsc1{i}.rollDeg,'--b','LineWidth',1.5)
+% plot(tsc1{i}.yawSP,'-r','LineWidth',1.5)
+% plot(tsc1{i}.yawDeg,'--r','LineWidth',1.5)
+% legend('SP','Response')
+% ylabel 'Attitude [deg]'
+% xlabel 'Time [s]'
+% title 'Cross Current Tracking - Well Timed Initiation'
+% legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
+% set(gca,'FontSize',15)
+% ylim([50 350])
 
 %% Process Test Data
-selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\05 20 21\data';
-listing = dir(selPath);
-
-figure; hold on; grid on;
-for i = 18
-    load(strcat(selPath,'\',listing(i).name));
-    tscData{i-17} = tsc;
-    if i > 4
-        a = find(tsc.speedCMD1.Data> 1,1);
-        speed(i-17) = tsc.speedCMD1.Data(a);
-        tscData{i-17}.linSpeed = tsc.speedCMD1.Data(a);
-    else
-        a = 1;
-        speed(i-2) = 0;
-        tscData{i-2}.linSpeed = 0;
-    end
-    tscData{i-17}.a = a;
-    plot(tsc.speedCMD1.Time(a:end),tsc.speedCMD1.Data(a:end))
-end
-
-figure; hold on; grid on;
-plotsq(tsc1{1,1}.velCMvec.Time,sqrt(dot(tsc1{1,1}.velCMvec.Data,tsc1{1,1}.velCMvec.Data)))
-plotsq(tsc1{1,1}.velEst.Time,sqrt(dot(tsc1{1,1}.velEst.Data',tsc1{1,1}.velEst.Data')))
-ylim([0 2])
-legend('Velocity','Velocity Estimation')
-
-figure; hold on; grid on;
-subplot(3,1,1); hold on; grid on;
-plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(1,:,:))
-plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(1,:,:))
-subplot(3,1,2); hold on; grid on;
-plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(2,:,:))
-plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(2,:,:))
-subplot(3,1,3); hold on; grid on;
-plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(3,:,:))
-plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(3,:,:))
-legend('Pos','Pos Estimation')
-
-figure; hold on; grid on;
-subplot(3,1,1); hold on; grid on;
-plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(1,:,:))
-plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,1,:))
-ylim([0,2])
-subplot(3,1,2); hold on; grid on;
-plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(2,:,:))
-plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,2,:))
-ylim([-2,2])
-subplot(3,1,3); hold on; grid on;
-plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(3,:,:))
-plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,3,:))
-ylim([-2,2])
-legend('Pos','Pos Estimation')
-
-%% March 26 Data
-towArray = [0.47 0.62 0.77]*1
-load('lineAngleSensor')
-g = 9.81; %acc due to grav m/s^2
-rho = 1000; %kg/m^3 density of water
-xCG = las.L_CM.Value %axial location of center of mass m
-xCB = las.L_CB.Value %axial location of center of buoyancy m
-mLAS = las.mass.Value; %mass of LAS boom kg
-vLAS = las.volume.Value; %las volume
-gammaLAS = rho*vLAS/mLAS
-l = las.length.Value;
-d = las.diameter.Value;
-A = l*d; %frontal cylinder area m^2
-
-CDconst = 4*mLAS*g*(xCG-gammaLAS*xCB)/(rho*A*l);
-
-%Data Filtering
-fLowPass = 2*2*pi; %low pass frequency in rad/s
-tau = 1/fLowPass; %time constant in 1/s
-tauRate = 1/(2*2*pi);
-lowFiltRaw = tf(1,[tau 1]);
-lowFiltRate = tf(1,[tauRate 1]);
-
-
-dataSeg = {[],[1:3]}%{[5:13],[14:19],[20:25],[26:31],[32:37]};
-        for i = 1:3
-%             windowSize = 100;
-%             b = (1/windowSize)*ones(1,windowSize);
-%             a = 1;
-            elFilt{i} = lsim(lowFiltRaw,tscData{i}.kite_elev.Data(tscData{i}.a:end),tscData{i}.kite_elev.Time(tscData{i}.a:end));
-            elDot{i} = diff(elFilt{i})./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1));
-%             
-            elDotT{i} = tscData{i}.kite_elev.Time(tscData{i}.a:end-1)-tscData{i}.kite_elev.Time(tscData{i}.a);
-            elDot{i} = lsim(lowFiltRate,elDot{i},elDotT{i});
-
-
+% selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\05 20 21\data';
+% listing = dir(selPath);
+% 
+% figure; hold on; grid on;
+% for i = 18
+%     load(strcat(selPath,'\',listing(i).name));
+%     tscData{i-17} = tsc;
+%     if i > 4
+%         a = find(tsc.speedCMD1.Data> 1,1);
+%         speed(i-17) = tsc.speedCMD1.Data(a);
+%         tscData{i-17}.linSpeed = tsc.speedCMD1.Data(a);
+%     else
+%         a = 1;
+%         speed(i-2) = 0;
+%         tscData{i-2}.linSpeed = 0;
+%     end
+%     tscData{i-17}.a = a;
+%     plot(tsc.speedCMD1.Time(a:end),tsc.speedCMD1.Data(a:end))
+% end
+% 
+% figure; hold on; grid on;
+% plotsq(tsc1{1,1}.velCMvec.Time,sqrt(dot(tsc1{1,1}.velCMvec.Data,tsc1{1,1}.velCMvec.Data)))
+% plotsq(tsc1{1,1}.velEst.Time,sqrt(dot(tsc1{1,1}.velEst.Data',tsc1{1,1}.velEst.Data')))
+% ylim([0 2])
+% legend('Velocity','Velocity Estimation')
+% 
+% figure; hold on; grid on;
+% subplot(3,1,1); hold on; grid on;
+% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(1,:,:))
+% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(1,:,:))
+% subplot(3,1,2); hold on; grid on;
+% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(2,:,:))
+% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(2,:,:))
+% subplot(3,1,3); hold on; grid on;
+% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(3,:,:))
+% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(3,:,:))
+% legend('Pos','Pos Estimation')
+% 
+% figure; hold on; grid on;
+% subplot(3,1,1); hold on; grid on;
+% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(1,:,:))
+% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,1,:))
+% ylim([0,2])
+% subplot(3,1,2); hold on; grid on;
+% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(2,:,:))
+% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,2,:))
+% ylim([-2,2])
+% subplot(3,1,3); hold on; grid on;
+% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(3,:,:))
+% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,3,:))
+% ylim([-2,2])
+% legend('Pos','Pos Estimation')
+% 
+% %% March 26 Data
+% towArray = [0.47 0.62 0.77]*1
+% load('lineAngleSensor')
+% g = 9.81; %acc due to grav m/s^2
+% rho = 1000; %kg/m^3 density of water
+% xCG = las.L_CM.Value %axial location of center of mass m
+% xCB = las.L_CB.Value %axial location of center of buoyancy m
+% mLAS = las.mass.Value; %mass of LAS boom kg
+% vLAS = las.volume.Value; %las volume
+% gammaLAS = rho*vLAS/mLAS
+% l = las.length.Value;
+% d = las.diameter.Value;
+% A = l*d; %frontal cylinder area m^2
+% 
+% CDconst = 4*mLAS*g*(xCG-gammaLAS*xCB)/(rho*A*l);
+% 
+% %Data Filtering
+% fLowPass = 2*2*pi; %low pass frequency in rad/s
+% tau = 1/fLowPass; %time constant in 1/s
+% tauRate = 1/(2*2*pi);
+% lowFiltRaw = tf(1,[tau 1]);
+% lowFiltRate = tf(1,[tauRate 1]);
+% 
+% 
+% dataSeg = {[],[1:3]}%{[5:13],[14:19],[20:25],[26:31],[32:37]};
+%         for i = 1:3
+% %             windowSize = 100;
+% %             b = (1/windowSize)*ones(1,windowSize);
+% %             a = 1;
+%             elFilt{i} = lsim(lowFiltRaw,tscData{i}.kite_elev.Data(tscData{i}.a:end),tscData{i}.kite_elev.Time(tscData{i}.a:end));
+%             elDot{i} = diff(elFilt{i})./(tscData{i}.kite_elev.Time(tscData{i}.a+1:end)-tscData{i}.kite_elev.Time(tscData{i}.a:end-1));
+% %             
+%             elDotT{i} = tscData{i}.kite_elev.Time(tscData{i}.a:end-1)-tscData{i}.kite_elev.Time(tscData{i}.a);
+%             elDot{i} = lsim(lowFiltRate,elDot{i},elDotT{i});
+% 
+% 
+%         end
+%         for i = 2
+%             subplot(1,1,1); hold on;
+%             alignment = [0 0;1 1; 2 1; 1 1; 2 2];
+%             imEl = squeeze(atan2(tsc1.t1Unit.Data(3,1,:),...
+%                 sqrt(tsc1.t1Unit.Data(1,1,:).^2+...
+%                 tsc1.t1Unit.Data(2,1,:).^2)))*180/pi;
+%             imEld = diff(imEl)./(tsc1.thrNodePosVecs.Time(2:end)-tsc1.thrNodePosVecs.Time(1:end-1));
+%             imEldotT = tsc1.thrNodePosVecs.Time(1:end-1);
+%             elDotLAS = tsc1.lasElevRateDeg.Data(1:end-1);
+%             plot(tsc1.elevationAngle.Time,imEl...
+%                 ,'k','DisplayName','Simulation','LineWidth',2)
+%             plot(tsc1.lasElevDeg.Time,...
+%                 -tsc1.lasElevDeg.Data,...
+%                 'r','DisplayName','Simulation LAS','LineWidth',2)
+% %             plot(tsc1{alignment(j,2),i,alignment(j,1)}.elevationAngle.Time,squeeze(tsc1{alignment(j,2),i,alignment(j,1)}.lasElevDeg.Data)...
+% %                 ,'b--','DisplayName','Simulation')
+%             %         plot(tsc1{j,i}.elevationAngle.Time,-squeeze(tsc1{j,i}.elevationAngle.Data)...
+%             %             ,'g--','DisplayName','Sim')
+%         end
+% 
+% 
+%     titleCell = {'Elevation Response - Line Angle Sensor',...
+%         'Elevation Response - Incidence = -8 Deg Init Elevation = 40 Deg',...
+%         'Elevation Response - Incidence = -8 Deg Init Elevation = 10 Deg',...
+%         'Elevation Response - Incidence = -2 Deg Init Elevation = 40 Deg',...
+%         'Elevation Response - Incidence = -2 Deg Init Elevation = 10 Deg'};
+% %     sgtitle(titleCell{j},'FontSize',24)
+% 
+% 
+% 
+% figure('Position',[100 100 900 400]); hold on; grid on;
+% 
+% for i = 2%
+%     for j = 3
+%         plot(imEldotT,imEld,'k','LineWidth',2)
+%         plot(imEldotT,-elDotLAS,'r','LineWidth',2)
+%     end
+% end
+% for i = 1:3
+% plot(elDotT{i}-4,elDot{i})
+% end
+% xlim([.1 10])
+% ylim([-5 50])
+% legend('Simulation','Simulation LAS','Run 7','Run 8','Run 9')
+% xlabel 'Time [s]'
+% ylabel 'Elevation Rate [deg/s]'
+%%
+for k = 1:length(rCM)
+    figure('Position',[100 100 900 750])
+    for j = 1:length(towArray)
+        subplot(2,1,j); hold on; grid on;
+        for i = 1:numel(inc)
+            
+            plotsq(tsc1{i,j,k,1}.eulerAngles.Time,tsc1{i,j,k,1}.vhclAngleOfAttack.Data,...
+                'DisplayName',sprintf('%d Elevator',inc(i)))
+            ylim([0 20])
         end
-        for i = 2
-            subplot(1,1,1); hold on;
-            alignment = [0 0;1 1; 2 1; 1 1; 2 2];
-            imEl = squeeze(atan2(tsc1.t1Unit.Data(3,1,:),...
-                sqrt(tsc1.t1Unit.Data(1,1,:).^2+...
-                tsc1.t1Unit.Data(2,1,:).^2)))*180/pi;
-            imEld = diff(imEl)./(tsc1.thrNodePosVecs.Time(2:end)-tsc1.thrNodePosVecs.Time(1:end-1));
-            imEldotT = tsc1.thrNodePosVecs.Time(1:end-1);
-            elDotLAS = tsc1.lasElevRateDeg.Data(1:end-1);
-            plot(tsc1.elevationAngle.Time,imEl...
-                ,'k','DisplayName','Simulation','LineWidth',2)
-            plot(tsc1.lasElevDeg.Time,...
-                -tsc1.lasElevDeg.Data,...
-                'r','DisplayName','Simulation LAS','LineWidth',2)
-%             plot(tsc1{alignment(j,2),i,alignment(j,1)}.elevationAngle.Time,squeeze(tsc1{alignment(j,2),i,alignment(j,1)}.lasElevDeg.Data)...
-%                 ,'b--','DisplayName','Simulation')
-            %         plot(tsc1{j,i}.elevationAngle.Time,-squeeze(tsc1{j,i}.elevationAngle.Data)...
-            %             ,'g--','DisplayName','Sim')
-        end
-
-
-    titleCell = {'Elevation Response - Line Angle Sensor',...
-        'Elevation Response - Incidence = -8 Deg Init Elevation = 40 Deg',...
-        'Elevation Response - Incidence = -8 Deg Init Elevation = 10 Deg',...
-        'Elevation Response - Incidence = -2 Deg Init Elevation = 40 Deg',...
-        'Elevation Response - Incidence = -2 Deg Init Elevation = 10 Deg'};
-%     sgtitle(titleCell{j},'FontSize',24)
-
-
-
-figure('Position',[100 100 900 400]); hold on; grid on;
-
-for i = 2%
-    for j = 3
-        plot(imEldotT,imEld,'k','LineWidth',2)
-        plot(imEldotT,-elDotLAS,'r','LineWidth',2)
+        legend
+        xlabel 'Time [s]'
+        ylabel 'AoA [deg]'
+        title(sprintf('Tow Velocity %.2f m/s',towArray(j)))
+        sgtitle(sprintf('Trim Response - CG %d\\%% Chord aft of wing leading edge',round((rCM(k)+vhcl.rCM_LE.Value(1))/vhcl.stbdWing.rootChord.Value*100)),...
+            'FontSize',20)
+        
+set(gca,'FontSize',15)
     end
 end
-for i = 1:3
-plot(elDotT{i}-4,elDot{i})
+
+%%
+figure('Position',[100 100 900 750])
+for k = 1:length(rCM)
+    
+    for j = 1:length(towArray)
+        subplot(2,1,j); hold on; grid on;
+        title(sprintf('Tow Speed = %.2f m/s',towArray(j)))
+        data = [];
+        for i = 1:numel(inc)
+            data = [data tsc1{i,j,k,1}.eulerAngles.Data(2,:,end)*180/pi]; 
+        end
+        plot(inc,data,'x','DisplayName',sprintf('%d\\%%',...
+            round((0.097-rCM(k))/vhcl.stbdWing.rootChord.Value*100)),...
+            'LineWidth',1.5)
+        legend('Orientation','horizontal','Location','south')
+        xlabel 'Elevator Inclination [deg]'
+        ylabel 'Pitch Angle [deg]'
+%         title(sprintf('CG %d %% Chord Aft of Leading Edge',round((rCM(k)+vhcl.rCM_LE.Value(1))/vhcl.stbdWing.rootChord.Value*100)))
+        set(gca,'FontSize',15)
+    end
 end
-xlim([.1 10])
-ylim([-5 50])
-legend('Simulation','Simulation LAS','Run 7','Run 8','Run 9')
-xlabel 'Time [s]'
-ylabel 'Elevation Rate [deg/s]'
+%%
+figure('Position',[100 100 900 750])
+for k = 1:length(rCM)
+    
+    for j = 1:length(towArray)
+        subplot(2,1,j); hold on; grid on;
+        title(sprintf('Tow Speed = %.2f m/s',towArray(j)))
+        data = [];
+        for i = 1:numel(inc)
+            data = [data tsc1{i,j,k,1}.Elevation.Data(end)]; 
+        end
+        plot(inc,data,'x','DisplayName',sprintf('%d%%',...
+            round((0.097-rCM(k))/vhcl.stbdWing.rootChord.Value*100)),...
+            'LineWidth',1.5)
+        legend('Orientation','horizontal','Location','south')
+        xlabel 'Elevator Inclination [deg]'
+        ylabel 'Elevation Angle [deg]'
+%         title(sprintf('CG %d %% Chord Aft of Leading Edge',round((rCM(k)+vhcl.rCM_LE.Value(1))/vhcl.stbdWing.rootChord.Value*100)))
+        set(gca,'FontSize',15)
+    end
+end
+%%
+figure('Position',[100 100 900 750]);
+for k = 1:length(rCM)
+    
+    for j = 1:length(towArray)
+        h = subplot(2,1,j); hold on; grid on;
+        title(sprintf('Tow Speed = %.2f m/s',towArray(j)))
+        data = zeros(numel(inc),1)';
+        data1 = zeros(numel(inc),1)';
+        for i = 1:numel(inc)
+            data(i) =sqrt(dot(tsc1{i,j,k,1}.FFluidBdy.Data(:,:,end),tsc1{i,j,k,1}.FFluidBdy.Data(:,:,end))); 
+            data1(i) = sqrt(dot(tsc1{i,j,k,1}.FBuoyBdy.Data(:,:,end),tsc1{i,j,k,1}.FBuoyBdy.Data(:,:,end)))-...
+                sqrt(dot(tsc1{i,j,k,1}.FGravBdy.Data(:,:,end),tsc1{i,j,k,1}.FGravBdy.Data(:,:,end)));
+        end
+        set(h,'ColorOrderIndex', k)
+        plot(inc,data,'x','DisplayName',sprintf('%d%%',...
+            round((.097-rCM(k))/vhcl.stbdWing.rootChord.Value*100)),...
+            'LineWidth',1.5)
+        set(h,'ColorOrderIndex', k)
+        x = plot(inc,data1)
+        x.Annotation.LegendInformation.IconDisplayStyle = 'off';
+        legend('Orientation','horizontal','FontName','cmr12')
+        xlabel 'Elevator Inclination [deg]'
+        ylabel 'Hydrodynamic Force [N]'
+        set(gca,'FontSize',15)
+    end
+end
+%%
+figure('Position',[100 100 900 750]);
+for k = 1:length(rCM)
+    
+    for j = 1:length(towArray)
+        h = subplot(2,1,j); hold on; grid on;
+        title(sprintf('Tow Speed = %.2f m/s',towArray(j)))
+        data = zeros(numel(inc),1)';
+        data1 = zeros(numel(inc),1)';
+        for i = 1:numel(inc)
+            data(i) =sqrt(dot(tsc1{i,j,k,1}.FFluidBdy.Data(:,:,end),tsc1{i,j,k,1}.FFluidBdy.Data(:,:,end))); 
+            data1(i) = sqrt(dot(tsc1{i,j,k,1}.FBuoyBdy.Data(:,:,end),tsc1{i,j,k,1}.FBuoyBdy.Data(:,:,end)))-...
+                sqrt(dot(tsc1{i,j,k,1}.FGravBdy.Data(:,:,end),tsc1{i,j,k,1}.FGravBdy.Data(:,:,end)));
+        end
+        set(h,'ColorOrderIndex', k)
+        plot(inc,abs(data./data1),'x','DisplayName',sprintf('%d\\%%',...
+            round((.097-rCM(k))/vhcl.stbdWing.rootChord.Value*100)),...
+            'LineWidth',1.5)
+%         set(h,'ColorOrderIndex', k)
+%         x = plot(inc,data1)
+%         x.Annotation.LegendInformation.IconDisplayStyle = 'off';
+        legend('Orientation','horizontal','FontName','cmr12')
+        xlabel 'Elevator Inclination [deg]'
+        ylabel '$|F_{hydro}/F_{buoy}|$'
+        set(gca,'FontSize',15)
+    end
+end
