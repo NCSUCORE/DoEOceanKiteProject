@@ -4,7 +4,7 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 1;                %   Flag to run linearization
-thrArray = 15;
+thrArray = 2.63;
 altitudeArray = 1.5;
 flwSpdArray = -0.5;%-0.03;
 distFreq = 0;
@@ -35,7 +35,7 @@ env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed
     ENVIRONMENT = 'environmentManta2RotBandLin';            %   Two turbines
 %%  Set basis parameters for high level controller
 load('lineAngleSensor');
-las.setInitAng([-el 0],'rad');
+
 loadComponent('constBoothLem');        %   High level controller
 % PATHGEOMETRY = 'lemOfBoothInv'
 % hiLvlCtrl.elevationLookup.setValue(maxT.R.EL,'deg');
@@ -94,7 +94,15 @@ thr.tether1.dragEnable.setValue(1,'')
 vhcl.hStab.setIncidence(-1.5,'deg');
 vhcl.setBuoyFactor(.98,'')
 vhcl.setRBridle_LE([0.029;0;-0.1],'m')
+            thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
+            thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+                +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+            x = thr.tether1.initGndNodePos.Value(1)-thr.tether1.initAirNodePos.Value(1);
+            y = thr.tether1.initGndNodePos.Value(2)-thr.tether1.initAirNodePos.Value(2);
+            z = thr.tether1.initGndNodePos.Value(3)-thr.tether1.initAirNodePos.Value(3);
+            initThrAng = atan2(z,sqrt(x^2+y^2));
 
+            las.setThrInitAng([-initThrAng 0],'rad');
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
@@ -102,5 +110,5 @@ vhcl.setRBridle_LE([0.029;0;-0.1],'m')
     simWithMonitor('OCTModel')
     tsc = signalcontainer(logsout);
 %%  Gif script
-vhcl.animateSim(tsc1,0.2,'GifTimeStep',0.05,'SaveGif',1==0)%,'View',[0 0])
+vhcl.animateSim(tsc,0.2,'GifTimeStep',0.05,'SaveGif',1==0)%,'View',[0 0])
 

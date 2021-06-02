@@ -4,16 +4,16 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
-inc = -6%[-10:-2]% -2];
+inc = [-9:-4]% -2];
 startTime = [0:.5:4]
-elevArray = 20*pi/180%[40 15]*pi/180;
-towArray = 0.47%[0.62 .77]%[0.47 .77];
-rCM = 0.010%[0 0.005 0.010 0.015 0.020 0.025];
-buoy = .9375%[97.5 95.4 93.75 92 90.4 88.8]/100;
+elevArray = 90*pi/180%[40 15]*pi/180;
+towArray = [0.62 0.77]%
+rCM = 0.016%[0 0.005 0.010 0.015 0.020 0.025];
+buoy = .908%[97.5 95.4 93.75 92 90.4 88.8]/100;
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
-for q = 2
+for q = 1
 for i = 1:length(inc)
     i
     for j = 1:length(towArray)
@@ -82,8 +82,9 @@ for i = 1:length(inc)
 %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
             vhcl.setInitVelVecBdy([0 0 0],'m/s');
 %             vhcl.setBuoyFactor(0.97,'');
-            vhcl.setRCM_LE([0.097-rCM(k) 0 0],'m');
+            vhcl.setRCM_LE([.075 0 0],'m');
             vhcl.setBuoyFactor(buoy(k),''); %Should this be slightly positively buoyant?
+            vhcl.setRCentOfBuoy_LE([0.081 0 0],'m');
 %             vhcl.rCentOfBuoy_LE.setValue([0.0929 0 0.003]','m')
 %             vhcl.rBridle_LE.setValue([0.019+2*0.00635 0 -0.079]','m');
 %             
@@ -148,8 +149,12 @@ fltCtrl.trimElevator.setValue(inc(i),'deg');
             %     set_param('OCTModel','SimulationMode','accelerator');
             simWithMonitor('OCTModel')
             tsc1{i,j,k,q} = signalcontainer(logsout);
+%             figure
+%             plotsq(tsc1{1,1}.eulerAngles.Data(2,:,:)*180/pi)
+%                         vhcl.animateSim(tsc1{1,1},0.2,'GifTimeStep',0.2,'SaveGif',1==1)%,'View',[0 0])
             if q == 2
             vhcl.animateSim(tsc1{i,j,k,q},0.2,'GifTimeStep',0.2,'SaveGif',1==1)%,'View',[0 0])
+
             figure('Position',[100 100 700 250]); hold on; grid on;
             plot(tsc1{i,j,k,q}.rollSP,'-b','LineWidth',1.5)
             plot(tsc1{i,j,k,q}.rollDeg,'--b','LineWidth',1.5)
@@ -197,73 +202,73 @@ end
 % ylim([50 350])
 
 %% Process Test Data
-% selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\05 20 21\data';
-% listing = dir(selPath);
-% 
-% figure; hold on; grid on;
-% for i = 18
-%     load(strcat(selPath,'\',listing(i).name));
-%     tscData{i-17} = tsc;
-%     if i > 4
-%         a = find(tsc.speedCMD1.Data> 1,1);
-%         speed(i-17) = tsc.speedCMD1.Data(a);
-%         tscData{i-17}.linSpeed = tsc.speedCMD1.Data(a);
-%     else
-%         a = 1;
-%         speed(i-2) = 0;
-%         tscData{i-2}.linSpeed = 0;
-%     end
-%     tscData{i-17}.a = a;
-%     plot(tsc.speedCMD1.Time(a:end),tsc.speedCMD1.Data(a:end))
-% end
-% 
-% figure; hold on; grid on;
-% plotsq(tsc1{1,1}.velCMvec.Time,sqrt(dot(tsc1{1,1}.velCMvec.Data,tsc1{1,1}.velCMvec.Data)))
-% plotsq(tsc1{1,1}.velEst.Time,sqrt(dot(tsc1{1,1}.velEst.Data',tsc1{1,1}.velEst.Data')))
-% ylim([0 2])
-% legend('Velocity','Velocity Estimation')
-% 
-% figure; hold on; grid on;
-% subplot(3,1,1); hold on; grid on;
-% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(1,:,:))
-% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(1,:,:))
-% subplot(3,1,2); hold on; grid on;
-% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(2,:,:))
-% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(2,:,:))
-% subplot(3,1,3); hold on; grid on;
-% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(3,:,:))
-% plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(3,:,:))
-% legend('Pos','Pos Estimation')
-% 
-% figure; hold on; grid on;
-% subplot(3,1,1); hold on; grid on;
-% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(1,:,:))
-% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,1,:))
-% ylim([0,2])
-% subplot(3,1,2); hold on; grid on;
-% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(2,:,:))
-% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,2,:))
-% ylim([-2,2])
-% subplot(3,1,3); hold on; grid on;
-% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(3,:,:))
-% plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,3,:))
-% ylim([-2,2])
-% legend('Pos','Pos Estimation')
-% 
-% %% March 26 Data
-% towArray = [0.47 0.62 0.77]*1
-% load('lineAngleSensor')
-% g = 9.81; %acc due to grav m/s^2
-% rho = 1000; %kg/m^3 density of water
-% xCG = las.L_CM.Value %axial location of center of mass m
-% xCB = las.L_CB.Value %axial location of center of buoyancy m
-% mLAS = las.mass.Value; %mass of LAS boom kg
-% vLAS = las.volume.Value; %las volume
-% gammaLAS = rho*vLAS/mLAS
-% l = las.length.Value;
-% d = las.diameter.Value;
-% A = l*d; %frontal cylinder area m^2
-% 
+selPath = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\05 20 21\data';
+listing = dir(selPath);
+
+figure; hold on; grid on;
+for i = 18
+    load(strcat(selPath,'\',listing(i).name));
+    tscData{i-17} = tsc;
+    if i > 4
+        a = find(tsc.speedCMD1.Data> 1,1);
+        speed(i-17) = tsc.speedCMD1.Data(a);
+        tscData{i-17}.linSpeed = tsc.speedCMD1.Data(a);
+    else
+        a = 1;
+        speed(i-2) = 0;
+        tscData{i-2}.linSpeed = 0;
+    end
+    tscData{i-17}.a = a;
+    plot(tsc.speedCMD1.Time(a:end),tsc.speedCMD1.Data(a:end))
+end
+
+figure; hold on; grid on;
+plotsq(tsc1{1,1}.velCMvec.Time,sqrt(dot(tsc1{1,1}.velCMvec.Data,tsc1{1,1}.velCMvec.Data)))
+plotsq(tsc1{1,1}.velEst.Time,sqrt(dot(tsc1{1,1}.velEst.Data',tsc1{1,1}.velEst.Data')))
+ylim([0 2])
+legend('Velocity','Velocity Estimation')
+
+figure; hold on; grid on;
+subplot(3,1,1); hold on; grid on;
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(1,:,:))
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(1,:,:))
+subplot(3,1,2); hold on; grid on;
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(2,:,:))
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(2,:,:))
+subplot(3,1,3); hold on; grid on;
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.positionVec.Data(3,:,:))
+plotsq(tsc1{1,1}.positionVec.Time,tsc1{1,1}.posEst.Data(3,:,:))
+legend('Pos','Pos Estimation')
+
+figure; hold on; grid on;
+subplot(3,1,1); hold on; grid on;
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(1,:,:))
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,1,:))
+ylim([0,2])
+subplot(3,1,2); hold on; grid on;
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(2,:,:))
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,2,:))
+ylim([-2,2])
+subplot(3,1,3); hold on; grid on;
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velocityVec.Data(3,:,:))
+plotsq(tsc1{1,1}.velocityVec.Time,tsc1{1,1}.velEst.Data(:,3,:))
+ylim([-2,2])
+legend('Pos','Pos Estimation')
+
+%% March 26 Data
+towArray = [0.47 0.62 0.77]*1
+load('lineAngleSensor')
+g = 9.81; %acc due to grav m/s^2
+rho = 1000; %kg/m^3 density of water
+xCG = las.L_CM.Value %axial location of center of mass m
+xCB = las.L_CB.Value %axial location of center of buoyancy m
+mLAS = las.mass.Value; %mass of LAS boom kg
+vLAS = las.volume.Value; %las volume
+gammaLAS = rho*vLAS/mLAS
+l = las.length.Value;
+d = las.diameter.Value;
+A = l*d; %frontal cylinder area m^2
+
 % CDconst = 4*mLAS*g*(xCG-gammaLAS*xCB)/(rho*A*l);
 % 
 % %Data Filtering
