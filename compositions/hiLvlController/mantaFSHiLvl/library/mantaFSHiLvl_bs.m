@@ -22,6 +22,9 @@ hiLvlCtrl.stateConst.setValue(1,'');
 hiLvlCtrl.add('GainNames',{'preXelevation'},'GainUnits',{'rad'});
 hiLvlCtrl.preXelevation.setValue(10*pi/180,'rad');
 
+hiLvlCtrl.add('GainNames',{'initXelevation'},'GainUnits',{'rad'});
+hiLvlCtrl.initXelevation.setValue(15*pi/180,'rad');
+
 %% save file in its respective directory
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
  save(saveFile,'PATHGEOMETRY','-append')

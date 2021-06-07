@@ -13,11 +13,11 @@ TETHERS               = 'tether000';
 % Create
 thr = OCT.tethers;
 thr.setNumTethers(1,'');
-thr.setNumNodes(5,'');
+thr.setNumNodes(6,'');
 thr.build;
 
 % Set parameter values
-thrDia = 8.8e-3;
+thrDia = 12.5e-3;
 
 thr.tether1.youngsMod.setValue(57e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.75,'');
