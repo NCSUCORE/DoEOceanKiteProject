@@ -428,11 +428,11 @@ classdef signalcontainer < dynamicprops
             figure();
             %%  Plot Elevation Angle
             subplot(R,C,1); hold on; grid on;
-            plot(obj.elevationSP.Time,squeeze(obj.elevationSP.Data),'r-');
+            plot(obj.elevationSP_slf.Time,squeeze(obj.elevationSP_slf.Data),'r-');
             plot(obj.elevationAngle.Time,squeeze(obj.elevationAngle.Data),'b-');  xlabel('Time [s]');  ylabel('Elevation [deg]');  %xlim([1900 2100])
             %%  Plot Pitch Angle
             subplot(R,C,2); hold on; grid on;
-            plot(obj.pitchSP.Time,squeeze(obj.pitchSP.Data),'r-');
+            plot(obj.pitchSP_slf.Time,squeeze(obj.pitchSP_slf.Data),'r-');
             plot(obj.eulerAngles.Time,squeeze(obj.eulerAngles.Data(2,1,:))*180/pi,'b-');  xlabel('Time [s]');  ylabel('Pitch [deg]');
             legend('Setpoint','AutoUpdate','off','location','northwest')
             %%  Plot Elevator Command

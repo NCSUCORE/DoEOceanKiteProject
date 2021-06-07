@@ -1,15 +1,15 @@
 %%  Load Results 
-Tmaxx = 38;
+Tmaxx = 20;
 fpath2 = fullfile(fileparts(which('OCTProject.prj')),'vehicleDesign\Tether\');  load([fpath2 'tetherDataFS3.mat']);
 % load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
 load(['C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Tmax Study\',...
     sprintf('Tmax_Study_AR8b8_Tmax-%d_ThrD-%.1f.mat',Tmaxx,AR8b8.length600.tensionValues190.outerDiam*1e3)]);
 depth = [300 250 200];
-eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',190))/100;
+eff = eval(sprintf('AR8b8.length600.tensionValues%d.efficencyPercent',114))/100;
 %%  Squeeze Results 
 Pavg = squeeze(Pavg(:,:,:));
 Pnet = squeeze(Pavg)*eff;
-Vavg = squeeze(Vavg);
+% Vavg = squeeze(Vavg);
 AoA = squeeze(AoA(:,:,:));
 CD = squeeze(CD(:,:,:));
 CL = squeeze(CL(:,:,:));
@@ -27,7 +27,7 @@ for i = 1:numel(flwSpd)
             idx1 = find(Pavg(i,:,j)==max(Pavg(i,:,j)));
             R.Pmax(i,j) = Pavg(i,idx1,j);
             R.Pnet(i,j) = Pnet(i,idx1,j);
-            R.Vavg(i,j) = Vavg(i,idx1,j);
+%             R.Vavg(i,j) = Vavg(i,idx1,j);
             R.alpha(i,j) = AoA(i,idx1,j);
             R.CD(i,j) = CD(i,idx1,j);
             R.CL(i,j) = CL(i,idx1,j);
@@ -66,7 +66,7 @@ for alt = 1:6
     subplot(3,2,1); hold on; grid on
     plot(flwSpd,R.Pmax(:,alt)*eff);  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Power [kW]');  xlim([.1 0.5]);
     subplot(3,2,3); hold on; grid on
-    plot(flwSpd,R.Vavg(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('$V_\mathrm{kite}$ [m/s]');  xlim([.1 0.5]);
+%     plot(flwSpd,R.Vavg(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('$V_\mathrm{kite}$ [m/s]');  xlim([.1 0.5]);
     subplot(3,2,6); hold on; grid on
     plot(flwSpd,R.alpha(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('AoA [deg]');  xlim([.1 0.5]);
     subplot(3,2,5); hold on; grid on
