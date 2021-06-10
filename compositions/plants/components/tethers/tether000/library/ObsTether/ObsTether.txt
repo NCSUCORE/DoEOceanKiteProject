@@ -1,0 +1,54 @@
+Obsthr.numTethers.Value = 1.0000e+00
+Obsthr.numTethers.Unit is unitless or has no unit specified
+Obsthr.numTethers.NoScale = true
+Obsthr.numNodes.Value = 2.0000e+00
+Obsthr.numNodes.Unit is unitless or has no unit specified
+Obsthr.numNodes.NoScale = true
+Obsthr.numNodes.Description = 'Number of nodes in each tether, all tethers have the same number of nodes'
+Obsthr.maxPercentageElongation.Value = 5.0000e-02
+Obsthr.maxPercentageElongation.Unit is unitless or has no unit specified
+Obsthr.maxPercentageElongation.NoScale = false
+Obsthr.maxAppFlowMultiplier.Value = 2.0000e+00
+Obsthr.maxAppFlowMultiplier.Unit is unitless or has no unit specified
+Obsthr.maxAppFlowMultiplier.NoScale = false
+Obsthr.tether1.numNodes.Value = 2.0000e+00
+Obsthr.tether1.numNodes.Unit is unitless or has no unit specified
+Obsthr.tether1.numNodes.NoScale = true
+Obsthr.tether1.diameter.Value = 8.8000e-03
+Obsthr.tether1.diameter.Unit = 'm'
+Obsthr.tether1.diameter.NoScale = false
+Obsthr.tether1.youngsMod.Value = 5.7000e+10
+Obsthr.tether1.youngsMod.Unit = 'Pa'
+Obsthr.tether1.youngsMod.NoScale = false
+Obsthr.tether1.vehicleMass.Unit = 'kg'
+Obsthr.tether1.vehicleMass.NoScale = false
+Obsthr.tether1.dampingRatio.Value = 7.5000e-01
+Obsthr.tether1.dampingRatio.Unit is unitless or has no unit specified
+Obsthr.tether1.dampingRatio.NoScale = false
+Obsthr.tether1.dragCoeff.Value = 1.0000e+00
+Obsthr.tether1.dragCoeff.Unit is unitless or has no unit specified
+Obsthr.tether1.dragCoeff.NoScale = false
+Obsthr.tether1.density.Value = 3.5500e+03
+Obsthr.tether1.density.Unit = 'kg/m^3'
+Obsthr.tether1.density.NoScale = false
+Obsthr.tether1.initGndNodePos.Unit = 'm'
+Obsthr.tether1.initGndNodePos.NoScale = false
+Obsthr.tether1.initAirNodePos.Unit = 'm'
+Obsthr.tether1.initAirNodePos.NoScale = false
+Obsthr.tether1.initGndNodeVel.Unit = 'm/s'
+Obsthr.tether1.initGndNodeVel.NoScale = false
+Obsthr.tether1.initAirNodeVel.Unit = 'm/s'
+Obsthr.tether1.initAirNodeVel.NoScale = false
+Obsthr.tether1.initNodePos.Unit = 'm'
+Obsthr.tether1.initNodePos.NoScale = false
+Obsthr.tether1.initNodeVel.Unit = 'm/s'
+Obsthr.tether1.initNodeVel.NoScale = false
+Obsthr.tether1.dragEnable.Value = true
+Obsthr.tether1.dragEnable.Unit is unitless or has no unit specified
+Obsthr.tether1.dragEnable.NoScale = true
+Obsthr.tether1.springDamperEnable.Value = true
+Obsthr.tether1.springDamperEnable.Unit is unitless or has no unit specified
+Obsthr.tether1.springDamperEnable.NoScale = true
+Obsthr.tether1.netBuoyEnable.Value = true
+Obsthr.tether1.netBuoyEnable.Unit is unitless or has no unit specified
+Obsthr.tether1.netBuoyEnable.NoScale = true
