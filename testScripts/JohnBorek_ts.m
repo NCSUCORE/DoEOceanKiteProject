@@ -11,14 +11,14 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 3 1 true false false];
+simScenario = [1 3 2 2 1 false false false];
 thrLength = 450;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 12.5;                             %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 1;
-TD = 0.97:0.01:1.04;
+TD = 1;
 for ii = 1:numel(TD)
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
@@ -147,7 +147,7 @@ switch simScenario(3)
         pthCtrl2.elevCtrl.kp.setValue(125,'(deg)/(rad)');        pthCtrl2.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
         pthCtrl2.rollCtrl.kp.setValue(200,'(deg)/(rad)');        pthCtrl2.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
         pthCtrl2.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl2.rollCtrl.tau.setValue(0.001,'s');
-        slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(2,'');
+        slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(2,''); slfCtrl.pitchConst.setValue(0,'deg');
         slfCtrl.pitchAngleMax.upperLimit.setValue(20,'');        slfCtrl.pitchAngleMax.lowerLimit.setValue(-20,'')
     case 3
         fltCtrl.LaRelevationSP.setValue(45,'deg');
@@ -158,10 +158,10 @@ switch simScenario(3)
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
-if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
-    error('Elevation angle is out of range')
-end
+simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
+% if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
+%     error('Elevation angle is out of range')
+% end
 simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
@@ -185,7 +185,7 @@ switch simScenario(3)
         filename = sprintf(strcat('Turb_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
     case 2
-        filename = sprintf(strcat('FS_V-%.3f_Alt-%d_thr-%d_Tmax-%d_TD-%.2f.mat'),flwSpd,altitude,thrLength,Tmax,TD(ii));
+        filename = sprintf(strcat('FS1_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','FS\');
     case 3
         filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
