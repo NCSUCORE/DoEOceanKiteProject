@@ -17,12 +17,12 @@ thr.setNumNodes(2,'');
 thr.build;
 
 % Set parameter values
-thrDia = 8.8e-3;
+thrDia = 12.5e-3;
 
-thr.tether1.youngsMod.setValue(57e9,'Pa');
+thr.tether1.youngsMod.setValue(53.6e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.75,'');
 thr.tether1.dragCoeff.setValue(1,'');
-thr.tether1.density.setValue(3550,'kg/m^3');
+thr.tether1.density.setValue(1763.7,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(true,'');
