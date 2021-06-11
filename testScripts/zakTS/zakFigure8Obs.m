@@ -145,5 +145,5 @@ simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 vhcl.animateSim(tsc,0.3,'GifTimeStep',0.05,'SaveGif',1==1)
 %%  Save results
-fname = fullfile('g:\','My Drive','RA','Simulation Data','2021-06-10','tow210610_2_CL');
+fname = fullfile('g:\','My Drive','RA','Simulation Data','2021-06-11','scratch');
 save(fname,'tsc')
