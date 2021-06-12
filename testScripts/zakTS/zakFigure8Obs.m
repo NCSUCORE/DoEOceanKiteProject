@@ -56,6 +56,13 @@ initGndStnPos = [x_init;y_init;3];
 thrAttachInit = initGndStnPos;
 %%  Vehicle Properties
 vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(tow_speed-flwSpd)*norm([1;0;0]))
+% vhcl.setICsOnPath(...
+%     0,... % Initial path position
+%     PATHGEOMETRY,... % Name of path function
+%     hiLvlCtrl.basisParams.Value,... % Geometry parameters
+%     initGndStnPos,... % Center point of path sphere
+%     (11/2)*norm([ 1 0 0 ])) % Initial speed
+
 initPosKite = vhcl.initPosVecGnd.Value;
 initVelKite = vhcl.initVelVecBdy.Value;
 %%  Tethers Properties
