@@ -2,39 +2,72 @@
 clear;clc;close all;
 Simulink.sdi.clear
 %%  Set Test Parameters
-saveSim = 0;               %   Flag to save results
-runLin = 1;                %   Flag to run linearization
-thrArray = 2.63;
-altitudeArray = 1.5;
-flwSpdArray = -0.5;%-0.03;
+thrLength = 2.63;
+altitude = 1.5;
+flwSpd = -0.01;
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
-thrLength = thrArray(1);  altitude = altitudeArray(1);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
-flwSpd = flwSpdArray(1);                                    %   m/s - Flow speed
-Tmax = 38;                                                  %   kN - Max tether tension 
-h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
-[a,b] = boothParamConversion(w,h);                          %   Path basis parameters
+elev = atan2(altitude,thrLength); % Initial tether length/operating altitude/elevation angle
+Tmax = 38; % kN - Max tether tension
+h = 25*pi/180;  w = 100*pi/180; % rad - Path width/height
+[a,b] = boothParamConversion(w,h); % Path basis parameters
+
+% saveSim = 0;               %   Flag to save results
+% runLin = 1;                %   Flag to run linearization
+% thrArray = 2.63;
+% altitudeArray = 1.5;
+% flwSpdArray = -0.01;%-0.03;
+% distFreq = 0;
+% distAmp = 0;
+% pertVec = [0 1 0];
+% thrLength = thrArray(1);  altitude = altitudeArray(1);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle 
+% flwSpd = flwSpdArray(1);                                    %   m/s - Flow speed
+% Tmax = 38;                                                  %   kN - Max tether tension 
+% h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
+% [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 %%  Load components
 fpath = fullfile(fileparts(which('OCTProject.prj')),...
     'vehicleDesign\Tether\Tension\');
 maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
 el = asin(altitude/thrLength);
-loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
+loadComponent('pathFollowCtrlExp'); % Path-following controller with AoA control
 FLIGHTCONTROLLER = 'pathFollowingControllerExp';
-loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-loadComponent('raftGroundStation');                         %   Ground station
-loadComponent('winchManta');                                %   Winches
-loadComponent('MantaTether');                               %   Manta Ray tether
-loadComponent('realisticSensors')                           %   Sensors
-loadComponent('realisticSensorProcessing')                  %   Sensor processing
-loadComponent('Manta2RotXFoil_AR8_b8_exp2');                %   AR = 8; 8m span
+loadComponent('oneDoFGSCtrlBasic'); % Ground station controller
+loadComponent('raftGroundStation'); % Ground station
+loadComponent('winchManta'); % Winches
+loadComponent('MantaTether'); % Manta Ray tether
+loadComponent('ObsTether'); % Observer tether
+loadComponent('idealSensors') % Sensors
+loadComponent('idealSensorProcessing') % Sensor processing
+loadComponent('Manta2RotXFoil_AR8_b8_exp2'); % AR = 8; 8m span
+
+% fpath = fullfile(fileparts(which('OCTProject.prj')),...
+%     'vehicleDesign\Tether\Tension\');
+% maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
+% el = asin(altitude/thrLength);
+% loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
+% FLIGHTCONTROLLER = 'pathFollowingControllerExp';
+% loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
+% loadComponent('raftGroundStation');                         %   Ground station
+% loadComponent('winchManta');                                %   Winches
+% loadComponent('MantaTether');                               %   Manta Ray tether
+% loadComponent('idealSensors')                           %   Sensors
+% loadComponent('idealSensorProcessing')                  %   Sensor processing
+% loadComponent('Manta2RotXFoil_AR8_b8_exp2');                %   AR = 8; 8m span
 %%  Environment Properties
-loadComponent('ConstXYZT');                                 %   Environment
-env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
-    ENVIRONMENT = 'environmentManta2RotBandLin';            %   Two turbines
+loadComponent('ConstXYZT'); % Environment
+env.water.setflowVec([flwSpd 0 0],'m/s'); % m/s - Flow speed vector
+    ENVIRONMENT = 'environmentManta2RotBandLin'; % Two turbines
+    %FLOWCALCULATION = 'rampSaturatedXYZT';
+    %rampSlope = 1; % flow speed ramp rate
+    %rampSlopeTow = 1; % tow speed ramp rate
+
+% loadComponent('ConstXYZT');                                 %   Environment
+% env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
+%     ENVIRONMENT = 'environmentManta2RotBandLin';            %   Two turbines
 %%  Set basis parameters for high level controller
-load('lineAngleSensor');
+%load('lineAngleSensor');
 
 loadComponent('constBoothLem');        %   High level controller
 % PATHGEOMETRY = 'lemOfBoothInv'
@@ -54,7 +87,7 @@ omega_kite = 2*pi/5; %rad/s
 m_raft = 78.3; %kg
 J_raft = 92.4; %kg*m^2
 tow_length = 16;
-tow_speed = 0;%0.5-0.03;
+tow_speed = 0.49;%0.5-0.03;
 end_time = tow_length/(tow_speed-flwSpd);
 x_init = 4;
 y_init = 0;
@@ -69,18 +102,30 @@ vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5
 
 %%  Tethers Properties
 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
-thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
+thr.tether1.initGndNodePos.setValue(initGndStnPos,'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([-tow_speed 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:)+[0 0 0]','m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
+%thr.tether1.youngsMod.setValue(1E20,'Pa');
 thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
 thr.tether1.setDiameter(.0076,'m');
+
+% load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
+% thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
+% thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+%     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+% thr.tether1.initGndNodeVel.setValue([-tow_speed 0 0]','m/s');
+% thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+% thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+% thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
+% thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
+% thr.tether1.setDiameter(.0076,'m');
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
-wnch.winch1.LaRspeed.setValue(1,'m/s');
+%wnch.winch1.LaRspeed.setValue(0,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,thrAttachInit);
@@ -94,15 +139,15 @@ thr.tether1.dragEnable.setValue(1,'')
 vhcl.hStab.setIncidence(-1.5,'deg');
 vhcl.setBuoyFactor(.98,'')
 vhcl.setRBridle_LE([0.029;0;-0.1],'m')
-            thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
-            thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-                +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+            %thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
+            %thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+            %    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
             x = thr.tether1.initGndNodePos.Value(1)-thr.tether1.initAirNodePos.Value(1);
             y = thr.tether1.initGndNodePos.Value(2)-thr.tether1.initAirNodePos.Value(2);
             z = thr.tether1.initGndNodePos.Value(3)-thr.tether1.initAirNodePos.Value(3);
             initThrAng = atan2(z,sqrt(x^2+y^2));
 
-            las.setThrInitAng([-initThrAng 0],'rad');
+            %las.setThrInitAng([-initThrAng 0],'rad');
 %%  Set up critical system parameters and run simulation
     simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
 %     open_system('OCTModel')
