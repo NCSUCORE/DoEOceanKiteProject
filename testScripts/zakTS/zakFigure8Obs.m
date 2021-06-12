@@ -24,8 +24,8 @@ loadComponent('raftGroundStation'); % Ground station
 loadComponent('winchManta'); % Winches
 loadComponent('MantaTether'); % Manta Ray tether
 loadComponent('ObsTether'); % Observer tether
-loadComponent('idealSensors') % Sensors
-loadComponent('idealSensorProcessing') % Sensor processing
+loadComponent('realisticSensors') % Sensors
+loadComponent('realisticSensorProcessing') % Sensor processing
 loadComponent('Manta2RotXFoil_AR8_b8_exp2'); % AR = 8; 8m span
 %%  Environment Properties
 loadComponent('ConstXYZT'); % Environment
