@@ -2,7 +2,7 @@
 clear;clc;close all;
 Simulink.sdi.clear
 %% Set Test Parameters
-thrLength = 3;
+thrLength = 2.63;
 altitude = 1.5;
 flwSpd = -0.01;
 distFreq = 0;
@@ -24,24 +24,20 @@ loadComponent('raftGroundStation'); % Ground station
 loadComponent('winchManta'); % Winches
 loadComponent('MantaTether'); % Manta Ray tether
 loadComponent('ObsTether'); % Observer tether
-loadComponent('realisticSensors') % Sensors
-loadComponent('realisticSensorProcessing') % Sensor processing
+loadComponent('idealSensors') % Sensors
+loadComponent('idealSensorProcessing') % Sensor processing
 loadComponent('Manta2RotXFoil_AR8_b8_exp2'); % AR = 8; 8m span
 %%  Environment Properties
 loadComponent('ConstXYZT'); % Environment
 env.water.setflowVec([flwSpd 0 0],'m/s'); % m/s - Flow speed vector
     ENVIRONMENT = 'environmentManta2RotBandLin'; % Two turbines
-    FLOWCALCULATION = 'rampSaturatedXYZT';
-    rampSlope = 1; % flow speed ramp rate
-    rampSlopeTow = 1; % tow speed ramp rate
+    %FLOWCALCULATION = 'rampSaturatedXYZT';
+    %rampSlope = 1; % flow speed ramp rate
+    %rampSlopeTow = 1; % tow speed ramp rate
 %%  Set basis parameters for high level controller
 loadComponent('constBoothLem');  % High level controller
-hiLvlCtrl.basisParams.setValue([a,b,-el,0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
 %%  Ground Station Properties
-theta = 30*pi/180;
-T_tether = 100; % N
-phi_max = 30*pi/180;
-omega_kite = 2*pi/5; % rad/s
 m_raft = 78.3; % kg
 J_raft = 92.4; % kg*m^2
 tow_length = 16;
@@ -56,13 +52,6 @@ initGndStnPos = [x_init;y_init;3];
 thrAttachInit = initGndStnPos;
 %%  Vehicle Properties
 vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(tow_speed-flwSpd)*norm([1;0;0]))
-% vhcl.setICsOnPath(...
-%     0,... % Initial path position
-%     PATHGEOMETRY,... % Name of path function
-%     hiLvlCtrl.basisParams.Value,... % Geometry parameters
-%     initGndStnPos,... % Center point of path sphere
-%     (11/2)*norm([ 1 0 0 ])) % Initial speed
-
 initPosKite = vhcl.initPosVecGnd.Value;
 initVelKite = vhcl.initVelVecBdy.Value;
 %%  Tethers Properties
@@ -71,19 +60,19 @@ thr.tether1.initGndNodePos.setValue(initGndStnPos,'m');
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([-tow_speed 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:)+[tow_speed 0 0]','m/s');
+thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:)+[0 0 0]','m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 thr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
 %thr.tether1.youngsMod.setValue(1E20,'Pa');
 thr.tether1.density.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.density',Tmax)),'kg/m^3');
 thr.tether1.setDiameter(.0076,'m');
-thr.setNumNodes(8,'');
+thr.setNumNodes(4,'');
 thr.tether1.setDragCoeff(1.8,'');
 %%  Observer Tether Properties
 Obsthr.tether1.initGndNodePos.setValue(initGndStnPos,'m');
 Obsthr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-Obsthr.tether1.initGndNodeVel.setValue([tow_speed 0 0]','m/s');
+Obsthr.tether1.initGndNodeVel.setValue([-tow_speed 0 0]','m/s');
 Obsthr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:)+[tow_speed 0 0]','m/s');
 Obsthr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 Obsthr.tether1.youngsMod.setValue(eval(sprintf('AR8b8.length600.tensionValues%d.youngsMod',Tmax)),'Pa');
@@ -124,7 +113,7 @@ obsLASthetaInit = las.initAng.Value(1);
 obsLASthetadotInit = las.initAngVel.Value(1);
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
-wnch.winch1.LaRspeed.setValue(0,'m/s');
+%wnch.winch1.LaRspeed.setValue(0,'m/s');
 %%  Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,'');
 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,thrAttachInit);
@@ -139,18 +128,11 @@ vhcl.setBuoyFactor(.81,'')
 bridlePosVec = [0.019;0;-0.072];
 vhcl.setRBridle_LE(bridlePosVec,'m')
 vhcl.setRCM_LE([0.077 0 0],'m');
-%% Start Control
-fltCtrl.startControl.setValue(end_time,'s')
-startFlow = 0;
-startTow = 0;
-elSP = -5;
-%% Open Loop Flow Speed
-flowSpeedOpenLoop = -.03;
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 vhcl.animateSim(tsc,0.3,'GifTimeStep',0.05,'SaveGif',1==1)
 %%  Save results
-fname = fullfile('g:\','My Drive','RA','Simulation Data','2021-06-11','scratch');
+fname = fullfile('g:\','My Drive','RA','Simulation Data','2021-06-12','scratch');
 save(fname,'tsc')
