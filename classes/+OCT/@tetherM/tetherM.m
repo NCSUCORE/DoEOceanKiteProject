@@ -25,14 +25,12 @@ classdef tetherM < handle
         numTethers
         minLinkDeviation
         minSoftLength
-    end
-
-    properties (Dependent) % Dependent properties
         numNodes    % Total nodes in tether
+    end
+    
+    properties (Dependent) % Dependent properties
         orgLengths  % link lengths based on total tether and reeled-out
         dragCoeff   % Total drag vector based on fairing drag, nominal
-        % drag, number of nodes, and fairing length
-       % vehicleMass % Total kite mass
         initNodePos % Initial intermediate node positions
         initNodeVel % Initial intermediate node velocities
     end
@@ -58,11 +56,12 @@ classdef tetherM < handle
             obj.numTethers       = SIM.parameter('Value',1,'Unit','');
             obj.minLinkDeviation = SIM.parameter('Value',.1,'Unit','');
             obj.minSoftLength    = SIM.parameter('Value',0,'Unit','');
+            obj.numNodes         = SIM.parameter('Unit','');
         end
         
         
         %% Set properties
-        function obj = setLinkLength(obj,val,units)         % 
+        function obj = setLinkLength(obj,val,units)         %
             obj.linkLength.setValue(val,units);
         end
         
@@ -76,7 +75,7 @@ classdef tetherM < handle
         
         function obj = setFairingLength(obj,val,units)    % Tether fairing length from kite
             obj.fairingLength.setValue(val,units);
-        end    
+        end
         
         function obj = setDiameter(obj,val,units)         % Diameter of tether
             obj.diameter.setValue(val,units);
@@ -128,6 +127,16 @@ classdef tetherM < handle
         
         
         %% Set the dependend properties
+%         function val = get.numNodes(obj) %length of segments at full extension
+%             val = obj.maxTetherLength.Value/obj.linkLength.Value+1;
+%             if mod(val,1)~=0
+%                 error('Total length/link length is not and integer')
+%             elseif obj.fairingLength.Value <= obj.linkLength.Value
+%                 error('Link length is to large')
+%             else
+%                 val = SIM.parameter('Value',val,'Unit','m');
+%             end
+%         end
         function val = get.orgLengths(obj) %length of segments at full extension
             val = ((obj.maxTetherLength.Value)/(obj.numNodes.Value-1))*ones(1,obj.numNodes.Value-1);
             val = SIM.parameter('Value',val,'Unit','m');
@@ -139,7 +148,7 @@ classdef tetherM < handle
             val = [obj.fairingDrag.Value*ones(1,numFairingLinks),obj.nominalDrag.Value*ones(1,numNominalLinks)];
             val = SIM.parameter('Value',val,'Unit','');
         end
-                
+        
         function val = get.initNodePos(obj) %sets intermediate node positions based on reeled out length
             if obj.numNodes.Value > 2 %sets intermediat nodes IC
                 
@@ -168,6 +177,9 @@ classdef tetherM < handle
                             tetherInitflag1 = true;
                         else
                             a=a+1;
+                        end
+                        if a == 15
+                            g=7;
                         end
                     end
                     %Update first link length value
@@ -273,18 +285,8 @@ classdef tetherM < handle
                 vel = [];
             end
             val = SIM.parameter('Value',vel,'Unit','m');
-        end     
+        end
         
-       function val = get.numNodes(obj) %length of segments at full extension
-            val = obj.maxTetherLength.Value/obj.linkLength.Value+1;
-            if mod(val,1)~=0
-                error('Total length/link length is not and integer')
-            elseif obj.fairingLength.Value <= obj.linkLength.Value
-                error('Link length is to large')
-            else
-                val = SIM.parameter('Value',val,'Unit','m');
-            end
-       end
         
         %% Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
@@ -292,7 +294,7 @@ classdef tetherM < handle
             for ii = 1:numel(props)
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
-        end 
+        end
     end
 end
 
