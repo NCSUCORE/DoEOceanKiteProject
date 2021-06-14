@@ -160,12 +160,17 @@ classdef winches < dynamicprops
             
             switch obj.numWinches.Value
                 case 1
-                    L = norm(thr.tether1.initAirNodePos.Value - ...
-                        thr.tether1.initGndNodePos.Value);
-                    delta_L = -(L*sum_F)/(thr.tether1.youngsMod.Value*...
-                        (pi/4)*thr.tether1.diameter.Value^2);
-                    
-                   
+                    try
+                        L = norm(thr.tether1.initAirNodePos.Value - ...
+                            thr.tether1.initGndNodePos.Value);
+                        delta_L = -(L*sum_F)/(thr.tether1.youngsMod.Value*...
+                            (pi/4)*thr.tether1.diameter.Value^2);
+                    catch
+                        L = norm(thr.initAirNodePos.Value - ...
+                            thr.initGndNodePos.Value);
+                        delta_L = -(L*sum_F)/(thr.youngsMod.Value*...
+                            (pi/4)*thr.diameter.Value^2);
+                    end
                     obj.winch1.initLength.setValue(L+delta_L/2,'m')
                     
                 case 3

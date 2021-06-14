@@ -11,7 +11,7 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 2 1 false false false];
+simScenario = [1 3 2 4 1 false false false];
 thrLength = 200;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 12.5;                             %   kN/mm - Max tether tension/tether diameter 
@@ -77,11 +77,13 @@ end
 switch simScenario(4)                                   %   Tether model 
     case 1
         loadComponent('MantaTether');                       %   Manta Ray tether
-    case 3
-        loadComponent('MantaTetherReal');                       %   Manta Ray tether
-    otherwise
+    case 2
         loadComponent('shortTether');                       %   Tether for reeling
         thr.tether1.setInitTetherLength(thrLength,'m');     %   Initialize tether length 
+    case 3
+        loadComponent('MantaTetherReal');                       %   Manta Ray tether
+    case 4
+        loadComponent('MantaFSTether');                       %   Manta Ray tether
 end
 switch simScenario(5)                                   %   Environment 
     case 1
@@ -106,15 +108,23 @@ else
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
 end
 %%  Tethers Properties
-thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
-thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
-thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-thr.tether1.youngsMod.setValue(3.7e10,'Pa');
-thr.tether1.density.setValue(2226,'kg/m^3');
-thr.tether1.setDiameter(Tdiam*1e-3,'m');
+if simScenario(4)~=4
+    thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
+    thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+        +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+    thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+    thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+    thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+    thr.tether1.youngsMod.setValue(3.7e10,'Pa');
+    thr.tether1.density.setValue(2226,'kg/m^3');
+    thr.tether1.setDiameter(Tdiam*1e-3,'m');
+else
+    thr.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
+    thr.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+        +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+    thr.initGndNodeVel.setValue([0 0 0]','m/s');
+    thr.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+end
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -158,7 +168,7 @@ switch simScenario(3)
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
 % if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
 %     error('Elevation angle is out of range')
 % end
