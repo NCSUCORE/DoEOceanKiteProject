@@ -12,12 +12,12 @@ Simulink.sdi.clear
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
 simScenario = [1 3 2 2 1 false false false];
-thrLength = 450;  altitude = 200;                           %   m/m - Initial tether length/operating altitude
+thrLength = 200;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 12.5;                             %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-subCtrl = 1;    sC = 1;
+subCtrl = 1;    sC = 0;
 TD = 1;
 for ii = 1:numel(TD)
 %%  Load components
@@ -158,7 +158,7 @@ switch simScenario(3)
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(3000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(5000,'s');  dynamicCalc = '';
 % if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
 %     error('Elevation angle is out of range')
 % end

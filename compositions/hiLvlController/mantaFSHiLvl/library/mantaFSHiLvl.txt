@@ -1,18 +1,21 @@
-hiLvlCtrl.stateConst.Value = 1.0000e+00
-hiLvlCtrl.stateConst.Unit is unitless or has no unit specified
-hiLvlCtrl.stateConst.NoScale = false
-hiLvlCtrl.maxNumberOfSimulatedLaps.Value = Inf
-hiLvlCtrl.maxNumberOfSimulatedLaps.Unit is unitless or has no unit specified
-hiLvlCtrl.maxNumberOfSimulatedLaps.NoScale = false
-hiLvlCtrl.initXelevation.Value = 2.6180e-01
-hiLvlCtrl.initXelevation.Unit = 'rad'
-hiLvlCtrl.initXelevation.NoScale = false
-hiLvlCtrl.basisParams.Value = [0.73 0.6 0.36 0 125]
-hiLvlCtrl.basisParams.Unit = '[rad rad rad rad m]'
-hiLvlCtrl.basisParams.NoScale = false
 hiLvlCtrl.stateCtrl.Value = 1.0000e+00
 hiLvlCtrl.stateCtrl.Unit is unitless or has no unit specified
 hiLvlCtrl.stateCtrl.NoScale = false
+hiLvlCtrl.maxNumberOfSimulatedLaps.Value = Inf
+hiLvlCtrl.maxNumberOfSimulatedLaps.Unit is unitless or has no unit specified
+hiLvlCtrl.maxNumberOfSimulatedLaps.NoScale = false
+hiLvlCtrl.basisParams.Value = [0.73 0.6 0.36 0 125]
+hiLvlCtrl.basisParams.Unit = '[rad rad rad rad m]'
+hiLvlCtrl.basisParams.NoScale = false
+hiLvlCtrl.initXelevation.Value = 2.6180e-01
+hiLvlCtrl.initXelevation.Unit = 'rad'
+hiLvlCtrl.initXelevation.NoScale = false
+hiLvlCtrl.maxThrLength.Value = 6.0000e+02
+hiLvlCtrl.maxThrLength.Unit = 'm'
+hiLvlCtrl.maxThrLength.NoScale = false
+hiLvlCtrl.stateConst.Value = 1.0000e+00
+hiLvlCtrl.stateConst.Unit is unitless or has no unit specified
+hiLvlCtrl.stateConst.NoScale = false
 hiLvlCtrl.preXelevation.Value = 1.7453e-01
 hiLvlCtrl.preXelevation.Unit = 'rad'
 hiLvlCtrl.preXelevation.NoScale = false
