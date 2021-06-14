@@ -49,7 +49,7 @@ thr.minSoftLength.Value = 0.0000e+00
 thr.minSoftLength.Unit is unitless or has no unit specified
 thr.minSoftLength.NoScale = false
 thr.numNodes.Value = 1.1000e+01
-thr.numNodes.Unit = 'm'
+thr.numNodes.Unit is unitless or has no unit specified
 thr.numNodes.NoScale = false
 thr.orgLengths.Value = [60 60 60 60 60 60 60 60 60 60]
 thr.orgLengths.Unit = 'm'
