@@ -1,0 +1,60 @@
+thr.linkLength.Value = 6.0000e+01
+thr.linkLength.Unit = 'm'
+thr.linkLength.NoScale = false
+thr.nominalDrag.Value = 1.0000e+00
+thr.nominalDrag.Unit is unitless or has no unit specified
+thr.nominalDrag.NoScale = false
+thr.fairingDrag.Value = 1.5000e-01
+thr.fairingDrag.Unit is unitless or has no unit specified
+thr.fairingDrag.NoScale = false
+thr.fairingLength.Value = 1.0000e+02
+thr.fairingLength.Unit = 'm'
+thr.fairingLength.NoScale = false
+thr.diameter.Value = 1.5000e-02
+thr.diameter.Unit = 'm'
+thr.diameter.NoScale = false
+thr.youngsMod.Value = 5.7000e+10
+thr.youngsMod.Unit = 'Pa'
+thr.youngsMod.NoScale = false
+thr.dampingRatio.Value = 1.0000e+00
+thr.dampingRatio.Unit is unitless or has no unit specified
+thr.dampingRatio.NoScale = false
+thr.density.Value = 1.5000e+03
+thr.density.Unit = 'kg/m^3'
+thr.density.NoScale = false
+thr.initGndNodePos.Unit = 'm'
+thr.initGndNodePos.NoScale = false
+thr.initAirNodePos.Unit = 'm'
+thr.initAirNodePos.NoScale = false
+thr.initGndNodeVel.Unit = 'm/s'
+thr.initGndNodeVel.NoScale = false
+thr.initAirNodeVel.Unit = 'm/s'
+thr.initAirNodeVel.NoScale = false
+thr.maxTetherLength.Value = 6.0000e+02
+thr.maxTetherLength.Unit = 'm'
+thr.maxTetherLength.NoScale = false
+thr.minLinkLength.Value = 1.0000e+00
+thr.minLinkLength.Unit = 'm'
+thr.minLinkLength.NoScale = false
+thr.initTetherLength.Value = 6.0000e+02
+thr.initTetherLength.Unit = 'm'
+thr.initTetherLength.NoScale = false
+thr.numTethers.Value = 1.0000e+00
+thr.numTethers.Unit is unitless or has no unit specified
+thr.numTethers.NoScale = false
+thr.minLinkDeviation.Value = 1.0000e-01
+thr.minLinkDeviation.Unit is unitless or has no unit specified
+thr.minLinkDeviation.NoScale = false
+thr.minSoftLength.Value = 0.0000e+00
+thr.minSoftLength.Unit is unitless or has no unit specified
+thr.minSoftLength.NoScale = false
+thr.numNodes.Value = 1.1000e+01
+thr.numNodes.Unit = 'm'
+thr.numNodes.NoScale = false
+thr.orgLengths.Value = [60 60 60 60 60 60 60 60 60 60]
+thr.orgLengths.Unit = 'm'
+thr.orgLengths.NoScale = false
+thr.dragCoeff.Value = [0.15 1 1 1 1 1 1 1 1 1]
+thr.dragCoeff.Unit is unitless or has no unit specified
+thr.dragCoeff.NoScale = false
+thr.initNodePos is non-string and non-numeric and takes up 8.1000e+01 bytes

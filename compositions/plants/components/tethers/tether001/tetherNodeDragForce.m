@@ -42,7 +42,7 @@ linkUnitVecs(isnan(linkUnitVecs))=0;
 projArea = thrDiam*linkLengths.*sqrt(sum(cross(linkUnitVecs,dragDirUnitVec).^2,1));
 
 % Drag force on links
-linkForceVecs = repmat(dragCoeff*dynPress.*projArea,[3 1]).*dragDirUnitVec;
+linkForceVecs = repmat(dragCoeff.*dynPress.*projArea,[3 1]).*dragDirUnitVec;
 
 % Drag force on nodes
 nodeForceVecs = zeros(3,TotalNodes);
