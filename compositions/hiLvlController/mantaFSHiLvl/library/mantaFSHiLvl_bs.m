@@ -30,6 +30,9 @@ hiLvlCtrl.maxThrLength.setValue(600,'m');
 hiLvlCtrl.add('GainNames',{'harvestingAltitude'},'GainUnits',{'m'});
 hiLvlCtrl.harvestingAltitude.setValue(200,'m');
 
+hiLvlCtrl.add('GainNames',{'harvestingThrLength'},'GainUnits',{'m'});
+hiLvlCtrl.harvestingThrLength.setValue(400,'m');
+
 hiLvlCtrl.add('GainNames',{'initialAltitude'},'GainUnits',{'m'});
 hiLvlCtrl.initialAltitude.setValue(20,'m');
 

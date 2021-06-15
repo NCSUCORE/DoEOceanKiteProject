@@ -59,6 +59,7 @@ switch simScenario(2)                                   %   Flight Controller
         hiLvlCtrl.basisParams.setValue([a,b,initEL,0*pi/180,... %   Initialize basis parameters 
             initTL],'[rad rad rad rad m]');
         hiLvlCtrl.harvestingAltitude.setValue(altitude,'m');
+        hiLvlCtrl.harvestingThrLength.setValue(thrLength,'m');
 %         (preEL-pi/2)/maxTL*u+pi/2
 end
 switch simScenario(3)                                   %   Flight Controller 
@@ -145,7 +146,7 @@ switch simScenario(3)
         fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      fltCtrl.rollCtrl.tau.setValue(0.001,'s');
     case 2
-        fltCtrl.maxTL.setValue(thrLength,'m');
+        fltCtrl.maxTL.setValue(hiLvlCtrl.maxThrLength.Value,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');
         pthCtrl1.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
         pthCtrl1.AoASP.setValue(1,'');                           pthCtrl1.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
@@ -164,6 +165,7 @@ switch simScenario(3)
         pthCtrl2.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl2.rollCtrl.tau.setValue(0.001,'s');
         slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(2,''); slfCtrl.pitchConst.setValue(0,'deg');
         slfCtrl.pitchAngleMax.upperLimit.setValue(20,'');        slfCtrl.pitchAngleMax.lowerLimit.setValue(-20,'')
+        slfCtrl.winchActive.setValue(1,'');
     case 3
         fltCtrl.LaRelevationSP.setValue(45,'deg');
         fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
@@ -193,6 +195,7 @@ Pow = tsc.rotPowerSummary(vhcl,env);
 [Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
 Turb = squeeze(tsc.FTurbBdy.Data(1,1,:));
 [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e1;
 Fdrag = mean(Drag(ran));    Fthr = mean(Thr(ran));    Fturb = mean(Turb(ran));
 fprintf('Pow = %.3f kW;\t Drag = %.2f N;\t Thr = %.2f N;\t Turb = %.2f N\n\n',Pow.avg,Fdrag,Fthr,Fturb);
 switch simScenario(3)

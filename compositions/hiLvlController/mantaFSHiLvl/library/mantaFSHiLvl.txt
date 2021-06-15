@@ -1,6 +1,9 @@
 hiLvlCtrl.preXelevation.Value = 1.7453e-01
 hiLvlCtrl.preXelevation.Unit = 'rad'
 hiLvlCtrl.preXelevation.NoScale = false
+hiLvlCtrl.harvestingThrLength.Value = 4.0000e+02
+hiLvlCtrl.harvestingThrLength.Unit = 'm'
+hiLvlCtrl.harvestingThrLength.NoScale = false
 hiLvlCtrl.stateConst.Value = 1.0000e+00
 hiLvlCtrl.stateConst.Unit is unitless or has no unit specified
 hiLvlCtrl.stateConst.NoScale = false

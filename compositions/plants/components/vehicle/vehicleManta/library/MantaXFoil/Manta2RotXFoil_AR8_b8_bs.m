@@ -77,7 +77,7 @@ vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2.5;0;0],'m');
 vhcl.fuse.setREnd_LE([4.1;0;0],'m');
-vhcl.setRBridle_LE([.4;0;-vhcl.fuse.diameter.Value/2],'m');
+vhcl.setRBridle_LE([vhcl.rCM_LE.Value(1)-.3;0;-vhcl.fuse.diameter.Value/2],'m');
 %% Turbines
 T1 = readtable('ct_0_7mdia_5_4_21.txt'); T1 = table2array(T1);
 T2 = readtable('cp_0_7mdia_5_4_21.txt'); T2 = table2array(T2);
