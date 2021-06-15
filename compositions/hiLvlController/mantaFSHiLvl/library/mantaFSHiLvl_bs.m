@@ -26,6 +26,10 @@ hiLvlCtrl.initXelevation.setValue(15*pi/180,'rad');
 
 hiLvlCtrl.add('GainNames',{'maxThrLength'},'GainUnits',{'m'});
 hiLvlCtrl.maxThrLength.setValue(600,'m');
+
+hiLvlCtrl.add('GainNames',{'harvestingAltitude'},'GainUnits',{'m'});
+hiLvlCtrl.harvestingAltitude.setValue(200,'m');
+
 %% save file in its respective directory
 saveFile = saveBuildFile('hiLvlCtrl',mfilename,'variant','HILVLCONTROLLER');
 save(saveFile,'PATHGEOMETRY','-append')

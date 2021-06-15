@@ -12,7 +12,8 @@ Simulink.sdi.clear
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
 simScenario = [1 3 2 4 1 false false false];
-thrLength = 200;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
+thrLength = 600;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
+initTL = 51;      initAltitude = 50;                        %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 12.5;                             %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
@@ -53,8 +54,12 @@ switch simScenario(2)                                   %   Flight Controller
         hiLvlCtrl.stateConst.setValue(subCtrl,'');
         hiLvlCtrl.preXelevation.setValue(max(el-h,5*pi/180),'rad')
         hiLvlCtrl.initXelevation.setValue(max(el-h/2,5*pi/180),'rad')
-        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
-            thrLength],'[rad rad rad rad m]');
+        m = (hiLvlCtrl.preXelevation.Value-pi/2)/hiLvlCtrl.maxThrLength.Value;
+        initEL = m*initTL+pi/2;                      %   rad - Initial elevation angle 
+        hiLvlCtrl.basisParams.setValue([a,b,initEL,0*pi/180,... %   Initialize basis parameters 
+            initTL],'[rad rad rad rad m]');
+        hiLvlCtrl.harvestingAltitude.setValue(altitude,'m');
+%         (preEL-pi/2)/maxTL*u+pi/2
 end
 switch simScenario(3)                                   %   Flight Controller 
     case 1
