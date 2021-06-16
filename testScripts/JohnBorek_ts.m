@@ -11,15 +11,15 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 4 1 false false false];
-thrLength = 600;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
-initTL = 51;      initAltitude = 50;                        %   m/m - Initial tether length/operating altitude
+simScenario = [1 3 2 4 1 false false 1==0];
+thrLength = 400;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
+initTL = 400;      initAltitude = 200;                        %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 12.5;                             %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-subCtrl = 1;    sC = 0;
-TD = 1;
+subCtrl = 1;    sC = 1;
+TD = 1; tf = 10000;
 for ii = 1:numel(TD)
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
@@ -56,7 +56,8 @@ switch simScenario(2)                                   %   Flight Controller
         hiLvlCtrl.initXelevation.setValue(max(el-h/2,5*pi/180),'rad')
         m = (hiLvlCtrl.preXelevation.Value-pi/2)/hiLvlCtrl.maxThrLength.Value;
         initEL = m*initTL+pi/2;                      %   rad - Initial elevation angle 
-        hiLvlCtrl.basisParams.setValue([a,b,initEL,0*pi/180,... %   Initialize basis parameters 
+%         hiLvlCtrl.basisParams.setValue([a,b,initEL,0*pi/180,... %   Initialize basis parameters 
+        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
             initTL],'[rad rad rad rad m]');
         hiLvlCtrl.harvestingAltitude.setValue(altitude,'m');
         hiLvlCtrl.harvestingThrLength.setValue(thrLength,'m');
@@ -165,7 +166,7 @@ switch simScenario(3)
         pthCtrl2.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl2.rollCtrl.tau.setValue(0.001,'s');
         slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(2,''); slfCtrl.pitchConst.setValue(0,'deg');
         slfCtrl.pitchAngleMax.upperLimit.setValue(20,'');        slfCtrl.pitchAngleMax.lowerLimit.setValue(-20,'')
-        slfCtrl.winchActive.setValue(1,'');                      slfCtrl.minThrTension.setValue(50,'N');
+        slfCtrl.winchActive.setValue(0,'');                      slfCtrl.minThrTension.setValue(50,'N');
     case 3
         fltCtrl.LaRelevationSP.setValue(45,'deg');
         fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
@@ -175,7 +176,7 @@ switch simScenario(3)
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(tf,'s');  dynamicCalc = '';
 % if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
 %     error('Elevation angle is out of range')
 % end
@@ -248,6 +249,6 @@ if simScenario(7)
     else
         vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
             'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-            'SaveGif',1==1,'GifFile',strrep(filename,'.mat','zoom.gif'));
+            'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
     end
 end
