@@ -4,19 +4,16 @@ clc
 close all
 Simulink.sdi.clear
 clear tsc1
+distFreq = 0;distAmp = 0;pertVec = [0 1 0];
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
-inc =-2%[-7:0]%[-12:2:-2]% -2];
-startTime = [0:.5:4]
+inc =-2;
 elevArray = 20*pi/180%[40 15]*pi/180;
-towArray = [0.77]%
-rCM = 0.016%[0 0.005 0.010 0.015 0.020 0.025];
-buoy = .908%[97.5 95.4 93.75 92 90.4 88.8]/100;
-distFreq = 0;
-distAmp = 0;
-pertVec = [0 1 0];
-
+towArray = [0.93];
+rCM = 1
+thrLength = 2.63;
+flwSpd = -1e-9;
 for q = 2
     for i = 1:length(inc)
         i
@@ -25,10 +22,6 @@ for q = 2
             for k = 1:numel(rCM)
                 tic
                 Simulink.sdi.clear
-                
-                k
-                thrLength = 2.63%-.52;  altitude = thrLength*sin(elevArray(k));                 %   Initial tether length/operating altitude/elevation angle
-                flwSpd = -1e-9 ;                                   %   m/s - Flow speed                                              %   kN - Max tether tension
                 h = 25*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
                 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
                 %%  Load components
@@ -58,10 +51,6 @@ for q = 2
                 
                 loadComponent('constBoothLem');        %   High level controller
                 % PATHGEOMETRY = 'lemOfBoothInv'
-                vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/4,'1/deg');
-                vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');
-                vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/4,'1/deg');
-                vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/4,'1/deg');
                 hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
                 las.setThrInitAng([-el 0],'rad');
                 las.setInitAngVel([-0 0],'rad/s');
@@ -86,6 +75,10 @@ for q = 2
                 initGndStnPos = [x_init;y_init;0];
                 thrAttachInit = initGndStnPos;
                 %%  Vehicle Properties
+                vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/4,'1/deg');
+                vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/4,'1/deg');
+                vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/4,'1/deg');
+                vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/4,'1/deg');
                 if q == 3
                     vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
                 else
@@ -94,8 +87,7 @@ for q = 2
                     %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
                     vhcl.setInitVelVecBdy([0 0 0],'m/s');
                 end
-                
-                
+
                 %%  Tethers Properties
                 load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
                 thr.tether1.initGndNodePos.setValue(thrAttachInit,'m');
@@ -134,9 +126,9 @@ for q = 2
                 end
                 if q ~= 3
                     
-                    fltCtrl.rollAmp.setValue(60,'deg');
-                    fltCtrl.yawAmp.setValue(80,'deg');
-                    fltCtrl.period.setValue(7.5,'s');
+                    fltCtrl.rollAmp.setValue(70,'deg');
+                    fltCtrl.yawAmp.setValue(90,'deg');
+                    fltCtrl.period.setValue(6,'s');
                     fltCtrl.rollPhase.setValue(pi,'rad');
                     fltCtrl.yawPhase.setValue(.693,'rad');
                     if q == 1
@@ -209,10 +201,10 @@ for q = 2
                     xlabel('Time [s]')
                     ylabel('Angle [deg]')
                     legend ('Roll','Yaw')
-%                     [pksRoll,locRoll] = findpeaks(squeeze(tsc.eulerAngles.Data(1,:,:)*180/pi)+180);
-%                     [pksYaw,locYaw] = findpeaks(squeeze(tsc.eulerAngles.Data(3,:,:)*180/pi)-180);
-%                     period = tsc.alphaBdy.Time(locYaw(end))-tsc.alphaBdy.Time(locYaw(end-1))
-%                     phase = 2*pi*((tsc.alphaBdy.Time(locYaw(end))-tsc.alphaBdy.Time(locRoll(end-2)))/period-1)
+                    %                     [pksRoll,locRoll] = findpeaks(squeeze(tsc.eulerAngles.Data(1,:,:)*180/pi)+180);
+                    %                     [pksYaw,locYaw] = findpeaks(squeeze(tsc.eulerAngles.Data(3,:,:)*180/pi)-180);
+                    %                     period = tsc.alphaBdy.Time(locYaw(end))-tsc.alphaBdy.Time(locYaw(end-1))
+                    %                     phase = 2*pi*((tsc.alphaBdy.Time(locYaw(end))-tsc.alphaBdy.Time(locRoll(end-2)))/period-1)
                     
                 end
                 % vhcl.animateSim(tsc1{i,j,k,q},0.2,'GifTimeStep',0.2,'SaveGif',1==1)%,'View',[0 0])
@@ -228,7 +220,7 @@ for q = 2
                     legend('SP','Response')
                     ylabel 'Attitude [deg]'
                     xlabel 'Time [s]'
-%                     title(sprintf('Cross Current Tracking - %.d Deg Elevator',-10))
+                    %                     title(sprintf('Cross Current Tracking - %.d Deg Elevator',-10))
                     legend('Roll SP','Roll','Yaw SP','Yaw','Orientation','horizontal')
                     set(gca,'FontSize',15)
                     ylim([-60 60])
