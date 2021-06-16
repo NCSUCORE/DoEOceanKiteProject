@@ -11,7 +11,7 @@ vhcl = OCT.vehicleM;
 
 vhcl.setFluidDensity(1000,'kg/m^3')
 vhcl.setNumTethers(1,'');
-vhcl.setBuoyFactor(0.97,''); %Should this be slightly positively buoyant?
+vhcl.setBuoyFactor(0.908,''); %Should this be slightly positively buoyant?
 vhcl.setFluidCoeffsFileName('poolScaleKiteAbney_fluid','');
 vhcl.setHydroCharacterization(2,'');
 %% Volumes and Inertia
@@ -28,9 +28,9 @@ vhcl.setInertia_CM([Ixx -Ixy -Ixz;...
                     -Ixz -Iyz Izz],'kg*m^2')
                 
 %% Important Points
-vhcl.setRCM_LE([9.7e-01;0;0],'m')
+vhcl.setRCM_LE([7.5e-01;0;0],'m')
 vhcl.setRB_LE([0;0;0],'m');
-vhcl.setRCentOfBuoy_LE([9.29e-01;0;3.01e-02],'m');
+vhcl.setRCentOfBuoy_LE([8.1e-01;0;3.01e-02],'m');
 
 %% Control Surfaces
 vhcl.setAllMaxCtrlDef(30,'deg');
