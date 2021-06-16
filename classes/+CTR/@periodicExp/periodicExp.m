@@ -50,6 +50,8 @@ classdef periodicExp < handle
         yawAmp
         trimElevator
         ccElevator
+        rollPhase
+        yawPhase
         
     end
     properties (Dependent)
@@ -104,6 +106,8 @@ classdef periodicExp < handle
             obj.yawAmp              = SIM.parameter('Unit','deg','Description','Yaw Amplitdue');
             obj.trimElevator        = SIM.parameter('Unit','deg','Description','Elevator SP for trim flight');
             obj.ccElevator          = SIM.parameter('Unit','deg','Description','Elevator SP during CC flight');
+            obj.rollPhase           = SIM.parameter('Unit','rad','Description','Roll Sinusoid Phase Offest');
+            obj.yawPhase           = SIM.parameter('Unit','rad','Description','Yaw Sinusoid Phase Offest');
         end
         
         function setWinchSpeedIn(obj,val,unit)
