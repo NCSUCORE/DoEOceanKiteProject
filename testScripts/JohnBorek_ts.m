@@ -165,7 +165,7 @@ switch simScenario(3)
         pthCtrl2.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl2.rollCtrl.tau.setValue(0.001,'s');
         slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(2,''); slfCtrl.pitchConst.setValue(0,'deg');
         slfCtrl.pitchAngleMax.upperLimit.setValue(20,'');        slfCtrl.pitchAngleMax.lowerLimit.setValue(-20,'')
-        slfCtrl.winchActive.setValue(1,'');
+        slfCtrl.winchActive.setValue(1,'');                      slfCtrl.minThrTension.setValue(50,'N');
     case 3
         fltCtrl.LaRelevationSP.setValue(45,'deg');
         fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
