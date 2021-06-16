@@ -154,7 +154,7 @@ elems(17).Complexity = 'real';
 elems(17).Unit = 'm/s^2';
 
 elems(18) = Simulink.BusElement;
-elems(18).Name = 'thrAttchPtAirPos';
+elems(18).Name = 'thrAttchPtGndPos';
 elems(18).Dimensions = [3 1];
 elems(18).DimensionsMode = 'Fixed';
 elems(18).DataType = 'double';
@@ -163,7 +163,7 @@ elems(18).Complexity = 'real';
 elems(18).Unit = 'm';
 
 elems(19) = Simulink.BusElement;
-elems(19).Name = 'thrAttchPtAirVel';
+elems(19).Name = 'thrAttchPtGndVel';
 elems(19).Dimensions = [3 1];
 elems(19).DimensionsMode = 'Fixed';
 elems(19).DataType = 'double';
@@ -172,7 +172,7 @@ elems(19).Complexity = 'real';
 elems(19).Unit = 'm/s';
 
 elems(20) = Simulink.BusElement;
-elems(20).Name = 'thrAttchPtGndPos';
+elems(20).Name = 'thrAttchPtAirPos';
 elems(20).Dimensions = [3 1];
 elems(20).DimensionsMode = 'Fixed';
 elems(20).DataType = 'double';
@@ -181,13 +181,15 @@ elems(20).Complexity = 'real';
 elems(20).Unit = 'm';
 
 elems(21) = Simulink.BusElement;
-elems(21).Name = 'thrAttchPtGndVel';
+elems(21).Name = 'thrAttchPtAirVel';
 elems(21).Dimensions = [3 1];
 elems(21).DimensionsMode = 'Fixed';
 elems(21).DataType = 'double';
 elems(21).SampleTime = -1;
 elems(21).Complexity = 'real';
 elems(21).Unit = 'm/s';
+
+
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
