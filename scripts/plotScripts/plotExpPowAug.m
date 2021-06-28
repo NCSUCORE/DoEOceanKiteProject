@@ -4,7 +4,7 @@ function [j] = plotExpPowAug(runData,i,j,run)
 figure(j); hold on; grid on;
 set(gcf,'Position',[100 100 800 400])
     plot(runData{i}.kite_azi.Time(1:end-1),velAug.^3,'LineWidth',1.5,...
-    'DisplayName',sprintf('Exp Run - %d 1Hz Filter',run))
+    'DisplayName',run)
 ylim([0 20])
 legend
 ylabel({'Power','Augmentation'})

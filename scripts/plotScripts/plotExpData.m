@@ -2,6 +2,7 @@ function [varargout] = plotExpData(runData,flightVar,varargin)
 %Flexible Plot Function for Experimental Data
 
 p = inputParser;
+p.KeepUnmatched = true;
 %Required Inputs
 addRequired(p,'runData');
 addRequired(p,'flightVar', @(x) isfield(runData{1},x));
@@ -29,16 +30,23 @@ end
 
 dataStr = strcat('runData{i}.',p.Results.flightVar);
 plotData = evalin('base',dataStr);
+p.Unmatched
 figure(j); hold on; grid on;
 set(gcf,'Position',[100 100 800 400])
-plot(plotData*p.Results.dataScale,'LineWidth',1.5,...
-    'DisplayName',p.Results.legendEntry)
+set(gca,'ColorOrderIndex',p.Results.runNum)
+if ~isempty(fieldnames(p.Unmatched))
+    plot(plotData*p.Results.dataScale,'LineWidth',1.5,...
+        'DisplayName',p.Results.legendEntry,p.Unmatched)
+else
+    plot(plotData*p.Results.dataScale,'LineWidth',1.5,...
+        'DisplayName',p.Results.legendEntry)
+end
 a = gca;
 a.Children(end).Annotation.LegendInformation.set...
     ('IconDisplayStyle',displayLeg)
 xlabel 'Time [s]'
 ylabel(p.Results.yLegend)
-legend
+legend('Location','northwest')
 set(gca,'FontSize',15)
 %iterate figure number if called 
 if nargout ~= 0

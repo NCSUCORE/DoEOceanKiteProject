@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-h = 20*pi/180;  w = 100*pi/180; elInit = 50*pi/180                             %   rad - Path width/height
+h = 30*pi/180;  w = 100*pi/180; elInit = 50*pi/180                             %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 loadComponent('constBoothLem');        %   High level controller
 loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
@@ -69,27 +69,57 @@ runData.posVec = timeseries(pos,T);
 eul = [runData.kiteRoll.Data runData.kitePitch.Data runData.kiteYaw.Data]*pi/180;
 runData.eulAngle = timeseries(eul,T);
 angRate = [runData.kiteRollRate.Data runData.kitePitchRate.Data runData.kiteYawRate.Data]*pi/180;
-roll = squeeze(eul(:,1,:));
-pitch = squeeze(eul(:,2,:));
-yaw = squeeze(eul(:,3,:));
-n = numel(yaw);
-omegaMat(1,1,:) = sin(pitch).* sin(roll);
-omegaMat(1,2,:) = cos(roll);
-omegaMat(1,3,:) = zeros(1,1,n);
-omegaMat(2,1,:) = sin(pitch).*cos(roll);
-omegaMat(2,2,:) = -sin(roll);
-omegaMat(2,3,:) = zeros(1,1,n);
-omegaMat(3,1,:) = cos(pitch);
-omegaMat(3,2,:) = zeros(1,1,n);
-omegaMat(3,3,:) = ones(1,1,n);
-
-for i = 1:n
-    omega(1,:,i) = omegaMat(:,:,i)*angRate(:,:,i)';
-end
-runData.angVelVec = timeseries(omega,T);
+% roll = squeeze(eul(:,1,:));
+% pitch = squeeze(eul(:,2,:));
+% yaw = squeeze(eul(:,3,:));
+n = numel(T);
+% omegaMat(1,1,:) = sin(pitch).* sin(roll);
+% omegaMat(1,2,:) = cos(roll);
+% omegaMat(1,3,:) = zeros(1,1,n);
+% omegaMat(2,1,:) = sin(pitch).*cos(roll);
+% omegaMat(2,2,:) = -sin(roll);
+% omegaMat(2,3,:) = zeros(1,1,n);
+% omegaMat(3,1,:) = cos(pitch);
+% omegaMat(3,2,:) = zeros(1,1,n);
+% omegaMat(3,3,:) = ones(1,1,n);
+% 
+% for i = 1:n
+%     omega(1,:,i) = omegaMat(:,:,i)*angRate(:,:,i)';
+% end
+runData.angVelVec = timeseries(angRate,T);
 
 basisParams = [ones(1,1,n)*a ,ones(1,1,n)*b,ones(1,1,n)*elInit,ones(1,1,n)*180*pi/180,ones(1,1,n)*2.63];
 runData.basisParams = timeseries(basisParams,T);
 
 sim('testHierCtrl')
 tsc = signalcontainer(ans.logsout)
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+plot(tsc.velAngleError*180/pi)
+xlabel 'Time [s]'
+ylabel 'Velocity Angle Error [deg]'
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+plot(tsc.tanRollDes*180/pi)
+xlabel 'Time [s]'
+ylabel 'Desired Tangent Roll Angle [deg]'
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+plot(tsc.centralAngle*180/pi)
+xlabel 'Time [s]'
+ylabel 'Central Angle [deg]'
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+plot(tsc.ctrlSurfDefl)
+xlabel 'Time [s]'
+ylabel 'Control Surface Commands [deg]'
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+plot(tsc.desiredMoment)
+xlabel 'Time [s]'
+ylabel 'Desired Moments [N-m]'

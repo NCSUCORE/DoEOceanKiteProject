@@ -3,7 +3,7 @@ function [j] = plotExpThrTen(runData,i,j,run)
 figure(j); hold on; grid on;
 set(gcf,'Position',[100 100 800 400])
 plot(runData{i}.LoadCell_N/2,'LineWidth',1.5,...
-    'DisplayName',sprintf('Exp Run %d',run))
+    'DisplayName',run)
 legend
 ylabel 'Tether Tension [N]'
 xlabel 'Time [s]'
