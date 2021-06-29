@@ -13,7 +13,7 @@ thr.setFairingDrag     (.15,'')          % Drag coeff on tether with farrings
 thr.setFairingLength   (100,'m')       % Fairing length measured from kite
 thr.setDiameter        (0.015,'m')    % Total tether diameter
 thr.setYoungsMod       (57e9,'Pa')     % Total tether Youngs Modulus
-thr.setDampingRatio    (1,'')          % Tether damping ratio
+thr.setDampingRatio    (.1,'')          % Tether damping ratio
 thr.setDensity         (1500,'kg/m^3') % Total tether density
 thr.setMinLinkLength   (1,'m')         % Minimum individual link length (increasing this
                                        % value can help with stiffness seen at short link

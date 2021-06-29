@@ -44,9 +44,12 @@ damperForces = DampCoeffs.*linkLengthDeriv;
 
 %Finds locations where there in no tension
 mask = (linkLength-ActiveLengths) < 0;
+%mask = ones(size((linkLength-ActiveLengths)))==0;
 
 %No compressive force in tether
 springForces(mask) = 0;%(tanh(springForces(mask)));
+springForces(mask) = 0;%(tanh(springForces(mask)));
+
 
 %No damping in slack tether
 damperForces(mask) = 0;%(tanh(damperForces(mask)));
@@ -65,7 +68,7 @@ if SpringConsts(1) == 0
     nodeForceVecs(:,No-Na+1) = [0;0;0];
 end
 
-Scope = ActiveLengths;
+Scope = linkLength-ActiveLengths;
 
 linkForces = springForces + damperForces;
 

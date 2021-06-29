@@ -44,7 +44,6 @@ else
         PositionIC = GivenIC;
         Bool = 1;
     else
-        Na = CurStepNumNodes;
         No = size(nodePositions,2);
 
         if PrevStepNumNodes==0
@@ -65,14 +64,7 @@ else
             Bool = -1;
         else
             Bool = 1;
-            linkVecs  = diff(nodePositions,1,2);
-            for ii = 1:(Na-2)
-                jj = (Na-2)-ii+1;
-                VecToi = sum(linkVecs(:,1:(No-ii)),2);
-                VecNextPercent = linkVecs(:,No-ii).*((jj)/(Na-1));
-                %PositionIC(:,jj+(No-Na)) = VecToi-VecNextPercent;
-                PositionIC(:,jj+(No-Na)) = VecToi-VecNextPercent+PositionIC(:,jj+(No-Na));
-            end 
+            PositionIC(:,No-Nc-1:end) = nodePositions(:,No-Nc+1:end); % set nodes to keep
         end
     end  
 end

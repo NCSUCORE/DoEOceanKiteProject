@@ -16,7 +16,7 @@ thr.diameter.NoScale = false
 thr.youngsMod.Value = 5.7000e+10
 thr.youngsMod.Unit = 'Pa'
 thr.youngsMod.NoScale = false
-thr.dampingRatio.Value = 1.0000e+00
+thr.dampingRatio.Value = 1.0000e-01
 thr.dampingRatio.Unit is unitless or has no unit specified
 thr.dampingRatio.NoScale = false
 thr.density.Value = 1.5000e+03
