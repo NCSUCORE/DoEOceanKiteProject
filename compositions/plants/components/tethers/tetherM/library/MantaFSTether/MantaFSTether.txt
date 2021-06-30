@@ -1,7 +1,7 @@
 thr.linkLength.Value = 6.0000e+01
 thr.linkLength.Unit = 'm'
 thr.linkLength.NoScale = false
-thr.nominalDrag.Value = 1.0000e+00
+thr.nominalDrag.Value = 1.2000e+00
 thr.nominalDrag.Unit is unitless or has no unit specified
 thr.nominalDrag.NoScale = false
 thr.fairingDrag.Value = 1.0000e-01
@@ -54,7 +54,7 @@ thr.numNodes.NoScale = false
 thr.orgLengths.Value = [60 60 60 60 60 60 60 60 60 60]
 thr.orgLengths.Unit = 'm'
 thr.orgLengths.NoScale = false
-thr.dragCoeff.Value = [1 1 1 1 1 1 1 1 0.1 0.1]
+thr.dragCoeff.Value = [1.2 1.2 1.2 1.2 1.2 1.2 1.2 1.2 0.1 0.1]
 thr.dragCoeff.Unit is unitless or has no unit specified
 thr.dragCoeff.NoScale = false
 thr.initNodePos is non-string and non-numeric and takes up 8.1000e+01 bytes
