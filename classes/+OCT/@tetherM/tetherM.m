@@ -146,7 +146,7 @@ classdef tetherM < handle
             numFairingLinks = floor((obj.numNodes.Value-1)*obj.fairingLength.Value/obj.maxTetherLength.Value);
             numNominalLinks = (obj.numNodes.Value-1)-numFairingLinks;
             val = [obj.fairingDrag.Value*ones(1,numFairingLinks),obj.nominalDrag.Value*ones(1,numNominalLinks)];
-            val = SIM.parameter('Value',val,'Unit','');
+            val = SIM.parameter('Value',fliplr(val),'Unit','');
         end
         
         function val = get.initNodePos(obj) %sets intermediate node positions based on reeled out length
