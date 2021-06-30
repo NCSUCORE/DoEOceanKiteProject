@@ -47,8 +47,8 @@ mask = (linkLength-ActiveLengths) < 0;
 %mask = ones(size((linkLength-ActiveLengths)))==0;
 
 %No compressive force in tether
-springForces(mask) = 0;%(tanh(springForces(mask)));
-springForces(mask) = 0;%(tanh(springForces(mask)));
+springForces(mask) = 0;
+% springForces(mask) = (tanh(springForces(mask)));
 
 
 %No damping in slack tether
