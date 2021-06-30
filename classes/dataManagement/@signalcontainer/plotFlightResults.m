@@ -1,4 +1,4 @@
-function plotFlightResults(obj,vhcl,env,varargin)
+function plotFlightResults(obj,vhcl,env,thr,varargin)
 %%  Parse Inputs
 p = inputParser;
 addOptional(p,'plot1Lap',false,@islogical);
@@ -47,7 +47,7 @@ vKite = -squeeze(obj.velCMvec.Data(1,:,:));
 airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
 gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
 %   Hydrocharacteristics
-[CLsurf,CDtot] = getCLCD(obj,vhcl);
+[CLsurf,CDtot] = getCLCD(obj,vhcl,thr);
 FLiftBdyP1 = squeeze(sqrt(sum(obj.portWingLift.Data(:,1,:).^2,1)));
 FLiftBdyP2 = squeeze(sqrt(sum(obj.stbdWingLift.Data(:,1,:).^2,1)));
 FLiftBdyP3 = squeeze(sqrt(sum(obj.hStabLift.Data(:,1,:).^2,1)));
