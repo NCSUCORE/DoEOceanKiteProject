@@ -11,15 +11,15 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 4 1 false false 1==0];
+simScenario = [1 3 2 4 1 1==1 false 1==0];
 thrLength = 400;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
-initTL = 400;      initAltitude = 200;                      %   m/m - Initial tether length/operating altitude
+initTL = 400;      initAltitude = 150;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
-Tmax = 20;        Tdiam = 15;                               %   kN/mm - Max tether tension/tether diameter 
+Tmax = 20;        Tdiam = 18;                               %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
-TD = 1; tf = 10000;
+TD = 1; tf = 300;
 for ii = 1:numel(TD)
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
@@ -55,7 +55,8 @@ switch simScenario(2)                                   %   Flight Controller
         hiLvlCtrl.preXelevation.setValue(max(el-h,5*pi/180),'rad')
         hiLvlCtrl.initXelevation.setValue(max(el-h/2,5*pi/180),'rad')
         m = (hiLvlCtrl.preXelevation.Value-pi/2)/hiLvlCtrl.maxThrLength.Value;
-        initEL = m*initTL+pi/2;                      %   rad - Initial elevation angle 
+%         initEL = m*initTL+pi/2;                      %   rad - Initial elevation angle 
+        initEL = asin(initAltitude/initTL);                      %   rad - Initial elevation angle 
 %         hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
         hiLvlCtrl.basisParams.setValue([a,b,initEL,0*pi/180,... %   Initialize basis parameters 
             initTL],'[rad rad rad rad m]');
@@ -197,7 +198,7 @@ switch simScenario(3)
         filename = sprintf(strcat('Turb_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
     case 2
-        filename = sprintf(strcat('FS_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
+        filename = sprintf(strcat('FS_V-%.3f_Alt-%d_thr-%d_Tmax-%d_FL-%d.mat'),flwSpd,altitude,thrLength,Tmax,thr.fairingLength.Value);
         fpath = 'C:\Users\jborek\Documents\MATLAB\Manta Results';
     case 3
         filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
