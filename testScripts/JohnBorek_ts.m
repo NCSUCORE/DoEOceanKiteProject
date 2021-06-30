@@ -13,12 +13,12 @@ Simulink.sdi.clear
 %%             1 2 3 4 5  6    7     8
 simScenario = [1 3 2 4 1 false false 1==0];
 thrLength = 400;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
-initTL = 51;      initAltitude = 50;                        %   m/m - Initial tether length/operating altitude
+initTL = 400;      initAltitude = 200;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 15;                               %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
-subCtrl = 1;    sC = 1;
+subCtrl = 1;    sC = 0;
 TD = 1; tf = 10000;
 for ii = 1:numel(TD)
 %%  Load components
@@ -85,7 +85,7 @@ switch simScenario(4)                                   %   Tether model
         loadComponent('MantaTether');                       %   Manta Ray tether
     case 2
         loadComponent('shortTether');                       %   Tether for reeling
-        thr.tether1.setInitTetherLength(thrLength,'m');     %   Initialize tether length 
+        thr.tether1.setInitTetherLength(initTL,'m');     %   Initialize tether length 
     case 3
         loadComponent('MantaTetherReal');                       %   Manta Ray tether
     case 4
@@ -130,6 +130,7 @@ else
         +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
     thr.initGndNodeVel.setValue([0 0 0]','m/s');
     thr.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+    thr.initTetherLength.setValue(initTL,'m')
 end
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
@@ -163,9 +164,9 @@ switch simScenario(3)
         pthCtrl2.elevCtrl.kp.setValue(125,'(deg)/(rad)');        pthCtrl2.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
         pthCtrl2.rollCtrl.kp.setValue(200,'(deg)/(rad)');        pthCtrl2.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
         pthCtrl2.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl2.rollCtrl.tau.setValue(0.001,'s');
-        slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(0,''); slfCtrl.pitchConst.setValue(0,'deg');
+        slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(2,''); slfCtrl.pitchConst.setValue(0,'deg');
         slfCtrl.pitchAngleMax.upperLimit.setValue(20,'');        slfCtrl.pitchAngleMax.lowerLimit.setValue(-20,'')
-        slfCtrl.winchActive.setValue(1,'');                      slfCtrl.minThrTension.setValue(50,'N');
+        slfCtrl.winchActive.setValue(0,'');                      slfCtrl.minThrTension.setValue(50,'N');
     case 3
         fltCtrl.LaRelevationSP.setValue(45,'deg');
         fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
@@ -191,20 +192,13 @@ if simScenario(3) == 1
     ten = max([max(airNode(ran)) max(gndNode(ran))]);
     fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
 end
-Pow = tsc.rotPowerSummary(vhcl,env);
-[Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
-Turb = squeeze(tsc.FTurbBdy.Data(1,1,:));
-[Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e1;
-Fdrag = mean(Drag(ran));    Fthr = mean(Thr(ran));    Fturb = mean(Turb(ran));
-fprintf('Pow = %.3f kW;\t Drag = %.2f N;\t Thr = %.2f N;\t Turb = %.2f N\n\n',Pow.avg,Fdrag,Fthr,Fturb);
 switch simScenario(3)
     case 1
         filename = sprintf(strcat('Turb_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
     case 2
-        filename = sprintf(strcat('FS1_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
-        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','FS\');
+        filename = sprintf(strcat('FS_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
+        fpath = 'C:\Users\jborek\Documents\MATLAB\Manta Results';
     case 3
         filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Steady\');
