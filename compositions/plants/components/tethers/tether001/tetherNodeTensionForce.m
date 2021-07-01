@@ -52,7 +52,8 @@ springForces(mask) = 0;
 
 
 %No damping in slack tether
-damperForces(mask) = 0;%(tanh(damperForces(mask)));
+damperForces(mask) = 0;
+% damperForces(mask) = (tanh(damperForces(mask)));
 
 %Finds force along each link
 totalLinkForceVec = repmat(springForces+damperForces,[3 1]).*linkUnitVecs;
@@ -68,7 +69,7 @@ if SpringConsts(1) == 0
     nodeForceVecs(:,No-Na+1) = [0;0;0];
 end
 
-Scope = linkLength-ActiveLengths;
+Scope = damperForces;
 
 linkForces = springForces + damperForces;
 
