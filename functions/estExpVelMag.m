@@ -4,7 +4,7 @@ T = tsc.kite_azi.Time;
 sampPeriod = T(2)-T(1);
 el = squeeze(tsc.kite_elev.Data);
 az = squeeze(tsc.kite_azi.Data);
-towSpeed = tsc.winch1rpm.Data(100)*.0098
+towSpeed = tsc.winch1rpm.Data(100)*.0098;
 
 %Estimate Position based on straight tether approximation
 pos = 2.63*[-cosd(az).*cosd(el)+towSpeed/2.63*T...

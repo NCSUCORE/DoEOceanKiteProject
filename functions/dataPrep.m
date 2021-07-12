@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-h = 30*pi/180;  w = 100*pi/180; elInit = 50*pi/180                             %   rad - Path width/height
+h = 20*pi/180;  w = 80*pi/180; elInit = 50*pi/180                             %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 loadComponent('constBoothLem');        %   High level controller
 loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
@@ -123,3 +123,29 @@ hold on; grid on;
 plot(tsc.desiredMoment)
 xlabel 'Time [s]'
 ylabel 'Desired Moments [N-m]'
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+plot(tsc.closestPathVariable)
+xlabel 'Time [s]'
+ylabel 'Path Parameter'
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+plot(runData.kite_azi.Data,runData.kite_elev.Data,...
+    'DisplayName','Experimental Path')
+plotsq(tsc.pathAz.Data,tsc.pathEl.Data,'DisplayName','Path Geometry')
+xlabel 'Azimuth Angle [deg]'
+ylabel 'Elevation Angle [deg]'
+legend
+set(gca,'FontSize',15)
+
+figure('Position',[100 100 800 400])
+hold on; grid on;
+% plot(runData.kite_azi.Data,tsc.tanRoll.Data*180/pi,...
+%     'DisplayName','')
+plotsq(tsc.eul.Data(1,:,:)*180/pi,tsc.tanRoll.Data*180/pi,'DisplayName','Path Geometry')
+xlabel 'Roll Angle [deg]'
+ylabel 'Tan Roll Angle [deg]'
+legend
+set(gca,'FontSize',15)

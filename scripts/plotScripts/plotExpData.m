@@ -12,13 +12,15 @@ addParameter(p,'runNum',1);
 %Figure number if looping through runs with multiple figures
 addParameter(p,'figNum',1);
 %Legend Entry
-addParameter(p,'legendEntry','',@(x) ischar(x) || isstr(x))
+addParameter(p,'legendEntry','',@(x) ischar(x) || ischar(x))
 %Y Axis Label
-addParameter(p,'yLegend','Value',@(x) ischar(x) || isstr(x))
+addParameter(p,'yLegend','Value',@(x) ischar(x) || ischar(x))
 %Data scaling for converting from rad to deg etc.
 addParameter(p,'dataScale',1,@(x) isnumeric(x))
+addParameter(p,'LineStyle','-',@(x) ischar(x))
+addParameter(p,'Color','k')
 
-parse(p,runData,flightVar,varargin{:})
+parse(p,runData,flightVar,varargin{:});
 
 j = p.Results.figNum;
 %Turn off legend entry for blank legend entries
@@ -27,23 +29,23 @@ if isempty(p.Results.legendEntry)
 else
     displayLeg = 'on';
 end
-
 dataStr = strcat('runData{i}.',p.Results.flightVar);
 plotData = evalin('base',dataStr);
-p.Unmatched
 figure(j); hold on; grid on;
 set(gcf,'Position',[100 100 800 400])
 set(gca,'ColorOrderIndex',p.Results.runNum)
 if ~isempty(fieldnames(p.Unmatched))
     plot(plotData*p.Results.dataScale,'LineWidth',1.5,...
-        'DisplayName',p.Results.legendEntry,p.Unmatched)
+        'DisplayName',p.Results.legendEntry,p.Unmatched,...
+        'LineStyle',p.Results.LineStyle,'Color',p.Results.Color)
 else
     plot(plotData*p.Results.dataScale,'LineWidth',1.5,...
-        'DisplayName',p.Results.legendEntry)
+        'DisplayName',p.Results.legendEntry,...
+        'LineStyle',p.Results.LineStyle,'Color',p.Results.Color)
 end
 a = gca;
 a.Children(end).Annotation.LegendInformation.set...
-    ('IconDisplayStyle',displayLeg)
+    ('IconDisplayStyle',displayLeg);
 xlabel 'Time [s]'
 ylabel(p.Results.yLegend)
 legend('Location','northwest')
