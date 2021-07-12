@@ -95,7 +95,10 @@ addParameter(p,'Bedrock',true,@islogical)
 addParameter(p,'LineAngleEst',false,@islogical)
 % Plot Flow Velocity Vector
 addParameter(p,'FlowVec',false,@islogical)
-
+% Plot Instant Sphere
+addParameter(p,'PlotSphere',false,@islogical)
+% Plot Azimuth/Elevation Isobars
+addParameter(p,'PlotLatLon',false,@islogical)
 % ---Parse the output---
 parse(p,tsc,timeStep,varargin{:})
 
@@ -511,6 +514,14 @@ if p.Results.TangentCoordSys
         'Color','b','LineWidth',1.5,'LineStyle','-');
 end
 
+if p.Results.PlotLatLon
+    [xSphere,ySphere,zSphere] = sphere(15);
+    xSphere = xSphere*squeeze(tscTmp.tetherLengths.Data(:,:,1)) + tscTmp.gndStnPositionVec.Data(1,:,1);
+    ySphere = ySphere*squeeze(tscTmp.tetherLengths.Data(:,:,1)) + tscTmp.gndStnPositionVec.Data(2,:,1);
+    zSphere = zSphere*squeeze(tscTmp.tetherLengths.Data(:,:,1)) + tscTmp.gndStnPositionVec.Data(3,:,1);
+    h.LatLon = mesh(xSphere,ySphere,zSphere,'EdgeColor','k','FaceColor','none');
+end
+    
 if p.Results.VelocityVec
     h.velVec = plot3(...
         [tscTmp.positionVec.Data(1,:,1) tscTmp.positionVec.Data(1,:,1)+tscTmp.velocityVec.Data(1,:,1)*obj.fuse.length.Value./norm(tscTmp.velocityVec.Data(:,:,1))],...
@@ -879,6 +890,29 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         h.velVec.YData = [pt(2) pt(2)+velVec(2)*obj.fuse.length.Value./speed];
         h.velVec.ZData = [pt(3) pt(3)+velVec(3)*obj.fuse.length.Value./speed];
         
+    end
+    
+    if p.Results.PlotLatLon
+        [xSphere,ySphere,zSphere] = sphere(15);
+        xSphere = xSphere*squeeze(tscTmp.tetherLengths.Data(:,:,ii)) + tscTmp.gndStnPositionVec.Data(1,:,ii);
+        ySphere = ySphere*squeeze(tscTmp.tetherLengths.Data(:,:,ii)) + tscTmp.gndStnPositionVec.Data(2,:,ii);
+        zSphere = zSphere*squeeze(tscTmp.tetherLengths.Data(:,:,ii)) + tscTmp.gndStnPositionVec.Data(3,:,ii);
+%         if tscTmp.positionVec.Data(3,:,1) < 0
+%             test = double((zSphere<0 | zSphere == 0));
+%             test(test==0) = NaN;
+%             xSphere = xSphere.*test;
+%             ySphere = ySphere.*test;
+%             zSphere = zSphere.*test;
+%         else
+%             test = double((zSphere>0 | zSphere == 0));
+%             test(test==0) = NaN;
+%             xSphere = xSphere.*test;
+%             ySphere = ySphere.*test;
+%             zSphere = zSphere.*test;
+%         end
+        h.LatLon.XData = xSphere;
+        h.LatLon.YData = ySphere;
+        h.LatLon.ZData = zSphere;
     end
     
     % Set the plot limits to zoom in on the body
