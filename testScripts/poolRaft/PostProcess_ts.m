@@ -23,7 +23,7 @@ for q = 3
             for k = 1:numel(rCM)
                 tic
                 Simulink.sdi.clear
-                h = 15*pi/180;  w = 80*pi/180;                             %   rad - Path width/height
+                h = 30*pi/180;  w = 90*pi/180;                             %   rad - Path width/height
                 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
                 %%  Load components
                 el = elevArray;
@@ -82,6 +82,8 @@ for q = 3
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
                 vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/8,'1/deg');
+                vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value,'')
+                vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value,'')
                 if q == 3
                     vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
                 else
