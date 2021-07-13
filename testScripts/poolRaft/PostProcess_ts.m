@@ -10,12 +10,12 @@ distFreq = 0;distAmp = 0;pertVec = [0 1 0];
 saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
 inc =-5.5;
-elevArray = 30*pi/180%[40 15]*pi/180;
+elevArray = 20*pi/180%[40 15]*pi/180;
 towArray = [0.78];
 rCM = 1
 thrLength = 2.63;
 flwSpd = -1e-9;
-for q = 3
+for q = 2
     for i = 1:length(inc)
         i
         for j = 1:length(towArray)
@@ -82,8 +82,8 @@ for q = 3
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
                 vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/8,'1/deg');
-                vhcl.vStab.CL.setValue(vhcl.vStab.CL.Value,'')
-                vhcl.vStab.CD.setValue(vhcl.vStab.CD.Value,'')
+                vhcl.vStab.setGainCL(vhcl.vStab.gainCL.Value/2,'1/deg');
+                vhcl.vStab.setGainCD(vhcl.vStab.gainCD.Value/2,'1/deg');
                 if q == 3
                     vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
                 else
@@ -132,7 +132,7 @@ for q = 3
                 if q ~= 3
                     %                     693
                     fltCtrl.rollAmp.setValue(60,'deg');
-                    fltCtrl.yawAmp.setValue(80,'deg');
+                    fltCtrl.yawAmp.setValue(70,'deg');
                     fltCtrl.period.setValue(7.5,'s');
                     fltCtrl.rollPhase.setValue(pi-pi,'rad');
                     fltCtrl.yawPhase.setValue(.693-pi,'rad');
@@ -144,26 +144,26 @@ for q = 3
                     end
                    
                    
-                    fltCtrl.rollCtrl.kp.setValue(3,'(deg)/(deg)');
+                    fltCtrl.rollCtrl.kp.setValue(.3/.7,'(deg)/(deg)');
                     fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.rollCtrl.kd.setValue(1,'(deg)/(deg/s)');
+                    fltCtrl.rollCtrl.kd.setValue(.1/.9,'(deg)/(deg/s)');
                     fltCtrl.rollCtrl.tau.setValue(0.02,'s');
                    
                    
                    
                    
-                    fltCtrl.yawCtrl.kp.setValue(1,'(deg)/(deg)');
+                    fltCtrl.yawCtrl.kp.setValue(.1/.7,'(deg)/(deg)');
                     fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.yawCtrl.kd.setValue(0.7,'(deg)/(deg/s)');
+                    fltCtrl.yawCtrl.kd.setValue(.07/.7 ,'(deg)/(deg/s)');
                     fltCtrl.yawCtrl.tau.setValue(0.02,'s');
                    
-                    fltCtrl.ccElevator.setValue(-5.5,'deg');
+                    fltCtrl.ccElevator.setValue(-3.5,'deg');
                     fltCtrl.trimElevator.setValue(inc(i),'deg');
                    
                 end
                 %                  FLIGHTCONTROLLER = 'periodicCtrlExpTran1';
                
-                initElvtor = 20;
+               fluidDensity  = 1000;
                 endTime = 25;
                 towPer = .1*.33;
                 towAmp = 0*.0098;%%  Set up critical system parameters and run simulation
