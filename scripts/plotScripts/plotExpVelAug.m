@@ -4,7 +4,7 @@ function [j] = plotExpVelAug(runData,i,j,run)
 figure(j); hold on; grid on;
 set(gcf,'Position',[100 100 800 400])
     plot(runData{i}.kite_azi.Time(1:end-1),velAug,'LineWidth',1.5,...
-    'DisplayName',sprintf('Exp Run - %d 1Hz Filter',run))
+    'DisplayName',run)
 set(gca,'FontSize',15)
 ylim([0 4])
 legend
