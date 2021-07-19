@@ -1,5 +1,5 @@
 clc 
-% clear all
+clear all
 close all
 date = '07 14 21'
 direc = strcat('G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\',date,'\Data')
@@ -13,7 +13,7 @@ runs = [31];
 runQuery = min(runs);
 runCount = min(runs);
 runLim = max(runs);
-i = 2;
+i = 1;
 j = 1;
 while runCount <= runLim
     if listing(j).isdir ~= 1
