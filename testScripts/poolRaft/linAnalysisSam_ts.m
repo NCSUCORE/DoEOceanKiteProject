@@ -114,7 +114,7 @@ for q = 1
                 thr.tether1.youngsMod.setValue(50e9,'Pa');
                 thr.tether1.density.setValue(1000,'kg/m^3');
                 thr.tether1.setDiameter(.0076,'m');
-                thr.setNumNodes(4,'');
+                thr.setNumNodes(2,'');
                 thr.tether1.setDragCoeff(1.8,'');
                 %%  Winches Properties
                 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
@@ -170,7 +170,7 @@ for q = 1
                 towAmp = 0*.0098;%%  Set up critical system parameters and run simulation
                 simParams = SIM.simParams;  simParams.setDuration(end_time,'s');  dynamicCalc = '';
                 %                     open_system('OCTModel')
-               
+                
                 set_param('OCTModel','SimulationMode','accelerator');
                 simWithMonitor('OCTModel')
                 tsc = signalcontainer(logsout);
