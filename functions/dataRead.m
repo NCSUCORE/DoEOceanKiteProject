@@ -15,6 +15,7 @@ runCount = min(runs);
 runLim = max(runs);
 i = 1;
 j = 1;
+
 while runCount <= runLim
     if listing(j).isdir ~= 1
         load(strcat(direc,'\',listing(j).name));
