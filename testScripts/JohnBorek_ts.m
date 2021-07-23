@@ -11,9 +11,9 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 4 1 false false false];
-thrLength = 200;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
-flwSpd = .25;                                               %   m/s - Flow speed
+simScenario = [1 1 1 3 1 false true false];
+thrLength = 600;  altitude = 600/sqrt(2);                           %   m/m - Initial tether length/operating altitude
+flwSpd = .15;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 12.5;                             %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -100,9 +100,21 @@ loadComponent('MantaGndStn');                               %   Ground station
 loadComponent('winchManta');                                %   Winches
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
+
+vhcl.vStab.setGainCD(vhcl.vStab.gainCD.Value*vhcl.vStab.planformArea.Value/vhcl.fluidRefArea.Value,'1/deg');
+vhcl.vStab.setGainCL(vhcl.vStab.gainCL.Value*vhcl.vStab.planformArea.Value/vhcl.fluidRefArea.Value,'1/deg');
+
+vhcl.hStab.setGainCD(vhcl.hStab.gainCD.Value*vhcl.hStab.planformArea.Value/vhcl.fluidRefArea.Value*2,'1/deg');
+vhcl.hStab.setGainCL(vhcl.hStab.gainCL.Value*vhcl.hStab.planformArea.Value/vhcl.fluidRefArea.Value*2,'1/deg');
+
+vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value,'1/deg');
+vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value,'1/deg');
+
+vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value,'1/deg');
+vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value,'1/deg');
 %%  Vehicle Initial Conditions 
 if simScenario(3) == 1 
-    vhcl.setICsOnPath(0.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
+    vhcl.setICsOnPath(0.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
 else
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
@@ -139,6 +151,9 @@ switch simScenario(3)
         fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      fltCtrl.rollCtrl.tau.setValue(0.001,'s');
+        fltCtrl.rudderGain.setValue(-1,'');
+        fltCtrl.yawMoment.kp.setValue(2500,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kp.setValue(15000,'(N*m)/(rad)');    fltCtrl.rollMoment.kd.setValue(12000,'(N*m)/(rad/s)');
     case 2
         fltCtrl.maxTL.setValue(thrLength,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');
@@ -231,7 +246,7 @@ end
 if simScenario(7)
     if simScenario(3) == 1
         vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
-            'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==1,...
+            'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
             'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
     elseif simScenario(3) == 2
         vhcl.animateSim(tsc,2,'PathFunc',pthCtrl2.fcnName.Value,'TracerDuration',20,...
@@ -241,5 +256,20 @@ if simScenario(7)
         vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
             'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
             'SaveGif',1==1,'GifFile',strrep(filename,'.mat','zoom.gif'));
+    end
+end
+
+vApp = squeeze(tsc.vhclVapp.Data);
+vAppSqr = squeeze(dot(vApp,vApp));
+bMat = squeeze(tsc.bMatrix.Data);
+t = tsc.vhclVapp.Time;
+q = 1
+figure
+for i = 1:2
+    for j = 1:2
+        bMatScale = squeeze(bMat(i,j,:))'./vAppSqr;
+        subplot(2,2,q)
+        plot(t,bMatScale);
+        q = q+1;
     end
 end
