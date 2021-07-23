@@ -61,6 +61,7 @@ classdef SLFAndSpoolCtrl < handle
         yawCtrl
         yawConst
         ctrlOff
+        minThrTension
     end
     
     methods
@@ -124,6 +125,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.pitchTime               = SIM.parameter('Unit','s','Description','Reference time for pitch setpoint lookup table');
             obj.pitchLookup             = SIM.parameter('Unit','deg','Description','Pitch setpoint lookup values');
             obj.ctrlOff                 = SIM.parameter('Value',1,'Description','Switch to turn off control. 1 = On, 0 = Off');
+            obj.minThrTension           = SIM.parameter('Unit','N','Description','Minimum allowable tension during reeling in/out');
         end
         
         function setTanRoll(obj,val,units)

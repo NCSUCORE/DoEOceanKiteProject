@@ -64,6 +64,7 @@ fltCtrl.setNomSpoolSpeed(.25,'m/s')
 fltCtrl.setShortLeashLength(20,'m')
 fltCtrl.LaRelevationSP.setValue(45,'deg');
 fltCtrl.LaRelevationSPErr.setValue(1,'deg');
+fltCtrl.minThrTension.setValue(5,'N');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
 save(saveFile,'SPOOLINGCONTROLLER','-append')

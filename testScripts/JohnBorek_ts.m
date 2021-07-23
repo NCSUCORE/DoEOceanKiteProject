@@ -11,14 +11,15 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 3 2 4 1 false false false];
-thrLength = 200;  altitude = 150;                           %   m/m - Initial tether length/operating altitude
+simScenario = [1 3 2 4 1 1==1 false 1==0];
+thrLength = 400;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
+initTL = 400;      initAltitude = 150;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
-Tmax = 20;        Tdiam = 12.5;                             %   kN/mm - Max tether tension/tether diameter 
+Tmax = 20;        Tdiam = 18;                               %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
-TD = 1;
+TD = 1; tf = 300;
 for ii = 1:numel(TD)
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
@@ -53,8 +54,14 @@ switch simScenario(2)                                   %   Flight Controller
         hiLvlCtrl.stateConst.setValue(subCtrl,'');
         hiLvlCtrl.preXelevation.setValue(max(el-h,5*pi/180),'rad')
         hiLvlCtrl.initXelevation.setValue(max(el-h/2,5*pi/180),'rad')
-        hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
-            thrLength],'[rad rad rad rad m]');
+        m = (hiLvlCtrl.preXelevation.Value-pi/2)/hiLvlCtrl.maxThrLength.Value;
+%         initEL = m*initTL+pi/2;                      %   rad - Initial elevation angle 
+        initEL = asin(initAltitude/initTL);                      %   rad - Initial elevation angle 
+%         hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters 
+        hiLvlCtrl.basisParams.setValue([a,b,initEL,0*pi/180,... %   Initialize basis parameters 
+            initTL],'[rad rad rad rad m]');
+        hiLvlCtrl.harvestingAltitude.setValue(altitude,'m');
+        hiLvlCtrl.harvestingThrLength.setValue(thrLength,'m');
 end
 switch simScenario(3)                                   %   Flight Controller 
     case 1
@@ -79,7 +86,7 @@ switch simScenario(4)                                   %   Tether model
         loadComponent('MantaTether');                       %   Manta Ray tether
     case 2
         loadComponent('shortTether');                       %   Tether for reeling
-        thr.tether1.setInitTetherLength(thrLength,'m');     %   Initialize tether length 
+        thr.tether1.setInitTetherLength(initTL,'m');     %   Initialize tether length 
     case 3
         loadComponent('MantaTetherReal');                       %   Manta Ray tether
     case 4
@@ -124,6 +131,7 @@ else
         +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
     thr.initGndNodeVel.setValue([0 0 0]','m/s');
     thr.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+    thr.initTetherLength.setValue(initTL,'m')
 end
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
@@ -140,7 +148,7 @@ switch simScenario(3)
         fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      fltCtrl.rollCtrl.tau.setValue(0.001,'s');
     case 2
-        fltCtrl.maxTL.setValue(thrLength,'m');
+        fltCtrl.maxTL.setValue(hiLvlCtrl.maxThrLength.Value,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');
         pthCtrl1.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
         pthCtrl1.AoASP.setValue(1,'');                           pthCtrl1.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
@@ -159,6 +167,7 @@ switch simScenario(3)
         pthCtrl2.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      pthCtrl2.rollCtrl.tau.setValue(0.001,'s');
         slfCtrl.LaRelevationSP.setValue(el*180/pi,'deg');        slfCtrl.pitchCtrl.setValue(2,''); slfCtrl.pitchConst.setValue(0,'deg');
         slfCtrl.pitchAngleMax.upperLimit.setValue(20,'');        slfCtrl.pitchAngleMax.lowerLimit.setValue(-20,'')
+        slfCtrl.winchActive.setValue(0,'');                      slfCtrl.minThrTension.setValue(50,'N');
     case 3
         fltCtrl.LaRelevationSP.setValue(45,'deg');
         fltCtrl.pitchCtrl.setValue(2,'');                   fltCtrl.pitchConst.setValue(-10,'deg');
@@ -168,7 +177,7 @@ switch simScenario(3)
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
-simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+simParams = SIM.simParams;  simParams.setDuration(tf,'s');  dynamicCalc = '';
 % if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
 %     error('Elevation angle is out of range')
 % end
@@ -184,19 +193,13 @@ if simScenario(3) == 1
     ten = max([max(airNode(ran)) max(gndNode(ran))]);
     fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
 end
-Pow = tsc.rotPowerSummary(vhcl,env);
-[Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
-Turb = squeeze(tsc.FTurbBdy.Data(1,1,:));
-[Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-Fdrag = mean(Drag(ran));    Fthr = mean(Thr(ran));    Fturb = mean(Turb(ran));
-fprintf('Pow = %.3f kW;\t Drag = %.2f N;\t Thr = %.2f N;\t Turb = %.2f N\n\n',Pow.avg,Fdrag,Fthr,Fturb);
 switch simScenario(3)
     case 1
         filename = sprintf(strcat('Turb_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Rotor\');
     case 2
-        filename = sprintf(strcat('FS1_V-%.3f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
-        fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','FS\');
+        filename = sprintf(strcat('FS_V-%.3f_Alt-%d_thr-%d_Tmax-%d_FL-%d.mat'),flwSpd,altitude,thrLength,Tmax,thr.fairingLength.Value);
+        fpath = 'C:\Users\jborek\Documents\MATLAB\Manta Results';
     case 3
         filename = sprintf(strcat('Steady_EL-%.1f_kp-%.2f_ki-%.2f.mat'),el*180/pi,fltCtrl.elevCmd.kp.Value,fltCtrl.elevCmd.ki.Value);
         fpath = fullfile(fileparts(which('OCTProject.prj')),'Results','Manta 2.0','Steady\');
@@ -214,9 +217,9 @@ if simScenario(8)
         case 1
             lap = max(tsc.lapNumS.Data)-1;
             if max(tsc.lapNumS.Data) < 2
-                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+                tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             else
-                tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+                tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             end
         case 2
             tsc.plotFSslf(fltCtrl,'Steady',true);
@@ -240,6 +243,6 @@ if simScenario(7)
     else
         vhcl.animateSim(tsc,2,'View',[0,0],'Pause',1==0,...
             'GifTimeStep',.05,'PlotTracer',true,'FontSize',12,'ZoomIn',1==0,...
-            'SaveGif',1==1,'GifFile',strrep(filename,'.mat','zoom.gif'));
+            'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
     end
 end
