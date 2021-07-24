@@ -1,4 +1,4 @@
-function plantManta_bc
+function plant1turb_bc
 sz = getBusDims;
 
 elems(1) = Simulink.BusElement;
