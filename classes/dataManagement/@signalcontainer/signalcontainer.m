@@ -213,12 +213,16 @@ classdef signalcontainer < dynamicprops
             plot(obj.ctrlSurfDeflCmd.Time,squeeze(obj.ctrlSurfDeflCmd.Data(3,:,:)),'b-');  
             xlabel('Time [s]');  ylabel('Elevator [deg]');
         end
-        function [CLsurf,CDtot] = getCLCD(obj,vhcl)
+        function [CLsurf,CDtot] = getCLCD(obj,vhcl,thr)
+            dThr = thr.tether1.diameter.Value;
+            LThr = sqrt(sum(vhcl.initPosVecGnd.Value.^2));
             Aref = vhcl.fluidRefArea.Value;
             Afuse = squeeze(obj.Afuse.Data);
+            Athr = LThr*dThr/4;
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
+            CDthr = thr.tether1.dragCoeff.Value.*Athr/Aref;
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
-            CDtot = CDfuse+CDsurf;
+            CDtot = CDfuse+CDsurf+CDthr;
             CLsurf = squeeze(obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data);
         end
         function [Lift,Drag,Fuse,Thr] = getLiftDrag(obj)
@@ -449,6 +453,25 @@ classdef signalcontainer < dynamicprops
 %             subplot(R,C,6); hold on; grid on;
 %             plot(time,airNode,'b-');  plot(time,gndNode,'r--');  %ylim([0 .5]);
 %             xlabel('Time [s]');  ylabel('Tension [kN]');  legend('Kite','Glider');  %xlim([1900 2100])
+        end
+        function [Pow,LThr,EL,vFlow] = LoydPowerWThr(obj,vhcl,env,thr)
+            Elev = squeeze(obj.elevationAngle.Data);
+            LThr = sqrt(sum(vhcl.initPosVecGnd.Value.^2));
+            vFlow = env.water.speed.Value;
+            rho = env.water.density.Value;
+            Aref = vhcl.fluidRefArea.Value;
+            [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
+            ran = Idx1:Idx2-1;
+            EL = mean(Elev(ran));
+            [CLsurf,CDtot] = getCLCD(obj,vhcl,thr);
+            C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            PLoyd = 2/27*rho*vFlow^3*Aref*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+            Pavg = squeeze(obj.turbPow.Data(1,1,ran));
+            Pow.loyd = mean(PLoyd(ran))*1e-3;
+            Pow.avg = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.Lfactor = mean(Pavg./PLoyd(ran));
+            fprintf('Flow:\t %.2f m/s;\t Lthr: %.1f m;\t EL: %.2f deg\n',vFlow,LThr,EL);
+            fprintf('Avg\t\t\t Loyd\t\t Factor\n%.3f kW\t %.3f kW\t %.3f\n\n',Pow.avg,Pow.loyd,Pow.Lfactor)
         end
     end
 end

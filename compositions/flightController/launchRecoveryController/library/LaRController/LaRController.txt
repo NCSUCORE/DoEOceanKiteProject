@@ -301,3 +301,7 @@ fltCtrl.ctrlOff.Value = 1.0000e+00
 fltCtrl.ctrlOff.Unit is unitless or has no unit specified
 fltCtrl.ctrlOff.NoScale = false
 fltCtrl.ctrlOff.Description = 'Switch to turn off control. 1 = On, 0 = Off'
+fltCtrl.minThrTension.Value = 5.0000e+00
+fltCtrl.minThrTension.Unit = 'N'
+fltCtrl.minThrTension.NoScale = false
+fltCtrl.minThrTension.Description = 'Minimum allowable tension during reeling in/out'
