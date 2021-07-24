@@ -1,4 +1,4 @@
-function pathFollowingControllerManta_bc()
+function pathFollowingCtrlAoATurb_bc()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
