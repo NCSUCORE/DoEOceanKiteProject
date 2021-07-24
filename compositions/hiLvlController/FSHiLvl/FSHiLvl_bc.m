@@ -1,4 +1,4 @@
-function mantaFSHiLvl_bc()
+function FSHiLvl_bc()
 
 % Creates output bus used by 
 elems(1) = Simulink.BusElement;
