@@ -154,7 +154,7 @@ fltCtrl.controlSigMax.upperLimit.NoScale = false
 fltCtrl.controlSigMax.lowerLimit.Value = -3.0000e+01
 fltCtrl.controlSigMax.lowerLimit.Unit is unitless or has no unit specified
 fltCtrl.controlSigMax.lowerLimit.NoScale = false
-fltCtrl.elevCtrlMax.upperLimit.Value = 8.0000e+00
+fltCtrl.elevCtrlMax.upperLimit.Value = 3.0000e+01
 fltCtrl.elevCtrlMax.upperLimit.Unit is unitless or has no unit specified
 fltCtrl.elevCtrlMax.upperLimit.NoScale = false
 fltCtrl.elevCtrlMax.lowerLimit.Value = -3.0000e+01
@@ -235,11 +235,11 @@ fltCtrl.AoAmin.Value = -8.7266e-02
 fltCtrl.AoAmin.Unit = 'deg'
 fltCtrl.AoAmin.NoScale = false
 fltCtrl.AoAmin.Description = 'Minimum AoA setpoint'
-fltCtrl.RPMConst.Value = 3.7000e+00
+fltCtrl.RPMConst.Value = 4.1880e+00
 fltCtrl.RPMConst.Unit is unitless or has no unit specified
 fltCtrl.RPMConst.NoScale = false
 fltCtrl.RPMConst.Description = 'Constant RPM setpoint'
-fltCtrl.RPMmax.Value = 8.0000e+00
+fltCtrl.RPMmax.Value = 6.0000e+00
 fltCtrl.RPMmax.Unit is unitless or has no unit specified
 fltCtrl.RPMmax.NoScale = false
 fltCtrl.RPMmax.Description = 'Maximum RPM setpoint'

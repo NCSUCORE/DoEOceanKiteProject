@@ -391,10 +391,10 @@ classdef signalcontainer < dynamicprops
 
             
         end
-        function Pow = rotPowerSummary(obj,vhcl,env)
+        function Pow = rotPowerSummary(obj,vhcl,env,thr)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
             ran = Idx1:Idx2-1;
-            [CLsurf,CDtot] = getCLCD(obj,vhcl);
+            [CLsurf,CDtot] = getCLCD(obj,vhcl,thr);
             C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
             Pow.loyd = mean(PLoyd)*1e-3;

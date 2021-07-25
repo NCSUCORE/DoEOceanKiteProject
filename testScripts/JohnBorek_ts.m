@@ -1,17 +1,17 @@
 %% Test script for John to control the kite model
-clear; %clc;
+clear; clc;
 Simulink.sdi.clear
 %% Simulation Setup
-% 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10, 4 = DOE
+% 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10
 % 2 - choose high level controller: 1 = const basis, 2 = variable alt, 3 = const basis/state flow
 % 3 - choose flight controller:     1 = pathFlow, 2 = full cycle, 3 = steady, 4 = reel-in
-% 4 - choose tether:                1 = Manta, 2 = Reel-in, 3 = Manta multi-node
+% 4 - choose tether:                1 = Single link, 2 = Reel-in, 3 = Multi-node, 4 = Faired
 % 5 - choose environment:           1 = const flow, 2 = variable flow.
 % 6 - save simulation results     
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 3 1 false true false];
+simScenario = [1 1 1 1 1 false true false];
 thrLength = 400;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
 initTL = 400;      initAltitude = 150;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .25;                                               %   m/s - Flow speed
@@ -19,8 +19,7 @@ Tmax = 20;        Tdiam = 18;                               %   kN/mm - Max teth
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
-TD = 1; tf = 300;
-for ii = 1:numel(TD)
+tf = 2000;
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -29,10 +28,7 @@ switch simScenario(1)                                   %   Vehicle
         loadComponent('Manta2RotXFoil_AR9_b9');             %   AR = 9; 9m span
     case 3
         loadComponent('Manta2RotXFoil_AR9_b10');            %   AR = 9; 10m span
-    case 4
-        loadComponent('fullScale1thr');                     %   DOE kite
 end
-vhcl.turb1.setDiameter(TD(ii),'m'); vhcl.turb2.setDiameter(TD(ii),'m');
 switch simScenario(2)                                   %   Flight Controller 
     case 1
         loadComponent('constBoothLem');                     %   Constant basis parameters
@@ -76,7 +72,6 @@ switch simScenario(3)                                   %   Flight Controller
         slfCtrl = fltCtrl;
         loadComponent('MantaFSController');                 %   Path-following controller with AoA control
     case 3
-%         loadComponent('LaRController');                     %   Launch and recovery controller
         loadComponent('SteadyController');                  %   Steady-flight controller
     case 4
         loadComponent('LaRController');                     %   Launch and recovery controller
@@ -95,11 +90,11 @@ end
 switch simScenario(5)                                   %   Environment 
     case 1
         loadComponent('ConstXYZT');                         %   Constant flow 
-        ENVIRONMENT = 'environmentManta2Rot';               %   Two turbines
+        ENVIRONMENT = 'env2turb';               %   Two turbines
         env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
     case 2
         loadComponent('ConstYZTvarX');                      %   Variable X
-        ENVIRONMENT = 'environmentManta2Rot';               %   Two turbines
+%         ENVIRONMENT = 'environmentManta2Rot';               %   Two turbines
         env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
 end
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
@@ -121,7 +116,7 @@ vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value,'1/deg');
 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value,'1/deg');
 %%  Vehicle Initial Conditions 
 if simScenario(3) == 1 
-    vhcl.setICsOnPath(0.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
+    vhcl.setICsOnPath(0.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
 else
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
@@ -200,7 +195,7 @@ simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
 if simScenario(3) == 1
-    Pow = tsc.rotPowerSummary(vhcl,env);
+    Pow = tsc.rotPowerSummary(vhcl,env,thr);
     [Idx1,Idx2] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
     AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
     airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
@@ -224,7 +219,6 @@ switch simScenario(3)
 end
 if simScenario(6)
     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
-end
 end
 %%  Plot Results
 if simScenario(8)
@@ -261,7 +255,7 @@ if simScenario(7)
             'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
     end
 end
-
+%%
 vApp = squeeze(tsc.vhclVapp.Data);
 vAppSqr = squeeze(dot(vApp,vApp));
 bMat = squeeze(tsc.bMatrix.Data);

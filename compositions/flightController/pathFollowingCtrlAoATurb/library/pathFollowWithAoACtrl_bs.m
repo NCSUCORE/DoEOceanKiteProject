@@ -1,4 +1,4 @@
-FLIGHTCONTROLLER = 'pathFollowingControllerManta';
+FLIGHTCONTROLLER = 'pathFollowingCtrlAoATurb';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
 fltCtrl = CTR.pthFlwCtrlM;
