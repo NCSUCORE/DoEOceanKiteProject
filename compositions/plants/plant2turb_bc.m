@@ -145,7 +145,7 @@ elems(16).Complexity = 'real';
 elems(16).Unit = 'm';
 
 elems(17) = Simulink.BusElement;
-elems(17).Name = 'accVecGnd';
+elems(17).Name = 'accelerometer';
 elems(17).Dimensions = [3 1];
 elems(17).DimensionsMode = 'Fixed';
 elems(17).DataType = 'double';
