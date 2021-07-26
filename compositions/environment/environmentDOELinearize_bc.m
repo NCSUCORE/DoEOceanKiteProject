@@ -1,52 +1,12 @@
-function  env2turbLinearize_bc
+function  environmentDOELinearize_bc
 
 sz = getBusDims;
 
 
-%% First, create sub-busses
-% Create sub-bus for vehicle flow vecs
-% 1) no sub-bus defined
-
-% 2) Create sub-bus for tether flow vecs
-% elems(1) = Simulink.BusElement;
-% elems(1).Name = 'linkFlowVecs';
-% elems(1).DimensionsMode = 'Fixed';
-% elems(1).Dimensions = [3 numNodes-1];
-% elems(1).DataType = 'double';
-% elems(1).SampleTime = -1;
-% elems(1).Complexity = 'real';
-% elems(1).Unit = 'm/s';
-% elems(1).Description = 'Flow velocity vector in the ground coordinate system at each of the tether link centers.';
-% 
-% linkFlowVecsBus = Simulink.Bus;
-% linkFlowVecsBus.Elements = elems;
-% linkFlowVecsBus.Description = 'Bus containing flow vector at all links of a single tether.';
-% 
-% assignin('base','linkFlowVecsBus',linkFlowVecsBus)
-% clearvars elems
-
-% 3) Create sub-bus for anchor tether flow vecs
-% elems(1) = Simulink.BusElement;
-% elems(1).Name = 'linkFlowVecs';
-% elems(1).DimensionsMode = 'Fixed';
-% elems(1).Dimensions = [3 numNodesAnchor-1];
-% elems(1).DataType = 'double';
-% elems(1).SampleTime = -1;
-% elems(1).Complexity = 'real';
-% elems(1).Unit = 'm/s';
-% elems(1).Description = 'Flow velocity vector in the ground coordinate system at each of the tether link centers for the anchor tether.';
-% 
-% linkFlowVecsAnchorBus = Simulink.Bus;
-% linkFlowVecsAnchorBus.Elements = elems;
-% linkFlowVecsAnchorBus.Description = 'Bus containing flow vector at all links of a single tether.';
-% 
-% assignin('base','linkFlowVecsAnchorBus',linkFlowVecsAnchorBus)
-% clearvars elems
-
 % Create bus for the entire environment
 elems(1) = Simulink.BusElement;
 elems(1).Name = 'vhclFlowVecs';
-elems(1).Dimensions = [3 13]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
+elems(1).Dimensions = [3 11]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
 elems(1).DimensionsMode = 'Fixed';
 elems(1).DataType = 'double';
 elems(1).SampleTime = -1;
@@ -57,7 +17,7 @@ elems(1).Description = 'Flow velocity vector in the ground coordinate system at 
 
 elems(2) = Simulink.BusElement;
 elems(2).Name = 'oceanHeightAtVhcl';
-elems(2).Dimensions = [13,1]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
+elems(2).Dimensions = [11,1]; % Assumes 5 fluid dynamic surfaces (4 + fuselage) + 6 gradient poll positions
 elems(2).DimensionsMode = 'Fixed';
 elems(2).DataType = 'double';
 elems(2).SampleTime = -1;
@@ -132,6 +92,7 @@ elems(8).Complexity = 'real';
 elems(8).Unit = 'm/s';
 elems(8).Description = 'Ocean surface height at the x location of the gnd stn lumped masses';
 
+% Create environment bus
 elems(9) = Simulink.BusElement;
 elems(9).Name = 'velPrim';
 elems(9).Dimensions = [3 1]; 
@@ -140,7 +101,7 @@ elems(9).DataType = 'double';
 elems(9).SampleTime = -1;
 elems(9).Complexity = 'real';
 elems(9).Unit = 'm/s';
-elems(9).Description = 'Velocity Primitives';
+elems(9).Description = 'Velocity primitives';
 
 envBus = Simulink.Bus;
 envBus.Elements = elems;
