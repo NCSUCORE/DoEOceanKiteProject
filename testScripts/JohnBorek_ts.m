@@ -1,17 +1,17 @@
 %% Test script for John to control the kite model
-clear; clc;
+clear; %clc;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10
 % 2 - choose high level controller: 1 = const basis, 2 = variable alt, 3 = const basis/state flow
 % 3 - choose flight controller:     1 = pathFlow, 2 = full cycle, 3 = steady, 4 = reel-in
-% 4 - choose tether:                1 = Single link, 2 = Reel-in, 3 = Multi-node, 4 = Faired
+% 4 - choose tether:                1 = Single link, 2 = Reel-in, 3 = Multi-node, 4 = Faired, 5 = Multi-node faired
 % 5 - choose environment:           1 = const flow, 2 = variable flow.
 % 6 - save simulation results     
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 3 1 false true false];
+simScenario = [1 1 1 5 1 false false false];
 thrLength = 200;  altitude = 100;                           %   m/m - Nominal tether length/operating altitude
 initTL = thrLength;200;      initAltitude = altitude;100;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .5;                                               %   m/s - Flow speed
@@ -19,7 +19,7 @@ Tmax = 20;        Tdiam = 18;                               %   kN/mm - Max teth
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
-TD = 1; tf = 500;
+TD = 1; tf = 5000;
 
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
@@ -89,6 +89,8 @@ switch simScenario(4)                                   %   Tether model
     case 4
         loadComponent('MantaFSTether'); 
         thr.initTetherLength.setValue(initTL,'m')%   Manta Ray tether
+    case 5
+        loadComponent('fairedNNodeTether');                       %   Manta Ray tether
 end
 switch simScenario(5)                                   %   Environment 
     case 1
@@ -250,17 +252,17 @@ if simScenario(7)
     end
 end
 %%
-vApp = squeeze(tsc.vhclVapp.Data);
-vAppSqr = squeeze(dot(vApp,vApp));
-bMat = squeeze(tsc.bMatrix.Data);
-t = tsc.vhclVapp.Time;
-q = 1
-figure
-for i = 1:2
-    for j = 1:2
-        bMatScale = squeeze(bMat(i,j,:))'./vAppSqr;
-        subplot(2,2,q)
-        plot(t,bMatScale);
-        q = q+1;
-    end
-end
+% vApp = squeeze(tsc.vhclVapp.Data);
+% vAppSqr = squeeze(dot(vApp,vApp));
+% bMat = squeeze(tsc.bMatrix.Data);
+% t = tsc.vhclVapp.Time;
+% q = 1
+% figure
+% for i = 1:2
+%     for j = 1:2
+%         bMatScale = squeeze(bMat(i,j,:))'./vAppSqr;
+%         subplot(2,2,q)
+%         plot(t,bMatScale);
+%         q = q+1;
+%     end
+% end

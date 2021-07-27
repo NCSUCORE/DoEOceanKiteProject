@@ -38,7 +38,7 @@ classdef tethers < dynamicprops
             
             p = inputParser;
             addParameter(p,'TetherNames',defThrName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
-            addParameter(p,'TetherClass','tether',@(x) any(strcmp(x,{'tether','tether001'})))
+            addParameter(p,'TetherClass','tether',@(x) any(strcmp(x,{'tether','tether001','tetherF'})))
             parse(p,varargin{:})
             
             % Create tethers
