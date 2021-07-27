@@ -222,7 +222,7 @@ classdef signalcontainer < dynamicprops
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
             CDthr = thr.tether1.dragCoeff.Value.*Athr/Aref;
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
-            CDtot = CDfuse+CDsurf+CDthr;
+            CDtot = CDfuse+CDsurf;%+CDthr;
             CLsurf = squeeze(obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data);
         end
         function [Lift,Drag,Fuse,Thr] = getLiftDrag(obj)

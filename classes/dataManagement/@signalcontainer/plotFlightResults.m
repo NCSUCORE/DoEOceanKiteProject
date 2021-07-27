@@ -5,7 +5,7 @@ addOptional(p,'plot1Lap',false,@islogical);
 addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'cross',false,@islogical);
-addOptional(p,'AoASP',false,@islogical);
+addOptional(p,'AoASP',true,@islogical);
 addOptional(p,'maxTension',true,@islogical)
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
@@ -161,17 +161,17 @@ ax4 = subplot(R,C,4); hold on; grid on
 if lap
     if con
         if p.Results.AoASP
-        plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');  
+            plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');
         end
-        plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA'); 
+        plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA');
         ylabel('Angle [deg]');
         if p.Results.plotBeta
-            plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');  
+            plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');
         end
         legend;
     else
-        plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');  
-        plot(time(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA'); 
+        plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');
+        plot(time(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA');
         ylabel('Angle [deg]');  xlim(lim);
         if p.Results.plotBeta
             plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');   xlim(lim)

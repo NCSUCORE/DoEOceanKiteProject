@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear; %clc;
+clear; clc;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10
@@ -11,8 +11,8 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 5 1 false false true];
-thrLength = 200;  altitude = 100;                           %   m/m - Nominal tether length/operating altitude
+simScenario = [1 1 1 5 1 false false 1==1];
+thrLength = 300;  altitude = 150;                           %   m/m - Nominal tether length/operating altitude
 initTL = thrLength;200;      initAltitude = altitude;100;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .5;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 18;                               %   kN/mm - Max tether tension/tether diameter 
@@ -20,7 +20,7 @@ h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
 TD = 1; tf = 5000;
-fairing = 100;
+fairing = 00;   AoAsp = 12;         
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -126,6 +126,7 @@ if simScenario(4)~=4
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     thr.tether1.fairedLength.setValue(fairing,'m');
+    thr.tether1.maxThrLength.setValue(thrLength,'m');
 else
     thr.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
     thr.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
@@ -142,7 +143,7 @@ switch simScenario(3)
     case 1
         fltCtrl.setFcnName(PATHGEOMETRY,'');
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-        fltCtrl.AoASP.setValue(1,'');                           fltCtrl.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+        fltCtrl.AoASP.setValue(1,'');                           fltCtrl.AoAConst.setValue(AoAsp*pi/180,'deg');
         fltCtrl.AoACtrl.setValue(1,'');                         fltCtrl.Tmax.setValue(Tmax-0.5,'kN');
         fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
         fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
