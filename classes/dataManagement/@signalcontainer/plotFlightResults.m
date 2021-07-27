@@ -6,7 +6,7 @@ addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'cross',false,@islogical);
 addOptional(p,'AoASP',false,@islogical);
-addOptional(p,'maxTension',false,@islogical)
+addOptional(p,'maxTension',true,@islogical)
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'dragChar',false,@islogical);
@@ -77,7 +77,7 @@ else
 end
 figure();
 %%  Plot Power Output
-subplot(R,C,1);
+ax1 = subplot(R,C,1);
 hold on; grid on
 yyaxis left
 if lap
@@ -104,7 +104,7 @@ else
     plot(time,energy,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
 end
 %%  Plot Tether Tension
-subplot(R,C,2); hold on; grid on
+ax2 = subplot(R,C,2); hold on; grid on
 if p.Results.maxTension
     Tmax = (obj.maxTension.Data+0.5)*ones(numel(time),1);
 else
@@ -123,7 +123,7 @@ else
     ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
 end
 %%  Plot Speed
-subplot(R,C,3); hold on; grid on
+ax3 = subplot(R,C,3); hold on; grid on
 if lap
     if con
         if turb
@@ -157,7 +157,7 @@ else
     end
 end
 %%  Plot Angle of attack
-subplot(R,C,4); hold on; grid on
+ax4 = subplot(R,C,4); hold on; grid on
 if lap
     if con
         if p.Results.AoASP
@@ -188,7 +188,7 @@ else
 end
 
 %%  Plot Ctrl Surface Deflection 
-subplot(R,C,6); hold on; grid on
+ax5 = subplot(R,C,6); hold on; grid on
 if lap
     if con
         plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'b-');  xlabel('Path Position');  ylabel('Deflection [deg]');
@@ -206,7 +206,7 @@ else
 end
 legend('P-Aileron','Elevator','Rudder')
 %%  Plot Lift-Drag ratio
-subplot(R,C,5); hold on; grid on
+ax6 = subplot(R,C,5); hold on; grid on
 yyaxis left
 if lap
     if con
@@ -223,19 +223,20 @@ end
 yyaxis right
 if lap
     if con
-        plot(data(ran),CDtot(ran),'r--');    xlabel('Path Position');  set(gca,'YColor',[0 0 0])
-        plot(data(ran),CLsurf(ran),'b--');   xlabel('Path Position');  ylabel('CD and CL');  legend('Drag','Lift','CD','CL')
+        plot(data(ran),CLsurf(ran),'b--');    xlabel('Path Position');  set(gca,'YColor',[0 0 0])
+        plot(data(ran),CDtot(ran),'r--');   xlabel('Path Position');  ylabel('CD and CL');  legend('Drag','Lift','CL','CD')
     else
-        plot(time(ran),CDtot(ran),'r--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
-        plot(time(ran),CLsurf(ran),'b--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CD','CL') ;  xlim(lim);
+        plot(time(ran),CLsurf(ran),'b--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
+        plot(time(ran),CDtot(ran),'r--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CL','CD') ;  xlim(lim);
     end
 else
-    plot(time,CDtot,'r--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
-    plot(time,CLsurf,'b--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CD','CL') ;  xlim(lim);
+    plot(time,CLsurf,'b--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
+    plot(time,CDtot,'r--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CL','CD') ;  xlim(lim);
 end
 % figure; hold on; grid on
 % plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
 % plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
+linkaxes([ax1 ax2 ax3 ax4 ax5 ax6],'x');
 % legend('CD','CL')
 %%  Plot Drag Characteristics 
 if turb && p.Results.dragChar && con

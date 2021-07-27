@@ -117,8 +117,9 @@ classdef tetherF < handle
         end
         
         function val = get.dragCoeff(obj)  % Total drag coeff vector based on fair/nom drag farring length
-            numFairingLinks = floor((obj.numNodes.Value-1)*obj.fairedLength.Value/obj.maxThrLength.Value);
-            numNominalLinks = (obj.numNodes.Value-1)-numFairingLinks;
+            numLinks = obj.numNodes.Value-1;  linkLength = obj.maxThrLength.Value/numLinks;
+            numFairingLinks = floor(obj.fairedLength.Value/linkLength);
+            numNominalLinks = numLinks-numFairingLinks;
             val = [obj.fairedDragCoeff.Value*ones(1,numFairingLinks),obj.nomDragCoeff.Value*ones(1,numNominalLinks)];
             val = SIM.parameter('Value',fliplr(val),'Unit','');
         end        

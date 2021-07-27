@@ -11,7 +11,7 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 5 1 false false false];
+simScenario = [1 1 1 5 1 false false true];
 thrLength = 200;  altitude = 100;                           %   m/m - Nominal tether length/operating altitude
 initTL = thrLength;200;      initAltitude = altitude;100;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .5;                                               %   m/s - Flow speed
@@ -20,7 +20,7 @@ h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
 TD = 1; tf = 5000;
-
+fairing = 100;
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -125,9 +125,7 @@ if simScenario(4)~=4
     thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-    thr.tether1.youngsMod.setValue(3.7e10,'Pa');
-    thr.tether1.density.setValue(2226,'kg/m^3');
-    thr.tether1.setDiameter(Tdiam*1e-3,'m');
+    thr.tether1.fairedLength.setValue(fairing,'m');
 else
     thr.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
     thr.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
@@ -224,7 +222,7 @@ if simScenario(8)
             if max(tsc.lapNumS.Data) < 2
                 tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             else
-                tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+                tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             end
         case 2
             tsc.plotFSslf(fltCtrl,'Steady',true);
