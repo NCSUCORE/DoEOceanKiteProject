@@ -31,7 +31,7 @@ for q = 2
                     %             loadComponent('exp_slCtrl');
                     loadComponent('periodicCtrlExp');
                     %             fltCtrl.ctrlOff.setValue(0,'')
-                    FLIGHTCONTROLLER = 'periodicCtrlExp';
+                    FLIGHTCONTROLLER = 'periodicCtrlExpAllocate';
                 else%
                     loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
                     FLIGHTCONTROLLER = 'pathFollowingControllerExp';
@@ -49,7 +49,7 @@ for q = 2
                 loadComponent('ConstXYZT');                                 %   Environment
                 %                 loadComponent('CNAPsTurbJames');
                 env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
-                ENVIRONMENT = 'environmentManta2RotBandLin';            %   Two turbines
+                ENVIRONMENT = 'env2turbLinearize';            %   Two turbines
                 %%  Set basis parameters for high level controller
                
                 loadComponent('constBoothLem');        %   High level controller

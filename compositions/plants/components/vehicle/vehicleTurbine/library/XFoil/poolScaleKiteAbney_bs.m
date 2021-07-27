@@ -1,10 +1,10 @@
 %%  Manta Ray Vehicle Build Script for 2 Rotors 
 % clear; clc
 
-VEHICLE               = "vehicleManta2RotPool";
-PLANT                 = "plantManta2Rot";
+VEHICLE               = "vhclPool";
+PLANT                 = "plant2turb";
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12Int";
-LIBRARY               = "Manta2RotXFoil_AR8_b8";
+LIBRARY               = "XFoil_AR8_b8";
 % Vehicle is scaled at the end.
 %% Essential Values
 vhcl = OCT.vehicleM;

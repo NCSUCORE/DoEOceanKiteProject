@@ -1,5 +1,5 @@
 clc 
-clear all
+% clear all
 close all
 date = '07 14 21'
 direc = strcat('G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\',date,'\Data')
@@ -9,11 +9,11 @@ saveFig = 0
 saveDir = strcat('output\',testCond)
 status = mkdir(saveDir)
 plotData = 1
-runs = [31];
+runs = [28];
 runQuery = min(runs);
 runCount = min(runs);
 runLim = max(runs);
-i = 1;
+i = 3;
 j = 1;
 while runCount <= runLim
     if listing(j).isdir ~= 1
@@ -73,7 +73,7 @@ end
 %     plot(vel,ten,'x')
 %%
 if plotData == 1
-    runs={'Parallel Control','Control Allocation'};
+    runs={'Roll Tracking','Roll and Yaw Tracking','Allocated Roll and Yaw Tracking'};
 close all
 j = 1
 color={[0    0.4470    0.7410],...
@@ -83,7 +83,7 @@ color={[0    0.4470    0.7410],...
     [0.4660    0.6740    0.1880],...
     [0.3010    0.7450    0.9330],...
     [0.6350    0.0780    0.1840]};
-for i = 1:numel(runs)
+for i = 1:32
 %%
 % if i == 1 
 % j=3
@@ -109,9 +109,12 @@ for i = 1:numel(runs)
 % end
 %%
 
+[~,velAug] = estExpVelMag(runData{i},1);
+powAugPlot{i} = velAug(500:2300).^3
 % j = plotExpPowAug(runData,i,j,runs{i});
 % j = plotExpVelAug(runData,i,j,runs{i});
-j = plotVelAugTrack(runData,i,j,'Roll and Yaw Parallel PID Control');
+j = plotVelAugTrack(runData,i,j,'');
+j = plotVelAugElev(runData,i,j,'',runs{i});
 % j = plotExpData(runData,'kiteRoll','yLegend','Roll [deg]',...
 %     'legendEntry','Roll','dataScale',180/pi,...
 %     'runNum',i,'figNum',j);
@@ -128,9 +131,10 @@ j = plotVelAugTrack(runData,i,j,'Roll and Yaw Parallel PID Control');
 j = plotExpData(runData,'kite_elev','yLegend','Elevation [deg]',...
     'legendEntry',runs{i},'dataScale',1,...
     'runNum',i,'figNum',j,'Color',color{i});
-% j = plotExpData(runData,'kite_azi','yLegend','Azimuth [deg]',...
-%     'legendEntry',runs{i},'dataScale',1,...
-%     'runNum',i,'figNum',j)
+
+j = plotExpData(runData,'kite_azi','yLegend','Azimuth [deg]',...
+    'legendEntry',runs{i},'dataScale',1,...
+    'runNum',i,'figNum',j,'Color',color{i})
 % j = plotExpData(runData,'LoadCell_N','yLegend','Tether Tension [N]',...
 %     'legendEntry',runs{i},'dataScale',1/2,...
 %     'runNum',i,'figNum',j,'Color',color{i});
@@ -158,26 +162,27 @@ j = 1
 end
 end
 
-% figure
-% subplot(3,1,1); hold on; grid on;
-% plot(runData{1,1}.kiteRoll*180/pi)
-% plotsq(tscSim.eulerAngles.Time,tscSim.eulerAngles.Data(1,:,:)*180/pi)
-% ylabel 'Roll [deg]'
-% set(gca,'FontSize',15)
-% subplot(3,1,2); hold on; grid on;
-% plot(runData{1,1}.kitePitch*180/pi)
-% plotsq(tscSim.eulerAngles.Time,tscSim.eulerAngles.Data(2,:,:)*180/pi)
-% ylabel 'Pitch [deg]'
-% set(gca,'FontSize',15)
-% subplot(3,1,3); hold on; grid on;
-% plot(runData{1,1}.yawDeadRec)
-% plotsq(tscSim.eulerAngles.Time,tscSim.eulerAngles.Data(3,:,:)*180/pi)
-% ylabel 'Yaw [deg]'
-% xlabel 'Time [s]'
-% legend('Exp','Sim')
-% set(gca,'FontSize',15)
-% 
-% figure
-% plot(runData{1,1}.kite_azi)
-% hold on
-% plot(tscSim.phi*180/pi)
+figure
+subplot(3,1,1); hold on; grid on;
+plot(runData{1,1}.kiteRoll*180/pi)
+plotsq(tscSim.eulerAngles.Time-1,tscSim.eulerAngles.Data(1,:,:)*180/pi)
+ylabel 'Roll [deg]'
+set(gca,'FontSize',15)
+subplot(3,1,2); hold on; grid on;
+plot(runData{1,1}.kitePitch*180/pi)
+plotsq(tscSim.eulerAngles.Time-1,tscSim.eulerAngles.Data(2,:,:)*180/pi)
+ylabel 'Pitch [deg]'
+set(gca,'FontSize',15)
+subplot(3,1,3); hold on; grid on;
+plot(runData{1,1}.yawDeadRec)
+plotsq(tscSim.eulerAngles.Time-1,tscSim.eulerAngles.Data(3,:,:)*180/pi-180)
+ylabel 'Yaw [deg]'
+xlabel 'Time [s]'
+legend('Exp','Sim')
+set(gca,'FontSize',15)
+
+figure
+plot(runData{1,1}.kite_azi*-1)
+hold on
+plot(tscSim.phi*180/pi)
+legend('Experiment','Simulation')

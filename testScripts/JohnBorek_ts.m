@@ -11,15 +11,16 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 1 1 false true false];
-thrLength = 400;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
-initTL = 400;      initAltitude = 150;                      %   m/m - Initial tether length/operating altitude
-flwSpd = .25;                                               %   m/s - Flow speed
+simScenario = [1 1 1 3 1 false true false];
+thrLength = 200;  altitude = 100;                           %   m/m - Nominal tether length/operating altitude
+initTL = thrLength;200;      initAltitude = altitude;100;                      %   m/m - Initial tether length/operating altitude
+flwSpd = .5;                                               %   m/s - Flow speed
 Tmax = 20;        Tdiam = 18;                               %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
-tf = 2000;
+TD = 1; tf = 500;
+
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -84,8 +85,10 @@ switch simScenario(4)                                   %   Tether model
         thr.tether1.setInitTetherLength(initTL,'m');     %   Initialize tether length 
     case 3
         loadComponent('MantaTetherReal');                       %   Manta Ray tether
+%         thr.setNumNodes(11,'');
     case 4
-        loadComponent('MantaFSTether');                       %   Manta Ray tether
+        loadComponent('MantaFSTether'); 
+        thr.initTetherLength.setValue(initTL,'m')%   Manta Ray tether
 end
 switch simScenario(5)                                   %   Environment 
     case 1
@@ -94,7 +97,7 @@ switch simScenario(5)                                   %   Environment
         env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
     case 2
         loadComponent('ConstYZTvarX');                      %   Variable X
-%         ENVIRONMENT = 'environmentManta2Rot';               %   Two turbines
+        ENVIRONMENT = 'env2turb';               %   Two turbines
         env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
 end
 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
@@ -103,17 +106,8 @@ loadComponent('winchManta');                                %   Winches
 loadComponent('idealSensors')                               %   Sensors
 loadComponent('idealSensorProcessing')                      %   Sensor processing
 
-vhcl.vStab.setGainCD(vhcl.vStab.gainCD.Value*vhcl.vStab.planformArea.Value/vhcl.fluidRefArea.Value,'1/deg');
-vhcl.vStab.setGainCL(vhcl.vStab.gainCL.Value*vhcl.vStab.planformArea.Value/vhcl.fluidRefArea.Value,'1/deg');
 
-vhcl.hStab.setGainCD(vhcl.hStab.gainCD.Value*vhcl.hStab.planformArea.Value/vhcl.fluidRefArea.Value*2,'1/deg');
-vhcl.hStab.setGainCL(vhcl.hStab.gainCL.Value*vhcl.hStab.planformArea.Value/vhcl.fluidRefArea.Value*2,'1/deg');
 
-vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value,'1/deg');
-vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value,'1/deg');
-
-vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value,'1/deg');
-vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value,'1/deg');
 %%  Vehicle Initial Conditions 
 if simScenario(3) == 1 
     vhcl.setICsOnPath(0.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
@@ -138,7 +132,7 @@ else
         +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
     thr.initGndNodeVel.setValue([0 0 0]','m/s');
     thr.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
-    thr.initTetherLength.setValue(initTL,'m')
+%     thr.initTetherLength.setValue(initTL,'m')
 end
 %%  Winches Properties
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
@@ -242,7 +236,7 @@ end
 %%  Animate Simulation
 if simScenario(7)
     if simScenario(3) == 1
-        vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+        vhcl.animateSim(tsc,10,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
             'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
             'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
     elseif simScenario(3) == 2
