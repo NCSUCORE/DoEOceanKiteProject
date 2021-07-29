@@ -11,16 +11,16 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 5 1 false false 1==1];
-thrLength = 300;  altitude = 150;                           %   m/m - Nominal tether length/operating altitude
+simScenario = [1 1 1 5 1 false true 1==1];
+thrLength = 600;  altitude = 600/sqrt(2);                           %   m/m - Nominal tether length/operating altitude
 initTL = thrLength;200;      initAltitude = altitude;100;                      %   m/m - Initial tether length/operating altitude
 flwSpd = .5;                                               %   m/s - Flow speed
-Tmax = 20;        Tdiam = 18;                               %   kN/mm - Max tether tension/tether diameter 
+Tmax = 12;        Tdiam = 13.6;                               %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
-TD = 1; tf = 5000;
-fairing = 00;   AoAsp = 12;         
+TD = 1; tf = 2500;
+fairing = 100;   AoAsp = 13;         
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -127,6 +127,7 @@ if simScenario(4)~=4
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
     thr.tether1.fairedLength.setValue(fairing,'m');
     thr.tether1.maxThrLength.setValue(thrLength,'m');
+    thr.tether1.diameter.setValue(Tdiam*10^-3,'m')
 else
     thr.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
     thr.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
@@ -145,13 +146,17 @@ switch simScenario(3)
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
         fltCtrl.AoASP.setValue(1,'');                           fltCtrl.AoAConst.setValue(AoAsp*pi/180,'deg');
         fltCtrl.AoACtrl.setValue(1,'');                         fltCtrl.Tmax.setValue(Tmax-0.5,'kN');
-        fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
+        fltCtrl.alphaCtrl.kp.setValue(1*pi/180,'(rad)/(kN)');         fltCtrl.alphaCtrl.ki.setValue(.004,'(rad)/(kN*s)');
+        fltCtrl.alphaCtrl.tau.setValue(2,'s');
         fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
-        fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
+        fltCtrl.elevCtrl.tau.setValue(10,'s');
+        fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      fltCtrl.rollCtrl.tau.setValue(0.001,'s');
         fltCtrl.rudderGain.setValue(-1,'');
-        fltCtrl.yawMoment.kp.setValue(2500,'(N*m)/(rad)');
-        fltCtrl.rollMoment.kp.setValue(15000,'(N*m)/(rad)');    fltCtrl.rollMoment.kd.setValue(12000,'(N*m)/(rad/s)');
+        fltCtrl.yawMoment.kp.setValue(1000,'(N*m)/(rad)');
+        fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');    fltCtrl.rollMoment.kd.setValue(3000,'(N*m)/(rad/s)');
+        fltCtrl.pitchMoment.kp.setValue(1000,'(N*m)/(rad)');    fltCtrl.pitchMoment.ki.setValue(1,'(N*m)/(rad*s)');
+        fltCtrl.pitchMoment.tau.setValue(10,'s');
     case 2
         fltCtrl.maxTL.setValue(hiLvlCtrl.maxThrLength.Value,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');

@@ -1,7 +1,7 @@
 clc 
 % clear all
 close all
-date = '07 14 21'
+date = '07 28 21'
 direc = strcat('G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\',date,'\Data')
 listing =  dir(direc) 
 testCond = strcat(date,'\0-77\mvd')
@@ -9,11 +9,11 @@ saveFig = 0
 saveDir = strcat('output\',testCond)
 status = mkdir(saveDir)
 plotData = 1
-runs = [28];
+runs = [59];
 runQuery = min(runs);
 runCount = min(runs);
 runLim = max(runs);
-i = 3;
+i = 1;
 j = 1;
 while runCount <= runLim
     if listing(j).isdir ~= 1
@@ -73,7 +73,7 @@ end
 %     plot(vel,ten,'x')
 %%
 if plotData == 1
-    runs={'Roll Tracking','Roll and Yaw Tracking','Allocated Roll and Yaw Tracking'};
+    runs={'No Drag Screens','Drag Screens','Allocated Roll and Yaw Tracking'};
 close all
 j = 1
 color={[0    0.4470    0.7410],...
@@ -110,11 +110,11 @@ for i = 1:32
 %%
 
 [~,velAug] = estExpVelMag(runData{i},1);
-powAugPlot{i} = velAug(500:2300).^3
+% powAugPlot{i} = velAug(500:2300).^3
 % j = plotExpPowAug(runData,i,j,runs{i});
-% j = plotExpVelAug(runData,i,j,runs{i});
-j = plotVelAugTrack(runData,i,j,'');
-j = plotVelAugElev(runData,i,j,'',runs{i});
+j = plotExpVelAug(runData,i,j,runs{i});
+% j = plotVelAugTrack(runData,i,j,'');
+% j = plotVelAugElev(runData,i,j,'',runs{i});
 % j = plotExpData(runData,'kiteRoll','yLegend','Roll [deg]',...
 %     'legendEntry','Roll','dataScale',180/pi,...
 %     'runNum',i,'figNum',j);
@@ -135,9 +135,9 @@ j = plotExpData(runData,'kite_elev','yLegend','Elevation [deg]',...
 j = plotExpData(runData,'kite_azi','yLegend','Azimuth [deg]',...
     'legendEntry',runs{i},'dataScale',1,...
     'runNum',i,'figNum',j,'Color',color{i})
-% j = plotExpData(runData,'LoadCell_N','yLegend','Tether Tension [N]',...
-%     'legendEntry',runs{i},'dataScale',1/2,...
-%     'runNum',i,'figNum',j,'Color',color{i});
+j = plotExpData(runData,'LoadCell_N','yLegend','Tether Tension [N]',...
+    'legendEntry',runs{i},'dataScale',1/2,...
+    'runNum',i,'figNum',j,'Color',color{i});
 
 % [~,velAug] = estExpVelMag(runData{1},1);
 % 
@@ -186,3 +186,31 @@ plot(runData{1,1}.kite_azi*-1)
 hold on
 plot(tscSim.phi*180/pi)
 legend('Experiment','Simulation')
+
+figure; 
+plot(runData{1}.velAngleDes)
+hold on; grid on;
+plot(runData{1}.velAngle)
+legend('Vel Ang Des','Vel Ang')
+xlabel 'Time [s]'
+ylabel 'Angle [deg]'
+set(gca,'FontSize',15)
+
+figure; 
+plot(runData{1}.tanRollDes*180/pi)
+hold on; grid on;
+plot(runData{1}.tanRoll*180/pi)
+plot(runData{1}.RollCMD_deg)
+legend('Tan Roll Des','Tan Roll','Aileron')
+xlabel 'Time [s]'
+ylabel 'Angle [deg]'
+set(gca,'FontSize',15)
+
+
+figure
+plot(runData{1}.kite_azi.Data,runData{1}.kite_elev.Data)
+xlabel 'Azimuth [s]'
+ylabel 'Elevation [deg]'
+set(gca,'FontSize',15)
+xlim([-70 70]);
+ylim([0 90]);
