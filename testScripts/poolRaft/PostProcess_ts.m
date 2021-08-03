@@ -40,7 +40,7 @@ for q = 2
                 loadComponent('raftGroundStation');
                 loadComponent('winchManta');                                %   Winches
                 loadComponent('MantaTether');                               %   Manta Ray tether
-                loadComponent('realisticSensors');                             %   Sensors
+                loadComponent('lasPosEst');                             %   Sensors
                 loadComponent('lineAngleSensor');
                 loadComponent('idealSensorProcessing');                      %   Sensor processing
                 loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
@@ -49,7 +49,7 @@ for q = 2
                 loadComponent('ConstXYZT');                                 %   Environment
                 %                 loadComponent('CNAPsTurbJames');
                 env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
-                ENVIRONMENT = 'environmentManta2RotBandLin';            %   Two turbines
+                ENVIRONMENT = 'env2turb';            %   Two turbines
                 %%  Set basis parameters for high level controller
                
                 loadComponent('constBoothLem');        %   High level controller
@@ -78,6 +78,9 @@ for q = 2
                 initGndStnPos = [x_init;y_init;0];
                 thrAttachInit = initGndStnPos;
                 %%  Vehicle Properties
+                PLANT = 'plant2turb';
+                VEHICLE = 'vhclPool';
+                SENSORS = 'lasPosEst';
                 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
@@ -132,7 +135,7 @@ for q = 2
                 if q ~= 3
                     %                     693
                     fltCtrl.rollAmp.setValue(60,'deg');
-                    fltCtrl.yawAmp.setValue(70,'deg');
+                    fltCtrl.yawAmp.setValue(80,'deg');
                     fltCtrl.period.setValue(7.5,'s');
                     fltCtrl.rollPhase.setValue(pi-pi,'rad');
                     fltCtrl.yawPhase.setValue(.693-pi,'rad');
@@ -144,20 +147,20 @@ for q = 2
                     end
                    
                    
-                    fltCtrl.rollCtrl.kp.setValue(.3/.7,'(deg)/(deg)');
+                    fltCtrl.rollCtrl.kp.setValue(3,'(deg)/(deg)');
                     fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.rollCtrl.kd.setValue(.1/.9,'(deg)/(deg/s)');
+                    fltCtrl.rollCtrl.kd.setValue(1,'(deg)/(deg/s)');
                     fltCtrl.rollCtrl.tau.setValue(0.02,'s');
                    
                    
                    
                    
-                    fltCtrl.yawCtrl.kp.setValue(.1/.7,'(deg)/(deg)');
+                    fltCtrl.yawCtrl.kp.setValue(1.4,'(deg)/(deg)');
                     fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.yawCtrl.kd.setValue(.07/.7 ,'(deg)/(deg/s)');
+                    fltCtrl.yawCtrl.kd.setValue(1 ,'(deg)/(deg/s)');
                     fltCtrl.yawCtrl.tau.setValue(0.02,'s');
                    
-                    fltCtrl.ccElevator.setValue(-3.5,'deg');
+                    fltCtrl.ccElevator.setValue(-5.5,'deg');
                     fltCtrl.trimElevator.setValue(inc(i),'deg');
                    
                 end
@@ -180,6 +183,6 @@ for q = 2
         end
     end
 end
-vhcl.animateSim(tsc,0.2)
-
-plotVelMags
+% vhcl.animateSim(tsc,0.2)
+% 
+% plotVelMags
