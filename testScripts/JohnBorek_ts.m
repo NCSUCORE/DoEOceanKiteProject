@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear; clc;
+clear; clc; %close all;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10
@@ -11,16 +11,17 @@ Simulink.sdi.clear
 % 7 - animate    
 % 8 - plotting 
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 5 1 false true 1==1];
-thrLength = 400;  altitude = 200;                           %   m/m - Nominal tether length/operating altitude
+simScenario = [1 1 1 5 1 false true  1==1];
+scale = 1
+thrLength = 600/scale;  altitude = thrLength/2;                           %   m/m - Nominal tether length/operating altitude
 initTL = thrLength;200;      initAltitude = altitude;100;                      %   m/m - Initial tether length/operating altitude
-flwSpd = .25;                                               %   m/s - Flow speed
-Tmax = 12;        Tdiam = 13.6;                               %   kN/mm - Max tether tension/tether diameter 
+flwSpd = 0.5;                                               %   m/s - Flow speed
+Tmax = 12/scale^3;        Tdiam = 13.6/scale;                               %   kN/mm - Max tether tension/tether diameter 
 h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 subCtrl = 1;    sC = 0;
 TD = 1; tf = 2500;
-fairing = 100;   AoAsp = 13;         
+fairing = 100;   AoAsp = 14;         
 %%  Load components
 switch simScenario(1)                                   %   Vehicle 
     case 1
@@ -113,7 +114,7 @@ loadComponent('idealSensorProcessing')                      %   Sensor processin
 
 %%  Vehicle Initial Conditions 
 if simScenario(3) == 1 
-    vhcl.setICsOnPath(0.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd)
+    vhcl.setICsOnPath(0.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,4*flwSpd)
 else
     vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
     vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
@@ -126,8 +127,10 @@ if simScenario(4)~=4
     thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
     thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
     thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-    thr.tether1.fairedLength.setValue(fairing,'m');
-    thr.tether1.maxThrLength.setValue(thrLength,'m');
+    if simScenario(4) == 5
+        thr.tether1.fairedLength.setValue(fairing,'m');
+        thr.tether1.maxThrLength.setValue(thrLength,'m');
+    end
     thr.tether1.diameter.setValue(Tdiam*10^-3,'m')
 else
     thr.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
@@ -138,6 +141,7 @@ else
 %     thr.initTetherLength.setValue(initTL,'m')
 end
 %%  Winches Properties
+vhcl.hStab.CL.setValue(vhcl.hStab.alpha.Value*0.02156+.04334,'')
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
 %%  Controller User Def. Parameters and dependant properties
@@ -146,31 +150,31 @@ switch simScenario(3)
         fltCtrl.setFcnName(PATHGEOMETRY,'');
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
         fltCtrl.AoASP.setValue(1,'');                           fltCtrl.AoAConst.setValue(AoAsp*pi/180,'deg');
-        fltCtrl.AoACtrl.setValue(1,'');                         fltCtrl.Tmax.setValue(Tmax-0.5,'kN');
-        fltCtrl.alphaCtrl.kp.setValue(1*pi/180,'(rad)/(kN)');         fltCtrl.alphaCtrl.ki.setValue(.004,'(rad)/(kN*s)');
-        fltCtrl.alphaCtrl.tau.setValue(2,'s');
+        fltCtrl.AoACtrl.setValue(1,'');                         
+%         fltCtrl.alphaCtrl.kp.setValue(4.8*pi/180,'(rad)/(kN*s^2/m^2)');         fltCtrl.alphaCtrl.ki.setValue(0.001,'(rad)/(kN*s^2/m^2*s)');
+%         fltCtrl.alphaCtrl.kd.setValue(12*pi/180,'(rad)/(kN*s^2/m^2/s)');
+%         fltCtrl.alphaCtrl.tau.setValue(2,'s');
+%         fltCtrl.perpErrorVal.setValue(.65,'rad')
 %         fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');        fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 %         fltCtrl.elevCtrl.tau.setValue(10,'s');
 %         fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');        fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
 %         fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');      fltCtrl.rollCtrl.tau.setValue(0.001,'s');
         fltCtrl.rudderGain.setValue(-1,'');
         fltCtrl.yawMoment.kp.setValue(1000,'(N*m)/(rad)');
-        fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');    fltCtrl.rollMoment.kd.setValue(3000,'(N*m)/(rad/s)');
-        fltCtrl.pitchMoment.kp.setValue(1000,'(N*m)/(rad)');    fltCtrl.pitchMoment.ki.setValue(1,'(N*m)/(rad*s)');
-        fltCtrl.pitchMoment.tau.setValue(10,'s');
-%         Ku = 15000;
-%         fltCtrl.pitchMoment.kp.setValue(.45*Ku,'(N*m)/(rad)');    fltCtrl.pitchMoment.ki.setValue(.54*Ku/11,'(N*m)/(rad*s)');
-%         fltCtrl.pitchMoment.kd.setValue(0,'(N*m)/(rad/s)');    fltCtrl.pitchMoment.tau.setValue(10,'s');
-%         KuAlpha = 6
-%         fltCtrl.alphaCtrl.kp.setValue(.2*KuAlpha*pi/180,'(rad)/(kN)');   
-%         fltCtrl.alphaCtrl.ki.setValue(.4*KuAlpha*pi/180/11,'(rad)/(kN*s)');
-%         fltCtrl.alphaCtrl.kd.setValue(.066*KuAlpha*pi/180*11,'(rad)/(kN/s)');
-%         fltCtrl.alphaCtrl.tau.setValue(2,'s');
+        fltCtrl.tanRoll.kp.setValue(.2,'(rad)/(rad)');
+%         fltCtrl.rollMoment.kp.setValue(2000,'(N*m)/(rad)');    fltCtrl.rollMoment.kd.setValue(20000,'(N*m)/(rad/s)');
+%         
+%         fltCtrl.pitchMoment.kp.setValue(20000,'(N*m)/(rad)');    fltCtrl.pitchMoment.ki.setValue(500,'(N*m)/(rad*s)');
+%         fltCtrl.pitchMoment.kd.setValue(16000,'(N*m)/(rad/s)');
+%         fltCtrl.pitchMoment.tau.setValue(.1,'s');
+
+
+        fltCtrl.Tmax.setValue(Tmax-0.5,'kN');
     case 2
         fltCtrl.maxTL.setValue(hiLvlCtrl.maxThrLength.Value,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');
         pthCtrl1.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-        pthCtrl1.AoASP.setValue(1,'');                           pthCtrl1.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
+        pthCtrl1.AoASP.setValue(0,'');                           pthCtrl1.AoAConst.setValue(vhcl.optAlpha.Value*pi/180,'deg');
         pthCtrl1.AoACtrl.setValue(1,'');                         pthCtrl1.Tmax.setValue(Tmax-.5,'kN');
         pthCtrl1.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');         pthCtrl1.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');         
         pthCtrl1.elevCtrl.kp.setValue(125,'(deg)/(rad)');        pthCtrl1.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
@@ -195,6 +199,15 @@ switch simScenario(3)
         fltCtrl.LaRelevationSP.setValue(60,'deg');          fltCtrl.setNomSpoolSpeed(.0,'m/s');
 end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
+% env.scale(.375,1);
+% hiLvlCtrl.scale(.375,1);
+% gndStn.scale(.375,1);
+% thr.scale(.375,1);
+% fltCtrl.scale(.375,1);
+% wnch.scale(.375,1);
+% vhcl.scale(.375,1);
+
+% vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(tf,'s');  dynamicCalc = '';
 % if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
@@ -279,3 +292,15 @@ end
 %         q = q+1;
 %     end
 % end
+
+% figure;
+% hold on
+% plotsq(tsc.MNetBdy.Time,tsc.MAddedBdy.Data(2,:,:))
+% plotsq(tsc.MNetBdy.Time,tsc.MBuoyBdy.Data(2,:,:))
+% plotsq(tsc.MNetBdy.Time,tsc.MFluidBdy.Data(2,:,:))
+% plotsq(tsc.MNetBdy.Time,tsc.MFuseBdy.Data(2,:,:))
+% plotsq(tsc.MNetBdy.Time,tsc.MGravBdy.Data(2,:,:))
+% plotsq(tsc.MNetBdy.Time,tsc.MThrNetBdy.Data(2,:,:))
+% plotsq(tsc.MNetBdy.Time,tsc.MTurbBdy.Data(2,:,:))
+% legend('Added','Buoy','Fluid','Fuse','Grav','Thr','Turb')
+

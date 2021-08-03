@@ -9,17 +9,17 @@ fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
 fltCtrl.tanRoll.tau.setValue(10,'s');
 
-fltCtrl.rollMoment.kp.setValue(15000,'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');    
 fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue(12000,'(N*m)/(rad/s)');
+fltCtrl.rollMoment.kd.setValue(20000,'(N*m)/(rad/s)');      
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
 
-fltCtrl.pitchMoment.kp.setValue(2.1e5,'(N*m)/(rad)')
-fltCtrl.pitchMoment.ki.setValue(1700,'(N*m)/(rad*s)');
-fltCtrl.pitchMoment.kd.setValue(0,'(N*m)/(rad/s)');
-fltCtrl.pitchMoment.tau.setValue(0.001,'s');
+fltCtrl.pitchMoment.kp.setValue(20000,'(N*m)/(rad)');    
+fltCtrl.pitchMoment.ki.setValue(500,'(N*m)/(rad*s)');
+fltCtrl.pitchMoment.kd.setValue(16000,'(N*m)/(rad/s)');
+fltCtrl.pitchMoment.tau.setValue(.1,'s');
 
-fltCtrl.yawMoment.kp.setValue(2500,'(N*m)/(rad)');
+fltCtrl.yawMoment.kp.setValue(1000,'(N*m)/(rad)');
 
 fltCtrl.elevCtrl.kp.setValue(125,'(deg)/(rad)');
 fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
@@ -31,10 +31,10 @@ fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');
 fltCtrl.rollCtrl.tau.setValue(0.001,'s');
 
-fltCtrl.alphaCtrl.kp.setValue(.2,'(rad)/(kN)');
-fltCtrl.alphaCtrl.ki.setValue(.08,'(rad)/(kN*s)');
-
-fltCtrl.RPMCtrl.kp.setValue(100,'()/(kN)');
+fltCtrl.alphaCtrl.kp.setValue(4.8*pi/180,'(rad)/(kN*s^2/m^2)');         
+fltCtrl.alphaCtrl.ki.setValue(0.001,'(rad)/(kN*s^2/m^2*s)');
+fltCtrl.alphaCtrl.kd.setValue(12*pi/180,'(rad)/(kN*s^2/m^2/s)');
+fltCtrl.alphaCtrl.tau.setValue(2,'s');
 
 fltCtrl.yawCtrl.kp.setValue(200,'(deg)/(rad)');
 fltCtrl.yawCtrl.ki.setValue(1,'(deg)/(rad*s)');

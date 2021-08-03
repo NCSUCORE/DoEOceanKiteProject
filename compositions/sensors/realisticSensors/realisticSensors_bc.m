@@ -110,31 +110,40 @@ elems(12).Complexity = 'real';
 elems(12).Unit = 'N';
 
 elems(13) = Simulink.BusElement;
-elems(13).Name = 'flowVelocityVec';
-elems(13).Dimensions = [3 1];
+elems(13).Name = 'airTenVecs';
+elems(13).Dimensions = sz.nodeTenVecSize;
 elems(13).DimensionsMode = 'Fixed';
 elems(13).DataType = 'double';
 elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';
-elems(13).Unit = 'm/s';
+elems(13).Unit = 'N';
 
 elems(14) = Simulink.BusElement;
-elems(14).Name = 'LASpositionVec';
-elems(14).Dimensions = [2 1];
+elems(14).Name = 'flowVelocityVec';
+elems(14).Dimensions = [3 1];
 elems(14).DimensionsMode = 'Fixed';
 elems(14).DataType = 'double';
 elems(14).SampleTime = -1;
 elems(14).Complexity = 'real';
-elems(14).Unit = 'rad';
+elems(14).Unit = 'm/s';
 
 elems(15) = Simulink.BusElement;
-elems(15).Name = 'LASvelocityVec';
+elems(15).Name = 'LASpositionVec';
 elems(15).Dimensions = [2 1];
 elems(15).DimensionsMode = 'Fixed';
 elems(15).DataType = 'double';
 elems(15).SampleTime = -1;
 elems(15).Complexity = 'real';
-elems(15).Unit = 'rad/s';
+elems(15).Unit = 'rad';
+
+elems(16) = Simulink.BusElement;
+elems(16).Name = 'LASvelocityVec';
+elems(16).Dimensions = [2 1];
+elems(16).DimensionsMode = 'Fixed';
+elems(16).DataType = 'double';
+elems(16).SampleTime = -1;
+elems(16).Complexity = 'real';
+elems(16).Unit = 'rad/s';
 
 BUS = Simulink.Bus;
 BUS.Elements = elems;

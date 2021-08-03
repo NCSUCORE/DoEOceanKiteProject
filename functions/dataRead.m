@@ -9,7 +9,7 @@ saveFig = 0
 saveDir = strcat('output\',testCond)
 status = mkdir(saveDir)
 plotData = 1
-runs = [59];
+runs = [25 57 59 60];
 runQuery = min(runs);
 runCount = min(runs);
 runLim = max(runs);
@@ -73,7 +73,7 @@ end
 %     plot(vel,ten,'x')
 %%
 if plotData == 1
-    runs={'No Drag Screens','Drag Screens','Allocated Roll and Yaw Tracking'};
+    runs={'All PID','60/40 PID','60/40 PID 2','40/60 PID'};
 close all
 j = 1
 color={[0    0.4470    0.7410],...
