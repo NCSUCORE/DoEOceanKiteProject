@@ -26,9 +26,9 @@ fltCtrl.elevCtrl.ki.setValue(1,'(deg)/(rad*s)');
 fltCtrl.elevCtrl.kd.setValue(0,'(deg)/(rad/s)');
 fltCtrl.elevCtrl.tau.setValue(0.001,'s');
 
-fltCtrl.rollCtrl.kp.setValue(150,'(deg)/(rad)');
-fltCtrl.rollCtrl.ki.setValue(1,'(deg)/(rad*s)');
-fltCtrl.rollCtrl.kd.setValue(150,'(deg)/(rad/s)');
+fltCtrl.rollCtrl.kp.setValue(.3,'(deg)/(rad)');
+fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
+fltCtrl.rollCtrl.kd.setValue(.1,'(deg)/(rad/s)');
 fltCtrl.rollCtrl.tau.setValue(0.001,'s');
 
 fltCtrl.alphaCtrl.kp.setValue(4.8*pi/180,'(rad)/(kN*s^2/m^2)');         
@@ -36,9 +36,9 @@ fltCtrl.alphaCtrl.ki.setValue(0.001,'(rad)/(kN*s^2/m^2*s)');
 fltCtrl.alphaCtrl.kd.setValue(12*pi/180,'(rad)/(kN*s^2/m^2/s)');
 fltCtrl.alphaCtrl.tau.setValue(2,'s');
 
-fltCtrl.yawCtrl.kp.setValue(200,'(deg)/(rad)');
-fltCtrl.yawCtrl.ki.setValue(1,'(deg)/(rad*s)');
-fltCtrl.yawCtrl.kd.setValue(0,'(deg)/(rad/s)');
+fltCtrl.yawCtrl.kp.setValue(.14,'(deg)/(rad)');
+fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(rad*s)');
+fltCtrl.yawCtrl.kd.setValue(.1,'(deg)/(rad/s)');
 fltCtrl.yawCtrl.tau.setValue(0.001,'s');
 
 %%  Saturations

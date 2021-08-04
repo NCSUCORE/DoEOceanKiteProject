@@ -11,16 +11,14 @@ saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run linearization
 inc =-5.5;
 elevArray = 20*pi/180%[40 15]*pi/180;
-towArray = [1];
+towArray = [0.78];
 rCM = 1
-lengthArray = 6.25;
+lengthArray = 2.63;
 thrLength = 5;
 flwSpd = -1e-9;
 cdArray = [1.2 1.8];
-for jj = 1:2
-for ii = 1:length(lengthArray)
-thrLength = lengthArray(ii)
-for q = 3
+
+for q = 2
     for i = 1:length(inc)
         i
         for j = 1:length(towArray)
@@ -37,7 +35,7 @@ for q = 3
                     %             loadComponent('exp_slCtrl');
                     loadComponent('periodicCtrlExp');
                     %             fltCtrl.ctrlOff.setValue(0,'')
-                    FLIGHTCONTROLLER = 'periodicCtrlExpAllocate';
+%                     FLIGHTCONTROLLER = 'periodicCtrlExpAllocate';
                 else%
                     loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
                     FLIGHTCONTROLLER = 'pathFollowingControllerExp';
@@ -48,7 +46,7 @@ for q = 3
                 loadComponent('winchManta');                                %   Winches
                 loadComponent('MantaTether');                               %   Manta Ray tether
                 loadComponent('idealSensors');                             %   Sensors
-%                 loadComponent('lasPosEst')
+                loadComponent('lasPosEst')
                 loadComponent('lineAngleSensor');
                 loadComponent('idealSensorProcessing');                      %   Sensor processing
                 loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
@@ -72,11 +70,11 @@ for q = 3
                 T_tether = 100; %N
                 phi_max = 30*pi/180;
                 omega_kite = 2*pi/5; %rad/s
-                m_raft = 5000000000; %kg
-                J_raft = 3000000000;
+                m_raft = 50; %kg
+                J_raft = 30;
                 tow_length = 16;
                 tow_speed = towArray(j);
-                end_time = 100;
+                end_time = 23;
                 x_init = 4;
                 y_init = 0;
                 y_dot_init = 0;
@@ -126,7 +124,7 @@ for q = 3
                 thr.tether1.density.setValue(1000,'kg/m^3');
                 thr.tether1.setDiameter(.0076,'m');
                 thr.setNumNodes(4,'');
-                thrDrag =   cdArray(jj)
+                thrDrag =   1.8
                 thr.tether1.setDragCoeff(thrDrag,'');
                 %%  Winches Properties
                 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
@@ -148,7 +146,7 @@ for q = 3
                 if q ~= 3
                     %                     693
                     fltCtrl.rollAmp.setValue(60,'deg');
-                    fltCtrl.yawAmp.setValue(70,'deg');
+                    fltCtrl.yawAmp.setValue(80,'deg');
                     fltCtrl.period.setValue(7.5,'s');
                     fltCtrl.rollPhase.setValue(pi-pi,'rad');
                     fltCtrl.yawPhase.setValue(.693-pi,'rad');
@@ -160,20 +158,20 @@ for q = 3
                     end
                    
                    
-                    fltCtrl.rollCtrl.kp.setValue(.3/.7,'(deg)/(deg)');
+                    fltCtrl.rollCtrl.kp.setValue(3,'(deg)/(deg)');
                     fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.rollCtrl.kd.setValue(.1/.9,'(deg)/(deg/s)');
+                    fltCtrl.rollCtrl.kd.setValue(1,'(deg)/(deg/s)');
                     fltCtrl.rollCtrl.tau.setValue(0.02,'s');
                    
                    
                    
                    
-                    fltCtrl.yawCtrl.kp.setValue(.1/.7,'(deg)/(deg)');
+                    fltCtrl.yawCtrl.kp.setValue(1.4,'(deg)/(deg)');
                     fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.yawCtrl.kd.setValue(.07/.7 ,'(deg)/(deg/s)');
+                    fltCtrl.yawCtrl.kd.setValue(1 ,'(deg)/(deg/s)');
                     fltCtrl.yawCtrl.tau.setValue(0.02,'s');
                    
-                    fltCtrl.ccElevator.setValue(-3.5,'deg');
+                    fltCtrl.ccElevator.setValue(5.5,'deg');
                     fltCtrl.trimElevator.setValue(inc(i),'deg');
                    
                 end
@@ -196,35 +194,32 @@ for q = 3
         end
     end
 end
-filename = sprintf('Turb_V-%.2f_El-%.0f_thr-%.2f_thrDrg_%.1f.mat',towArray,el*180/pi,thrLength,thrDrag);
-save(filename,'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
-vel = tsc.velCMvec.getsampleusingtime(20,100);
-vels = squeeze(vel.Data);
-velmags = sqrt(sum((vels).^2,1));
-peakAug(jj,ii) = max(velmags);
-plotVelMags
-end
-end
+vhcl.animateSim(tsc,0.2)
 close all
-%%
-thrArray = [2.5:.5:5 6.25:1.25:20]
-cdArray = [1.2 1.8]
-towArray = 1
-for i = 1:length(cdArray)
-    for j = 1:length(thrArray)
-        thrDrag = cdArray(i)
-        thrLength = thrArray(j)
-        filename = sprintf('Turb_V-%.2f_El-%.0f_thr-%.2f_thrDrg_%.1f.mat',towArray,el*180/pi,thrLength,thrDrag);
-        load(filename)
-        vel = tsc.velCMvec.getsampleusingtime(20,100);
-        vels = squeeze(vel.Data);
-        velmags = sqrt(sum((vels).^2,1));
-        peakAug(i,j) = max(velmags);
-    end
-end
+% %%
+% thrArray = [2.5:.5:5 6.25:1.25:20]
+% cdArray = [1.2 1.8]
+% towArray = 1
+% for i = 1:length(cdArray)
+%     for j = 1:length(thrArray)
+%         thrDrag = cdArray(i)
+%         thrLength = thrArray(j)
+%         filename = sprintf('Turb_V-%.2f_El-%.0f_thr-%.2f_thrDrg_%.1f.mat',towArray,el*180/pi,thrLength,thrDrag);
+%         load(filename)
+%         vel = tsc.velCMvec.getsampleusingtime(20,100);
+%         vels = squeeze(vel.Data);
+%         velmags = sqrt(sum((vels).^2,1));
+%         peakAug(i,j) = max(velmags);
+%     end
+% end
+% 
+% figure
+% plot(thrArray,peakAug,'x')
+% legend('$CD_{thr} = 1.2$','$CD_{thr} = 1.8$')
+% xlabel 'Tether Length [m]'
+% ylabel 'Peak Velocity Augmentation'
 
-figure
-plot(thrArray,peakAug,'x')
-legend('$CD_{thr} = 1.2$','$CD_{thr} = 1.8$')
-xlabel 'Tether Length [m]'
-ylabel 'Peak Velocity Augmentation'
+figure;
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(1,:,:))
+hold on;
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(3,:,:))
