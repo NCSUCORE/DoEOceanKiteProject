@@ -11,16 +11,17 @@ Simulink.sdi.clear
 % 7 - animate
 % 8 - plotting
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 3 1 true true 1==1];
-flwArray = 1;[.1:.05:.5];
-altArray = 40;[50:50:424];
-% thrArray = [200:100:600];
-% tDiamArray = 13.6;% [12.4 10.6 9.4];
-% TmaxArray = 12;% [9.5 6.8 5.4];
-thrArray = 80;[80 110 140];
-tDiamArray = 12.7;[12.7 11.3 10.4];
-TmaxArray = 10.6;[10.6 9.0 8.0]*2;
-scale = .375;
+simScenario = [1 1 1 5 1 true false 1==0];
+flwArray = .25;[.1:.05:.5];
+altArray = 150;[50:50:424];
+thrArray = 300;[200:100:600];
+tDiamArray = 13.6;% [12.4 10.6 9.4];
+TmaxArray = 12;% [9.5 6.8 5.4];
+% thrArray = 80;[80 110 140];
+% tDiamArray = 12.7;[12.7 11.3 10.4];
+% TmaxArray = 10.6;[10.6 9.0 8.0]*2;
+scale = 1;
+q = 1
 for i = 1:numel(flwArray)
     for j = 1:numel(thrArray)
         for k = 1:numel(altArray)
@@ -28,14 +29,14 @@ for i = 1:numel(flwArray)
         thrLength = thrArray(j)/scale;  altitude = altArray(k);                           %   m/m - Nominal tether length/operating altitude
         initTL = thrLength;200;      initAltitude = altitude;100;                      %   m/m - Initial tether length/operating altitude
         flwSpd = flwArray(i)/scale^0.5;                                               %   m/s - Flow speed
-        Tmax = TmaxArray(j)/scale^3;        Tdiam = tDiamArray(j)/scale;                               %   kN/mm - Max tether tension/tether diameter
+        Tmax = TmaxArray/scale^3;        Tdiam = tDiamArray/scale;                               %   kN/mm - Max tether tension/tether diameter
         h = 10*pi/180;  w = 40*pi/180;                              %   rad - Path width/height
         [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
         subCtrl = 1;    sC = 0;
         TD = 1; tf = 2500;
         fairing = 100;   AoAsp = 14;
         if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
-            fprintf('Elevation angle is out of range')
+            fprintf('Elevation angle is out of range\n')
             peakAug(i,j,k) = NaN;
             lapAvgPow(i,j,k) = NaN;
             tenMax(i,j,k) = NaN;
@@ -53,7 +54,7 @@ for i = 1:numel(flwArray)
         switch simScenario(2)                                   %   Flight Controller
             case 1
                 loadComponent('constBoothLem');                     %   Constant basis parameters
-                el = 20*pi/180;asin(altitude/thrLength);                      %   rad - Initial elevation angle
+                el = asin(altitude/thrLength);                      %   rad - Initial elevation angle
                 hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters
                     thrLength],'[rad rad rad rad m]');
             case 2
@@ -325,9 +326,25 @@ for i = 1:numel(flwArray)
         peakAug(i,j,k) = max(velmags)/(flwSpd*scale^(1/2));
         lapAvgPow(i,j,k) = Pow.avg;
         tenMax(i,j,k) = ten;
+        figure(1); hold on; grid on;
+        plot(q/360,q/360)
+        xlim([0 1])
+        q = q+1
     end
     end
 end
+
+figure
+plot(tsc.airTenVecs.Time,gndNode,'DisplayName','Tether Tension','LineWidth',1.5)
+hold on;
+line([1000 1000],[0 14],'DisplayName','Failure Point','Color','r','LineWidth',1.5)
+line([0 2000],[12 12],'DisplayName','Tension Limit','Color','k','LineWidth',1.5,'LineStyle','--')
+legend('Location','southeast')
+xlabel 'Time [s]'
+ylabel 'Tether Tension [kN]'
+set(gca,'FontSize',15)
+xlim([0 2000])
+
 figure
 plot(thrArray,peakAug,'x')
 xlabel 'Tether Length [m]'
@@ -337,48 +354,32 @@ figure
 plot(thrArray,lapAvgPow,'x')
 xlabel 'Tether Length [m]'
 ylabel 'Peak Velocity Augmentation'
-%%
-% vApp = squeeze(tsc.vhclVapp.Data);
-% vAppSqr = squeeze(dot(vApp,vApp));
-% bMat = squeeze(tsc.bMatrix.Data);
-% t = tsc.vhclVapp.Time;
-% q = 1
-% figure
-% for i = 1:2
-%     for j = 1:2
-%         bMatScale = squeeze(bMat(i,j,:))'./vAppSqr;
-%         subplot(2,2,q)
-%         plot(t,bMatScale);
-%         q = q+1;
-%     end
-% end
 
-% figure;
-% hold on
-% plotsq(tsc.MNetBdy.Time,tsc.MAddedBdy.Data(2,:,:))
-% plotsq(tsc.MNetBdy.Time,tsc.MBuoyBdy.Data(2,:,:))
-% plotsq(tsc.MNetBdy.Time,tsc.MFluidBdy.Data(2,:,:))
-% plotsq(tsc.MNetBdy.Time,tsc.MFuseBdy.Data(2,:,:))
-% plotsq(tsc.MNetBdy.Time,tsc.MGravBdy.Data(2,:,:))
-% plotsq(tsc.MNetBdy.Time,tsc.MThrNetBdy.Data(2,:,:))
-% plotsq(tsc.MNetBdy.Time,tsc.MTurbBdy.Data(2,:,:))
-% legend('Added','Buoy','Fluid','Fuse','Grav','Thr','Turb')
+for i = 1:numel(flwArray)
+    for j = 1:numel(thrArray)
+        for k = 1:numel(altArray)
+            if tenMax(i,j,k) > 12.2
+                peakAugProc(i,j,k) = NaN;
+                tenMaxProc(i,j,k) = NaN;
+                lapAvgPowProc(i,j,k) = NaN;
+            else
+                peakAugProc(i,j,k) = peakAug(i,j,k);
+                tenMaxProc(i,j,k) = tenMax(i,j,k);
+                lapAvgPowProc(i,j,k) = lapAvgPow(i,j,k);
+            end
+        end
+    end
+end
+flwArray = [.1:.05:.5];
+altArray = [50:50:424];
+thrArray = [200:100:600];
+lapAvgPowAlt = squeeze(max(lapAvgPowProc,[],2));
+lapAvgPowAlt(1,7) = NaN;
+lapAvgPowAlt(1,8) = NaN;
+
 figure
-ten = tsc.gndNodeTenVecs.Data;
-tenMag = sqrt(dot(ten,ten));
-plotsq(tsc.gndNodeTenVecs.Time,tenMag/1000,'LineWidth',1.5);
-xlabel('Time [s]')
-ylabel('Tether Tension [kN]')
-line([0 2000],[12 12],'Color','r','LineStyle','--','LineWidth',1.5)
-ylim([0 14])
-legend('Tether Tension','Limit','Fault Control Limit')
-set(gca,'FontSize',15)
-xlim([0 2000])
+[X,Y]=meshgrid(altArray,flwArray)
 
-
-figure;
-plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(1,:,:))
-hold on;
-plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(3,:,:))
-plotsq(tsc.rollSP)
-plotsq(tsc.yawSP)
+contour(X,Y,lapAvgPowAlt,[0:.05:.2 .3:.1:1],'Fill','on','ShowText','on')
+xlabel 'Altitude [m]'
+ylabel 'Flow Speed [m/s]'
