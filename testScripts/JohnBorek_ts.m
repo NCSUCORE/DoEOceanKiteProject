@@ -11,7 +11,7 @@ Simulink.sdi.clear
 % 7 - animate
 % 8 - plotting
 %%             1 2 3 4 5  6    7     8
-simScenario = [1 1 1 5 1 true false 1==0];
+simScenario = [1 1 1 5 1 false false 1==1];
 flwArray = .25;[.1:.05:.5];
 altArray = 150;[50:50:424];
 thrArray = 300;[200:100:600];
@@ -379,7 +379,7 @@ lapAvgPowAlt(1,8) = NaN;
 
 figure
 [X,Y]=meshgrid(altArray,flwArray)
-
+%%
 contour(X,Y,lapAvgPowAlt,[0:.05:.2 .3:.1:1],'Fill','on','ShowText','on')
 xlabel 'Altitude [m]'
 ylabel 'Flow Speed [m/s]'
