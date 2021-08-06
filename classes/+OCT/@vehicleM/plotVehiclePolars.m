@@ -1,4 +1,4 @@
-function h = plotVehiclePolars(obj,varargin)
+function h = plotVehiclePolars(obj,thr,varargin)
 p = inputParser;
 addParameter(p,'pMom',false,@islogical);
 addParameter(p,'xLim',[-20 20],@isnumeric);
@@ -44,6 +44,8 @@ alpha = obj.portWing.alpha.Value;
 Aref = obj.fluidRefArea.Value;
 Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
     (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
+Athr = 3*thr.tether1.diameter.Value/4;
+CDthr = thr.tether1.dragCoeff.Value*Athr/Aref;
 CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
     obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref;
 CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
@@ -53,7 +55,7 @@ CDstab = obj.hStab.CD.Value;
 CDvert = obj.vStab.CD.Value;
 
 CLtot = CLwing+CLstab;
-CDtot = CDwing+CDstab+CDvert+CDfuse;
+CDtot = CDwing+CDstab+CDvert+CDfuse+CDthr;
 
 figure(fig);
 subplot(2,2,1);hold on;grid on;
