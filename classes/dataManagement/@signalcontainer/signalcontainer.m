@@ -220,9 +220,9 @@ classdef signalcontainer < dynamicprops
             Afuse = squeeze(obj.Afuse.Data);
             Athr = LThr*dThr/4;
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
-            CDthr = thr.tether1.dragCoeff.Value.*Athr/Aref;
+            CDthr = thr.tether1.dragCoeff.Value(1).*Athr/Aref;
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
-            CDtot = CDfuse+CDsurf;%+CDthr;
+            CDtot = CDfuse+CDsurf+CDthr;
             CLsurf = squeeze(obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data);
         end
         function [Lift,Drag,Fuse,Thr] = getLiftDrag(obj)
@@ -394,17 +394,19 @@ classdef signalcontainer < dynamicprops
         function Pow = rotPowerSummary(obj,vhcl,env,thr)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
             ran = Idx1:Idx2-1;
-%             [CLsurf,CDtot] = getCLCD(obj,vhcl,thr);
-%             C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
-%             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
-%             Pow.loyd = mean(PLoyd)*1e-3;
+            [CLsurf,CDtot] = obj.getCLCD(vhcl,thr);
+            C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+            Pow.loyd = mean(PLoyd)*1e-3;
             Pow.avg = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+%             Rthr = thr.tether1.resistance.Value;
+%             Ithr = thr.tether1.transVoltage.Value/Rthr;
+            Pow.loss = Pow.avg*.05+Pow.avg*.25;
+            Pow.net = Pow.avg-Pow.loss;
             Pow.max = max(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.min = min(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.wnch = mean(obj.winchPower.Data(ran))*1e-3;
-            fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\n%.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg)
-%             fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
-            fprintf('Avg Charge Time: %.1f days\n',270/Pow.avg/24)
+            fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.min,Pow.max,Pow.avg,Pow.loyd,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);

@@ -2,24 +2,21 @@
 clear; clc; close all;
 Simulink.sdi.clear
 %% Simulation Setup
-% 1 - choose vehicle design:        1 = AR8b8, 2 = AR9b9, 3 = AR9b10
-% 2 - choose high level controller: 1 = const basis, 2 = variable alt, 3 = const basis/state flow
-% 3 - choose flight controller:     1 = pathFlow, 2 = full cycle, 3 = steady, 4 = reel-in
-% 4 - choose tether:                1 = Single link, 2 = Reel-in, 3 = Multi-node, 4 = Faired, 5 = Multi-node faired
-% 5 - choose environment:           1 = const flow, 2 = variable flow.
-% 6 - save simulation results
-% 7 - animate
-% 8 - plotting
+% 1 - Vehicle Model:         1 = AR8b8, 2 = AR9b9, 3 = AR9b10
+% 2 - High-level Controller: 1 = const basis, 2 = variable alt, 3 = const basis/state flow
+% 3 - Flight controller:     1 = pathFlow, 2 = full cycle, 3 = steady, 4 = reel-in
+% 4 - Tether Model:          1 = Single link, 2 = Reel-in, 3 = Multi-node, 4 = Multi-node faired
+% 5 - Environment:           1 = const flow, 2 = variable flow
+% 6 - Save Results
+% 7 - Animate
+% 8 - Plotting
 %%             1 2 3 4 5  6    7     8
 simScenario = [1 1 1 5 1 false false 1==1];
 flwArray = .25;[.1:.05:.5];
 altArray = 150;[50:50:424];
 thrArray = 300;[200:100:600];
-tDiamArray = 13.6;% [12.4 10.6 9.4];
-TmaxArray = 12;% [9.5 6.8 5.4];
-% thrArray = 80;[80 110 140];
-% tDiamArray = 12.7;[12.7 11.3 10.4];
-% TmaxArray = 10.6;[10.6 9.0 8.0]*2;
+tDiamArray = 18;% [12.4 10.6 9.4];
+TmaxArray = 20;% [9.5 6.8 5.4];
 scale = 1;
 q = 1
 for i = 1:numel(flwArray)
@@ -282,23 +279,23 @@ for i = 1:numel(flwArray)
 %             save(strcat('output/powStudy/',filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
         end
         %%  Plot Results
-        if simScenario(8)
-            switch simScenario(3)
-                case 1
-                    lap = max(tsc.lapNumS.Data)-1;
-                    if max(tsc.lapNumS.Data) < 2
-                        tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
-                    else
-                        tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
-                    end
-                case 2
-                    tsc.plotFSslf(fltCtrl,'Steady',true);
-                case 3
-                    tsc.plotLaR(fltCtrl,'Steady',true);
-                case 4
-                    tsc.plotLaR(fltCtrl,'Steady',true);
-            end
-        end
+%         if simScenario(8)
+%             switch simScenario(3)
+%                 case 1
+%                     lap = max(tsc.lapNumS.Data)-1;
+%                     if max(tsc.lapNumS.Data) < 2
+%                         tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+%                     else
+%                         tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+%                     end
+%                 case 2
+%                     tsc.plotFSslf(fltCtrl,'Steady',true);
+%                 case 3
+%                     tsc.plotLaR(fltCtrl,'Steady',true);
+%                 case 4
+%                     tsc.plotLaR(fltCtrl,'Steady',true);
+%             end
+%         end
         % set(gcf,'OuterPosition',[-773.4000   34.6000  780.8000  830.4000]);
         %%  Animate Simulation
         if simScenario(7)
@@ -330,7 +327,7 @@ for i = 1:numel(flwArray)
         plot(q/360,q/360)
         xlim([0 1])
         q = q+1
-    end
+        end
     end
 end
 

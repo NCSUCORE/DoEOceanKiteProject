@@ -31,10 +31,10 @@ thr.tether1.nomDragCoeff.NoScale = false
 thr.tether1.fairedDragCoeff.Value = 1.0000e-01
 thr.tether1.fairedDragCoeff.Unit is unitless or has no unit specified
 thr.tether1.fairedDragCoeff.NoScale = false
-thr.tether1.fairedLength.Value = 5.0000e+01
+thr.tether1.fairedLength.Value = 1.0000e+02
 thr.tether1.fairedLength.Unit = 'm'
 thr.tether1.fairedLength.NoScale = false
-thr.tether1.maxThrLength.Value = 3.0000e+02
+thr.tether1.maxThrLength.Value = 6.0000e+02
 thr.tether1.maxThrLength.Unit = 'm'
 thr.tether1.maxThrLength.NoScale = false
 thr.tether1.density.Value = 1.5000e+03

@@ -22,9 +22,11 @@ classdef tetherF < handle
         dragEnable
         springDamperEnable
         netBuoyEnable
+        transVoltage
     end
     properties (Dependent)
         dragCoeff
+        resistance
     end
     methods
         function obj = tetherF(numNodes)
@@ -47,6 +49,7 @@ classdef tetherF < handle
             obj.dragEnable          = SIM.parameter('Value',true,'NoScale',true);
             obj.springDamperEnable  = SIM.parameter('Value',true,'NoScale',true);
             obj.netBuoyEnable       = SIM.parameter('Value',true,'NoScale',true);
+            obj.transVoltage        = SIM.parameter('Unit','V','Description','Tether transmission voltage');
         end
         
         
@@ -122,6 +125,11 @@ classdef tetherF < handle
             numNominalLinks = numLinks-numFairingLinks;
             val = [obj.fairedDragCoeff.Value*ones(1,numFairingLinks),obj.nomDragCoeff.Value*ones(1,numNominalLinks)];
             val = SIM.parameter('Value',fliplr(val),'Unit','');
+        end        
+        function val = get.resistance(obj) 
+            maxTL = obj.maxThrLength.Value;
+            refTL = 304.8;  refR = 7.1;
+            val = SIM.parameter('Value',refR*maxTL/refTL,'Unit','Ohm','Description','Internal conductor resistance');
         end        
         
         function val = get.initNodePos(obj)
