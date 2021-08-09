@@ -15,10 +15,10 @@ simScenario = [1 1 1 4 1 false false 1==1];
 %%  Set Test Parameters
 flwArray = 0.1:0.05:0.5;                %   m/s - candidate flow speeds
 altArray = 50:50:400;                   %   m - candidate operating altitudes
-thrArray = 100:100:600;                 %   m - candidate tether lengths
-thrDiam = 18.0;                         %   mm - candidate tether diameters
+thrArray = 10:10:300;                 %   m - candidate tether lengths
+thrDiam = 12.0;                         %   mm - candidate tether diameters
 Tmax = getMaxTension(thrDiam);          %   kN - candidate tether tension limits
-fairing = 100;                          %   m - length of fairing distribution
+fairing = 00;                          %   m - length of fairing distribution
 
 h = 10*pi/180;  w = 40*pi/180;          %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);      %   Path basis parameters
@@ -230,7 +230,7 @@ for i = 1:numel(flwArray)
                     R.elevation(i,j,k) = el*180/pi;
                     R.thrL(i,j,k) = thrLength; R.alt(i,j,k) = altitude; R.flw(i,j,k) = flwSpd;
                     filename = sprintf(strcat('CDR_V-%.3f_alt-%.d_thrL-%d_thrD-%.1f_Fair-%d.mat'),flwSpd,altitude,thrLength,thrDiam,fairing);
-                    fpath = 'D:\Power Study\';
+                    fpath = 'D:\Thr-L Study\';
                     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
                 else
                     R.Pavg(i,j,k) = NaN;  R.AoA(i,j,k) = NaN;   R.ten(i,j,k) = NaN;
