@@ -2,7 +2,7 @@
 flwArray = 0.1:0.05:0.5;                %   m/s - candidate flow speeds
 altArray = 50:50:400;                   %   m - candidate operating altitudes
 thrArray = 100:100:600;                 %   m - candidate tether lengths
-thrDiam = 18;   fairing = 00;
+thrDiam = 18;   fairing = 100;
 Tmax = getMaxTension(thrDiam);          %   kN - candidate tether tension limits
 filename1 = sprintf('powStudy_CDR_ThrD-%.1f_Fair-%d.mat',thrDiam,fairing);
 fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\');
@@ -31,16 +31,16 @@ for alt = 1:6
     plot(flwArray,R1.EL(:,alt));  xlabel('$V_\mathrm{flow}$ [m/s]');  ylabel('Elevation [deg]');  xlim([.1 0.5]);
 end
 %%  Load Individual Surfaces 
-D18F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-18.0_F-0.mat');
-D18F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-18.0_F-100.mat');
-D16F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-16.0_F-0.mat');
-D16F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-16.0_F-100.mat');
-D14F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-14.0_F-0.mat');
-D14F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-14.0_F-100.mat');
-D11F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-11.0_F-0.mat');
-D11F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowCurve_CDR_D-11.0_F-100.mat');
-%%  Compare Diameters
-figure;
+D18F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-18.0_F-0.mat');
+D18F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-18.0_F-100.mat');
+D16F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-16.0_F-0.mat');
+D16F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-16.0_F-100.mat');
+D14F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-14.0_F-0.mat');
+D14F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-14.0_F-100.mat');
+D11F0 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-11.0_F-0.mat');
+D11F100 = load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\PowSurfaces\PowCurve_CDR_D-11.0_F-100.mat');
+%%  Compare diameters without fairing 
+figure; % No fairing 
 for i = 1:8
     subplot(4,2,i); hold on; grid on;
     plot(D18F0.flwArray,D18F0.Pnet(:,i),'r-');   
@@ -50,46 +50,76 @@ for i = 1:8
     xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  ylim([0 1.6]);
     title(sprintf('Altitude = %d',D18F0.altArray(i)));
 end
-legend('18 mm','16 mm','11 mm')
+legend('18 mm','16 mm','14 mm','11 mm')
+%%  Compare diameters with fairing 
+figure;
+for i = 1:6
+    subplot(3,2,i); hold on; grid on;
+    plot(D18F100.flwArray*1.94384,D18F100.Pnet(:,i),'r-');   
+    plot(D16F100.flwArray*1.94384,D16F100.Pnet(:,i),'b-');   
+    plot(D14F100.flwArray*1.94384,D14F100.Pnet(:,i),'color',[.75 0 0.75]);   
+    plot(D11F100.flwArray*1.94384,D11F100.Pnet(:,i),'g-');   
+    xlabel('Flow Speed [kts]');   ylabel('Net Power [kW]');  ylim([0 2.5]); xlim([.1*1.94384 0.5*1.94384])
+    title(sprintf('Altitude = %.1f ft',D18F0.altArray(i)*3.2808));
+end
+L = legend('18 mm','16 mm','14 mm','11 mm');
+%%  Compare Diameters Pavg
 figure;
 for i = 1:8
     subplot(4,2,i); hold on; grid on;
-    plot(D18F100.flwArray,D18F100.Pnet(:,i),'r-');   
-    plot(D16F100.flwArray,D16F100.Pnet(:,i),'b-');   
-    plot(D14F100.flwArray,D14F100.Pnet(:,i),'color',[.75 0 0.75]);   
-    plot(D11F100.flwArray,D11F100.Pnet(:,i),'g-');   
-    xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  ylim([0 1.6]);
+    plot(D18F0.flwArray,D18F0.Pavg(:,i),'r-');   
+    plot(D16F0.flwArray,D16F0.Pavg(:,i),'b-');   
+    plot(D14F0.flwArray,D14F0.Pavg(:,i),'color',[.75 0 0.75]);   
+    plot(D11F0.flwArray,D11F0.Pavg(:,i),'g-');   
+    xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  ylim([0 2.5]);
+    title(sprintf('Altitude = %d',D18F0.altArray(i)));
+end
+legend('18 mm','16 mm','14 mm','11 mm')
+figure;
+for i = 1:8
+    subplot(4,2,i); hold on; grid on;
+    plot(D18F100.flwArray,D18F100.Pavg(:,i),'r-');   
+    plot(D16F100.flwArray,D16F100.Pavg(:,i),'b-');   
+    plot(D14F100.flwArray,D14F100.Pavg(:,i),'color',[.75 0 0.75]);   
+    plot(D11F100.flwArray,D11F100.Pavg(:,i),'g-');   
+    xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  ylim([0 2.5]);
     title(sprintf('Altitude = %d',D18F0.altArray(i)));
 end
 legend('18 mm','16 mm','14 mm','11 mm')
 %%  Compare Fairing
 altitude = 100; idx = find(D18F0.altArray == altitude);
-figure; subplot(3,1,1); hold on; grid on;
+figure; subplot(4,1,1); hold on; grid on;
 plot(D18F0.flwArray,D18F0.Pnet(:,idx),'r-');
-plot(D18F100.flwArray,D18F100.Pnet(:,idx),'b-');  ylim([0 1.6]);
+plot(D18F100.flwArray,D18F100.Pnet(:,idx),'b-');  %ylim([0 1.6]);
 xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  
 legend('No Fairing','100 m Fairing','location','northwest');
 title(sprintf('Alt = %d; Diam = %.1f',D18F0.altArray(idx),18.0));
-subplot(3,1,2); hold on; grid on;
+subplot(4,1,2); hold on; grid on;
 plot(D16F0.flwArray,D16F0.Pnet(:,idx),'r-');
 plot(D16F100.flwArray,D16F100.Pnet(:,idx),'b-');  ylim([0 1.6]);
 xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  
 title(sprintf('Alt = %d; Diam = %.1f',D18F0.altArray(idx),16.0));
-subplot(3,1,3); hold on; grid on;
+subplot(4,1,3); hold on; grid on;
+plot(D14F0.flwArray,D14F0.Pnet(:,idx),'r-');
+plot(D14F100.flwArray,D14F100.Pnet(:,idx),'b-');  ylim([0 1.6]);
+xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  
+title(sprintf('Alt = %d; Diam = %.1f',D18F0.altArray(idx),14.0));
+subplot(4,1,4); hold on; grid on;
 plot(D11F0.flwArray,D11F0.Pnet(:,idx),'r-');
 plot(D11F100.flwArray,D11F100.Pnet(:,idx),'b-');  ylim([0 1.6]);
 xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  
 title(sprintf('Alt = %d; Diam = %.1f',D18F0.altArray(idx),11.0));
-%%  Compare Fairing 2
+%%  Compare Fairing 2 for 18 mm
 figure;
-for i = 1:8
-    subplot(4,2,i); hold on; grid on;
-    plot(D18F0.flwArray,D18F0.Pnet(:,i),'r-');   
-    plot(D18F100.flwArray,D18F100.Pnet(:,i),'b-');   
-    xlabel('Flow Speed [m/s]');   ylabel('Net Power [kW]');  ylim([0 1.6]);
-    title(sprintf('Altitude = %d',D18F0.altArray(i)));
+for i = 1:6
+    subplot(3,2,i); hold on; grid on;
+    plot(D18F0.flwArray*1.94384,D18F0.Pnet(:,i),'r-');   
+    plot(D18F100.flwArray*1.94384,D18F100.Pnet(:,i),'b-');   
+    xlabel('Flow Speed [kts]');   ylabel('Net Power [kW]');  ylim([0 2.5]); xlim([.1*1.94384 0.5*1.94384]);
+    title(sprintf('Altitude = %.1f ft',D18F0.altArray(i)*3.2808));
 end
 legend('No Fairing','100 m Fairing','location','northwest');
+%%  Compare Fairing 2 for 11 mm
 figure;
 for i = 1:8
     subplot(4,2,i); hold on; grid on;

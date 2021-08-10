@@ -1,5 +1,5 @@
 %% Test script to generate a power surface with respect to flow speed and altitude
-clear; clc; close all;
+clear; clc; %close all;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - Vehicle Model:         1 = AR8b8, 2 = AR9b9, 3 = AR9b10
@@ -15,8 +15,8 @@ simScenario = [1 1 1 4 1 false false 1==1];
 %%  Set Test Parameters
 flwArray = 0.1:0.05:0.5;                %   m/s - candidate flow speeds
 altArray = 50:50:400;                   %   m - candidate operating altitudes
-thrArray = 10:10:300;                 %   m - candidate tether lengths
-thrDiam = 12.0;                         %   mm - candidate tether diameters
+thrArray = 100:100:600;                 %   m - candidate tether lengths
+thrDiam = 18.0;                         %   mm - candidate tether diameters
 Tmax = getMaxTension(thrDiam);          %   kN - candidate tether tension limits
 fairing = 00;                          %   m - length of fairing distribution
 
@@ -24,7 +24,7 @@ h = 10*pi/180;  w = 40*pi/180;          %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);      %   Path basis parameters
 
 scale = 1;                              %   Simulation scale factor
-AoAsp = 14;                             %   deg - angle of attack setpoint
+AoAsp = 5;                             %   deg - angle of attack setpoint
 tFinal = 10000;                         %   s - maximum simulation time
 %%  Loop Through Simulation Scenarios
 for i = 1:numel(flwArray)
@@ -124,7 +124,6 @@ for i = 1:numel(flwArray)
             thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
             if simScenario(4) == 4
                 thr.tether1.fairedLength.setValue(fairing,'m');
-                thr.tether1.maxThrLength.setValue(thrLength,'m');
             end
             thr.tether1.diameter.setValue(thrDiam*1e-3,'m')
             %%  Winches Properties
@@ -201,6 +200,7 @@ for i = 1:numel(flwArray)
             vhcl.scale(scale,1);
             vhcl.turb1.scale(scale,1);
             vhcl.turb2.scale(scale,1);
+%             thr.tether1.dragEnable.setValue(0,'');
             %%  Set up critical system parameters and run simulation
             fprintf('\nFlow Speed = %.3f m/s;\tTether Length = %.1f m;\t Altitude = %d m;\t ThrD = %.1f mm\n',flwSpd,thrLength,altitude,thrDiam);
             simParams = SIM.simParams;  simParams.setDuration(tFinal,'s');  dynamicCalc = '';
