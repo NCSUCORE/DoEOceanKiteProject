@@ -11,7 +11,7 @@ filename = sprintf(strcat('CDR_V-%.3f_alt-%.d_thrL-%d_thrD-%.1f_Fair-%d.mat'),fl
 load([fpath filename]);
 %%
 lap = max(tsc.lapNumS.Data)-1;
-tsc.plotFlightResultsEng(vhcl,env,thr,'plot1Lap',1==1,'plotS',1==1,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+tsc.plotFlightResultsEng(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
 %%
 % vhcl.animateSimEng(tsc,5,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
 %     'GifTimeStep',.1,'PlotTracer',true,'FontSize',12,'Pause',1==0,...

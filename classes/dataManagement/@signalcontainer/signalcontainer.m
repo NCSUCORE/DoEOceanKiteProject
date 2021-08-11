@@ -210,7 +210,7 @@ classdef signalcontainer < dynamicprops
             legend('Setpoint','AutoUpdate','off','location','northwest')
             %  Plot Elevator Command
             subplot(2,1,2); hold on; grid on;
-            plot(obj.ctrlSurfDeflCmd.Time,squeeze(obj.ctrlSurfDeflCmd.Data(3,:,:)),'b-');  
+            plot(obj.ctrlSurfDefl.Time,squeeze(obj.ctrlSurfDefl.Data(3,:,:)),'b-');  
             xlabel('Time [s]');  ylabel('Elevator [deg]');
         end
         function [CLsurf,CDtot] = getCLCD(obj,vhcl,thr)
@@ -341,7 +341,7 @@ classdef signalcontainer < dynamicprops
             pObj(pIdx) = plot(plotParam,SSA(ran));
             ylabel('SSA (deg)');
             % plot elevator deflection
-            csDef = squeeze(obj.ctrlSurfDeflCmd.Data);
+            csDef = squeeze(obj.ctrlSurfDefl.Data);
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             pObj(pIdx) = plot(plotParam,csDef(ran,4));
@@ -669,18 +669,18 @@ classdef signalcontainer < dynamicprops
             ax5 = subplot(R,C,6); hold on; grid on
             if lap
                 if con
-                    plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'b-');  xlabel('Path Position');  ylabel('Deflection [deg]');
-                    plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,3)),'r-');  xlabel('Path Position');  ylabel('Deflection [deg]');
-                    plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,4)),'g-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+                    plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'b-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+                    plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,3)),'r-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+                    plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,4)),'g-');  xlabel('Path Position');  ylabel('Deflection [deg]');
                 else
-                    plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
-                    plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
-                    plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                    plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                    plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                    plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
                 end
             else
-                plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
-                plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
-                plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                plot(time,squeeze(obj.ctrlSurfDefl.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                plot(time,squeeze(obj.ctrlSurfDefl.Data(:,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                plot(time,squeeze(obj.ctrlSurfDefl.Data(:,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
             end
             legend('P-Aileron','Elevator','Rudder')
             %%  Plot Lift-Drag ratio
@@ -749,15 +749,15 @@ classdef signalcontainer < dynamicprops
                 subplot(3,1,2); hold on; grid on
                 if lap
                     if con
-                        plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'r-');    xlabel('Path Position');  ylabel('Angle [deg]');
-                        plot(data(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,2)),'b-');    xlabel('Path Position');  ylabel('Angle [deg]');  legend('Port','Stbd');
+                        plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'r-');    xlabel('Path Position');  ylabel('Angle [deg]');
+                        plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,2)),'b-');    xlabel('Path Position');  ylabel('Angle [deg]');  legend('Port','Stbd');
                     else
-                        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
-                        plot(time(ran),squeeze(obj.ctrlSurfDeflCmd.Data(ran,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
+                        plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
+                        plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
                     end
                 else
-                    plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
-                    plot(time,squeeze(obj.ctrlSurfDeflCmd.Data(:,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
+                    plot(time,squeeze(obj.ctrlSurfDefl.Data(:,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
+                    plot(time,squeeze(obj.ctrlSurfDefl.Data(:,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
                 end
                 subplot(3,1,3); hold on; grid on
                 if lap
