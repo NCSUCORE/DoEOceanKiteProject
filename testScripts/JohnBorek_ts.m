@@ -26,10 +26,12 @@ if el*180/pi < 10 || el*180/pi > 45
     error('Elevation angle is out of range\n');
 end
 %%  Load components
-load(['D:\Power Study\' sprintf('CDR_V-%.3f_alt-%d_thrL-%d_thrD-%.1f_Fair-%d.mat',flwSpd,altitude,thrLength,thrDiam,fairing)])
-load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\Turb_V-0.45_Alt-150_thr-300_Tmax-1.740814e+01.mat')
+% load(['D:\Power Study\' sprintf('CDR_V-%.3f_alt-%d_thrL-%d_thrD-%.1f_Fair-%d.mat',flwSpd,altitude,thrLength,thrDiam,fairing)])
+% load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\Turb_V-0.45_Alt-150_thr-300_Tmax-1.740814e+01.mat')
+load('C:\Users\jbore\Documents\DoEOceanKiteProject\output\Turb_V-0.45_Alt-150_thr-300_Tmax-17.4.mat')
 [Idx1,Idx2] = tsc.getLapIdxs(3);  ran = Idx1:Idx2;
 pathVec = squeeze(tsc.currentPathVar.Data(ran));
+timeVec = tsc.eulerAngles.Time(ran)-tsc.eulerAngles.Time(Idx1);
 for i = 2:length(pathVec)
     if pathVec(i) <= pathVec(i-1)
         pathVec(i) = pathVec(i-1)+1e-7;
@@ -166,7 +168,7 @@ switch simScenario(3)
         fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.yawCtrl.kd.setValue(0,'(deg)/(rad/s)');
         fltCtrl.yawCtrl.tau.setValue(0.001,'s');
-        lapN = 1;
+        lapN = 2;
     case 2
         fltCtrl.maxTL.setValue(hiLvlCtrl.maxThrLength.Value,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');
@@ -206,7 +208,7 @@ if simScenario(3) == 1
 end
 switch simScenario(3)
     case 1
-        filename = sprintf(strcat('Turb_V-%.2f_Alt-%d_thr-%d_Tmax-%d.mat'),flwSpd,altitude,thrLength,Tmax);
+        filename = sprintf(strcat('Turb_V-%.2f_Alt-%d_thr-%d_Tmax-%.1f.mat'),flwSpd,altitude,thrLength,Tmax);
     case 2
         filename = sprintf(strcat('FS_V-%.3f_Alt-%d_thr-%d_Tmax-%d_FL-%d.mat'),flwSpd,altitude,thrLength,Tmax,thr.fairingLength.Value);
 end
@@ -236,12 +238,12 @@ lap = max(tsc.lapNumS.Data)-1;
 tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
 %%
 figure; ax1=subplot(3,1,1); hold on; grid on;
-plot(tsc.rollSP.Time,tsc.rollSP.Data,'r-')
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,1,:)),'b-')
+plot(tsc.rollSP.Time,tsc.rollSP.Data*180/pi,'r-')
+plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,1,:))*180/pi,'b-')
 xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Roll SP','Roll');
 ax2=subplot(3,1,3); hold on; grid on;
-plot(tsc.yawSP.Time,tsc.rollSP.Data,'r-')
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,1,:)),'b-')
+plot(tsc.yawSP.Time,tsc.yawSP.Data*180/pi,'r-')
+plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,1,:))*180/pi,'b-')
 xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Yaw SP','Yaw');
 ax3=subplot(3,1,2); hold on; grid on;
 plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  
@@ -254,7 +256,7 @@ if simScenario(7)
     if simScenario(3) == 1
         vhcl.animateSim(tsc,5,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
             'GifTimeStep',.1,'PlotTracer',true,'FontSize',12,'Pause',1==0,'endTime',tFinal,...
-            'ZoomIn',1==0,'SaveGif',1==1,'GifFile',strrep(filename,'.mat','.gif'));
+            'ZoomIn',1==0,'SaveGif',1==0,'GifFile',strrep(filename,'.mat','.gif'));
     elseif simScenario(3) == 2
         vhcl.animateSim(tsc,2,'PathFunc',pthCtrl2.fcnName.Value,'TracerDuration',20,...
             'GifTimeStep',.01,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
