@@ -1,4 +1,4 @@
-FLIGHTCONTROLLER = 'steadyLevelFlightController';
+FLIGHTCONTROLLER = 'slController';
 SPOOLINGCONTROLLER = 'universalSpoolingController';
 
 fltCtrl = CTR.SLFAndSpoolCtrl;
@@ -8,31 +8,30 @@ fltCtrl.setElevatorReelInDef(20,'deg')
 fltCtrl.firstSpoolLap.setValue(1,'');
 
 %%  Control parameters
-fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
-fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
-fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
-fltCtrl.tanRoll.tau.setValue(1e-3,'s');
-
-fltCtrl.rollMoment.kp.setValue((10e4)/(11*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue(1000,'(N*m)/(rad)');    
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((10e4)/(11*pi/180),'(N*m)/(rad/s)');
-fltCtrl.rollMoment.tau.setValue(0.001,'s');
+fltCtrl.rollMoment.kd.setValue(6000,'(N*m)/(rad/s)');      
+fltCtrl.rollMoment.tau.setValue(3,'s');
 
-fltCtrl.yawMoment.kp.setValue((1e3)/(10*pi/180),'(N*m)/(rad)');
+fltCtrl.yawMoment.kp.setValue(1000,'(N*m)/(rad)');
+fltCtrl.yawMoment.ki.setValue(5,'(N*m)/(rad*s)');
+fltCtrl.yawMoment.kd.setValue(1000,'(N*m)/(rad/s)');      
+fltCtrl.yawMoment.tau.setValue(0.001,'s');
 
-fltCtrl.pitchSP.kp.setValue(10,'(deg)/(deg)');
-fltCtrl.pitchSP.ki.setValue(.01,'(deg)/(deg*s)');
-fltCtrl.pitchSP.kd.setValue(0,'(deg)/(deg/s)');
+fltCtrl.pitchMoment.kp.setValue(20000,'(N*m)/(rad)')
+fltCtrl.pitchMoment.ki.setValue(100,'(N*m)/(rad*s)');
+fltCtrl.pitchMoment.kd.setValue(25000,'(N*m)/(rad/s)');
+fltCtrl.pitchMoment.tau.setValue(3,'s');
+
+fltCtrl.pitchSP.kp.setValue(4,'(deg)/(deg)');
+fltCtrl.pitchSP.ki.setValue(.05,'(deg)/(deg*s)');
+fltCtrl.pitchSP.kd.setValue(8,'(deg)/(deg/s)');
 fltCtrl.pitchSP.tau.setValue(.01,'s');
-fltCtrl.pitchSPkpSlope.setValue(.02368,'');
-fltCtrl.pitchSPkpInt.setValue(.5263,'');
-fltCtrl.pitchSPkiSlope.setValue(7.895e-5,'');
-fltCtrl.pitchSPkiInt.setValue(.008421,'');
 
-fltCtrl.elevCmd.kp.setValue(125,'(deg)/(rad)');
-fltCtrl.elevCmd.ki.setValue(1,'(deg)/(rad*s)');
-fltCtrl.elevCmd.kd.setValue(0,'(deg)/(rad/s)');
-fltCtrl.elevCmd.tau.setValue(.01,'s');
+fltCtrl.rollSP.kp.setValue(2,'(deg)/(deg)');
+fltCtrl.rollSP.ki.setValue(.05,'(deg)/(deg*s)');
+fltCtrl.rollSP.kd.setValue(2,'(deg)/(deg/s)');
+fltCtrl.rollSP.tau.setValue(.01,'s');
 
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')

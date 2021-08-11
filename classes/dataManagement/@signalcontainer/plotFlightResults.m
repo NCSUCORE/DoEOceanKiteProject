@@ -106,7 +106,7 @@ end
 %%  Plot Tether Tension
 ax2 = subplot(R,C,2); hold on; grid on
 if p.Results.maxTension
-    Tmax = (obj.maxTension.Data+0.5)*ones(numel(time),1);
+    Tmax = (obj.maxTension.Data/.95)*ones(numel(time),1);
 else
     Tmax = (0*ones(numel(time),1));
 end
