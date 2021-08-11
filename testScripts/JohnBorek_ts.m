@@ -236,12 +236,12 @@ lap = max(tsc.lapNumS.Data)-1;
 tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
 %%
 figure; ax1=subplot(3,1,1); hold on; grid on;
-plot(tsc.rollSP.Time,tsc.rollSP.Data,'r-')
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,1,:)),'b-')
+plot(tsc.rollSP.Time,tsc.rollSP.Data*180/pi,'r-')
+plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,1,:))*180/pi,'b-')
 xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Roll SP','Roll');
 ax2=subplot(3,1,3); hold on; grid on;
-plot(tsc.yawSP.Time,tsc.rollSP.Data,'r-')
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,1,:)),'b-')
+plot(tsc.yawSP.Time,tsc.rollSP.Data*180/pi,'r-')
+plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,1,:))*180/pi,'b-')
 xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Yaw SP','Yaw');
 ax3=subplot(3,1,2); hold on; grid on;
 plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  
