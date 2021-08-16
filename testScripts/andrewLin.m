@@ -1,6 +1,6 @@
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(10000,'s');
+simParams.setDuration(1000,'s');
 dynamicCalc = '';
 distFreq = 0;distAmp = 0;pertVec = [0 1 0];flwSpd = -2
 %% Load components
@@ -37,6 +37,7 @@ VEHICLE = 'vehicleLEBand'
 % loadComponent('CNAPsTurbMitchell');
 loadComponent('ConstXYZT');
 ENVIRONMENT = 'environmentDOELinearize'
+SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12int'
 %% Environment IC's and dependant properties
 env.water.setflowVec([-2 0 0],'m/s')
 %% Set basis parameters for high level controller
@@ -129,7 +130,7 @@ toc
     for i = 1:4
         for ii = 1
             for iii = 1:length(snaps)
-                [mag{i,ii,iii},phase,wout] = bode(linsys(i,3*(ii-1)+[1:3],iii,:),{0.001*2*pi 2*pi});
+                [mag{i,ii,iii},phase,wout] = bode(linsys(i,3*(ii-1)+[1:3],iii,:),{0.001*2*pi 20*pi});
                 magdb{i,ii,iii} = 20*log10(mag{i,ii,iii}.*flwSpd);
                 wHz{i,ii,iii} = wout/(2*pi);
             end
@@ -137,9 +138,9 @@ toc
     end
     
     titleCellIn = {'Ground X Component','Ground Y Component','Ground Z Component'};
-    titleCellOut = {' Side Slip Error [rad]',' Central Angle Error [rad]',...
-        ' Tangent Roll Error [rad]',' Velocity Angle Error [rad]'};
-    subTitleCellIn = {'Frequency Response: Turbulence Intensity [$\%$]'};;
+    titleCellOut = {' Central Angle Error [rad]',' Velocity Angle Error [rad]',...
+        ' Tangent Roll Error [rad]',' Side Slip Error [rad]'};
+    subTitleCellIn = {'Frequency Response: Turbulence Intensity [$\%$]'};
     yLabelIn = 'Magnitude [dB]';
     xLabelIn = 'Frequency [Hz]';
        

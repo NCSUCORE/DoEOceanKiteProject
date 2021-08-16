@@ -13,8 +13,11 @@ inc =-5.5;
 elevArray = 20*pi/180%[40 15]*pi/180;
 towArray = [0.78];
 rCM = 1
-thrLength = 2.63;
+lengthArray = 2.63;
+thrLength = 5;
 flwSpd = -1e-9;
+cdArray = [1.2 1.8];
+
 for q = 2
     for i = 1:length(inc)
         i
@@ -25,22 +28,25 @@ for q = 2
                 Simulink.sdi.clear
                 h = 30*pi/180;  w = 90*pi/180;                             %   rad - Path width/height
                 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
+
                 %%  Load components
-                el = elevArray;
+                el = 30*pi/180;
                 if q ~= 3
                     %             loadComponent('exp_slCtrl');
                     loadComponent('periodicCtrlExp');
                     %             fltCtrl.ctrlOff.setValue(0,'')
-                    FLIGHTCONTROLLER = 'periodicCtrlExp';
+%                     FLIGHTCONTROLLER = 'periodicCtrlExpAllocate';
                 else%
                     loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
                     FLIGHTCONTROLLER = 'pathFollowingControllerExp';
                 end
                 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller                           %   Ground station
                 loadComponent('raftGroundStation');
+%                 GROUNDSTATION = 'boatGroundStation'
                 loadComponent('winchManta');                                %   Winches
                 loadComponent('MantaTether');                               %   Manta Ray tether
-                loadComponent('lasPosEst');                             %   Sensors
+                loadComponent('idealSensors');                             %   Sensors
+                loadComponent('lasPosEst')
                 loadComponent('lineAngleSensor');
                 loadComponent('idealSensorProcessing');                      %   Sensor processing
                 loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
@@ -49,14 +55,13 @@ for q = 2
                 loadComponent('ConstXYZT');                                 %   Environment
                 %                 loadComponent('CNAPsTurbJames');
                 env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
-                ENVIRONMENT = 'env2turb';            %   Two turbines
+                ENVIRONMENT = 'env2turbLinearize';            %   Two turbines
                 %%  Set basis parameters for high level controller
                
                 loadComponent('constBoothLem');        %   High level controller
                 % PATHGEOMETRY = 'lemOfBoothInv'
-                hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
-                las.setThrInitAng([-el 0],'rad');
-                las.setInitAngVel([-0 0],'rad/s');
+                hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+
                 %             las.tetherLoadDisable;
                 %             las.dragDisable;
                 %%  Ground Station Properties
@@ -69,13 +74,13 @@ for q = 2
                 J_raft = 30;
                 tow_length = 16;
                 tow_speed = towArray(j);
-                end_time = tow_length/tow_speed;
+                end_time = 23;
                 x_init = 4;
                 y_init = 0;
                 y_dot_init = 0;
                 psi_init = 0;
                 psi_dot_init = 0;
-                initGndStnPos = [x_init;y_init;0];
+                initGndStnPos = [x_init;0;0];
                 thrAttachInit = initGndStnPos;
                 %%  Vehicle Properties
                 PLANT = 'plant2turb';
@@ -88,7 +93,15 @@ for q = 2
                 vhcl.vStab.setGainCL(vhcl.vStab.gainCL.Value/2,'1/deg');
                 vhcl.vStab.setGainCD(vhcl.vStab.gainCD.Value/2,'1/deg');
                 if q == 3
-                    vhcl.setICsOnPath(.05,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
+                    vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
+                    pos = vhcl.initPosVecGnd.Value;
+                    x = pos(1);
+                    y = pos(2);
+                    z = pos(3);
+                    az1 = atan2(y,x)
+                    el1 = atan2(z,sqrt(x.^2 + y.^2))
+                    las.setThrInitAng([el1 az1],'rad');
+                    las.setInitAngVel([-0 0],'rad/s');
                 else
                     vhcl.setICsOnPath(0.0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,0);
                     vhcl.setInitEulAng([180 0 180]*pi/180,'rad');
@@ -114,7 +127,8 @@ for q = 2
                 thr.tether1.density.setValue(1000,'kg/m^3');
                 thr.tether1.setDiameter(.0076,'m');
                 thr.setNumNodes(4,'');
-                thr.tether1.setDragCoeff(1.8,'');
+                thrDrag =   1.8
+                thr.tether1.setDragCoeff(thrDrag,'');
                 %%  Winches Properties
                 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
                 wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -126,7 +140,7 @@ for q = 2
                 fltCtrl.rollMoment.kp.setValue(45/3,'(N*m)/(rad)')
                 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
                 fltCtrl.rollMoment.kd.setValue(25/3,'(N*m)/(rad/s)')
-                fltCtrl.tanRoll.kp.setValue(.25,'(rad)/(rad)')
+                fltCtrl.tanRoll.kp.setValue(.1,'(rad)/(rad)')
                 thr.tether1.dragEnable.setValue(1,'')
                 vhcl.hStab.setIncidence(0,'deg');
                 if q == 3
@@ -160,7 +174,7 @@ for q = 2
                     fltCtrl.yawCtrl.kd.setValue(1 ,'(deg)/(deg/s)');
                     fltCtrl.yawCtrl.tau.setValue(0.02,'s');
                    
-                    fltCtrl.ccElevator.setValue(-5.5,'deg');
+                    fltCtrl.ccElevator.setValue(5.5,'deg');
                     fltCtrl.trimElevator.setValue(inc(i),'deg');
                    
                 end
@@ -183,6 +197,32 @@ for q = 2
         end
     end
 end
-% vhcl.animateSim(tsc,0.2)
+vhcl.animateSim(tsc,0.2)
+close all
+% %%
+% thrArray = [2.5:.5:5 6.25:1.25:20]
+% cdArray = [1.2 1.8]
+% towArray = 1
+% for i = 1:length(cdArray)
+%     for j = 1:length(thrArray)
+%         thrDrag = cdArray(i)
+%         thrLength = thrArray(j)
+%         filename = sprintf('Turb_V-%.2f_El-%.0f_thr-%.2f_thrDrg_%.1f.mat',towArray,el*180/pi,thrLength,thrDrag);
+%         load(filename)
+%         vel = tsc.velCMvec.getsampleusingtime(20,100);
+%         vels = squeeze(vel.Data);
+%         velmags = sqrt(sum((vels).^2,1));
+%         peakAug(i,j) = max(velmags);
+%     end
+% end
 % 
-% plotVelMags
+% figure
+% plot(thrArray,peakAug,'x')
+% legend('$CD_{thr} = 1.2$','$CD_{thr} = 1.8$')
+% xlabel 'Tether Length [m]'
+% ylabel 'Peak Velocity Augmentation'
+
+figure;
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(1,:,:))
+hold on;
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(3,:,:))

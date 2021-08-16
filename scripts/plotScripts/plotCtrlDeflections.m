@@ -14,6 +14,7 @@ xlabel('Time, [s]')
 ylabel('Deflection [deg]')
 legend('FontSize',16,'Orientation','horizontal','Location','southeast')
 % legend('boxoff')
+xlim([300 inf])
 % ylim([-10 5])
 
 subplot(2,2,2); hold on; grid on;
@@ -29,6 +30,7 @@ plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,:,:))*180/pi,...
 %     'LineStyle','--','Color','r','LineWidth',1.5)
 % plot(tsc.yawSP.Time,squeeze(tsc.yawSP.Data),...
 %     'LineStyle','--','Color','b','LineWidth',1.5)
+xlim([300 inf])
 legend('Roll','Pitch','Yaw','FontSize',16,'Orientation','horizontal',...
     'Location','southeast')
 % legend('boxoff')
@@ -43,6 +45,7 @@ plot(tsc.elevationAngle.Time,squeeze(tsc.elevationAngle.Data),...
     'LineStyle','-','Color','b','LineWidth',1.5,'DisplayName','Elevation')
 legend('FontSize',16,'Orientation','horizontal','Location','southeast')
 % legend('boxoff')
+xlim([300 inf])
 xlabel('Time, [s]')
 ylabel('Azimuth Angle [deg]')
 
@@ -50,6 +53,7 @@ subplot(2,2,4); hold on; grid on;
 plot(tsc.airTenVecs.Time,squeeze(tsc.airTenVecs.mag.Data),...
     'LineStyle','-','Color','k','LineWidth',1.5)
 xlabel('Time, [s]')
+xlim([300 inf])
 ylabel('Tether Tension [N]')
 % ylim([2000 2500])
 

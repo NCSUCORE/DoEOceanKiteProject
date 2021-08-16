@@ -3,6 +3,7 @@
 
 clc
 close all
+clear all
 Simulink.sdi.clear
 clear tsc1
 distFreq = 0;distAmp = 0;pertVec = [0 1 0];
@@ -16,7 +17,7 @@ rCM = 1;
 thrLength = 2.63;
 flwSpd = -1e-9;
 
-for q = 2
+for q = 3
     for i = 1:length(inc)
         i
         for j = 1:3
@@ -228,28 +229,52 @@ vhcl.animateSim(tscSim{1},0.2)
 
 vhcl.animateSim(tscSim{2},0.2)
 vhcl.animateSim(tsc,0.2)
-% bMat = tsc.scaledB.getsam
-% pleusingtime(5,20);
+
+tsc = tscSim{1}
 %%
-% figure;
-% hold on;
-% legEnt = {'$\delta M/(\delta_{a}v_{app}^2)$',...
-%     '$\delta M/(\delta_{r}v_{app}^2)$';...
-%     '$\delta L/(\delta_{a}v_{app}^2)$',...
-%     '$\delta L/(\delta_{r}v_{app}^2)$'}
-% color = {'k','r'}
-% lineSpec = {'-','--'}
-% for i = 1:2
-%     for j = 1:2
-%         plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
-%             'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
-%     end
-% end
-% legend('FontSize',15)
-% xlabel 'Time [s]'
-% ylabel 'Control Effectiveness [$\frac{Ns^2}{(deg)m}$]'
+bMat = tsc.scaledB
+figure;
+hold on;
+legEnt = {'$\delta M/(\delta_{a}v_{app}^2)$',...
+    '$\delta M/(\delta_{r}v_{app}^2)$';...
+    '$\delta L/(\delta_{a}v_{app}^2)$',...
+    '$\delta L/(\delta_{r}v_{app}^2)$'}
+color = {'k','r'}
+lineSpec = {'-','--'}
+for i = 1:2
+    for j = 1:2
+        plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
+            'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
+    end
+end
+legend('FontSize',15)
+xlabel 'Time [s]'
+ylabel 'Control Effectiveness [$\frac{Ns^2}{(deg)m}$]'
+xlim([5 inf])
+ylim([-.2 .1])
+set(gca,'FontSize',15)
+
+bMat = tsc.bMatrix
+figure;
+hold on;
+legEnt = {'$\delta M/(\delta_{a})$',...
+    '$\delta M/(\delta_{r})$';...
+    '$\delta L/(\delta_{a})$',...
+    '$\delta L/(\delta_{r})$'}
+color = {'k','r'}
+lineSpec = {'-','--'}
+for i = 1:2
+    for j = 1:2
+        plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
+            'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
+    end
+end
+legend('FontSize',15)
+xlabel 'Time [s]'
+ylabel 'Control Effectiveness [$\frac{N-m}{(deg)}$]'
 % ylim([-.2 .1])
-% set(gca,'FontSize',15)
+xlim([5 inf])
+set(gca,'FontSize',15)
 
 %%
 for i = 1:3

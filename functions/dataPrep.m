@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-h = 20*pi/180;  w = 80*pi/180; elInit = 50*pi/180                             %   rad - Path width/height
+h = 27*pi/180;  w = 100*pi/180; elInit = 43*pi/180                             %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 loadComponent('constBoothLem');        %   High level controller
 loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
@@ -18,10 +18,10 @@ loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
 loadComponent('ConstXYZT');                                 %   Environment
 
-direc = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\06 16 21\Data';
+direc = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\07 28 21\Data';
 listing =  dir(direc) ;
 towSpeed = 0.77;
-runs = [9];
+runs = [3:7 9];
 runQuery = min(runs);
 runCount = min(runs);
 runLim = max(runs);
@@ -61,14 +61,15 @@ T = runData.kite_azi.Time;
 el = squeeze(runData.kite_elev.Data);
 az = squeeze(runData.kite_azi.Data);
 
-pos = 2.63*[-cosd(az).*cosd(el)+towSpeed/2.63*T...
+pos = 2.63*[cosd(az).*cosd(el)...
     sind(az).*cosd(el)...
-    sind(el)];
+    sind(el)]
 
 runData.posVec = timeseries(pos,T);
 eul = [runData.kiteRoll.Data runData.kitePitch.Data runData.kiteYaw.Data]*pi/180;
 runData.eulAngle = timeseries(eul,T);
-angRate = [runData.kiteRollRate.Data runData.kitePitchRate.Data runData.kiteYawRate.Data]*pi/180;
+% angRate = [runData.kiteRollRate.Data runData.kitePitchRate.Data runData.kiteYawRate.Data]*pi/180;
+angRate = [runData.kiteP.Data runData.kiteQ.Data runData.kiteR.Data]*pi/180;
 % roll = squeeze(eul(:,1,:));
 % pitch = squeeze(eul(:,2,:));
 % yaw = squeeze(eul(:,3,:));
@@ -112,21 +113,21 @@ plot(tsc.centralAngle*180/pi)
 xlabel 'Time [s]'
 ylabel 'Central Angle [deg]'
 
-figure('Position',[100 100 800 400])
-hold on; grid on;
-plot(tsc.ctrlSurfDefl)
-xlabel 'Time [s]'
-ylabel 'Control Surface Commands [deg]'
+% figure('Position',[100 100 800 400])
+% hold on; grid on;
+% plot(tsc.ctrlSurfDefl)
+% xlabel 'Time [s]'
+% ylabel 'Control Surface Commands [deg]'
+% 
+% figure('Position',[100 100 800 400])
+% hold on; grid on;
+% plot(tsc.desiredMoment)
+% xlabel 'Time [s]'
+% ylabel 'Desired Moments [N-m]'
 
 figure('Position',[100 100 800 400])
 hold on; grid on;
-plot(tsc.desiredMoment)
-xlabel 'Time [s]'
-ylabel 'Desired Moments [N-m]'
-
-figure('Position',[100 100 800 400])
-hold on; grid on;
-plot(tsc.closestPathVariable)
+plot(tsc.currentPathVar)
 xlabel 'Time [s]'
 ylabel 'Path Parameter'
 

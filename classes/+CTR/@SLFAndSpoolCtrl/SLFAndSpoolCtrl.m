@@ -7,6 +7,7 @@ classdef SLFAndSpoolCtrl < handle
         tanRoll
         yawMoment
         rollMoment
+        pitchMoment
         pitchSP
         pitchSPkpSlope
         pitchSPkpInt
@@ -70,16 +71,17 @@ classdef SLFAndSpoolCtrl < handle
             obj.tanRoll             = CTR.FPID('rad','rad');
             obj.yawMoment           = CTR.FPID('rad','N*m');
             obj.rollMoment          = CTR.FPID('rad','N*m');
+            obj.pitchMoment         = CTR.FPID('rad','N*m');
             obj.pitchSP             = CTR.FPID('deg','deg');
             obj.pitchSPkpSlope      = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
             obj.pitchSPkpInt        = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
             obj.pitchSPkiSlope      = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
             obj.pitchSPkiInt        = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
-            obj.rollSP               = CTR.FPID('deg','deg');
-            obj.rollSPkpSlope        = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
-            obj.rollSPkpInt          = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
-            obj.rollSPkiSlope        = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
-            obj.rollSPkiInt          = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
+            obj.rollSP              = CTR.FPID('deg','deg');
+            obj.rollSPkpSlope       = SIM.parameter('Unit','','Description','Variable kp slope value','NoScale',true);
+            obj.rollSPkpInt         = SIM.parameter('Unit','','Description','Variable kp y-intercept value','NoScale',true);
+            obj.rollSPkiSlope       = SIM.parameter('Unit','','Description','Variable ki slope value','NoScale',true);
+            obj.rollSPkiInt         = SIM.parameter('Unit','','Description','Variable ki y-intercept value','NoScale',true);
             obj.elevCmd             = CTR.FPID('rad','deg');
             obj.rudderCmd           = CTR.FPID('rad','deg');
             obj.alrnCmd             = CTR.FPID('rad','deg');

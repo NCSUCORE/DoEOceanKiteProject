@@ -189,7 +189,14 @@ elems(21).SampleTime = -1;
 elems(21).Complexity = 'real';
 elems(21).Unit = 'm/s';
 
-
+elems(22) = Simulink.BusElement;
+elems(22).Name = 'airTenVecs';
+elems(22).Dimensions = sz.nodeTenVecSize;
+elems(22).DimensionsMode = 'Fixed';
+elems(22).DataType = 'double';
+elems(22).SampleTime = -1;
+elems(22).Complexity = 'real';
+elems(22).Unit = 'N';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;

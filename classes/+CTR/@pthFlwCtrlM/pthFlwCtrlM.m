@@ -55,8 +55,8 @@ classdef pthFlwCtrlM < handle
             obj.rollMoment          = CTR.FPID('rad','N*m');
             obj.elevCtrl            = CTR.FPID('rad','deg');
             obj.rollCtrl            = CTR.FPID('rad','deg');
-            obj.alphaCtrl           = CTR.FPID('kN','rad');
-            obj.RPMCtrl             = CTR.FPID('kN','');
+            obj.alphaCtrl           = CTR.FPID('kN*s^2/m^2','rad');
+%             obj.RPMCtrl             = CTR.FPID('kN','(s^-1)');
             obj.yawCtrl             = CTR.FPID('rad','deg');
             
             obj.maxBank             = CTR.sat;

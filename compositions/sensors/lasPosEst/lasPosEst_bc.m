@@ -110,13 +110,22 @@ elems(12).Complexity = 'real';
 elems(12).Unit = 'N';
 
 elems(13) = Simulink.BusElement;
-elems(13).Name = 'flowVelocityVec';
-elems(13).Dimensions = [3 1];
+elems(13).Name = 'airTenVecs';
+elems(13).Dimensions = sz.nodeTenVecSize;
 elems(13).DimensionsMode = 'Fixed';
 elems(13).DataType = 'double';
 elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';
-elems(13).Unit = 'm/s';
+elems(13).Unit = 'N';
+
+elems(14) = Simulink.BusElement;
+elems(14).Name = 'flowVelocityVec';
+elems(14).Dimensions = [3 1];
+elems(14).DimensionsMode = 'Fixed';
+elems(14).DataType = 'double';
+elems(14).SampleTime = -1;
+elems(14).Complexity = 'real';
+elems(14).Unit = 'm/s';
 
 
 BUS = Simulink.Bus;

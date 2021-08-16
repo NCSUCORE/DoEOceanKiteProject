@@ -368,7 +368,7 @@ if p.Results.ZoomInMove
     pt2 = tscTmp.gndStnPositionVec.getsamples(1).Data;
     r = pt-pt2;
     midpt = (pt+pt2)/2;
-    limbound = norm(r)*[-1 1];
+    limbound = norm(r)*[-0.6 0.6];
     xlim(midpt(1)+limbound)
     ylim(midpt(2)+limbound)
     zlim(midpt(3)+limbound)
@@ -585,10 +585,10 @@ daspect([1 1 1])
 % Set figure position 
 h.fig.Position = p.Results.FigPos;
 % Create a title
-if norm(diff(squeeze(tsc.thrNodePosVecs.Data(:,1,:)),3))>0
-h.title = title({strcat(sprintf('Time = %.6f s',0),',',...
+if norm(diff(squeeze(tscTmp.thrNodePosVecs.Data(:,1,:)),3))>0
+h.title = title({strcat(sprintf('Time = %.0f s',0),',',...
     sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.Data(:,:,1)))),...
-    sprintf('Tow Speed = %.2f m/s',tsc.towSpeed.Data)});
+    sprintf('Tow Speed = %.1f m/s',tscTmp.towSpeed.Data(1))});
 else
     h.title = title({strcat(sprintf('Time = %.0f s',0),',',...
     sprintf(' Speed = %.2f m/s',norm(tscTmp.velocityVec.Data(:,:,1)))),...
@@ -840,11 +840,11 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     end
     
     % Update the title
-    if norm(diff(squeeze(tsc.thrNodePosVecs.Data(:,1,:)),3))>0
+    if norm(diff(squeeze(tscTmp.thrNodePosVecs.Data(:,1,:)),3))>0
         h.title.String = {strcat(...
-            sprintf('Time = %.6f s',tscTmp.velocityVec.Time(ii)),',',...
+            sprintf('Time = %.0f s',tscTmp.velocityVec.Time(ii)),',',...
             sprintf(' Speed = %.1f m/s',norm(tscTmp.velocityVec.getsamples(ii).Data))),...
-            sprintf('Tow Speed = %.2f m/s',tsc.towSpeed.Data)};
+            sprintf('Tow Speed = %.1f m/s',tscTmp.towSpeed.Data(1))};
     else
         h.title.String = {strcat(...
             sprintf('Time = %.0f s',tscTmp.velocityVec.Time(ii)),',',...
@@ -933,7 +933,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         end
         r = pt-pt2;
         midpt =(pt+pt2)/2;
-        limbound = norm(r)*[-1 1];
+        limbound = norm(r)*[-0.6 .6];
         xlim(midpt(1)+limbound)
         ylim(midpt(2)+limbound)
         zlim(midpt(3)+limbound)
