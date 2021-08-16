@@ -12,15 +12,15 @@ thr.build('TetherClass','tetherF');
 thr.tether1.setDiameter(18e-3,'m');
 thr.tether1.nomDragCoeff.setValue(1.2,'');
 thr.tether1.fairedDragCoeff.setValue(.1,'');
-thr.tether1.fairedLength.setValue(50,'m');
-thr.tether1.maxThrLength.setValue(300,'m');
+thr.tether1.fairedLength.setValue(100,'m');
+thr.tether1.maxThrLength.setValue(600,'m');
 thr.tether1.youngsMod.setValue(57e9,'Pa');
 thr.tether1.dampingRatio.setValue(0.75,'');
 thr.tether1.density.setValue(1500,'kg/m^3');
 thr.tether1.setDragEnable(true,'');
 thr.tether1.setSpringDamperEnable(true,'');
 thr.tether1.setNetBuoyEnable(true,'');
-
+thr.tether1.transVoltage.setValue(1000,'V');
 % check if all the initial conditions are empty
 testEmpty = NaN(4,3);
 for ii = 1:thr.numTethers.Value

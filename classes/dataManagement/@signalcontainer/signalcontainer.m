@@ -210,7 +210,7 @@ classdef signalcontainer < dynamicprops
             legend('Setpoint','AutoUpdate','off','location','northwest')
             %  Plot Elevator Command
             subplot(2,1,2); hold on; grid on;
-            plot(obj.ctrlSurfDeflCmd.Time,squeeze(obj.ctrlSurfDeflCmd.Data(3,:,:)),'b-');  
+            plot(obj.ctrlSurfDefl.Time,squeeze(obj.ctrlSurfDefl.Data(3,:,:)),'b-');  
             xlabel('Time [s]');  ylabel('Elevator [deg]');
         end
         function [CLsurf,CDtot] = getCLCD(obj,vhcl,thr)
@@ -218,11 +218,11 @@ classdef signalcontainer < dynamicprops
             LThr = sqrt(sum(vhcl.initPosVecGnd.Value.^2));
             Aref = vhcl.fluidRefArea.Value;
             Afuse = squeeze(obj.Afuse.Data);
-            Athr = LThr*dThr/4;
+            Athr = LThr*dThr/4*0;
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
-            CDthr = thr.tether1.dragCoeff.Value.*Athr/Aref;
+            CDthr = thr.tether1.dragCoeff.Value(1).*Athr/Aref;
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
-            CDtot = CDfuse+CDsurf;%+CDthr;
+            CDtot = CDfuse+CDsurf+CDthr;
             CLsurf = squeeze(obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data);
         end
         function [Lift,Drag,Fuse,Thr] = getLiftDrag(obj)
@@ -341,7 +341,7 @@ classdef signalcontainer < dynamicprops
             pObj(pIdx) = plot(plotParam,SSA(ran));
             ylabel('SSA (deg)');
             % plot elevator deflection
-            csDef = squeeze(obj.ctrlSurfDeflCmd.Data);
+            csDef = squeeze(obj.ctrlSurfDefl.Data);
             spIdx = spIdx + 1; pIdx = pIdx + 1;
             spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
             pObj(pIdx) = plot(plotParam,csDef(ran,4));
@@ -394,17 +394,25 @@ classdef signalcontainer < dynamicprops
         function Pow = rotPowerSummary(obj,vhcl,env,thr)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
             ran = Idx1:Idx2-1;
-%             [CLsurf,CDtot] = getCLCD(obj,vhcl,thr);
-%             C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
-%             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
-%             Pow.loyd = mean(PLoyd)*1e-3;
-            Pow.avg = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+            [CLsurf,CDtot] = obj.getCLCD(vhcl,thr);
+            C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3*.5;
+            Pow.loyd = mean(PLoyd)*1e-3;
+            Pow.mech = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.elec = Pow.mech*0.76;
+            try
+                Rthr = thr.tether1.resistance.Value;
+                Ithr = Pow.elec*1e3/thr.tether1.transVoltage.Value;
+            catch
+                Rthr = 14;
+                Ithr = Pow.elec*1e3/1e3;
+            end
+            Pow.loss = Rthr*Ithr^2*1e-3;
+            Pow.net = Pow.elec-Pow.loss;
             Pow.max = max(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.min = min(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.wnch = mean(obj.winchPower.Data(ran))*1e-3;
-            fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\n%.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg)
-%             fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.avg,Pow.loyd)
-            fprintf('Avg Charge Time: %.1f days\n',270/Pow.avg/24)
+            fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.min,Pow.max,Pow.mech,Pow.loyd,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
@@ -473,6 +481,298 @@ classdef signalcontainer < dynamicprops
             Pow.Lfactor = mean(Pavg./PLoyd(ran));
             fprintf('Flow:\t %.2f m/s;\t Lthr: %.1f m;\t EL: %.2f deg\n',vFlow,LThr,EL);
             fprintf('Avg\t\t\t Loyd\t\t Factor\n%.3f kW\t %.3f kW\t %.3f\n\n',Pow.avg,Pow.loyd,Pow.Lfactor)
+        end
+        function plotFlightResultsEng(obj,vhcl,env,thr,varargin)
+            %%  Parse Inputs
+            p = inputParser;
+            addOptional(p,'plot1Lap',false,@islogical);
+            addOptional(p,'lapNum',1,@isnumeric);
+            addOptional(p,'plotS',false,@islogical);
+            addOptional(p,'cross',false,@islogical);
+            addOptional(p,'AoASP',true,@islogical);
+            addOptional(p,'maxTension',true,@islogical)
+            addOptional(p,'plotBeta',false,@islogical);
+            addOptional(p,'LiftDrag',false,@islogical);
+            addOptional(p,'dragChar',false,@islogical);
+            parse(p,varargin{:})
+            
+            R = 3;  C = 2;
+            data = squeeze(obj.currentPathVar.Data);
+            time = obj.lapNumS.Time;
+            lap = p.Results.plot1Lap;
+            con = p.Results.plotS;
+            AoA = p.Results.AoASP;
+            turb = isprop(obj,'turbPow');
+            %%  Determine Single Lap Indices
+            if lap
+                [Idx1,Idx2] = getLapIdxs(obj,p.Results.lapNum);
+                ran = Idx1:Idx2-1;
+                lim = [time(Idx1) time(Idx2)];
+            else
+                lim = [time(1) time(end)];
+            end
+            %%  Compute Plotting Variables
+            if turb
+                N = vhcl.numTurbines.Value;
+                if N == 1
+                    power = squeeze(obj.turbPow.Data(1,1,:));
+                    energy = cumtrapz(time,power)/1000/3600;
+                else
+                    power = squeeze(obj.turbPow.Data(1,1,:));
+                    energy = cumtrapz(time,power)/1000/3600;
+                    speed = (squeeze(obj.turbVelP.Data(1,1,:))+squeeze(obj.turbVelS.Data(1,1,:)))/2;
+                end
+            else
+                power = squeeze(obj.winchPower.Data(:,1));
+                energy = cumtrapz(time,power)/1000/3600;
+            end
+            vKite = -squeeze(obj.velCMvec.Data(1,:,:));
+            %   Tether tension
+            airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
+            gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
+            %   Hydrocharacteristics
+            [CLsurf,CDtot] = getCLCD(obj,vhcl,thr);
+            FLiftBdyP1 = squeeze(sqrt(sum(obj.portWingLift.Data(:,1,:).^2,1)));
+            FLiftBdyP2 = squeeze(sqrt(sum(obj.stbdWingLift.Data(:,1,:).^2,1)));
+            FLiftBdyP3 = squeeze(sqrt(sum(obj.hStabLift.Data(:,1,:).^2,1)));
+            FLiftBdy   = FLiftBdyP1 + FLiftBdyP2 + FLiftBdyP3;
+            FDragBdyP1 = squeeze(sqrt(sum(obj.portWingDrag.Data(:,1,:).^2,1)));
+            FDragBdyP2 = squeeze(sqrt(sum(obj.stbdWingDrag.Data(:,1,:).^2,1)));
+            FDragBdyP3 = squeeze(sqrt(sum(obj.hStabDrag.Data(:,1,:).^2,1)));
+            FDragBdyP4 = squeeze(sqrt(sum(obj.vStabDrag.Data(:,1,:).^2,1)));
+            FDragBdy = FDragBdyP1 + FDragBdyP2 + FDragBdyP3 + FDragBdyP4;
+            FDragFuse = squeeze(sqrt(sum(obj.FFuseBdy.Data.^2,1)));
+            FDragThr = squeeze(sqrt(sum(obj.thrDragVecs.Data.^2,1)));
+            if turb
+                FTurbBdy = squeeze(sqrt(sum(obj.FTurbBdy.Data.^2,1)));
+                totDrag = (FDragBdy + FTurbBdy + FDragFuse + FDragThr);
+                LiftDrag = FLiftBdy./(FDragBdy + FTurbBdy + FDragFuse );
+            else
+                totDrag = (FDragBdy + FDragFuse + FDragThr);
+                LiftDrag = FLiftBdy./(FDragBdy + FDragFuse);
+            end
+            C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            if turb
+                PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
+                vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
+            else
+                PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
+                vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2)*2/3;
+            end
+            figure();
+            %%  Plot Power Output
+            ax1 = subplot(R,C,1);
+            hold on; grid on
+            yyaxis left
+            if lap
+                if con
+                    plot(data(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1])
+                    %         plot(data(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
+                    %         text(0.04,310,sprintf('P = %.3f kW',mean(powAvg)*1e-3))
+                else
+                    plot(time(ran),power(ran)*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
+                    %         plot(time(ran),PLoyd(ran)*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
+                end
+            else
+                plot(time,power*1e-3,'b-');  ylabel('Power [kW]');  set(gca,'YColor',[0 0 1]);  xlim(lim);  ylim([0 inf]);
+                %     plot(time,PLoyd*1e-3,'b--');  ylabel('Power [kW]');  legend('Kite','Loyd','location','southeast','AutoUpdate','off');  ylim([0 inf]);
+            end
+            yyaxis right
+            if lap
+                if con
+                    plot(data(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0])
+                else
+                    plot(time(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+                end
+            else
+                plot(time,energy,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+            end
+            %%  Plot Tether Tension
+            scT = 0.224809*1000;
+            ax2 = subplot(R,C,2); hold on; grid on
+            if p.Results.maxTension
+                Tmax = (obj.maxTension.Data+0.5)*ones(numel(time),1);
+            else
+                Tmax = (0*ones(numel(time),1));
+            end
+            if lap
+                if con
+                    plot(data(ran),Tmax(ran)*scT,'r--');    plot(data(ran),airNode(ran)*scT,'b-');
+                    plot(data(ran),gndNode(ran)*scT,'g-');  ylabel('Thr Tension [lb]');  legend('Limit','Kite','Glider')
+                else
+                    plot(time(ran),Tmax(ran)*scT,'r--');    plot(time(ran),airNode(ran)*scT,'b-');
+                    plot(time(ran),gndNode(ran)*scT,'g-');  ylabel('Thr Tension [lb]');  legend('Limit','Kite','Glider');  xlim(lim)
+                end
+            else
+                plot(time,Tmax*scT,'r--');  plot(time,airNode*scT,'b-');  plot(time,gndNode*scT,'g-');
+                ylabel('Thr Tension [lb]');  legend('Limit','Kite','Glider');  xlim(lim)
+            end
+            %%  Plot Speed
+            ax3 = subplot(R,C,3); hold on; grid on
+            scV = 1.94384;
+            if lap
+                if con
+                    if ~turb
+                        plot(data(ran),speed(ran)*scV,'g-');  ylabel('Speed [kts]');  ylim([0,inf])
+                        plot(data(ran),vKite(ran)*scV,'b-');  ylabel('Speed [kts]');  legend('Turb','Kite','location','southeast');
+                    else
+                        plot(data(ran),vKite(ran)*scV,'b-');  ylabel('Speed [kts]');  ylim([0,inf])
+                    end
+                else
+                    if ~turb
+                        plot(time(ran),speed(ran)*scV,'g-');  ylabel('Speed [kts]');  xlim(lim);  ylim([0,inf])
+                        plot(time(ran),vKite(ran)*scV,'b-');  ylabel('Speed [kts]');  legend('Turb','Kite','location','southeast');
+                    else
+                        plot(time(ran),vKite(ran)*scV,'b-');  ylabel('Speed [kts]');  ylim([0,inf])
+                    end
+                end
+            else
+                if ~turb
+                    plot(time,speed*scV,'g-');  ylabel('Speed [kts]');  xlim(lim)
+                    plot(time,vKite*scV,'b-');  ylabel('Speed [kts]');  ylim([0,inf]);  legend('Turb','Kite','location','southeast');
+                else
+                    plot(time,vKite*scV,'b-');  ylabel('Speed [kts]');
+                end
+            end
+            %%  Plot Angle of attack
+            ax4 = subplot(R,C,4); hold on; grid on
+            if lap
+                if con
+                    if p.Results.AoASP
+                        plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');
+                    end
+                    plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA');
+                    ylabel('Angle [deg]');
+                    if p.Results.plotBeta
+                        plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');
+                    end
+                    legend;
+                else
+                    plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');
+                    plot(time(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA');
+                    ylabel('Angle [deg]');  xlim(lim);
+                    if p.Results.plotBeta
+                        plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');   xlim(lim)
+                    end
+                    legend;
+                end
+            else
+                plot(time,obj.AoASP.Data*180/pi,'r-');
+                plot(time,squeeze(obj.vhclAngleOfAttack.Data),'b-'); ylim([0 20]);
+                ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
+                if p.Results.plotBeta
+                    plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)
+                end
+            end
+            
+            %%  Plot Ctrl Surface Deflection
+            ax5 = subplot(R,C,6); hold on; grid on
+            if lap
+                if con
+                    plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'b-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+                    plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,3)),'r-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+                    plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,4)),'g-');  xlabel('Path Position');  ylabel('Deflection [deg]');
+                else
+                    plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                    plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                    plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                end
+            else
+                plot(time,squeeze(obj.ctrlSurfDefl.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                plot(time,squeeze(obj.ctrlSurfDefl.Data(:,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+                plot(time,squeeze(obj.ctrlSurfDefl.Data(:,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  xlim(lim)
+            end
+            legend('P-Aileron','Elevator','Rudder')
+            %%  Plot Lift-Drag ratio
+            ax6 = subplot(R,C,5); hold on; grid on
+            yyaxis left
+            if lap
+                if con
+                    plot(data(ran),totDrag(ran)*1e-3*scT,'r-');    xlabel('Path Position');  ylabel('Force [lb]');  set(gca,'YColor',[0 0 0])
+                    plot(data(ran),FLiftBdy(ran)*1e-3*scT,'b-');   xlabel('Path Position');  ylabel('Force [lb]');  legend('Drag','Lift')
+                else
+                    plot(time(ran),totDrag(ran)*1e-3*scT,'r-');    xlabel('Time [s]');  ylabel('Force [lb]');  set(gca,'YColor',[0 0 0])
+                    plot(time(ran),FLiftBdy(ran)*1e-3*scT,'b-');   xlabel('Time [s]');  ylabel('Force [lb]');  legend('Drag','Lift') ;  xlim(lim);
+                end
+            else
+                plot(time,totDrag*1e-3*scT,'r-');    xlabel('Time [s]');  ylabel('Force [lb]');  set(gca,'YColor',[0 0 0])
+                plot(time,FLiftBdy*1e-3*scT,'b-');   xlabel('Time [s]');  ylabel('Force [lb]');  legend('Drag','Lift') ;  xlim(lim);
+            end
+            yyaxis right
+            if lap
+                if con
+                    plot(data(ran),CLsurf(ran),'b--');    xlabel('Path Position');  set(gca,'YColor',[0 0 0])
+                    plot(data(ran),CDtot(ran),'r--');   xlabel('Path Position');  ylabel('CD and CL');  legend('Drag','Lift','CL','CD')
+                else
+                    plot(time(ran),CLsurf(ran),'b--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
+                    plot(time(ran),CDtot(ran),'r--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CL','CD') ;  xlim(lim);
+                end
+            else
+                plot(time,CLsurf,'b--');    xlabel('Time [s]');  set(gca,'YColor',[0 0 0])
+                plot(time,CDtot,'r--');   xlabel('Time [s]');  ylabel('CD and CL');  legend('Drag','Lift','CL','CD') ;  xlim(lim);
+            end
+            % figure; hold on; grid on
+            % plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
+            % plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
+            linkaxes([ax1 ax2 ax3 ax4 ax5 ax6],'x');
+            % legend('CD','CL')
+            %%  Plot Drag Characteristics
+            if turb && p.Results.dragChar && con
+                figure(); subplot(2,1,2); hold on; grid on
+                plot(time,FTurbBdy./(totDrag-FTurbBdy),'b-');
+                plot(time,.5*ones(length(time),1),'r-');
+                xlabel('Path Position');  ylabel('$\mathrm{D_t/D_k}$');  ylim([0 1]);
+                subplot(2,1,1); hold on; grid on
+                plot(time,FDragBdy,'b-');
+                plot(time,FDragFuse,'r-');
+                plot(time,FDragThr,'g-');
+                plot(time,FTurbBdy,'c-');
+                plot(time,totDrag,'k-');
+                xlabel('Path Position');  ylabel('Drag [N]');  legend('Surf','Fuse','Thr','Turb','Tot');
+            end
+            %%  Assess cross-current flight performance
+            if p.Results.cross
+                figure;
+                subplot(3,1,1); hold on; grid on
+                if lap
+                    if con
+                        plot(data(ran),squeeze(obj.velAngleError.Data(1,1,ran))*180/pi,'r-');    xlabel('Path Position');  ylabel('Angle Error [deg]');
+                        plot(data(ran),squeeze(obj.tanRollError.Data(ran))*180/pi,'b-');   xlabel('Path Position');  ylabel('Angle Error [deg]');  legend('Velocity','Tan Roll');
+                    else
+                        plot(time(ran),squeeze(obj.velAngleError.Data(1,1,ran))*180/pi,'r-');    xlabel('Time [s]');  ylabel('Angle Error [deg]');
+                        plot(time(ran),squeeze(obj.tanRollError.Data(ran))*180/pi,'b-');   xlabel('Time [s]');  ylabel('Angle Error [deg]');  legend('Velocity','Tan Roll');  xlim(lim);
+                    end
+                else
+                    plot(time,squeeze(obj.velAngleError.Data(1,1,:))*180/pi,'r-');    xlabel('Time [s]');  ylabel('Angle Error [deg]');
+                    plot(time,squeeze(obj.tanRollError.Data(:))*180/pi,'b-');   xlabel('Time [s]');  ylabel('Angle Error [deg]');  legend('Velocity','Tan Roll');  xlim(lim);
+                end
+                subplot(3,1,2); hold on; grid on
+                if lap
+                    if con
+                        plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'r-');    xlabel('Path Position');  ylabel('Angle [deg]');
+                        plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,2)),'b-');    xlabel('Path Position');  ylabel('Angle [deg]');  legend('Port','Stbd');
+                    else
+                        plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
+                        plot(time(ran),squeeze(obj.ctrlSurfDefl.Data(ran,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
+                    end
+                else
+                    plot(time,squeeze(obj.ctrlSurfDefl.Data(:,1)),'r-');    xlabel('Time [s]');  ylabel('Angle [deg]');
+                    plot(time,squeeze(obj.ctrlSurfDefl.Data(:,2)),'b-');    xlabel('Time [s]');  ylabel('Angle [deg]');  legend('Port','Stbd');  xlim(lim);
+                end
+                subplot(3,1,3); hold on; grid on
+                if lap
+                    if con
+                        plot(data(ran),squeeze(obj.desiredMoment.Data(ran,1)),'r-');    xlabel('Path Position');  ylabel('Roll Moment [N]');
+                        plot(data(ran),squeeze(obj.MFluidBdy.Data(1,1,ran)),'b-');   xlabel('Path Position');  ylabel('Roll Moment [N]');  legend('Desired','Actual');
+                    else
+                        plot(time(ran),squeeze(obj.desiredMoment.Data(ran,1)),'r-');    xlabel('Time [s]');  ylabel('Roll Moment [N]');
+                        plot(time(ran),squeeze(obj.MFluidBdy.Data(1,1,ran)),'b-');   xlabel('Time [s]');  ylabel('Roll Moment [N]');  legend('Desired','Actual');  xlim(lim);
+                    end
+                else
+                    plot(time,squeeze(obj.desiredMoment.Data(:,1)),'r-');    xlabel('Time [s]');  ylabel('Roll Moment [N]');
+                    plot(time,squeeze(obj.MFluidBdy.Data(1,1,:)),'b-');   xlabel('Time [s]');  ylabel('Roll Moment [N]');  legend('Desired','Actual');  xlim(lim);
+                end
+            end
         end
     end
 end
