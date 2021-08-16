@@ -21,7 +21,7 @@ loadComponent('ConstXYZT');                                 %   Environment
 direc = 'G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\07 28 21\Data';
 listing =  dir(direc) ;
 towSpeed = 0.77;
-runs = [26];
+runs = [3:7 9];
 runQuery = min(runs);
 runCount = min(runs);
 runLim = max(runs);

@@ -9,7 +9,7 @@ saveFig = 0
 saveDir = strcat('output\',testCond)
 status = mkdir(saveDir)
 plotData = 1
-runs = [25 57 59 60];
+runs = [3];
 runQuery = min(runs);
 runCount = min(runs);
 runLim = max(runs);
@@ -73,7 +73,7 @@ end
 %     plot(vel,ten,'x')
 %%
 if plotData == 1
-    runs={'All PID','60/40 PID','60/40 PID 2','40/60 PID'};
+    runs={'1','2','3','4','5','6'};
 close all
 j = 1
 color={[0    0.4470    0.7410],...
@@ -83,7 +83,7 @@ color={[0    0.4470    0.7410],...
     [0.4660    0.6740    0.1880],...
     [0.3010    0.7450    0.9330],...
     [0.6350    0.0780    0.1840]};
-for i = 1:32
+for i = 1:6
 %%
 % if i == 1 
 % j=3
@@ -138,7 +138,12 @@ j = plotExpData(runData,'kite_azi','yLegend','Azimuth [deg]',...
 j = plotExpData(runData,'LoadCell_N','yLegend','Tether Tension [N]',...
     'legendEntry',runs{i},'dataScale',1/2,...
     'runNum',i,'figNum',j,'Color',color{i});
-
+j = plotExpData(runData,'kitevely','yLegend','Lateral Velocity [m/s]',...
+    'legendEntry',runs{i},'dataScale',1,...
+    'runNum',i,'figNum',j,'Color',color{i});
+j = plotExpData(runData,'rollSP','yLegend','Angle [deg]',...
+    'legendEntry',runs{i},'dataScale',1,...
+    'runNum',i,'figNum',j-1,'LineStyle','--','Color',color{i});
 % [~,velAug] = estExpVelMag(runData{1},1);
 % 
 % figure('Position',[100 100 800 400])
