@@ -32,8 +32,8 @@ loadComponent('idealSensors')
 loadComponent('idealSensorProcessing')
 % Vehicle
 loadComponent('fullScale1thr');
-VEHICLE = "vehicleLEBand"
-
+VEHICLE = "vhcl2turbLinearize";
+PLANT = "plant2turb";
 % loadComponent('pathFollowingVhclForComp')
 % loadComponent('sensitivityAnalysis');              %   Load vehicle 
 
@@ -91,13 +91,15 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg')
 % vhcl.setFlowGradientDist(.01,'m')
 % simWithMonitor('OCTModel')
 % tsc = signalcontainer(logsout);
-ENVIRONMENT = "environmentManta2RotBandLin"
+fltCtrl.yawMoment.kp.setValue(100,'(N*m)/(rad)')
+ENVIRONMENT = "env2turbLinearize";
 SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
 set_param('OCTModel','SimulationMode','accelerator');
 simWithMonitor('OCTModel')
 cPV = logsout.getElement('closestPathVariable');
 lapNumS = logsout.getElement('lapNumS');
 tsc = signalcontainer(logsout);
+plotCtrlDeflections
 %%
 snaps = 0:0.025:.99;
  cPV = logsout.getElement('currentPathVar');
@@ -123,14 +125,8 @@ tsnaps = reshape(cPV.Values.Time(x),1,numel(x));
 
 %%
     io(1) = linio('OCTModel/flightController',1,'output',[],...
-        'betaBdy');
-    io(2) = linio('OCTModel/flightController',1,'output',[],...
-        'centralAngle');
-    io(3) = linio('OCTModel/flightController',1,'output',[],...
-        'tanRollErr');
-    io(4) = linio('OCTModel/flightController',1,'output',[],...
-        'velAngErr');
-    io(5) = linio('OCTModel/environment',1,'input',[],...
+        'ctrlError');
+    io(2) = linio('OCTModel/environment',1,'input',[],...
         'velPrim');
     toc
 fprintf('Finding Operation Points')
@@ -168,7 +164,7 @@ toc
     for i = 1:4
         for ii = 1:1
             h = figure('Units','inches','Position',[1 1 12 8])
-            r = 1; c = 3;
+            r = 3; c = 1;
             a=lines(5);
             ax1 = subplot(r,c,1); hold on; xlabel(xLabelIn); ylabel(yLabelIn); title(titleCellIn{1});
             ax2 = subplot(r,c,2); hold on; xlabel(xLabelIn); ylabel(yLabelIn); title(titleCellIn{2});
@@ -179,7 +175,7 @@ toc
             set(ax3,'xscale','log','ylim',[-60 10]);
             sgtitle({strcat('Frequency Response: ',subTitleCellIn{ii},' disturbance'),...
                 strcat(' to ',titleCellOut{i})})
-            for iii = 1:1:length(snaps)
+            for iii = 1:1:length(snaps)/2
                     serName = sprintf('s = %.3f',snaps(iii));
                     semilogx(ax1,wHz{i,1,iii},squeeze(magdb{i,1,iii}(:,1,:)));
                     semilogx(ax2,wHz{i,1,iii},squeeze(magdb{i,1,iii}(:,2,:)),'DisplayName',serName);
@@ -200,7 +196,7 @@ numEnt = numel(x)
 a=hsv(numEnt/numLap);
 colororder(ax,a);
 colormap(ax,jet)
-for i = 1:numEnt
+for i = 1:numEnt/2
     if rem(i,length(snaps)) == 0
         serName = sprintf('s = %.3f',snaps(end));
     else
@@ -240,7 +236,7 @@ ylabel('Real Component of Slowest Pole [$s^{-1}$]')
 
 
 %%
-tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)
+% tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)
 
 figure
 plot(tsc.thrAttchPtAirBus.posVec.Time,squeeze(sqrt(dot(tsc.thrAttchPtAirBus.posVec.Data,tsc.thrAttchPtAirBus.posVec.Data)))-squeeze(tsc.tetherLengths.Data))

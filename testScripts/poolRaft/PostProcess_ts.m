@@ -18,7 +18,7 @@ thrLength = 5;
 flwSpd = -1e-9;
 cdArray = [1.2 1.8];
 
-for q = 2
+for q = 3
     for i = 1:length(inc)
         i
         for j = 1:length(towArray)
@@ -43,10 +43,10 @@ for q = 2
                 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller                           %   Ground station
                 loadComponent('raftGroundStation');
 %                 GROUNDSTATION = 'boatGroundStation'
-                loadComponent('winchManta');                                %   Winches
-                loadComponent('MantaTether');                               %   Manta Ray tether
+                loadComponent('oneDOFWnch');                                %   Winches
+                loadComponent('poolTether');                               %   Manta Ray tether
                 loadComponent('idealSensors');                             %   Sensors
-                loadComponent('lasPosEst')
+%                 loadComponent('lasPosEst')
                 loadComponent('lineAngleSensor');
                 loadComponent('idealSensorProcessing');                      %   Sensor processing
                 loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
@@ -74,7 +74,7 @@ for q = 2
                 J_raft = 30;
                 tow_length = 16;
                 tow_speed = towArray(j);
-                end_time = 23;
+                end_time = tow_length/tow_speed;
                 x_init = 4;
                 y_init = 0;
                 y_dot_init = 0;
@@ -85,7 +85,7 @@ for q = 2
                 %%  Vehicle Properties
                 PLANT = 'plant2turb';
                 VEHICLE = 'vhclPool';
-                SENSORS = 'lasPosEst';
+%                 SENSORS = 'lasPosEst';
                 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
@@ -131,7 +131,7 @@ for q = 2
                 thr.tether1.setDragCoeff(thrDrag,'');
                 %%  Winches Properties
                 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
-                wnch.winch1.LaRspeed.setValue(1,'m/s');
+%                 wnch.winch1.LaRspeed.setValue(1,'m/s');
                 %%  Controller User Def. Parameters and dependant properties
                 fltCtrl.setFcnName(PATHGEOMETRY,'');
                 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,thrAttachInit);

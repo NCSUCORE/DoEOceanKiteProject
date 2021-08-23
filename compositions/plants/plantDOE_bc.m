@@ -136,14 +136,22 @@ elems(15).Unit = 'N';
 
 
 elems(16) = Simulink.BusElement;
-elems(16).Name = 'gndStnFlowPollPos';
-elems(16).Dimensions = sz.gndStnLmpMasPosSize;
+elems(16).Name = 'airTenVecs';
+elems(16).Dimensions = [3 1];
 elems(16).DimensionsMode = 'Fixed';
 elems(16).DataType = 'double';
 elems(16).SampleTime = -1;
 elems(16).Complexity = 'real';
-elems(16).Unit = 'm';
+elems(16).Unit = 'N';
 
+elems(17) = Simulink.BusElement;
+elems(17).Name = 'gndStnFlowPollPos';
+elems(17).Dimensions = sz.gndStnLmpMasPosSize;
+elems(17).DimensionsMode = 'Fixed';
+elems(17).DataType = 'double';
+elems(17).SampleTime = -1;
+elems(17).Complexity = 'real';
+elems(17).Unit = 'm';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;

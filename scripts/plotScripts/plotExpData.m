@@ -32,7 +32,7 @@ end
 dataStr = strcat('runData{i}.',p.Results.flightVar);
 plotData = evalin('base',dataStr);
 figure(j); hold on; grid on;
-set(gcf,'Position',[100 100 800 400])
+set(gcf,'Position',[100 100 800 200])
 set(gca,'ColorOrderIndex',p.Results.runNum)
 if ~isempty(fieldnames(p.Unmatched))
     plot(plotData*p.Results.dataScale,'LineWidth',1.5,...

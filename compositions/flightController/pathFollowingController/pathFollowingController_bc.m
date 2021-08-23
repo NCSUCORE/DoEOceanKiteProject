@@ -47,7 +47,7 @@ elems(5).Complexity = 'real';
 elems(5).Unit = '';
 
 elems(6) = Simulink.BusElement;
-elems(6).Name = 'err';
+elems(6).Name = 'ctrlError';
 elems(6).Dimensions = [4 1];
 elems(6).DimensionsMode = 'Fixed';
 elems(6).DataType = 'double';
