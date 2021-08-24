@@ -23,6 +23,8 @@ classdef aeroSurf < handle
         
         CL
         CD
+        CH
+        cCtrlSurf
         alpha
         gainCL
         gainCD
@@ -46,7 +48,7 @@ classdef aeroSurf < handle
             obj.sweep               = SIM.parameter('Value',0,'Unit','deg','Description','Sweep angle');
             obj.dihedral            = SIM.parameter('Value',0,'Unit','deg','Description','Dihedral angle');
             obj.incidence           = SIM.parameter('Value',0,'Unit','deg','Description','Flow incidence angle');
-            obj.Airfoil                = SIM.parameter('Description','airfoil','NoScale',true);
+            obj.Airfoil             = SIM.parameter('Description','airfoil','NoScale',true);
             obj.ClMin               = SIM.parameter('Description','Minimum section lift coef','NoScale',true);
             obj.ClMax               = SIM.parameter('Description','Maximum section lift coef','NoScale',true);
             obj.spanUnitVec         = SIM.parameter('Description','Body frame unit vector for the span before dihedral/incidence');
@@ -60,6 +62,8 @@ classdef aeroSurf < handle
             %AVL Params
             obj.CL                = SIM.parameter('NoScale',true);
             obj.CD                = SIM.parameter('NoScale',true);
+            obj.CH                = SIM.parameter('Value',[0 0],'NoScale',true,'Description','Control Hinge Moment Coefficients. 1 - AoA Sensitivity 2 - Ctrl Deflection Sensitivity. Note - Coefficients should be normalized to vehicle reference area');
+            obj.cCtrlSurf         = SIM.parameter('Value',0,'Unit','m');
             obj.alpha             = SIM.parameter('Unit','deg');
             obj.gainCL            = SIM.parameter('Unit','1/deg');
             obj.gainCD            = SIM.parameter('Unit','1/deg');
