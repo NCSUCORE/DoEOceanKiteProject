@@ -86,30 +86,44 @@ vhcl.fuse.setEndDragCoeff(.1,'');
 vhcl.fuse.setSideDragCoeff(1,'');
 vhcl.fuse.setRNose_LE([-2;0;0],'m');
 vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurfLE_WingLEBdy.Value(1));0;0],'m');
+  
+%% load/generate fluid dynamic data
+vhcl.hydroCharacterization.setValue(3,'')
+vhcl.calcFluidDynamicCoefffs;
 
 %% Turbines
+vhclDragCoeff = 2*vhcl.portWing.CD.Value + vhcl.hStab.CD.Value + vhcl.vStab.CD.Value(vhcl.vStab.alpha.Value == 0);
+% assume operating angle of attack
+CDkite = interp1(vhcl.portWing.alpha.Value,vhclDragCoeff,5);
+% number of turbines 
+nT = 2;
+CDturb = 0.5;
+
+% size the turbine such that (turbine drag) = 0.5*(kite drag)
+dTurb = sqrt((2*CDkite*vhcl.fluidRefArea.Value)/(pi*nT*CDturb));
+
+
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
-vhcl.turb1.setMass(6,'kg')
-vhcl.turb1.setDiameter(0,'m')
+% vhcl.turb1.setMass(6,'kg')
+vhcl.turb1.setDiameter(dTurb,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2),'m')
 vhcl.turb1.setPowerCoeff(.5,'')
+vhcl.turb1.setDragCoef(CDturb,'');
 vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
 % starboard rotor
-vhcl.turb2.setMass(6,'kg')
-vhcl.turb2.setDiameter(0,'m')
-vhcl.turb2.setAxisUnitVec([-1;0;0],'')
+% vhcl.turb2.setMass(6,'kg')
+vhcl.turb2.setDiameter(dTurb,'m')
+vhcl.turb2.setAxisUnitVec([1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2),'m')
 vhcl.turb2.setPowerCoeff(.5,'')
-vhcl.turb2.setAxalInductionFactor(1.5,'')
+vhcl.turb2.setDragCoef(0.5,'');
+vhcl.turb2.setAxalInductionFactor(CDturb,'')
 vhcl.turb2.setTipSpeedRatio(6,'')
-    
-%% load/generate fluid dynamic data
-vhcl.hydroCharacterization.setValue(3,'')
-vhcl.calcFluidDynamicCoefffs
+
 
 %% save file in its respective directory
 saveBuildFile('vhcl',mfilename,'variant',["VEHICLE","PLANT","SIXDOFDYNAMICS"]);

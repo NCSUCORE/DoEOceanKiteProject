@@ -189,13 +189,20 @@ vhcl.hStab.CL.NoScale = true
 vhcl.hStab.CD.Value = [0.228399412999785;0.218270491740625;0.208383648758785;0.198738884054265;0.189336197627065;0.180175589477185;0.171257059604625;0.162580608009385;0.154146234691465;0.145953939650865;0.138003722887585;0.130295584401625;0.122829524192985;0.115605542261665;0.108623638607665;0.101883813230985;0.095386066131625;0.089130397309585;0.083116806764865;0.077345294497465;0.071815860507385;0.066528504794625;0.061483227359185;0.056680028201065;0.052118907320265;0.047799864716785;0.043722900390625;0.039888014341785;0.036295206570265;0.032944477076065;0.029835825859185;0.026969252919625;0.024344758257385;0.021962341872465;0.019822003764865;0.017923743934585;0.016267562381625;0.014853459105985;0.013681434107665;0.012751487386665;0.012063618942985;0.011617828776625;0.011414116887585;0.011452483275865;0.011732927941465;0.012255450884385;0.013020052104625;0.014026731602185;0.015275489377065;0.016766325429265;0.018499239758785;0.020474232365625;0.022691303249785;0.025150452411265;0.027851679850065;0.030794985566185;0.033980369559625;0.037407831830385;0.041077372378465;0.044988991203865;0.049142688306585;0.053538463686625;0.058176317343985;0.063056249278665;0.068178259490665;0.073542347979985;0.079148514746625;0.084996759790585;0.091087083111865;0.097419484710465;0.103993964586385]
 vhcl.hStab.CD.Unit is unitless or has no unit specified
 vhcl.hStab.CD.NoScale = true
+vhcl.hStab.CH.Value = [0 0]
+vhcl.hStab.CH.Unit is unitless or has no unit specified
+vhcl.hStab.CH.NoScale = true
+vhcl.hStab.CH.Description = 'Control Hinge Moment Coefficients. 1 - AoA Sensitivity 2 - Ctrl Deflection Sensitivity. Note - Coefficients should be normalized to vehicle reference area'
+vhcl.hStab.cCtrlSurf.Value = 0.0000e+00
+vhcl.hStab.cCtrlSurf.Unit = 'm'
+vhcl.hStab.cCtrlSurf.NoScale = false
 vhcl.hStab.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
 vhcl.hStab.alpha.Unit = 'deg'
 vhcl.hStab.alpha.NoScale = false
-vhcl.hStab.gainCL.Value = [9.08097375338768e-09 0.00966868580212788 0]
+vhcl.hStab.gainCL.Value = [9.08097375233557e-09 0.00966868580212788 0]
 vhcl.hStab.gainCL.Unit = '1/deg'
 vhcl.hStab.gainCL.NoScale = false
-vhcl.hStab.gainCD.Value = [1.9759090909091e-05 -0.00099 0]
+vhcl.hStab.gainCD.Value = [1.97590909090908e-05 -0.00099 0]
 vhcl.hStab.gainCD.Unit = '1/deg'
 vhcl.hStab.gainCD.NoScale = false
 vhcl.hStab.AR.Value = 8.8889e+00
@@ -296,10 +303,17 @@ vhcl.vStab.CL.NoScale = true
 vhcl.vStab.CD.Value = [0.0770807245480205;0.072757203066651;0.0685590274586833;0.0644861977241173;0.060538713862953;0.0567165758751905;0.0530197837608297;0.0494483375198706;0.0460022371523132;0.0426814826581576;0.0394860740374038;0.0364160112900516;0.0334712944161012;0.0306519234155526;0.0279578982884057;0.0253892190346605;0.022945885654317;0.0206278981473753;0.0184352565138353;0.0163679607536971;0.0144260108669606;0.0126094068536258;0.0109181487136928;0.00935223644716148;0.00791167005403192;0.00659644953430409;0.005406574887978;0.00434204611505365;0.00340286321553103;0.00258902618941015;0.001900535036691;0.00133738975737358;0.000899590351457909;0.000587136818943968;0.000400029159831764;0.000338267374121295;0.000401851461812563;0.000590781422905566;0.000905057257400305;0.00134467896529678;0.00190964654659499;0.00259996000129494;0.00341561932939662;0.00435662453090004;0.00542297560580519;0.00661467255411208;0.00793171537582071;0.00937410407093107;0.0109418386394432;0.012634919081357;0.0144533453966726;0.0163971175853899;0.0184662356475089;0.0206606995830297;0.0229805093919522;0.0254256650742765;0.0279961666300024;0.0306920140591301;0.0335132073616596;0.0364597465375908;0.0395316315869237;0.0427288625096584;0.0460514393057948;0.0494993619753329;0.0530726305182728;0.0567712449346144;0.0605952052243578;0.0645445113875028;0.0686191634240497;0.0728191613339982;0.0771445051173485]
 vhcl.vStab.CD.Unit is unitless or has no unit specified
 vhcl.vStab.CD.NoScale = true
+vhcl.vStab.CH.Value = [0 0]
+vhcl.vStab.CH.Unit is unitless or has no unit specified
+vhcl.vStab.CH.NoScale = true
+vhcl.vStab.CH.Description = 'Control Hinge Moment Coefficients. 1 - AoA Sensitivity 2 - Ctrl Deflection Sensitivity. Note - Coefficients should be normalized to vehicle reference area'
+vhcl.vStab.cCtrlSurf.Value = 0.0000e+00
+vhcl.vStab.cCtrlSurf.Unit = 'm'
+vhcl.vStab.cCtrlSurf.NoScale = false
 vhcl.vStab.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
 vhcl.vStab.alpha.Unit = 'deg'
 vhcl.vStab.alpha.NoScale = false
-vhcl.vStab.gainCL.Value = [6.88331642435178e-20 0.00609197978147636 0]
+vhcl.vStab.gainCL.Value = [8.03053582841042e-20 0.00609197978147636 0]
 vhcl.vStab.gainCL.Unit = '1/deg'
 vhcl.vStab.gainCL.NoScale = false
 vhcl.vStab.gainCD.Value = [1.78568181818182e-05 -1.07371615586703e-20 0]
@@ -403,10 +417,17 @@ vhcl.portWing.CL.NoScale = true
 vhcl.portWing.CD.Value = [0.545342940692299;0.513942153763687;0.483478563198788;0.453952168997601;0.425362971160128;0.397710969686367;0.370996164576319;0.345218555829983;0.320378143447361;0.296474927428451;0.273508907773255;0.251480084481771;0.230388457553999;0.210234026989941;0.191016792789596;0.172736754952963;0.155393913480043;0.138988268370836;0.123519819625342;0.10898856724356;0.0953945112254915;0.0827376515711356;0.0710179882804927;0.0602355213535625;0.0503902507903451;0.0414821765908405;0.0335112987550488;0.0264776172829699;0.0203811321746038;0.0152218434299505;0.01099975104901;0.0077148550317824;0.00536715537826758;0.00395665208846557;0.00348334516237637;0.0039472346;0.00534832040133644;0.0076866025663857;0.0109620810951478;0.0151747559876227;0.0203246272438104;0.0264116948637109;0.0334359588473242;0.0413974191946504;0.0502960759056894;0.0601319289804412;0.0709049784189058;0.0826152242210832;0.0952626663869735;0.108847304916577;0.123369139809892;0.138828171066921;0.155224398687663;0.172557822672117;0.190828443020284;0.210036259732164;0.230181272807757;0.251263482247063;0.273282888050081;0.296239490216812;0.320133288747256;0.344964283641413;0.370732474899283;0.397437862520865;0.425080446506161;0.453660226855169;0.48317720356789;0.513631376644323;0.54502274608447;0.57735131188833;0.610617074055902]
 vhcl.portWing.CD.Unit is unitless or has no unit specified
 vhcl.portWing.CD.NoScale = true
+vhcl.portWing.CH.Value = [0 0]
+vhcl.portWing.CH.Unit is unitless or has no unit specified
+vhcl.portWing.CH.NoScale = true
+vhcl.portWing.CH.Description = 'Control Hinge Moment Coefficients. 1 - AoA Sensitivity 2 - Ctrl Deflection Sensitivity. Note - Coefficients should be normalized to vehicle reference area'
+vhcl.portWing.cCtrlSurf.Value = 0.0000e+00
+vhcl.portWing.cCtrlSurf.Unit = 'm'
+vhcl.portWing.cCtrlSurf.NoScale = false
 vhcl.portWing.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
 vhcl.portWing.alpha.Unit = 'deg'
 vhcl.portWing.alpha.NoScale = false
-vhcl.portWing.gainCL.Value = [2.40238854375257e-07 0.0211401594724691 0]
+vhcl.portWing.gainCL.Value = [2.40238854373722e-07 0.0211401594724691 0]
 vhcl.portWing.gainCL.Unit = '1/deg'
 vhcl.portWing.gainCL.NoScale = false
 vhcl.portWing.gainCD.Value = [5.28954545454546e-05 0.000386127272727273 0]
@@ -510,10 +531,17 @@ vhcl.stbdWing.CL.NoScale = true
 vhcl.stbdWing.CD.Value = [0.545342940692299;0.513942153763687;0.483478563198788;0.453952168997601;0.425362971160128;0.397710969686367;0.370996164576319;0.345218555829983;0.320378143447361;0.296474927428451;0.273508907773255;0.251480084481771;0.230388457553999;0.210234026989941;0.191016792789596;0.172736754952963;0.155393913480043;0.138988268370836;0.123519819625342;0.10898856724356;0.0953945112254915;0.0827376515711356;0.0710179882804927;0.0602355213535625;0.0503902507903451;0.0414821765908405;0.0335112987550488;0.0264776172829699;0.0203811321746038;0.0152218434299505;0.01099975104901;0.0077148550317824;0.00536715537826758;0.00395665208846557;0.00348334516237637;0.0039472346;0.00534832040133644;0.0076866025663857;0.0109620810951478;0.0151747559876227;0.0203246272438104;0.0264116948637109;0.0334359588473242;0.0413974191946504;0.0502960759056894;0.0601319289804412;0.0709049784189058;0.0826152242210832;0.0952626663869735;0.108847304916577;0.123369139809892;0.138828171066921;0.155224398687663;0.172557822672117;0.190828443020284;0.210036259732164;0.230181272807757;0.251263482247063;0.273282888050081;0.296239490216812;0.320133288747256;0.344964283641413;0.370732474899283;0.397437862520865;0.425080446506161;0.453660226855169;0.48317720356789;0.513631376644323;0.54502274608447;0.57735131188833;0.610617074055902]
 vhcl.stbdWing.CD.Unit is unitless or has no unit specified
 vhcl.stbdWing.CD.NoScale = true
+vhcl.stbdWing.CH.Value = [0 0]
+vhcl.stbdWing.CH.Unit is unitless or has no unit specified
+vhcl.stbdWing.CH.NoScale = true
+vhcl.stbdWing.CH.Description = 'Control Hinge Moment Coefficients. 1 - AoA Sensitivity 2 - Ctrl Deflection Sensitivity. Note - Coefficients should be normalized to vehicle reference area'
+vhcl.stbdWing.cCtrlSurf.Value = 0.0000e+00
+vhcl.stbdWing.cCtrlSurf.Unit = 'm'
+vhcl.stbdWing.cCtrlSurf.NoScale = false
 vhcl.stbdWing.alpha.Value = [-55;-53.4285714285714;-51.8571428571429;-50.2857142857143;-48.7142857142857;-47.1428571428571;-45.5714285714286;-44;-42.4285714285714;-40.8571428571429;-39.2857142857143;-37.7142857142857;-36.1428571428571;-34.5714285714286;-33;-31.4285714285714;-29.8571428571429;-28.2857142857143;-26.7142857142857;-25.1428571428571;-23.5714285714286;-22;-20.4285714285714;-18.8571428571429;-17.2857142857143;-15.7142857142857;-14.1428571428571;-12.5714285714286;-11;-9.42857142857143;-7.85714285714286;-6.28571428571429;-4.71428571428571;-3.14285714285714;-1.57142857142857;0;1.57142857142857;3.14285714285714;4.71428571428571;6.28571428571429;7.85714285714286;9.42857142857143;11;12.5714285714286;14.1428571428571;15.7142857142857;17.2857142857143;18.8571428571429;20.4285714285714;22;23.5714285714286;25.1428571428571;26.7142857142857;28.2857142857143;29.8571428571429;31.4285714285714;33;34.5714285714286;36.1428571428571;37.7142857142857;39.2857142857143;40.8571428571429;42.4285714285714;44;45.5714285714286;47.1428571428571;48.7142857142857;50.2857142857143;51.8571428571429;53.4285714285714;55]
 vhcl.stbdWing.alpha.Unit = 'deg'
 vhcl.stbdWing.alpha.NoScale = false
-vhcl.stbdWing.gainCL.Value = [2.40238854375257e-07 0.0211401594724691 0]
+vhcl.stbdWing.gainCL.Value = [2.40238854373722e-07 0.0211401594724691 0]
 vhcl.stbdWing.gainCL.Unit = '1/deg'
 vhcl.stbdWing.gainCL.NoScale = false
 vhcl.stbdWing.gainCD.Value = [5.28954545454546e-05 0.000386127272727273 0]
@@ -638,14 +666,26 @@ vhcl.contactPoints.Value = [0.200820744835959 0.200820744835959 5.99999981711822
 vhcl.contactPoints.Unit = 'm'
 vhcl.contactPoints.NoScale = false
 vhcl.contactPoints.Description = 'Points where contact forces are modeled'
-vhcl.turb1.mass.Value = 6.0000e+00
-vhcl.turb1.mass.Unit = 'kg'
-vhcl.turb1.mass.NoScale = false
-vhcl.turb1.mass.Description = 'Rotor mass'
-vhcl.turb1.diameter.Value = 0.0000e+00
+vhcl.turb1.numBlades.Value = 3.0000e+00
+vhcl.turb1.numBlades.Unit is unitless or has no unit specified
+vhcl.turb1.numBlades.NoScale = false
+vhcl.turb1.numBlades.Description = 'Number of blades'
+vhcl.turb1.hubMass.Value = 1.0000e+00
+vhcl.turb1.hubMass.Unit = 'kg'
+vhcl.turb1.hubMass.NoScale = false
+vhcl.turb1.hubMass.Description = 'Hub mass'
+vhcl.turb1.bladeMass.Value = 1.0000e+00
+vhcl.turb1.bladeMass.Unit = 'kg'
+vhcl.turb1.bladeMass.NoScale = false
+vhcl.turb1.bladeMass.Description = 'Blade mass'
+vhcl.turb1.diameter.Value = 4.6233e-01
 vhcl.turb1.diameter.Unit = 'm'
 vhcl.turb1.diameter.NoScale = false
-vhcl.turb1.diameter.Description = 'Diameter of the rotor'
+vhcl.turb1.diameter.Description = 'Total diameter of the rotor'
+vhcl.turb1.hubDiameter.Value = 0.0000e+00
+vhcl.turb1.hubDiameter.Unit = 'm'
+vhcl.turb1.hubDiameter.NoScale = false
+vhcl.turb1.hubDiameter.Description = 'Diameter of the hub'
 vhcl.turb1.axisUnitVec.Value = [1;0;0]
 vhcl.turb1.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turb1.axisUnitVec.NoScale = false
@@ -666,24 +706,64 @@ vhcl.turb1.tipSpeepRatio.Value = 6.0000e+00
 vhcl.turb1.tipSpeepRatio.Unit is unitless or has no unit specified
 vhcl.turb1.tipSpeepRatio.NoScale = false
 vhcl.turb1.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
+vhcl.turb1.dragCoef.Value = 5.0000e-01
+vhcl.turb1.dragCoef.Unit is unitless or has no unit specified
+vhcl.turb1.dragCoef.NoScale = false
+vhcl.turb1.dragCoef.Description = 'Coefficient used in drag calculation'
+vhcl.turb1.staticArea.Value = 0.0000e+00
+vhcl.turb1.staticArea.Unit = 'm^2'
+vhcl.turb1.staticArea.NoScale = false
+vhcl.turb1.staticArea.Description = 'Projected area of the static turbine'
+vhcl.turb1.staticCD.Value = 0.0000e+00
+vhcl.turb1.staticCD.Unit is unitless or has no unit specified
+vhcl.turb1.staticCD.NoScale = false
+vhcl.turb1.staticCD.Description = 'Turbine drag coefficient while static'
+vhcl.turb1.CpLookup.Value = 1.0000e+00
+vhcl.turb1.CpLookup.Unit is unitless or has no unit specified
+vhcl.turb1.CpLookup.NoScale = false
+vhcl.turb1.CpLookup.Description = 'Turbine power coefficient lookup'
+vhcl.turb1.CtLookup.Value = 1.0000e+00
+vhcl.turb1.CtLookup.Unit is unitless or has no unit specified
+vhcl.turb1.CtLookup.NoScale = false
+vhcl.turb1.CtLookup.Description = 'Turbine thrust coefficient lookup'
+vhcl.turb1.RPMref.Value = 0.0000e+00
+vhcl.turb1.RPMref.Unit is unitless or has no unit specified
+vhcl.turb1.RPMref.NoScale = false
+vhcl.turb1.RPMref.Description = 'Turbine lookup table reference vector for tip-speed-ratio'
+vhcl.turb1.mass.Value = 4.0000e+00
+vhcl.turb1.mass.Unit = 'kg'
+vhcl.turb1.mass.NoScale = false
+vhcl.turb1.mass.Description = 'Total turbine mass'
 vhcl.turb1.dragCoeff.Value = 7.5000e-01
 vhcl.turb1.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb1.dragCoeff.NoScale = false
 vhcl.turb1.momentArm.Value = [0.200820744835959;-5;0.174497483512505]
 vhcl.turb1.momentArm.Unit = 'm'
 vhcl.turb1.momentArm.NoScale = false
-vhcl.turb1.momentOfInertia.Value = 0.0000e+00
+vhcl.turb1.momentOfInertia.Value = 5.3438e-02
 vhcl.turb1.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb1.momentOfInertia.NoScale = false
-vhcl.turb2.mass.Value = 6.0000e+00
-vhcl.turb2.mass.Unit = 'kg'
-vhcl.turb2.mass.NoScale = false
-vhcl.turb2.mass.Description = 'Rotor mass'
-vhcl.turb2.diameter.Value = 0.0000e+00
+vhcl.turb2.numBlades.Value = 3.0000e+00
+vhcl.turb2.numBlades.Unit is unitless or has no unit specified
+vhcl.turb2.numBlades.NoScale = false
+vhcl.turb2.numBlades.Description = 'Number of blades'
+vhcl.turb2.hubMass.Value = 1.0000e+00
+vhcl.turb2.hubMass.Unit = 'kg'
+vhcl.turb2.hubMass.NoScale = false
+vhcl.turb2.hubMass.Description = 'Hub mass'
+vhcl.turb2.bladeMass.Value = 1.0000e+00
+vhcl.turb2.bladeMass.Unit = 'kg'
+vhcl.turb2.bladeMass.NoScale = false
+vhcl.turb2.bladeMass.Description = 'Blade mass'
+vhcl.turb2.diameter.Value = 4.6233e-01
 vhcl.turb2.diameter.Unit = 'm'
 vhcl.turb2.diameter.NoScale = false
-vhcl.turb2.diameter.Description = 'Diameter of the rotor'
-vhcl.turb2.axisUnitVec.Value = [-1;0;0]
+vhcl.turb2.diameter.Description = 'Total diameter of the rotor'
+vhcl.turb2.hubDiameter.Value = 0.0000e+00
+vhcl.turb2.hubDiameter.Unit = 'm'
+vhcl.turb2.hubDiameter.NoScale = false
+vhcl.turb2.hubDiameter.Description = 'Diameter of the hub'
+vhcl.turb2.axisUnitVec.Value = [1;0;0]
 vhcl.turb2.axisUnitVec.Unit is unitless or has no unit specified
 vhcl.turb2.axisUnitVec.NoScale = false
 vhcl.turb2.axisUnitVec.Description = 'Vector defining axis of rotation in body frame, should be close to [1 0 0]'
@@ -695,7 +775,7 @@ vhcl.turb2.powerCoeff.Value = 5.0000e-01
 vhcl.turb2.powerCoeff.Unit is unitless or has no unit specified
 vhcl.turb2.powerCoeff.NoScale = false
 vhcl.turb2.powerCoeff.Description = 'Coefficient used in power calculation'
-vhcl.turb2.axialInductionFactor.Value = 1.5000e+00
+vhcl.turb2.axialInductionFactor.Value = 5.0000e-01
 vhcl.turb2.axialInductionFactor.Unit is unitless or has no unit specified
 vhcl.turb2.axialInductionFactor.NoScale = false
 vhcl.turb2.axialInductionFactor.Description = 'Relationship between CP and CD'
@@ -703,12 +783,40 @@ vhcl.turb2.tipSpeepRatio.Value = 6.0000e+00
 vhcl.turb2.tipSpeepRatio.Unit is unitless or has no unit specified
 vhcl.turb2.tipSpeepRatio.NoScale = false
 vhcl.turb2.tipSpeepRatio.Description = 'Relationship between flow speed and rotor tip speed'
-vhcl.turb2.dragCoeff.Value = 7.5000e-01
+vhcl.turb2.dragCoef.Value = 5.0000e-01
+vhcl.turb2.dragCoef.Unit is unitless or has no unit specified
+vhcl.turb2.dragCoef.NoScale = false
+vhcl.turb2.dragCoef.Description = 'Coefficient used in drag calculation'
+vhcl.turb2.staticArea.Value = 0.0000e+00
+vhcl.turb2.staticArea.Unit = 'm^2'
+vhcl.turb2.staticArea.NoScale = false
+vhcl.turb2.staticArea.Description = 'Projected area of the static turbine'
+vhcl.turb2.staticCD.Value = 0.0000e+00
+vhcl.turb2.staticCD.Unit is unitless or has no unit specified
+vhcl.turb2.staticCD.NoScale = false
+vhcl.turb2.staticCD.Description = 'Turbine drag coefficient while static'
+vhcl.turb2.CpLookup.Value = 1.0000e+00
+vhcl.turb2.CpLookup.Unit is unitless or has no unit specified
+vhcl.turb2.CpLookup.NoScale = false
+vhcl.turb2.CpLookup.Description = 'Turbine power coefficient lookup'
+vhcl.turb2.CtLookup.Value = 1.0000e+00
+vhcl.turb2.CtLookup.Unit is unitless or has no unit specified
+vhcl.turb2.CtLookup.NoScale = false
+vhcl.turb2.CtLookup.Description = 'Turbine thrust coefficient lookup'
+vhcl.turb2.RPMref.Value = 0.0000e+00
+vhcl.turb2.RPMref.Unit is unitless or has no unit specified
+vhcl.turb2.RPMref.NoScale = false
+vhcl.turb2.RPMref.Description = 'Turbine lookup table reference vector for tip-speed-ratio'
+vhcl.turb2.mass.Value = 4.0000e+00
+vhcl.turb2.mass.Unit = 'kg'
+vhcl.turb2.mass.NoScale = false
+vhcl.turb2.mass.Description = 'Total turbine mass'
+vhcl.turb2.dragCoeff.Value = 2.5000e-01
 vhcl.turb2.dragCoeff.Unit is unitless or has no unit specified
 vhcl.turb2.dragCoeff.NoScale = false
 vhcl.turb2.momentArm.Value = [0.200820744835959;5;0.174497483512505]
 vhcl.turb2.momentArm.Unit = 'm'
 vhcl.turb2.momentArm.NoScale = false
-vhcl.turb2.momentOfInertia.Value = 0.0000e+00
+vhcl.turb2.momentOfInertia.Value = 5.3438e-02
 vhcl.turb2.momentOfInertia.Unit = 'kg*m^2'
 vhcl.turb2.momentOfInertia.NoScale = false

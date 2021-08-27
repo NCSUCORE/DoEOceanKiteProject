@@ -28,22 +28,22 @@ classdef turb < handle
     end
     methods
         function obj = turb
-            obj.numBlades            = SIM.parameter('Unit','','Description','Number of blades');
-            obj.hubMass              = SIM.parameter('Unit','kg','Description','Hub mass');
-            obj.bladeMass            = SIM.parameter('Unit','kg','Description','Blade mass');
+            obj.numBlades            = SIM.parameter('Value',3,'Unit','','Description','Number of blades');
+            obj.hubMass              = SIM.parameter('Value',1,'Unit','kg','Description','Hub mass');
+            obj.bladeMass            = SIM.parameter('Value',1,'Unit','kg','Description','Blade mass');
             obj.diameter             = SIM.parameter('Unit','m','Description','Total diameter of the rotor');
-            obj.hubDiameter          = SIM.parameter('Unit','m','Description','Diameter of the hub');
+            obj.hubDiameter          = SIM.parameter('Value',0,'Unit','m','Description','Diameter of the hub');
             obj.axisUnitVec          = SIM.parameter('Description','Vector defining axis of rotation in body frame, should be close to [1 0 0]');
             obj.attachPtVec          = SIM.parameter('Unit','m','Description','Vector from CoM to turbine center, in body frame');
             obj.powerCoeff           = SIM.parameter('Unit','','Description','Coefficient used in power calculation');
             obj.dragCoef             = SIM.parameter('Unit','','Description','Coefficient used in drag calculation');
-            obj.axialInductionFactor = SIM.parameter('Unit','','Description','Relationship between CP and CD');
-            obj.tipSpeepRatio        = SIM.parameter('Unit','','Description','Relationship between flow speed and rotor tip speed');
-            obj.staticArea           = SIM.parameter('Unit','m^2','Description','Projected area of the static turbine');
-            obj.staticCD             = SIM.parameter('Unit','','Description','Turbine drag coefficient while static');
-            obj.CpLookup             = SIM.parameter('Unit','','Description','Turbine power coefficient lookup');
-            obj.CtLookup             = SIM.parameter('Unit','','Description','Turbine thrust coefficient lookup');
-            obj.RPMref               = SIM.parameter('Unit','','Description','Turbine lookup table reference vector for tip-speed-ratio');
+            obj.axialInductionFactor = SIM.parameter('Value',0,'Unit','','Description','Relationship between CP and CD');
+            obj.tipSpeepRatio        = SIM.parameter('Value',0,'Unit','','Description','Relationship between flow speed and rotor tip speed');
+            obj.staticArea           = SIM.parameter('Value',0,'Unit','m^2','Description','Projected area of the static turbine');
+            obj.staticCD             = SIM.parameter('Value',0,'Unit','','Description','Turbine drag coefficient while static');
+            obj.CpLookup             = SIM.parameter('Value',1,'Unit','','Description','Turbine power coefficient lookup');
+            obj.CtLookup             = SIM.parameter('Value',1,'Unit','','Description','Turbine thrust coefficient lookup');
+            obj.RPMref               = SIM.parameter('Value',0,'Unit','','Description','Turbine lookup table reference vector for tip-speed-ratio');
         end
         
         function setHubMass(obj,val,units)

@@ -7,7 +7,7 @@ dynamicCalc = '';
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
 loadComponent('pathFollowingCtrlForILC');
-fltCtrl.rudderGain.setValue(0,'')
+fltCtrl.rudderGain.setValue(-1,'')
 % SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller
@@ -84,7 +84,7 @@ simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 tsc1 = tsc.resample(1);
 %%
-tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)
+% tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)
 
 %     x =  squeeze(tsc1.tc.Data);
 %     y = squeeze(tsc1.wd.Data);
