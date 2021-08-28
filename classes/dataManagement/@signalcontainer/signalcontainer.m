@@ -210,7 +210,7 @@ classdef signalcontainer < dynamicprops
             legend('Setpoint','AutoUpdate','off','location','northwest')
             %  Plot Elevator Command
             subplot(2,1,2); hold on; grid on;
-            plot(obj.ctrlSurfDefl.Time,squeeze(obj.ctrlSurfDefl.Data(3,:,:)),'b-');  
+            plot(obj.ctrlSurfDefl.Time,squeeze(obj.ctrlSurfDefl.Data(3,:,:)),'b-');
             xlabel('Time [s]');  ylabel('Elevator [deg]');
         end
         function [CLsurf,CDtot] = getCLCD(obj,vhcl,thr)
@@ -238,157 +238,148 @@ classdef signalcontainer < dynamicprops
             Fuse = squeeze(sqrt(sum(obj.FFuseBdy.Data.^2,1)));
             Thr = squeeze(sqrt(sum(obj.thrDragVecs.Data.^2,1)));
         end
-        function stats = plotAndComputeLapStats(obj)
+        function val = plotAndComputeLapStats(obj,plotResSwitch)
             % local functions
             uVec = @(x,y)['$\hat{',x,'}_{\bar{',y,'}}$'];
-            pathParam = squeeze(obj.currentPathVar.Data);
-            lapsStarted = unique(obj.lapNumS.Data);
-            plotLap = max(lapsStarted)-1;
-            %  Determine Single Lap Indices
+            % local dummy variables
             lapNum = squeeze(obj.lapNumS.Data);
-            Idx1 = find(lapNum == plotLap,1,'first');
-            Idx2 = find(lapNum == plotLap,1,'last');
-            if isempty(Idx1) || isempty(Idx2)
-                error('Lap 1 was never started or finished. Simulate longer or reassess the meaning to your life')
+            plotLap = max(lapNum)-1;
+            % Determine start and end indices of the lap to be plotted
+            strtIdx = find(lapNum == plotLap,1,'first');
+            endIdx = find(lapNum == plotLap,1,'last');
+            plotIdx = strtIdx:endIdx;
+            % check if we have a complete lap
+            if isempty(strtIdx) || isempty(endIdx)
+                error('Lap 1 was never started or finished. Simulate longer.')
             end
-            ran = Idx1:Idx2;
-            % plot path param
-            plotParam = pathParam(ran) - plotLap + 1;
+            % time values over the lap
+            tVec = obj.positionVec.Time(plotIdx);
+            tVec = tVec - tVec(1);
+            
+            % calculate lap average statistics
+            % tether drag
+            val.thrDragKN = mean(vecnorm(obj.thrDragVecs.Data(:,:,plotIdx)))/1e3;
+            % tether tension
+            val.thrTensionKN = mean(vecnorm(obj.gndNodeTenVecs.Data(:,:,plotIdx)))/1e3;
+            % winch power
+            val.winchPowerKW = mean(obj.winchPower.Data(plotIdx))./1e3;
+            % turbine power
+            val.turbPowerKW = mean(obj.turbPow.Data(:,:,plotIdx))./1e3;
+            % turbine energy
+            val.turbEnergyKJ = (obj.turbEnrg.Data(endIdx) - obj.turbEnrg.Data(strtIdx))/1e3;
+            % kite speed
+            val.kiteSpeedMPS = mean(vecnorm(obj.velocityVec.Data(:,:,plotIdx)));
+            % lap time
+            val.lapTimeS   = tVec(end) - tVec(1);
+            % kite angle of attack
+            val.kiteAoADEG   = mean(obj.vhclAngleOfAttack.Data);
+            % max tan roll
+            val.maxTanRollDEG = max(abs(obj.tanRoll.Data*180/pi));
+            % max tan roll des
+            val.maxTanRollDesDEG = max(abs(obj.desiredTanRoll.Data*180/pi));
+            % max slip angle
+            val.maxTurnAngleDEG = max(abs(obj.turnAngle.Data*180/pi));
+            % max slip angle
+            val.maxAilDEG = max(abs(obj.ctrlSurfDeflCmd.Data(:,1)));
+            % lap number
+            val.lapNumUL = max(lapNum);
+            % distance traveled over lap
+            val.disTraveledM = sum(vecnorm(...
+                obj.positionVec.Data(:,:,strtIdx+1:endIdx) - ...
+                obj.positionVec.Data(:,:,strtIdx:endIdx-1)));
+            % vapp,x
+            val.vAppxMPS = mean(max(0,obj.vhclVapp.Data(1,:,plotIdx)));
+            % V_a,x^3 by V_w^3 over lap
+            val.vAppByvFlow3UL = mean((max(0,obj.vhclVapp.Data(1,:,plotIdx))./...
+                obj.vWindFuseGnd.Data(1,:,plotIdx)).^3);
+            % V_k^3 by V_w^3 over lap
+            val.vKiteByvFlow3UL = mean(vecnorm(obj.velocityVec.Data(:,:,plotIdx)./...
+                obj.vWindFuseGnd.Data(1,:,plotIdx)).^3);
+            
+            if nargin==2 && plotResSwitch
             % make subplot grid
-            spSz = [3,5]; % grid size
-            spGrid = reshape(1:15,spSz(2),[])';
-            pIdx = 1;
-            spIdx = 1;
-            % assign graphic objects
-            spAxes = gobjects;
-            pObj   = gobjects;
+            tiledlayout('flow');
             % plot vx
             G_vCM = squeeze(obj.velocityVec.Data);
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,G_vCM(1,ran));
+            nexttile; plot(tVec,G_vCM(1,plotIdx));
             ylabel(['$v_{\mathrm{cm}}$.',uVec('i','O'),' (m/s)']);
             % plot vy
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,G_vCM(2,ran));
+            nexttile; plot(tVec,G_vCM(2,plotIdx));
             ylabel(['$v_{\mathrm{cm}}$.',uVec('j','O'),' (m/s)']);
             % plot vz
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,G_vCM(3,ran));
+            nexttile; plot(tVec,G_vCM(3,plotIdx));
             ylabel(['$v_{\mathrm{cm}}$.',uVec('k','O'),' (m/s)']);
             % plot v_Appx
             B_vApp = squeeze(obj.vhclVapp.Data);
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,B_vApp(1,ran));
+            nexttile; plot(tVec,B_vApp(1,plotIdx));
             ylabel(['$v_{\mathrm{app}}$.',uVec('i','B'),' (m/s)']);
             % plot v_Appy
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,B_vApp(2,ran));
+            nexttile; plot(tVec,B_vApp(2,plotIdx));
             ylabel(['$v_{\mathrm{app}}$.',uVec('j','B'),' (m/s)']);
             % plot v_Appz
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,B_vApp(3,ran));
+            nexttile; plot(tVec,B_vApp(3,plotIdx));
             ylabel(['$v_{\mathrm{app}}$.',uVec('k','B'),' (m/s)']);
             % plot Euler
             euler = squeeze(obj.eulerAngles.Data)*180/pi;
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,euler(1,ran));
+            nexttile; plot(tVec,euler(1,plotIdx));
             ylabel('$\mathrm{\phi}$ (deg)');
             % plot vy
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,euler(2,ran));
+            nexttile; plot(tVec,euler(2,plotIdx));
             ylabel('$\mathrm{\theta}$ (deg)');
             % plot vz
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,euler(3,ran));
+            nexttile; plot(tVec,euler(3,plotIdx));
             ylabel('$\mathrm{\psi}$ (deg)');
+            % plot turn angle
+            nexttile; plot(tVec,squeeze(obj.vhclAngleOfAttack.Data(plotIdx)));hold on;
+            ylabel('Turn angle [deg]'); 
             % plot tangent roll
             tanRoll = squeeze(obj.tanRoll.Data)*180/pi;
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,tanRoll(ran));
+            nexttile; plot(tVec,tanRoll(plotIdx)); hold on;
             ylabel('$\mathrm{\phi_{tan}}$ (deg)');
+            plot(tVec,obj.desiredTanRoll.Data(plotIdx)*180/pi);
             % plot tangent pitch
             tanPitch = squeeze(obj.tanPitch.Data)*180/pi;
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,tanPitch(ran));
+            nexttile; plot(tVec,tanPitch(plotIdx));
             ylabel('$\mathrm{\theta_{tan}}$ (deg)');
             % plot speed
-           vhclSpeed = squeeze(obj.velocityVec.Data);
+            vhclSpeed = squeeze(obj.velocityVec.Data);
             vhclSpeed = vecnorm(vhclSpeed);
-             spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,vhclSpeed(ran));
+            nexttile; plot(tVec,vhclSpeed(plotIdx));
             ylabel('Speed (m/s)');
             % plot angle of attack
             AoA = squeeze(obj.vhclAngleOfAttack.Data);
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,AoA(ran));
+            nexttile; plot(tVec,AoA(plotIdx));
             ylabel('AoA (deg)');
             % plot side slip angle
             SSA = squeeze(obj.vhclSideSlipAngle.Data);
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,SSA(ran));
+            nexttile; plot(tVec,SSA(plotIdx));
             ylabel('SSA (deg)');
             % plot elevator deflection
-            csDef = squeeze(obj.ctrlSurfDefl.Data);
-            spIdx = spIdx + 1; pIdx = pIdx + 1;
-            spAxes(spIdx) = subplot(spSz(1),spSz(2),spGrid(spIdx));
-            pObj(pIdx) = plot(plotParam,csDef(ran,4));
+            csDef = squeeze(obj.ctrlSurfDeflCmd.Data);
+            nexttile; plot(tVec,csDef(plotIdx,4));
             ylabel('$\mathrm{\delta e}$ (deg)');
-            
-            stats = computeSimLapStats(obj);
-           
+                        
             % set all axis labels and stuff
             linStyleOrder = {'-','--',':o',};
-            colorOrder = [228,26,28
+            colorOrder = [0,0,0
+                228,26,28
                 55,126,184
                 77,175,74
                 152,78,16]./255;
-            
-            xlabel(spAxes(1:spIdx),'Path parameter');
-            grid(spAxes(1:spIdx),'on');
-            hold(spAxes(1:spIdx),'on');
-            set(spAxes(1:spIdx),'FontSize',11, ...
-                'XTick',0:0.25:1,...
+            allAxes = findall(gcf,'type','axes');
+            xlabel(allAxes,'Time [sec]');
+            grid(allAxes,'on');
+            hold(allAxes,'on');
+            set(allAxes,'FontSize',11, ...
                 'ColorOrder', colorOrder,...
                 'LineStyleOrder', linStyleOrder);
             
             % set line properties
-            set(pObj(1:pIdx),'LineWidth',1);
-            
+            allLines = findall(gcf,'Type','line');
+            set(allLines,'linewidth',1.0);
             % link axes
-            linkaxes(spAxes(1:spIdx),'x');
-            
-            % compute some base statics
-            % lap time
-            lapTime = squeeze(obj.currentPathVar.Time(ran));
-            lapTime = lapTime(end)-lapTime(1);
-            % average apparent velocity in x direction cubed
-            meanVappxCubed = mean(max(0,B_vApp(1,:)).^3);
-            % distance traveled
-            rCM = squeeze(obj.positionVec.Data);
-            rCM = rCM(:,ran);
-            disTraveled = sum(vecnorm(rCM(:,2:end) - rCM(:,1:end-1)));
-            % avereage speed
-            avgSpeed = mean(vhclSpeed);
-            % title            
-            sgtitle(sprintf(['Lap number = %d',', Lap time = %.2f sec',...
-                ', Avg $v_{app,x}^3$ = %.2f',', Distace covered = %.2f m',...
-                ', Avg speed = %.2f m/s'],...
-                [plotLap,lapTime,meanVappxCubed,disTraveled,avgSpeed]),...
-                'FontSize',11);
-
+            linkaxes(allAxes,'x');
+            end
             
         end
         function Pow = rotPowerSummary(obj,vhcl,env,thr)
@@ -434,10 +425,10 @@ classdef signalcontainer < dynamicprops
             parse(p,varargin{:})
             
             R = 3;  C = 1;
-%             time = obj.MNetBdy.Time;
-%             airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
-%             gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
-%             coneWidth = ctrl.LaRelevationSPErr.Value;
+            %             time = obj.MNetBdy.Time;
+            %             airNode = squeeze(sqrt(sum(obj.airTenVecs.Data.^2,1)))*1e-3;
+            %             gndNode = squeeze(sqrt(sum(obj.gndNodeTenVecs.Data.^2,1)))*1e-3;
+            %             coneWidth = ctrl.LaRelevationSPErr.Value;
             figure();
             %%  Plot Elevation Angle
             subplot(R,C,1); hold on; grid on;
@@ -451,17 +442,17 @@ classdef signalcontainer < dynamicprops
             %%  Plot Elevator Command
             subplot(R,C,3); hold on; grid on;
             plot(obj.ctrlSurfDefl_slf.Time,squeeze(obj.ctrlSurfDefl_slf.Data(3,1,:)),'b-');  xlabel('Time [s]');  ylabel('Elevator [deg]');
-%             %%  Tether Length
-%             subplot(R,C,2); hold on; grid on;
-%             plot(obj.tetherLengths.Time,squeeze(obj.tetherLengths.Data),'b-');  xlabel('Time [s]');  ylabel('Length [m]');  %xlim([1900 2100])
-%             %%  Plot Spool Command
-%             subplot(R,C,4); hold on; grid on;
-%             plot(time,squeeze(obj.wnchCmd.Data),'b-');
-%             xlabel('Time [s]');  ylabel('Winch [m/s]');  %xlim([1900 2100])
-%             %%  Plot Tether Tension
-%             subplot(R,C,6); hold on; grid on;
-%             plot(time,airNode,'b-');  plot(time,gndNode,'r--');  %ylim([0 .5]);
-%             xlabel('Time [s]');  ylabel('Tension [kN]');  legend('Kite','Glider');  %xlim([1900 2100])
+            %             %%  Tether Length
+            %             subplot(R,C,2); hold on; grid on;
+            %             plot(obj.tetherLengths.Time,squeeze(obj.tetherLengths.Data),'b-');  xlabel('Time [s]');  ylabel('Length [m]');  %xlim([1900 2100])
+            %             %%  Plot Spool Command
+            %             subplot(R,C,4); hold on; grid on;
+            %             plot(time,squeeze(obj.wnchCmd.Data),'b-');
+            %             xlabel('Time [s]');  ylabel('Winch [m/s]');  %xlim([1900 2100])
+            %             %%  Plot Tether Tension
+            %             subplot(R,C,6); hold on; grid on;
+            %             plot(time,airNode,'b-');  plot(time,gndNode,'r--');  %ylim([0 .5]);
+            %             xlabel('Time [s]');  ylabel('Tension [kN]');  legend('Kite','Glider');  %xlim([1900 2100])
         end
         function [Pow,LThr,EL,vFlow] = LoydPowerWThr(obj,vhcl,env,thr)
             Elev = squeeze(obj.elevationAngle.Data);

@@ -14,6 +14,7 @@ classdef guidanceLawPathFollow_class
         aileron_kp(1,1) double {mustBeNonnegative} = 1
         aileron_kd(1,1) double {mustBeNonnegative} = 0
         aileron_tau(1,1) double {mustBePositive} = 0.1
+        maxLap(1,1) double {mustBePositive} = inf;
     end
     
     methods

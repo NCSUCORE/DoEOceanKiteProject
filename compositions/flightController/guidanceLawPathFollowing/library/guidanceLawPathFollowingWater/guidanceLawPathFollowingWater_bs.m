@@ -13,6 +13,7 @@ fltCtrl.initPathParameter	= 0;
 fltCtrl.aileron_kp			= 0.5;
 fltCtrl.aileron_kd			= 4*fltCtrl.aileron_kp;
 fltCtrl.aileron_tau			= 0.001000;
+fltCtrl.maxLap              = 20;
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

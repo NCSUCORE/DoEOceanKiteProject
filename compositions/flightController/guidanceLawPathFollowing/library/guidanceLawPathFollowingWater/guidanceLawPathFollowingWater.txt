@@ -8,3 +8,4 @@ fltCtrl.initPathParameter = 0.0000e+00
 fltCtrl.aileron_kp = 5.0000e-01
 fltCtrl.aileron_kd = 2.0000e+00
 fltCtrl.aileron_tau = 1.0000e-03
+fltCtrl.maxLap = 2.0000e+01

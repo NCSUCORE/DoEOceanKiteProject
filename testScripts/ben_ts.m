@@ -5,7 +5,7 @@ cd(fileparts(mfilename('fullpath')));
 
 % clear;clc;close all
 simParams = SIM.simParams;
-simParams.setDuration(50,'s');
+simParams.setDuration(500,'s');
 dynamicCalc = '';
 
 %% Load components
@@ -88,6 +88,24 @@ wnch.winch1.initLength.setValue(norm(vhcl.initPosVecGnd.Value),'m')
 simWithMonitor('OCTModel')
 tsc = signalcontainer(logsout);
 tsc1 = tsc.resample(0.1);
+
+%% processing
+figure('WindowState','maximized');
+plotResults(tsc);
+
+% lap results
+figure('WindowState','maximized');
+lapStats = tsc.plotAndComputeLapStats;
+
+% sgtitle(sprintf('Elevation: %.1f deg, Tether length: %.1f m, Altitude: %.1f m, Wind speed: %.1f m/s',...
+%     baselinePathELSp,baselineThrLengthSP,baselineAltSp,flowSpeed));
+
+% fName = sprintf('E=%.1f,TL=%.1f,VW=%.1f',...
+%     baselinePathELSp,baselineThrLengthSP,flowSpeed);
+
+allAxes = findall(gcf,'type','axes');
+set(allAxes,'FontSize',13);
+% exportgraphics(gcf,[fName,'.png'],'Resolution',600);
 
 %% plots
 
