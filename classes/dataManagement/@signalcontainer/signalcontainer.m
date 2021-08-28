@@ -240,7 +240,7 @@ classdef signalcontainer < dynamicprops
         end
         function val = plotAndComputeLapStats(obj,plotResSwitch)
             % local functions
-            uVec = @(x,y)['$\hat{',x,'}_{\bar{',y,'}}$'];
+            ps = @(x,idx) squeeze(x(:,:,idx));
             % local dummy variables
             lapNum = squeeze(obj.lapNumS.Data);
             plotLap = max(lapNum)-1;
@@ -258,127 +258,123 @@ classdef signalcontainer < dynamicprops
             
             % calculate lap average statistics
             % tether drag
-            val.thrDragKN = mean(vecnorm(obj.thrDragVecs.Data(:,:,plotIdx)))/1e3;
+            val.all.thrDragKN = ps(obj.thrDragVecs.Data,plotIdx)./1e3;
+            val.thrDragKN = mean(vecnorm(val.all.thrDragKN));
             % tether tension
-            val.thrTensionKN = mean(vecnorm(obj.gndNodeTenVecs.Data(:,:,plotIdx)))/1e3;
+            val.all.thrTensionKN = ps(obj.gndNodeTenVecs.Data,plotIdx)./1e3;
+            val.thrTensionKN = mean(vecnorm(val.all.thrTensionKN));
             % winch power
-            val.winchPowerKW = mean(obj.winchPower.Data(plotIdx))./1e3;
+            val.all.winchPowerKW = obj.winchPower.Data(plotIdx)./1e3;
+            val.winchPowerKW = mean(val.all.winchPowerKW);
             % turbine power
-            val.turbPowerKW = mean(obj.turbPow.Data(:,:,plotIdx))./1e3;
+            val.all.turbPowerKW = ps(obj.turbPow.Data,plotIdx)./1e3;
+            val.turbPowerKW = mean(val.all.turbPowerKW);
             % turbine energy
-            val.turbEnergyKJ = (obj.turbEnrg.Data(endIdx) - obj.turbEnrg.Data(strtIdx))/1e3;
+            val.all.turbEnergyKJ = ps(obj.turbEnrg.Data,plotIdx)./1e3;
+            val.all.turbEnergyKJ = val.all.turbEnergyKJ - val.all.turbEnergyKJ(1);
+            val.turbEnergyKJ = val.all.turbEnergyKJ(end) - val.all.turbEnergyKJ(1);
             % kite speed
-            val.kiteSpeedMPS = mean(vecnorm(obj.velocityVec.Data(:,:,plotIdx)));
+            val.all.kiteSpeedMPS = vecnorm(ps(obj.velocityVec.Data,plotIdx));
+            val.kiteSpeedMPS = mean(val.all.kiteSpeedMPS);
             % lap time
             val.lapTimeS   = tVec(end) - tVec(1);
             % kite angle of attack
-            val.kiteAoADEG   = mean(obj.vhclAngleOfAttack.Data);
+            val.all.kiteAoADEG = ps(obj.vhclAngleOfAttack.Data,plotIdx);
+            val.kiteAoADEG   = mean(val.all.kiteAoADEG);
             % max tan roll
-            val.maxTanRollDEG = max(abs(obj.tanRoll.Data*180/pi));
+            val.all.TanRollDEG = obj.tanRoll.Data(plotIdx)*180/pi;
+            val.maxTanRollDEG = max(abs(val.all.TanRollDEG));
             % max tan roll des
-            val.maxTanRollDesDEG = max(abs(obj.desiredTanRoll.Data*180/pi));
-            % max slip angle
-            val.maxTurnAngleDEG = max(abs(obj.turnAngle.Data*180/pi));
-            % max slip angle
-            val.maxAilDEG = max(abs(obj.ctrlSurfDeflCmd.Data(:,1)));
+            val.all.DesTanRollDEG = obj.desiredTanRoll.Data(plotIdx)*180/pi;
+            val.maxTanRollDesDEG = max(abs(val.all.DesTanRollDEG));
+            % max turn angle
+            val.all.TurnAngleDEG = obj.turnAngle.Data(plotIdx)*180/pi;
+            val.maxTurnAngleDEG = max(abs(val.all.TurnAngleDEG));
+            % max aileron deflection angle
+            val.all.AilDEG = obj.ctrlSurfDeflCmd.Data(plotIdx,1);
+            val.maxAilDEG = max(abs(val.all.AilDEG));
             % lap number
             val.lapNumUL = max(lapNum);
             % distance traveled over lap
+            val.all.posVecM = ps(obj.positionVec.Data,plotIdx);
             val.disTraveledM = sum(vecnorm(...
-                obj.positionVec.Data(:,:,strtIdx+1:endIdx) - ...
-                obj.positionVec.Data(:,:,strtIdx:endIdx-1)));
+                val.all.posVecM(:,2:end) - val.all.posVecM(:,1:end-1)));
             % vapp,x
-            val.vAppxMPS = mean(max(0,obj.vhclVapp.Data(1,:,plotIdx)));
+            val.all.vAppMPS = ps(obj.vhclVapp.Data,plotIdx);
+            val.vAppxMPS = mean(max(0,val.all.vAppMPS(1,:)));
             % V_a,x^3 by V_w^3 over lap
-            val.vAppByvFlow3UL = mean((max(0,obj.vhclVapp.Data(1,:,plotIdx))./...
-                obj.vWindFuseGnd.Data(1,:,plotIdx)).^3);
+            val.all.vWindFuseGnd =  ps(obj.vWindFuseGnd.Data,plotIdx);
+            val.vAppByvFlowUL = mean(max(0,val.all.vAppMPS(1,:))./...
+                val.all.vWindFuseGnd(1,:));
             % V_k^3 by V_w^3 over lap
-            val.vKiteByvFlow3UL = mean(vecnorm(obj.velocityVec.Data(:,:,plotIdx)./...
-                obj.vWindFuseGnd.Data(1,:,plotIdx)).^3);
+            val.all.VelVecMPS = ps(obj.velocityVec.Data,plotIdx);
+            val.vKiteByvFlowUL = mean(vecnorm(val.all.VelVecMPS)./...
+                val.all.vWindFuseGnd(1,:));
+            % mean Z
+            val.meanAltM = mean(val.all.posVecM(3,:));
             
             if nargin==2 && plotResSwitch
-            % make subplot grid
-            tiledlayout('flow');
-            % plot vx
-            G_vCM = squeeze(obj.velocityVec.Data);
-            nexttile; plot(tVec,G_vCM(1,plotIdx));
-            ylabel(['$v_{\mathrm{cm}}$.',uVec('i','O'),' (m/s)']);
-            % plot vy
-            nexttile; plot(tVec,G_vCM(2,plotIdx));
-            ylabel(['$v_{\mathrm{cm}}$.',uVec('j','O'),' (m/s)']);
-            % plot vz
-            nexttile; plot(tVec,G_vCM(3,plotIdx));
-            ylabel(['$v_{\mathrm{cm}}$.',uVec('k','O'),' (m/s)']);
-            % plot v_Appx
-            B_vApp = squeeze(obj.vhclVapp.Data);
-            nexttile; plot(tVec,B_vApp(1,plotIdx));
-            ylabel(['$v_{\mathrm{app}}$.',uVec('i','B'),' (m/s)']);
-            % plot v_Appy
-            nexttile; plot(tVec,B_vApp(2,plotIdx));
-            ylabel(['$v_{\mathrm{app}}$.',uVec('j','B'),' (m/s)']);
-            % plot v_Appz
-            nexttile; plot(tVec,B_vApp(3,plotIdx));
-            ylabel(['$v_{\mathrm{app}}$.',uVec('k','B'),' (m/s)']);
-            % plot Euler
-            euler = squeeze(obj.eulerAngles.Data)*180/pi;
-            nexttile; plot(tVec,euler(1,plotIdx));
-            ylabel('$\mathrm{\phi}$ (deg)');
-            % plot vy
-            nexttile; plot(tVec,euler(2,plotIdx));
-            ylabel('$\mathrm{\theta}$ (deg)');
-            % plot vz
-            nexttile; plot(tVec,euler(3,plotIdx));
-            ylabel('$\mathrm{\psi}$ (deg)');
-            % plot turn angle
-            nexttile; plot(tVec,squeeze(obj.vhclAngleOfAttack.Data(plotIdx)));hold on;
-            ylabel('Turn angle [deg]'); 
-            % plot tangent roll
-            tanRoll = squeeze(obj.tanRoll.Data)*180/pi;
-            nexttile; plot(tVec,tanRoll(plotIdx)); hold on;
-            ylabel('$\mathrm{\phi_{tan}}$ (deg)');
-            plot(tVec,obj.desiredTanRoll.Data(plotIdx)*180/pi);
-            % plot tangent pitch
-            tanPitch = squeeze(obj.tanPitch.Data)*180/pi;
-            nexttile; plot(tVec,tanPitch(plotIdx));
-            ylabel('$\mathrm{\theta_{tan}}$ (deg)');
-            % plot speed
-            vhclSpeed = squeeze(obj.velocityVec.Data);
-            vhclSpeed = vecnorm(vhclSpeed);
-            nexttile; plot(tVec,vhclSpeed(plotIdx));
-            ylabel('Speed (m/s)');
-            % plot angle of attack
-            AoA = squeeze(obj.vhclAngleOfAttack.Data);
-            nexttile; plot(tVec,AoA(plotIdx));
-            ylabel('AoA (deg)');
-            % plot side slip angle
-            SSA = squeeze(obj.vhclSideSlipAngle.Data);
-            nexttile; plot(tVec,SSA(plotIdx));
-            ylabel('SSA (deg)');
-            % plot elevator deflection
-            csDef = squeeze(obj.ctrlSurfDeflCmd.Data);
-            nexttile; plot(tVec,csDef(plotIdx,4));
-            ylabel('$\mathrm{\delta e}$ (deg)');
-                        
-            % set all axis labels and stuff
-            linStyleOrder = {'-','--',':o',};
-            colorOrder = [0,0,0
-                228,26,28
-                55,126,184
-                77,175,74
-                152,78,16]./255;
-            allAxes = findall(gcf,'type','axes');
-            xlabel(allAxes,'Time [sec]');
-            grid(allAxes,'on');
-            hold(allAxes,'on');
-            set(allAxes,'FontSize',11, ...
-                'ColorOrder', colorOrder,...
-                'LineStyleOrder', linStyleOrder);
-            
-            % set line properties
-            allLines = findall(gcf,'Type','line');
-            set(allLines,'linewidth',1.0);
-            % link axes
-            linkaxes(allAxes,'x');
+                % open maximized figure
+                figure('WindowState','maximized');
+                % make subplot grid
+                tiledlayout('flow');
+                % plot kite altitude
+                nexttile; plot(tVec,val.all.posVecM(3,:));
+                ylabel('Kite altitude [m]');
+                % plot kite speed
+                nexttile; plot(tVec,val.all.kiteSpeedMPS);
+                ylabel('Kite speed [m/s]');
+                % plot tangent roll
+                nexttile; plot(tVec,val.all.TanRollDEG); hold on;
+                plot(tVec,val.all.DesTanRollDEG);
+                ylabel('Tangent roll [deg]');
+                % plot aileron deflection
+                nexttile; plot(tVec,val.all.AilDEG); hold on;
+                ylabel('Aileron command [deg]');
+                % plot turbine power
+                nexttile; plot(tVec,val.all.turbPowerKW); hold on;
+                ylabel('Turbine power [kW]');
+                % plot turbine energy
+                nexttile; plot(tVec,val.all.turbEnergyKJ); hold on;
+                ylabel('Turbine energy [kJ]');
+                % plot tether tension
+                nexttile; plot(tVec,val.all.thrTensionKN); hold on;
+                ylabel('Tether tension [kN]');
+                % plot tether drag
+                nexttile; plot(tVec,val.all.thrDragKN); hold on;
+                ylabel('Tether drag [kN]');
+                % plot angle of attack
+                nexttile; plot(tVec,val.all.kiteAoADEG); hold on;
+                ylabel('Angle of attack [deg]');
+                % plot side slip angle
+                SSA = squeeze(obj.vhclSideSlipAngle.Data);
+                nexttile; plot(tVec,SSA(plotIdx));
+                ylabel('Sideslip angle [deg]');
+                % plot elevator deflection
+                csDef = squeeze(obj.ctrlSurfDeflCmd.Data);
+                nexttile; plot(tVec,csDef(plotIdx,4));
+                ylabel('Elevator deflection [deg]');
+                
+                % set all axis labels and stuff
+                linStyleOrder = {'-','--',':o',};
+                colorOrder = [0,0,0
+                    228,26,28
+                    55,126,184
+                    77,175,74
+                    152,78,16]./255;
+                allAxes = findall(gcf,'type','axes');
+                xlabel(allAxes,'Time [sec]');
+                grid(allAxes,'on');
+                hold(allAxes,'on');
+                set(allAxes,'FontSize',11, ...
+                    'ColorOrder', colorOrder,...
+                    'LineStyleOrder', linStyleOrder);
+                
+                % set line properties
+                allLines = findall(gcf,'Type','line');
+                set(allLines,'linewidth',1.0);
+                % link axes
+                linkaxes(allAxes,'x');
             end
             
         end
