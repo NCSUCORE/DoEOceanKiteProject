@@ -18,7 +18,7 @@ thrLength = 5;
 flwSpd = -1e-9;
 cdArray = [1.2 1.8];
 
-for q = 3
+for q = 2
     for i = 1:length(inc)
         i
         for j = 1:length(towArray)
@@ -35,7 +35,7 @@ for q = 3
                     %             loadComponent('exp_slCtrl');
                     loadComponent('periodicCtrlExp');
                     %             fltCtrl.ctrlOff.setValue(0,'')
-%                     FLIGHTCONTROLLER = 'periodicCtrlExpAllocate';
+                    FLIGHTCONTROLLER = 'periodicCtrlExpAllocate';
                 else%
                     loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
                     FLIGHTCONTROLLER = 'pathFollowingControllerExp';
@@ -144,7 +144,7 @@ for q = 3
                 thr.tether1.dragEnable.setValue(1,'')
                 vhcl.hStab.setIncidence(0,'deg');
                 if q == 3
-                    vhcl.hStab.setIncidence(-3,'deg');
+                    vhcl.hStab.setIncidence(-5.5,'deg');
                 end
                 if q ~= 3
                     %                     693
@@ -161,20 +161,20 @@ for q = 3
                     end
                    
                    
-                    fltCtrl.rollCtrl.kp.setValue(3,'(deg)/(deg)');
+                    fltCtrl.rollCtrl.kp.setValue(.2143,'(deg)/(deg)');
                     fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.rollCtrl.kd.setValue(1,'(deg)/(deg/s)');
+                    fltCtrl.rollCtrl.kd.setValue(.0555,'(deg)/(deg/s)');
                     fltCtrl.rollCtrl.tau.setValue(0.02,'s');
                    
                    
                    
                    
-                    fltCtrl.yawCtrl.kp.setValue(1.4,'(deg)/(deg)');
+                    fltCtrl.yawCtrl.kp.setValue(.14,'(deg)/(deg)');
                     fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
-                    fltCtrl.yawCtrl.kd.setValue(1 ,'(deg)/(deg/s)');
+                    fltCtrl.yawCtrl.kd.setValue(.1 ,'(deg)/(deg/s)');
                     fltCtrl.yawCtrl.tau.setValue(0.02,'s');
                    
-                    fltCtrl.ccElevator.setValue(5.5,'deg');
+                    fltCtrl.ccElevator.setValue(-5.5,'deg');
                     fltCtrl.trimElevator.setValue(inc(i),'deg');
                    
                 end
@@ -223,6 +223,6 @@ close all
 % ylabel 'Peak Velocity Augmentation'
 
 figure;
-plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(1,:,:))
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(1,:,:)*180/pi-180)
 hold on;
-plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(3,:,:))
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(3,:,:)*180/pi-180)

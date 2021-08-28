@@ -11,7 +11,7 @@ flwSpd = -1
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
 loadComponent('pathFollowingCtrlForILC');
-fltCtrl.rudderGain.setValue(0,'')
+fltCtrl.rudderGain.setValue(-1,'')
 % SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 fltCtrl.firstSpoolLap.setValue(100,'')
@@ -83,15 +83,27 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
     hiLvlCtrl.basisParams.Value,...
     gndStn.posVec.Value);
 % fltCtrl.rollMoment.setKp(.2,'(rad)/(rad)')
-fltCtrl.rollMoment.setTau(.1,'s')
+% fltCtrl.rollMoment.setTau(.1,'s')
 
 fltCtrl.firstSpoolLap.setValue(100,'')
 fltCtrl.elevatorReelInDef.setValue(0,'deg')
+% 
+% fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');    
+% fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
+% fltCtrl.rollMoment.kd.setValue(20000,'(N*m)/(rad/s)');      
+% fltCtrl.rollMoment.tau.setValue(0.001,'s');
+% 
+% fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
+% fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
+% fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');
+% fltCtrl.tanRoll.tau.setValue(10,'s');
+
+% fltCtrl.yawMoment.kp.setValue(,'(N*m)/(rad)');
 %% Run Simulation
 % vhcl.setFlowGradientDist(.01,'m')
 % simWithMonitor('OCTModel')
 % tsc = signalcontainer(logsout);
-fltCtrl.yawMoment.kp.setValue(100,'(N*m)/(rad)')
+% fltCtrl.yawMoment.kp.setValue(100,'(N*m)/(rad)')
 ENVIRONMENT = "env2turbLinearize";
 SIXDOFDYNAMICS = 'sixDoFDynamicsCoupledFossen12Int';
 set_param('OCTModel','SimulationMode','accelerator');
@@ -101,6 +113,8 @@ lapNumS = logsout.getElement('lapNumS');
 tsc = signalcontainer(logsout);
 plotCtrlDeflections
 %%
+lin = 0
+if lin ~= 1
 snaps = 0:0.025:.99;
  cPV = logsout.getElement('currentPathVar');
  cPVData = mod(cPV.Values.Data,1);
@@ -233,7 +247,7 @@ scatter(snaps1,pPlot,[],pPlot,'filled')
 
 xlabel('Path Position')
 ylabel('Real Component of Slowest Pole [$s^{-1}$]')
-
+end
 
 %%
 % tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)

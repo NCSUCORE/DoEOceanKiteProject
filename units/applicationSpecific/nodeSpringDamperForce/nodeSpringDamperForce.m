@@ -1,10 +1,18 @@
-function nodeForceVecs = nodeSpringDamperForce(nodePositions,nodeVelocities,unstretchedLength,mass,zeta,diameter,youngsMod)
+function nodeForceVecs = nodeSpringDamperForce(nodePositions,nodeVelocities,unstretchedLength,mass,zeta,diameter,youngsMod) %#codegen
 
 % Number of nodes
 N = size(nodePositions,2);
 
-% total spring stiffness
-totalSpringConst = youngsMod*(pi/4)*(diameter^2)/unstretchedLength;
+% Deal with variable length links, if present
+if numel(unstretchedLength) > 1 %implies fairedNNode tether - variable link lengths
+    totUnstretchedLength = sum(unstretchedLength);
+    unstretchedLinkLength = unstretchedLength;
+else
+    totUnstretchedLength = unstretchedLength;
+    unstretchedLinkLength   = unstretchedLength/(N-1);
+end
+
+totalSpringConst = youngsMod*(pi/4)*(diameter^2)/totUnstretchedLength;
 
 % total damping coefficient
 totalDampCoeff = zeta*2*sqrt(totalSpringConst*mass);
@@ -12,7 +20,6 @@ totalDampCoeff = zeta*2*sqrt(totalSpringConst*mass);
 % Spring constant and damping coefficient for each link
 linkSpringConst  = totalSpringConst*(N-1);
 linkDampingCoeff = totalDampCoeff*(N-1);
-meanLinkLength   = unstretchedLength/(N-1);
 
 % Vector from one node to another
 linkVecs  = diff(nodePositions,1,2);
@@ -29,11 +36,12 @@ linkLengthDeriv = dot(nodeVelocities(:,2:end)-nodeVelocities(:,1:end-1),linkUnit
 
 % Magnitude of spring force on each link
 springForces = zeros(size(linkLength));
-springForces(linkLength>meanLinkLength) = linkSpringConst*(linkLength(linkLength>meanLinkLength)-meanLinkLength);
-
+% springForces(linkLength>unstretchedLinkLength) = linkSpringConst*(linkLength(linkLength>unstretchedLinkLength)-unstretchedLinkLength);
+springForces = linkSpringConst*(linkLength-unstretchedLinkLength);
+springForces = springForces.*(linkLength>unstretchedLinkLength);
 % Magnitude of damping force on each link
 damperForces  = zeros(size(linkLengthDeriv));
-damperForces(linkLength>meanLinkLength) = linkDampingCoeff*linkLengthDeriv(linkLength>meanLinkLength);
+damperForces(linkLength>unstretchedLinkLength) = linkDampingCoeff*linkLengthDeriv(linkLength>unstretchedLinkLength);
 
 % Total force in each link
 totalLinkForceVec = repmat(springForces+damperForces,[3 1]).*linkUnitVecs;

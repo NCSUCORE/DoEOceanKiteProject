@@ -4,6 +4,7 @@
 clc
 close all
 clear all
+load expCompData.mat
 Simulink.sdi.clear
 clear tsc1
 distFreq = 0;distAmp = 0;pertVec = [0 1 0];
@@ -17,7 +18,7 @@ rCM = 1;
 thrLength = 2.63;
 flwSpd = -1e-9;
 
-for q = 3
+for q = 2
     for i = 1:length(inc)
         i
         for j = 1:3
@@ -144,8 +145,8 @@ for q = 3
                         fltCtrl.rollAmp.setValue(60,'deg');
                         fltCtrl.yawAmp.setValue(80,'deg');
                         fltCtrl.period.setValue(7.5,'s');
-                        fltCtrl.rollPhase.setValue(0,'rad');
-                        fltCtrl.yawPhase.setValue(.693-pi,'rad');
+                        fltCtrl.rollPhase.setValue(-pi/2,'rad');
+                        fltCtrl.yawPhase.setValue(.693+pi/2,'rad');
                     elseif j == 3
                         fltCtrl.rollAmp.setValue(60,'deg');
                         fltCtrl.yawAmp.setValue(80,'deg');
@@ -232,49 +233,49 @@ vhcl.animateSim(tsc,0.2)
 
 tsc = tscSim{1}
 %%
-bMat = tsc.scaledB
-figure;
-hold on;
-legEnt = {'$\delta M/(\delta_{a}v_{app}^2)$',...
-    '$\delta M/(\delta_{r}v_{app}^2)$';...
-    '$\delta L/(\delta_{a}v_{app}^2)$',...
-    '$\delta L/(\delta_{r}v_{app}^2)$'}
-color = {'k','r'}
-lineSpec = {'-','--'}
-for i = 1:2
-    for j = 1:2
-        plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
-            'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
-    end
-end
-legend('FontSize',15)
-xlabel 'Time [s]'
-ylabel 'Control Effectiveness [$\frac{Ns^2}{(deg)m}$]'
-xlim([5 inf])
-ylim([-.2 .1])
-set(gca,'FontSize',15)
-
-bMat = tsc.bMatrix
-figure;
-hold on;
-legEnt = {'$\delta M/(\delta_{a})$',...
-    '$\delta M/(\delta_{r})$';...
-    '$\delta L/(\delta_{a})$',...
-    '$\delta L/(\delta_{r})$'}
-color = {'k','r'}
-lineSpec = {'-','--'}
-for i = 1:2
-    for j = 1:2
-        plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
-            'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
-    end
-end
-legend('FontSize',15)
-xlabel 'Time [s]'
-ylabel 'Control Effectiveness [$\frac{N-m}{(deg)}$]'
+% bMat = tsc.scaledB
+% figure;
+% hold on;
+% legEnt = {'$\delta M/(\delta_{a}v_{app}^2)$',...
+%     '$\delta M/(\delta_{r}v_{app}^2)$';...
+%     '$\delta L/(\delta_{a}v_{app}^2)$',...
+%     '$\delta L/(\delta_{r}v_{app}^2)$'}
+% color = {'k','r'}
+% lineSpec = {'-','--'}
+% for i = 1:2
+%     for j = 1:2
+%         plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
+%             'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
+%     end
+% end
+% legend('FontSize',15)
+% xlabel 'Time [s]'
+% ylabel 'Control Effectiveness [$\frac{Ns^2}{(deg)m}$]'
+% xlim([5 inf])
 % ylim([-.2 .1])
-xlim([5 inf])
-set(gca,'FontSize',15)
+% set(gca,'FontSize',12)
+% 
+% bMat = tsc.bMatrix
+% figure;
+% hold on;
+% legEnt = {'$\delta M/(\delta_{a})$',...
+%     '$\delta M/(\delta_{r})$';...
+%     '$\delta L/(\delta_{a})$',...
+%     '$\delta L/(\delta_{r})$'}
+% color = {'k','r'}
+% lineSpec = {'-','--'}
+% for i = 1:2
+%     for j = 1:2
+%         plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
+%             'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
+%     end
+% end
+% legend('FontSize',15)
+% xlabel 'Time [s]'
+% ylabel 'Control Effectiveness [$\frac{N-m}{(deg)}$]'
+% % ylim([-.2 .1])
+% xlim([5 inf])
+% set(gca,'FontSize',12)
 
 %%
 for i = 1:3
@@ -282,109 +283,164 @@ for i = 1:3
     tscSim{i} = reSampleDataUsingTime(tscSim{i},1,25.25);
 end
 %%
-
+close all
 subTitle = {'Roll Tracking','Roll and Yaw Tracking','Allocated Roll and Yaw Tracking'};
-figure('Position',[100 100 800 500])
+figure('Position',[50 50 800 600])
 for i = 1:3
-    subplot(3,1,i); grid on; hold on;
-    plot(runData{i}.kite_elev,'LineWidth',1.5)
-    plot(tscSim{i}.theta*-180/pi,'LineWidth',1.5')
+    subplot(4,3,i); grid on; hold on;
+    plot(runData{i}.kite_elev,'LineWidth',1.5,'Color','k')
+    plot(tscSim{i}.theta*-180/pi,'LineWidth',1.5,'LineStyle',':','Color','r')
     if i == 1
         legend('Experiment','Simulation')
-        xlabel ''
-    elseif i == 2
-        xlabel ''
-    elseif i == 3
-        xlabel 'Time [s]'
+%         xlabel ''
+%     elseif i == 2
+%         xlabel ''
+%     elseif i == 3
+%         xlabel 'Time [s]'
+%     end
     end
     grid on;
-    ylabel 'Angle [deg]'
+    if i == 1
+        ylabel '$\theta_o$ [deg]'
+    end
     xlim([0 20])
-    ylim([-30 90])
-    yticks([0 30 60 90])
+    ylim([0 90])
+%     yticks([0 30 60 90])
     title('')
-    set(gca,'FontSize',15)
+    set(gca,'FontSize',12)
 end
 
-figure('Position',[100 100 800 500])
+% figure('Position',[100 100 800 500])
 for i = 1:3
-    subplot(3,1,i); grid on; hold on;
-    plot(runData{i}.kite_azi*-1,'LineWidth',1.5)
-    plot(tscSim{i}.phi*180/pi,'LineWidth',1.5')
-    if i == 1
-        legend('Experiment','Simulation')
-        xlabel ''
-    elseif i == 2
-        xlabel ''
-    elseif i == 3
-        xlabel 'Time [s]'
-    end
+    subplot(4,3,3+i); grid on; hold on;
+    plot(runData{i}.kite_azi*-1,'LineWidth',1.5,'Color','k')
+    plot(tscSim{i}.phi*180/pi,'LineWidth',1.5,'LineStyle',':','Color','r')
+%     if i == 1
+%         legend('Experiment','Simulation')
+%         xlabel ''
+%     elseif i == 2
+%         xlabel ''
+%     elseif i == 3
+%         xlabel 'Time [s]'
+%     end
     grid on;
-    ylabel 'Angle [deg]'
+    if i == 1
+        ylabel '$\phi_o$ [deg]'
+    end
     xlim([0 20])
     ylim([-90 90])
 %     yticks([0 30 690 90])
     title('')
-    set(gca,'FontSize',15)
+    set(gca,'FontSize',12)
 end
 
-figure('Position',[100 100 800 500])
+% figure('Position',[100 100 800 500])
 for i = 1:3
     [~,velAug{i}] = estExpVelMag(runData{i},1);
     powAug{i} = velAug{i}.^3;
     
-    vels=tscSim{i}.velocityVec.Data(:,:,:);
+    vels=tscSim{i}.velocityVecEst.Data(:,:,:);
     velmags{i} = squeeze(sqrt(sum((vels).^2,1)))/0.78;
     
     t = runData{i}.kite_azi.Time(1:end-1);
-    subplot(3,1,i); grid on; hold on;
-    plot(t,powAug{i},'LineWidth',1.5)
-    plot(tscSim{i}.phi.Time,velmags{i}.^3,'LineWidth',1.5')
-    if i == 1
-        legend('Experiment','Simulation')
-        xlabel ''
-    elseif i == 2
-        xlabel ''
-    elseif i == 3
-        xlabel 'Time [s]'
-    end
+    subplot(4,3,9+i); grid on; hold on;
+    plot(t,powAug{i},'LineWidth',1.5,'Color','k')
+    plot(tscSim{i}.phi.Time,velmags{i}.^3,'LineWidth',1.5,'LineStyle',':','Color','r')
+    xlabel 'Time [s]'
     grid on;
-    ylabel({'Power','Augmentation'})
-    xlim([0 20])
     if i == 1
-        ylim([0 10])
-    elseif i ==2
-        ylim([0 30])
-    elseif i == 3
-        ylim([0 100])
+    ylabel('$||\frac{v_{app}}{v_{tow}}||^3$')
     end
+    xlim([0 20])
+
+%     if i == 1
+%         ylim([0 10])
+%     elseif i ==2
+%         ylim([0 20])
+%     elseif i == 3
+        ylim([0 20])
+%     end
 %     yticks([0 30 690 90])
     title('')
-    set(gca,'FontSize',15)
+    set(gca,'FontSize',12)
 end
 
-figure('Position',[100 100 800 500])
+% figure('Position',[100 100 800 500])
 for i = 1:3
-    subplot(3,1,i); grid on; hold on;
-    plot(t,velAug{i},'LineWidth',1.5)
-    plot(tscSim{i}.phi.Time,velmags{i},'LineWidth',1.5')
-    if i == 1
-        legend('Experiment','Simulation')
-        xlabel ''
-    elseif i == 2
-        xlabel ''
-    elseif i == 3
-        xlabel 'Time [s]'
-    end
+    subplot(4,3,6+i); grid on; hold on;
+    plot(t,velAug{i},'LineWidth',1.5,'Color','k')
+    plot(tscSim{i}.phi.Time,velmags{i},'LineWidth',1.5,'LineStyle',':','Color','r')
+%     if i == 1
+%         legend('Experiment','Simulation')
+%         xlabel ''
+%     elseif i == 2
+%         xlabel ''
+%     elseif i == 3
+%         xlabel 'Time [s]'
+%     end
     grid on;
-    ylabel({'Velocity','Augmentation'})
+    if i == 1
+        ylabel('$||\frac{v_{app}}{v_{tow}}||$')
+    end
     xlim([0 20])
-    ylim([0 5])
-    yticks([0 1 2 3 4 5])
+    ylim([0 3])
     title('')
-    set(gca,'FontSize',15)
+    set(gca,'FontSize',12)
 end
 
+% figure('Position',[100 100 800 500])
+% for i = 1:3
+%     subplot(3,1,i); grid on; hold on;
+%     if i == 1
+%         plot(runData{i}.kiteRoll,'LineWidth',1.5)
+%     else
+%         plot(runData{i}.kiteRoll*180/pi,'LineWidth',1.5)
+%     end
+%     plotsq(tscSim{i}.eulerAngles.Time,tscSim{i}.eulerAngles.Data(1,:,:)*180/pi-180,'LineWidth',1.5')
+%     if i == 1
+%         legend('Experiment','Simulation')
+%         xlabel ''
+%     elseif i == 2
+%         xlabel ''
+%     elseif i == 3
+%         xlabel 'Time [s]'
+%     end
+%     grid on;
+%     ylabel('Roll SP')
+% %     xlim([0 20])
+% %     ylim([0 5])
+% %     yticks([0 1 2 3 4 5])
+%     title('')
+%     set(gca,'FontSize',12)
+% end
+% 
+% figure('Position',[100 100 800 500])
+% for i = 1:3
+%     subplot(3,1,i); grid on; hold on;
+%     if i == 1
+%         plot(runData{i}.kiteYaw,'LineWidth',1.5)
+%     else
+%         plot(runData{i}.yawDeadRec,'LineWidth',1.5)
+%     end
+%     
+%     plotsq(tscSim{i}.eulerAngles.Time,tscSim{i}.eulerAngles.Data(3,:,:)*-180/pi+180,'LineWidth',1.5')
+%     if i == 1
+%         legend('Experiment','Simulation')
+%         xlabel ''
+%     elseif i == 2
+%         xlabel ''
+%     elseif i == 3
+%         xlabel 'Time [s]'
+%     end
+%     grid on;
+%     ylabel('Yaw')
+% %     xlim([0 20])
+% %     ylim([0 5])
+% %     yticks([0 1 2 3 4 5])
+%     title('')
+%     set(gca,'FontSize',12)
+% end
+%%
 for i = 1:3
 tscSimRMS{i} = reSampleDataUsingTime(tscSim{i},7.5,19.5);
 runDataRMS{i} = reSampleDataUsingTime(runData{i},7.5,19.5);
@@ -392,6 +448,7 @@ rmsAz(i) = rms(tscSimRMS{i}.phi.Data*180/pi-runDataRMS{i}.kite_azi.Data*-1)
 rmsEL(i) = rms(tscSimRMS{i}.theta.Data*-180/pi-runDataRMS{i}.kite_elev.Data)
 rmsVelAug(i) = rms(squeeze(velmags{i}(750:1950))'-squeeze(velAug{i}(750:1950)))
 rmsPowAug(i) = rms(squeeze(velmags{i}(750:1950))'.^3 - powAug{i}(750:1950))
+
 if isfield(runDataRMS{i},'yawDeadRec')
     rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)
     rmsYaw(i) = rms(squeeze(tscSimRMS{i}.yawDeg.Data)*-1+180-runDataRMS{i}.yawDeadRec.Data)
@@ -399,4 +456,50 @@ else
     rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data))
     rmsYaw(i) = rms(squeeze(tscSimRMS{i}.yawDeg.Data)*-1+180-squeeze(runDataRMS{i}.kiteYaw.Data))
 end
+prom = 2
+thresh = 20
+
+azSimP{i} = [findpeaks(tscSimRMS{i}.phi.Data*180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+    findpeaks(-tscSimRMS{i}.phi.Data*180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+azExpP{i} = [findpeaks(runDataRMS{i}.kite_azi.Data*-1,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+    findpeaks(-runDataRMS{i}.kite_azi.Data*-1,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+A_phi{i} = (sqrt(sum(azSimP{i}.^2/length(azExpP{i})))-sqrt(sum(azExpP{i}.^2/length(azExpP{i}))))/...
+    (max(runDataRMS{i}.kite_azi.Data*-1)-min(runDataRMS{i}.kite_azi.Data*-1))
+
+elSimP{i} = [findpeaks(tscSimRMS{i}.theta.Data*-180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+    findpeaks(-tscSimRMS{i}.theta.Data*-180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+elExpP{i} = [findpeaks(runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+    findpeaks(-runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+A_theta{i} = (sqrt(sum(elSimP{i}.^2/length(elExpP{i})))-sqrt(sum(elExpP{i}.^2/length(elExpP{i}))))/...
+    (max(runDataRMS{i}.kite_elev.Data)-min(runDataRMS{i}.kite_elev.Data))
+
+rollSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+    findpeaks(-squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+yawSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+    findpeaks(-squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+if isfield(runDataRMS{i},'yawDeadRec')
+    rollExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    yawExpP{i} = [findpeaks(runDataRMS{i}.yawDeadRec.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-runDataRMS{i}.yawDeadRec.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    A_roll{i} = (sqrt(sum(rollSimP{i}.^2/length(rollSimP{i})))-sqrt(sum(rollExpP{i}.^2/length(rollExpP{i}))))/...
+        (max(squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)-min(squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi))
+    A_yaw{i} = (sqrt(sum(yawSimP{i}.^2/length(yawSimP{i})))-sqrt(sum(yawExpP{i}.^2/length(yawExpP{i}))))/...
+        (max(squeeze(runDataRMS{i}.yawDeadRec.Data))-min(squeeze(runDataRMS{i}.yawDeadRec.Data)))
+else
+    rollExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteRoll.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-squeeze(runDataRMS{i}.kiteRoll.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    yawExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteYaw.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-squeeze(runDataRMS{i}.kiteYaw.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    A_roll{i} = (sqrt(sum(rollSimP{i}.^2/length(rollSimP{i})))-sqrt(sum(rollExpP{i}.^2/length(rollExpP{i}))))/...
+        (max(runDataRMS{i}.kiteRoll.Data)-min(runDataRMS{i}.kiteRoll.Data))
+    A_yaw{i} = (sqrt(sum(yawSimP{i}.^2/length(yawSimP{i})))-sqrt(sum(yawExpP{i}.^2/length(yawExpP{i}))))/...
+        (max(squeeze(runDataRMS{i}.kiteYaw.Data))-min(squeeze(runDataRMS{i}.kiteYaw.Data)))
+end
+
+
+% elExpP{i} = [findpeaks(runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+%     findpeaks(-runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+% A_theta{i} = (sqrt(sum(elSimP{i}.^2/length(elExpP{i})))-sqrt(sum(elExpP{i}.^2/length(elExpP{i}))))/...
+%     (max(runDataRMS{i}.kite_elev.Data)-min(runDataRMS{i}.kite_elev.Data))
 end

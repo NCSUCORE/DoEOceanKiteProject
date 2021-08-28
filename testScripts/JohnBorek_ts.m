@@ -11,12 +11,12 @@ Simulink.sdi.clear
 % 7 - Animate
 % 8 - Plotting
 %%             1 2 3 4 5 6     7     8
-simScenario = [1 1 1 1 1 false false 1==0];
+simScenario = [1 1 1 4 1 false true 1==0];
 %%  Set Test Parameters
 tFinal = 2500;      tSwitch = 10000;                        %   s - maximum sim duration 
-flwSpd = 0.45;                                              %   m/s - Flow speed
-altitude = 150;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
-thrLength = 300;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
+flwSpd = 0.5;                                              %   m/s - Flow speed
+altitude = 100;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
+thrLength = 200;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
 thrDiam = 18;       fairing = 100;                          %   mm/m - tether diameter and fairing length
 h = 10*pi/180;      w = 40*pi/180;                          %   rad - Path width/height
 sC = 0;             subCtrl = 3;                            %   State mac on/off and selected flight controller 
@@ -28,17 +28,17 @@ end
 %%  Load components
 % load(['D:\Power Study\' sprintf('CDR_V-%.3f_alt-%d_thrL-%d_thrD-%.1f_Fair-%d.mat',flwSpd,altitude,thrLength,thrDiam,fairing)])
 % load('C:\Users\JohnJr\Desktop\Manta Ray\DoEOceanKiteProject\output\Turb_V-0.45_Alt-150_thr-300_Tmax-1.740814e+01.mat')
-load('C:\Users\jbore\Documents\DoEOceanKiteProject\output\Turb_V-0.45_Alt-150_thr-300_Tmax-17.4.mat')
-[Idx1,Idx2] = tsc.getLapIdxs(3);  ran = Idx1:Idx2;
-pathVec = squeeze(tsc.currentPathVar.Data(ran));
-timeVec = tsc.eulerAngles.Time(ran)-tsc.eulerAngles.Time(Idx1);
-for i = 2:length(pathVec)
-    if pathVec(i) <= pathVec(i-1)
-        pathVec(i) = pathVec(i-1)+1e-7;
-    end
-end
-rollVec = squeeze(tsc.eulerAngles.Data(1,1,ran));
-yawVec = squeeze(tsc.eulerAngles.Data(3,1,ran));
+% load('C:\Users\jbore\Documents\DoEOceanKiteProject\output\Turb_V-0.45_Alt-150_thr-300_Tmax-17.4.mat')
+% [Idx1,Idx2] = tsc.getLapIdxs(3);  ran = Idx1:Idx2;
+% pathVec = squeeze(tsc.currentPathVar.Data(ran));
+% timeVec = tsc.eulerAngles.Time(ran)-tsc.eulerAngles.Time(Idx1);
+% for i = 2:length(pathVec)
+%     if pathVec(i) <= pathVec(i-1)
+%         pathVec(i) = pathVec(i-1)+1e-7;
+%     end
+% end
+% rollVec = squeeze(tsc.eulerAngles.Data(1,1,ran));
+% yawVec = squeeze(tsc.eulerAngles.Data(3,1,ran));
 switch simScenario(1)                                   %   Vehicle
     case 1
         loadComponent('Manta2RotXFoil_AR8_b8');             %   AR = 8; 8m span
@@ -86,7 +86,8 @@ switch simScenario(3)                                   %   Flight Controller
         slfCtrl = fltCtrl;
         loadComponent('MantaFSController');                 %   Path-following controller with AoA control
     case 3
-        load('C:\Users\andre\Documents\OCT\DoEOceanKiteProject\compositions\flightController\launchRecoveryController\library\SteadyController\SteadyController.mat')
+%         load('C:\Users\andre\Documents\OCT\DoEOceanKiteProject\compositions\flightController\launchRecoveryController\library\SteadyController\SteadyController.mat')
+        load('SteadyController.mat')
         fltCtrl.rollMoment.kp.setValue(1000,'(N*m)/(rad)')
         fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
         fltCtrl.rollMoment.kd.setValue(1000,'(N*m)/(rad/s)');
@@ -168,7 +169,7 @@ switch simScenario(3)
         fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(rad*s)');
         fltCtrl.yawCtrl.kd.setValue(0,'(deg)/(rad/s)');
         fltCtrl.yawCtrl.tau.setValue(0.001,'s');
-        lapN = 2;
+        lapN = 40;
     case 2
         fltCtrl.maxTL.setValue(hiLvlCtrl.maxThrLength.Value,'m');
         pthCtrl1.setFcnName(PATHGEOMETRY,'');
@@ -237,20 +238,30 @@ end
 lap = max(tsc.lapNumS.Data)-1;
 tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
 %%
-figure; ax1=subplot(3,1,1); hold on; grid on;
-plot(tsc.rollSP.Time,tsc.rollSP.Data*180/pi,'r-')
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,1,:))*180/pi,'b-')
-xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Roll SP','Roll');
-ax2=subplot(3,1,3); hold on; grid on;
-plot(tsc.yawSP.Time,tsc.yawSP.Data*180/pi,'r-')
-plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,1,:))*180/pi,'b-')
-xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Yaw SP','Yaw');
-ax3=subplot(3,1,2); hold on; grid on;
-plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  
-plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
-plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]'); 
-legend('P-Aileron','Elevator','Rudder')
-linkaxes([ax1 ax2 ax3],'x'); %xlim([1100 1300])
+for i = 1:numel(tsc.FNetBdy.Time)
+momAdd = cross(vhcl.rBridle_LE.Value,squeeze(tsc.FNetBdy.Data(:,:,i)));
+momNet(:,i) = squeeze(tsc.MNetBdy.Data(:,:,i))+momAdd;
+end
+
+figure
+plot(tsc.FNetBdy.Time,momNet(3,:))
+xlim([100 inf])
+xlabel 'Time [s]'
+ylabel 'Net Moment at Tether Attachment [N-m]'
+% figure; ax1=subplot(3,1,1); hold on; grid on;
+% plot(tsc.rollSP.Time,tsc.rollSP.Data*180/pi,'r-')
+% plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(1,1,:))*180/pi,'b-')
+% xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Roll SP','Roll');
+% ax2=subplot(3,1,3); hold on; grid on;
+% plot(tsc.yawSP.Time,tsc.yawSP.Data*180/pi,'r-')
+% plot(tsc.eulerAngles.Time,squeeze(tsc.eulerAngles.Data(3,1,:))*180/pi,'b-')
+% xlabel('Time [s]'); ylabel('Angle [deg]'); legend('Yaw SP','Yaw');
+% ax3=subplot(3,1,2); hold on; grid on;
+% plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,1)),'b-');  xlabel('Time [s]');  ylabel('Deflection [deg]');  
+% plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,3)),'r-');  xlabel('Time [s]');  ylabel('Deflection [deg]');
+% plot(tsc.ctrlSurfDefl.Time,squeeze(tsc.ctrlSurfDefl.Data(:,4)),'g-');  xlabel('Time [s]');  ylabel('Deflection [deg]'); 
+% legend('P-Aileron','Elevator','Rudder')
+% linkaxes([ax1 ax2 ax3],'x'); %xlim([1100 1300])
 %%  Animate Simulation
 if simScenario(7)
     if simScenario(3) == 1

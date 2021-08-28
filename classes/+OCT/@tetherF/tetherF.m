@@ -11,6 +11,7 @@ classdef tetherF < handle
         nomDragCoeff
         fairedDragCoeff
         fairedLength
+        fairedLinks
         maxThrLength
         density
         initGndNodePos
@@ -27,6 +28,7 @@ classdef tetherF < handle
     properties (Dependent)
         dragCoeff
         resistance
+        linkLengths
     end
     methods
         function obj = tetherF(numNodes)
@@ -38,6 +40,7 @@ classdef tetherF < handle
             obj.nomDragCoeff    = SIM.parameter;
             obj.fairedDragCoeff = SIM.parameter;
             obj.fairedLength    = SIM.parameter('Unit','m');
+            obj.fairedLinks     = SIM.parameter('Unit','');
             obj.maxThrLength    = SIM.parameter('Unit','m');
             obj.density         = SIM.parameter('Unit','kg/m^3');
             obj.initGndNodePos  = SIM.parameter('Unit','m');
@@ -118,20 +121,31 @@ classdef tetherF < handle
             end
             obj.netBuoyEnable.setValue(val,units);
         end
-        
+
+
         function val = get.dragCoeff(obj)  % Total drag coeff vector based on fair/nom drag farring length
-            numLinks = obj.numNodes.Value-1;  linkLength = obj.maxThrLength.Value/numLinks;
-            numFairingLinks = floor(obj.fairedLength.Value/linkLength);
-            numNominalLinks = numLinks-numFairingLinks;
-            val = [obj.fairedDragCoeff.Value*ones(1,numFairingLinks),obj.nomDragCoeff.Value*ones(1,numNominalLinks)];
+            numLinks = obj.numNodes.Value-1;  
+            numNominalLinks = numLinks-obj.fairedLinks.Value;
+            val = [obj.fairedDragCoeff.Value*ones(1,obj.fairedLinks.Value),obj.nomDragCoeff.Value*ones(1,numNominalLinks)];
             val = SIM.parameter('Value',fliplr(val),'Unit','');
-        end        
+        end               
+%         function val = get.dragCoeff(obj)  % Total drag coeff vector based on fair/nom drag farring length
+%             numLinks = obj.numNodes.Value-1;  linkLength = obj.maxThrLength.Value/numLinks;
+%             numFairingLinks = floor(obj.fairedLength.Value/linkLength);
+%             numNominalLinks = numLinks-numFairingLinks;
+%             val = [obj.fairedDragCoeff.Value*ones(1,numFairingLinks),obj.nomDragCoeff.Value*ones(1,numNominalLinks)];
+%             val = SIM.parameter('Value',fliplr(val),'Unit','');
+%         end        
         function val = get.resistance(obj) 
             maxTL = obj.maxThrLength.Value;
             refTL = 304.8;  refR = 7.1;
             val = SIM.parameter('Value',refR*maxTL/refTL,'Unit','Ohm','Description','Internal conductor resistance');
         end        
-        
+        function val = get.linkLengths(obj)
+            vecs = diff([obj.initGndNodePos.Value obj.initNodePos.Value obj.initAirNodePos.Value],1,2);
+            lengths  = sqrt(dot(vecs,vecs));
+            val = SIM.parameter('Value',lengths,'Description','Unstretched Lengths of Tether Links','Unit','m');
+        end
         function val = get.initNodePos(obj)
             % note rodney mitchell this forces the nodes to be evenly distributed between the gound and second to last node.
             % Is that what we want? This means that you cannot change the
@@ -141,23 +155,62 @@ classdef tetherF < handle
             % dependent. If the behavior is not intended I suggest making a
             % class method for the intended behavior and releasing the get.
             if obj.numNodes.Value>2
+                if obj.fairedLength == 0
                 pos = ...
                     [linspace(obj.initGndNodePos.Value(1),obj.initAirNodePos.Value(1),obj.numNodes.Value);...
                     linspace(obj.initGndNodePos.Value(2),obj.initAirNodePos.Value(2),obj.numNodes.Value);...
                     linspace(obj.initGndNodePos.Value(3),obj.initAirNodePos.Value(3),obj.numNodes.Value)];
                 pos = pos(:,2:end-1);
+                else
+                unfairedLinks = obj.numNodes.Value-1-obj.fairedLinks.Value;
+                    if rem(obj.fairedLinks.Value,1) ~= 0
+                        error('Incorrect faired length or faired link lenght. Must be divisible')
+                    end
+                    rAG = obj.initAirNodePos.Value-obj.initGndNodePos.Value;
+                    magRAG = sqrt(dot(rAG,rAG));
+                    fairStop = rAG*(1-obj.fairedLength.Value/magRAG);
+                    posFair = ...
+                        [linspace(fairStop(1),obj.initAirNodePos.Value(1),obj.fairedLinks.Value+1);
+                         linspace(fairStop(2),obj.initAirNodePos.Value(2),obj.fairedLinks.Value+1);
+                         linspace(fairStop(3),obj.initAirNodePos.Value(3),obj.fairedLinks.Value+1)];
+                    posUnfair = ...
+                        [linspace(obj.initGndNodePos.Value(1),fairStop(1),unfairedLinks+1);
+                         linspace(obj.initGndNodePos.Value(2),fairStop(2),unfairedLinks+1);
+                         linspace(obj.initGndNodePos.Value(3),fairStop(3),unfairedLinks+1)];
+                    pos = [posUnfair(:,2:end) posFair(:,2:end-1)];
+                end                    
             else
                 pos = [];
             end
             val = SIM.parameter('Value',pos,'Unit','m');
         end
+        
         function val = get.initNodeVel(obj)
             if obj.numNodes.Value>2
+                if obj.fairedLength == 0
                 vel = ...
                     [linspace(obj.initGndNodeVel.Value(1),obj.initAirNodeVel.Value(1),obj.numNodes.Value);...
                     linspace(obj.initGndNodeVel.Value(2),obj.initAirNodeVel.Value(2),obj.numNodes.Value);...
                     linspace(obj.initGndNodeVel.Value(3),obj.initAirNodeVel.Value(3),obj.numNodes.Value)];
                 vel = vel(:,2:end-1);
+                else
+                unfairedLinks = obj.numNodes.Value-1-obj.fairedLinks.Value;
+                    if rem(obj.fairedLinks.Value,1) ~= 0
+                        error('Incorrect faired length or faired link lenght. Must be divisible')
+                    end
+                    vAG = obj.initAirNodeVel.Value-obj.initGndNodeVel.Value;
+                    magRAG = sqrt(dot(vAG,vAG));
+                    fairStop = vAG*(1-obj.fairedLength.Value/magRAG);
+                    velFair = ...
+                        [linspace(fairStop(1),obj.initAirNodeVel.Value(1),obj.fairedLinks.Value+1);
+                         linspace(fairStop(2),obj.initAirNodeVel.Value(2),obj.fairedLinks.Value+1);
+                         linspace(fairStop(3),obj.initAirNodeVel.Value(3),obj.fairedLinks.Value+1)];
+                    velUnfair = ...
+                        [linspace(obj.initGndNodeVel.Value(1),fairStop(1),unfairedLinks+1);
+                         linspace(obj.initGndNodeVel.Value(2),fairStop(2),unfairedLinks+1);
+                         linspace(obj.initGndNodeVel.Value(3),fairStop(3),unfairedLinks+1)];
+                    vel = [velUnfair(:,2:end) velFair(:,2:end-1)];
+                end        
             else
                 vel = [];
             end
