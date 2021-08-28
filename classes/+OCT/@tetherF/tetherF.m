@@ -198,9 +198,10 @@ classdef tetherF < handle
                     if rem(obj.fairedLinks.Value,1) ~= 0
                         error('Incorrect faired length or faired link lenght. Must be divisible')
                     end
-                    vAG = obj.initAirNodeVel.Value-obj.initGndNodeVel.Value;
-                    magRAG = sqrt(dot(vAG,vAG));
-                    fairStop = vAG*(1-obj.fairedLength.Value/magRAG);
+                    rAG = obj.initAirNodePos.Value-obj.initGndNodePos.Value
+                    vAG = obj.initAirNodeVel.Value-obj.initGndNodeVel.Value
+                    magRAG = sqrt(dot(rAG,rAG));
+                    fairStop = vAG*(1-obj.fairedLength.Value/magRAG)
                     velFair = ...
                         [linspace(fairStop(1),obj.initAirNodeVel.Value(1),obj.fairedLinks.Value+1);
                          linspace(fairStop(2),obj.initAirNodeVel.Value(2),obj.fairedLinks.Value+1);
@@ -209,7 +210,7 @@ classdef tetherF < handle
                         [linspace(obj.initGndNodeVel.Value(1),fairStop(1),unfairedLinks+1);
                          linspace(obj.initGndNodeVel.Value(2),fairStop(2),unfairedLinks+1);
                          linspace(obj.initGndNodeVel.Value(3),fairStop(3),unfairedLinks+1)];
-                    vel = [velUnfair(:,2:end) velFair(:,2:end-1)];
+                    vel = [velUnfair(:,2:end) velFair(:,2:end-1)]
                 end        
             else
                 vel = [];
