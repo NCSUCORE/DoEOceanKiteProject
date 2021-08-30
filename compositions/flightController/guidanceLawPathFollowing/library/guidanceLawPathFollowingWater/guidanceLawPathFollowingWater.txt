@@ -1,7 +1,7 @@
 fltCtrl.pathWidth_deg = 5.0000e+01
 fltCtrl.pathHeight_deg = 8.0000e+00
 fltCtrl.pathElevation_deg = 2.0000e+01
-fltCtrl.normalizedLforward = 3.0000e-02
+fltCtrl.normalizedLforward = 4.0000e-02
 fltCtrl.kiteMass = 2.8570e+03
 fltCtrl.maxTanRoll_deg = 4.0000e+01
 fltCtrl.initPathParameter = 0.0000e+00

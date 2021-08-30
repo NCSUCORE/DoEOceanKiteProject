@@ -12,7 +12,7 @@ fltCtrl.pathElevation_deg	= 20;
 % fltCtrl.pathHeight_deg		= 20.35;
 % fltCtrl.pathElevation_deg	= abs(pathFollowingBasis(3))*180/pi;
 
-fltCtrl.normalizedLforward	= 0.03;
+fltCtrl.normalizedLforward	= 0.04;
 fltCtrl.kiteMass			= 2.8570e+03;
 fltCtrl.maxTanRoll_deg		= 40;
 fltCtrl.initPathParameter	= 0.00;
