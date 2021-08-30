@@ -12,11 +12,11 @@ simParams.setDuration(150,'s');
 maxElev = 50;
 minElev = fltCtrl.pathHeight_deg/2;
 
-zRange = 100:25:400;
-flowSpeedRange = 0.5:0.25:2;
+zRange = 25:25:400;
+flowSpeedRange = 0.1:0.2:2.1;
 minThrLen = round(min(zRange)/sind(maxElev),-1);
 minThrLen = minThrLen - mod(minThrLen,50) + 50;
-thrLengthRange = minThrLen:100:600;
+thrLengthRange = minThrLen:25:600;
 
 zRange = 100:400:400;
 flowSpeedRange = 1:1:2;
@@ -78,9 +78,9 @@ for FSct = 1:nFS
             fName = [cd,'\',foldName,'\',sprintf('F,%.1f,TL,%.1f,Z,%.1f',[FS(Zct,TLct,FSct),TL(Zct,TLct,FSct),Z(Zct,TLct,FSct)])];
             
             aSinTerm = Z(Zct,TLct,FSct)/TL(Zct,TLct,FSct);
-            lowestAlt = (sind(-fltCtrl.pathHeight_deg/2) + aSinTerm)*thrLengthRange(TLct);
+%             lowestAlt = (sind(-fltCtrl.pathHeight_deg/2) + aSinTerm)*thrLengthRange(TLct);
             
-            if aSinTerm <= sind(maxElev) && Z(Zct,TLct,FSct) > lowestAlt
+            if aSinTerm <= sind(maxElev)
                 
                 
                 EL(Zct,TLct,FSct) = asind(aSinTerm);

@@ -4,7 +4,7 @@ SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 fltCtrl = guidanceLawPathFollow_class;
 
 fltCtrl.pathWidth_deg		= 50;
-fltCtrl.pathHeight_deg		= 12;
+fltCtrl.pathHeight_deg		= 8;
 fltCtrl.pathElevation_deg	= 20;
 
 % pathFollowingBasis = [1.5,2.3,-.3,180*pi/180,125];
@@ -12,16 +12,16 @@ fltCtrl.pathElevation_deg	= 20;
 % fltCtrl.pathHeight_deg		= 20.35;
 % fltCtrl.pathElevation_deg	= abs(pathFollowingBasis(3))*180/pi;
 
-fltCtrl.normalizedLforward	= 0.02;
+fltCtrl.normalizedLforward	= 0.03;
 fltCtrl.kiteMass			= 2.8570e+03;
 fltCtrl.maxTanRoll_deg		= 40;
-fltCtrl.initPathParameter	= 0.05;
+fltCtrl.initPathParameter	= 0.00;
 fltCtrl.aileron_kp			= 0.9*2;
 fltCtrl.aileron_kd			= 4*fltCtrl.aileron_kp;
-fltCtrl.aileron_tau			= 0.0001000;
+fltCtrl.aileron_tau			= 0.01000;
 fltCtrl.maxLap              = 20;
 
-% val = pathCoordEqn(fltCtrl.pathWidth_deg,fltCtrl.pathHeight_deg,fltCtrl.pathElevation_deg,1);
+val = pathCoordEqn(fltCtrl.pathWidth_deg,fltCtrl.pathHeight_deg,fltCtrl.pathElevation_deg,1);
 
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

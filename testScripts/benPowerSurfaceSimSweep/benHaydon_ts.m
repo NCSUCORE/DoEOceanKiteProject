@@ -5,21 +5,19 @@ cd(fileparts(mfilename('fullpath')));
 
 % load parameters that are common for all simulations
 commonSimParameters;
-simParams.setDuration(150,'s');
+simParams.setDuration(100,'s');
 
 %% simulation sweep parameters
-flowSpeed = 2;
+flowSpeed = 2.1;
 Z = 60;
 thrLength = 200;
-% fltCtrl.pathElevation_deg	= asind(Z/thrLength);
-% fltCtrl.pathWidth_deg	= 40;
-% fltCtrl.pathHeight_deg	= 10;
+fltCtrl.pathElevation_deg	= asind(Z/thrLength);
 
 % Environment IC's and dependant properties
 env.water.setflowVec([flowSpeed 0 0],'m/s')
 
 % Set vehicle initial conditions
-init_speed = 4*norm(env.water.flowVec.Value);
+init_speed = 2*norm(env.water.flowVec.Value);
 [init_O_rKite,init_Euler,init_O_vKite,init_OwB,init_Az,init_El,init_OcB] = ...
     getInitConditions(fltCtrl.initPathParameter,fltCtrl.pathWidth_deg,...
     fltCtrl.pathHeight_deg,fltCtrl.pathElevation_deg,thrLength,init_speed);
@@ -31,7 +29,7 @@ vhcl.setInitEulAng(init_Euler,'rad')
 vhcl.setInitAngVelVec(init_OwB,'rad/s');
 
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-wnch.winch1.initLength.setValue(0.95*norm(vhcl.initPosVecGnd.Value),'m')
+wnch.winch1.initLength.setValue(1*norm(vhcl.initPosVecGnd.Value),'m')
 
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
@@ -81,6 +79,10 @@ plot(tsc.positionVec.Time,tsc.tanRoll.Data(:)./max(abs(tsc.tanRoll.Data(:))))
 hold on;
 plot(tsc.positionVec.Time,tsc.ctrlSurfDeflCmd.Data(:,1)./max(abs(tsc.ctrlSurfDeflCmd.Data(:,1))))
 legend('Tan roll','Aileron def.')
+
+figure; dynamicFigureLocations;
+plot(tsc.currentPathVar.Data(:),tsc.turnAngle.Data(:)*180/pi); grid on;
+hold on;
 
 %% animations
 figure; dynamicFigureLocations;

@@ -19,6 +19,8 @@ O_rKite         = squeeze(tsc.positionVec.Data);
 O_vKite         = squeeze(tsc.velocityVec.Data);
 sphericalCoords = squeeze(tsc.sphericalCoords.Data)';
 O_rTarget_n     = squeeze(tsc.rTarget_norm.Data)';
+O_rClosest_n    = squeeze(tsc.rClosest_norm.Data)';
+
 % first time step
 % body frame axes
 bfAxes = gobjects(3,1);
@@ -53,6 +55,11 @@ pV = quiver3(n_O_rKite(1,1),n_O_rKite(2,1),n_O_rKite(3,1),...
 % target point
 n_O_rTarg = squeeze(O_rTarget_n)./vecnorm(squeeze(O_rTarget_n));
 pTarg = plot3(n_O_rTarg(1,1),n_O_rTarg(2,1),n_O_rTarg(3,1),'m*');
+
+% target point
+n_O_rClosest = squeeze(O_rClosest_n)./vecnorm(squeeze(O_rClosest_n));
+pClose = plot3(n_O_rClosest(1,1),n_O_rClosest(2,1),n_O_rClosest(3,1),'r*');
+
 
 % trajectory
 pTraj = animatedline(n_O_rKite(1,1),n_O_rKite(2,1),n_O_rKite(3,1),'color','r');
@@ -107,6 +114,11 @@ for tc = 1:length(tVec)
     pTarg.XData = n_O_rTarg(1,tc);
     pTarg.YData = n_O_rTarg(2,tc);
     pTarg.ZData = n_O_rTarg(3,tc);
+    
+    % update closest point
+    pClose.XData = n_O_rClosest(1,tc);
+    pClose.YData = n_O_rClosest(2,tc);
+    pClose.ZData = n_O_rClosest(3,tc);
     
     % update trajectory
     addpoints(pTraj,n_O_rKite(1,tc),n_O_rKite(2,tc),n_O_rKite(3,tc));
