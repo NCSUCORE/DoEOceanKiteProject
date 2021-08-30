@@ -26,19 +26,26 @@ h = 10*pi/180;  w = 40*pi/180;          %   rad - Path width/height
 scale = 1;                              %   Simulation scale factor
 AoAsp = 5;                             %   deg - angle of attack setpoint
 tFinal = 10000;                         %   s - maximum simulation time
+% Cp0 = interp1(vhcl.turb1.RPMref.Value,vhcl.turb1.CpLookup.Value,fltCtrl.RPMConst.Value);
+% Ct0 = interp1(vhcl.turb1.RPMref.Value,vhcl.turb1.CtLookup.Value,fltCtrl.RPMConst.Value);
+% D0 = vhcl.turb1.diameter.Value; A0 = pi/4*D0^2;
+% Cp1 = 0.288;  Ct1 = 0.425; A1 = A0*Ct0/Ct1; D1 = sqrt(A1*4/pi);
+% f = Cp1/Cp0*A1/A0
 %%  Loop Through Simulation Scenarios
 for i = 1:numel(flwArray)
     for j = 1:numel(thrArray)
         for k = 1:numel(altArray)
+            
             Simulink.sdi.clear              %   Clear Simulink cashe
             flwSpd = flwArray(i);           %   m/s - current flow speed
             thrLength = thrArray(j);        %   m = current tether length
             altitude = altArray(k);         %   m - current altitude
+            fprintf(sprintf('\n V = %.2f m/s, Thr = %d m, Alt = %d m.',flwSpd,thrLength,altitude))
             initTL = thrLength;             %   m - set initial tether length
             initAltitude = altitude;        %   m - set initial altitude
             %   Check elevation angle limts
             if altitude >= 0.7071*thrLength || altitude <= 0.1736*thrLength
-                fprintf('Elevation angle is out of range\n')
+                fprintf(' Elevation angle is out of range')
                 el = NaN;
             else
                 el = asin(altitude/thrLength);
@@ -211,7 +218,7 @@ for i = 1:numel(flwArray)
             simParams = SIM.simParams;  simParams.setDuration(tFinal,'s');  dynamicCalc = '';
             vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
             if ~isnan(el)
-                simWithMonitor('OCTModel')
+                sim('OCTModel')
                 %%  Log Results
                 tsc = signalcontainer(logsout);
                 if tsc.lapNumS.Data(end) >= 2
