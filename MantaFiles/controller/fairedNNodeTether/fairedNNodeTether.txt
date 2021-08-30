@@ -34,9 +34,9 @@ thr.tether1.fairedDragCoeff.NoScale = false
 thr.tether1.fairedLength.Value = 1.0000e+02
 thr.tether1.fairedLength.Unit = 'm'
 thr.tether1.fairedLength.NoScale = false
-thr.tether1.fairedLinkLength.Value = 2.5000e+01
-thr.tether1.fairedLinkLength.Unit = 'm'
-thr.tether1.fairedLinkLength.NoScale = false
+thr.tether1.fairedLinks.Value = 3.0000e+00
+thr.tether1.fairedLinks.Unit is unitless or has no unit specified
+thr.tether1.fairedLinks.NoScale = false
 thr.tether1.maxThrLength.Value = 6.0000e+02
 thr.tether1.maxThrLength.Unit = 'm'
 thr.tether1.maxThrLength.NoScale = false

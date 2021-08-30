@@ -13,7 +13,7 @@ Simulink.sdi.clear
 %%             1 2 3 4 5 6     7     8
 simScenario = [1 1 1 4 1 false true 1==0];
 %%  Set Test Parameters
-tFinal = 2500;      tSwitch = 10000;                        %   s - maximum sim duration 
+tFinal = 1000;      tSwitch = 10000;                        %   s - maximum sim duration 
 flwSpd = 0.5;                                              %   m/s - Flow speed
 altitude = 200;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
 thrLength = 400;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
@@ -198,7 +198,7 @@ end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(tFinal,'s');  dynamicCalc = '';
-simWithMonitor('OCTModel','minRate',0)
+simout = sim('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
 if simScenario(3) == 1

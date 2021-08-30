@@ -15,10 +15,10 @@ simScenario = [1 1 1 4 1 false false 1==1];
 %%  Set Test Parameters
 flwArray = 0.1:0.05:0.5;                %   m/s - candidate flow speeds
 altArray = 50:50:400;                   %   m - candidate operating altitudes
-thrArray = 100:100:600;                 %   m - candidate tether lengths
+thrArray = 200:50:600;                 %   m - candidate tether lengths
 thrDiam = 18.0;                         %   mm - candidate tether diameters
 Tmax = getMaxTension(thrDiam);          %   kN - candidate tether tension limits
-fairing = 00;                          %   m - length of fairing distribution
+fairing = 100;                          %   m - length of fairing distribution
 
 h = 10*pi/180;  w = 40*pi/180;          %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);      %   Path basis parameters
@@ -120,11 +120,16 @@ for i = 1:numel(flwArray)
             thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
                 +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
             thr.tether1.initGndNodeVel.setValue(gndStn.velVec.Value','m/s');
-            thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+            thr.tether1.initAirNodeVel.setValue(rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value(:),'m/s');
             thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+            thr.numNodes.setValue(9,'');
+            thr.tether1.numNodes.setValue(9,'');
+            thr.tether1.fairedLinks.setValue(2,'');
+            
             if simScenario(4) == 4
                 thr.tether1.fairedLength.setValue(fairing,'m');
             end
+            
             thr.tether1.diameter.setValue(thrDiam*1e-3,'m')
             %%  Winches Properties
             wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
