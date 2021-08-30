@@ -1,5 +1,5 @@
 function desTanRoll = calcDesTanRollAng(kitePos,kiteVel,...
-    targetPoint,turnAngle,netWingLift,kiteMass,maxTanRoll_deg)
+    targetPoint,closestPoint,turnAngle,netWingLift,kiteMass,maxTanRoll_deg)
 %CALCDESTANROLLANG(kitePos,kiteVel,targetPoint,turnAngle,netWingLift,maxTanRoll_deg) 
 % Calculate desired tangent roll angle
 % 
@@ -23,15 +23,20 @@ turnAng = turnAngle;
 sphereRad = norm(kitePos);
 % position vector from kite to target point
 rTarg_kite = (targetPoint./norm(targetPoint)) - (kitePos./sphereRad);
+rClose_kite = (closestPoint./norm(closestPoint)) - (kitePos./sphereRad);
 % scale it
 rTarg_kite = rTarg_kite*sphereRad;
 % rTarg_kite = 1;
 % velocity squared
 V2 = sum(kiteVel.^2);
 % formula to calculate desired tangent roll
-x = 1.5*(norm(rTarg_kite)/sphereRad)*(2*m*sin(-turnAng)*V2)/(max(eps,netWingLift));
+% x = 1.5*(norm(rTarg_kite)/sphereRad)*(2*m*sin(-turnAng)*V2)/(max(eps,netWingLift));
+kGain = max(0,5*norm(rClose_kite));
+% kGain = 1;
+x = kGain*(2*m*sin(-turnAng)*V2)/(max(eps,netWingLift));
 % x = 0.1*(2*m*sin(-turnAng)*V2)/(norm(rTarg_kite)*max(eps,netWingLift));
 desTanRoll = asin(min(max(-sind(maxTanRoll_deg),x),sind(maxTanRoll_deg)));
+% desTanRoll = x;
 
 
 end

@@ -9,15 +9,15 @@ simParams.setDuration(300,'s');
 
 %% simulation sweep parameters
 flowSpeed = 2.1;
-Z = 200;
-thrLength = 600;
+thrLength = 100;
+Z = 25;
 fltCtrl.pathElevation_deg	= asind(Z/thrLength);
 
 % Environment IC's and dependant properties
 env.water.setflowVec([flowSpeed 0 0],'m/s')
 
 % Set vehicle initial conditions
-init_speed = 2*norm(env.water.flowVec.Value);
+init_speed = 6*norm(env.water.flowVec.Value);
 [init_O_rKite,init_Euler,init_O_vKite,init_OwB,init_Az,init_El,init_OcB] = ...
     getInitConditions(fltCtrl.initPathParameter,fltCtrl.pathWidth_deg,...
     fltCtrl.pathHeight_deg,fltCtrl.pathElevation_deg,thrLength,init_speed);
