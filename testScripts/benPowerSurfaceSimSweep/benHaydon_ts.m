@@ -5,12 +5,12 @@ cd(fileparts(mfilename('fullpath')));
 
 % load parameters that are common for all simulations
 commonSimParameters;
-simParams.setDuration(100,'s');
+simParams.setDuration(300,'s');
 
 %% simulation sweep parameters
 flowSpeed = 2.1;
-Z = 60;
-thrLength = 200;
+Z = 200;
+thrLength = 600;
 fltCtrl.pathElevation_deg	= asind(Z/thrLength);
 
 % Environment IC's and dependant properties
