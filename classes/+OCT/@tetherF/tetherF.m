@@ -28,7 +28,8 @@ classdef tetherF < handle
     properties (Dependent)
         dragCoeff
         resistance
-        linkLengths
+        fairLinkLength
+        unfairLinkLength
     end
     methods
         function obj = tetherF(numNodes)
@@ -128,7 +129,8 @@ classdef tetherF < handle
             numNominalLinks = numLinks-obj.fairedLinks.Value;
             val = [obj.fairedDragCoeff.Value*ones(1,obj.fairedLinks.Value),obj.nomDragCoeff.Value*ones(1,numNominalLinks)];
             val = SIM.parameter('Value',fliplr(val),'Unit','');
-        end               
+        end
+        
 %         function val = get.dragCoeff(obj)  % Total drag coeff vector based on fair/nom drag farring length
 %             numLinks = obj.numNodes.Value-1;  linkLength = obj.maxThrLength.Value/numLinks;
 %             numFairingLinks = floor(obj.fairedLength.Value/linkLength);
@@ -140,12 +142,18 @@ classdef tetherF < handle
             maxTL = obj.maxThrLength.Value;
             refTL = 304.8;  refR = 7.1;
             val = SIM.parameter('Value',refR*maxTL/refTL,'Unit','Ohm','Description','Internal conductor resistance');
-        end        
-        function val = get.linkLengths(obj)
-            vecs = diff([obj.initGndNodePos.Value obj.initNodePos.Value obj.initAirNodePos.Value],1,2);
-            lengths  = sqrt(dot(vecs,vecs));
-            val = SIM.parameter('Value',lengths,'Description','Unstretched Lengths of Tether Links','Unit','m');
         end
+        
+        function val = get.fairLinkLength(obj)
+            length = ones(1,obj.fairedLinks.Value)*obj.fairedLength.Value/obj.fairedLinks.Value;
+            val = SIM.parameter('Value',length,'Description','Unstretched Lengths of Faired Tether Links','Unit','m');
+        end
+        
+        function val = get.unfairLinkLength(obj)
+            length = ones(1,(obj.numNodes.Value-1)-obj.fairedLinks.Value);
+            val = SIM.parameter('Value',length,'Description','Unstretched Lengths of Faired Tether Links','Unit','m');
+        end
+        
         function val = get.initNodePos(obj)
             % note rodney mitchell this forces the nodes to be evenly distributed between the gound and second to last node.
             % Is that what we want? This means that you cannot change the
@@ -198,10 +206,10 @@ classdef tetherF < handle
                     if rem(obj.fairedLinks.Value,1) ~= 0
                         error('Incorrect faired length or faired link lenght. Must be divisible')
                     end
-                    rAG = obj.initAirNodePos.Value-obj.initGndNodePos.Value
-                    vAG = obj.initAirNodeVel.Value-obj.initGndNodeVel.Value
+                    rAG = obj.initAirNodePos.Value-obj.initGndNodePos.Value;
+                    vAG = obj.initAirNodeVel.Value-obj.initGndNodeVel.Value;
                     magRAG = sqrt(dot(rAG,rAG));
-                    fairStop = vAG*(1-obj.fairedLength.Value/magRAG)
+                    fairStop = vAG*(1-obj.fairedLength.Value/magRAG);
                     velFair = ...
                         [linspace(fairStop(1),obj.initAirNodeVel.Value(1),obj.fairedLinks.Value+1);
                          linspace(fairStop(2),obj.initAirNodeVel.Value(2),obj.fairedLinks.Value+1);
@@ -210,7 +218,7 @@ classdef tetherF < handle
                         [linspace(obj.initGndNodeVel.Value(1),fairStop(1),unfairedLinks+1);
                          linspace(obj.initGndNodeVel.Value(2),fairStop(2),unfairedLinks+1);
                          linspace(obj.initGndNodeVel.Value(3),fairStop(3),unfairedLinks+1)];
-                    vel = [velUnfair(:,2:end) velFair(:,2:end-1)]
+                    vel = [velUnfair(:,2:end) velFair(:,2:end-1)];
                 end        
             else
                 vel = [];

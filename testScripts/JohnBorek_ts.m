@@ -1,5 +1,5 @@
 %% Test script for John to control the kite model
-clear; clc; %close all;
+clear; clc; close all;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - Vehicle Model:         1 = AR8b8, 2 = AR9b9, 3 = AR9b10
@@ -15,8 +15,8 @@ simScenario = [1 1 1 4 1 false true 1==0];
 %%  Set Test Parameters
 tFinal = 2500;      tSwitch = 10000;                        %   s - maximum sim duration 
 flwSpd = 0.5;                                              %   m/s - Flow speed
-altitude = 100;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
-thrLength = 200;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
+altitude = 200;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
+thrLength = 400;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
 thrDiam = 18;       fairing = 100;                          %   mm/m - tether diameter and fairing length
 h = 10*pi/180;      w = 40*pi/180;                          %   rad - Path width/height
 sC = 0;             subCtrl = 3;                            %   State mac on/off and selected flight controller 
@@ -110,6 +110,9 @@ switch simScenario(4)                                   %   Tether model
     case 4
         loadComponent('fairedNNodeTether');                       %   Manta Ray tether
         thr.tether1.diameter.setValue(thrDiam*10^-3,'m')
+        thr.numNodes.setValue(10,'');
+        thr.tether1.numNodes.setValue(10,'');
+        thr.tether1.fairedLinks.setValue(2,'');
 end
 switch simScenario(5)                                   %   Environment
     case 1
@@ -140,7 +143,7 @@ thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posV
 thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
     +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
-thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
+thr.tether1.initAirNodeVel.setValue(rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value(:),'m/s');
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 if simScenario(4) == 4
     thr.tether1.fairedLength.setValue(fairing,'m');
@@ -195,7 +198,7 @@ end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(tFinal,'s');  dynamicCalc = '';
-simWithMonitor('OCTModel')
+simWithMonitor('OCTModel','minRate',0)
 %%  Log Results
 tsc = signalcontainer(logsout);
 if simScenario(3) == 1
