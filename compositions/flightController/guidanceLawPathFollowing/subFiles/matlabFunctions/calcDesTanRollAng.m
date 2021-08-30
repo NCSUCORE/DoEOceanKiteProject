@@ -32,11 +32,11 @@ V2 = sum(kiteVel.^2);
 % formula to calculate desired tangent roll
 % x = 1.5*(norm(rTarg_kite)/sphereRad)*(2*m*sin(-turnAng)*V2)/(max(eps,netWingLift));
 kGain = max(0,5*norm(rClose_kite));
-% kGain = 1;
+kGain = 1;
 x = kGain*(2*m*sin(-turnAng)*V2)/(max(eps,netWingLift));
 % x = 0.1*(2*m*sin(-turnAng)*V2)/(norm(rTarg_kite)*max(eps,netWingLift));
-desTanRoll = asin(min(max(-sind(maxTanRoll_deg),x),sind(maxTanRoll_deg)));
-% desTanRoll = x;
+% desTanRoll = asin(min(max(-sind(maxTanRoll_deg),x),sind(maxTanRoll_deg)));
+desTanRoll = x;
 
 
 end

@@ -5,14 +5,13 @@ cd(fileparts(mfilename('fullpath')));
 
 % load parameters that are common for all simulations
 commonSimParameters;
-simParams.setDuration(300,'s');
+simParams.setDuration(500,'s');
 
 %% simulation sweep parameters
 flowSpeed = 2.1;
-thrLength = 100;
-Z = 25;
+thrLength = 600;
+Z = 400;
 fltCtrl.pathElevation_deg	= asind(Z/thrLength);
-
 % Environment IC's and dependant properties
 env.water.setflowVec([flowSpeed 0 0],'m/s')
 

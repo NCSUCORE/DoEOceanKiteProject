@@ -9,3 +9,4 @@ fltCtrl.aileron_kp = 4.0000e+00
 fltCtrl.aileron_kd = 1.6000e+01
 fltCtrl.aileron_tau = 1.0000e-02
 fltCtrl.maxLap = 2.0000e+01
+fltCtrl.pathRadius = 1.0000e+02
