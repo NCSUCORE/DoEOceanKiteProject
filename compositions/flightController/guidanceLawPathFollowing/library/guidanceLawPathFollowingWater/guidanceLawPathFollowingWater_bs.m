@@ -16,8 +16,8 @@ fltCtrl.normalizedLforward	= 0.02;
 fltCtrl.kiteMass			= 2.8570e+03;
 fltCtrl.maxTanRoll_deg		= 40;
 fltCtrl.initPathParameter	= 0.05;
-fltCtrl.aileron_kp			= 0.9*5;
-fltCtrl.aileron_kd			= 5*fltCtrl.aileron_kp;
+fltCtrl.aileron_kp			= 0.9*2;
+fltCtrl.aileron_kd			= 4*fltCtrl.aileron_kp;
 fltCtrl.aileron_tau			= 0.0001000;
 fltCtrl.maxLap              = 20;
 
