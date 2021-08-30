@@ -6,6 +6,7 @@ cd(fileparts(mfilename('fullpath')));
 %% load common paramters
 % load parameters that are common for all simulations
 commonSimParameters;
+simParams.setDuration(150,'s');
 
 %% sim sweep
 maxElev = 50;

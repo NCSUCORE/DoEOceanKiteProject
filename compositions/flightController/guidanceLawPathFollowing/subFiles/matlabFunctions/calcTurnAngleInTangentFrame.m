@@ -26,6 +26,7 @@ TcO = calcTcO(azimuth,elevation);
 a = TcO*kiteVel;
 b = TcO*rTarg_kite;
 turnAngle = atan2(a(1)*b(2) - a(2)*b(1),a(1)*b(1) + a(2)*b(2));
-
+maxTurn = 0.99*pi/2;
+turnAngle = min(max(-maxTurn,turnAngle),maxTurn);
 end
 

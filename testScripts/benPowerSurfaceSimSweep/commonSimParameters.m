@@ -1,5 +1,4 @@
 simParams = SIM.simParams;
-simParams.setDuration(500,'s');
 dynamicCalc = '';
 
 %% Load components
