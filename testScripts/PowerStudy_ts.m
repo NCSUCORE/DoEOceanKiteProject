@@ -26,6 +26,7 @@ h = 10*pi/180;  w = 40*pi/180;          %   rad - Path width/height
 scale = 1;                              %   Simulation scale factor
 AoAsp = 5;                             %   deg - angle of attack setpoint
 tFinal = 10000;                         %   s - maximum simulation time
+tSwitch = 100000;
 % Cp0 = interp1(vhcl.turb1.RPMref.Value,vhcl.turb1.CpLookup.Value,fltCtrl.RPMConst.Value);
 % Ct0 = interp1(vhcl.turb1.RPMref.Value,vhcl.turb1.CtLookup.Value,fltCtrl.RPMConst.Value);
 % D0 = vhcl.turb1.diameter.Value; A0 = pi/4*D0^2;
@@ -40,7 +41,7 @@ for i = 1:numel(flwArray)
             flwSpd = flwArray(i);           %   m/s - current flow speed
             thrLength = thrArray(j);        %   m = current tether length
             altitude = altArray(k);         %   m - current altitude
-            fprintf(sprintf('\n V = %.2f m/s, Thr = %d m, Alt = %d m.',flwSpd,thrLength,altitude))
+%             fprintf(sprintf('\n V = %.2f m/s, Thr = %d m, Alt = %d m.',flwSpd,thrLength,altitude))
             initTL = thrLength;             %   m - set initial tether length
             initAltitude = altitude;        %   m - set initial altitude
             %   Check elevation angle limts
