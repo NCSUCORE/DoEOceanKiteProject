@@ -398,8 +398,8 @@ classdef signalcontainer < dynamicprops
             C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3*.5;
             Pow.loyd = mean(PLoyd)*1e-3;
-            Pow.mech = mean(obj.netPower.Data(1,1,ran))*1e-3;
-            Pow.elec = Pow.mech;
+            Pow.mech = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.elec = mean(obj.elecPow.Data(1,1,ran))*1e-3;
             try
                 Rthr = thr.tether1.resistance.Value;
                 Ithr = Pow.elec*1e3/thr.tether1.transVoltage.Value;
@@ -407,7 +407,7 @@ classdef signalcontainer < dynamicprops
                 Rthr = 14;
                 Ithr = Pow.elec*1e3/1e3;
             end
-            Pow.loss = Rthr*Ithr^2*1e-3;
+            Pow.loss = Rthr*Ithr^2*1e-3+mean(obj.ctrlPowLoss.Data(1,1,ran));
             Pow.net = Pow.elec-Pow.loss;
             Pow.max = max(obj.netPower.Data(1,1,ran))*1e-3;
             Pow.min = min(obj.netPower.Data(1,1,ran))*1e-3;
