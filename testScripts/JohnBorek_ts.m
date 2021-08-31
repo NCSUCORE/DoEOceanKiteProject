@@ -13,10 +13,10 @@ Simulink.sdi.clear
 %%             1 2 3 4 5 6     7     8
 simScenario = [1 1 1 4 1 false true 1==0];
 %%  Set Test Parameters
-tFinal = 1000;      tSwitch = 10000;                        %   s - maximum sim duration 
+tFinal = 1500;      tSwitch = 10000;                        %   s - maximum sim duration 
 flwSpd = 0.5;                                              %   m/s - Flow speed
-altitude = 200;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
-thrLength = 400;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
+altitude = 100;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
+thrLength = 200;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
 thrDiam = 18;       fairing = 100;                          %   mm/m - tether diameter and fairing length
 h = 10*pi/180;      w = 40*pi/180;                          %   rad - Path width/height
 sC = 0;             subCtrl = 3;                            %   State mac on/off and selected flight controller 
@@ -110,8 +110,8 @@ switch simScenario(4)                                   %   Tether model
     case 4
         loadComponent('fairedNNodeTether');                       %   Manta Ray tether
         thr.tether1.diameter.setValue(thrDiam*10^-3,'m')
-        thr.numNodes.setValue(10,'');
-        thr.tether1.numNodes.setValue(10,'');
+        thr.numNodes.setValue(9,'');
+        thr.tether1.numNodes.setValue(9,'');
         thr.tether1.fairedLinks.setValue(2,'');
 end
 switch simScenario(5)                                   %   Environment
@@ -198,7 +198,7 @@ end
 vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
 %%  Set up critical system parameters and run simulation
 simParams = SIM.simParams;  simParams.setDuration(tFinal,'s');  dynamicCalc = '';
-simout = sim('OCTModel')
+simWithMonitor('OCTModel')
 %%  Log Results
 tsc = signalcontainer(logsout);
 if simScenario(3) == 1
