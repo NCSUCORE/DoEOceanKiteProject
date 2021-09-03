@@ -22,7 +22,7 @@ if numNodes < 2  || floor(numNodes)~=numNodes
 end
 
 if numNodes > 2
-    set_param(gcb,'OverrideUsingVariant','NNodeTether')
+    set_param(gcb,'OverrideUsingVariant','NNodeTetherFaired')
 else
     set_param(gcb,'OverrideUsingVariant','twoNodeTether')
 end
