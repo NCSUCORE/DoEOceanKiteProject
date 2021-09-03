@@ -91,7 +91,7 @@ vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurf
 vhcl.setNumTurbines(2,'');
 vhcl.build('TurbClass','turb');
 % port rotor
-vhcl.turb1.setMass(6,'kg')
+% vhcl.turb1.setMass(6,'kg')
 vhcl.turb1.setDiameter(0,'m')
 vhcl.turb1.setAxisUnitVec([1;0;0],'')
 vhcl.turb1.setAttachPtVec(vhcl.portWing.outlinePtsBdy.Value(:,2),'m')
@@ -99,7 +99,7 @@ vhcl.turb1.setPowerCoeff(.5,'')
 vhcl.turb1.setAxalInductionFactor(1.5,'')
 vhcl.turb1.setTipSpeedRatio(6,'')
 % starboard rotor
-vhcl.turb2.setMass(6,'kg')
+% vhcl.turb2.setMass(6,'kg')
 vhcl.turb2.setDiameter(0,'m')
 vhcl.turb2.setAxisUnitVec([-1;0;0],'')
 vhcl.turb2.setAttachPtVec(vhcl.stbdWing.outlinePtsBdy.Value(:,2),'m')
