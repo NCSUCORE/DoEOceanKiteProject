@@ -6,7 +6,7 @@ Simulink.sdi.clear
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
-flwSpd = -1
+flwSpd = -.7
 %% Load components
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
@@ -45,10 +45,12 @@ loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
 env.water.setflowVec([flwSpd 0 0],'m/s')
-
+w = 40*pi/180; h = 10*pi/180;
+[a,b] = boothParamConversion(w,h)  
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,-.3,180*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+% hiLvlCtrl.basisParams.setValue([1,1.4,-30*pi/180,180*pi/180,150],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([a,b,-30*pi/180,180*pi/180,150],'[rad rad rad rad m]') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -134,7 +136,7 @@ for j = 1:numLap;
     toc
     
 end
-x
+
 tsnaps = reshape(cPV.Values.Time(x),1,numel(x));
 
 %%
@@ -161,7 +163,7 @@ toc
     for i = 1:4
         for ii = 1
             for iii = 1:length(snaps)
-                [mag{i,ii,iii},phase,wout] = bode(linsys(i,3*(ii-1)+[1:3],iii,:),{0.001*2*pi 2*pi});
+                [mag{i,ii,iii},phase,wout] = bode(linsys(i,3*(ii-1)+[1:3],iii,:),linspace(0.001*2*pi,2*pi,500));
                 magdb{i,ii,iii} = 20*log10(mag{i,ii,iii}.*flwSpd);
                 wHz{i,ii,iii} = wout/(2*pi);
             end
@@ -169,8 +171,8 @@ toc
     end
     
     titleCellIn = {'Ground X Component','Ground Y Component','Ground Z Component'};
-    titleCellOut = {' Side Slip Error [rad]',' Central Angle Error [rad]',...
-        ' Tangent Roll Error [rad]',' Velocity Angle Error [rad]'};
+    titleCellOut = {' Central Angle Error [rad]',' Velocity Angle Error [rad]',...
+        ' Tangent Roll Error [rad]',' Side Slip Error [rad]'};
     subTitleCellIn = {'Frequency Response: Turbulence Intensity [$\%$]'};;
     yLabelIn = 'Magnitude [dB]';
     xLabelIn = 'Frequency [Hz]';
@@ -210,7 +212,7 @@ numEnt = numel(x)
 a=hsv(numEnt/numLap);
 colororder(ax,a);
 colormap(ax,jet)
-for i = 1:numEnt/2
+for i = 1:numEnt
     if rem(i,length(snaps)) == 0
         serName = sprintf('s = %.3f',snaps(end));
     else
@@ -248,7 +250,148 @@ scatter(snaps1,pPlot,[],pPlot,'filled')
 xlabel('Path Position')
 ylabel('Real Component of Slowest Pole [$s^{-1}$]')
 end
+%%
+distAmp = 0;
+distFreq = 0;
+pertVec = [1 0 0];
+set_param('OCTModel','SimulationMode','accelerator');
+simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+simWithMonitor('OCTModel')
+tsc = signalcontainer(logsout);
+% distAmp = .25;
+% distFreq = .1866;
+% pertVec = [1 0 0];
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+% simWithMonitor('OCTModel')
+% tsc1 = signalcontainer(logsout);  
+% 
+% distAmp = .25;
+% distFreq = .1866;
+% pertVec = [0 1 0];
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
+% simWithMonitor('OCTModel')
+% tsc2 = signalcontainer(logsout);  
 
+distAmp = .1;
+distFreq = .031;
+pertVec = [0 1 0];
+simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+simWithMonitor('OCTModel')
+tsc2 = signalcontainer(logsout);    
+%%
+runLin = 1
+lap = max(tsc.lapNumS.Data)-2;
+    [Idx1,Idx2] = getLapIdxs(tsc,lap);
+    ran = Idx1:Idx2-1;
+    for i = 1:1000-2
+        ind(i)=find(tsc.closestPathVariable.Data(ran) > i/1000,1);
+    end
+    tanRollErrBase = squeeze(tsc.tanRollError.Data(Idx1+ind));
+    cenAngleErrBase = squeeze(tsc.centralAngle.Data(Idx1+ind));
+    betaErrBase = squeeze(tsc.betaErr.Data(Idx1+ind));
+    velAngErrBase = squeeze(mod(tsc.velAngleError.Data(Idx1+ind)-pi,2*pi)-pi)
+    pathVar = tsc.closestPathVariable.Data(Idx1+ind);
+    figure
+    plotsq(pathVar,tanRollErrBase)
+ 
+
+
+    lap = max(tsc2.lapNumS.Data)-2;
+    [Idx1,Idx2] = getLapIdxs(tsc2,lap);
+    ran = Idx1:Idx2-1;
+    for i = 1:1000-2
+        ind(i)=find(tsc2.closestPathVariable.Data(ran) > i/1000,1);
+    end
+    tanRollErr = squeeze(tsc2.tanRollError.Data(Idx1+ind));
+    cenAngleErr = squeeze(tsc2.centralAngle.Data(Idx1+ind));
+    betaErr = squeeze(tsc2.betaErr.Data(Idx1+ind));
+    velAngErr = squeeze(mod(tsc2.velAngleError.Data(Idx1+ind)-pi,2*pi)-pi);
+    
+clear x
+for ii = 1:4
+    for i = 1:length(snaps)
+        x(ii,i)=find(wHz{ii,1,i} > distFreq,1);
+        wHzPlot(ii,i) = wHz{ii,1,i}(x(ii,i));
+        magPlot(ii,i,:) = mag{ii,1,i}(1,:,x(ii,i));
+    end
+end
+x
+
+figure; hold on;
+ax = gca;
+plotsq(pathVar,betaErr-betaErrBase)
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(4,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(4,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Side Slip [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on;
+plotsq(pathVar,cenAngleErr-cenAngleErrBase)
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(1,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(1,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Central Angle Error [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on;
+plotsq(pathVar,tanRollErr-tanRollErrBase,'k--')
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(3,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(3,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Tangent Roll Error [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on
+
+plotsq(pathVar,velAngErr-velAngErrBase,'k--')
+if runLin == 1
+    ax = gca; colormap(ax,jet);
+    scatter(snaps,magPlot(2,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    scatter(snaps,-magPlot(2,:,2)*distAmp*flwSpd,[],pPlot,'filled')
+    h = colorbar;
+    ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
+end
+xlabel('Path Position')
+ylabel('Residual Velocity Angle Error [rad]')
+legend('Residual Error','Predicted Error')
+
+figure; hold on;
+subplot (2,2,1); hold on;
+plotsq(pathVar,betaErr)
+plotsq(pathVar,betaErrBase,'k')
+ylabel('Error [rad]'); title('Side Slip Error')
+
+subplot (2,2,2); hold on;
+plotsq(pathVar,cenAngleErr)
+plotsq(pathVar,cenAngleErrBase,'k')
+ylabel('Error [rad]'); title('Central Angle Error')
+
+subplot (2,2,3); hold on;
+plotsq(pathVar,tanRollErr)
+plotsq(pathVar,tanRollErrBase,'k')
+ylabel('Error [rad]'); title('Tangent Roll Angle Error'); xlabel('Path Position')
+
+subplot (2,2,4); hold on;
+plotsq(pathVar,velAngErr)
+plotsq(pathVar,velAngErrBase,'k')
+ylabel('Error [rad]'); title('Velocity Angle Error'); xlabel('Path Position')
+legend('Base Case','Perturbed Flow')
 %%
 % tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)
 
