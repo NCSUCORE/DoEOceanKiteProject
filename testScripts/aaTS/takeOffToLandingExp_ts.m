@@ -1,5 +1,5 @@
 %% Test script for James to control the kite model
-clear;clc;close all;
+clear;clc;close all ;
 Simulink.sdi.clear
 %%  Select sim scenario
 %   0 = fig8;   1.a = fig8-2rot;   2.a = fig8-winch;   3.a = Steady   4.a = LaR
