@@ -1,7 +1,7 @@
 FLIGHTCONTROLLER = 'pathFollowingControllerExp';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 
-fltCtrl = CTR.pthFlwCtrlM;
+fltCtrl = CTR.periodicExp;
 
 fltCtrl.maxBank.upperLimit.setValue(.8,'');
 fltCtrl.maxBank.lowerLimit.setValue(-.8,'');
@@ -31,16 +31,6 @@ fltCtrl.yawMoment.ki.setValue(0.0,'(N*m)/(rad*s)')
 fltCtrl.yawMoment.kd.setValue(0.0,'(N*m)/(rad/s)')
 fltCtrl.yawMoment.tau.setValue(.01,'s')
 
-fltCtrl.elevCtrl.kp.setValue(0,'(deg)/(rad)');
-fltCtrl.elevCtrl.ki.setValue(0,'(deg)/(rad*s)');
-fltCtrl.elevCtrl.kd.setValue(0,'(deg)/(rad/s)');
-fltCtrl.elevCtrl.tau.setValue(0.001,'s');
-
-fltCtrl.yawCtrl.kp.setValue(0,'(deg)/(rad)');
-fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(rad*s)');
-fltCtrl.yawCtrl.kd.setValue(0,'(deg)/(rad/s)');
-fltCtrl.yawCtrl.tau.setValue(0.001,'s');
-
 fltCtrl.controlSigMax.upperLimit.setValue(30,'')
 fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
 fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
@@ -49,6 +39,32 @@ fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'')
 fltCtrl.rudderGain.setValue(0,'')
 fltCtrl.RPMConst.setValue(3.7,'');
 fltCtrl.RPMmax.setValue(8,'');
+
+% Control surface parameters
+fltCtrl.rollCtrl.kp.setValue(1,'(deg)/(deg)');
+fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
+fltCtrl.rollCtrl.kd.setValue(0.5,'(deg)/(deg/s)');
+fltCtrl.rollCtrl.tau.setValue(0.02,'s');
+
+fltCtrl.yawCtrl.kp.setValue(0,'(deg)/(deg)');
+fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
+fltCtrl.yawCtrl.kd.setValue(0,'(deg)/(deg/s)');
+fltCtrl.yawCtrl.tau.setValue(0.001,'s');
+
+fltCtrl.controlSigMax.upperLimit.setValue(30,'')
+fltCtrl.controlSigMax.lowerLimit.setValue(-30,'')
+fltCtrl.elevCtrlMax.upperLimit.setValue(8,'')
+fltCtrl.elevCtrlMax.lowerLimit.setValue(-30,'')
+
+fltCtrl.rollAmp.setValue(30,'deg');
+fltCtrl.yawAmp.setValue(180,'deg');
+fltCtrl.period.setValue(10,'s');
+fltCtrl.rollPhase.setValue(pi,'rad');
+fltCtrl.yawPhase.setValue(2/10*pi,'rad');
+
+fltCtrl.ccElevator.setValue(0,'deg');
+fltCtrl.trimElevator.setValue(0,'deg');
+fltCtrl.startCtrl.setValue(3,'s');
 
 fltCtrl.startControl.setValue(0,'s');
 %% Save
