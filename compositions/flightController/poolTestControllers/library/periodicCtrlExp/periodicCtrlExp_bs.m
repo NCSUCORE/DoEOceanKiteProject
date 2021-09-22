@@ -25,8 +25,8 @@ fltCtrl.period.setValue(10,'s');
 fltCtrl.rollPhase.setValue(pi,'rad');
 fltCtrl.yawPhase.setValue(2/10*pi,'rad');
 
-fltCtrl.ccElevator.setValue(2,'deg');
-fltCtrl.trimElevator.setValue(-3,'deg');
+fltCtrl.ccElevator.setValue(0,'deg');
+fltCtrl.trimElevator.setValue(0,'deg');
 fltCtrl.startCtrl.setValue(3,'s');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
