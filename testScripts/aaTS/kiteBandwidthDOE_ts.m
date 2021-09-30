@@ -6,7 +6,11 @@ Simulink.sdi.clear
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
+<<<<<<< Updated upstream
 flwSpd = -1
+=======
+flwSpd = .7
+>>>>>>> Stashed changes
 %% Load components
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
@@ -46,12 +50,24 @@ loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
 env.water.setflowVec([flwSpd 0 0],'m/s')
+<<<<<<< Updated upstream
 % w = 100*pi/180; h = 30*pi/180;
 % [a,b] = boothParamConversion(w,h)
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
 hiLvlCtrl.basisParams.setValue([1,1.4,-30*pi/180,180*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([a,b,-30*pi/180,180*pi/180,150],'[rad rad rad rad m]') % Lemniscate of Booth
+=======
+w = 40*pi/180; h = 20*pi/180;
+PATHGEOMETRY = 'lemBoothNew'
+w = 40*pi/180*150;
+h = h*150;
+% [w,h] = boothParamConversion(w,h)  
+%% Set basis parameters for high level controller
+% hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
+% hiLvlCtrl.basisParams.setValue([1,1.4,-30*pi/180,180*pi/180,150],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([w,h,30*pi/180,0,150],'[rad rad rad rad m]') % Lemniscate of Booth
+>>>>>>> Stashed changes
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -59,7 +75,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    0,... % Initial path position
+    0.05,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
@@ -90,8 +106,14 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 fltCtrl.firstSpoolLap.setValue(100,'')
 fltCtrl.elevatorReelInDef.setValue(0,'deg')
+<<<<<<< Updated upstream
 %
 % fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');
+=======
+fltCtrl.searchSize.setValue(0.25,'')
+% 
+% fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');    
+>>>>>>> Stashed changes
 % fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
 % fltCtrl.rollMoment.kd.setValue(20000,'(N*m)/(rad/s)');
 % fltCtrl.rollMoment.tau.setValue(0.001,'s');
@@ -456,7 +478,13 @@ ylabel('Tether Stretch [m]')
 %     %[y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
 %     %sound(y*.2, Fs, 16)
 %     fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
+<<<<<<< Updated upstream
 %
 vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
     'GifTimeStep',.00001,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
     'ZoomIn',1==0,'SaveGif',1==1,'GifFile','really.gif')
+=======
+% 
+    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
+        'GifTimeStep',.00001,'PlotTracer',true,'FontSize',12,'Pause',1==0)
+>>>>>>> Stashed changes

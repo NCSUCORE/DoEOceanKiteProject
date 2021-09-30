@@ -13,18 +13,20 @@ Simulink.sdi.clear
 %%             1 2 3 4 5 6     7     8
 simScenario = [1 1 1 4 1 false false 1==1];
 %%  Set Test Parameters
-flwArray = 0.1:0.05:0.5;                %   m/s - candidate flow speeds
-altArray = 50:50:400;                   %   m - candidate operating altitudes
+flwArray = 0.15:0.05:0.5;                %   m/s - candidate flow speeds
+altArray = 350:50:400;                   %   m - candidate operating altitudes
 thrArray = 200:50:600;                 %   m - candidate tether lengths
 thrDiam = 18.0;                         %   mm - candidate tether diameters
 Tmax = getMaxTension(thrDiam);          %   kN - candidate tether tension limits
-fairing = 100;                          %   m - length of fairing distribution
+fairArray = [50 100];
+for ii = 1:2
+fairing = fairArray(ii);                          %   m - length of fairing distribution
 
 h = 10*pi/180;  w = 40*pi/180;          %   rad - Path width/height
 [a,b] = boothParamConversion(w,h);      %   Path basis parameters
 
 scale = 1;                              %   Simulation scale factor
-AoAsp = 5;                             %   deg - angle of attack setpoint
+AoAsp = 14;                             %   deg - angle of attack setpoint
 tFinal = 10000;                         %   s - maximum simulation time
 tSwitch = 100000;
 % Cp0 = interp1(vhcl.turb1.RPMref.Value,vhcl.turb1.CpLookup.Value,fltCtrl.RPMConst.Value);
@@ -36,7 +38,10 @@ tSwitch = 100000;
 for i = 1:numel(flwArray)
     for j = 1:numel(thrArray)
         for k = 1:numel(altArray)
-            
+            iter = k + (j-1)*numel(altArray) + (i-1)*numel(altArray)*numel(thrArray) + (ii-1)*numel(altArray)*numel(thrArray)*numel(flwArray);
+            perc = iter/(numel(altArray)*numel(thrArray)*numel(flwArray)*numel(fairArray))*100;
+            note = sprintf('%.1f Complete\n',perc);
+            fprintf(note);
             Simulink.sdi.clear              %   Clear Simulink cashe
             flwSpd = flwArray(i);           %   m/s - current flow speed
             thrLength = thrArray(j);        %   m = current tether length
@@ -219,7 +224,7 @@ for i = 1:numel(flwArray)
             simParams = SIM.simParams;  simParams.setDuration(tFinal,'s');  dynamicCalc = '';
             vhcl.setBuoyFactor(getBuoyancyFactor(vhcl,env,thr),'');
             if ~isnan(el)
-                sim('OCTModel')
+                simWithMonitor('OCTModel')
                 %%  Log Results
                 tsc = signalcontainer(logsout);
                 if tsc.lapNumS.Data(end) >= 2
@@ -229,7 +234,7 @@ for i = 1:numel(flwArray)
                     [Lift,Drag,Fuse,Thr] = tsc.getLiftDrag;
                     Turb = squeeze(sqrt(sum(tsc.FTurbBdy.Data.^2,1)));
                     Pow = tsc.rotPowerSummary(vhcl,env,thr);
-                    R.Pavg(i,j,k) = Pow.avg;
+                    R.Pavg(i,j,k) = Pow.elec;
                     R.Pnet(i,j,k) = Pow.net;
                     V = squeeze(sqrt(sum(tsc.velCMvec.Data.^2,1)));
                     R.Vavg(i,j,k) = mean(V(ran));
@@ -243,7 +248,7 @@ for i = 1:numel(flwArray)
                     R.elevation(i,j,k) = el*180/pi;
                     R.thrL(i,j,k) = thrLength; R.alt(i,j,k) = altitude; R.flw(i,j,k) = flwSpd;
                     filename = sprintf(strcat('CDR_V-%.3f_alt-%.d_thrL-%d_thrD-%.1f_Fair-%d.mat'),flwSpd,altitude,thrLength,thrDiam,fairing);
-                    fpath = fullfile(fileparts(which('OCTProject.prj')),'output\PowSurf\');
+                    fpath = fullfile(fileparts(which('OCTProject.prj')),sprintf('output\\PowSurf%d\\',fairing));
                     save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
                 else
                     R.Pavg(i,j,k) = NaN;  R.AoA(i,j,k) = NaN;   R.ten(i,j,k) = NaN;
@@ -264,7 +269,7 @@ for i = 1:numel(flwArray)
         end
     end
 end
-
+end
 filename1 = sprintf('Pow_Study_CDR_ThrD-%.1f_Fair-%d.mat',thrDiam,fairing);
 fpath1 = fullfile(fileparts(which('OCTProject.prj')),'output\');
 save([fpath1,filename1],'R','thrLength','fairing','flwSpd','thrDiam','Tmax','altitude')

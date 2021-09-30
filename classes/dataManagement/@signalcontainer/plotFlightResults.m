@@ -31,10 +31,18 @@ end
 if turb
     N = vhcl.numTurbines.Value;
     if N == 1
-        power = squeeze(obj.netPower.Data(1,1,:));
+        if isfield(obj,'netPower')
+            power = squeeze(obj.netPower.Data(1,1,:));
+        else 
+            power = squeeze(obj.turbPow.Data(1,1,:));
+        end
         energy = cumtrapz(time,power)/1000/3600;
     else
-        power = squeeze(obj.netPower.Data(1,1,:));
+        if isfield(obj,'netPower')
+            power = squeeze(obj.netPower.Data(1,1,:));
+        else 
+            power = squeeze(obj.turbPow.Data(1,1,:));
+        end
         energy = cumtrapz(time,power)/1000/3600;
         speed = (squeeze(obj.turbVelP.Data(1,1,:))+squeeze(obj.turbVelS.Data(1,1,:)))/2;
     end
@@ -106,20 +114,20 @@ end
 %%  Plot Tether Tension
 ax2 = subplot(R,C,2); hold on; grid on
 if p.Results.maxTension
-    Tmax = (obj.maxTension.Data/.95)*ones(numel(time),1);
+    Tmax = (obj.maxTension.Data/.95)*ones(numel(time),1)/4.4488*1000;
 else
     Tmax = (0*ones(numel(time),1));
 end
 if lap
     if con
-        plot(data(ran),Tmax(ran),'r--');    plot(data(ran),airNode(ran),'b-');  
-        plot(data(ran),gndNode(ran),'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider')
+        plot(data(ran),Tmax(ran),'r--');    plot(data(ran),airNode(ran)*1000/4.4488,'b-');  
+        plot(data(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider')
     else
-        plot(time(ran),Tmax(ran),'r--');    plot(time(ran),airNode(ran),'b-');  
-        plot(time(ran),gndNode(ran),'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
+        plot(time(ran),Tmax(ran)*1000/4.4488,'r--');    plot(time(ran),airNode(ran)*1000/4.4488,'b-');  
+        plot(time(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
     end
 else
-    plot(time,Tmax,'r--');  plot(time,airNode,'b-');  plot(time,gndNode,'g-');  
+    plot(time,Tmax*1000/4.4488,'r--');  plot(time,airNode*1000/4.4488,'b-');  plot(time,gndNode*1000/4.4488,'g-');  
     ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
 end
 %%  Plot Speed
