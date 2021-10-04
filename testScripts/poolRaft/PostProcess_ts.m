@@ -4,7 +4,7 @@
 clc
 % close all
 Simulink.sdi.clear
-clear tsc1
+clear tsc
 distFreq = 0;distAmp = 0;pertVec = [0 1 0];
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
@@ -42,7 +42,7 @@ for q = 2
                 end
                 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller                           %   Ground station
                 loadComponent('raftGroundStation');
-%                 GROUNDSTATION = 'boatGroundStation'
+                GROUNDSTATION = 'boatGroundStation'
                 loadComponent('oneDOFWnch');                                %   Winches
                 loadComponent('poolTether');                               %   Manta Ray tether
                 loadComponent('idealSensors');                             %   Sensors
@@ -59,8 +59,8 @@ for q = 2
                 %%  Set basis parameters for high level controller
                
                 loadComponent('constBoothLem');        %   High level controller
-                % PATHGEOMETRY = 'lemOfBoothInv'
-                hiLvlCtrl.basisParams.setValue([a,b,-el,180*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+                PATHGEOMETRY = 'lemOfBoothInv'
+                hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
 
                 %             las.tetherLoadDisable;
                 %             las.dragDisable;
@@ -75,7 +75,7 @@ for q = 2
                 tow_length = 16;
                 tow_speed = towArray(j);
                 end_time = tow_length/tow_speed;
-                x_init = 4;
+                x_init = -4;
                 y_init = 0;
                 y_dot_init = 0;
                 psi_init = 0;
@@ -85,7 +85,7 @@ for q = 2
                 %%  Vehicle Properties
                 PLANT = 'plant2turb';
                 VEHICLE = 'vhclPool';
-%                 SENSORS = 'lasPosEst';
+                SENSORS = 'lasPosEst';
                 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
@@ -98,15 +98,23 @@ for q = 2
                     x = pos(1);
                     y = pos(2);
                     z = pos(3);
-                    az1 = atan2(y,x)
-                    el1 = atan2(z,sqrt(x.^2 + y.^2))
+                    az1 = atan2(y,x);
+                    el1 = atan2(z,sqrt(x.^2 + y.^2));
                     las.setThrInitAng([el1 az1],'rad');
                     las.setInitAngVel([-0 0],'rad/s');
                 else
                     vhcl.setICsOnPath(0.0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,0);
-                    vhcl.setInitEulAng([180 0 180]*pi/180,'rad');
+                    vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
                     %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
                     vhcl.setInitVelVecBdy([0 0 0],'m/s');
+                    pos = vhcl.initPosVecGnd.Value;
+                    x = pos(1);
+                    y = pos(2);
+                    z = pos(3);
+                    az1 = atan2(y,x);
+                    el1 = atan2(z,sqrt(x.^2 + y.^2));
+                    las.setThrInitAng([el1 az1],'rad');
+                    las.setInitAngVel([-0 0],'rad/s');
                 end
                
                 %%  Tethers Properties

@@ -13,6 +13,7 @@ classdef lineAngleSensor < dynamicprops
         L_CB
         L_CM
         CD
+        lasOrient
         dragEnable
         tetherEnable
         initAngVel
@@ -45,6 +46,7 @@ classdef lineAngleSensor < dynamicprops
             obj.CD              = SIM.parameter('Unit','','Description','Coefficient of Drag');
             obj.dragEnable      = SIM.parameter('Value',1,'Description','Enable Line Angle Sensor Drag');
             obj.tetherEnable    = SIM.parameter('Value',1,'Description','Enable Tether Loading');
+            obj.lasOrient       = SIM.parameter('Unit','','Description','Rotation matrix from inertial frame to LAS frame');
 %             obj.initAng         = SIM.parameter('Unit','rad','Description','Initial Angles');
             obj.initAngVel      = SIM.parameter('Value',[0 0],'Unit','rad/s','Description','Initial Angular Velocities');
             obj.r_RP            = SIM.parameter('Unit','m','Description','Position Vector from pivot roller to center of rotation');
@@ -131,9 +133,9 @@ classdef lineAngleSensor < dynamicprops
         %Set Dependent Properties
         function val = get.initAng(obj)
             val = SIM.parameter('Value',...
-            [-interp1(obj.thrAngLookup.Value(1,:),...
+            [interp1(obj.thrAngLookup.Value(1,:),...
                 obj.thrAngLookup.Value(2,:),...
-                -obj.thrInitAng.Value(1))...
+                obj.thrInitAng.Value(1))...
                 obj.thrInitAng.Value(2)],...                
                 'Unit','rad','Description','Initial LAS Angle');
         end

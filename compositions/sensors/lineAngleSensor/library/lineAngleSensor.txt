@@ -38,6 +38,10 @@ las.CD.Value = 1.0200e+00
 las.CD.Unit is unitless or has no unit specified
 las.CD.NoScale = false
 las.CD.Description = 'Coefficient of Drag'
+las.lasOrient.Value = [-1 -1.22464679914735e-16 0;1.22464679914735e-16 -1 0;0 0 1]
+las.lasOrient.Unit is unitless or has no unit specified
+las.lasOrient.NoScale = false
+las.lasOrient.Description = 'Rotation matrix from inertial frame to LAS frame'
 las.dragEnable.Value = 1.0000e+00
 las.dragEnable.Unit is unitless or has no unit specified
 las.dragEnable.NoScale = false
