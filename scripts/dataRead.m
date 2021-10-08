@@ -1,7 +1,13 @@
 clc 
+<<<<<<< Updated upstream
 clear all
 close all
 date = '09 03 21'
+=======
+% clear all
+% close all
+date = '07 14 21'
+>>>>>>> Stashed changes
 direc = strcat('G:\Shared drives\Kite Experimentation\Pool testing\Friday Pool Test\',date,'\Data')
 listing =  dir(direc) 
 testCond = strcat(date,'\0-77\mvd')
@@ -50,6 +56,7 @@ while runCount <= runLim
     ind = [];
     runStart = [];
 end
+<<<<<<< Updated upstream
 figure;
 plot(runData{1, 1}.rollCmd_PID);hold on;
 plot(runData{1, 1}.heirAliCmd/-1)
@@ -66,6 +73,11 @@ figure;
 hold on
 plot(runData{1,1}.yawCmd_PID)
 plotsq(runData{1,1}.desiredMoment.Time,runData{1,1}.desiredMoment.Data(2,1,:)*20)
+=======
+figure;plot(runData{1, 1}.yawSP)
+hold on
+plot(runData{1, 1}.rollSP)
+>>>>>>> Stashed changes
 % runs = {'0.49 m/s','0.65 m/s','0.77 m/s'}
 % simCtrlStart = find(tscSim.rollSP.Data < 180 , 1);
 % T = tscSim.rollSP.Time(simCtrlStart);
@@ -87,7 +99,11 @@ plotsq(runData{1,1}.desiredMoment.Time,runData{1,1}.desiredMoment.Data(2,1,:)*20
 % % fminsearch( objectiveFunc, p0 );
 %     figure(5)
 %     plot(vel,ten,'x')
+<<<<<<< Updated upstream
 %%
+=======
+% %%
+>>>>>>> Stashed changes
 % if plotData == 1
 %     runs={'Roll','Roll and Yaw','Allocated Roll and Yaw'};
 % close all

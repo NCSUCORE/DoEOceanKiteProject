@@ -1,4 +1,4 @@
-function [posGround,varargout] = lemOfBoothInv(pathVariable,geomParams,cntrPtPosVec)
+function [posGround,varargout] = lemOfBooth(pathVariable,geomParams,cntrPtPosVec)
 %pathVariable is parameterized along the path from 0 to 1
 %geomParams is a vector in order of the following variables:
 %   aBooth is the general size
@@ -33,10 +33,10 @@ pathVariable = pathVariable(:)'; %Make the path variable a row vector
 
 % Create anonymous function handle to calculate path shape
 long = @(x) meanLon+(a.*sin(x)./(1+(a./b).^2.*cos(x).^2));
-lat  = @(x) meanLat+(-(a./b).^2.*sin(x).*cos(x)./(1 + (a./b).^2.*cos(x).^2));
-path = @(x)radius * [cos(long(x)).*cos(lat(x));...
-                     sin(long(x)).*cos(lat(x));...
-                     sin(lat(x))]                   + cntrPtPosVec(:);
+lat  = @(x) meanLat+((a./b).^2.*sin(x).*cos(x)./(1 + (a./b).^2.*cos(x).^2));
+path = @(x)radius * [cos(-long(x)).*cos(-lat(x));...
+                     sin(-long(x)).*cos(-lat(x));...
+                     sin(-lat(x))]                   + cntrPtPosVec(:);
 
 % Evaluate function handles at the specified path variables
 posGround = path(pathVariable);
