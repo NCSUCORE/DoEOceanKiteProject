@@ -43,8 +43,8 @@ for q = 2
                 end
                 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller                           %   Ground station
                 loadComponent('raftGroundStation');
-                loadComponent('winchManta');                                %   Winches
-                loadComponent('MantaTether');                               %   Manta Ray tether
+                loadComponent('oneDOFWnch');                                %   Winches
+                loadComponent('poolTether');                               %   Manta Ray tether
                 loadComponent('lasPosEst');                             %   Sensors
                 loadComponent('lineAngleSensor');
                 loadComponent('idealSensorProcessing');                      %   Sensor processing
@@ -119,7 +119,7 @@ for q = 2
                 thr.tether1.setDragCoeff(1.8,'');
                 %%  Winches Properties
                 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
-                wnch.winch1.LaRspeed.setValue(1,'m/s');
+%                 wnch.winch1.LaRspeed.setValue(1,'m/s');
                 %%  Controller User Def. Parameters and dependant properties
                 fltCtrl.setFcnName(PATHGEOMETRY,'');
                 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,thrAttachInit);
@@ -176,7 +176,7 @@ for q = 2
                             fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(deg*s)');
                             fltCtrl.rollCtrl.kd.setValue(.1/.9,'(deg)/(deg/s)');
                             fltCtrl.rollCtrl.tau.setValue(0.02,'s');
-                                                    
+                            
                             fltCtrl.yawCtrl.kp.setValue(.1/.7,'(deg)/(deg)');
                             fltCtrl.yawCtrl.ki.setValue(0,'(deg)/(deg*s)');
                             fltCtrl.yawCtrl.kd.setValue(.07/.7 ,'(deg)/(deg/s)');
@@ -232,50 +232,50 @@ vhcl.animateSim(tscSim{2},0.2)
 vhcl.animateSim(tsc,0.2)
 
 tsc = tscSim{1}
-%%
-% bMat = tsc.scaledB
-% figure;
-% hold on;
-% legEnt = {'$\delta M/(\delta_{a}v_{app}^2)$',...
-%     '$\delta M/(\delta_{r}v_{app}^2)$';...
-%     '$\delta L/(\delta_{a}v_{app}^2)$',...
-%     '$\delta L/(\delta_{r}v_{app}^2)$'}
-% color = {'k','r'}
-% lineSpec = {'-','--'}
-% for i = 1:2
-%     for j = 1:2
-%         plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
-%             'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
-%     end
-% end
-% legend('FontSize',15)
-% xlabel 'Time [s]'
-% ylabel 'Control Effectiveness [$\frac{Ns^2}{(deg)m}$]'
-% xlim([5 inf])
+%
+bMat = tsc.scaledB
+figure;
+hold on;
+legEnt = {'$\delta M/(\delta_{a}v_{app}^2)$',...
+    '$\delta M/(\delta_{r}v_{app}^2)$';...
+    '$\delta L/(\delta_{a}v_{app}^2)$',...
+    '$\delta L/(\delta_{r}v_{app}^2)$'}
+color = {'k','r'}
+lineSpec = {'-','--'}
+for i = 1:2
+    for j = 1:2
+        plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
+            'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
+    end
+end
+legend('FontSize',15)
+xlabel 'Time [s]'
+ylabel 'Control Effectiveness [$\frac{Ns^2}{(deg)m}$]'
+xlim([5 inf])
+ylim([-.2 .1])
+set(gca,'FontSize',12)
+
+bMat = tsc.bMatrix
+figure;
+hold on;
+legEnt = {'$\delta M/(\delta_{a})$',...
+    '$\delta M/(\delta_{r})$';...
+    '$\delta L/(\delta_{a})$',...
+    '$\delta L/(\delta_{r})$'}
+color = {'k','r'}
+lineSpec = {'-','--'}
+for i = 1:2
+    for j = 1:2
+        plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
+            'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
+    end
+end
+legend('FontSize',15)
+xlabel 'Time [s]'
+ylabel 'Control Effectiveness [$\frac{Nm}{(deg)}$]'
 % ylim([-.2 .1])
-% set(gca,'FontSize',12)
-% 
-% bMat = tsc.bMatrix
-% figure;
-% hold on;
-% legEnt = {'$\delta M/(\delta_{a})$',...
-%     '$\delta M/(\delta_{r})$';...
-%     '$\delta L/(\delta_{a})$',...
-%     '$\delta L/(\delta_{r})$'}
-% color = {'k','r'}
-% lineSpec = {'-','--'}
-% for i = 1:2
-%     for j = 1:2
-%         plotsq(bMat.Time,bMat.Data(i,j,:),'DisplayName',legEnt{i,j},...
-%             'Color',color{j},'LineStyle',lineSpec{i},'LineWidth',1.5)
-%     end
-% end
-% legend('FontSize',15)
-% xlabel 'Time [s]'
-% ylabel 'Control Effectiveness [$\frac{N-m}{(deg)}$]'
-% % ylim([-.2 .1])
-% xlim([5 inf])
-% set(gca,'FontSize',12)
+xlim([5 inf])
+set(gca,'FontSize',12)
 
 %%
 for i = 1:3
@@ -292,12 +292,12 @@ for i = 1:3
     plot(tscSim{i}.theta*-180/pi,'LineWidth',1.5,'LineStyle',':','Color','r')
     if i == 1
         legend('Experiment','Simulation')
-%         xlabel ''
-%     elseif i == 2
-%         xlabel ''
-%     elseif i == 3
-%         xlabel 'Time [s]'
-%     end
+        %         xlabel ''
+        %     elseif i == 2
+        %         xlabel ''
+        %     elseif i == 3
+        %         xlabel 'Time [s]'
+        %     end
     end
     grid on;
     if i == 1
@@ -305,7 +305,7 @@ for i = 1:3
     end
     xlim([0 20])
     ylim([0 90])
-%     yticks([0 30 60 90])
+    %     yticks([0 30 60 90])
     title('')
     set(gca,'FontSize',12)
 end
@@ -315,21 +315,21 @@ for i = 1:3
     subplot(4,3,3+i); grid on; hold on;
     plot(runData{i}.kite_azi*-1,'LineWidth',1.5,'Color','k')
     plot(tscSim{i}.phi*180/pi,'LineWidth',1.5,'LineStyle',':','Color','r')
-%     if i == 1
-%         legend('Experiment','Simulation')
-%         xlabel ''
-%     elseif i == 2
-%         xlabel ''
-%     elseif i == 3
-%         xlabel 'Time [s]'
-%     end
+    %     if i == 1
+    %         legend('Experiment','Simulation')
+    %         xlabel ''
+    %     elseif i == 2
+    %         xlabel ''
+    %     elseif i == 3
+    %         xlabel 'Time [s]'
+    %     end
     grid on;
     if i == 1
         ylabel '$\phi_o$ [deg]'
     end
     xlim([0 20])
     ylim([-90 90])
-%     yticks([0 30 690 90])
+    %     yticks([0 30 690 90])
     title('')
     set(gca,'FontSize',12)
 end
@@ -349,18 +349,18 @@ for i = 1:3
     xlabel 'Time [s]'
     grid on;
     if i == 1
-    ylabel('$||\frac{v_{app}}{v_{tow}}||^3$')
+        ylabel('$||\frac{v_{app}}{v_{tow}}||^3$')
     end
     xlim([0 20])
-
-%     if i == 1
-%         ylim([0 10])
-%     elseif i ==2
-%         ylim([0 20])
-%     elseif i == 3
-        ylim([0 20])
-%     end
-%     yticks([0 30 690 90])
+    
+    %     if i == 1
+    %         ylim([0 10])
+    %     elseif i ==2
+    %         ylim([0 20])
+    %     elseif i == 3
+    ylim([0 20])
+    %     end
+    %     yticks([0 30 690 90])
     title('')
     set(gca,'FontSize',12)
 end
@@ -370,14 +370,14 @@ for i = 1:3
     subplot(4,3,6+i); grid on; hold on;
     plot(t,velAug{i},'LineWidth',1.5,'Color','k')
     plot(tscSim{i}.phi.Time,velmags{i},'LineWidth',1.5,'LineStyle',':','Color','r')
-%     if i == 1
-%         legend('Experiment','Simulation')
-%         xlabel ''
-%     elseif i == 2
-%         xlabel ''
-%     elseif i == 3
-%         xlabel 'Time [s]'
-%     end
+    %     if i == 1
+    %         legend('Experiment','Simulation')
+    %         xlabel ''
+    %     elseif i == 2
+    %         xlabel ''
+    %     elseif i == 3
+    %         xlabel 'Time [s]'
+    %     end
     grid on;
     if i == 1
         ylabel('$||\frac{v_{app}}{v_{tow}}||$')
@@ -387,119 +387,244 @@ for i = 1:3
     title('')
     set(gca,'FontSize',12)
 end
+%%
+t1 = t
+xbound = [2 20];
+figure('Position',[100 100 800 400])
+t = tiledlayout(2,1)
+for i = 2
+    nexttile
+    grid on; hold on;
+    if i == 1
+        plot(runData{i}.kiteRoll,'LineWidth',1.5)
+    else
+        plot(runData{i}.kiteRoll*180/pi,'LineWidth',1.5)
+        %          plotsq(tscSim{i}.eulerAngles.Time,tscSim{i}.eulerAngles.Data(1,:,:)*180/pi-180,'LineWidth',1.5')
+        plot(runData{i}.rollSP,'--k')
+    end
+    
+    %     if i == 1
+    legend('Experiment','Set Point','Simulation')
+    %         xlabel ''
+    %     elseif i == 2
+    %         xlabel ''
+    %     elseif i == 3
+    %     xlabel 'Time [s]'
+    %     end
+    grid on;
+    ylabel('Roll [deg]')
+    xlim(xbound)
+    %     ylim([0 5])
+    %     yticks([0 1 2 3 4 5])
+    title('')
+    set(gca,'FontSize',12)
+end
 
 % figure('Position',[100 100 800 500])
-% for i = 1:3
-%     subplot(3,1,i); grid on; hold on;
-%     if i == 1
-%         plot(runData{i}.kiteRoll,'LineWidth',1.5)
-%     else
-%         plot(runData{i}.kiteRoll*180/pi,'LineWidth',1.5)
-%     end
-%     plotsq(tscSim{i}.eulerAngles.Time,tscSim{i}.eulerAngles.Data(1,:,:)*180/pi-180,'LineWidth',1.5')
-%     if i == 1
-%         legend('Experiment','Simulation')
-%         xlabel ''
-%     elseif i == 2
-%         xlabel ''
-%     elseif i == 3
-%         xlabel 'Time [s]'
-%     end
-%     grid on;
-%     ylabel('Roll SP')
-% %     xlim([0 20])
-% %     ylim([0 5])
-% %     yticks([0 1 2 3 4 5])
-%     title('')
-%     set(gca,'FontSize',12)
-% end
-% 
-% figure('Position',[100 100 800 500])
-% for i = 1:3
-%     subplot(3,1,i); grid on; hold on;
-%     if i == 1
-%         plot(runData{i}.kiteYaw,'LineWidth',1.5)
-%     else
-%         plot(runData{i}.yawDeadRec,'LineWidth',1.5)
-%     end
-%     
-%     plotsq(tscSim{i}.eulerAngles.Time,tscSim{i}.eulerAngles.Data(3,:,:)*-180/pi+180,'LineWidth',1.5')
-%     if i == 1
-%         legend('Experiment','Simulation')
-%         xlabel ''
-%     elseif i == 2
-%         xlabel ''
-%     elseif i == 3
-%         xlabel 'Time [s]'
-%     end
-%     grid on;
-%     ylabel('Yaw')
-% %     xlim([0 20])
-% %     ylim([0 5])
-% %     yticks([0 1 2 3 4 5])
-%     title('')
-%     set(gca,'FontSize',12)
-% end
+for i = 2
+    nexttile; grid on; hold on;
+    if i == 1
+        plot(runData{i}.kiteYaw,'LineWidth',1.5)
+    else
+        plot(runData{i}.yawDeadRec,'LineWidth',1.5)
+        
+        %     plotsq(tscSim{i}.eulerAngles.Time,tscSim{i}.eulerAngles.Data(3,:,:)*-180/pi+180,'LineWidth',1.5')
+        plot(runData{i}.yawSP,'--k')
+    end
+    
+    %     if i == 1
+    %         legend('Experiment','Simulation')
+    %         xlabel ''
+    %     elseif i == 2
+    %         xlabel ''
+    %     elseif i == 3
+    %         xlabel 'Time [s]'
+    %     end
+    grid on;
+    ylabel('Yaw [deg]')
+    xlim(xbound)
+    %     ylim([0 5])
+    %     yticks([0 1 2 3 4 5])
+    title('')
+    set(gca,'FontSize',12)
+    xlabel 'Time [s]'
+end
+%%
+xbound = [2 20];
+figure('Position',[100 100 800 600])
+t = tiledlayout(3,1)
+for i = 2
+    nexttile; grid on; hold on;
+    if i == 1
+        plot(runData{i}.kiteYaw,'LineWidth',1.5)
+    else
+        plot(runData{i}.kite_azi,'LineWidth',1.5)
+    end
+    
+    plotsq(tscSim{i}.phi*-180/pi,'LineWidth',1.5')
+    %     if i == 1
+    %         legend('Experiment','Simulation')
+    %         xlabel ''
+    %     elseif i == 2
+    %         xlabel ''
+    %     elseif i == 3
+    %         xlabel 'Time [s]'
+    %     end
+    grid on;
+    ylabel('Azimuth [deg]')
+    xlim(xbound)
+    legend('Experiment','Simulation')
+    set(gca,'FontSize',12)
+end
+
+for i = 2
+    nexttile; grid on; hold on;
+    if i == 1
+        plot(runData{i}.kiteYaw,'LineWidth',1.5)
+    else
+        plot(runData{i}.kite_elev,'LineWidth',1.5)
+    end
+    
+    plotsq(tscSim{i}.theta*-180/pi,'LineWidth',1.5')
+    %     if i == 1
+    %         legend('Experiment','Simulation')
+    %         xlabel ''
+    %     elseif i == 2
+    %         xlabel ''
+    %     elseif i == 3
+    %         xlabel 'Time [s]'
+    %     end
+    grid on;
+    ylabel('Elevation [deg]')
+    xlim(xbound)
+    set(gca,'FontSize',12)
+end
+for i = 2
+    nexttile; grid on; hold on;
+    if i == 1
+        plot(runData{i}.kiteYaw,'LineWidth',1.5)
+    else
+        plot(t1,velAug{i},'LineWidth',1.5)
+    end
+    
+    plotsq(tscSim{i}.phi.Time,velmags{i},'LineWidth',1.5')
+    %     if i == 1
+    %         legend('Experiment','Simulation')
+    %         xlabel ''
+    %     elseif i == 2
+    %         xlabel ''
+    %     elseif i == 3
+    %         xlabel 'Time [s]'
+    %     end
+    grid on;
+    ylabel('$\frac{||v_{app}||}{||v_{tow}||}$')
+    xlim(xbound)
+    
+    set(gca,'FontSize',12)
+    xlabel 'Time [s]'
+end
+% t.TileSpacing = 'compact';
+% t.Padding = 'compact';
+
+%% Plot Roll and Yaw Tracking per Control Type
+i = 3
+figure('Position',[100 100 800 200])
+hold on
+plot(runData{i}.kiteRoll*180/pi,'k','LineWidth',1.5)
+plot(runData{i}.rollSP,'--k','LineWidth',1.5)
+plot(runData{i}.yawDeadRec,'r','LineWidth',1.5)
+plot(runData{i}.yawSP,'--r','LineWidth',1.5)
+grid on;
+ylabel('Angle [deg]')
+xlabel('Time [s]')
+legend('Roll','Roll SP','Yaw','Yaw SP')
+xlim([0 30])
+title('')
+set(gca,'FontSize',15)
+
+%% Plot Az and El per Control Type, vs Time and vs Each Other
+%% Plot Roll and Yaw Tracking per Control Type
+fpath = fullfile(fileparts(which('OCTProject.prj')),'output\');
+nameCell = {'azElRoll','azElRollYaw','azElRollYawAllocated'}
+for i = 1:3
+    fName = nameCell{i}
+    figure('Position',[100 100 800 200])
+    hold on
+    plot(runData{i}.kite_azi,'k','LineWidth',1.5)
+    % plot(runData{i}.rollSP,'--k','LineWidth',1.5)
+    plot(runData{i}.kite_elev,'r','LineWidth',1.5)
+    % plot(runData{i}.yawSP,'--r','LineWidth',1.5)
+    grid on;
+    ylabel('Angle [deg]')
+    xlabel('Time [s]')
+    legend('Azimuth','Elevation')
+    xlim([0 25])
+    % ylim([-50 50])
+    title('')
+    set(gca,'FontSize',15)
+    saveas(gcf,[fpath fName],'fig')
+    saveas(gcf,[fpath fName],'png')
+end
 %%
 for i = 1:3
-tscSimRMS{i} = reSampleDataUsingTime(tscSim{i},7.5,19.5);
-runDataRMS{i} = reSampleDataUsingTime(runData{i},7.5,19.5);
-rmsAz(i) = rms(tscSimRMS{i}.phi.Data*180/pi-runDataRMS{i}.kite_azi.Data*-1)
-rmsEL(i) = rms(tscSimRMS{i}.theta.Data*-180/pi-runDataRMS{i}.kite_elev.Data)
-rmsVelAug(i) = rms(squeeze(velmags{i}(750:1950))'-squeeze(velAug{i}(750:1950)))
-rmsPowAug(i) = rms(squeeze(velmags{i}(750:1950))'.^3 - powAug{i}(750:1950))
-
-if isfield(runDataRMS{i},'yawDeadRec')
-    rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)
-    rmsYaw(i) = rms(squeeze(tscSimRMS{i}.yawDeg.Data)*-1+180-runDataRMS{i}.yawDeadRec.Data)
-else
-    rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data))
-    rmsYaw(i) = rms(squeeze(tscSimRMS{i}.yawDeg.Data)*-1+180-squeeze(runDataRMS{i}.kiteYaw.Data))
-end
-prom = 2
-thresh = 20
-
-azSimP{i} = [findpeaks(tscSimRMS{i}.phi.Data*180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-    findpeaks(-tscSimRMS{i}.phi.Data*180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-azExpP{i} = [findpeaks(runDataRMS{i}.kite_azi.Data*-1,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-    findpeaks(-runDataRMS{i}.kite_azi.Data*-1,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-A_phi{i} = (sqrt(sum(azSimP{i}.^2/length(azExpP{i})))-sqrt(sum(azExpP{i}.^2/length(azExpP{i}))))/...
-    (max(runDataRMS{i}.kite_azi.Data*-1)-min(runDataRMS{i}.kite_azi.Data*-1))
-
-elSimP{i} = [findpeaks(tscSimRMS{i}.theta.Data*-180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-    findpeaks(-tscSimRMS{i}.theta.Data*-180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-elExpP{i} = [findpeaks(runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-    findpeaks(-runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-A_theta{i} = (sqrt(sum(elSimP{i}.^2/length(elExpP{i})))-sqrt(sum(elExpP{i}.^2/length(elExpP{i}))))/...
-    (max(runDataRMS{i}.kite_elev.Data)-min(runDataRMS{i}.kite_elev.Data))
-
-rollSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-    findpeaks(-squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-yawSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-    findpeaks(-squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-if isfield(runDataRMS{i},'yawDeadRec')
-    rollExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-        findpeaks(-squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-    yawExpP{i} = [findpeaks(runDataRMS{i}.yawDeadRec.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-        findpeaks(-runDataRMS{i}.yawDeadRec.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-    A_roll{i} = (sqrt(sum(rollSimP{i}.^2/length(rollSimP{i})))-sqrt(sum(rollExpP{i}.^2/length(rollExpP{i}))))/...
-        (max(squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)-min(squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi))
-    A_yaw{i} = (sqrt(sum(yawSimP{i}.^2/length(yawSimP{i})))-sqrt(sum(yawExpP{i}.^2/length(yawExpP{i}))))/...
-        (max(squeeze(runDataRMS{i}.yawDeadRec.Data))-min(squeeze(runDataRMS{i}.yawDeadRec.Data)))
-else
-    rollExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteRoll.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-        findpeaks(-squeeze(runDataRMS{i}.kiteRoll.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-    yawExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteYaw.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-        findpeaks(-squeeze(runDataRMS{i}.kiteYaw.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-    A_roll{i} = (sqrt(sum(rollSimP{i}.^2/length(rollSimP{i})))-sqrt(sum(rollExpP{i}.^2/length(rollExpP{i}))))/...
-        (max(runDataRMS{i}.kiteRoll.Data)-min(runDataRMS{i}.kiteRoll.Data))
-    A_yaw{i} = (sqrt(sum(yawSimP{i}.^2/length(yawSimP{i})))-sqrt(sum(yawExpP{i}.^2/length(yawExpP{i}))))/...
-        (max(squeeze(runDataRMS{i}.kiteYaw.Data))-min(squeeze(runDataRMS{i}.kiteYaw.Data)))
-end
-
-
-% elExpP{i} = [findpeaks(runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-%     findpeaks(-runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-% A_theta{i} = (sqrt(sum(elSimP{i}.^2/length(elExpP{i})))-sqrt(sum(elExpP{i}.^2/length(elExpP{i}))))/...
-%     (max(runDataRMS{i}.kite_elev.Data)-min(runDataRMS{i}.kite_elev.Data))
+    tscSimRMS{i} = reSampleDataUsingTime(tscSim{i},7.5,19.5);
+    runDataRMS{i} = reSampleDataUsingTime(runData{i},7.5,19.5);
+    rmsAz(i) = rms(tscSimRMS{i}.phi.Data*180/pi-runDataRMS{i}.kite_azi.Data*-1)
+    rmsEL(i) = rms(tscSimRMS{i}.theta.Data*-180/pi-runDataRMS{i}.kite_elev.Data)
+    rmsVelAug(i) = rms(squeeze(velmags{i}(750:1950))'-squeeze(velAug{i}(750:1950)))
+    rmsPowAug(i) = rms(squeeze(velmags{i}(750:1950))'.^3 - powAug{i}(750:1950))
+    
+    if isfield(runDataRMS{i},'yawDeadRec')
+        rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)
+        rmsYaw(i) = rms(squeeze(tscSimRMS{i}.yawDeg.Data)*-1+180-runDataRMS{i}.yawDeadRec.Data)
+    else
+        rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data))
+        rmsYaw(i) = rms(squeeze(tscSimRMS{i}.yawDeg.Data)*-1+180-squeeze(runDataRMS{i}.kiteYaw.Data))
+    end
+    prom = 2
+    thresh = 20
+    
+    azSimP{i} = [findpeaks(tscSimRMS{i}.phi.Data*180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-tscSimRMS{i}.phi.Data*180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    azExpP{i} = [findpeaks(runDataRMS{i}.kite_azi.Data*-1,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-runDataRMS{i}.kite_azi.Data*-1,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    A_phi{i} = (sqrt(sum(azSimP{i}.^2/length(azExpP{i})))-sqrt(sum(azExpP{i}.^2/length(azExpP{i}))))/...
+        (max(runDataRMS{i}.kite_azi.Data*-1)-min(runDataRMS{i}.kite_azi.Data*-1))
+    
+    elSimP{i} = [findpeaks(tscSimRMS{i}.theta.Data*-180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-tscSimRMS{i}.theta.Data*-180/pi,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    elExpP{i} = [findpeaks(runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    A_theta{i} = (sqrt(sum(elSimP{i}.^2/length(elExpP{i})))-sqrt(sum(elExpP{i}.^2/length(elExpP{i}))))/...
+        (max(runDataRMS{i}.kite_elev.Data)-min(runDataRMS{i}.kite_elev.Data))
+    
+    rollSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    yawSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    if isfield(runDataRMS{i},'yawDeadRec')
+        rollExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+            findpeaks(-squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+        yawExpP{i} = [findpeaks(runDataRMS{i}.yawDeadRec.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+            findpeaks(-runDataRMS{i}.yawDeadRec.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+        A_roll{i} = (sqrt(sum(rollSimP{i}.^2/length(rollSimP{i})))-sqrt(sum(rollExpP{i}.^2/length(rollExpP{i}))))/...
+            (max(squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)-min(squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi))
+        A_yaw{i} = (sqrt(sum(yawSimP{i}.^2/length(yawSimP{i})))-sqrt(sum(yawExpP{i}.^2/length(yawExpP{i}))))/...
+            (max(squeeze(runDataRMS{i}.yawDeadRec.Data))-min(squeeze(runDataRMS{i}.yawDeadRec.Data)))
+    else
+        rollExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteRoll.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+            findpeaks(-squeeze(runDataRMS{i}.kiteRoll.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+        yawExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteYaw.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+            findpeaks(-squeeze(runDataRMS{i}.kiteYaw.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+        A_roll{i} = (sqrt(sum(rollSimP{i}.^2/length(rollSimP{i})))-sqrt(sum(rollExpP{i}.^2/length(rollExpP{i}))))/...
+            (max(runDataRMS{i}.kiteRoll.Data)-min(runDataRMS{i}.kiteRoll.Data))
+        A_yaw{i} = (sqrt(sum(yawSimP{i}.^2/length(yawSimP{i})))-sqrt(sum(yawExpP{i}.^2/length(yawExpP{i}))))/...
+            (max(squeeze(runDataRMS{i}.kiteYaw.Data))-min(squeeze(runDataRMS{i}.kiteYaw.Data)))
+    end
+    
+    
+    % elExpP{i} = [findpeaks(runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+    %     findpeaks(-runDataRMS{i}.kite_elev.Data,'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    % A_theta{i} = (sqrt(sum(elSimP{i}.^2/length(elExpP{i})))-sqrt(sum(elExpP{i}.^2/length(elExpP{i}))))/...
+    %     (max(runDataRMS{i}.kite_elev.Data)-min(runDataRMS{i}.kite_elev.Data))
 end

@@ -13,12 +13,12 @@ Simulink.sdi.clear
 %%             1 2 3 4 5 6     7     8
 simScenario = [1 1 1 4 1 false true 1==0];
 %%  Set Test Parameters
-tFinal = 1500;      tSwitch = 10000;                        %   s - maximum sim duration 
-flwSpd = 0.5;                                              %   m/s - Flow speed
-altitude = 100;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
-thrLength = 200;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
+tFinal = 5000;      tSwitch = 10000;                        %   s - maximum sim duration 
+flwSpd = 0.25;                                              %   m/s - Flow speed
+altitude = 150;     initAltitude = 100;                     %   m/m - cross-current and initial altitude 
+thrLength = 600;    initThrLength = 200;                    %   m/m - cross-current and initial tether length 
 thrDiam = 18;       fairing = 100;                          %   mm/m - tether diameter and fairing length
-h = 10*pi/180;      w = 40*pi/180;                          %   rad - Path width/height
+h = 2.5*pi/180;      w = 10*pi/180;                          %   rad - Path width/height
 sC = 0;             subCtrl = 3;                            %   State mac on/off and selected flight controller 
 el = asin(altitude/thrLength);                              %   rad - Initial elevation angle
 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
@@ -153,6 +153,7 @@ thr.tether1.diameter.setValue(thrDiam*10^-3,'m')
 wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
 wnch.winch1.LaRspeed.setValue(1,'m/s');
 %%  Controller User Def. Parameters and dependant properties
+% FLIGHTCONTROLLER = 'pathFollowingCtrlAoATurbFault'
 switch simScenario(3)
     case 1
         fltCtrl.setFcnName(PATHGEOMETRY,'');
@@ -161,7 +162,7 @@ switch simScenario(3)
         fltCtrl.AoACtrl.setValue(1,'');
         fltCtrl.Tmax.setValue(Tmax,'kN');
         
-        fltCtrl.elevatorConst.setValue(-1.6,'deg');
+        fltCtrl.elevatorConst.setValue(-4,'deg');
         
         fltCtrl.rollCtrl.kp.setValue(100,'(deg)/(rad)');
         fltCtrl.rollCtrl.ki.setValue(0,'(deg)/(rad*s)');
@@ -281,3 +282,27 @@ if simScenario(7)
             'SaveGif',1==0,'GifFile',strrep(filename,'.mat','zoom.gif'));
     end
 end
+%%
+figure
+subplot(3,1,1)
+hold on
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(1,:,:)*180/pi,'b','DisplayName','Roll')
+plotsq(tsc.eulerAngles.Time,tsc.rollSP.Data*180/pi,'r','DisplayName','Roll SP')
+plot([1000 1000],[-100 100],'k--','DisplayName','Failure Point','Linewidth',1.5)
+ylabel 'Angle [deg]'; grid on; set(gca,'FontSize',12)
+legend('Location','west')
+
+subplot(3,1,2)
+hold on
+plotsq(tsc.ctrlSurfDefl.Time, tsc.ctrlSurfDefl.Data(:,1),'b','DisplayName','Aileron')
+plotsq(tsc.ctrlSurfDefl.Time, tsc.ctrlSurfDefl.Data(:,3),'r','DisplayName','Elevator')
+plotsq(tsc.ctrlSurfDefl.Time, tsc.ctrlSurfDefl.Data(:,4),'g','DisplayName','Rudder')
+plot([1000 1000],[-20 20],'k--','DisplayName','Failure Point','Linewidth',1.5)
+ylabel 'Angle [deg]'; set(gca,'FontSize',12); legend('Location','west')
+subplot(3,1,3)
+hold on
+plotsq(tsc.eulerAngles.Time,tsc.eulerAngles.Data(3,:,:)*180/pi,'b','DisplayName','Yaw')
+plotsq(tsc.eulerAngles.Time,tsc.yawSP.Data*180/pi,'r','DisplayName','Yaw SP')
+plot([1000 1000],[-100 100],'k--','DisplayName','Failure Point','Linewidth',1.5)
+ylabel 'Angle [deg]'; grid on; xlabel 'Time [s]'; set(gca,'FontSize',15)
+set(gca,'FontSize',12); legend('Location','west')
