@@ -25,36 +25,22 @@ phi0 =   geomParams(4);
 radius = geomParams(5);
 
 %%%%
-% Initialize the path parameter. Allow for same path regardless of positive
-% or negative. Convert s in [0 1] to s in [0 2pi]
-%%%%
-
-
-
-
-if theta0 < 0
-    phi = 2*pi * pathPos;
-else
-    phi = 2*pi - (pathPos * 2*pi);
-end
-%%%%
 % Convert path specification into the form that the lemniscate of booth can
 % handle
 %%%%
 
 a = h;
-b = w^2/h;
+b = w^2/(4*h);
 
-critAng = asin(sqrt(a/b));
-inc = (critAng-.000001)/.25;
-tanDir = 0.*phi;
-pathPos = mod(pathPos,1);
+critAng = asin(sqrt(a/b))-1e-6;
+tanDir = 0.*pathPos;
+phi = tanDir;
 for i = 1:length(pathPos)
     if pathPos(i) <= 0.5
-        phi(i) = (critAng-0.000001)-inc*pathPos(i)+pi;
+        phi(i) = critAng*cos(2*pi*pathPos(i))+pi;
         tanDir(i) = -1;
     elseif pathPos(i) > 0.50
-        phi(i) = inc*(pathPos(i)-.5)-critAng+0.000001;
+        phi(i) = critAng*cos(2*pi*pathPos(i));
         tanDir(i) = 1;
     end
 end
@@ -74,15 +60,15 @@ c = radius*ones(size(phi));
 %%%%
 % Compute unrotated position/path
 %%%%
-x0 = c.*sqrt(complex((1-r2./c.^2)))
-y0 = r.*cos(phi)
-z0 = r.*sin(phi)
+x0 = c.*sqrt(complex((1-r2./c.^2)));
+y0 = r.*cos(phi);
+z0 = r.*sin(phi);
 
 %%%%
 % Define relevant rotation matrices
 %%%%
-ry = @(x)[cos(x) 0 sin(x);0 1 0; -sin(x) 0 cos(x)]
-rz = @(x)[cos(x) -sin(x) 0; sin(x) cos(x) 0; 0 0 1]
+ry = @(x)[cos(x) 0 sin(x);0 1 0; -sin(x) 0 cos(x)];
+rz = @(x)[cos(x) -sin(x) 0; sin(x) cos(x) 0; 0 0 1];
 
 %%%%
 % Rotate into the correct position
