@@ -73,7 +73,7 @@ rz = @(x)[cos(x) -sin(x) 0; sin(x) cos(x) 0; 0 0 1];
 %%%%
 % Rotate into the correct position
 %%%%
-posGround = real(ry(theta0)*rz(phi0)*[x0;y0;z0]);
+posGround = real(ry(theta0)*rz(phi0)*[x0;y0;z0])+cntrPos;
 
 %%%%
 % Compute Tangent Vector
