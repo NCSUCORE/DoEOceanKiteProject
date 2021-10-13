@@ -6,7 +6,7 @@ function [posGround,tanVec] = lemBoothNew(pathPos,geomParams,cntrPos)
 % path width and height in meters. Allows for a constant width and height
 % as the tether spools out.
 %%%%
-
+ cntrPos = reshape(cntrPos,[],1);
 
 
 %%%%

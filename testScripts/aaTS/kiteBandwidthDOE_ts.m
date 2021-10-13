@@ -6,15 +6,7 @@ Simulink.sdi.clear
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 flwSpd = -1
-=======
-flwSpd = .7
->>>>>>> Stashed changes
-=======
-flwSpd = 1
->>>>>>> Stashed changes
 %% Load components
 % Flight Controller
 % loadComponent('pathFollowingCtrlAddedMass');
@@ -54,24 +46,12 @@ loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
 env.water.setflowVec([flwSpd 0 0],'m/s')
-<<<<<<< Updated upstream
 % w = 100*pi/180; h = 30*pi/180;
 % [a,b] = boothParamConversion(w,h)
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1,1.4,30*pi/180,0,125],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1,1.4,-30*pi/180,180*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
 % hiLvlCtrl.basisParams.setValue([a,b,-30*pi/180,180*pi/180,150],'[rad rad rad rad m]') % Lemniscate of Booth
-=======
-w = 40*pi/180; h = 20*pi/180;
-PATHGEOMETRY = 'lemBoothNew'
-w = 40*pi/180*150;
-h = h*150;
-% [w,h] = boothParamConversion(w,h)  
-%% Set basis parameters for high level controller
-% hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-% hiLvlCtrl.basisParams.setValue([1,1.4,-30*pi/180,180*pi/180,150],'[rad rad rad rad m]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([w,h,30*pi/180,0,150],'[rad rad rad rad m]') % Lemniscate of Booth
->>>>>>> Stashed changes
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 0],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -79,7 +59,7 @@ gndStn.initAngVel.setValue(0,'rad/s');
 
 %% Set vehicle initial conditions
 vhcl.setICsOnPath(...
-    0.05,... % Initial path position
+    0,... % Initial path position
     PATHGEOMETRY,... % Name of path function
     hiLvlCtrl.basisParams.Value,... % Geometry parameters
     gndStn.posVec.Value,... % Center point of path sphere
@@ -110,14 +90,8 @@ fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,...
 
 fltCtrl.firstSpoolLap.setValue(100,'')
 fltCtrl.elevatorReelInDef.setValue(0,'deg')
-<<<<<<< Updated upstream
 %
 % fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');
-=======
-fltCtrl.searchSize.setValue(0.25,'')
-% 
-% fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');    
->>>>>>> Stashed changes
 % fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
 % fltCtrl.rollMoment.kd.setValue(20000,'(N*m)/(rad/s)');
 % fltCtrl.rollMoment.tau.setValue(0.001,'s');
@@ -141,12 +115,8 @@ cPV = logsout.getElement('closestPathVariable');
 lapNumS = logsout.getElement('lapNumS');
 tsc = signalcontainer(logsout);
 plotCtrlDeflections
-
-figure;plot(tsc.desiredMoment.Time,tsc.desiredMoment.Data(:,1)/max(tsc.desiredMoment.Data(:,1)))
-hold on
-plotsq(tsc.desiredMoment.Time,tsc.velAngleError.Data)
 %%
-lin = 1
+lin = 0
 if lin ~= 1
     snaps = 0:0.025:.99;
     cPV = logsout.getElement('currentPathVar');
@@ -314,35 +284,27 @@ if lin ~= 1
     xlabel('Path Position')
     ylabel('Real Component of Slowest Pole [$s^{-1}$]')
 end
-% %%
-% distAmp = 0;
-% distFreq = 0;
+%%
+distAmp = 0;
+distFreq = 0;
+pertVec = [1 0 0];
+set_param('OCTModel','SimulationMode','accelerator');
+simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+simWithMonitor('OCTModel')
+tsc = signalcontainer(logsout);
+% distAmp = .25;
+% distFreq = .1866;
 % pertVec = [1 0 0];
-% set_param('OCTModel','SimulationMode','accelerator');
-% simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
 % simWithMonitor('OCTModel')
-% tsc = signalcontainer(logsout);
-% % distAmp = .25;
-% % distFreq = .1866;
-% % pertVec = [1 0 0];
-% % simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
-% % simWithMonitor('OCTModel')
-% % tsc1 = signalcontainer(logsout);
-% %
-% % distAmp = .25;
-% % distFreq = .1866;
-% % pertVec = [0 1 0];
-% % simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
-% % simWithMonitor('OCTModel')
-% % tsc2 = signalcontainer(logsout);
-% 
-% distAmp = .1;
-% distFreq = 1;
+% tsc1 = signalcontainer(logsout);
+%
+% distAmp = .25;
+% distFreq = .1866;
 % pertVec = [0 1 0];
-% simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
+% simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
 % simWithMonitor('OCTModel')
 % tsc2 = signalcontainer(logsout);
-<<<<<<< Updated upstream
 
 distAmp = .1;
 distFreq = 1;
@@ -494,163 +456,7 @@ ylabel('Tether Stretch [m]')
 %     %[y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
 %     %sound(y*.2, Fs, 16)
 %     fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
-<<<<<<< Updated upstream
 %
 vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
     'GifTimeStep',.00001,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
     'ZoomIn',1==0,'SaveGif',1==1,'GifFile','really.gif')
-=======
-% 
-    vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
-        'GifTimeStep',.00001,'PlotTracer',true,'FontSize',12,'Pause',1==0)
->>>>>>> Stashed changes
-=======
-% %%
-% runLin = 1
-% lap = max(tsc.lapNumS.Data)-2;
-% [Idx1,Idx2] = getLapIdxs(tsc,lap);
-% ran = Idx1:Idx2-1;
-% for i = 1:1000-3
-%     ind(i)=find(tsc.closestPathVariable.Data(ran) > i/1000,1);
-% end
-% tanRollErrBase = squeeze(tsc.tanRollError.Data(Idx1+ind));
-% cenAngleErrBase = squeeze(tsc.centralAngle.Data(Idx1+ind));
-% betaErrBase = squeeze(tsc.betaErr.Data(Idx1+ind));
-% velAngErrBase = squeeze(mod(tsc.velAngleError.Data(Idx1+ind)-pi,2*pi)-pi)
-% pathVar = tsc.closestPathVariable.Data(Idx1+ind);
-% 
-% lap = max(tsc2.lapNumS.Data)-2;
-% [Idx1,Idx2] = getLapIdxs(tsc2,lap);
-% ran = Idx1:Idx2-1;
-% for i = 1:1000-3
-%     
-%     ind(i)=find(tsc2.closestPathVariable.Data(ran) > i/1000,1);
-% end
-% tanRollErr = squeeze(tsc2.tanRollError.Data(Idx1+ind));
-% cenAngleErr = squeeze(tsc2.centralAngle.Data(Idx1+ind));
-% betaErr = squeeze(tsc2.betaErr.Data(Idx1+ind));
-% velAngErr = squeeze(mod(tsc2.velAngleError.Data(Idx1+ind)-pi,2*pi)-pi);
-% 
-% clear xx
-% for ii = 1:4
-%     for i = 1:length(snaps)
-%         xx(ii,i)=find(wHz{ii,1,i} > distFreq,1);
-%         wHzPlot(ii,i) = wHz{ii,1,i}(xx(ii,i));
-%         magPlot(ii,i,:) = mag{ii,1,i}(1,:,xx(ii,i));
-%     end
-% end
-% 
-% fSize = 14
-% figure; hold on;
-% ax = gca;
-% plotsq(pathVar,betaErr-betaErrBase,'k')
-% if runLin == 1
-%     ax = gca; colormap(ax,jet);
-%     scatter(snaps,magPlot(4,:,2)*distAmp*flwSpd,'r','filled')
-%     scatter(snaps,-magPlot(4,:,2)*distAmp*flwSpd,'r','filled')
-%     %     h = colorbar;
-%     %     ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
-% end
-% xlabel('Path Position')
-% ylabel('Side Slip Error [rad]')
-% legend('Simulation','Predicted Error','Location','southeast')
-% set(gca,'FontSize',fSize)
-% saveas(gcf,[fpath 'betaErr'],'fig')
-% saveas(gcf,[fpath 'betaErr'],'png')
-% 
-% 
-% figure; hold on;
-% plotsq(pathVar,cenAngleErr-cenAngleErrBase,'k')
-% if runLin == 1
-%     ax = gca; colormap(ax,jet);
-%     scatter(snaps,magPlot(1,:,2)*distAmp*flwSpd,'r','filled')
-%     scatter(snaps,-magPlot(1,:,2)*distAmp*flwSpd,'r','filled')
-%     %     h = colorbar;
-%     %     ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
-% end
-% xlabel('Path Position')
-% ylabel('Central Angle Error [rad]')
-% legend('Simulation','Predicted Error','Location','southeast')
-% set(gca,'FontSize',fSize)
-% saveas(gcf,[fpath 'centAngErr'],'fig')
-% saveas(gcf,[fpath 'centAngErr'],'png')
-% 
-% figure; hold on;
-% plotsq(pathVar,tanRollErr-tanRollErrBase,'k')
-% if runLin == 1
-%     ax = gca; colormap(ax,jet);
-%     scatter(snaps,magPlot(3,:,2)*distAmp*flwSpd,'r','filled')
-%     scatter(snaps,-magPlot(3,:,2)*distAmp*flwSpd,'r','filled')
-%     %     h = colorbar;
-%     %     ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
-% end
-% xlabel('Path Position')
-% ylabel('Tangent Roll Error [rad]')
-% legend('Simulation','Predicted Error','Location','southeast')
-% set(gca,'FontSize',fSize)
-% saveas(gcf,[fpath 'tanRollErr'],'fig')
-% saveas(gcf,[fpath 'tanRollErr'],'png')
-% 
-% figure; hold on
-% plotsq(pathVar,velAngErr-velAngErrBase,'k')
-% if runLin == 1
-%     ax = gca; colormap(ax,jet);
-%     scatter(snaps,magPlot(2,:,2)*distAmp*flwSpd,'r','filled')%,[],pPlot,'filled')
-%     scatter(snaps,-magPlot(2,:,2)*distAmp*flwSpd,'r','filled')%,[],pPlot,'filled')
-%     %     h = colorbar;
-%     %     ylabel(h, 'Pole Location [$s^{-1}$]','Interpreter','latex')
-% end
-% xlabel('Path Position')
-% ylabel('Velocity Angle Error [rad]')
-% legend('Simulation','Predicted Error','Location','southeast')
-% set(gca,'FontSize',fSize)
-% saveas(gcf,[fpath 'velAngErr'],'fig')
-% saveas(gcf,[fpath 'velAngErr'],'png')
-% 
-% figure; hold on;
-% subplot (2,2,1); hold on;
-% plotsq(pathVar,betaErr)
-% plotsq(pathVar,betaErrBase,'k')
-% ylabel('Error [rad]'); title('Side Slip Error')
-% 
-% subplot (2,2,2); hold on;
-% plotsq(pathVar,cenAngleErr)
-% plotsq(pathVar,cenAngleErrBase,'k')
-% ylabel('Error [rad]'); title('Central Angle Error')
-% 
-% subplot (2,2,3); hold on;
-% plotsq(pathVar,tanRollErr)
-% plotsq(pathVar,tanRollErrBase,'k')
-% ylabel('Error [rad]'); title('Tangent Roll Angle Error'); xlabel('Path Position')
-% 
-% subplot (2,2,4); hold on;
-% plotsq(pathVar,velAngErr)
-% plotsq(pathVar,velAngErrBase,'k')
-% ylabel('Error [rad]'); title('Velocity Angle Error'); xlabel('Path Position')
-% legend('Perturbed Flow','Base Case')
-% %%
-% % tsc.plotFlightResults(vhcl,env,'plot1Lap',1==1,'plotS',true,'plotBeta',false,'lapNum',max(tsc.lapNumS.Data)-1)
-% 
-% figure
-% plot(tsc.thrAttchPtAirBus.posVec.Time,squeeze(sqrt(dot(tsc.thrAttchPtAirBus.posVec.Data,tsc.thrAttchPtAirBus.posVec.Data)))-squeeze(tsc.tetherLengths.Data))
-% xlabel('Time [s]')
-% ylabel('Tether Stretch [m]')
-% %     x =  squeeze(tsc1.tc.Data);
-% %     y = squeeze(tsc1.wd.Data);
-% %     hist2d(y,x)
-% %     title('2.0 M/S Flow Speed')
-% %     zlabel('Occurences')
-% %     xlabel('Drum Velocity (rad/s)')
-% %     ylabel('Torque (Nm)')
-% %     set(gca,'FontSize',15);
-% 
-% %     fprintf("Mean central angle = %g deg\n",180/pi*mean(tsc.centralAngle.Data))
-% %     disp(hiLvlCtrl.basisParams.Value)
-% %     %[y, Fs] = audioread('Ding-sound-effect.mp3'); %https://www.freesoundslibrary.com/ding-sound-effect/
-% %     %sound(y*.2, Fs, 16)
-% %     fprintf("min Z = %4.2f\n",min(tsc.positionVec.Data(3,1,:)))
-% %
-% vhcl.animateSim(tsc,2,'PathFunc',fltCtrl.fcnName.Value,'TracerDuration',20,...
-%     'GifTimeStep',.00001,'PlotTracer',true,'FontSize',12,'Pause',1==0,...
-%     'ZoomIn',1==0,'SaveGif',1==1,'GifFile','really.gif')
->>>>>>> Stashed changes
