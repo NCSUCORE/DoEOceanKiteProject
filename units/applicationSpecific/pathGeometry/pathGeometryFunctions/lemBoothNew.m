@@ -35,6 +35,7 @@ b = w^2/(4*h);
 critAng = asin(sqrt(a/b))-1e-6;
 tanDir = 0.*pathPos;
 phi = tanDir;
+
 for i = 1:length(pathPos)
     if pathPos(i) <= 0.5
         phi(i) = critAng*cos(2*pi*pathPos(i))+pi;
@@ -51,7 +52,7 @@ end
 % Compute 2D Polar Radius
 %%%%
 r2 = b*(a-b*sin(phi).^2);
-r = complex(r2).^(1/2);
+r = r2.^(1/2);
 
 %%%%
 % Initilize sphere radius to size of incoming path parameters
@@ -60,7 +61,7 @@ c = radius*ones(size(phi));
 %%%%
 % Compute unrotated position/path
 %%%%
-x0 = c.*sqrt(complex((1-r2./c.^2)));
+x0 = c.*sqrt(1-r2./c.^2);
 y0 = r.*cos(phi);
 z0 = r.*sin(phi);
 
@@ -73,7 +74,7 @@ rz = @(x)[cos(x) -sin(x) 0; sin(x) cos(x) 0; 0 0 1];
 %%%%
 % Rotate into the correct position
 %%%%
-posGround = real(ry(theta0)*rz(phi0)*[x0;y0;z0])+cntrPos;
+posGround = ry(theta0)*rz(phi0)*[x0;y0;z0]+cntrPos;
 
 %%%%
 % Compute Tangent Vector
@@ -83,6 +84,7 @@ xPrime = b^2.*sin(phi).*cos(phi)./(c*sqrt(1-r.^2/c.^2));
 yPrime = -r.*sin(phi)+cos(phi).*drdphi;
 zPrime = r.*cos(phi)+sin(phi).*drdphi;
 tanVec = [xPrime;yPrime;zPrime];
-tanVec = ry(theta0)*rz(phi0)*(tanVec./vecnorm(tanVec,1)).*tanDir;
+tanVecMag = sqrt(sum(tanVec.^2,1));
+tanVec = ry(theta0)*rz(phi0)*(tanVec./tanVecMag).*tanDir;
 end
 
