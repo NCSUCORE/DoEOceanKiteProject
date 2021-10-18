@@ -1,5 +1,5 @@
 %% Test script for pool test simulation of the kite model
-clear;clc;close all;
+clear;clc;%close all;
 
 clc
 Simulink.sdi.clear
@@ -11,10 +11,10 @@ saveSim = 0;               %   Flag to save results
 runLin = 0;                %   Flag to run l    inearization
 inc =-5.5;
 elevArray = 20*pi/180%[40 15]*pi/180;
-towArray = [0.78];
+towArray = [1];
 rCM = 1 
 lengthArray = 2.63;     
-thrLength = 2.63%2.63
+thrLength = 6%2.63
 flwSpd = -1e-9;
 cdArray = [1.2 1.8];    
 shareArray = 0;1:-.2:0
@@ -23,7 +23,7 @@ for q = 3
             for k = 1:numel(rCM)
                 tic
                 Simulink.sdi.clear
-                h = 30*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
+                h = 40*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
                 [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
 
                 %%  Load components
@@ -36,6 +36,8 @@ for q = 3
                 else%
                     loadComponent('pathFollowCtrlExp');                         %   Path-following controller with AoA control
                     FLIGHTCONTROLLER = 'pathFollowingControllerExp';
+
+
                 end
                 loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller                           %   Ground station
                   loadComponent('raftGroundStation');
@@ -58,7 +60,11 @@ for q = 3
                 %%  Set basis parameters for high level controller
                
                 loadComponent('constBoothLem');        %   High level controller
-%                 PATHGEOMETRY = 'lemOfBoothInv'
+                                    PATHGEOMETRY = 'lemBoothNew'
+                                                        a = 2*thrLength*sin(w/2);
+                    b = 2*thrLength*sin(h/2);
+                    a = 6
+                    b = 2
                 hiLvlCtrl.basisParams.setValue([a,b,el,0,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
 
                 %             las.tetherLoadDisable;
@@ -74,7 +80,7 @@ for q = 3
                 J_raft = 30;
                 tow_length = 16;
                 tow_speed = towArray;
-                end_time = 30;tow_length/tow_speed;
+                end_time = 60;tow_length/tow_speed;
                 x_init = 0;
                 y_init = 0;
                 y_dot_init = 0;
@@ -85,14 +91,14 @@ for q = 3
                 %%  Vehicle Properties
                 PLANT = 'plant2turb';
                 VEHICLE = 'vhclPool';
-%                 SENSORS = 'realisticSensors';
+                SENSORS = 'realisticSensors';
                 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
                 vhcl.portWing.setGainCD(vhcl.portWing.gainCD.Value/8,'1/deg');
                 vhcl.vStab.setGainCL(vhcl.vStab.gainCL.Value/2,'1/deg');
                 vhcl.vStab.setGainCD(vhcl.vStab.gainCD.Value/2,'1/deg');
-                if q == 43
+                if q == 3
                     vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
                     pos = vhcl.initPosVecGnd.Value;
                     x = pos(1);
@@ -145,13 +151,13 @@ for q = 3
                 %%  Controller User Def. Parameters and dependant properties
                 fltCtrl.setFcnName(PATHGEOMETRY,'');
                 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,thrAttachInit);
-                fltCtrl.setPerpErrorVal(.8,'rad')
+                fltCtrl.setPerpErrorVal(.2,'rad')
                 fltCtrl.rudderGain.setValue(0,'')
                 fltCtrl.rollMoment.kp.setValue(45/3,'(N*m)/(rad)')
                 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
                 fltCtrl.rollMoment.kd.setValue(25/3,'(N*m)/(rad/s)')
-                fltCtrl.yawMoment.kp.setValue(1,'(N*m)/(rad)')
-                fltCtrl.tanRoll.kp.setValue(.1,'(rad)/(rad)')
+                fltCtrl.yawMoment.kp.setValue(15,'(N*m)/(rad)')
+                fltCtrl.tanRoll.kp.setValue(.4,'(rad)/(rad)')
                 thr.tether1.dragEnable.setValue(1,'')
                 vhcl.hStab.setIncidence(-6,'deg');
                 if q == 3
@@ -201,12 +207,11 @@ for q = 3
                
                 set_param('OCTModel','SimulationMode','accelerator');
                 simWithMonitor('OCTModel','minRate',0)
-                tsc{i} = signalcontainer(logsout);
-                figure;plot(tsc{i}.ctrlSurfDeflCmd);
-                figure;plot(tsc{i}.ctrlSurfDefl);
-%                 
-% vhcl.animateSim(tsc{i},0.5,'endTime',60,'TracerDuration',15,'SaveGif',true)
-               
+                tsc = signalcontainer(logsout);
+                figure;plot(tsc.ctrlSurfDeflCmd);
+                figure;tsc.positionVec.plot3;
+                vhcl.animateSim(tsc,0.5,'endTime',60,'PathFunc',fltCtrl.fcnName.Value)
+                plotVelMags    
             end
             toc
         end
