@@ -4,7 +4,7 @@ clear;clc;%close all;
 clc
 Simulink.sdi.clear
 clear all
-% close all
+%close all
 distFreq = 0;distAmp = 0;pertVec = [0 1 0];
 %%  Set Test Parameters
 saveSim = 0;               %   Flag to save results
@@ -17,7 +17,7 @@ lengthArray = 2.63;
 thrLength = 6%2.63
 flwSpd = -1e-9;
 cdArray = [1.2 1.8];    
-shareArray = 0;1:-.2:0
+shareArray = 1;1:-.2:0
 for q = 3           
     for i = 1:length(shareArray)
             for k = 1:numel(rCM)
@@ -58,13 +58,15 @@ for q = 3
                 env.water.setflowVec([flwSpd 0 0],'m/s');                   %   m/s - Flow speed vector
                 ENVIRONMENT = 'env2turbLinearize';            %   Two turbines
                 %%  Set basis parameters for high level controller
-               
+                 thr.tether1.youngsMod.setValue(10e9,'Pa');
                 loadComponent('constBoothLem');        %   High level controller
-                                    PATHGEOMETRY = 'lemBoothNew'
+                                     PATHGEOMETRY = 'lemBoothNew'
                                                         a = 2*thrLength*sin(w/2);
                     b = 2*thrLength*sin(h/2);
                     a = 6
                     b = 2
+%                     h = 2*asin(b/2/thrLength );  w = 2*asin(a/2/thrLength );                              %   rad - Path width/height
+%         [a,b] = boothParamConversion(w,h);
                 hiLvlCtrl.basisParams.setValue([a,b,el,0,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
 
                 %             las.tetherLoadDisable;
@@ -91,7 +93,7 @@ for q = 3
                 %%  Vehicle Properties
                 PLANT = 'plant2turb';
                 VEHICLE = 'vhclPool';
-                SENSORS = 'realisticSensors';
+%                 SENSORS = 'realisticSensors';
                 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
@@ -113,7 +115,7 @@ for q = 3
                     vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
                     %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
                     vhcl.setInitVelVecBdy([-towArray 0 0],'m/s');
-                    
+                   gmaili 
                     vhcl.initPosVecGnd.setValue([cos(elevArray) 0 sin(elevArray)]*thrLength,'m')
                     pos = vhcl.initPosVecGnd.Value;
                     x = pos(1);
@@ -143,7 +145,7 @@ for q = 3
                 thr.tether1.density.setValue(1000,'kg/m^3');
                 thr.tether1.setDiameter(.0076,'m');
                 thr.setNumNodes(4,'');
-                thrDrag =   1.8
+                thrDrag =   1.8;
                 thr.tether1.setDragCoeff(thrDrag,'');
                 %%  Winches Properties
                 wnch.setTetherInitLength(vhcl,thrAttachInit,env,thr,env.water.flowVec.Value);
@@ -167,7 +169,7 @@ for q = 3
                     %                     693
                     fltCtrl.rollAmp.setValue(60,'deg');
                     fltCtrl.yawAmp.setValue(80,'deg');
-                    fltCtrl.period.setValue(7.5,'s');
+                    fltCtrl.period.setValue(10,'s');
                     fltCtrl.rollPhase.setValue(-pi/2,'rad');
                     fltCtrl.yawPhase.setValue(-pi/2,'rad');
                     if q == 1
@@ -315,7 +317,7 @@ end
 % plot(tsc.phi*180/pi)
 % 
 % gndTen = squeeze(tsc.gndNodeTenVecs.Data);
-% timeVec = tsc.gndNodeTenVecs.Time;
+timeVec = tsc.gndNodeTenVecs.Time;
 % gndTenMag = sqrt(dot(gndTen,gndTen));
 % figure
 % plot(timeVec,gndTenMag)
@@ -323,58 +325,58 @@ end
 % xlabel 'Time [s]'
 % ylabel 'Tension Magnitude [N]'
 % 
-% pos = squeeze(tsc.positionVec.Data);
-% posEst = squeeze(tsc.positionVecEst.Data);
-% vel = squeeze(tsc.velocityVec.Data);
-% velEst = squeeze(tsc.velocityVecEst.Data);
+pos = squeeze(tsc.positionVec.Data);
+posEst = squeeze(tsc.positionVecEst.Data);
+vel = squeeze(tsc.velocityVec.Data);
+velEst = squeeze(tsc.velocityVecEst.Data);
 % %%
 % r = thrLength;
 % az = tsc.phi.Data;
 % el = -tsc.lasElevDeg.Data*pi/180;
 % posEstBoom = positionEstimate(r,el,az);
 % 
-% figure
-% tiledlayout(3,1)
-% labelCell = {'X-Pos [m]','Y-Pos [m]','Z-Pos [m]'}
-% for i = 1:3
-%     nexttile
-%     plot(timeVec,pos(i,:))
-%     hold on
-%     plot(timeVec,posEst(i,:))
-%     xlabel 'Time [s]'
-%     ylabel(labelCell{i})
-%     xlim([2 inf])
-%     if i == 1
-%         legend('Kite Position','LAS Estimate')
-%     end
-% end
+figure
+tiledlayout(3,1)
+labelCell = {'X-Pos [m]','Y-Pos [m]','Z-Pos [m]'}
+for i = 1:3
+    nexttile
+    plot(timeVec,pos(i,:))
+    hold on
+    plot(timeVec,posEst(i,:))
+    xlabel 'Time [s]'
+    ylabel(labelCell{i})
+    xlim([2 inf])
+    if i == 1
+        legend('Kite Position','LAS Estimate')
+    end
+end
+
+figure
+tiledlayout(3,1)
+labelCell = {'X-Vel [m/s]','Y-Vel [m/s]','Z-Vel [m/s]'}
+for i = 1:3
+    nexttile
+    plot(timeVec,vel(i,:))
+    hold on
+    plot(timeVec,velEst(i,:))
+    xlabel 'Time [s]'
+    ylabel(labelCell{i})
+    if i == 1
+        legend('Kite Velocity','LAS Predicted')
+    end
+    xlim([2 inf])
+end
 % 
-% figure
-% tiledlayout(3,1)
-% labelCell = {'X-Vel [m/s]','Y-Vel [m/s]','Z-Vel [m/s]'}
-% for i = 1:3
-%     nexttile
-%     plot(timeVec,vel(i,:))
-%     hold on
-%     plot(timeVec,velEst(i,:))
-%     xlabel 'Time [s]'
-%     ylabel(labelCell{i})
-%     if i == 1
-%         legend('Kite Velocity','LAS Predicted')
-%     end
-%     xlim([2 inf])
-% end
 % 
 % 
-% 
-% figure
-% plot(timeVec,(dot(vel,vel)))
-% hold on
-% plot(timeVec,(dot(velEst,velEst))*1.15)
-% xlim([3 inf])
-% xlabel 'Time [s]'
-% ylabel '$V_{app}^2$ [$(m/s)^2$]'
-% legend('Kite Velocity','1.1$V_{app,LAS}^2$')
+figure
+plot(timeVec,(dot(vel,vel)))
+hold on
+plot(timeVec,(dot(velEst,velEst))*1.15)
+xlim([3 inf])
+xlabel 'Time [s]'
+ylabel '$V_{app}^2$ [$(m/s)^2$]'
+legend('Kite Velocity','1.1$V_{app,LAS}^2$')
 %%
 
 fPath = 'C:\Users\adabney\iCloudDrive\NCSU HW Uploads\'
