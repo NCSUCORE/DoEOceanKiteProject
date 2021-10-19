@@ -115,7 +115,7 @@ for q = 3
                     vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
                     %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
                     vhcl.setInitVelVecBdy([-towArray 0 0],'m/s');
-                   gmaili 
+ 
                     vhcl.initPosVecGnd.setValue([cos(elevArray) 0 sin(elevArray)]*thrLength,'m')
                     pos = vhcl.initPosVecGnd.Value;
                     x = pos(1);
