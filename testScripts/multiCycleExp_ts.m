@@ -9,7 +9,7 @@ saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
 thrArray = 5;%[200:400:600];%:25:600];
 altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = 1.5;%[0.1:0.1:.5];
+flwSpdArray = 1;%[0.1:0.1:.5];
 distFreq = 0;
 distAmp = 0;
 pertVec = [0 1 0];
@@ -93,7 +93,7 @@ for j = 1:length(thrArray)
         
         thr.tether1.youngsMod.setValue(10e9,'Pa');
         %%  Set up critical system parameters and run simulation
-        simParams = SIM.simParams;  simParams.setDuration(500,'s');  dynamicCalc = '';
+        simParams = SIM.simParams;  simParams.setDuration(400,'s');  dynamicCalc = '';
 
         
         
@@ -116,8 +116,8 @@ plot(velmags3(2000:end))
 meanVel = mean(velmags3(2000:end))
 % %% Animate Sim
 %
-vhcl.animateSim(tsc,.7,'PathFunc','lemOfBooth',...
-    'PlotTracer',false,'FontSize',18,'starttime',250,'endtime',500,'SaveGif',1==1,'GifTimeStep',.01)
+vhcl.animateSim(tsc,.3,'PathFunc','lemOfBooth',...
+    'PlotTracer',false,'FontSize',18,'starttime',150,'endtime',400,'SaveGif',1==1,'GifTimeStep',.01)
 
 
 

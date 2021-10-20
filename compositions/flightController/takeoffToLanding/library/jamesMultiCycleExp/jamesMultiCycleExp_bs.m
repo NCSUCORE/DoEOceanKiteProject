@@ -26,23 +26,23 @@ fltCtrl.rollMomentPhase1.tau.setValue(0.001,'s');
 fltCtrl.rollCtrl.kp.setValue(3,'(N*m)/(rad)')
 fltCtrl.rollCtrl.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollCtrl.kd.setValue(1,'(N*m)/(rad/s)');
-fltCtrl.rollCtrl.tau.setValue(0.001,'s');
+fltCtrl.rollCtrl.tau.setValue(0.01,'s');
 
 fltCtrl.yawCtrl.kp.setValue(1.4,'(N*m)/(rad)')
 fltCtrl.yawCtrl.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.yawCtrl.kd.setValue(1,'(N*m)/(rad/s)');
-fltCtrl.yawCtrl.tau.setValue(0.001,'s');
+fltCtrl.yawCtrl.tau.setValue(0.01,'s');
 
 fltCtrl.rollAmp.setValue(70,'deg')
 fltCtrl.yawAmp.setValue(90,'deg')
 fltCtrl.rollPhase.setValue(0,'rad')
-fltCtrl.yawPhase.setValue(.693-pi,'rad')
+fltCtrl.yawPhase.setValue(.4,'rad')
 fltCtrl.frequency.setValue((2*pi)/(6.5),'')
 
 %% elevator constants
 fltCtrl.elvDeflStrt.setValue(5,'deg')
 fltCtrl.elvDeflLaunch.setValue(12,'deg')
-fltCtrl.ccElevator.setValue(-4,'deg')
+fltCtrl.ccElevator.setValue(-6,'deg')
 fltCtrl.phase2Elevator.setValue(-6,'deg')
 %% tether lengths
 
@@ -58,8 +58,8 @@ fltCtrl.setPerpErrorVal(.2,'rad');
 fltCtrl.setStartControl(150,'s')
 %% other constants
 
-fltCtrl.controllerEnable.setValue(1,'');
-fltCtrl.vSat.setValue(.125,'');
+fltCtrl.controllerEnable.setValue(0,'');
+fltCtrl.vSat.setValue(.15,'');
 fltCtrl.sIM.setValue(.5,'');
 fltCtrl.gain4to1.setValue(.7,'');
 fltCtrl.gain2to3.setValue(.4,'');
