@@ -13,14 +13,14 @@ fltCtrl.rollMoment.kp.setValue(45/3,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollMoment.kd.setValue(25/3,'(N*m)/(rad/s)');
 fltCtrl.rollMoment.tau.setValue(0.001,'s');
-fltCtrl.rudderGain.setValue(-1,'')
+fltCtrl.rudderGain.setValue(1,'')
 
 %% phase 1 controller
 
 
-fltCtrl.rollMomentPhase1.kp.setValue(0,'(N*m)/(rad)')
+fltCtrl.rollMomentPhase1.kp.setValue(3,'(N*m)/(rad)')
 fltCtrl.rollMomentPhase1.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMomentPhase1.kd.setValue(.07,'(N*m)/(rad/s)');
+fltCtrl.rollMomentPhase1.kd.setValue(1,'(N*m)/(rad/s)');
 fltCtrl.rollMomentPhase1.tau.setValue(0.001,'s');
 %% Control surface periodic setpoint tracking  controllers
 fltCtrl.rollCtrl.kp.setValue(3,'(N*m)/(rad)')
@@ -42,7 +42,7 @@ fltCtrl.frequency.setValue((2*pi)/(6.5),'')
 %% elevator constants
 fltCtrl.elvDeflStrt.setValue(5,'deg')
 fltCtrl.elvDeflLaunch.setValue(12,'deg')
-fltCtrl.ccElevator.setValue(-6,'deg')
+fltCtrl.ccElevator.setValue(-4,'deg')
 fltCtrl.phase2Elevator.setValue(-6,'deg')
 %% tether lengths
 
@@ -59,10 +59,10 @@ fltCtrl.setStartControl(150,'s')
 %% other constants
 
 fltCtrl.controllerEnable.setValue(1,'');
-fltCtrl.vSat.setValue(.1,'');
+fltCtrl.vSat.setValue(.125,'');
 fltCtrl.sIM.setValue(.5,'');
 fltCtrl.gain4to1.setValue(.7,'');
 fltCtrl.gain2to3.setValue(.4,'');
-fltCtrl.elvPeak.setValue(40,'deg');
+fltCtrl.elvPeak.setValue(50,'deg');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
