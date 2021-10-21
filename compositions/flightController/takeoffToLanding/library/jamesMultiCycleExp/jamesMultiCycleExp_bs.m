@@ -47,7 +47,7 @@ fltCtrl.phase2Elevator.setValue(-6,'deg')
 %% tether lengths
 
 fltCtrl.initTL.setValue(5,'m')
-fltCtrl.maxTL.setValue(8,'m')
+fltCtrl.maxTL.setValue(9,'m')
 %% Saturations
 fltCtrl.maxBank.upperLimit.setValue(20*pi/180,'');
 fltCtrl.maxBank.lowerLimit.setValue(-20*pi/180,'');
@@ -59,7 +59,7 @@ fltCtrl.setStartControl(150,'s')
 %% other constants
 
 fltCtrl.controllerEnable.setValue(0,'');
-fltCtrl.vSat.setValue(.15,'');
+fltCtrl.vSat.setValue(.2,'');
 fltCtrl.sIM.setValue(.5,'');
 fltCtrl.gain4to1.setValue(.7,'');
 fltCtrl.gain2to3.setValue(.4,'');
