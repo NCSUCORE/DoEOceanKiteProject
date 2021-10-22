@@ -1,5 +1,5 @@
 %% Test script for pool test simulation of the kite model
-clear;clc;%close all;
+clear;clc;close all;
 
 clc
 Simulink.sdi.clear
@@ -13,14 +13,16 @@ inc =-5.5;
 elevArray = 20*pi/180%[40 15]*pi/180;
 towArray = [1];
 rCM = 1 
-lengthArray = 2.63;     
+lengthArray = [4]%:1:10];     
 thrLength = 6%2.63
 flwSpd = -1e-9;
 cdArray = [1.2 1.8];    
-shareArray = 0;1:-.2:0
+shareArray = 1;1:-.2:0
+inc = [-6]
 for q = 3           
-    for i = 1:length(shareArray)
-            for k = 1:numel(rCM)
+    for i = 1:length(lengthArray)
+            for k = 1:numel(towArray)
+                thrLength = lengthArray(i)
                 tic
                 Simulink.sdi.clear
                 h = 40*pi/180;  w = 100*pi/180;                             %   rad - Path width/height
@@ -63,8 +65,8 @@ for q = 3
                                      PATHGEOMETRY = 'lemBoothNew'
                                                         a = 2*thrLength*sin(w/2);
                     b = 2*thrLength*sin(h/2);
-                    a = 6
-                    b = 2
+                    a = 7
+                    b = 3
 %                     h = 2*asin(b/2/thrLength );  w = 2*asin(a/2/thrLength );                              %   rad - Path width/height
 %         [a,b] = boothParamConversion(w,h);
                 hiLvlCtrl.basisParams.setValue([a,b,el,0,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
@@ -81,7 +83,7 @@ for q = 3
                 m_raft = 50; %kg
                 J_raft = 30;
                 tow_length = 16;
-                tow_speed = towArray;
+                tow_speed = towArray(k);
                 end_time = 60;tow_length/tow_speed;
                 x_init = 0;
                 y_init = 0;
@@ -94,6 +96,7 @@ for q = 3
                 PLANT = 'plant2turb';
                 VEHICLE = 'vhclPool';
                 SENSORS = 'realisticSensors';
+%                 SENSORS = 'idealSensors';
                 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
@@ -101,7 +104,7 @@ for q = 3
                 vhcl.vStab.setGainCL(vhcl.vStab.gainCL.Value/2,'1/deg');
                 vhcl.vStab.setGainCD(vhcl.vStab.gainCD.Value/2,'1/deg');
                 if q == 3
-                    vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,6.5*abs(flwSpd)*norm([1;0;0]))
+                    vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,3*abs(flwSpd)*norm([1;0;0]))
                     pos = vhcl.initPosVecGnd.Value;
                     x = pos(1);
                     y = pos(2);
@@ -114,7 +117,7 @@ for q = 3
                     vhcl.setICsOnPath(0.0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,initGndStnPos,0);
                     vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
                     %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
-                    vhcl.setInitVelVecBdy([-towArray 0 0],'m/s');
+                    vhcl.setInitVelVecBdy([-towArray(k) 0 0],'m/s');
  
                     vhcl.initPosVecGnd.setValue([cos(elevArray) 0 sin(elevArray)]*thrLength,'m')
                     pos = vhcl.initPosVecGnd.Value;
@@ -161,14 +164,17 @@ for q = 3
                 fltCtrl.yawMoment.kp.setValue(15,'(N*m)/(rad)')
                 fltCtrl.tanRoll.kp.setValue(.4,'(rad)/(rad)')
                 thr.tether1.dragEnable.setValue(1,'')
-                vhcl.hStab.setIncidence(-6,'deg');
+                vhcl.hStab.setIncidence(inc,'deg');
                 if q == 3
-                    vhcl.hStab.setIncidence(-6,'deg');
+                    vhcl.hStab.setIncidence(inc,'deg');
                 end
 
                     %                     693
                     fltCtrl.rollAmp.setValue(60,'deg');
                     fltCtrl.yawAmp.setValue(80,'deg');
+%                     fltCtrl.rollAmp.setValue(0,'deg');
+%                     fltCtrl.yawAmp.setValue(0,'deg');
+
                     fltCtrl.period.setValue(10,'s');
                     fltCtrl.rollPhase.setValue(-pi/2,'rad');
                     fltCtrl.yawPhase.setValue(-pi/2,'rad');
@@ -196,7 +202,7 @@ for q = 3
                     fltCtrl.ccElevator.setValue(0,'deg');
                     fltCtrl.trimElevator.setValue(0,'deg');
                     fltCtrl.searchSize.setValue(0.1,'');
-                    share = shareArray(i)
+                    share = shareArray
                                  FLIGHTCONTROLLER = 'sharedController';
                fltCtrl.winchSpeedIn.setValue(0,'m/s')
                fltCtrl.firstSpoolLap.setValue(1000,'')
@@ -210,14 +216,24 @@ for q = 3
                 set_param('OCTModel','SimulationMode','accelerator');
                 simWithMonitor('OCTModel','minRate',0)
                 tsc = signalcontainer(logsout);
-                figure;plot(tsc.ctrlSurfDeflCmd);
-                figure;tsc.positionVec.plot3;
-                vhcl.animateSim(tsc,0.5,'endTime',60,'PathFunc',fltCtrl.fcnName.Value)
-                plotVelMags    
+                figure; tsc.eulerAngles.plot;
+                pitchSS(i,k) = tsc.eulerAngles.Data(2,:,end);
+%                 figure;plot(tsc.ctrlSurfDeflCmd);
+%                 figure;tsc.positionVec.plot3;
+                vhcl.animateSim(tsc,0.5,'endTime',60,'PathFunc',fltCtrl.fcnName.Value,'SaveGIF',true,'GifTimeStep',.0001)
+                plotVelAug    
             end
             toc
         end
 end
+%%
+% figure
+% plot(inc,pitchSS*180/pi,'x')
+% xlabel 'Elevator Deflection [deg]'
+% ylabel 'Pitch Angle [deg]'
+% legend('$v_{flow} = 1 m/s$','$v_{flow} = 1.5 m/s$')
+% 
+% slope = mean(diff(pitchSS,1))*180/pi
 %  tsc=tsc{1}
 % figure;plot(tsc.ctrlSurfDeflCmd.Time,tsc.ctrlSurfDeflCmd.Data(:,1))
 % vhcl.animateSim(tsc,0.5,'endTime',60,'TracerDuration',15,'SaveGif',true)
@@ -324,9 +340,9 @@ timeVec = tsc.gndNodeTenVecs.Time;
 % xlim([2 inf])
 % xlabel 'Time [s]'
 % ylabel 'Tension Magnitude [N]'
-% 
-pos = squeeze(tsc.positionVec.Data);
-posEst = squeeze(tsc.positionVecEst.Data);
+%%
+pos = squeeze(tsc.positionVec.Data)-squeeze(tsc.gndStnPositionVec.Data);
+posEst = squeeze(tsc.positionVecEst.Data)-squeeze(tsc.gndStnPositionVec.Data);
 vel = squeeze(tsc.velocityVec.Data);
 velEst = squeeze(tsc.velocityVecEst.Data);
 % %%
@@ -370,13 +386,13 @@ end
 % 
 % 
 figure
-plot(timeVec,(dot(vel,vel)))
+plot(timeVec,sqrt((dot(vel,vel))))
 hold on
-plot(timeVec,(dot(velEst,velEst))*1.15)
+plot(timeVec,sqrt((dot(velEst,velEst))))
 xlim([3 inf])
 xlabel 'Time [s]'
-ylabel '$V_{app}^2$ [$(m/s)^2$]'
-legend('Kite Velocity','1.1$V_{app,LAS}^2$')
+ylabel '$|V_{app}|$ [$(m/s)^2$]'
+legend('Kite Velocity','$LAS Prediction$')
 %%
 
 fPath = 'C:\Users\adabney\iCloudDrive\NCSU HW Uploads\'

@@ -32,9 +32,10 @@ for j = 1:length(thrArray)
         loadComponent('pathFollowingGndStn');
         loadComponent('oneDOFWnch');                                %   Winches
         loadComponent('poolTether');                               %   Manta Ray tether
-        loadComponent('idealSensors')
-        loadComponent('lasPosEst')
-        loadComponent('lineAngleSensor');%   Sensors
+
+        loadComponent('lasPosEst')                               %   Sensors
+        loadComponent('lineAngleSensor');
+
         loadComponent('idealSensorProcessing')                      %   Sensor processing
         loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
         SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
@@ -64,13 +65,27 @@ for j = 1:length(thrArray)
         %%  Ground Station Properties
         
         gndStn.posVec.setValue([0 0 0],'m')
+        elevArray = 70*pi/180;
         %%  Vehicle Properties
         % vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
-        %         vhcl.initPosVecGnd.setValue([0;0;thrLength],'m')
-        vhcl.initPosVecGnd.setValue([cos(70*(pi/180)) 0 sin(70*(pi/180))]*thrLength,'m')
+
+        vhcl.initPosVecGnd.setValue([cos(elevArray) 0 sin(elevArray)]*thrLength,'m')
+
         vhcl.initAngVelVec.setValue([0;0;0],'rad/s')
         vhcl.initVelVecBdy.setValue([0;0;0],'m/s')
         vhcl.initEulAng.setValue([0;0;0],'rad')
+        
+        %%%%
+        % Initialize LAS
+        %%%%
+        pos = vhcl.initPosVecGnd.Value;
+        x = pos(1);
+        y = pos(2);
+        z = pos(3);
+        az1 = atan2(y,x);
+        el1 = atan2(z,sqrt(x.^2 + y.^2));
+        las.setThrInitAng([el1 az1],'rad');
+        las.setInitAngVel([-0 0],'rad/s');
         %%  Tethers Properties
         load([fileparts(which('OCTProject.prj')),'\vehicleDesign\Tether\tetherDataNew.mat']);
         thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
@@ -117,12 +132,9 @@ for j = 1:length(thrArray)
         
         thr.tether1.youngsMod.setValue(10e9,'Pa');
         %%  Set up critical system parameters and run simulation
+
         simParams = SIM.simParams;  simParams.setDuration(500,'s');  dynamicCalc = '';
-        
-        
-        
-        
-        simWithMonitor('OCTModel')
+         simWithMonitor('OCTModel')
         tsc = signalcontainer(logsout);
         
     end

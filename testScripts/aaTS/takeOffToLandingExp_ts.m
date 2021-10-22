@@ -84,14 +84,15 @@ vhcl.setBuoyFactor(.98,'')
 vhcl.setRBridle_LE([0.029;0;-0.1],'m')
 %% Transition gains
 gain4to1 = 1; 
-gain2to3 = 1; 
+gain2to3 = 1;
+elSP = -5; 
 % fltCtrl.rollMoment.kp.setValue(50,'(N*m)/(rad)')
 % fltCtrl.rollMoment.kp.setValue(0,'(N*m)/(rad)')
 % fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
 % fltCtrl.rollMoment.kd.setValue(25,'(N*m)/(rad/s)')
 % fltCtrl.rollMoment.kd.setValue(0,'(N*m)/(rad/s)')
 % fltCtrl.tanRoll.kp.setValue(0,'(rad)/(rad)')
-elSP = -5; 
+
 %% Start Control
 flowSpeedOpenLoop = -.03;
 fltCtrl.startControl.setValue(150,'s')
