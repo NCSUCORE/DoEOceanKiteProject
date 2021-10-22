@@ -7,24 +7,24 @@ Simulink.sdi.clear
 %%  Set Test Parameters
 saveSim = 0;              %   Flag to save results
 runLin = 1;                %   Flag to run linearization
-thrArray = 5;%[200:400:600];%:25:600];
-altitudeArray = 1.5;%[100:200:300];%150:25:300];
-flwSpdArray = 1;%[0.1:0.1:.5];
-distFreq = 0;
-distAmp = 0;
-pertVec = [0 1 0];
+thrArray = 5;
+
+flwSpdArray = 1;
+
+
 for j = 1:length(thrArray)
     for k = 1:length(flwSpdArray)
-        thrLength = thrArray(j);  altitude = altitudeArray(j);  elev = atan2(altitude,thrLength);               %   Initial tether length/operating altitude/elevation angle
+        thrLength = thrArray(j);            %   Initial tether length/operating altitude/elevation angle
         flwSpd = flwSpdArray(k) ;                                              %   m/s - Flow speed
-        %         Tmax = 38;                                                  %   kN - Max tether tension
-        h = 2*asin(2/2/thrLength );  w = 2*asin(6/2/thrLength );                              %   rad - Path width/height
-        [a,b] = boothParamConversion(w,h);                          %   Path basis parameters
+        %   kN - Max tether tension
+        %         h = 2*asin(2/2/thrLength );  w = 2*asin(6/2/thrLength );                              %   rad - Path width/height
+        %         [a,b] = boothParamConversion(w,h);
+        
+        
+        %   Path basis parameters
         %%  Load components
-        % fpath = fullfile(fileparts(which('OCTProject.prj')),...
-        %     'vehicleDesign\Tether\Tension\');
-        % maxT = load([fpath,sprintf('TmaxStudy_%dkN.mat',Tmax)]);
-        el = asin(altitude/thrLength);
+        
+     
         loadComponent('jamesMultiCycleExp');                 %   Path-following controller with AoA control
         % FLIGHTCONTROLLER = 'pathFollowingControllerExp';
         FLIGHTCONTROLLER = 'takeOffToLanding';
@@ -32,7 +32,9 @@ for j = 1:length(thrArray)
         loadComponent('pathFollowingGndStn');
         loadComponent('oneDOFWnch');                                %   Winches
         loadComponent('poolTether');                               %   Manta Ray tether
-        loadComponent('idealSensors')                               %   Sensors
+        loadComponent('idealSensors')
+        loadComponent('lasPosEst')
+        loadComponent('lineAngleSensor');%   Sensors
         loadComponent('idealSensorProcessing')                      %   Sensor processing
         loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
         SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
@@ -45,15 +47,27 @@ for j = 1:length(thrArray)
         %%  Set basis parameters for high level controller
         
         
-        loadComponent('constBoothLem');        %   High level controller
+        %         loadComponent('constBoothLem');        %   High level controller
+        %
+        %         hiLvlCtrl.basisParams.setValue([a,b,deg2rad(25),0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
         
-        hiLvlCtrl.basisParams.setValue([a,b,deg2rad(25),0*pi/180,thrLength-.1],'[rad rad rad rad m]') % Lemniscate of Booth
+        loadComponent('constBoothLem');        %   High level controller
+        PATHGEOMETRY = 'lemBoothNew';
+%         a = 2*thrLength*sin(w/2);
+%         b = 2*thrLength*sin(h/2);
+        a = 6
+        b = 2
+        %                     h = 2*asin(b/2/thrLength );  w = 2*asin(a/2/thrLength );                              %   rad - Path width/height
+        %         [a,b] = boothParamConversion(w,h);
+        hiLvlCtrl.basisParams.setValue([a,b,deg2rad(25),0,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
+        
         %%  Ground Station Properties
         
         gndStn.posVec.setValue([0 0 0],'m')
         %%  Vehicle Properties
         % vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
-        vhcl.initPosVecGnd.setValue([0;0;thrLength],'m')
+        %         vhcl.initPosVecGnd.setValue([0;0;thrLength],'m')
+        vhcl.initPosVecGnd.setValue([cos(70*(pi/180)) 0 sin(70*(pi/180))]*thrLength,'m')
         vhcl.initAngVelVec.setValue([0;0;0],'rad/s')
         vhcl.initVelVecBdy.setValue([0;0;0],'m/s')
         vhcl.initEulAng.setValue([0;0;0],'rad')
@@ -69,20 +83,30 @@ for j = 1:length(thrArray)
         thr.setNumNodes(4,'');
         thrDrag =   1.8;
         thr.tether1.setDragCoeff(thrDrag,'');
+        
+        %% LAS
+        pos = vhcl.initPosVecGnd.Value;
+        x = pos(1);
+        y = pos(2);
+        z = pos(3);
+        az1 = atan2(y,x);
+        el1 = atan2(z,sqrt(x.^2 + y.^2));
+        las.setThrInitAng([el1 az1],'rad');
+        las.setInitAngVel([-0 0],'rad/s');
         %%  Winches Properties
         wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
         wnch.winch1.LaRspeed.setValue(1,'m/s');
         %%  Controller User Def. Parameters and dependant properties
         fltCtrl.setFcnName(PATHGEOMETRY,'');
         fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-%         fltCtrl.setPerpErrorVal(.25,'rad')
+        %         fltCtrl.setPerpErrorVal(.25,'rad')
         thr.tether1.dragEnable.setValue(1,'')
-       
+        
         fltCtrl.initPathVar.setValue(0,'')
-    
+        
         %% Start Control
         flowSpeedOpenLoop = .03;
-  
+        
         %% degredations
         vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
         vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
@@ -93,8 +117,8 @@ for j = 1:length(thrArray)
         
         thr.tether1.youngsMod.setValue(10e9,'Pa');
         %%  Set up critical system parameters and run simulation
-        simParams = SIM.simParams;  simParams.setDuration(400,'s');  dynamicCalc = '';
-
+        simParams = SIM.simParams;  simParams.setDuration(500,'s');  dynamicCalc = '';
+        
         
         
         
@@ -116,7 +140,7 @@ plot(velmags3(2000:end))
 meanVel = mean(velmags3(2000:end))
 % %% Animate Sim
 %
-vhcl.animateSim(tsc,.3,'PathFunc','lemOfBooth',...
+vhcl.animateSim(tsc,.3,...
     'PlotTracer',false,'FontSize',18,'starttime',150,'endtime',400,'SaveGif',1==1,'GifTimeStep',.01)
 
 
