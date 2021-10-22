@@ -17,7 +17,7 @@ lengthArray = 2.63;
 thrLength = 6%2.63
 flwSpd = -1e-9;
 cdArray = [1.2 1.8];    
-shareArray = 1;1:-.2:0
+shareArray = 0;1:-.2:0
 for q = 3           
     for i = 1:length(shareArray)
             for k = 1:numel(rCM)
@@ -93,7 +93,7 @@ for q = 3
                 %%  Vehicle Properties
                 PLANT = 'plant2turb';
                 VEHICLE = 'vhclPool';
-%                 SENSORS = 'realisticSensors';
+                SENSORS = 'realisticSensors';
                 vhcl.stbdWing.setGainCL(vhcl.stbdWing.gainCL.Value/8,'1/deg');
                 vhcl.portWing.setGainCL(vhcl.portWing.gainCL.Value/8,'1/deg');
                 vhcl.stbdWing.setGainCD(vhcl.stbdWing.gainCD.Value/8,'1/deg');
