@@ -20,7 +20,7 @@ classdef MultiCycleExp < handle
         ctrlAllocMat
         searchSize
         traditionalBool
-        
+        bScale
         perpErrorVal
         startControl
         outRanges
@@ -45,8 +45,9 @@ classdef MultiCycleExp < handle
         vSat
         ccElevator
          % period setpoint params
+         period
          rollAmp
-         frequency
+
          rollPhase
          yawAmp
          yawPhase
@@ -57,10 +58,14 @@ classdef MultiCycleExp < handle
          maxTL
          elvPeak
          
-         
+         % las scaling
+         vAppGain
          
     end
     
+    properties (Dependent)
+        frequency           
+    end
     methods
         function obj = MultiCycleExp
             %PTHFLWCTRL 
@@ -99,7 +104,8 @@ classdef MultiCycleExp < handle
             obj.vSat                = SIM.parameter('Unit','','Description','sat on spool out gain');
             obj.ccElevator          = SIM.parameter('Unit','deg','Description','crosscurrent elevator');
             obj.rollAmp             = SIM.parameter('Unit','deg','Description','roll sp amp');
-            obj.frequency           = SIM.parameter('Unit','','Description','frequency of sinewave sp');
+            obj.period              = SIM.parameter('Unit','s','Description','Setpoint period');
+            obj.bScale              = SIM.parameter('Unit','(N*s^2)/(deg*m)');
             obj.rollPhase           = SIM.parameter('Unit','rad','Description','roll sp phase');
             obj.yawAmp              = SIM.parameter('Unit','deg','Description','yaw sp amp');
             obj.yawPhase            = SIM.parameter('Unit','rad','Description','yaw sp phase');
@@ -107,9 +113,13 @@ classdef MultiCycleExp < handle
             obj.gain2to3            = SIM.parameter('Unit','','Description','transition gain from phase 2 to 3');
             obj.maxTL               = SIM.parameter('Unit','m','Description','max and ending tether length');
             obj.elvPeak             = SIM.parameter('Unit','deg','Description','peak elevation during phase 1');
-         
+            obj.vAppGain            = SIM.parameter('Unit','','Value',1,'Description','gain on vAppSqr for LAS estimation');
         end
         
+        function val = get.frequency(obj)
+            freq = 2*pi/obj.period.Value;
+            val = SIM.parameter('Unit','','Description','frequency of sinewave sp','Value',freq);
+        end
         function setWinchSpeedIn(obj,val,unit)
             obj.winchSpeedIn.setValue(val,unit);
         end

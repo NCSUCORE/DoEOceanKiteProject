@@ -1,4 +1,4 @@
-classdef lineAngleSensor < dynamicprops
+    classdef lineAngleSensor < dynamicprops
     %REALISTIC container for instances of realistic sensor models
     
     properties (SetAccess = private)

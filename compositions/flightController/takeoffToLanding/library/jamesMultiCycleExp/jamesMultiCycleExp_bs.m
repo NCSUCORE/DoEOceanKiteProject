@@ -37,7 +37,7 @@ fltCtrl.rollAmp.setValue(70,'deg')
 fltCtrl.yawAmp.setValue(90,'deg')
 fltCtrl.rollPhase.setValue(0,'rad')
 fltCtrl.yawPhase.setValue(.4,'rad')
-fltCtrl.frequency.setValue((2*pi)/(6.5),'')
+fltCtrl.period.setValue(7.5,'s')
 
 %% elevator constants
 fltCtrl.elvDeflStrt.setValue(5,'deg')
@@ -57,12 +57,13 @@ fltCtrl.setSearchSize(.5,'');
 fltCtrl.setPerpErrorVal(.2,'rad');
 fltCtrl.setStartControl(150,'s')
 %% other constants
-
+fltCtrl.vAppGain.setValue(1,'');
 fltCtrl.controllerEnable.setValue(0,'');
 fltCtrl.vSat.setValue(.2,'');
 fltCtrl.sIM.setValue(.5,'');
 fltCtrl.gain4to1.setValue(.7,'');
 fltCtrl.gain2to3.setValue(.4,'');
 fltCtrl.elvPeak.setValue(50,'deg');
+fltCtrl.bScale.setValue([0.0457 0.0417; 0.0085 -0.1495],'(N*s^2)/(deg*m)');
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

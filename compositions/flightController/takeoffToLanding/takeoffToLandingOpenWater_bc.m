@@ -16,7 +16,7 @@ elems(2).Dimensions = 1;
 elems(2).DimensionsMode = 'Fixed';
 elems(2).DataType = 'double';
 elems(2).SampleTime = -1;
-elems(2).Complexity = 'real';
+elems(2).Complexity = 'real';   
 elems(2).Unit = 'm/s';
 
 elems(3) = Simulink.BusElement;

@@ -122,6 +122,9 @@ fltCtrl.searchSize.Description = 'Range of normalized path variable to search'
 fltCtrl.traditionalBool.Unit is unitless or has no unit specified
 fltCtrl.traditionalBool.NoScale = true
 fltCtrl.traditionalBool.Description = 'Switch for inter vs intra cycle spooling.  Should be phased out in favor of variant subsystem'
+fltCtrl.bScale.Value = [0.0457 0.0417;0.0085 -0.1495]
+fltCtrl.bScale.Unit = '(N*s^2)/(deg*m)'
+fltCtrl.bScale.NoScale = false
 fltCtrl.perpErrorVal.Value = 2.0000e-01
 fltCtrl.perpErrorVal.Unit = 'rad'
 fltCtrl.perpErrorVal.NoScale = false
@@ -180,14 +183,14 @@ fltCtrl.ccElevator.Value = -6.0000e+00
 fltCtrl.ccElevator.Unit = 'deg'
 fltCtrl.ccElevator.NoScale = false
 fltCtrl.ccElevator.Description = 'crosscurrent elevator'
+fltCtrl.period.Value = 7.5000e+00
+fltCtrl.period.Unit = 's'
+fltCtrl.period.NoScale = false
+fltCtrl.period.Description = 'Setpoint period'
 fltCtrl.rollAmp.Value = 7.0000e+01
 fltCtrl.rollAmp.Unit = 'deg'
 fltCtrl.rollAmp.NoScale = false
 fltCtrl.rollAmp.Description = 'roll sp amp'
-fltCtrl.frequency.Value = 9.6664e-01
-fltCtrl.frequency.Unit is unitless or has no unit specified
-fltCtrl.frequency.NoScale = false
-fltCtrl.frequency.Description = 'frequency of sinewave sp'
 fltCtrl.rollPhase.Value = 0.0000e+00
 fltCtrl.rollPhase.Unit = 'rad'
 fltCtrl.rollPhase.NoScale = false
@@ -216,3 +219,11 @@ fltCtrl.elvPeak.Value = 5.0000e+01
 fltCtrl.elvPeak.Unit = 'deg'
 fltCtrl.elvPeak.NoScale = false
 fltCtrl.elvPeak.Description = 'peak elevation during phase 1'
+fltCtrl.vAppGain.Value = 1.0000e+00
+fltCtrl.vAppGain.Unit is unitless or has no unit specified
+fltCtrl.vAppGain.NoScale = false
+fltCtrl.vAppGain.Description = 'gain on vAppSqr for LAS estimation'
+fltCtrl.frequency.Value = 8.3776e-01
+fltCtrl.frequency.Unit is unitless or has no unit specified
+fltCtrl.frequency.NoScale = false
+fltCtrl.frequency.Description = 'frequency of sinewave sp'
