@@ -22,7 +22,7 @@ thr.tether1.youngsMod.Unit = 'Pa'
 thr.tether1.youngsMod.NoScale = false
 thr.tether1.vehicleMass.Unit = 'kg'
 thr.tether1.vehicleMass.NoScale = false
-thr.tether1.dampingRatio.Value = 7.5000e-01
+thr.tether1.dampingRatio.Value = 1.5000e-02
 thr.tether1.dampingRatio.Unit is unitless or has no unit specified
 thr.tether1.dampingRatio.NoScale = false
 thr.tether1.dragCoeff.Value = 1.8000e+00

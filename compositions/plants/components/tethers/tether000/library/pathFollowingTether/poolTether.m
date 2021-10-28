@@ -20,7 +20,7 @@ thr.build;
 thrDia = 0.0076;
 
 thr.tether1.youngsMod.setValue(50e9,'Pa');
-thr.tether1.dampingRatio.setValue(0.75,'');
+thr.tether1.dampingRatio.setValue(0.015,'');
 thr.tether1.dragCoeff.setValue(1.8,'');
 thr.tether1.density.setValue(1000,'kg/m^3');
 thr.tether1.setDragEnable(true,'');

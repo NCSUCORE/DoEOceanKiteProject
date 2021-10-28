@@ -23,18 +23,18 @@ fltCtrl.rollMomentPhase1.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollMomentPhase1.kd.setValue(1,'(N*m)/(rad/s)');
 fltCtrl.rollMomentPhase1.tau.setValue(0.001,'s');
 %% Control surface periodic setpoint tracking  controllers
-fltCtrl.rollCtrl.kp.setValue(3,'(N*m)/(rad)')
+fltCtrl.rollCtrl.kp.setValue(.3,'(N*m)/(rad)')
 fltCtrl.rollCtrl.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollCtrl.kd.setValue(1,'(N*m)/(rad/s)');
+fltCtrl.rollCtrl.kd.setValue(.1,'(N*m)/(rad/s)');
 fltCtrl.rollCtrl.tau.setValue(0.01,'s');
 
-fltCtrl.yawCtrl.kp.setValue(1.4,'(N*m)/(rad)')
+fltCtrl.yawCtrl.kp.setValue(.14,'(N*m)/(rad)')
 fltCtrl.yawCtrl.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.yawCtrl.kd.setValue(1,'(N*m)/(rad/s)');
+fltCtrl.yawCtrl.kd.setValue(.1,'(N*m)/(rad/s)');
 fltCtrl.yawCtrl.tau.setValue(0.01,'s');
 
-fltCtrl.rollAmp.setValue(70,'deg')
-fltCtrl.yawAmp.setValue(90,'deg')
+fltCtrl.rollAmp.setValue(60,'deg')
+fltCtrl.yawAmp.setValue(80,'deg')
 fltCtrl.rollPhase.setValue(0,'rad')
 fltCtrl.yawPhase.setValue(.4,'rad')
 fltCtrl.period.setValue(7.5,'s')
@@ -58,8 +58,8 @@ fltCtrl.setPerpErrorVal(.2,'rad');
 fltCtrl.setStartControl(150,'s')
 %% other constants
 fltCtrl.vAppGain.setValue(1,'');
-fltCtrl.controllerEnable.setValue(0,'');
-fltCtrl.vSat.setValue(.2,'');
+fltCtrl.controllerEnable.setValue(-1,'');
+fltCtrl.vSat.setValue(.01,'');
 fltCtrl.sIM.setValue(.5,'');
 fltCtrl.gain4to1.setValue(.7,'');
 fltCtrl.gain2to3.setValue(.4,'');
