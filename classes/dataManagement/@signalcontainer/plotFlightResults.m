@@ -75,7 +75,11 @@ else
     totDrag = (FDragBdy + FDragFuse + FDragThr);
     LiftDrag = FLiftBdy./(FDragBdy + FDragFuse);
 end
-C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+try
+    C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+catch
+    C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+end
 if turb
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
     vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
