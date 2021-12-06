@@ -121,14 +121,14 @@ end
 if lap
     if con
         plot(data(ran),Tmax(ran),'r--');    plot(data(ran),airNode(ran)*1000/4.4488,'b-');  
-        plot(data(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider')
+        plot(data(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [lbf]');  legend('Limit','Kite','Glider')
     else
-        plot(time(ran),Tmax(ran)*1000/4.4488,'r--');    plot(time(ran),airNode(ran)*1000/4.4488,'b-');  
-        plot(time(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
+        plot(time(ran),Tmax(ran),'r--');    plot(time(ran),airNode(ran)*1000/4.4488,'b-');  
+        plot(time(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [lbf]');  legend('Limit','Kite','Glider');  xlim(lim)
     end
 else
-    plot(time,Tmax*1000/4.4488,'r--');  plot(time,airNode*1000/4.4488,'b-');  plot(time,gndNode*1000/4.4488,'g-');  
-    ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
+    plot(time,Tmax,'r--');  plot(time,airNode*1000/4.4488,'b-');  plot(time,gndNode*1000/4.4488,'g-');  
+    ylabel('Thr Tension [lbf]');  legend('Limit','Kite','Glider');  xlim(lim)
 end
 %%  Plot Speed
 ax3 = subplot(R,C,3); hold on; grid on
@@ -172,6 +172,7 @@ if lap
             plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');
         end
         plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA');
+        plot(data(ran),squeeze(obj.hStabAoA.Data(ran)),'k--','DisplayName','Stabilizer AoA');
         ylabel('Angle [deg]');
         if p.Results.plotBeta
             plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');
@@ -180,6 +181,7 @@ if lap
     else
         plot(time(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');
         plot(time(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA');
+%         plot(data(ran),squeeze(obj.hStabAoA.Data(ran)),'k--','DisplayName','Stabilizer AoA');
         ylabel('Angle [deg]');  xlim(lim);
         if p.Results.plotBeta
             plot(time(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');   xlim(lim)
@@ -188,7 +190,8 @@ if lap
     end
 else
     plot(time,obj.AoASP.Data*180/pi,'r-');  
-    plot(time,squeeze(obj.vhclAngleOfAttack.Data),'b-'); ylim([0 20]);
+    plot(time,squeeze(obj.vhclAngleOfAttack.Data),'b-'); %ylim([0 20]);
+    plot(time,squeeze(obj.hStabAoA.Data),'k--','DisplayName','Stabilizer AoA');
     ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
     if p.Results.plotBeta
         plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)

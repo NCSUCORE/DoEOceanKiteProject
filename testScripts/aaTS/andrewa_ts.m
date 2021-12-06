@@ -9,7 +9,7 @@ clear;clc;%close all
 %   3 = steady Old;       3.1 = steady AVL;     3.2 = steady XFoil      3.3 = Steady XFlr5      3.4 = Steady XFlr5 Passive ;
 %   4 = LaR Old;          4.1 = LaR AVL;        4.2 = LaR XFoil;        4.3 = LaR XFlr5 
 simScenario = 3.5;
-simScenariosub = (simScenario - floor(simScenario))*10
+simScenariosub =  (simScenario - floor(simScenario))*10
 %%  Set Physical Test Parameters
 thrLength = 8;                                            %   m - Initial tether length
 flwSpd = 1                                               %   m/s - Flow speed

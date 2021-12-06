@@ -407,11 +407,11 @@ classdef signalcontainer < dynamicprops
                 Rthr = 14;
                 Ithr = Pow.elec*1e3/1e3;
             end
-            Pow.loss = Rthr*Ithr^2*1e-3+mean(obj.ctrlPowLoss.Data(1,1,ran));
-            Pow.net = Pow.elec-Pow.loss;
+            Pow.loss = Rthr*Ithr^2*1e-3+mean(obj.ctrlPowLoss.Data(1,1,ran))*1e-3;
             Pow.max = max(obj.netPower.Data(1,1,ran))*1e-3;
             Pow.min = min(obj.netPower.Data(1,1,ran))*1e-3;
             Pow.wnch = mean(obj.winchPower.Data(ran))*1e-3;
+            Pow.net = Pow.elec-Pow.loss-Pow.wnch;
             fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.min,Pow.max,Pow.elec,Pow.loyd,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)

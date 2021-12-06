@@ -22,7 +22,7 @@ alpha = obj.portWing.alpha.Value;
 Aref = obj.fluidRefArea.Value;
 Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
     (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
-Athr = thrL*thr.tether1.diameter.Value/4;
+Athr = thr.tether1.diameter.Value/4;
 CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref;
 CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
     obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
