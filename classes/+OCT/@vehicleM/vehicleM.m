@@ -785,8 +785,8 @@ classdef vehicleM < dynamicprops
                 x = reshape(repmat(x,perSlice,1),[1 numel(x)*perSlice]);
                 th=linspace(0,2*pi,perSlice);
                 d=obj.fuse.diameter.Value;
-                y=repmat(d/2*cos(th),1,p.Results.fuseRings);
-                z=repmat(d/2*sin(th),1,p.Results.fuseRings);
+                y=repmat(d/2*cos(th),1,p.Results.fuseRings)+obj.fuse.rNose_LE.Value(2);
+                z=repmat(d/2*sin(th),1,p.Results.fuseRings)+obj.fuse.rNose_LE.Value(3);
                 numextra=(perSlice-1)*2;
                 xend=x(end);
                 for i = 0:numextra-1
@@ -804,15 +804,15 @@ classdef vehicleM < dynamicprops
                 sy = reshape(obj.fuse.diameter.Value/2*sy,[1 numel(sy)]);
                 sz = reshape(obj.fuse.diameter.Value/2*sz,[1 numel(sz)]);
                 nosex = sy(1:ceil(numel(sx)/2))+obj.fuse.rNose_LE.Value(1)+obj.fuse.diameter.Value/2;
-                nosey = sx(1:ceil(numel(sx)/2));
-                nosez = sz(1:ceil(numel(sx)/2));
+                nosey = sx(1:ceil(numel(sx)/2))+obj.fuse.rNose_LE.Value(2);
+                nosez = sz(1:ceil(numel(sx)/2))+obj.fuse.rNose_LE.Value(3);
                 %                 x(end+1:end+numel(nosex))=nosex;
                 %                 y(end+1:end+numel(nosey))=nosey;
                 %                 z(end+1:end+numel(nosez))=nosez;
                 
                 endx = sy(ceil(numel(sx)/2):end)+obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value/2;
-                endy = sx(ceil(numel(sx)/2):end);
-                endz = sz(ceil(numel(sx)/2):end);
+                endy = sx(ceil(numel(sx)/2):end)+obj.fuse.rNose_LE.Value(2);
+                endz = sz(ceil(numel(sx)/2):end)+obj.fuse.rNose_LE.Value(3);
                 %                 x(end+1:end+numel(endx))=endx;
                 %                 y(end+1:end+numel(endy))=endy;
                 %                 z(end+1:end+numel(endz))=endz;

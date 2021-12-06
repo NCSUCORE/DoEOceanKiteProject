@@ -13,6 +13,8 @@ classdef pthFlwCtrlM < handle
         alphaCtrl
         RPMCtrl
         yawCtrl
+        % Reference Filter
+        refFiltTau
         % Saturations
         maxBank
         controlSigMax
@@ -58,6 +60,8 @@ classdef pthFlwCtrlM < handle
             obj.alphaCtrl           = CTR.FPID('kN*s^2/m^2','rad');
 %             obj.RPMCtrl             = CTR.FPID('kN','(s^-1)');
             obj.yawCtrl             = CTR.FPID('rad','deg');
+            
+            obj.refFiltTau          = SIM.parameter('Unit','s','Description','Reference filter time constant');
             
             obj.maxBank             = CTR.sat;
             obj.controlSigMax       = CTR.sat;
