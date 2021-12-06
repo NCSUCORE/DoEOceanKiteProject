@@ -75,7 +75,11 @@ else
     totDrag = (FDragBdy + FDragFuse + FDragThr);
     LiftDrag = FLiftBdy./(FDragBdy + FDragFuse);
 end
-C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+try
+    C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+catch
+    C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+end
 if turb
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3/vhcl.turb1.axialInductionFactor.Value;
     vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2);
@@ -114,21 +118,22 @@ end
 %%  Plot Tether Tension
 ax2 = subplot(R,C,2); hold on; grid on
 if p.Results.maxTension
-    Tmax = (obj.maxTension.Data/.95)*ones(numel(time),1)/4.4488*1000;
+    Tmax = (obj.maxTension.Data/.95)*ones(numel(time),1);
 else
     Tmax = (0*ones(numel(time),1));
 end
 if lap
     if con
-        plot(data(ran),Tmax(ran),'r--');    plot(data(ran),airNode(ran)*1000/4.4488,'b-');  
-        plot(data(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [lbf]');  legend('Limit','Kite','Glider')
+        plot(data(ran),Tmax(ran),'r--');    plot(data(ran),airNode(ran)*1000,'b-');  
+        plot(data(ran),gndNode(ran)*1000,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider')
     else
-        plot(time(ran),Tmax(ran),'r--');    plot(time(ran),airNode(ran)*1000/4.4488,'b-');  
-        plot(time(ran),gndNode(ran)*1000/4.4488,'g-');  ylabel('Thr Tension [lbf]');  legend('Limit','Kite','Glider');  xlim(lim)
+        plot(time(ran),Tmax(ran)*1000,'r--');    plot(time(ran),airNode(ran)*1000,'b-');  
+        plot(time(ran),gndNode(ran)*1000,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
     end
 else
-    plot(time,Tmax,'r--');  plot(time,airNode*1000/4.4488,'b-');  plot(time,gndNode*1000/4.4488,'g-');  
-    ylabel('Thr Tension [lbf]');  legend('Limit','Kite','Glider');  xlim(lim)
+    plot(time,Tmax,'r--');  plot(time,airNode,'b-');  plot(time,gndNode,'g-');  
+    ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
+
 end
 %%  Plot Speed
 ax3 = subplot(R,C,3); hold on; grid on

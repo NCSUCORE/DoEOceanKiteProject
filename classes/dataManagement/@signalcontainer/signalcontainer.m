@@ -218,7 +218,7 @@ classdef signalcontainer < dynamicprops
             LThr = sqrt(sum(vhcl.initPosVecGnd.Value.^2));
             Aref = vhcl.fluidRefArea.Value;
             Afuse = squeeze(obj.Afuse.Data);
-            Athr = LThr*dThr/4*0;
+            Athr = LThr*dThr/4;
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
             CDthr = thr.tether1.dragCoeff.Value(1).*Athr/Aref;
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
@@ -398,21 +398,24 @@ classdef signalcontainer < dynamicprops
             C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3*.5;
             Pow.loyd = mean(PLoyd)*1e-3;
-            Pow.mech = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.turb = mean(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.elec = mean(obj.elecPow.Data(1,1,ran))*1e-3;
+            Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;
+            Pow.ctrl = mean(obj.ctrlPowLoss.Data(1,1,ran))*1e-3;
             try
                 Rthr = thr.tether1.resistance.Value;
-                Ithr = Pow.elec*1e3/thr.tether1.transVoltage.Value;
+                Ithr = obj.elecPow.Data(1,1,ran)/thr.tether1.transVoltage.Value;
             catch
                 Rthr = 14;
-                Ithr = Pow.elec*1e3/1e3;
+                Ithr = obj.elecPow.Data(1,1,ran)/1e3;
             end
-            Pow.loss = Rthr*Ithr^2*1e-3+mean(obj.ctrlPowLoss.Data(1,1,ran))*1e-3;
-            Pow.max = max(obj.netPower.Data(1,1,ran))*1e-3;
-            Pow.min = min(obj.netPower.Data(1,1,ran))*1e-3;
-            Pow.wnch = mean(obj.winchPower.Data(ran))*1e-3;
-            Pow.net = Pow.elec-Pow.loss-Pow.wnch;
-            fprintf('Lap power output:\nMin\t\t\t Max\t\t Avg\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.min,Pow.max,Pow.elec,Pow.loyd,Pow.net)
+            Pow.loss = mean(Rthr*Ithr.^2)*1e-3;
+            Pnet = (squeeze(obj.elecPow.Data(1,1,ran))-squeeze(Rthr*Ithr.^2)...
+                -squeeze(obj.ctrlPowLoss.Data(1,1,ran))+squeeze(obj.winchPower.Data(ran)))*1e-3;
+            Pow.net = mean(Pnet);
+            Pow.max = max(Pnet);
+            Pow.min = min(Pnet)*1e-3;
+            fprintf('Lap power output:\nMin\t\t\t Max\t\t Turb\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.min,Pow.max,Pow.elec,Pow.loyd,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
