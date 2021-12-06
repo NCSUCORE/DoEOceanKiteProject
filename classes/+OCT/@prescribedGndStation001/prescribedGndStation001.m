@@ -21,6 +21,8 @@ classdef prescribedGndStation001 < dynamicprops
         pathVar
         initSpiralRad
         spiralWidth
+        waveAmplitude
+        wavePeriod
     end
     
     properties (Dependent)
@@ -41,7 +43,8 @@ classdef prescribedGndStation001 < dynamicprops
             obj.pathVar                     = SIM.parameter('Unit','');
             obj.initSpiralRad               = SIM.parameter('Unit','m');
             obj.spiralWidth                 = SIM.parameter('Unit','m');
-            
+            obj.waveAmplitude               = SIM.parameter('Unit','m');
+            obj.wavePeriod                  = SIM.parameter('Unit','s');
             % Initial conditions
             obj.initPosVecGnd               = SIM.parameter('Unit','m','Description','Initial position of the station in the ground frame.');
             obj.initEulAng                  = SIM.parameter('Unit','rad','Description','Initial Euler angles of the station in the ground frame, radians.');
