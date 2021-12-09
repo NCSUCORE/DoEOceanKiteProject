@@ -2,7 +2,7 @@
 %% Mohammad Y. Saadeh May, 10, 2010, University of Nevada Las Vegas
 clc;clear;close all
 figure('Position',[100 100 700 250]); hold on; grid on;
-for linkage = 1:2; %1 for el 2 for vStab
+for linkage = 1; %1 for el 2 for vStab
 %Reworked Tailcone
 % if linkage == 1 %Elevator
 %     X =   [12.7 23.5 36.3 33.3 0 0];
@@ -13,11 +13,11 @@ for linkage = 1:2; %1 for el 2 for vStab
 % end
 %Old Tailcone
 if linkage == 1 %Elevator
-    X =   [9.2 22.9 19.8+9.2 30.3 0 0];
+    X =   [22 49 5 30.3 0 0];
     offset = 130.85;
-elseif linkage == 2 %Vertical Stabilizer
-    X = [22 26.9 34.1 29.5 0 0];
-    offset = 114.22; 
+% elseif linkage == 2 %Vertical Stabilizer
+%     X = [22 26.9 34.1 29.5 0 0];
+%     offset = 114.22; 
 end
 % X =   [180 100 185 220 55 0];
 % X = [r1  r2  r3  r4  Cx  Cy ];
