@@ -37,6 +37,7 @@ classdef SLFAndSpoolCtrl < handle
         towCtrlStrat
         % Spooling
         winchActive
+        winchMode
         ctrlVecUpdateFcn
         tetherLengthSetpointFcn
         winchAndElevCmdFcn
@@ -54,6 +55,7 @@ classdef SLFAndSpoolCtrl < handle
         shortLeashLength
         LaRelevationSP
         LaRelevationSPErr
+        LaRelevationSwitch
         % Pitch setpoint 
         pitchCtrl
         pitchConst
@@ -101,6 +103,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.towCtrlStrat        = SIM.parameter('Unit','','Description','Towing Positon Control Variant');
             
             obj.winchActive         = SIM.parameter('Unit','','Description','Winch active flag');
+            obj.winchMode           = SIM.parameter('Unit','','Description','Winch control mode: 1 = elevation, 2 = pitch');
             obj.ctrlVecUpdateFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
             obj.tetherLengthSetpointFcn    = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
             obj.winchAndElevCmdFcn  = SIM.parameter('Unit','','Description','Function to calculate ctrl and speed vectors between laps');
@@ -119,6 +122,7 @@ classdef SLFAndSpoolCtrl < handle
             obj.shortLeashLength        = SIM.parameter('Unit','m','Description','Length of the short leash');
             obj.LaRelevationSP          = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint');
             obj.LaRelevationSPErr       = SIM.parameter('Unit','deg','Description','Reel-in elevation angle setpoint error where spooling is allowed');
+            obj.LaRelevationSwitch      = SIM.parameter('Unit','deg','Description','Reel-in elevation angle where pitch setpoint strategy changes');
             
             obj.pitchCtrl               = SIM.parameter('Unit','','Description','Flag to decide pitch setpoint source. 0 = contant; 1 = time-lookup; 2 = LaR');
             obj.pitchConst              = SIM.parameter('Unit','deg','Description','Constant pitch setpoint');
