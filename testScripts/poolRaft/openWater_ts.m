@@ -52,7 +52,7 @@ for q = 3
                 loadComponent('lasPosEst')
                 loadComponent('lineAngleSensor');
                 loadComponent('idealSensorProcessing');                      %   Sensor processing
-                loadComponent('poolScaleKiteAbney');                %   AR = 8; 8m span
+                loadComponent('poolScaleKiteAbneyRefined');                %   AR = 8; 8m span
                 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
                 %%  Environment Properties
                 loadComponent('ConstXYZT');                                 %   Environment
@@ -118,7 +118,6 @@ for q = 3
                     vhcl.setInitEulAng([0 0 0]*pi/180,'rad');
                     %             vhcl.setInitEulAng([180 0 0]*pi/180,'rad');
                     vhcl.setInitVelVecBdy([-towArray(k) 0 0],'m/s');
- 
                     vhcl.initPosVecGnd.setValue([cos(elevArray) 0 sin(elevArray)]*thrLength,'m')
                     pos = vhcl.initPosVecGnd.Value;
                     x = pos(1);

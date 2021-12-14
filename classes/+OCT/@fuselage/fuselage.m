@@ -8,6 +8,9 @@ classdef fuselage < handle
         rEnd_LE
         sideDragCoeff
         endDragCoeff
+        alpha
+        CD
+        CL
     end
     
     properties (Dependent)
@@ -24,6 +27,9 @@ classdef fuselage < handle
             obj.rEnd_LE              = SIM.parameter('Unit','m','Description','Vector from the wing LE to the end of the fuselage');
             obj.sideDragCoeff        = SIM.parameter('Description','Drag Coeff if at 90 degrees angle of attack');
             obj.endDragCoeff         = SIM.parameter('Description','Drag Coeff if at 0 degrees angle of attack');
+            obj.alpha                = SIM.parameter('Description','AoA Lookup Array','Unit','deg');
+            obj.CL                   = SIM.parameter('Description','Lift Coefficient','Unit','');
+            obj.CD                   = SIM.parameter('Description','Drag Coefficient','Unit','');
         end
         %% Setters
         function setDiameter(obj,val,units)
