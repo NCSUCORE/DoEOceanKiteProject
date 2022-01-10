@@ -2,8 +2,8 @@
 % clear;clc;close all;
 
 clc
-close all
-clear all
+% close all
+% clear all
 load expCompData.mat
 Simulink.sdi.clear
 clear tsc1
@@ -49,7 +49,8 @@ for q = 2
                 loadComponent('lasPosEst');                             %   Sensors
                 loadComponent('lineAngleSensor');
                 loadComponent('idealSensorProcessing');                      %   Sensor processing
-                loadComponent('poolScaleKiteAbneyRefined');                %   AR = 8; 8m span
+                loadComponent('poolScaleKiteAbneyRefined');
+%                                 loadComponent('poolScaleKiteAbney');%   AR = 8; 8m span
                 SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12int";
                 %%  Environment Properties
                 loadComponent('ConstXYZT');                                 %   Environment
@@ -152,7 +153,7 @@ for q = 2
                         fltCtrl.rollAmp.setValue(30,'deg')
                         fltCtrl.yawAmp.setValue(0,'deg');
                         fltCtrl.period.setValue(7.5,'s');
-                        fltCtrl.rollPhase.setValue(0,'rad');
+                        fltCtrl.rollPhase.setValue(pi,'rad');
                     elseif j == 2
                         fltCtrl.rollAmp.setValue(60,'deg');
                         fltCtrl.yawAmp.setValue(80,'deg');
@@ -163,7 +164,7 @@ for q = 2
                         fltCtrl.rollAmp.setValue(60,'deg');
                         fltCtrl.yawAmp.setValue(80,'deg');
                         fltCtrl.period.setValue(7.5,'s');
-                        fltCtrl.rollPhase.setValue(-pi/2,'rad');
+                        fltCtrl.rollPhase.setValue(pi/2,'rad');
                         fltCtrl.yawPhase.setValue(.693+pi/2,'rad');
                     end
                     if q == 1
@@ -238,10 +239,11 @@ for q = 2
         end
     end
 end
-vhcl.animateSim(tscSim{1},0.2)
-
-vhcl.animateSim(tscSim{2},0.05)
-vhcl.animateSim(tsc,0.2)
+% vhcl.animateSim(tscSim{3},0.2)
+% vhcl.animateSim(tscSim{1},0.2)
+% 
+% vhcl.animateSim(tscSim{2},0.05)
+% vhcl.animateSim(tscSim{3},0.2)
 
 % tsc = tscSim{1}
 % %
@@ -295,7 +297,7 @@ for i = 1:3
     tscSim{i} = reSampleDataUsingTime(tscSim{i},1,25.25);
 end
 %%
-close all
+% close all
 subTitle = {'Roll Tracking','Roll and Yaw Tracking','Allocated Roll and Yaw Tracking'};
 figure('Position',[50 50 800 600])
 for i = 1:3
@@ -463,14 +465,15 @@ for i = 2
 end
 %%
 xbound = [2 20];
-figure('Position',[100 100 800 600])
-t = tiledlayout(3,1)
+figure(3)
+set(gcf,'Position',[100 100 800 600])
+% t = tiledlayout(3,1)
 for i = 2
-    nexttile; grid on; hold on;
+    nexttile(1); grid on; hold on;
     if i == 1
         plot(runData{i}.kiteYaw,'LineWidth',1.5)
     else
-        plot(runData{i}.kite_azi,'LineWidth',1.5)
+%         plot(runData{i}.kite_azi,'LineWidth',1.5)
     end
     
     plotsq(tscSim{i}.phi*180/pi,'LineWidth',1.5')
@@ -485,16 +488,16 @@ for i = 2
     grid on;
     ylabel('Azimuth [deg]')
     xlim(xbound)
-    legend('Experiment','Simulation')
+    legend('Experiment','Pre-Refinement','Post-Refinement')
     set(gca,'FontSize',12)
 end
 
 for i = 2
-    nexttile; grid on; hold on;
+    nexttile(2); grid on; hold on;
     if i == 1
         plot(runData{i}.kiteYaw,'LineWidth',1.5)
     else
-        plot(runData{i}.kite_elev,'LineWidth',1.5)
+%         plot(runData{i}.kite_elev,'LineWidth',1.5)
     end
     
     plotsq(tscSim{i}.theta*180/pi,'LineWidth',1.5')
@@ -512,11 +515,11 @@ for i = 2
     set(gca,'FontSize',12)
 end
 for i = 2
-    nexttile; grid on; hold on;
+    nexttile(3); grid on; hold on;
     if i == 1
         plot(runData{i}.kiteYaw,'LineWidth',1.5)
     else
-        plot(t1,velAug{i},'LineWidth',1.5)
+%         plot(t1,velAug{i},'LineWidth',1.5)
     end
     
     plotsq(tscSim{i}.phi.Time,velmags{i},'LineWidth',1.5')
@@ -531,12 +534,12 @@ for i = 2
     grid on;
     ylabel('$\frac{||v_{app}||}{||v_{tow}||}$')
     xlim(xbound)
-    
+    ylim([0 5])
     set(gca,'FontSize',12)
     xlabel 'Time [s]'
 end
-% t.TileSpacing = 'compact';
-% t.Padding = 'compact';
+t.TileSpacing = 'compact';
+t.Padding = 'compact';
 
 %% Plot Roll and Yaw Tracking per Control Type
 i = 3
@@ -581,13 +584,13 @@ end
 for i = 1:3
     tscSimRMS{i} = reSampleDataUsingTime(tscSim{i},7.5,19.5);
     runDataRMS{i} = reSampleDataUsingTime(runData{i},7.5,19.5);
-    rmsAz(i) = rms(tscSimRMS{i}.phi.Data*180/pi-runDataRMS{i}.kite_azi.Data*-1)
-    rmsEL(i) = rms(tscSimRMS{i}.theta.Data*-180/pi-runDataRMS{i}.kite_elev.Data)
+    rmsAz(i) = rms(tscSimRMS{i}.phi.Data*180/pi-runDataRMS{i}.kite_azi.Data)
+    rmsEL(i) = rms(tscSimRMS{i}.theta.Data*180/pi-runDataRMS{i}.kite_elev.Data)
     rmsVelAug(i) = rms(squeeze(velmags{i}(750:1950))'-squeeze(velAug{i}(750:1950)))
     rmsPowAug(i) = rms(squeeze(velmags{i}(750:1950))'.^3 - powAug{i}(750:1950))
     
     if isfield(runDataRMS{i},'yawDeadRec')
-        rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)
+        rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-squeeze(runDataRMS{i}.kiteRoll.Data)*180/pi)
         rmsYaw(i) = rms(squeeze(tscSimRMS{i}.yawDeg.Data)*-1+180-runDataRMS{i}.yawDeadRec.Data)
     else
         rmsRoll(i) = rms(squeeze(tscSimRMS{i}.rollDeg.Data)-180-squeeze(runDataRMS{i}.kiteRoll.Data))
@@ -610,10 +613,10 @@ for i = 1:3
     A_theta{i} = (sqrt(sum(elSimP{i}.^2/length(elExpP{i})))-sqrt(sum(elExpP{i}.^2/length(elExpP{i}))))/...
         (max(runDataRMS{i}.kite_elev.Data)-min(runDataRMS{i}.kite_elev.Data))
     
-    rollSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-        findpeaks(-squeeze(tscSimRMS{i}.rollDeg.Data-180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
-    yawSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
-        findpeaks(-squeeze(tscSimRMS{i}.yawDeg.Data*-1+180),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    rollSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.rollDeg.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-squeeze(tscSimRMS{i}.rollDeg.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
+    yawSimP{i} = [findpeaks(squeeze(tscSimRMS{i}.yawDeg.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
+        findpeaks(-squeeze(tscSimRMS{i}.yawDeg.Data),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
     if isfield(runDataRMS{i},'yawDeadRec')
         rollExpP{i} = [findpeaks(squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)'...
             findpeaks(-squeeze(runDataRMS{i}.kiteRoll.Data*180/pi),'MinPeakProminence',prom,'MinPeakDistance',thresh)']
