@@ -48,10 +48,12 @@ classdef MultiCycleExp < handle
          % period setpoint params
          period
          rollAmp
-
          rollPhase
+         rollBias
+         
          yawAmp
          yawPhase
+         yawBias
          
          % transition gains
          gain4to1
@@ -119,8 +121,10 @@ classdef MultiCycleExp < handle
             obj.period              = SIM.parameter('Unit','s','Description','Setpoint period');
             obj.bScale              = SIM.parameter('Unit','(N*s^2)/(deg*m)');
             obj.rollPhase           = SIM.parameter('Unit','rad','Description','roll sp phase');
+            obj.rollBias            = SIM.parameter('Unit','deg','Description','periodic roll setpoint bias');
             obj.yawAmp              = SIM.parameter('Unit','deg','Description','yaw sp amp');
             obj.yawPhase            = SIM.parameter('Unit','rad','Description','yaw sp phase');
+            obj.yawBias             = SIM.parameter('Unit','deg','Description','periodic yaw setpoint bias');
             obj.gain4to1            = SIM.parameter('Unit','','Description','transition gain from phase 4 to 1');
             obj.gain2to3            = SIM.parameter('Unit','','Description','transition gain from phase 2 to 3');
             obj.maxTL               = SIM.parameter('Unit','m','Description','max and ending tether length');
