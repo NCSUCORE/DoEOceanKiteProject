@@ -44,23 +44,36 @@ classdef MultiCycleExp < handle
         controllerEnable % 0 = Periodic ctrl, 1 = PFC
         vSat
         ccElevator
+        tWait
          % period setpoint params
          period
          rollAmp
-
          rollPhase
+         rollBias
+         
          yawAmp
          yawPhase
+         yawBias
          
          % transition gains
          gain4to1
          gain2to3
          maxTL
          elvPeak
+         time23
+         time41
          
          % las scaling
          vAppGain
          
+         %ilc 
+         ilcTrig
+         initBasisParams
+         learningGain
+         forgettingFactor
+         trustRegion
+         whiteNoise
+         enableVec
     end
     
     properties (Dependent)
@@ -104,16 +117,29 @@ classdef MultiCycleExp < handle
             obj.vSat                = SIM.parameter('Unit','','Description','sat on spool out gain');
             obj.ccElevator          = SIM.parameter('Unit','deg','Description','crosscurrent elevator');
             obj.rollAmp             = SIM.parameter('Unit','deg','Description','roll sp amp');
+            obj.tWait               = SIM.parameter('Unit','s','Description','time to wait before spooling');
             obj.period              = SIM.parameter('Unit','s','Description','Setpoint period');
             obj.bScale              = SIM.parameter('Unit','(N*s^2)/(deg*m)');
             obj.rollPhase           = SIM.parameter('Unit','rad','Description','roll sp phase');
+            obj.rollBias            = SIM.parameter('Unit','deg','Description','periodic roll setpoint bias');
             obj.yawAmp              = SIM.parameter('Unit','deg','Description','yaw sp amp');
             obj.yawPhase            = SIM.parameter('Unit','rad','Description','yaw sp phase');
+            obj.yawBias             = SIM.parameter('Unit','deg','Description','periodic yaw setpoint bias');
             obj.gain4to1            = SIM.parameter('Unit','','Description','transition gain from phase 4 to 1');
             obj.gain2to3            = SIM.parameter('Unit','','Description','transition gain from phase 2 to 3');
             obj.maxTL               = SIM.parameter('Unit','m','Description','max and ending tether length');
             obj.elvPeak             = SIM.parameter('Unit','deg','Description','peak elevation during phase 1');
+            obj.time23              = SIM.parameter('Unit','s','Description','time to transition between phase 2 and 3');
+            obj.time41              = SIM.parameter('Unit','s','Description','time to transition between phase 4 and 1');
             obj.vAppGain            = SIM.parameter('Unit','','Value',1,'Description','gain on vAppSqr for LAS estimation');
+            obj.ilcTrig             = SIM.parameter('Unit','','Description','turn ilc on or off. Off = 0, on = 1');
+            obj.initBasisParams     = SIM.parameter('Unit','','Description','basis parameters');
+            obj.learningGain        = SIM.parameter('Unit','','Description','learning gain ilc');
+            obj.forgettingFactor    = SIM.parameter('Unit','','Description','forgetting factor');
+            obj.trustRegion         = SIM.parameter('Unit','','Description','trust region');
+            obj.whiteNoise          = SIM.parameter('Unit','','Description','perturbabtion');
+            obj.enableVec           = SIM.parameter('Unit','','Description','which basis params are active');
+           
         end
         
         function val = get.frequency(obj)

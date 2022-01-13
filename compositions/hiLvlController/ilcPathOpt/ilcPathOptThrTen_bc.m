@@ -1,4 +1,4 @@
-function ilcPathOpt_bc()
+function ilcPathOptThrTen_bc()
 % Creates output bus used by allActuatorCtrl_cl
 
 try

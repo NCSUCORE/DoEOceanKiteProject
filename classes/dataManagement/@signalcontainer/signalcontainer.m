@@ -395,7 +395,15 @@ classdef signalcontainer < dynamicprops
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
             ran = Idx1:Idx2-1;
             [CLsurf,CDtot] = obj.getCLCD(vhcl,thr);
-            C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            try
+                C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
+            catch
+                try
+                    C1 = cosd(squeeze(obj.elevation_slf.Data));  C2 = cosd(squeeze(obj.azimuth_slf.Data));
+                catch
+                    C1 = cosd(squeeze(obj.elevation_X_lem.Data));  C2 = cosd(squeeze(obj.azimuth_X_lem.Data));
+                end
+            end
             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3*.5;
             Pow.loyd = mean(PLoyd)*1e-3;
             Pow.turb = mean(obj.turbPow.Data(1,1,ran))*1e-3;
@@ -414,8 +422,8 @@ classdef signalcontainer < dynamicprops
                 -squeeze(obj.ctrlPowLoss.Data(1,1,ran))+squeeze(obj.winchPower.Data(ran)))*1e-3;
             Pow.net = mean(Pnet);
             Pow.max = max(Pnet);
-            Pow.min = min(Pnet)*1e-3;
-            fprintf('Lap power output:\nMin\t\t\t Max\t\t Turb\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.min,Pow.max,Pow.elec,Pow.loyd,Pow.net)
+            Pow.min = min(Pnet);
+            fprintf('Lap power output:\nMax\t\t\t Turb\t\t Winch\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.max,Pow.elec,Pow.winch,Pow.loyd,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
