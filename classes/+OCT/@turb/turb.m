@@ -18,6 +18,7 @@ classdef turb < handle
         staticCD
         CpLookup
         CtLookup
+        torqueCoefLookup
         RPMref
     end
     properties (Dependent)
@@ -43,6 +44,7 @@ classdef turb < handle
             obj.staticCD             = SIM.parameter('Unit','','Description','Turbine drag coefficient while static');
             obj.CpLookup             = SIM.parameter('Unit','','Description','Turbine power coefficient lookup');
             obj.CtLookup             = SIM.parameter('Unit','','Description','Turbine thrust coefficient lookup');
+            obj.torqueCoefLookup     = SIM.parameter('Unit','','Description','Torque coefficient lookup');
             obj.RPMref               = SIM.parameter('Unit','','Description','Turbine lookup table reference vector for tip-speed-ratio');
         end
         

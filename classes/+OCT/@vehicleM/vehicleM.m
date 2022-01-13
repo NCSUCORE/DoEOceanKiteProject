@@ -894,6 +894,7 @@ classdef vehicleM < dynamicprops
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
             title('Port Wing')
+            xlim([-20 20])
             grid on
             hold on
             
@@ -903,6 +904,7 @@ classdef vehicleM < dynamicprops
             ylabel('$C_{D}$')
             grid on
             hold on
+            xlim([-20 20])
             hWingCD_ax = gca;
             
             ax9 = subplot(4,4,9);
@@ -911,6 +913,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}}{C_D}$')
             grid on
             hold on
+            xlim([-20 20])
             
             ax13 = subplot(4,4,13);
             plot(obj.portWing.alpha.Value,(obj.portWing.CL.Value(:).^3)./(obj.portWing.CD.Value(:).^2))
@@ -918,6 +921,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}^3}{C_D^2}$')
             grid on
             hold on
+            xlim([-20 20])
             
             linkaxes([ax1,ax5,ax9,ax13],'x');
             
@@ -930,6 +934,7 @@ classdef vehicleM < dynamicprops
             title('Starboard Wing')
             grid on
             hold on
+            xlim([-20 20])
             
             ax6 = subplot(4,4,6);
             plot(obj.stbdWing.alpha.Value,obj.stbdWing.CD.Value);
@@ -937,6 +942,7 @@ classdef vehicleM < dynamicprops
             ylabel('$C_{D}$')
             grid on
             hold on
+            xlim([-20 20])
             
             ax10 = subplot(4,4,10);
             plot(obj.stbdWing.alpha.Value,obj.stbdWing.CL.Value(:)./obj.stbdWing.CD.Value(:))
@@ -944,6 +950,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}}{C_D}$')
             grid on
             hold on
+            xlim([-20 20])
             
             ax14 = subplot(4,4,14);
             plot(obj.stbdWing.alpha.Value,(obj.stbdWing.CL.Value(:).^3)./(obj.stbdWing.CD.Value(:).^2))
@@ -951,6 +958,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}^3}{C_D^2}$')
             grid on
             hold on
+            xlim([-20 20])
             
             linkaxes([ax2,ax6,ax10,ax14],'x');
             
@@ -964,6 +972,7 @@ classdef vehicleM < dynamicprops
             title('Horizontal stabilizer')
             grid on
             hold on
+            xlim([-20 20])
             
             ax7 = subplot(4,4,7);
             plot(obj.hStab.alpha.Value,obj.hStab.CD.Value);
@@ -972,6 +981,7 @@ classdef vehicleM < dynamicprops
             ylabel('$C_{D}$')
             grid on
             hold on
+            xlim([-20 20])
             
             ax11 = subplot(4,4,11);
             plot(obj.hStab.alpha.Value,obj.hStab.CL.Value(:)./obj.hStab.CD.Value(:))
@@ -979,6 +989,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}}{C_D}$')
             grid on
             hold on
+            xlim([-20 20])
             
             ax15 = subplot(4,4,15);
             plot(obj.hStab.alpha.Value,(obj.hStab.CL.Value(:).^3)./(obj.hStab.CD.Value(:).^3))
@@ -986,6 +997,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}^3}{C_D^2}$')
             grid on
             hold on
+            xlim([-20 20])
             
             linkaxes([ax3,ax7,ax11,ax15],'x');
             
@@ -998,6 +1010,7 @@ classdef vehicleM < dynamicprops
             title('Vertical stabilizer')
             grid on
             hold on
+            xlim([-20 20])
             
             ax8 = subplot(4,4,8);
             plot(obj.vStab.alpha.Value,obj.vStab.CD.Value);
@@ -1006,6 +1019,7 @@ classdef vehicleM < dynamicprops
             ylabel('$C_{D}$')
             grid on
             hold on
+            xlim([-20 20])
             
             ax12 = subplot(4,4,12);
             plot(obj.vStab.alpha.Value,obj.vStab.CL.Value(:)./obj.vStab.CD.Value(:))
@@ -1013,6 +1027,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}}{C_D}$')
             grid on
             hold on
+            xlim([-20 20])
             
             ax16 = subplot(4,4,16);
             plot(obj.vStab.alpha.Value,(obj.vStab.CL.Value(:).^3)./(obj.vStab.CD.Value(:).^3))
@@ -1020,6 +1035,7 @@ classdef vehicleM < dynamicprops
             ylabel('$\frac{C_{L}^3}{C_D^2}$')
             grid on
             hold on
+            xlim([-20 20])
             
             linkaxes([ax4,ax8,ax12,ax16],'x');
             

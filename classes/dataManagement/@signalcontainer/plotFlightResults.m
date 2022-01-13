@@ -172,7 +172,7 @@ if lap
             plot(data(ran),obj.AoASP.Data(ran)*180/pi,'r-','DisplayName','Setpoint');
         end
         plot(data(ran),squeeze(obj.vhclAngleOfAttack.Data(ran)),'b-','DisplayName','AoA');
-        plot(data(ran),squeeze(obj.hStabAoA.Data(ran)),'k--','DisplayName','Stabilizer AoA');
+%         plot(data(ran),squeeze(obj.hStabAoA.Data(ran)),'k--','DisplayName','Stabilizer AoA');
         ylabel('Angle [deg]');
         if p.Results.plotBeta
             plot(data(ran),squeeze(obj.betaBdy.Data(1,1,ran))*180/pi,'g-','DisplayName','Beta');  ylabel('Angle [deg]');
@@ -191,7 +191,7 @@ if lap
 else
     plot(time,obj.AoASP.Data*180/pi,'r-');  
     plot(time,squeeze(obj.vhclAngleOfAttack.Data),'b-'); %ylim([0 20]);
-    plot(time,squeeze(obj.hStabAoA.Data),'k--','DisplayName','Stabilizer AoA');
+%     plot(time,squeeze(obj.hStabAoA.Data),'k--','DisplayName','Stabilizer AoA');
     ylabel('Angle [deg]');  xlim(lim);  legend('Setpoint','AoA');
     if p.Results.plotBeta
         plot(time,squeeze(obj.betaBdy.Data(1,1,:))*180/pi,'g-');  ylabel('Angle [deg]');  legend('Port AoA','Stbd AoA','Beta');  xlim(lim)

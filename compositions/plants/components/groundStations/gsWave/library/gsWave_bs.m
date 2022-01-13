@@ -15,8 +15,9 @@ gndStn.pathVar.setValue(1,'');
 gndStn.waveAmplitude.setValue(2,'m');
 gndStn.wavePeriod.setValue(8,'s');
 
-gndStn.initPosVecGnd.setValue([0 0 0],'m');
-gndStn.thrAttach.setPosVec([0 0 0],'m');
+gndStn.initPosVecGnd.setValue([0 0 0]','m');
+gndStn.initEulAng.setValue([0;0;0],'rad');
+gndStn.thrAttach.setPosVec([0 0 0]','m');
 gndStn.lumpedMassPositionMatrixBdy.setValue([0,0,0]','m');
 
 %dummy , allows the env. to work for this ground station and the other

@@ -24,8 +24,12 @@ Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
     (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
 Athr = thr.tether1.diameter.Value/4;
 CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref;
+if strcmpi(obj.wingAirfoil.Value,'SG6040.dat')
+    CDfuse = 2.15*(alpha*pi/180).^2+0.038;
+else
 CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
     obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
+end
 CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
 CLstab = obj.hStab.CL.Value;
 CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
