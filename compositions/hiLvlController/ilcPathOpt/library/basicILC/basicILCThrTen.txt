@@ -1,0 +1,41 @@
+hiLvlCtrl.pathVarLowerLim.Value = 5.0000e-02
+hiLvlCtrl.pathVarLowerLim.Unit is unitless or has no unit specified
+hiLvlCtrl.pathVarLowerLim.NoScale = false
+hiLvlCtrl.pathVarLowerLim.Description = 'ILC trigger lower path variable limit, ILC triggers when path var falls below low lim then goes above upper lim.'
+hiLvlCtrl.filtTimeConst.Value = 5.0000e-02
+hiLvlCtrl.filtTimeConst.Unit = 's'
+hiLvlCtrl.filtTimeConst.NoScale = false
+hiLvlCtrl.filtTimeConst.Description = 'Time constant of filter on output of ILC update.'
+hiLvlCtrl.forgettingFactor.Value = 8.0000e-01
+hiLvlCtrl.forgettingFactor.Unit is unitless or has no unit specified
+hiLvlCtrl.forgettingFactor.NoScale = false
+hiLvlCtrl.forgettingFactor.Description = 'Forgetting factor of RLS estimator in ILC update'
+hiLvlCtrl.pathVarUpperLim.Value = 9.5000e-01
+hiLvlCtrl.pathVarUpperLim.Unit is unitless or has no unit specified
+hiLvlCtrl.pathVarUpperLim.NoScale = false
+hiLvlCtrl.pathVarUpperLim.Description = 'ILC trigger upper path variable limit, ILC triggers when path var falls below low lim then goes above upper lim.'
+hiLvlCtrl.excitationAmp.Value = [1 1 0 0 0 0]
+hiLvlCtrl.excitationAmp.Unit = '[]'
+hiLvlCtrl.excitationAmp.NoScale = false
+hiLvlCtrl.excitationAmp.Description = 'Amplitude of persistent excitation (uniform white noise) in the ILC update.'
+hiLvlCtrl.initBasisParams.Unit = '[]'
+hiLvlCtrl.initBasisParams.NoScale = false
+hiLvlCtrl.initBasisParams.Description = 'Initial basis parameters for the figure 8 path.'
+hiLvlCtrl.trustRegion.Value = [5 3 Inf Inf Inf]
+hiLvlCtrl.trustRegion.Unit = '[]'
+hiLvlCtrl.trustRegion.NoScale = false
+hiLvlCtrl.trustRegion.Description = 'Trust region of ILC update.'
+hiLvlCtrl.optEnable.Value = [1 1 0 0 0]
+hiLvlCtrl.optEnable.Unit = '[]'
+hiLvlCtrl.optEnable.NoScale = false
+hiLvlCtrl.numInitLaps.Value = 2.0000e+00
+hiLvlCtrl.numInitLaps.Unit is unitless or has no unit specified
+hiLvlCtrl.numInitLaps.NoScale = false
+hiLvlCtrl.numInitLaps.Description = 'Number of laps before we start running ILC, in order to let transients die out.'
+hiLvlCtrl.learningGain.Value = 1.0000e+01
+hiLvlCtrl.learningGain.Unit = '[]'
+hiLvlCtrl.learningGain.NoScale = false
+hiLvlCtrl.learningGain.Description = 'Learning gain of the ILC update law.  Multiplies the gradient'
+hiLvlCtrl.penaltyWeight.Value = 4.2857e+04
+hiLvlCtrl.penaltyWeight.Unit is unitless or has no unit specified
+hiLvlCtrl.penaltyWeight.NoScale = false
