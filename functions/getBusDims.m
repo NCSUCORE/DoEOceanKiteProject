@@ -17,6 +17,8 @@ else
     nodeTenVecSize      = [3 1 numTethers];
 end
 
+% determine the number of environmental poll positions
+fluidPollPos = evalin('base','11+vhcl.numTurbines.Value;');
 
 % make sure that a ground station object exists in the base workspace
 if evalin('base','~exist(''gndStn'',''var'')')
@@ -74,5 +76,5 @@ resultsStruct.numNodes = numNodes;
 resultsStruct.numTethers = numTethers;
 resultsStruct.thrLinkFlowVecsSize = thrLinkFlowVecsSize;
 resultsStruct.nodeTenVecSize = nodeTenVecSize;
-
+resultsStruct.fluidPollPos = [3 fluidPollPos];
 end

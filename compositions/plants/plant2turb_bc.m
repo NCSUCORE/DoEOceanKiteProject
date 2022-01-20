@@ -92,7 +92,7 @@ elems(10).Complexity = 'real';
 
 elems(11) = Simulink.BusElement;
 elems(11).Name = 'vhclFlowPollPos';
-elems(11).Dimensions = [3 13]; %Note this assumes 5 fluid dynamic surfaces + fuselage + 2 turbines + 6 gradient points
+elems(11).Dimensions = sz.fluidPollPos; %Note this assumes 5 fluid dynamic surfaces + fuselage + 2 turbines + 6 gradient points
 elems(11).DimensionsMode = 'Fixed';
 elems(11).DataType = 'double';
 elems(11).SampleTime = -1;
@@ -197,6 +197,15 @@ elems(22).DataType = 'double';
 elems(22).SampleTime = -1;
 elems(22).Complexity = 'real';
 elems(22).Unit = 'N';
+
+elems(23) = Simulink.BusElement;
+elems(23).Name = 'rotorRPM';
+elems(23).Dimensions = [2 1];
+elems(23).DimensionsMode = 'Fixed';
+elems(23).DataType = 'double';
+elems(23).SampleTime = -1;
+elems(23).Complexity = 'real';
+elems(23).Unit = 'RPM';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;

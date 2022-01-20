@@ -46,7 +46,10 @@ for i = 1:length(pathPos)
     end
 end
 
-
+if theta0 > 0
+    tanDir = tanDir*-1;
+    phi = phi(end:-1:1);
+end
 
 %%%%
 % Compute 2D Polar Radius
