@@ -8,7 +8,7 @@ classdef vehicleM < dynamicprops
         fluidCoeffsFileName
         flowGradientDist
         oldFluidMomentArms
-        
+        convEfficiency
         numTurbines
         
         volume
@@ -85,7 +85,7 @@ classdef vehicleM < dynamicprops
             obj.fluidCoeffsFileName = SIM.parameter('Description','File that contains fluid dynamics coefficient data','NoScale',true);
             obj.flowGradientDist    = SIM.parameter('Value',0.08,'Unit','m','Description','Distance to space points used for estimating gradient of the flow field');
             obj.oldFluidMomentArms  = SIM.parameter('Value',0,'Description','Turns on the old (incorrect) calculation for fluid moment arms');
-            
+            obj.convEfficiency      = SIM.parameter('Description','Losses in power conversion','Unit','');
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
             
@@ -342,7 +342,74 @@ classdef vehicleM < dynamicprops
         end
         
         %% getters
+        function plotTurbPerformance(obj,vAppMax,imp)
+
+        turb = obj.turb1;
+        tauLim = turb.torqueLim.Value;
+        diam = turb.diameter.Value;
+        figure; hold on; grid on;
+        plot(turb.RPMref.Value,turb.CpLookup.Value,'k','LineWidth',1)
+        plot(turb.RPMref.Value,turb.CtLookup.Value,'r','LineWidth',1)
+        plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value,'--k','LineWidth',1)
+        legend('$C_p$','$C_t$','$C_p/C_t$')
+        xlabel 'TSR'
+        ylabel 'Coefficient'
+        set(gca,'FontSize',12)
+
+        % Rotor Performance Surface
+        vApp = 0.1:0.1:vAppMax;
+        idx = 10*turb.optTSR.Value;
         
+        TSR = turb.optTSR.Value;
+        TSRRef = turb.RPMref.Value;
+        cP = turb.CpLookup.Value;
+        cT = turb.CtLookup.Value;
+
+        tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(TSR*10)./(vApp.*TSR/(pi*diam)*2*pi);
+        tRot(tRot>tauLim) = tauLim;
+        cTau = turb.tauCoefLookup.Value;
+        cTauLookup = turb.tauCoefTSR.Value;
+        
+        cTauReq = tRot./(pi*diam^3/8*1/2*1000.*vApp.^2);
+
+        gamma = interp1(cTau,cTauLookup,cTauReq);
+        gamma(isnan(gamma))=TSR;
+        cPRot = interp1(TSRRef,cP,gamma);
+        
+        rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
+        RPM = gamma.*vApp*60/(pi*diam);
+        
+        if imp == 1
+            tRot = tRot/1.356;
+            xlab = 'Rotor Torque [ft-lbf]';
+            vApp = vApp*1.94384;
+            xlabV = 'Apparent Velocity [knots]';
+        else
+            xlab = 'Rotor Torque [Nm]';
+            xlabV = 'Apparent Velocity [m/s]';
+        end
+        
+        figure
+        plot(vApp,tRot)
+        xlabel(xlabV)
+        ylabel(xlab)
+        
+        figure
+        plot(vApp,RPM)
+        xlabel(xlabV)
+        ylabel('Rotor Speed [RPM]')
+        
+        figure
+        plot(RPM,tRot)
+        xlabel('Rotor Speed [RPM]')
+        ylabel(xlab)
+        set(gca,'FontSize',12)
+        yyaxis right
+        plot(RPM,rotPow)
+        ylabel('Rotor Mechanical Power [W]')
+        set(gca,'FontSize',12)
+        legend('Torque Curve','Power Curve','Location','southeast')
+        end
         % mass
         function val = get.mass(obj)
             val = SIM.parameter('Value',obj.fluidDensity.Value*obj.volume.Value/...
@@ -379,12 +446,16 @@ classdef vehicleM < dynamicprops
         end
         function val = get.turbMomentArms(obj)
             N = obj.numTurbines.Value;
-            if N == 1
-                arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
-            else
-                arms(:,1) = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
-                arms(:,2) = -obj.rB_LE.Value + obj.turb2.attachPtVec.Value;
+            arms = zeros(3,N);
+            for i = 1:N
+                arms(:,i) = -obj.rB_LE.Value + eval(['obj.turb' num2str(i) '.attachPtVec.Value']);
             end
+%             if N == 1
+%                 arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
+%             else
+%                 arms(:,1) = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
+%                 arms(:,2) = -obj.rB_LE.Value + obj.turb2.attachPtVec.Value;
+%             end
             val = SIM.parameter('Value',arms,'Unit','m');
         end
         function val = get.wingTipPositions(obj)

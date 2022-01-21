@@ -18,15 +18,22 @@ classdef turb < handle
         staticCD
         CpLookup
         CtLookup
-        torqueCoefLookup
         RPMref
+        torqueLim
+        
     end
     properties (Dependent)
         mass
         dragCoeff
         momentArm
         momentOfInertia
+        torqueCoefLookup
+        optTSR
+        peakTorqueCoef
+        tauCoefLookup
+        tauCoefTSR
     end
+    
     methods
         function obj = turb
             obj.numBlades            = SIM.parameter('Unit','','Description','Number of blades');
@@ -44,14 +51,14 @@ classdef turb < handle
             obj.staticCD             = SIM.parameter('Unit','','Description','Turbine drag coefficient while static');
             obj.CpLookup             = SIM.parameter('Unit','','Description','Turbine power coefficient lookup');
             obj.CtLookup             = SIM.parameter('Unit','','Description','Turbine thrust coefficient lookup');
-            obj.torqueCoefLookup     = SIM.parameter('Unit','','Description','Torque coefficient lookup');
             obj.RPMref               = SIM.parameter('Unit','','Description','Turbine lookup table reference vector for tip-speed-ratio');
+            obj.torqueLim            = SIM.parameter('Unit','(N*m)','Description','Turbine Torque Limit');
         end
         
         function setHubMass(obj,val,units)
             obj.hubMass.setValue(val,units)
         end
-
+        
         function setBladeMass(obj,val,units)
             obj.bladeMass.setValue(val,units)
         end
@@ -59,15 +66,15 @@ classdef turb < handle
         function setDiameter(obj,val,units)
             obj.diameter.setValue(val,units)
         end
-
+        
         function setAxisUnitVec(obj,val,units)
             obj.axisUnitVec.setValue(val,units)
         end
-
+        
         function setAttachPtVec(obj,val,units)
             obj.attachPtVec.setValue(val,units)
         end
-
+        
         function setPowerCoeff(obj,val,units)
             obj.powerCoeff.setValue(val,units)
         end
@@ -87,29 +94,60 @@ classdef turb < handle
         function setStaticArea(obj,val,units)
             obj.staticArea.setValue(val,units)
         end
-
+        
         function setStaticCD(obj,val,units)
             obj.staticCD.setValue(val,units)
         end
-
+        
         function val = get.dragCoeff(obj)
             val = SIM.parameter('Value',obj.powerCoeff.Value*obj.axialInductionFactor.Value,'Unit','');
         end
-
+        
         function val = get.mass(obj)
             val = SIM.parameter('Value',obj.numBlades.Value*obj.bladeMass.Value+obj.hubMass.Value,'Unit','kg','Description','Total turbine mass');
+        end
+        
+        function val = get.torqueCoefLookup(obj)
+            val = SIM.parameter('Value',obj.CpLookup.Value./obj.RPMref.Value,'Unit','','Description','Torque coefficient lookup');
+        end
+        
+        function val = get.peakTorqueCoef(obj)
+            [~,ind] = max(obj.CpLookup.Value./obj.RPMref.Value);
+            val = SIM.parameter('Value',obj.torqueCoefLookup.Value(ind),'Unit','','Description','Maximum torque coefficient');
+        end
+        
+        function val = get.optTSR(obj)
+            [~,ind] = max(obj.CpLookup.Value./obj.CtLookup.Value);
+            val = SIM.parameter('Value',obj.RPMref.Value(ind),'Unit','','Description','Optimal TSR');
+        end
+        
+        function val = get.tauCoefLookup(obj)
+            ind = find(obj.torqueCoefLookup.Value==obj.peakTorqueCoef.Value);
+            %             x = Simulink.LookupTable;
+            %             x.Breakpoints.Value = obj.torqueCoefLookup.Value(end:-1:ind);
+            %             x.Table.Value = obj.RPMref.Value(end:-1:ind);
+            val = SIM.parameter('Value',...
+                obj.torqueCoefLookup.Value(end:-1:ind),...,'Unit','',...
+                'Description','Torque Coef Lookup Table Data');
+        end
+        
+        
+        function val = get.tauCoefTSR(obj)
+            ind = find(obj.torqueCoefLookup.Value==obj.peakTorqueCoef.Value);
+            val = SIM.parameter('Value',obj.RPMref.Value(end:-1:ind),...
+                'Unit','','Description','Torque Coef Lookup Breakpoint');
         end
         
         function val = get.momentArm(obj)
             veh = OCT.vehicleM;
             val = SIM.parameter('Value',-veh.rB_LE.Value + obj.attachPtVec.Value,'Unit','m');
-        end        
+        end
         
         function val = get.momentOfInertia(obj)
             Jhub = 1/2*obj.hubMass.Value*(obj.hubDiameter.Value/2)^2;
             Jblade = 1/3*obj.bladeMass.Value*((obj.diameter.Value-obj.hubDiameter.Value)/2)^2;
             val = SIM.parameter('Value',Jhub+Jblade*obj.numBlades.Value,'Unit','kg*m^2');
-        end     
+        end
         
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);
