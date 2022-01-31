@@ -21,7 +21,7 @@ fltCtrl.rudderGain.setValue(1,'')
 fltCtrl.rollMomentPhase1.kp.setValue(3,'(N*m)/(rad)')
 fltCtrl.rollMomentPhase1.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.rollMomentPhase1.kd.setValue(1,'(N*m)/(rad/s)');
-fltCtrl.rollMomentPhase1.tau.setValue(0.001,'s');
+fltCtrl.rollMomentPhase1.tau.setValue(0.01,'s');
 %% Control surface periodic setpoint tracking  controllers
 fltCtrl.rollCtrl.kp.setValue(3,'(N*m)/(rad)')
 fltCtrl.rollCtrl.ki.setValue(0,'(N*m)/(rad*s)');
@@ -41,8 +41,8 @@ fltCtrl.period.setValue(7,'s')
 
 %% elevator constants
 fltCtrl.elvDeflStrt.setValue(5,'deg')
-fltCtrl.elvDeflLaunch.setValue(0,'deg')
-fltCtrl.ccElevator.setValue(-8,'deg')
+fltCtrl.elvDeflLaunch.setValue(.5,'deg')
+fltCtrl.ccElevator.setValue(-4,'deg')
 fltCtrl.phase2Elevator.setValue(0,'deg')
 %% tether lengths
 
@@ -65,17 +65,18 @@ fltCtrl.gain4to1.setValue(.7,'');
 fltCtrl.gain2to3.setValue(.4,'');
 fltCtrl.elvPeak.setValue(50,'deg');
 fltCtrl.bScale.setValue([0.0457 0.0417; 0.0085 -0.1495],'(N*s^2)/(deg*m)');
-fltCtrl.time23.setValue(10,'s');
-fltCtrl.time41.setValue(10,'s');
+fltCtrl.time23.setValue(1,'s');
+fltCtrl.time41.setValue(2,'s');
 fltCtrl.tWait.setValue(5,'s');
 
 %% ILC
-fltCtrl.ilcTrig.setValue(1,'');
-fltCtrl.forgettingFactor.setValue(.95,'');
-fltCtrl.initBasisParams.setValue([50,70,.4,0,0],'');
-fltCtrl.learningGain.setValue(3,'');
-fltCtrl.enableVec.setValue([1 1 1,0,0],'');
-fltCtrl.trustRegion.setValue([ 5,5,.1,inf,inf],'');
+fltCtrl.ilcTrig.setValue(0,'');
+fltCtrl.forgettingFactor.setValue(.85,'');
+fltCtrl.initBasisParams.setValue([60,80,.2,-3,7.5],'');
+fltCtrl.learningGain.setValue(5,'');
+fltCtrl.enableVec.setValue([1 1 1,1,1],'');
+fltCtrl.trustRegion.setValue([ 5,5,.1,2,.1],'');
 fltCtrl.whiteNoise.setValue([0;0;0;0;0],'');
+
 %% Save
 saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');

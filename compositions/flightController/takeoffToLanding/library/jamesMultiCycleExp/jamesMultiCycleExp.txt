@@ -58,7 +58,7 @@ fltCtrl.rollMomentPhase1.kd.Value = 1.0000e+00
 fltCtrl.rollMomentPhase1.kd.Unit = '(N*m)/(rad/s)'
 fltCtrl.rollMomentPhase1.kd.NoScale = false
 fltCtrl.rollMomentPhase1.kd.Description = 'Derivative gain'
-fltCtrl.rollMomentPhase1.tau.Value = 1.0000e-03
+fltCtrl.rollMomentPhase1.tau.Value = 1.0000e-02
 fltCtrl.rollMomentPhase1.tau.Unit = 's'
 fltCtrl.rollMomentPhase1.tau.NoScale = false
 fltCtrl.rollMomentPhase1.tau.Description = 'Time Constant'
@@ -152,7 +152,7 @@ fltCtrl.rudderGain.Value = 1.0000e+00
 fltCtrl.rudderGain.Unit is unitless or has no unit specified
 fltCtrl.rudderGain.NoScale = false
 fltCtrl.rudderGain.Description = '0 Turns off rudder'
-fltCtrl.elvDeflLaunch.Value = 0.0000e+00
+fltCtrl.elvDeflLaunch.Value = 5.0000e-01
 fltCtrl.elvDeflLaunch.Unit = 'deg'
 fltCtrl.elvDeflLaunch.NoScale = false
 fltCtrl.elvDeflLaunch.Description = 'elv defl at launch'
@@ -179,7 +179,7 @@ fltCtrl.vSat.Value = 1.0000e-01
 fltCtrl.vSat.Unit is unitless or has no unit specified
 fltCtrl.vSat.NoScale = false
 fltCtrl.vSat.Description = 'sat on spool out gain'
-fltCtrl.ccElevator.Value = -8.0000e+00
+fltCtrl.ccElevator.Value = -4.0000e+00
 fltCtrl.ccElevator.Unit = 'deg'
 fltCtrl.ccElevator.NoScale = false
 fltCtrl.ccElevator.Description = 'crosscurrent elevator'
@@ -223,11 +223,11 @@ fltCtrl.elvPeak.Value = 5.0000e+01
 fltCtrl.elvPeak.Unit = 'deg'
 fltCtrl.elvPeak.NoScale = false
 fltCtrl.elvPeak.Description = 'peak elevation during phase 1'
-fltCtrl.time23.Value = 1.0000e+01
+fltCtrl.time23.Value = 1.0000e+00
 fltCtrl.time23.Unit = 's'
 fltCtrl.time23.NoScale = false
 fltCtrl.time23.Description = 'time to transition between phase 2 and 3'
-fltCtrl.time41.Value = 1.0000e+01
+fltCtrl.time41.Value = 2.0000e+00
 fltCtrl.time41.Unit = 's'
 fltCtrl.time41.NoScale = false
 fltCtrl.time41.Description = 'time to transition between phase 4 and 1'
@@ -235,23 +235,23 @@ fltCtrl.vAppGain.Value = 1.0000e+00
 fltCtrl.vAppGain.Unit is unitless or has no unit specified
 fltCtrl.vAppGain.NoScale = false
 fltCtrl.vAppGain.Description = 'gain on vAppSqr for LAS estimation'
-fltCtrl.ilcTrig.Value = 1.0000e+00
+fltCtrl.ilcTrig.Value = 0.0000e+00
 fltCtrl.ilcTrig.Unit is unitless or has no unit specified
 fltCtrl.ilcTrig.NoScale = false
 fltCtrl.ilcTrig.Description = 'turn ilc on or off. Off = 0, on = 1'
-fltCtrl.initBasisParams.Value = [50 70 0.4 0 0]
+fltCtrl.initBasisParams.Value = [60 80 0.2 -3 7.5]
 fltCtrl.initBasisParams.Unit is unitless or has no unit specified
 fltCtrl.initBasisParams.NoScale = false
 fltCtrl.initBasisParams.Description = 'basis parameters'
-fltCtrl.learningGain.Value = 3.0000e+00
+fltCtrl.learningGain.Value = 5.0000e+00
 fltCtrl.learningGain.Unit is unitless or has no unit specified
 fltCtrl.learningGain.NoScale = false
 fltCtrl.learningGain.Description = 'learning gain ilc'
-fltCtrl.forgettingFactor.Value = 9.5000e-01
+fltCtrl.forgettingFactor.Value = 8.5000e-01
 fltCtrl.forgettingFactor.Unit is unitless or has no unit specified
 fltCtrl.forgettingFactor.NoScale = false
 fltCtrl.forgettingFactor.Description = 'forgetting factor'
-fltCtrl.trustRegion.Value = [5 5 0.1 Inf Inf]
+fltCtrl.trustRegion.Value = [5 5 0.1 2 0.1]
 fltCtrl.trustRegion.Unit is unitless or has no unit specified
 fltCtrl.trustRegion.NoScale = false
 fltCtrl.trustRegion.Description = 'trust region'
@@ -259,7 +259,7 @@ fltCtrl.whiteNoise.Value = [0;0;0;0;0]
 fltCtrl.whiteNoise.Unit is unitless or has no unit specified
 fltCtrl.whiteNoise.NoScale = false
 fltCtrl.whiteNoise.Description = 'perturbabtion'
-fltCtrl.enableVec.Value = [1 1 1 0 0]
+fltCtrl.enableVec.Value = [1 1 1 1 1]
 fltCtrl.enableVec.Unit is unitless or has no unit specified
 fltCtrl.enableVec.NoScale = false
 fltCtrl.enableVec.Description = 'which basis params are active'

@@ -25,7 +25,7 @@ alpha1 = obj.hStab.alpha.Value;
 Aref = obj.fluidRefArea.Value;
 Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
     (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
-Athr = thr.tether1.diameter.Value/4;
+Athr = thr.tether1.diameter.Value*9.5/4;
 CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref;
 if isempty(obj.fuse.alpha)
 CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
@@ -41,6 +41,7 @@ CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
 
 CLtot = CLwing+CLstab;
 CDtot = CDwing+CDstab+CDvert+CDfuse+CDthr;
+CRtot = sqrt(CLtot.^2 + CDtot.^2);
 
 h = figure(fig);
 subplot(2,2,1);hold on;grid on;
@@ -55,5 +56,13 @@ xlabel('alpha [deg]');  ylabel('$\mathrm{CL^3/CD^2}$');  xlim(p.Results.xLim);
 subplot(2,2,4);hold on;grid on;
 plot(alpha,CLtot./CDtot,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
 xlabel('alpha [deg]');  ylabel('$\mathrm{CL/CD}$');  xlim(p.Results.xLim);
+
+figure
+plot(alpha,(CRtot.^3./CDtot.^2))
+xlabel('alpha [deg]');  ylabel('$\mathrm{CR^3/CD^2}$'); 
+
+
+
+
 
 end

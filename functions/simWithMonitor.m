@@ -8,7 +8,7 @@ function simLogsout = simWithMonitor(model,varargin)
     p=inputParser;
     addRequired(p,'model');
     addParameter(p,'timeStep',2);
-    addParameter(p,'minRate',0.001);
+    addParameter(p,'minRate',0.00001);
     parse(p,model,varargin{:})
     model=p.Results.model;
     timeStep=p.Results.timeStep;
