@@ -213,7 +213,7 @@ classdef signalcontainer < dynamicprops
             plot(obj.ctrlSurfDefl.Time,squeeze(obj.ctrlSurfDefl.Data(3,:,:)),'b-');  
             xlabel('Time [s]');  ylabel('Elevator [deg]');
         end
-        function [CLsurf,CDtot] = getCLCD(obj,vhcl,thr)
+        function [CLsurf,CDtot,CDnoThr] = getCLCD(obj,vhcl,thr)
             dThr = thr.tether1.diameter.Value;
             LThr = sqrt(sum(vhcl.initPosVecGnd.Value.^2));
             Aref = vhcl.fluidRefArea.Value;
@@ -223,6 +223,7 @@ classdef signalcontainer < dynamicprops
             CDthr = thr.tether1.dragCoeff.Value(1).*Athr/Aref;
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
             CDtot = CDfuse+CDsurf+CDthr;
+            CDnoThr = CDfuse+CDsurf;
             CLsurf = squeeze(obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data);
         end
         function [Lift,Drag,Fuse,Thr] = getLiftDrag(obj)
@@ -394,7 +395,9 @@ classdef signalcontainer < dynamicprops
         function Pow = rotPowerSummary(obj,vhcl,env,thr)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
             ran = Idx1:Idx2-1;
-            [CLsurf,CDtot] = obj.getCLCD(vhcl,thr);
+            [CLsurf,CDtot,CDnoThr] = obj.getCLCD(vhcl,thr);
+            CDtot
+            CDnoThr
             try
                 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
             catch
@@ -404,8 +407,10 @@ classdef signalcontainer < dynamicprops
                     C1 = cosd(squeeze(obj.elevation_X_lem.Data));  C2 = cosd(squeeze(obj.azimuth_X_lem.Data));
                 end
             end
-            PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3*.5;
+            PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;%*.5;
+            PLoydKite = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDnoThr.^2.*(C1.*C2).^3;%*.5;
             Pow.loyd = mean(PLoyd)*1e-3;
+            Pow.loydNT = mean(PLoydKite)*1e-3;
             Pow.turb = mean(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.elec = mean(obj.elecPow.Data(1,1,ran))*1e-3;
             Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;
@@ -423,7 +428,7 @@ classdef signalcontainer < dynamicprops
             Pow.net = mean(Pnet);
             Pow.max = max(Pnet);
             Pow.min = min(Pnet);
-            fprintf('Lap power output:\nMax\t\t\t Turb\t\t Winch\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f\n',Pow.max,Pow.elec,Pow.winch,Pow.loyd,Pow.net)
+            fprintf('Lap power output:\nMin\t\t\t Max\t\t Turb\t\t Winch\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.elec,Pow.winch,Pow.loyd,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);

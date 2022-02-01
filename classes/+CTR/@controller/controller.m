@@ -62,6 +62,36 @@ classdef controller < dynamicprops
             
         end
         
+        function plotPath(obj)
+            pathGeom = evalin('base','PATHGEOMETRY');
+            n = numel(0:0.005:1)-1;
+            try
+                [pg,~] = evalin('base',[pathGeom '(0:0.005:1,hiLvlCtrl.basisParams.Value,[0 0 0])']);
+            catch
+                basisParams = obj.initBasisParams.Value;
+            end
+            figure
+            plot3(pg(1,:),pg(2,:),pg(3,:),'k','LineWidth',1,'DisplayName','Path Geometry')
+            hold on
+            grid on
+            plot3([pg(1,3*n/4) pg(1,n/4)],[max(pg(2,:)) min(pg(2,:))],[pg(3,3*n/4) pg(3,n/4)],...
+                'r','LineWidth',1.5,'DisplayName','Path Width (w)')
+            plot3([pg(1,3*n/8) pg(1,n/8)],[pg(2,n/8) pg(2,n/8)],[max(pg(3,:)) min(pg(3,:))],...
+                'b','LineWidth',1.5,'DisplayName','Path Height (h)')
+            plot3([0 pg(1,1)],[0 pg(2,1)],[0 pg(3,1)],'k--','LineWidth',...
+                1.5,'DisplayName','Tether Length (l)')
+            plot3([0 pg(1,1) pg(1,1) 0],[0 pg(2,1) pg(2,1) 0],[0 pg(3,1) 0 0],'r:',...
+                'LineWidth',1.5,'DisplayName','Elevation Angle ($\theta$)')
+            plot3([0 pg(1,1) pg(1,1) 0],[0 0 pg(2,1) 0],[0 0 0 0],'b:',...
+                'LineWidth',1.5,'DisplayName','Azimuth Angle ($\phi$)')
+            axis equal
+            legend('Location','northeast')
+            view(40,30)
+        end
+        
+        
+        
+        
         % Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);

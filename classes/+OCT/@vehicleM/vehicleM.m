@@ -357,7 +357,7 @@ classdef vehicleM < dynamicprops
         set(gca,'FontSize',12)
 
         % Rotor Performance Surface
-        vApp = 0.1:0.1:vAppMax;
+        vApp = 0.1:0.01:vAppMax;
         idx = 10*turb.optTSR.Value;
         
         TSR = turb.optTSR.Value;
@@ -389,10 +389,10 @@ classdef vehicleM < dynamicprops
             xlabV = 'Apparent Velocity [m/s]';
         end
         
-        figure
-        plot(vApp,tRot)
-        xlabel(xlabV)
-        ylabel(xlab)
+%         figure
+%         plot(vApp,tRot)
+%         xlabel(xlabV)
+%         ylabel(xlab)
         
         figure
         plot(vApp,RPM)
@@ -400,6 +400,8 @@ classdef vehicleM < dynamicprops
         ylabel('Rotor Speed [RPM]')
         
         figure
+        tiledlayout(2,1)
+        nexttile
         plot(RPM,tRot)
         xlabel('Rotor Speed [RPM]')
         ylabel(xlab)
@@ -409,6 +411,11 @@ classdef vehicleM < dynamicprops
         ylabel('Rotor Mechanical Power [W]')
         set(gca,'FontSize',12)
         legend('Torque Curve','Power Curve','Location','southeast')
+        nexttile
+        plot(RPM,vApp)
+        ylabel(xlabV)
+        xlabel('Rotor Speed [RPM]')
+        set(gca,'FontSize',12)
         end
         % mass
         function val = get.mass(obj)

@@ -357,9 +357,9 @@ end
 
 % Set the plot limits to zoom in on the body
 if p.Results.ZoomIn
-    xlim(tscTmp.positionVec.Data(1,:,1)+obj.fuse.length.Value*[-1.5 1.5])
-    ylim(tscTmp.positionVec.Data(2,:,1)+obj.fuse.length.Value*[-1.5 1.5])
-    zlim(tscTmp.positionVec.Data(3,:,1)+obj.fuse.length.Value*[-1.5 1.5])
+    xlim(tscTmp.positionVec.Data(1,:,1)*[.8 1.1])
+    ylim(tscTmp.positionVec.Data(2,:,1)*2*[-1 1])
+    zlim(tscTmp.positionVec.Data(3,:,1)*[.8 1.1])
 end
 
 % Ste the plot limits to zoom in on the body with a moving ground station
@@ -916,13 +916,19 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     end
     
     % Set the plot limits to zoom in on the body
+%     if p.Results.ZoomIn
+%         pt = tscTmp.positionVec.getsamples(ii).Data;
+%         xlim(pt(1)+obj.fuse.length.Value*[-1.5 1.5])
+%         ylim(pt(2)+obj.fuse.length.Value*[-1.5 1.5])
+%         zlim(pt(3)+obj.fuse.length.Value*[-1.5 1.5])
+%     end
     if p.Results.ZoomIn
-        pt = tscTmp.positionVec.getsamples(ii).Data;
-        xlim(pt(1)+obj.fuse.length.Value*[-1.5 1.5])
-        ylim(pt(2)+obj.fuse.length.Value*[-1.5 1.5])
-        zlim(pt(3)+obj.fuse.length.Value*[-1.5 1.5])
+        posmin = tscTmp.positionVec.min;
+        posmax = tscTmp.positionVec.max;
+    xlim([posmin(1) posmax(1)]+[-100 100]);
+    ylim([posmin(2) posmax(2)]*1.5);
+    zlim([posmin(3) posmax(3)]+[-100 100])
     end
-    
     if p.Results.ZoomInMove
         pt = tscTmp.positionVec.getsamples(ii).Data;
         [a,b] = size(tscTmp.gndStnPositionVec.Data);
