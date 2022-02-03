@@ -1,3 +1,5 @@
+
+function jamesMultiCycleExpFun_bs(T,rA,yA,pO,SIS,SOS,SOE,SIE) 
 FLIGHTCONTROLLER = 'takeoffToLanding';
 
 fltCtrl = CTR.MultiCycleExp;
@@ -33,16 +35,16 @@ fltCtrl.yawCtrl.ki.setValue(0,'(N*m)/(rad*s)');
 fltCtrl.yawCtrl.kd.setValue(1,'(N*m)/(rad/s)');
 fltCtrl.yawCtrl.tau.setValue(0.01,'s');
 
-fltCtrl.rollAmp.setValue(50,'deg')
-fltCtrl.yawAmp.setValue(70,'deg')
+fltCtrl.rollAmp.setValue(rA,'deg')
+fltCtrl.yawAmp.setValue(yA,'deg')
 fltCtrl.rollPhase.setValue(0,'rad')
-fltCtrl.yawPhase.setValue(0,'rad')
-fltCtrl.period.setValue(7,'s')
+fltCtrl.yawPhase.setValue(pO,'rad')
+fltCtrl.period.setValue(T,'s')
 
 %% elevator constants
 fltCtrl.elvDeflStrt.setValue(5,'deg')
-fltCtrl.elvDeflLaunch.setValue(.5,'deg')
-fltCtrl.ccElevator.setValue(-4,'deg')
+fltCtrl.elvDeflLaunch.setValue(SIE,'deg')
+fltCtrl.ccElevator.setValue(SOE,'deg')
 fltCtrl.phase2Elevator.setValue(0,'deg')
 %% tether lengths
 
@@ -59,8 +61,8 @@ fltCtrl.setStartControl(150,'s')
 %% other constants
 fltCtrl.vAppGain.setValue(1,'');
 fltCtrl.controllerEnable.setValue(-1,'');
-fltCtrl.vSat.setValue(.1,'');
-fltCtrl.sIM.setValue(.5,'');
+fltCtrl.vSat.setValue(SOS,'');
+fltCtrl.sIM.setValue(SIS,'');
 fltCtrl.gain4to1.setValue(.7,'');
 fltCtrl.gain2to3.setValue(.4,'');
 fltCtrl.elvPeak.setValue(50,'deg');
@@ -79,4 +81,4 @@ fltCtrl.trustRegion.setValue([ 5,5,.05,2,.1],'');
 fltCtrl.whiteNoise.setValue([0;0;0;0;0],'');
 
 %% Save
-saveFile = saveBuildFile('fltCtrl',mfilename,'variant','FLIGHTCONTROLLER');
+saveFile = saveBuildFile('fltCtrl',mfilename);

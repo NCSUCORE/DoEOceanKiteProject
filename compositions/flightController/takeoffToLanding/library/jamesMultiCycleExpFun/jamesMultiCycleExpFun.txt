@@ -164,7 +164,7 @@ fltCtrl.initTL.Value = 7.0000e+00
 fltCtrl.initTL.Unit = 'm'
 fltCtrl.initTL.NoScale = false
 fltCtrl.initTL.Description = 'starting and min tether length'
-fltCtrl.sIM.Value = 5.0000e-01
+fltCtrl.sIM.Value = 4.0000e-01
 fltCtrl.sIM.Unit is unitless or has no unit specified
 fltCtrl.sIM.NoScale = false
 fltCtrl.phase2Elevator.Value = 0.0000e+00
@@ -175,7 +175,7 @@ fltCtrl.controllerEnable.Value = -1.0000e+00
 fltCtrl.controllerEnable.Unit is unitless or has no unit specified
 fltCtrl.controllerEnable.NoScale = false
 fltCtrl.controllerEnable.Description = 'switch between PFC and periodic setpoint ctrl'
-fltCtrl.vSat.Value = 1.0000e-01
+fltCtrl.vSat.Value = 1.5000e-01
 fltCtrl.vSat.Unit is unitless or has no unit specified
 fltCtrl.vSat.NoScale = false
 fltCtrl.vSat.Description = 'sat on spool out gain'
@@ -187,11 +187,11 @@ fltCtrl.tWait.Value = 5.0000e+00
 fltCtrl.tWait.Unit = 's'
 fltCtrl.tWait.NoScale = false
 fltCtrl.tWait.Description = 'time to wait before spooling'
-fltCtrl.period.Value = 7.0000e+00
+fltCtrl.period.Value = 7.2500e+00
 fltCtrl.period.Unit = 's'
 fltCtrl.period.NoScale = false
 fltCtrl.period.Description = 'Setpoint period'
-fltCtrl.rollAmp.Value = 5.0000e+01
+fltCtrl.rollAmp.Value = 5.6000e+01
 fltCtrl.rollAmp.Unit = 'deg'
 fltCtrl.rollAmp.NoScale = false
 fltCtrl.rollAmp.Description = 'roll sp amp'
@@ -199,11 +199,11 @@ fltCtrl.rollPhase.Value = 0.0000e+00
 fltCtrl.rollPhase.Unit = 'rad'
 fltCtrl.rollPhase.NoScale = false
 fltCtrl.rollPhase.Description = 'roll sp phase'
-fltCtrl.yawAmp.Value = 7.0000e+01
+fltCtrl.yawAmp.Value = 8.5000e+01
 fltCtrl.yawAmp.Unit = 'deg'
 fltCtrl.yawAmp.NoScale = false
 fltCtrl.yawAmp.Description = 'yaw sp amp'
-fltCtrl.yawPhase.Value = 0.0000e+00
+fltCtrl.yawPhase.Value = 3.0000e-01
 fltCtrl.yawPhase.Unit = 'rad'
 fltCtrl.yawPhase.NoScale = false
 fltCtrl.yawPhase.Description = 'yaw sp phase'
@@ -263,7 +263,7 @@ fltCtrl.enableVec.Value = [1 1 1 1 1]
 fltCtrl.enableVec.Unit is unitless or has no unit specified
 fltCtrl.enableVec.NoScale = false
 fltCtrl.enableVec.Description = 'which basis params are active'
-fltCtrl.frequency.Value = 8.9760e-01
+fltCtrl.frequency.Value = 8.6665e-01
 fltCtrl.frequency.Unit is unitless or has no unit specified
 fltCtrl.frequency.NoScale = false
 fltCtrl.frequency.Description = 'frequency of sinewave sp'

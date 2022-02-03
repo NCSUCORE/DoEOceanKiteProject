@@ -2,38 +2,24 @@
 clear;clc;close all;
 Simulink.sdi.clear
 %%  Set Test Parameters
-
-thrArray = 7.5;
-
-flwSpdArray = [1.75]; %[1,1.25,1.5,1.75,2];
-spoolInPerc =[.4]; %[.1,.15,.2,.25,.3,.375];
-spoolOutPerc =.15; %[.1,.125,.15,.175,.2,.225,.25,.275,.3,.33];
-rollAmpMat = [56];
-for gg = 1:length(rollAmpMat)
-for q = 1 :length(spoolOutPerc)
-    for j = 1:length(spoolInPerc)
-        for k = 1:length(flwSpdArray)
             thrLength = 7.1;            %   Initial tether length/operating altitude/elevation angle
-            flwSpd = flwSpdArray(k) ;                                              %   m/s - Flow speed
+                                                        %   m/s - Flow speed
             
             %%  Load components
-            
-            
-            loadComponent('jamesMultiCycleExp');                 %   Path-following controller with AoA control
+
+            loadComponent('jamesMultiCycleExpFun');                 %   Path-following controller with AoA control
             FLIGHTCONTROLLER = 'takeOffToLanding';
             loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
             loadComponent('pathFollowingGndStn');
             loadComponent('oneDOFWnch');                                %   Winches
             loadComponent('poolTether');                               %   Manta Ray tether
             loadComponent('idealSensors')
-%             loadComponent('lasPosEst')
-%             loadComponent('lineAngleSensor');%   Sensors
             loadComponent('idealSensorProcessing')                      %   Sensor processing
             loadComponent('poolScaleKiteAbneyRefined');                %   AR = 8; 8m span
             SIXDOFDYNAMICS        = "sixDoFDynamicsCoupledFossen12Int";
+            FLIGHTCONTROLLER = 'takeoffToLanding';
             %%  Environment Properties
-            loadComponent('ConstXYZT');                                 %   Environment
-            env.water.setflowVec([flwSpd 0 0],'m/s');               %   m/s - Flow speed vector
+            loadComponent('constXYZTFun');                                 %   Environment                 
             ENVIRONMENT = 'env2turb';                   %   Two turbines
             FLOWCALCULATION = 'rampSaturatedXYZT';
             rampSlope = .05; %flow speed ramp rate
@@ -41,17 +27,12 @@ for q = 1 :length(spoolOutPerc)
             
             loadComponent('constBoothLem');        %   High level controller
             PATHGEOMETRY = 'lemBoothNew';
-            
-            a = 6.5
-            b = 2.5
-            
-            hiLvlCtrl.basisParams.setValue([a,b,deg2rad(25),0,thrLength],'[rad rad rad rad m]') % Lemniscate of Booth
-            
+
+          
             %%  Ground Station Properties
             gndStn.posVec.setValue([0 0 0],'m')
             %%  Vehicle Properties
-            % vhcl.setICsOnPath(.85,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,6.5*flwSpd*norm([1;0;0]))
-            %         vhcl.initPosVecGnd.setValue([0;0;thrLength],'m')
+
             vhcl.initPosVecGnd.setValue([cos(70*(pi/180)) 0 sin(70*(pi/180))]*thrLength,'m')
             vhcl.initAngVelVec.setValue([0;0;0],'rad/s')
             vhcl.initVelVecBdy.setValue([0;0;0],'m/s')
@@ -68,18 +49,9 @@ for q = 1 :length(spoolOutPerc)
             thr.setNumNodes(4,'');
             thrDrag =   1.8;
             thr.tether1.setDragCoeff(thrDrag,'');
-            
             thr.tether1.netBuoyEnable.setValue(0,'');
             thr.tether1.dragEnable.setValue(1,'')
-            %% Line Angle Sensor
-%                     pos = vhcl.initPosVecGnd.Value;
-%                     x = pos(1);
-%                     y = pos(2);
-%                     z = pos(3);
-%                     az1 = atan2(y,x);
-%                     el1 = atan2(z,sqrt(x.^2 + y.^2));
-%                     las.setThrInitAng([el1 az1],'rad');
-%                     las.setInitAngVel([-0 0],'rad/s');
+
             %%  Winches Properties
             wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
             wnch.winch1.LaRspeed.setValue(1,'m/s');
@@ -102,34 +74,16 @@ for q = 1 :length(spoolOutPerc)
             thr.tether1.youngsMod.setValue(10e9,'Pa');
   
             %% Control Parameters
-            fltCtrl.vSat.setValue(spoolOutPerc(q),''); %spool out speed (.15)
-            fltCtrl.sIM.setValue(spoolInPerc(j),''); %spool in speed (.3)
-            fltCtrl.rollAmp.setValue(rollAmpMat(gg),'deg')
-            fltCtrl.yawAmp.setValue(86,'deg')
-            fltCtrl.yawPhase.setValue(.3,'rad')
-            fltCtrl.period.setValue(7.25,'s')
+           
             rollBias = 0;
             yawBias = 0;
-            fltCtrl.ccElevator.setValue(-4,'deg')
+            
             
             %%  Set up critical system parameters and run simulation
-            simParams = SIM.simParams;  simParams.setDuration(2800,'s');  dynamicCalc = '';
+            simParams = SIM.simParams;  simParams.setDuration(800,'s');  dynamicCalc = '';
             simWithMonitor('OCTModel')
             tsc = signalcontainer(logsout);
-%             fileName = sprintf('spoolInStudyflwSpd%.2f_spoolInPerc%.2f.mat',[flwSpdArray(k),spoolInPerc(j)])
-%             try
-%             save(fileName,'tsc1')
-%             catch
-%             end
-         
-        end
-    end
-end
-end
 
-% 
-vhcl.animateSim(tsc,.7,...
-    'PlotTracer',true,'FontSize',18,'starttime',250,'endtime',800,'SaveGif',1==1,'GifTimeStep',.01)
 
 
 
