@@ -343,7 +343,12 @@ classdef vehicleM < dynamicprops
         
         %% getters
         function plotTurbPerformance(obj,vAppMax,imp)
-
+        
+        if ~exist('vAppMax')
+            vAppMax = 3;
+            fprintf('Max apparent velocity set to 3 m/s. Declare vAppMax in function call to specify peak apparent velocity presented to turbines in m/s\n')
+        end
+            
         turb = obj.turb1;
         tauLim = turb.torqueLim.Value;
         diam = turb.diameter.Value;
@@ -378,6 +383,10 @@ classdef vehicleM < dynamicprops
         
         rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
         RPM = gamma.*vApp*60/(pi*diam);
+        if ~exist('imp')
+            imp = 0;
+            fprintf('Plotting in metric units by default. Declare imp = 1 in function call to plot in imperial units\n')
+        end
         
         if imp == 1
             tRot = tRot/1.356;
