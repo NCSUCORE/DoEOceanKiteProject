@@ -1,4 +1,4 @@
-function plotFlightResults(obj,vhcl,env,thr,varargin)
+function plotFlightResults(obj,vhcl,env,thr,fltCtrl,varargin)
 %%  Parse Inputs
 p = inputParser;
 addOptional(p,'plot1Lap',false,@islogical);
@@ -6,7 +6,7 @@ addOptional(p,'lapNum',1,@isnumeric);
 addOptional(p,'plotS',false,@islogical);
 addOptional(p,'cross',false,@islogical);
 addOptional(p,'AoASP',true,@islogical);
-addOptional(p,'maxTension',true,@islogical)
+addOptional(p,'maxTension',true,@islogical);
 addOptional(p,'plotBeta',false,@islogical);
 addOptional(p,'LiftDrag',false,@islogical);
 addOptional(p,'dragChar',false,@islogical);
@@ -21,8 +21,9 @@ AoA = p.Results.AoASP;
 turb = isprop(obj,'turbPow');
 %%  Determine Single Lap Indices
 if lap
-    [Idx1,Idx2] = getLapIdxs(obj,p.Results.lapNum);
+    [Idx1,Idx2] = getLapIdxs(obj,p.Results.lapNum-1);
     ran = Idx1:Idx2-1;
+    data(ran)
     lim = [time(Idx1) time(Idx2)];
 else
     lim = [time(1) time(end)];
@@ -44,7 +45,11 @@ if turb
             power = squeeze(obj.turbPow.Data(1,1,:));
         end
         energy = cumtrapz(time,power)/1000/3600;
-        speed = (squeeze(obj.turbVelP.Data(1,1,:))+squeeze(obj.turbVelS.Data(1,1,:)))/2;
+        try
+            speed = (squeeze(obj.turbVelP.Data(1,1,:))+squeeze(obj.turbVelS.Data(1,1,:)))/2;
+        catch
+            speed = squeeze(sqrt(sum(obj.vAppTurb.Data.^2,1)))';
+        end
     end
 else
     power = squeeze(obj.winchPower.Data(:,1));
@@ -108,17 +113,17 @@ end
 yyaxis right
 if lap
     if con
-        plot(data(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0])
+        plot(data(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);
     else
-        plot(time(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+        plot(time(ran),energy(ran)-energy(Idx1),'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim);
     end
 else
-    plot(time,energy,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim)
+    plot(time,energy,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim);
 end
 %%  Plot Tether Tension
-ax2 = subplot(R,C,2); hold on; grid on
+ax2 = subplot(R,C,2); hold on; grid on;
 if p.Results.maxTension
-    Tmax = (obj.maxTension.Data/.95)*ones(numel(time),1);
+    Tmax = (fltCtrl.Tmax.Value/0.92)*ones(numel(time),1)*1e3;
 else
     Tmax = (0*ones(numel(time),1));
 end
@@ -127,7 +132,7 @@ if lap
         plot(data(ran),Tmax(ran),'r--');    plot(data(ran),airNode(ran)*1000,'b-');  
         plot(data(ran),gndNode(ran)*1000,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider')
     else
-        plot(time(ran),Tmax(ran)*1000,'r--');    plot(time(ran),airNode(ran)*1000,'b-');  
+        plot(time(ran),Tmax(ran),'r--');    plot(time(ran),airNode(ran)*1000,'b-');  
         plot(time(ran),gndNode(ran)*1000,'g-');  ylabel('Thr Tension [kN]');  legend('Limit','Kite','Glider');  xlim(lim)
     end
 else
@@ -136,32 +141,32 @@ else
 
 end
 %%  Plot Speed
-ax3 = subplot(R,C,3); hold on; grid on
+ax3 = subplot(R,C,3); hold on; grid on;
 if lap
     if con
         if turb
-            plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  ylim([0,inf])
+            plot(data(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  ylim([0,inf]);
             plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  legend('Turb','Kite','location','southeast');
 %             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
 %             text(0.05,1,sprintf('V = %.3f m/s',mean(speed(ran))))
 %             text(0.05,3,['$\mathrm{V_f}$',sprintf(' = %.3f m/s',env.water.speed.Value)])
         else
-            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+            plot(data(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf]);
 %             plot(data(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     else
         if turb
-            plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim);  ylim([0,inf])
+            plot(time(ran),speed(ran),'g-');  ylabel('Speed [m/s]');  xlim(lim);  ylim([0,inf]);
             plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  legend('Turb','Kite','location','southeast');
 %             plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
         else
-            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf])
+            plot(time(ran),vKite(ran),'b-');  ylabel('Speed [m/s]');  ylim([0,inf]);
 %             plot(time(ran),vLoyd(ran),'r--');  ylabel('Speed [m/s]');  legend('Kite','Loyd','location','southeast');
         end
     end
 else
     if turb
-        plot(time,speed,'g-');  ylabel('Speed [m/s]');  xlim(lim)
+        plot(time,speed,'g-');  ylabel('Speed [m/s]');  xlim(lim);
         plot(time,vKite,'b-');  ylabel('Speed [m/s]');  ylim([0,inf]);  legend('Turb','Kite','location','southeast');
 %         plot(time,vLoyd,'r--');  ylabel('Speed [m/s]');  legend('Turb','Kite','Loyd','location','southeast');
     else
