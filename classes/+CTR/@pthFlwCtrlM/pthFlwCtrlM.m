@@ -46,8 +46,12 @@ classdef pthFlwCtrlM < handle
         Tmax
         TmaxCtrl
         optAltitude
+        % Discrete time sample rate
+        Ts
     end
-    
+    properties (Dependent)
+        discRefTau
+    end
     methods
         function obj = pthFlwCtrlM
             %PTHFLWCTRL 
@@ -93,6 +97,7 @@ classdef pthFlwCtrlM < handle
             obj.Tmax                = SIM.parameter('Unit','kN','Description','Maximum tether tension limit');
             obj.TmaxCtrl            = SIM.parameter('Unit','','Description','Tether tension limit selector');
             obj.optAltitude         = SIM.parameter('Unit','m','Description','Mean operating altitude');
+            obj.Ts                  = SIM.parameter('Unit','s','Description','Controller time step','NoScale',1==1)';
         end
         
         function setWinchSpeedIn(obj,val,unit)
@@ -144,6 +149,13 @@ classdef pthFlwCtrlM < handle
             obj.initPathVar.setValue(pathVars(idx),'');
         end
         
+        function val = get.discRefTau(obj)
+                 gCont = tf(1,[obj.refFiltTau.Value 1]);
+                 gDisc = c2d(gCont,obj.Ts.Value,'zoh');
+                 [num,dem] = tfdata(gDisc);
+                 val = SIM.parameter('Unit','','Description',...
+                     'Discrete Time Vel Angle Filter Coefficients','Value',[num{1};dem{1}]);
+        end
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
 
             props = getPropsByClass(obj,'CTR.sat');

@@ -23,7 +23,6 @@ turb = isprop(obj,'turbPow');
 if lap
     [Idx1,Idx2] = getLapIdxs(obj,p.Results.lapNum-1);
     ran = Idx1:Idx2-1;
-    data(ran)
     lim = [time(Idx1) time(Idx2)];
 else
     lim = [time(1) time(end)];

@@ -224,8 +224,6 @@ classdef signalcontainer < dynamicprops
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
             CDtot = CDfuse+CDsurf+CDthr;
             CDnoThr = CDfuse+CDsurf;
-            size(CDtot)
-            size(CDnoThr)
             CLsurf = squeeze(obj.portWingCL.Data+obj.stbdWingCL.Data+obj.hStabCL.Data);
         end
         function [Lift,Drag,Fuse,Thr] = getLiftDrag(obj)
@@ -398,8 +396,6 @@ classdef signalcontainer < dynamicprops
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
             ran = Idx1:Idx2-1;
             [CLsurf,CDtot,CDnoThr] = obj.getCLCD(vhcl,thr);
-            mean(CDtot)
-            mean(CDnoThr)
             try
                 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
             catch
@@ -409,10 +405,6 @@ classdef signalcontainer < dynamicprops
                     C1 = cosd(squeeze(obj.elevation_X_lem.Data));  C2 = cosd(squeeze(obj.azimuth_X_lem.Data));
                 end
             end
-            size(C1)
-            size(C2)
-            size(CDtot)
-            size(CLsurf)
             PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;%*.5;
             PLoydKite = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDnoThr.^2.*(C1.*C2).^3;%*.5;
             Pow.loyd = mean(PLoyd)*1e-3;
@@ -434,7 +426,7 @@ classdef signalcontainer < dynamicprops
             Pow.net = mean(Pnet);
             Pow.max = max(Pnet);
             Pow.min = min(Pnet);
-            fprintf('Lap power output:\nMin\t\t\t Max\t\t Turb\t\t Winch\t\t Loyd Sys\t Loyd Kite\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.elec,Pow.winch,Pow.loyd,Pow.loydNT,Pow.net)
+            fprintf('Lap power output:\nMech\t\t Elec\t\t Loyd Sys\t Loyd Kite\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.turb,Pow.elec,Pow.loyd,Pow.loydNT,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
