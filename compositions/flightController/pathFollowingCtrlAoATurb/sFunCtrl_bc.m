@@ -1,4 +1,4 @@
-function LaRController_bc()
+function sFunCtrl_bc()
 % Creates output bus used by allActuatorCtrl_cl
 
 elems(1) = Simulink.BusElement;
@@ -39,7 +39,7 @@ elems(4).Unit = 'm/s';
 
 elems(5) = Simulink.BusElement;
 elems(5).Name = 'turbOnOff';
-elems(5).Dimensions = 1;
+elems(5).Dimensions = 2;
 elems(5).DimensionsMode = 'Fixed';
 elems(5).DataType = 'double';
 elems(5).SampleTime = -1;
