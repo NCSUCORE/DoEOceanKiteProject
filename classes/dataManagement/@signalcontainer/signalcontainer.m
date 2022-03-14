@@ -788,6 +788,35 @@ classdef signalcontainer < dynamicprops
                 end
             end
         end
+      
+        function rotMat(obj)
+            eul = squeeze(obj.eulerAngles.Data);
+            time = obj.eulerAngles.Time;
+            
+            roll = eul(1,:); 
+            cr = cos(roll); 
+            sr = sin(roll);
+            
+            pitch = eul(2,:);
+            cp = cos(pitch);
+            sp = sin(pitch);
+            
+            yaw = eul(3,:);
+            cy = cos(yaw);
+            sy = sin(yaw);
+            for i = 1:numel(yaw)
+            Rx = [1 0 0; 0 cr(i) sr(i); 0 -sr(i) cr(i)];
+            Ry = [cp(i) 0 -sp(i); 0 1 0;sp(i) 0 cp(i)];
+            Rz = [cy(i) sy(i) 0; -sy(i) cy(i) 0; 0 0 1];
+            rotMat(:,:,i) = (Rx*Ry*Rz)';
+            end
+            
+            try
+            obj.addprop('OcK');
+            end
+            obj.OcK = timeseries(rotMat,time);
+            
+        end
     end
 end
 

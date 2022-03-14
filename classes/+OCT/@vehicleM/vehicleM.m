@@ -546,16 +546,17 @@ classdef vehicleM < dynamicprops
         
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
-            eta_s = .6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
-            hStabArea = 2*(obj.hStab.halfSpan.Value * .5 * (1+obj.hStab.TR.Value)*obj.hStab.rootChord.Value);
-            wingArea = 2*(obj.portWing.halfSpan.Value * .5 * (1+obj.portWing.TR.Value)*obj.portWing.rootChord.Value);
-            cla_wing = (obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
+            eta_s = 1;%.6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
+            hStabArea = obj.hStab.planformArea.Value;
+            wingArea = obj.fluidRefArea.Value;
+            cla_wing = 2*(obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
             cla_hs = (obj.hStab.CL.Value(ceil(end/2)+1)-obj.hStab.CL.Value(ceil(end/2)-1))/(obj.hStab.alpha.Value(ceil(end/2)+1)-obj.hStab.alpha.Value(ceil(end/2)-1));
-            V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
+%             V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
+            V_s = ((obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(obj.portWing.MACLength.Value);
             depsilon_dalpha = .5;
-            hn = h0 + eta_s*V_s*(cla_hs/cla_wing)*(1-depsilon_dalpha);
-            margin = hn - (obj.rCM_LE.Value(1) / obj.portWing.MACLength.Value);
-            val = SIM.parameter('Unit','m','Value',margin,'Description','Static Margin of Stability');
+            hn = h0 + eta_s*V_s*(cla_hs/cla_wing);%*(1-depsilon_dalpha)
+            margin = hn - [obj.rBridle_LE.Value(1);obj.rCM_LE.Value(1)];% / obj.portWing.MACLength.Value;
+            val = SIM.parameter('Unit','','Value',margin,'Description','Static Margin of Stability relative to the [bridle;CM], Percent MAC.');
         end
         
         function val = get.contactPoints(obj)
