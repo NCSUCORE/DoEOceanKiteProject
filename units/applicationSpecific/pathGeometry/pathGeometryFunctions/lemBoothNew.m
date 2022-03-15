@@ -64,7 +64,8 @@ c = radius*ones(size(phi));
 %%%%
 % Compute unrotated position/path
 %%%%
-x0 = c.*sqrt(1-r2./c.^2);
+num = (c.^2-r.^2).^2;
+x0 = (num).^(1/4);
 y0 = r.*cos(phi);
 z0 = r.*sin(phi);
 
@@ -83,7 +84,7 @@ posGround = ry(theta0)*rz(phi0)*[x0;y0;z0]+cntrPos;
 % Compute Tangent Vector
 %%%%
 drdphi = -b^2.*cos(phi).*sin(phi)./sqrt(complex(b*(a-b.*sin(phi).^2)));
-xPrime = b^2.*sin(phi).*cos(phi)./(c*sqrt(1-r.^2/c.^2));
+xPrime = b^2.*sin(phi).*cos(phi)./x0;
 yPrime = -r.*sin(phi)+cos(phi).*drdphi;
 zPrime = r.*cos(phi)+sin(phi).*drdphi;
 tanVec = [xPrime;yPrime;zPrime];

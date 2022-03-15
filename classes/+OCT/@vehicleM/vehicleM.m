@@ -583,7 +583,8 @@ classdef vehicleM < dynamicprops
         %Sets initial conditions on the path at the specified pathVariable
         function setICsOnPath(obj,initPathVar,pathFunc,geomParams,pathCntrPt,speed) %#ok<INUSL>
             % Sets initial conditions of the vehicle to be on the path
-            [initPos,initVel] = eval(sprintf('%s(initPathVar,geomParams,pathCntrPt)',pathFunc));
+
+            [initPos,initVel] = eval(sprintf('%s(initPathVar,geomParams,pathCntrPt)',pathFunc))
             obj.setInitPosVecGnd(initPos,'m');
             obj.setInitVelVecBdy([-speed 0 0],'m/s');
             % Initial body z points radially out
