@@ -57,7 +57,7 @@ classdef turb < handle
             obj.torqueLim            = SIM.parameter('Unit','(N*m)','Description','Turbine Torque Limit');
             obj.genMap               = SIM.parameter('Unit','','Description','Generator Efficiency Map');
             obj.genTauIn             = SIM.parameter('Unit','(N*m)','Description','Torque Input to Efficiency Map Lookup');
-            obj.genRPMIn             = SIM.parameter('Unit','RPM','Description','RPM input into the efficiency map lookup');
+            obj.genRPMIn             = SIM.parameter('Unit','','Description','RPM input into the efficiency map lookup');
         end
         
         function setHubMass(obj,val,units)
