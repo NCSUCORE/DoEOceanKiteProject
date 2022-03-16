@@ -6,7 +6,7 @@ function [posGround,tanVec] = lemBoothNew(pathPos,geomParams,cntrPos)
 % path width and height in meters. Allows for a constant width and height
 % as the tether spools out.
 %%%%
- cntrPos = reshape(cntrPos,[],1);
+cntrPos = reshape(cntrPos,[],1);
 
 
 %%%%
@@ -35,21 +35,32 @@ b = w^2/(4*h);
 critAng = asin(sqrt(a/b))-1e-6;
 tanDir = 0.*pathPos;
 phi = tanDir;
-
-for i = 1:length(pathPos)
-    if pathPos(i) <= 0.5
-        phi(i) = critAng*cos(2*pi*pathPos(i))+pi;
-        tanDir(i) = -1;
-    elseif pathPos(i) > 0.50
-        phi(i) = critAng*cos(2*pi*pathPos(i));
-        tanDir(i) = 1;
+if theta0>0
+    for i = 1:length(pathPos)
+        if pathPos(i) <= 0.5
+            phi(i) = critAng*cos(2*pi*(1-pathPos(i)));
+            tanDir(i) = -1;
+        elseif pathPos(i) > 0.50
+            phi(i) = critAng*cos(2*pi*(1-pathPos(i)))+pi;
+            tanDir(i) = 1;
+        end
+    end
+else
+    for i = 1:length(pathPos)
+        if pathPos(i) <= 0.5
+            phi(i) = critAng*cos(2*pi*pathPos(i))+pi;
+            tanDir(i) = -1;
+        elseif pathPos(i) > 0.50
+            phi(i) = critAng*cos(2*pi*pathPos(i));
+            tanDir(i) = 1;
+        end
     end
 end
 
-if theta0 > 0
-    tanDir = tanDir*-1;
-    phi = phi(end:-1:1);
-end
+% if theta0 > 0
+%     tanDir = tanDir*-1;
+%     phi = phi(end:-1:1);
+% end
 
 %%%%
 % Compute 2D Polar Radius
