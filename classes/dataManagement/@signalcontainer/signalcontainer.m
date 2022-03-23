@@ -809,13 +809,17 @@ classdef signalcontainer < dynamicprops
             Ry = [cp(i) 0 -sp(i); 0 1 0;sp(i) 0 cp(i)];
             Rz = [cy(i) sy(i) 0; -sy(i) cy(i) 0; 0 0 1];
             rotMat(:,:,i) = (Rx*Ry*Rz)';
+            rotMat1(:,:,i) = rotMat(:,:,i)';
             end
             
             try
-            obj.addprop('OcK');
+                obj.addprop('OcK');
+            end
+            try
+                obj.addprop('KcO');
             end
             obj.OcK = timeseries(rotMat,time);
-            
+            obj.KcO = timeseries(rotMat1,time);
         end
     end
 end
