@@ -10,7 +10,10 @@ classdef vehicleM < dynamicprops
         oldFluidMomentArms
         convEfficiency
         numTurbines
-        
+        gearBoxLoss
+        gearBoxRatio
+        genR
+        genKt
         volume
         inertia_CM
         
@@ -88,6 +91,11 @@ classdef vehicleM < dynamicprops
             obj.convEfficiency      = SIM.parameter('Description','Losses in power conversion','Unit','');
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
+            
+            obj.gearBoxLoss = SIM.parameter('Description','Ratio of input rotor speed (RPM) to gearbox loss (W)');
+            obj.gearBoxRatio = SIM.parameter('Description','Gearbox Ratio');
+            obj.genR        = SIM.parameter('Description','Someone please tell me');
+            obj.genKt       = SIM.parameter('Description','Someone please tell me this too');
             
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
@@ -383,6 +391,14 @@ classdef vehicleM < dynamicprops
         
         rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
         RPM = gamma.*vApp*60/(pi*diam);
+        gbLoss = RPM*obj.gearBoxLoss.Value
+        genSpeed = RPM*obj.gearBoxRatio.Value*2*pi/60;
+        genPowerIn = gbLoss+rotPow;
+        genTorque = genPowerIn./genSpeed/1.3558*12*16;
+        genCurrent = genTorque./obj.genKt.Value
+        genLoss = genCurrent.^2*obj.genR.Value
+        genPowerOut = rotPow-genLoss-gbLoss;
+        
         if ~exist('imp')
             imp = 0;
             fprintf('Plotting in metric units by default. Declare imp = 1 in function call to plot in imperial units\n')
@@ -407,6 +423,19 @@ classdef vehicleM < dynamicprops
         plot(vApp,RPM)
         xlabel(xlabV)
         ylabel('Rotor Speed [RPM]')
+       
+        
+        figure
+        plot(RPM,genPowerOut./rotPow)
+        xlabel('Rotor Speed [RPM]')
+        ylabel('Conversion Efficiency')
+        ylim([0 1])
+        xlim([0 inf])
+        grid on
+        
+        figure(459)
+        hold on
+        plot(vApp,genPowerOut)
         
         figure
         tiledlayout(2,1)
@@ -416,10 +445,12 @@ classdef vehicleM < dynamicprops
         ylabel(xlab)
         set(gca,'FontSize',12)
         yyaxis right
+        hold on
         plot(RPM,rotPow)
-        ylabel('Rotor Mechanical Power [W]')
+        plot(RPM,genPowerOut)
+        ylabel('Power [W]')
         set(gca,'FontSize',12)
-        legend('Torque Curve','Power Curve','Location','southeast')
+        legend('Torque Curve','Mechanical Power','Electrical Power','Location','southeast')
         nexttile
         plot(RPM,vApp)
         ylabel(xlabV)
