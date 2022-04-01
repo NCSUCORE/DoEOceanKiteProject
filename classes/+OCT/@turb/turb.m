@@ -117,7 +117,7 @@ classdef turb < handle
         end
         
         function val = get.peakTorqueCoef(obj)
-            [~,ind] = max(obj.CpLookup.Value./obj.RPMref.Value);
+            ind = find(obj.RPMref.Value==obj.optTSR.Value);
             val = SIM.parameter('Value',obj.torqueCoefLookup.Value(ind),'Unit','','Description','Maximum torque coefficient');
         end
         
@@ -127,7 +127,7 @@ classdef turb < handle
         end
         
         function val = get.tauCoefLookup(obj)
-            ind = find(obj.torqueCoefLookup.Value==obj.peakTorqueCoef.Value);
+            ind = find(obj.RPMref.Value==obj.optTSR.Value);
             %             x = Simulink.LookupTable;
             %             x.Breakpoints.Value = obj.torqueCoefLookup.Value(end:-1:ind);
             %             x.Table.Value = obj.RPMref.Value(end:-1:ind);
@@ -138,7 +138,7 @@ classdef turb < handle
         
         
         function val = get.tauCoefTSR(obj)
-            ind = find(obj.torqueCoefLookup.Value==obj.peakTorqueCoef.Value);
+            ind = find(obj.RPMref.Value==obj.optTSR.Value);
             val = SIM.parameter('Value',obj.RPMref.Value(end:-1:ind),...
                 'Unit','','Description','Torque Coef Lookup Breakpoint');
         end

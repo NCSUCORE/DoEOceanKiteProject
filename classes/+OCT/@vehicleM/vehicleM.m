@@ -391,12 +391,12 @@ classdef vehicleM < dynamicprops
         
         rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
         RPM = gamma.*vApp*60/(pi*diam);
-        gbLoss = RPM*obj.gearBoxLoss.Value
+        gbLoss = RPM*obj.gearBoxLoss.Value;
         genSpeed = RPM*obj.gearBoxRatio.Value*2*pi/60;
         genPowerIn = gbLoss+rotPow;
         genTorque = genPowerIn./genSpeed/1.3558*12*16;
-        genCurrent = genTorque./obj.genKt.Value
-        genLoss = genCurrent.^2*obj.genR.Value
+        genCurrent = genTorque./obj.genKt.Value;
+        genLoss = genCurrent.^2*obj.genR.Value;
         genPowerOut = rotPow-genLoss-gbLoss;
         
         if ~exist('imp')
