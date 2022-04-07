@@ -20,9 +20,6 @@ classdef turb < handle
         CtLookup
         RPMref
         torqueLim
-        genMap       
-        genTauIn
-        genRPMIn
     end
     properties (Dependent)
         mass
@@ -55,9 +52,6 @@ classdef turb < handle
             obj.CtLookup             = SIM.parameter('Unit','','Description','Turbine thrust coefficient lookup');
             obj.RPMref               = SIM.parameter('Unit','','Description','Turbine lookup table reference vector for tip-speed-ratio');
             obj.torqueLim            = SIM.parameter('Unit','(N*m)','Description','Turbine Torque Limit');
-            obj.genMap               = SIM.parameter('Unit','','Description','Generator Efficiency Map');
-            obj.genTauIn             = SIM.parameter('Unit','(N*m)','Description','Torque Input to Efficiency Map Lookup');
-            obj.genRPMIn             = SIM.parameter('Unit','','Description','RPM input into the efficiency map lookup');
         end
         
         function setHubMass(obj,val,units)

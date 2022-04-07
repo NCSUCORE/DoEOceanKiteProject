@@ -375,10 +375,11 @@ classdef vehicleM < dynamicprops
         
         TSR = turb.optTSR.Value;
         TSRRef = turb.RPMref.Value;
+        ind = find(TSR==TSRRef);
         cP = turb.CpLookup.Value;
         cT = turb.CtLookup.Value;
 
-        tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(TSR*10)./(vApp.*TSR/(pi*diam)*2*pi);
+        tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(ind)./(vApp.*TSR/(pi*diam)*2*pi);
         tRot(tRot>tauLim) = tauLim;
         cTau = turb.tauCoefLookup.Value;
         cTauLookup = turb.tauCoefTSR.Value;
