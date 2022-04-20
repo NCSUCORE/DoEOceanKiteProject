@@ -1192,9 +1192,9 @@ classdef vehicleM < dynamicprops
         end
         
         CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
-        CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha);
+        CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha*(1-0.2753))%*0.8^2;
         CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
-        CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha);
+        CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha*(1-0.2753))%*0.8^2;
         CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
         
         % Turbine CD
