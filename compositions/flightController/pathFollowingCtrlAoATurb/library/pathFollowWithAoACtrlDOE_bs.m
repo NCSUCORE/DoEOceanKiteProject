@@ -17,7 +17,8 @@ fltCtrl.tanRoll.kd.setValue(0.2,'(rad)/(rad/s)')
 fltCtrl.tanRoll.tau.setValue(1,'s')
 fltCtrl.refFiltTau.setValue(3,'s')
 
-
+fltCtrl.RPMConst.setValue(3,'');
+fltCtrl.Tmax.setValue(200,'kN')
 fltCtrl.pitchMoment.kp.setValue(20000,fltCtrl.pitchMoment.kp.Unit)
 fltCtrl.pitchMoment.ki.setValue(10000,fltCtrl.pitchMoment.ki.Unit)
 fltCtrl.pitchMoment.kd.setValue(12000,fltCtrl.pitchMoment.kd.Unit)
@@ -56,7 +57,7 @@ fltCtrl.rudderGain.setValue(-1,'');
 fltCtrl.RCtrl.setValue(0,'');
 fltCtrl.AoACtrl.setValue(1,'');
 fltCtrl.AoASP.setValue(1,'');
-fltCtrl.AoAConst.setValue(10*pi/180,'deg');
+fltCtrl.AoAConst.setValue(18*pi/180,'deg');
 fltCtrl.AoAmin.setValue(-5*pi/180,'deg');
 
 fltCtrl.TmaxCtrl.setValue(1,'');
