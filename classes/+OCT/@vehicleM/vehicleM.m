@@ -395,7 +395,7 @@ classdef vehicleM < dynamicprops
             RPM = gamma.*vApp*60/(pi*diam);
             gbLoss = RPM*obj.gearBoxLoss.Value;
             genSpeed = RPM*obj.gearBoxRatio.Value*2*pi/60;
-            genPowerIn = gbLoss+rotPow;
+            genPowerIn = rotPow-gbLoss;
             genTorque = genPowerIn./genSpeed/1.3558*12*16;
             genCurrent = genTorque./obj.genKt.Value;
             genLoss = genCurrent.^2*obj.genR.Value;
@@ -428,11 +428,27 @@ classdef vehicleM < dynamicprops
             
             
             figure
-            plot(RPM,genPowerOut./rotPow)
+            plot(RPM,genPowerOut./rotPow,'DisplayName','System')
+            hold on
+            plot(RPM,1-gbLoss./rotPow,'DisplayName','Gearbox Efficiency')
+            plot(RPM,genPowerOut./genPowerIn,'DisplayName','Motor Efficiency')
             xlabel('Rotor Speed [RPM]')
             ylabel('Conversion Efficiency')
             ylim([0 1])
             xlim([0 inf])
+            legend
+            grid on
+            
+                        figure
+            plot(vApp,genPowerOut./rotPow,'DisplayName','System')
+            hold on
+            plot(vApp,1-gbLoss./rotPow,'DisplayName','Gearbox Efficiency')
+            plot(vApp,genPowerOut./genPowerIn,'DisplayName','Motor Efficiency')
+            xlabel('Apparent Velocity [m/s]')
+            ylabel('Conversion Efficiency')
+            ylim([0 1])
+            xlim([0 inf])
+            legend
             grid on
             
             figure(459)
@@ -1201,7 +1217,7 @@ classdef vehicleM < dynamicprops
         turbTSR = obj.turb1.optTSR.Value;
         ind = find(turbTSR==obj.turb1.RPMref.Value);
         CT = obj.turb1.CtLookup.Value(ind);
-        turbArea = obj.turb1.diameter.Value^2/4;
+        turbArea = pi*obj.turb1.diameter.Value^2/4;
         N = obj.numTurbines.Value;
         CDturb = CT*turbArea/Aref*N;
         
