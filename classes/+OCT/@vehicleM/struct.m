@@ -14,9 +14,9 @@ if  ismember(props{1},{'portWing','stbdWing','hStab','vStab'})
     props{4} = 'vStab';
 end
 subProps = properties(obj.(props{1}));
-if any(contains(subProps,'CL'))
-    subProps =  {"CL" "CD" "alpha" "gainCL" "gainCD" "RSurf2Bdy" "maxCtrlDefSpeed" "maxCtrlDef" "minCtrlDef", "incAlphaUnitVecSurf"};
-end
+% if any(contains(subProps,'CL'))
+%     subProps =  {"CL" "CD" "alpha" "gainCL" "gainCD" "RSurf2Bdy" "maxCtrlDefSpeed" "maxCtrlDef" "minCtrlDef", "incAlphaUnitVecSurf"};
+% end
 if numel(obj.(props{1})) == 1
     for ii = 1:length(props)
         try
