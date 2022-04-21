@@ -351,112 +351,113 @@ classdef vehicleM < dynamicprops
         
         %% getters
         function plotTurbPerformance(obj,vAppMax,imp)
-        
-        if ~exist('vAppMax')
-            vAppMax = 3;
-            fprintf('Max apparent velocity set to 3 m/s. Declare vAppMax in function call to specify peak apparent velocity presented to turbines in m/s\n')
-        end
             
-        turb = obj.turb1;
-        tauLim = turb.torqueLim.Value;
-        diam = turb.diameter.Value;
-        figure; hold on; grid on;
-        plot(turb.RPMref.Value,turb.CpLookup.Value,'k','LineWidth',1)
-        plot(turb.RPMref.Value,turb.CtLookup.Value,'r','LineWidth',1)
-        plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value,'--k','LineWidth',1)
-        legend('$C_p$','$C_t$','$C_p/C_t$')
-        xlabel 'TSR'
-        ylabel 'Coefficient'
-        set(gca,'FontSize',12)
-
-        % Rotor Performance Surface
-        vApp = 0.1:0.01:vAppMax;
-        idx = 10*turb.optTSR.Value;
-        
-        TSR = turb.optTSR.Value;
-        TSRRef = turb.RPMref.Value;
-        ind = find(TSR==TSRRef);
-        cP = turb.CpLookup.Value;
-        cT = turb.CtLookup.Value;
-
-        tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(ind)./(vApp.*TSR/(pi*diam)*2*pi);
-        tRot(tRot>tauLim) = tauLim;
-        cTau = turb.tauCoefLookup.Value;
-        cTauLookup = turb.tauCoefTSR.Value;
-        
-        cTauReq = tRot./(pi*diam^3/8*1/2*1000.*vApp.^2);
-
-        gamma = interp1(cTau,cTauLookup,cTauReq);
-        gamma(isnan(gamma))=TSR;
-        cPRot = interp1(TSRRef,cP,gamma);
-        
-        rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
-        RPM = gamma.*vApp*60/(pi*diam);
-        gbLoss = RPM*obj.gearBoxLoss.Value;
-        genSpeed = RPM*obj.gearBoxRatio.Value*2*pi/60;
-        genPowerIn = gbLoss+rotPow;
-        genTorque = genPowerIn./genSpeed/1.3558*12*16;
-        genCurrent = genTorque./obj.genKt.Value;
-        genLoss = genCurrent.^2*obj.genR.Value;
-        genPowerOut = rotPow-genLoss-gbLoss;
-        
-        if ~exist('imp')
-            imp = 0;
-            fprintf('Plotting in metric units by default. Declare imp = 1 in function call to plot in imperial units\n')
-        end
-        
-        if imp == 1
-            tRot = tRot/1.356;
-            xlab = 'Rotor Torque [ft-lbf]';
-            vApp = vApp*1.94384;
-            xlabV = 'Apparent Velocity [knots]';
-        else
-            xlab = 'Rotor Torque [Nm]';
-            xlabV = 'Apparent Velocity [m/s]';
-        end
-        
-%         figure
-%         plot(vApp,tRot)
-%         xlabel(xlabV)
-%         ylabel(xlab)
-        
-        figure
-        plot(vApp,RPM)
-        xlabel(xlabV)
-        ylabel('Rotor Speed [RPM]')
-       
-        
-        figure
-        plot(RPM,genPowerOut./rotPow)
-        xlabel('Rotor Speed [RPM]')
-        ylabel('Conversion Efficiency')
-        ylim([0 1])
-        xlim([0 inf])
-        grid on
-        
-        figure(459)
-        hold on
-        plot(vApp,genPowerOut)
-        
-        figure
-        tiledlayout(2,1)
-        nexttile
-        plot(RPM,tRot)
-        xlabel('Rotor Speed [RPM]')
-        ylabel(xlab)
-        set(gca,'FontSize',12)
-        yyaxis right
-        hold on
-        plot(RPM,rotPow)
-        plot(RPM,genPowerOut)
-        ylabel('Power [W]')
-        set(gca,'FontSize',12)
-        legend('Torque Curve','Mechanical Power','Electrical Power','Location','southeast')
-        nexttile
-        plot(RPM,vApp)
-        ylabel(xlabV)
-        xlabel('Rotor Speed [RPM]')
-        set(gca,'FontSize',12)
+            if ~exist('vAppMax')
+                vAppMax = 3;
+                fprintf('Max apparent velocity set to 3 m/s. Declare vAppMax in function call to specify peak apparent velocity presented to turbines in m/s\n')
+            end
+            
+            turb = obj.turb1;
+            tauLim = turb.torqueLim.Value;
+            diam = turb.diameter.Value;
+            figure; hold on; grid on;
+            plot(turb.RPMref.Value,turb.CpLookup.Value,'k','LineWidth',1)
+            plot(turb.RPMref.Value,turb.CtLookup.Value,'r','LineWidth',1)
+            plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value,'--k','LineWidth',1)
+%             plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value.^3,':k','LineWidth',1)
+            legend('$C_p$','$C_t$','$C_p/C_t$','$C_p/C_t^3$')
+            xlabel 'TSR'
+            ylabel 'Coefficient'
+            set(gca,'FontSize',12)
+            
+            % Rotor Performance Surface
+            vApp = 0.1:0.01:vAppMax;
+            idx = 10*turb.optTSR.Value;
+            
+            TSR = turb.optTSR.Value;
+            TSRRef = turb.RPMref.Value;
+            ind = find(TSR==TSRRef);
+            cP = turb.CpLookup.Value;
+            cT = turb.CtLookup.Value;
+            
+            tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(ind)./(vApp.*TSR/(pi*diam)*2*pi);
+            tRot(tRot>tauLim) = tauLim;
+            cTau = turb.tauCoefLookup.Value;
+            cTauLookup = turb.tauCoefTSR.Value;
+            
+            cTauReq = tRot./(pi*diam^3/8*1/2*1000.*vApp.^2);
+            
+            gamma = interp1(cTau,cTauLookup,cTauReq);
+            gamma(isnan(gamma))=TSR;
+            cPRot = interp1(TSRRef,cP,gamma);
+            
+            rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
+            RPM = gamma.*vApp*60/(pi*diam);
+            gbLoss = RPM*obj.gearBoxLoss.Value;
+            genSpeed = RPM*obj.gearBoxRatio.Value*2*pi/60;
+            genPowerIn = gbLoss+rotPow;
+            genTorque = genPowerIn./genSpeed/1.3558*12*16;
+            genCurrent = genTorque./obj.genKt.Value;
+            genLoss = genCurrent.^2*obj.genR.Value;
+            genPowerOut = rotPow-genLoss-gbLoss;
+            
+            if ~exist('imp')
+                imp = 0;
+                fprintf('Plotting in metric units by default. Declare imp = 1 in function call to plot in imperial units\n')
+            end
+            
+            if imp == 1
+                tRot = tRot/1.356;
+                xlab = 'Rotor Torque [ft-lbf]';
+                vApp = vApp*1.94384;
+                xlabV = 'Apparent Velocity [knots]';
+            else
+                xlab = 'Rotor Torque [Nm]';
+                xlabV = 'Apparent Velocity [m/s]';
+            end
+            
+            %         figure
+            %         plot(vApp,tRot)
+            %         xlabel(xlabV)
+            %         ylabel(xlab)
+            
+            figure
+            plot(vApp,RPM)
+            xlabel(xlabV)
+            ylabel('Rotor Speed [RPM]')
+            
+            
+            figure
+            plot(RPM,genPowerOut./rotPow)
+            xlabel('Rotor Speed [RPM]')
+            ylabel('Conversion Efficiency')
+            ylim([0 1])
+            xlim([0 inf])
+            grid on
+            
+            figure(459)
+            hold on
+            plot(vApp,genPowerOut)
+            
+            figure
+            tiledlayout(2,1)
+            nexttile
+            plot(RPM,tRot)
+            xlabel('Rotor Speed [RPM]')
+            ylabel(xlab)
+            set(gca,'FontSize',12)
+            yyaxis right
+            hold on
+            plot(RPM,rotPow)
+            plot(RPM,genPowerOut)
+            ylabel('Power [W]')
+            set(gca,'FontSize',12)
+            legend('Torque Curve','Mechanical Power','Electrical Power','Location','southeast')
+            nexttile
+            plot(RPM,vApp)
+            ylabel(xlabV)
+            xlabel('Rotor Speed [RPM]')
+            set(gca,'FontSize',12)
         end
         % mass
         function val = get.mass(obj)
@@ -498,12 +499,12 @@ classdef vehicleM < dynamicprops
             for i = 1:N
                 arms(:,i) = -obj.rB_LE.Value + eval(['obj.turb' num2str(i) '.attachPtVec.Value']);
             end
-%             if N == 1
-%                 arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
-%             else
-%                 arms(:,1) = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
-%                 arms(:,2) = -obj.rB_LE.Value + obj.turb2.attachPtVec.Value;
-%             end
+            %             if N == 1
+            %                 arms = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
+            %             else
+            %                 arms(:,1) = -obj.rB_LE.Value + obj.turb1.attachPtVec.Value;
+            %                 arms(:,2) = -obj.rB_LE.Value + obj.turb2.attachPtVec.Value;
+            %             end
             val = SIM.parameter('Value',arms,'Unit','m');
         end
         function val = get.wingTipPositions(obj)
@@ -583,7 +584,7 @@ classdef vehicleM < dynamicprops
             wingArea = obj.fluidRefArea.Value;
             cla_wing = 2*(obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
             cla_hs = (obj.hStab.CL.Value(ceil(end/2)+1)-obj.hStab.CL.Value(ceil(end/2)-1))/(obj.hStab.alpha.Value(ceil(end/2)+1)-obj.hStab.alpha.Value(ceil(end/2)-1));
-%             V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
+            %             V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
             V_s = ((obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(obj.portWing.MACLength.Value);
             depsilon_dalpha = .5;
             hn = h0 + eta_s*V_s*(cla_hs/cla_wing);%*(1-depsilon_dalpha)
@@ -615,7 +616,7 @@ classdef vehicleM < dynamicprops
         %Sets initial conditions on the path at the specified pathVariable
         function setICsOnPath(obj,initPathVar,pathFunc,geomParams,pathCntrPt,speed) %#ok<INUSL>
             % Sets initial conditions of the vehicle to be on the path
-
+            
             [initPos,initVel] = eval(sprintf('%s(initPathVar,geomParams,pathCntrPt)',pathFunc))
             obj.setInitPosVecGnd(initPos,'m');
             obj.setInitVelVecBdy([-speed 0 0],'m/s');
@@ -1172,19 +1173,59 @@ classdef vehicleM < dynamicprops
         %Get a struct of parameters of the desired class
         [output,varargout] = struct(obj,className);
         
-        %returns a cell array of properties of the desired class
-        output = getPropsByClass(obj,className);
+        %get aggregate CL and CD
+        function [CL,CD] = getCLCD(obj,thr,thrL)
+        alpha = obj.portWing.alpha.Value;
+        alpha1 = obj.hStab.alpha.Value;
+        Aref = obj.fluidRefArea.Value;
+        Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
+            (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
+        Athr = thr.tether1.diameter.Value*thrL/4;
         
-        % calculate max equilibrium speed at a given azimuth, elevation, and
-        % flow velocity vector
-        [sp,tanRoll,velAng] = eqSpeed(obj,vf,az,el)
+        CDthr = thr.tether1.dragCoeff.Value(end)*Athr/Aref;
+        fuseFactor = 1;
+        if isempty(obj.fuse.alpha.Value)
+            CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
+                obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
+        else
+            CDfuse = obj.fuse.CD.Value;
+        end
         
-        % Functions to animate the vehicle
-        val = animateSim(obj,tsc,timeStep,varargin)
-        val = animateBody(obj,tsc,timeStep,varargin)
+        CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
+        CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha*(1-0.2753))%*0.8^2;
+        CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
+        CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha*(1-0.2753))%*0.8^2;
+        CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
+        
+        % Turbine CD
+        turbTSR = obj.turb1.optTSR.Value;
+        ind = find(turbTSR==obj.turb1.RPMref.Value);
+        CT = obj.turb1.CtLookup.Value(ind);
+        turbArea = obj.turb1.diameter.Value^2/4;
+        N = obj.numTurbines.Value;
+        CDturb = CT*turbArea/Aref*N;
         
         
         
-        
-    end % methods
+        CL = CLwing+CLstab;
+        CD.kite = CDwing+CDstab+CDvert+CDfuse;
+        CD.kiteTurb = CDwing+CDstab+CDvert+CDfuse+CDturb;
+        CD.kiteThr = CDwing+CDstab+CDvert+CDfuse+CDthr;
+        CD.sys = CDwing+CDstab+CDvert+CDfuse+CDthr+CDturb;
+    end
+    %returns a cell array of properties of the desired class
+    output = getPropsByClass(obj,className);
+    
+    % calculate max equilibrium speed at a given azimuth, elevation, and
+    % flow velocity vector
+    [sp,tanRoll,velAng] = eqSpeed(obj,vf,az,el)
+    
+    % Functions to animate the vehicle
+    val = animateSim(obj,tsc,timeStep,varargin)
+    val = animateBody(obj,tsc,timeStep,varargin)
+    
+    
+    
+    
+end % methods
 end
