@@ -1,4 +1,4 @@
-%%  Consolidate Results 
+%%  Consolidate   Results 
 Sim = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Alt Study\AltStudy_1-5_20kN.mat');
 Simb = load('C:\Users\John Jr\Desktop\Manta Ray\Model 9_28\output\Alt Study\AltStudy_1-5d_post.mat');
 %%
