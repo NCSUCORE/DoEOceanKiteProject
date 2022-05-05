@@ -1,4 +1,4 @@
-%% Test script for John to control the kite model
+%% Test script for John to control the kite   model
 Simulink.sdi.clear
 clear;clc;%close all
 %%  Select sim scenario
