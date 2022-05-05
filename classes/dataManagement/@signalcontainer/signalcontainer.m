@@ -220,7 +220,7 @@ classdef signalcontainer < dynamicprops
             Afuse = squeeze(obj.Afuse.Data);
             Athr = LThr*dThr/4;
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
-            CDthr = thr.tether1.dragCoeff.Value(1).*Athr/Aref;
+            CDthr = thr.tether1.dragCoeff.Value(end).*Athr/Aref;
             CDsurf = squeeze(obj.portWingCD.Data+obj.stbdWingCD.Data+obj.hStabCD.Data+obj.vStabCD.Data);
             CDtot = CDfuse+CDsurf+CDthr;
             CDnoThr = CDfuse+CDsurf;
@@ -393,11 +393,9 @@ classdef signalcontainer < dynamicprops
             
         end
         function Pow = rotPowerSummary(obj,vhcl,env,thr)
-            [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
+            [Idx1,Idx2] = obj.getLapIdxs(floor(max(obj.lapNumS.Data))-1);
             ran = Idx1:Idx2-1;
             [CLsurf,CDtot,CDnoThr] = obj.getCLCD(vhcl,thr);
-            CDtot
-            CDnoThr
             try
                 C1 = cosd(squeeze(obj.elevationAngle.Data));  C2 = cosd(squeeze(obj.azimuthAngle.Data));
             catch
@@ -428,7 +426,7 @@ classdef signalcontainer < dynamicprops
             Pow.net = mean(Pnet);
             Pow.max = max(Pnet);
             Pow.min = min(Pnet);
-            fprintf('Lap power output:\nMin\t\t\t Max\t\t Turb\t\t Winch\t\t Loyd\t\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.min,Pow.max,Pow.elec,Pow.winch,Pow.loyd,Pow.net)
+            fprintf('Lap power output:\nMech\t\t Elec\t\t Loyd Sys\t Loyd Kite\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.turb,Pow.elec,Pow.loyd,Pow.loydNT,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
@@ -789,6 +787,39 @@ classdef signalcontainer < dynamicprops
                     plot(time,squeeze(obj.MFluidBdy.Data(1,1,:)),'b-');   xlabel('Time [s]');  ylabel('Roll Moment [N]');  legend('Desired','Actual');  xlim(lim);
                 end
             end
+        end
+      
+        function rotMat(obj)
+            eul = squeeze(obj.eulerAngles.Data);
+            time = obj.eulerAngles.Time;
+            
+            roll = eul(1,:); 
+            cr = cos(roll); 
+            sr = sin(roll);
+            
+            pitch = eul(2,:);
+            cp = cos(pitch);
+            sp = sin(pitch);
+            
+            yaw = eul(3,:);
+            cy = cos(yaw);
+            sy = sin(yaw);
+            for i = 1:numel(yaw)
+            Rx = [1 0 0; 0 cr(i) sr(i); 0 -sr(i) cr(i)];
+            Ry = [cp(i) 0 -sp(i); 0 1 0;sp(i) 0 cp(i)];
+            Rz = [cy(i) sy(i) 0; -sy(i) cy(i) 0; 0 0 1];
+            rotMat(:,:,i) = (Rx*Ry*Rz)';
+            rotMat1(:,:,i) = rotMat(:,:,i)';
+            end
+            
+            try
+                obj.addprop('OcK');
+            end
+            try
+                obj.addprop('KcO');
+            end
+            obj.OcK = timeseries(rotMat,time);
+            obj.KcO = timeseries(rotMat1,time);
         end
     end
 end

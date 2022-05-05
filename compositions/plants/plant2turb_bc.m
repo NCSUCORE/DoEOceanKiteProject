@@ -205,7 +205,7 @@ elems(23).DimensionsMode = 'Fixed';
 elems(23).DataType = 'double';
 elems(23).SampleTime = -1;
 elems(23).Complexity = 'real';
-elems(23).Unit = 'RPM';
+elems(23).Unit = '';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;

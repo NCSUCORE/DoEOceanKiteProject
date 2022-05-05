@@ -127,6 +127,14 @@ elems(14).SampleTime = -1;
 elems(14).Complexity = 'real';
 elems(14).Unit = 'm/s';
 
+elems(15) = Simulink.BusElement;
+elems(15).Name = 'rotorRPM';
+elems(15).Dimensions = [2 1];
+elems(15).DimensionsMode = 'Fixed';
+elems(15).DataType = 'double';
+elems(15).SampleTime = -1;
+elems(15).Complexity = 'real';
+elems(15).Unit = 'RPM';
 
 BUS = Simulink.Bus;
 BUS.Elements = elems;

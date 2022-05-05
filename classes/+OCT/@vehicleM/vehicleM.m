@@ -10,7 +10,10 @@ classdef vehicleM < dynamicprops
         oldFluidMomentArms
         convEfficiency
         numTurbines
-        
+        gearBoxLoss
+        gearBoxRatio
+        genR
+        genKt
         volume
         inertia_CM
         
@@ -88,6 +91,11 @@ classdef vehicleM < dynamicprops
             obj.convEfficiency      = SIM.parameter('Description','Losses in power conversion','Unit','');
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
+            
+            obj.gearBoxLoss = SIM.parameter('Description','Ratio of input rotor speed (RPM) to gearbox loss (W)');
+            obj.gearBoxRatio = SIM.parameter('Description','Gearbox Ratio');
+            obj.genR        = SIM.parameter('Description','Someone please tell me');
+            obj.genKt       = SIM.parameter('Description','Someone please tell me this too');
             
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
@@ -343,7 +351,12 @@ classdef vehicleM < dynamicprops
         
         %% getters
         function plotTurbPerformance(obj,vAppMax,imp)
-
+        
+        if ~exist('vAppMax')
+            vAppMax = 3;
+            fprintf('Max apparent velocity set to 3 m/s. Declare vAppMax in function call to specify peak apparent velocity presented to turbines in m/s\n')
+        end
+            
         turb = obj.turb1;
         tauLim = turb.torqueLim.Value;
         diam = turb.diameter.Value;
@@ -362,10 +375,11 @@ classdef vehicleM < dynamicprops
         
         TSR = turb.optTSR.Value;
         TSRRef = turb.RPMref.Value;
+        ind = find(TSR==TSRRef);
         cP = turb.CpLookup.Value;
         cT = turb.CtLookup.Value;
 
-        tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(TSR*10)./(vApp.*TSR/(pi*diam)*2*pi);
+        tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(ind)./(vApp.*TSR/(pi*diam)*2*pi);
         tRot(tRot>tauLim) = tauLim;
         cTau = turb.tauCoefLookup.Value;
         cTauLookup = turb.tauCoefTSR.Value;
@@ -378,6 +392,18 @@ classdef vehicleM < dynamicprops
         
         rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
         RPM = gamma.*vApp*60/(pi*diam);
+        gbLoss = RPM*obj.gearBoxLoss.Value;
+        genSpeed = RPM*obj.gearBoxRatio.Value*2*pi/60;
+        genPowerIn = gbLoss+rotPow;
+        genTorque = genPowerIn./genSpeed/1.3558*12*16;
+        genCurrent = genTorque./obj.genKt.Value;
+        genLoss = genCurrent.^2*obj.genR.Value;
+        genPowerOut = rotPow-genLoss-gbLoss;
+        
+        if ~exist('imp')
+            imp = 0;
+            fprintf('Plotting in metric units by default. Declare imp = 1 in function call to plot in imperial units\n')
+        end
         
         if imp == 1
             tRot = tRot/1.356;
@@ -398,6 +424,19 @@ classdef vehicleM < dynamicprops
         plot(vApp,RPM)
         xlabel(xlabV)
         ylabel('Rotor Speed [RPM]')
+       
+        
+        figure
+        plot(RPM,genPowerOut./rotPow)
+        xlabel('Rotor Speed [RPM]')
+        ylabel('Conversion Efficiency')
+        ylim([0 1])
+        xlim([0 inf])
+        grid on
+        
+        figure(459)
+        hold on
+        plot(vApp,genPowerOut)
         
         figure
         tiledlayout(2,1)
@@ -407,10 +446,12 @@ classdef vehicleM < dynamicprops
         ylabel(xlab)
         set(gca,'FontSize',12)
         yyaxis right
+        hold on
         plot(RPM,rotPow)
-        ylabel('Rotor Mechanical Power [W]')
+        plot(RPM,genPowerOut)
+        ylabel('Power [W]')
         set(gca,'FontSize',12)
-        legend('Torque Curve','Power Curve','Location','southeast')
+        legend('Torque Curve','Mechanical Power','Electrical Power','Location','southeast')
         nexttile
         plot(RPM,vApp)
         ylabel(xlabV)
@@ -537,16 +578,17 @@ classdef vehicleM < dynamicprops
         
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
-            eta_s = .6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
-            hStabArea = 2*(obj.hStab.halfSpan.Value * .5 * (1+obj.hStab.TR.Value)*obj.hStab.rootChord.Value);
-            wingArea = 2*(obj.portWing.halfSpan.Value * .5 * (1+obj.portWing.TR.Value)*obj.portWing.rootChord.Value);
-            cla_wing = (obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
+            eta_s = 1;%.6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
+            hStabArea = obj.hStab.planformArea.Value;
+            wingArea = obj.fluidRefArea.Value;
+            cla_wing = 2*(obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
             cla_hs = (obj.hStab.CL.Value(ceil(end/2)+1)-obj.hStab.CL.Value(ceil(end/2)-1))/(obj.hStab.alpha.Value(ceil(end/2)+1)-obj.hStab.alpha.Value(ceil(end/2)-1));
-            V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
+%             V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
+            V_s = ((obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(obj.portWing.MACLength.Value);
             depsilon_dalpha = .5;
-            hn = h0 + eta_s*V_s*(cla_hs/cla_wing)*(1-depsilon_dalpha);
-            margin = hn - (obj.rCM_LE.Value(1) / obj.portWing.MACLength.Value);
-            val = SIM.parameter('Unit','m','Value',margin,'Description','Static Margin of Stability');
+            hn = h0 + eta_s*V_s*(cla_hs/cla_wing);%*(1-depsilon_dalpha)
+            margin = hn - [obj.rBridle_LE.Value(1);obj.rCM_LE.Value(1)];% / obj.portWing.MACLength.Value;
+            val = SIM.parameter('Unit','','Value',margin,'Description','Static Margin of Stability relative to the [bridle;CM], Percent MAC.');
         end
         
         function val = get.contactPoints(obj)
@@ -573,7 +615,8 @@ classdef vehicleM < dynamicprops
         %Sets initial conditions on the path at the specified pathVariable
         function setICsOnPath(obj,initPathVar,pathFunc,geomParams,pathCntrPt,speed) %#ok<INUSL>
             % Sets initial conditions of the vehicle to be on the path
-            [initPos,initVel] = eval(sprintf('%s(initPathVar,geomParams,pathCntrPt)',pathFunc));
+
+            [initPos,initVel] = eval(sprintf('%s(initPathVar,geomParams,pathCntrPt)',pathFunc))
             obj.setInitPosVecGnd(initPos,'m');
             obj.setInitVelVecBdy([-speed 0 0],'m/s');
             % Initial body z points radially out

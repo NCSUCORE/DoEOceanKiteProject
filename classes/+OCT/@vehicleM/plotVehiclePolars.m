@@ -15,7 +15,7 @@ addParameter(p,'elevation',30,@isnumeric);
 addParameter(p,'azimuth',0,@isnumeric);
 addParameter(p,'heading',90,@isnumeric);
 addParameter(p,'fuseFactor',1,@isnumeric);
-parse(p,varargin{:})
+parse(p,varargin{:});
 
 fig = p.Results.fig;
 fuseFactor = p.Results.fuseFactor;
@@ -25,10 +25,10 @@ alpha1 = obj.hStab.alpha.Value;
 Aref = obj.fluidRefArea.Value;
 Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
     (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
-Athr = thr.tether1.diameter.Value/4;
+Athr = thr.tether1.diameter.Value*thrL/4;
 
-CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref
-if isempty(obj.fuse.alpha)
+CDthr = thr.tether1.dragCoeff.Value(end)*Athr/Aref;
+if isempty(obj.fuse.alpha.Value)
 CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
     obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
 else
@@ -42,23 +42,28 @@ CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
 
 CLtot = CLwing+CLstab;
 CDtot = CDwing+CDstab+CDvert+CDfuse+CDthr;
+CDtotNoThr = CDwing+CDstab+CDvert+CDfuse;
 
 h = figure(fig);
 subplot(2,2,1);hold on;grid on;
 plot(alpha,CLtot,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_L}$');  xlim(p.Results.xLim);
-set(gca,'FontSize',12)
+set(gca,'FontSize',12);
 subplot(2,2,2);hold on;grid on;
 plot(alpha,CDtot,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CDtotNoThr,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_D}$');  xlim(p.Results.xLim);
-set(gca,'FontSize',12)
+legend('System','Kite Only')
+set(gca,'FontSize',12);
 subplot(2,2,3);hold on;grid on; 
 plot(alpha,CLtot.^3./CDtot.^2,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CLtot.^3./CDtotNoThr.^2,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_L^3/C_D^2}$');  xlim(p.Results.xLim);
-set(gca,'FontSize',12)
+set(gca,'FontSize',12);
 subplot(2,2,4);hold on;grid on;
 plot(alpha,CLtot./CDtot,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CLtot./CDtotNoThr,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_L/C_D}$');  xlim(p.Results.xLim);
-set(gca,'FontSize',12)
+set(gca,'FontSize',12);
 
 end

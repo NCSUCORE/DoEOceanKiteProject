@@ -62,7 +62,15 @@ classdef controller < dynamicprops
             
         end
         
-        function plotPath(obj)
+        function plotPath(obj,varargin)
+            p = inputParser;
+            addParameter(p,'azimuth',true,@islogical);
+            addParameter(p,'elevation',true,@islogical);
+            addParameter(p,'tether',true,@islogical);
+            addParameter(p,'width',true,@islogical);
+            addParameter(p,'height',true,@islogical);
+            parse(p,varargin{:});
+            
             pathGeom = evalin('base','PATHGEOMETRY');
             n = numel(0:0.005:1)-1;
             try
@@ -74,17 +82,32 @@ classdef controller < dynamicprops
             plot3(pg(1,:),pg(2,:),pg(3,:),'k','LineWidth',1,'DisplayName','Path Geometry')
             hold on
             grid on
+            if p.Results.width
             plot3([pg(1,3*n/4) pg(1,n/4)],[max(pg(2,:)) min(pg(2,:))],[pg(3,3*n/4) pg(3,n/4)],...
                 'r','LineWidth',1.5,'DisplayName','Path Width (w)')
+            end
+            if p.Results.height
             plot3([pg(1,3*n/8) pg(1,n/8)],[pg(2,n/8) pg(2,n/8)],[max(pg(3,:)) min(pg(3,:))],...
                 'b','LineWidth',1.5,'DisplayName','Path Height (h)')
+            end
+            if p.Results.tether
             plot3([0 pg(1,1)],[0 pg(2,1)],[0 pg(3,1)],'k--','LineWidth',...
                 1.5,'DisplayName','Tether Length (l)')
+            end
+            if p.Results.elevation
             plot3([0 pg(1,1) pg(1,1) 0],[0 pg(2,1) pg(2,1) 0],[0 pg(3,1) 0 0],'r:',...
                 'LineWidth',1.5,'DisplayName','Elevation Angle ($\theta$)')
+            end
+            if p.Results.azimuth
             plot3([0 pg(1,1) pg(1,1) 0],[0 0 pg(2,1) 0],[0 0 0 0],'b:',...
                 'LineWidth',1.5,'DisplayName','Azimuth Angle ($\phi$)')
+            end
             axis equal
+            xlim([0 inf])
+            zlim([0 inf])
+            xlabel 'X [m]';
+            ylabel 'Y [m]';
+            zlabel 'Z [m]';
             legend('Location','northeast')
             view(40,30)
         end

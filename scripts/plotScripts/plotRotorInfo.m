@@ -2,7 +2,7 @@ figure
 tiledlayout(2,2)
 hold on
 grid on
-[m,n] = size(tsc.rotorTorque.Data)
+[m,n] = size(tsc.rotorTorque.Data);
 
 lap = tsc.lapNumS.max-1;
 [idx1,idx2,~] = tsc.getLapIdxs(lap);
