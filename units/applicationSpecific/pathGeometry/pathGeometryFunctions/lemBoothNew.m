@@ -20,10 +20,11 @@ cntrPos = reshape(cntrPos,[],1);
 
 w =      geomParams(1);
 h =      geomParams(2);
+height = geomParams(3);
 theta0 = -geomParams(3);
 phi0 =   geomParams(4);
 radius = geomParams(5);
-
+% theta0 = -asin(height/radius);
 %%%%
 % Convert path specification into the form that the lemniscate of booth can
 % handle
@@ -89,7 +90,12 @@ rz = @(x)[cos(x) -sin(x) 0; sin(x) cos(x) 0; 0 0 1];
 %%%%
 % Rotate into the correct position
 %%%%
-posGround = ry(theta0)*rz(phi0)*[x0;y0;z0]+cntrPos;
+posGround = rz(phi0)*ry(theta0)*[x0;y0;z0]+cntrPos;
+% alt = -radius*sin(theta0)
+% xShift = -radius*(1-cos(theta0))-h
+% cntrPos = [xShift;0;alt];
+% cntrPos = reshape(cntrPos,[],1);
+% posGround = rz(phi0)*[x0;y0;z0]+cntrPos;
 
 %%%%
 % Compute Tangent Vector
@@ -101,5 +107,6 @@ zPrime = r.*cos(phi)+sin(phi).*drdphi;
 tanVec = [xPrime;yPrime;zPrime];
 tanVecMag = sqrt(sum(tanVec.^2,1));
 tanVec = ry(theta0)*rz(phi0)*(tanVec./tanVecMag).*tanDir;
+% tanVec = rz(phi0)*(tanVec./tanVecMag).*tanDir;
 end
 

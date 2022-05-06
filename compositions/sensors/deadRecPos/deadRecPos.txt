@@ -1,0 +1,40 @@
+sns.posErrMag.Value = 3.0000e+00
+sns.posErrMag.Unit = 'm'
+sns.posErrMag.NoScale = false
+sns.posErrMag.Description = 'Positional Accuracy of Acoustic Ping'
+sns.bGyro.Value = [0.00890972222222222;0.00890972222222222;0.00890972222222222]
+sns.bGyro.Unit is unitless or has no unit specified
+sns.bGyro.NoScale = false
+sns.bGyro.Description = 'Static Gyro Bias'
+sns.kGyro.Value = 0.0000e+00
+sns.kGyro.Unit = 'deg/s'
+sns.kGyro.NoScale = false
+sns.kGyro.Description = 'IMU Gyro Linearity'
+sns.velErrMag.Value = 1.0000e-02
+sns.velErrMag.Unit is unitless or has no unit specified
+sns.velErrMag.NoScale = false
+sns.velErrMag.Description = 'Velocity Accuracy of Acoustic Ping'
+sns.ARW.Value = 4.2433e-03
+sns.ARW.Unit = 'deg/(s)^1/2'
+sns.ARW.NoScale = false
+sns.ARW.Description = 'Angle Random Walk'
+sns.kAcc.Value = [0;0;0]
+sns.kAcc.Unit is unitless or has no unit specified
+sns.kAcc.NoScale = false
+sns.kAcc.Description = 'IMU Acceleration Linearity'
+sns.bPrimeGyro.Value = [0;0;0]
+sns.bPrimeGyro.Unit is unitless or has no unit specified
+sns.bPrimeGyro.NoScale = false
+sns.bPrimeGyro.Description = 'Time Varying Gyro Bias'
+sns.VRW.Value = 1.5205e-03
+sns.VRW.Unit = 'm/s/(s)^1/2'
+sns.VRW.NoScale = false
+sns.VRW.Description = 'Velocity Random Walk'
+sns.bAcc.Value = [0.0036498105;0.0036498105;0.0036498105]
+sns.bAcc.Unit is unitless or has no unit specified
+sns.bAcc.NoScale = false
+sns.bAcc.Description = 'Static Accelleration Bias'
+sns.gndTruthFreq.Value = 1.5708e+00
+sns.gndTruthFreq.Unit = 'rad/s'
+sns.gndTruthFreq.NoScale = false
+sns.gndTruthFreq.Description = 'Update Frequency for acoustic ground truth'

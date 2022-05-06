@@ -20,49 +20,34 @@ parse(p,varargin{:});
 fig = p.Results.fig;
 fuseFactor = p.Results.fuseFactor;
 
+[CL,CD] = obj.getCLCD(thr,thrL);
 alpha = obj.portWing.alpha.Value;
-alpha1 = obj.hStab.alpha.Value;
-Aref = obj.fluidRefArea.Value;
-Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
-    (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
-Athr = thr.tether1.diameter.Value*thrL/4;
-
-CDthr = thr.tether1.dragCoeff.Value(end)*Athr/Aref;
-if isempty(obj.fuse.alpha.Value)
-CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
-    obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
-else
-    CDfuse = obj.fuse.CD.Value;
-end
-CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
-CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha);
-CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
-CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha);
-CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
-
-CLtot = CLwing+CLstab;
-CDtot = CDwing+CDstab+CDvert+CDfuse+CDthr;
-CDtotNoThr = CDwing+CDstab+CDvert+CDfuse;
 
 h = figure(fig);
 subplot(2,2,1);hold on;grid on;
-plot(alpha,CLtot,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CL,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_L}$');  xlim(p.Results.xLim);
 set(gca,'FontSize',12);
+
 subplot(2,2,2);hold on;grid on;
-plot(alpha,CDtot,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
-plot(alpha,CDtotNoThr,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
+plot(alpha,CD.kite,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CD.kiteTurb,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
+plot(alpha,CD.sys,'color',p.Results.color,'LineStyle',':','Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_D}$');  xlim(p.Results.xLim);
-legend('System','Kite Only')
+legend('Kite','Kite+Turb','Sys')
 set(gca,'FontSize',12);
+
 subplot(2,2,3);hold on;grid on; 
-plot(alpha,CLtot.^3./CDtot.^2,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
-plot(alpha,CLtot.^3./CDtotNoThr.^2,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
+plot(alpha,CL.^3./CD.kite.^2,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CL.^3./CD.kiteTurb.^2,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
+plot(alpha,CL.^3./CD.sys.^2,'color',p.Results.color,'LineStyle',':','Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_L^3/C_D^2}$');  xlim(p.Results.xLim);
 set(gca,'FontSize',12);
+
 subplot(2,2,4);hold on;grid on;
-plot(alpha,CLtot./CDtot,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
-plot(alpha,CLtot./CDtotNoThr,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
+plot(alpha,CL./CD.kite,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CL./CD.kiteTurb,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
+plot(alpha,CL./CD.sys,'color',p.Results.color,'LineStyle',':','Marker',p.Results.marker);
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_L/C_D}$');  xlim(p.Results.xLim);
 set(gca,'FontSize',12);
 

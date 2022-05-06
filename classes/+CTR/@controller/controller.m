@@ -69,6 +69,7 @@ classdef controller < dynamicprops
             addParameter(p,'tether',true,@islogical);
             addParameter(p,'width',true,@islogical);
             addParameter(p,'height',true,@islogical);
+            addParameter(p,'path',true,@islogical)
             parse(p,varargin{:});
             
             pathGeom = evalin('base','PATHGEOMETRY');
@@ -78,8 +79,11 @@ classdef controller < dynamicprops
             catch
                 basisParams = obj.initBasisParams.Value;
             end
-            figure
+            h = figure(1000)
+            set(h,'Position',[100 100 800 400])
+            if p.Results.path
             plot3(pg(1,:),pg(2,:),pg(3,:),'k','LineWidth',1,'DisplayName','Path Geometry')
+            end
             hold on
             grid on
             if p.Results.width
@@ -92,15 +96,15 @@ classdef controller < dynamicprops
             end
             if p.Results.tether
             plot3([0 pg(1,1)],[0 pg(2,1)],[0 pg(3,1)],'k--','LineWidth',...
-                1.5,'DisplayName','Tether Length (l)')
+                1.5,'DisplayName','Tether Length (r)')
             end
             if p.Results.elevation
             plot3([0 pg(1,1) pg(1,1) 0],[0 pg(2,1) pg(2,1) 0],[0 pg(3,1) 0 0],'r:',...
-                'LineWidth',1.5,'DisplayName','Elevation Angle ($\theta$)')
+                'LineWidth',1.5,'DisplayName','Elevation Angle ($\theta_0$)')
             end
             if p.Results.azimuth
             plot3([0 pg(1,1) pg(1,1) 0],[0 0 pg(2,1) 0],[0 0 0 0],'b:',...
-                'LineWidth',1.5,'DisplayName','Azimuth Angle ($\phi$)')
+                'LineWidth',1.5,'DisplayName','Azimuth Angle ($\phi_0$)')
             end
             axis equal
             xlim([0 inf])
