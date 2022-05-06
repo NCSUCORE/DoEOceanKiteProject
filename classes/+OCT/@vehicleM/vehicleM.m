@@ -368,6 +368,7 @@ classdef vehicleM < dynamicprops
             legend('$C_p$','$C_t$','$C_p/C_t$','$C_p/C_t^3$')
             xlabel 'TSR'
             ylabel 'Coefficient'
+            ylim([0 inf])
             set(gca,'FontSize',12)
             
             % Rotor Performance Surface
@@ -1198,7 +1199,7 @@ classdef vehicleM < dynamicprops
             (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
         Athr = thr.tether1.diameter.Value*thrL/4;
         
-        CDthr = thr.tether1.dragCoeff.Value(end)*Athr/Aref;
+        CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref;
         fuseFactor = 1;
         if isempty(obj.fuse.alpha.Value)
             CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
@@ -1208,9 +1209,9 @@ classdef vehicleM < dynamicprops
         end
         
         CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
-        CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha*(1-0.2753))%*0.8^2;
+        CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha)%*(1-0.2753));%*0.8^2;
         CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
-        CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha*(1-0.2753))%*0.8^2;
+        CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha)%*(1-0.2753));%*0.8^2;
         CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
         
         % Turbine CD

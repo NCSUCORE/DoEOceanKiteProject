@@ -1,4 +1,4 @@
-classdef ideal
+classdef ideal < dynamicprops
     %IDEAL Empty classdef for the ideal sensor processing
     
     properties

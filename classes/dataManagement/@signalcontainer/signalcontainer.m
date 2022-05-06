@@ -411,8 +411,8 @@ classdef signalcontainer < dynamicprops
             Pow.loydNT = mean(PLoydKite)*1e-3;
             Pow.turb = mean(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.elec = mean(obj.elecPow.Data(1,1,ran))*1e-3;
-%             Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;
-%             Pow.ctrl = mean(obj.ctrlPowLoss.Data(1,1,ran))*1e-3;
+            Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;
+            Pow.ctrl = mean(obj.ctrlPowLoss.Data(1,1,ran))*1e-3;
             try
                 Rthr = thr.tether1.resistance.Value;
                 Ithr = obj.elecPow.Data(1,1,ran)/thr.tether1.transVoltage.Value;
@@ -421,12 +421,12 @@ classdef signalcontainer < dynamicprops
                 Ithr = obj.elecPow.Data(1,1,ran)/1e3;
             end
             Pow.loss = mean(Rthr*Ithr.^2)*1e-3;
-%             Pnet = (squeeze(obj.elecPow.Data(1,1,ran))-squeeze(Rthr*Ithr.^2)...
-%                 -squeeze(obj.ctrlPowLoss.Data(1,1,ran))+squeeze(obj.winchPower.Data(ran)))*1e-3;
-%             Pow.net = mean(Pnet);
-%             Pow.max = max(Pnet);
-%             Pow.min = min(Pnet);
-%             fprintf('Lap power output:\nMech\t\t Elec\t\t Loyd Sys\t Loyd Kite\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.turb,Pow.elec,Pow.loyd,Pow.loydNT,Pow.net)
+            Pnet = (squeeze(obj.elecPow.Data(1,1,ran))-squeeze(Rthr*Ithr.^2)...
+                -squeeze(obj.ctrlPowLoss.Data(1,1,ran))+squeeze(obj.winchPower.Data(ran)))*1e-3;
+            Pow.net = mean(Pnet);
+            Pow.max = max(Pnet);
+            Pow.min = min(Pnet);
+            fprintf('Lap power output:\nMech\t\t Elec\t\t Loyd Sys\t Loyd Kite\t Net\n%.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\t %.3f kW\n',Pow.turb,Pow.elec,Pow.loyd,Pow.loydNT,Pow.net)
         end
         function Pow = rotPowerSummaryAir(obj,vhcl,env)
             [Idx1,Idx2] = obj.getLapIdxs(max(obj.lapNumS.Data)-1);
