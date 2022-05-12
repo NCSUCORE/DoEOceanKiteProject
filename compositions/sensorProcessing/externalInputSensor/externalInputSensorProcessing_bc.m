@@ -174,7 +174,7 @@ elems(19).Unit = 'rad/s';
 
 elems(20) = Simulink.BusElement;
 elems(20).Name = 'flowResource';
-elems(20).Dimensions = [1 1];
+elems(20).Dimensions = [2 1];
 elems(20).DimensionsMode = 'Fixed';
 elems(20).DataType = 'double';
 elems(20).SampleTime = -1;
