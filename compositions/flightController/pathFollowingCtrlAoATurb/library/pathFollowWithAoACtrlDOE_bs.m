@@ -6,10 +6,10 @@ fltCtrl = CTR.pthFlwCtrlM;
 %% FPID Controller parameters
 fltCtrl.AoAConst.setValue(18*pi/180,'deg')
 %             fltCtrl.tanRoll.kp.setValue(0.8,fltCtrl.tanRoll.kp.Unit)
-fltCtrl.rollMoment.kp.setValue((10e4)/(11*pi/180),'(N*m)/(rad)')
+fltCtrl.rollMoment.kp.setValue(500000,'(N*m)/(rad)')
 fltCtrl.rollMoment.ki.setValue(0,'(N*m)/(rad*s)');
-fltCtrl.rollMoment.kd.setValue((10e4)/(11*pi/180),'(N*m)/(rad/s)');
-fltCtrl.rollMoment.tau.setValue(0.001,'s');
+fltCtrl.rollMoment.kd.setValue(500000,'(N*m)/(rad/s)');
+fltCtrl.rollMoment.tau.setValue(1,'s');
 
 fltCtrl.tanRoll.kp.setValue(0.4,'(rad)/(rad)');
 fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
