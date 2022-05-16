@@ -16,22 +16,22 @@ classdef vehicleM < dynamicprops
         genKt
         volume
         inertia_CM
-        
+
         Ma6x6_LEUL
         Ma6x6_LEUR
         Ma6x6_LELL
         Ma6x6_LELR
         D6x6_LE
-        
+
         allMaxCtrlDef
         allMinCtrlDef
         allMaxCtrlDefSpeed
-        
+
         rB_LE
         rCM_LE
         rBridle_LE
         rCentOfBuoy_LE
-        
+
         wingRootChord
         wingAR
         wingTR
@@ -41,43 +41,43 @@ classdef vehicleM < dynamicprops
         wingAirfoil
         wingClMin
         wingClMax
-        
+
         hStab
         vStab
         portWing
         stbdWing
         fuse
-        
+
         initPosVecGnd
         initVelVecBdy
         initEulAng
         initAngVelVec
-        
+
         hydroChracterization
-        
+
         optAlpha
     end
-    
+
     properties (Dependent)
         mass
         thrAttchPts_B %Used for moment arms
-        
+
         fluidMomentArms
         fuseMomentArm
         buoyMomentArm
         turbMomentArms
         rCM_B
         wingTipPositions
-        
+
         fluidRefArea
         M6x6_B
         Ma6x6_LE
-        
+
         staticMargin
-        
+
         contactPoints
     end
-    
+
     methods
         %% Constructor
         function obj = vehicleM
@@ -91,34 +91,34 @@ classdef vehicleM < dynamicprops
             obj.convEfficiency      = SIM.parameter('Description','Losses in power conversion','Unit','');
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
-            
+
             obj.gearBoxLoss = SIM.parameter('Description','Ratio of input rotor speed (RPM) to gearbox loss (W)');
             obj.gearBoxRatio = SIM.parameter('Description','Gearbox Ratio');
             obj.genR        = SIM.parameter('Description','Someone please tell me');
             obj.genKt       = SIM.parameter('Description','Someone please tell me this too');
-            
+
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
             obj.inertia_CM     = SIM.parameter('Unit','kg*m^2','Description','Inertia Matrix');
-            
+
             %Added Mass Matrices
             obj.Ma6x6_LEUL        = SIM.parameter('Value',zeros(3),'Unit','kg','Description','Upper left quadrant 6x6 Added Mass Matrix');
             obj.Ma6x6_LEUR        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Upper right quadrant 6x6 Added Mass Matrix');
             obj.Ma6x6_LELL        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
             obj.Ma6x6_LELR        = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
             obj.D6x6_LE           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
-            
+
             %Control Surface Deflections
             obj.allMaxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
             obj.allMinCtrlDef     = SIM.parameter('Value',-30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the negative direction');
             obj.allMaxCtrlDefSpeed= SIM.parameter('Value',60,'Unit','deg/s','Description','Fastest rate of control surface deflection for all surfaces in either direction');
-            
+
             %Important Point Locations
             obj.rB_LE          = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the body frame');
             obj.rCM_LE         = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the Center of Mass');
             obj.rBridle_LE     = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to bridle point');
             obj.rCentOfBuoy_LE = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
-            
+
             % Overall Wing Properties (Used to create portWing and stbdWing
             obj.wingRootChord  = SIM.parameter('Unit','m','Description','Wing root chord');
             obj.wingAR         = SIM.parameter('Description','Wing Aspect ratio','NoScale',true);
@@ -129,7 +129,7 @@ classdef vehicleM < dynamicprops
             obj.wingAirfoil    = SIM.parameter('Description','Wing airfoil','NoScale',true);
             obj.wingClMin      = SIM.parameter('Description','minimum section Lift Coef','NoScale',true);
             obj.wingClMax      = SIM.parameter('Description','maximum section Lift Coef','NoScale',true);
-            
+
             % aerodynamic surfaces
             obj.hStab = OCT.aeroSurf;
             obj.hStab.setSpanUnitVec([0;1;0],'');
@@ -138,7 +138,7 @@ classdef vehicleM < dynamicprops
             obj.hStab.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.hStab.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.hStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-            
+
             obj.vStab = OCT.aeroSurf;
             obj.vStab.setSpanUnitVec([0;0;1],'');
             obj.vStab.setChordUnitVec([1;0;0],'');
@@ -146,41 +146,41 @@ classdef vehicleM < dynamicprops
             obj.vStab.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.vStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
             obj.vStab.setIncAlphaUnitVecSurf([0;-1;0],'');
-            
+
             obj.portWing = OCT.aeroSurf;
             obj.stbdWing = OCT.aeroSurf;
             obj.updateWings;
-            
+
             obj.fuse = OCT.fuselage;
             %             obj.turb = OCT.turb;
-            
+
             %             obj.updateTurb;
-            
+
             % initial conditions
             obj.initPosVecGnd           = SIM.parameter('Unit','m','Description','Initial CM position represented in the inertial frame');
             obj.initVelVecBdy           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the body frame ');
             obj.initEulAng              = SIM.parameter('Unit','rad','Description','Initial Euler angles');
             obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
-            
-            
+
+
             obj.hydroChracterization    = SIM.parameter('Value',1,'Unit','','Description','1 = AVL; 2 = XFoil; 3 = XFlr');
             obj.optAlpha                = SIM.parameter('Unit','deg','Description','Optimal constant angle of attack');
             %Legacy Properties
-            
+
         end
-        
+
         %% setters
         function obj = build(obj,varargin)
             defTurbName = {};
             for ii = 1:obj.numTurbines.Value
                 defTurbName{ii} = sprintf('turb%d',ii);
             end
-            
+
             p = inputParser;
             addParameter(p,'TurbNames',defTurbName,@(x) all(cellfun(@(x) isa(x,'char'),x)))
             addParameter(p,'TurbClass','turb',@(x) any(strcmp(x,{'turb'})))
             parse(p,varargin{:})
-            
+
             % Create tturbines
             for ii = 1:obj.numTurbines.Value
                 obj.addprop(p.Results.TurbNames{ii});
@@ -190,53 +190,53 @@ classdef vehicleM < dynamicprops
         function setFluidDensity(obj,val,units)
             obj.fluidDensity.setValue(val,units);
         end
-        
+
         function setNumTethers(obj,val,units)
             obj.numTethers.setValue(val,units);
             if obj.numTethers.Value > 1
                 warning("The vehicle is being constructed with tether attachment points at hardcoded locations in the OCT.Vehicle.get.thrAttachPts method")
             end
         end
-        
+
         function setBuoyFactor(obj,val,units)
             obj.buoyFactor.setValue(val,units);
         end
-        
+
         function setFluidCoeffsFileName(obj,val,units)
             if ~endsWith(val,'.mat')
                 val = [val '.mat'] ;
             end
             obj.fluidCoeffsFileName.setValue(val,units);
         end
-        
+
         function setFlowGradientDist(obj,val,units)
             obj.flowGradientDist.setValue(val,units);
         end
-        
+
         function setHydroCharacterization(obj,val,units)
             obj.hydroChracterization.setValue(val,units);
         end
-        
+
         function setOptAlpha(obj,val,units)
             obj.optAlpha.setValue(val,units);
         end
-        
+
         function setNumTurbines(obj,val,units)
             obj.numTurbines.setValue(val,units);
         end
-        
+
         function setOldFluidMomentArms(obj,val,units)
             obj.oldFluidMomentArms.setValue(val,units);
         end
-        
+
         function setVolume(obj,val,units)
             obj.volume.setValue(val,units);
         end
-        
+
         function setInertia_CM(obj,val,units)
             obj.inertia_CM.setValue(val,units);
         end
-        
+
         function setMa6x6_LE(obj,val,units)
             if isempty(units)
                 obj.Ma6x6_LEUL.setValue(val(1:3,1:3),'kg');
@@ -247,116 +247,116 @@ classdef vehicleM < dynamicprops
                 error('Units for Ma6x6_LE should be '''', the setter will define the partial matrix units')
             end
         end
-        
+
         function setD6x6_LE(obj,val,units)
             obj.D6x6_LE.setValue(val,units);
         end
-        
+
         function setAllMaxCtrlDef(obj,val,units)
             obj.allMaxCtrlDef.setValue(val,units);
         end
-        
+
         function setAllMinCtrlDef(obj,val,units)
             obj.allMinCtrlDef.setValue(val,units);
         end
-        
+
         function setAllMaxCtrlDefSpeed(obj,val,units)
             obj.allMaxCtrlDefSpeed.setValue(val,units);
         end
-        
+
         function setRB_LE(obj,val,units)
             obj.rB_LE.setValue(val(:),units);
         end
-        
+
         function setRCM_LE(obj,val,units)
             obj.rCM_LE.setValue(val(:),units);
         end
-        
+
         function setRBridle_LE(obj,val,units)
             obj.rBridle_LE.setValue(val(:),units);
         end
-        
+
         function setRCentOfBuoy_LE(obj,val,units)
             obj.rCentOfBuoy_LE.setValue(val(:),units);
         end
-        
+
         function setWingRootChord(obj,val,units)
             obj.wingRootChord.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingAR(obj,val,units)
             obj.wingAR.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingTR(obj,val,units)
             obj.wingTR.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingSweep(obj,val,units)
             obj.wingSweep.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingDihedral(obj,val,units)
             obj.wingDihedral.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingIncidence(obj,val,units)
             obj.wingIncidence.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingAirfoil(obj,val,units)
             obj.wingAirfoil.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingClMin(obj,val,units)
             obj.wingClMin.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setWingClMax(obj,val,units)
             obj.wingClMax.setValue(val,units);
             obj.updateWings
         end
-        
+
         function setHStab(obj,val,units)
             obj.hStab.setValue(val,units);
         end
-        
+
         function setVStab(obj,val,units)
             obj.vStab.setValue(val,units);
         end
-        
+
         function setInitPosVecGnd(obj,val,units)
             obj.initPosVecGnd.setValue(val(:),units);
         end
-        
+
         function setInitVelVecBdy(obj,val,units)
             obj.initVelVecBdy.setValue(val(:),units);
         end
-        
+
         function setInitEulAng(obj,val,units)
             obj.initEulAng.setValue(val(:),units);
         end
-        
+
         function setInitAngVelVec(obj,val,units)
             obj.initAngVelVec.setValue(val(:),units);
         end
-        
+
         %% getters
         function plotTurbPerformance(obj,vAppMax,imp)
-            
+
             if ~exist('vAppMax')
                 vAppMax = 3;
                 fprintf('Max apparent velocity set to 3 m/s. Declare vAppMax in function call to specify peak apparent velocity presented to turbines in m/s\n')
             end
-            
+
             turb = obj.turb1;
             tauLim = turb.torqueLim.Value;
             diam = turb.diameter.Value;
@@ -364,34 +364,34 @@ classdef vehicleM < dynamicprops
             plot(turb.RPMref.Value,turb.CpLookup.Value,'k','LineWidth',1)
             plot(turb.RPMref.Value,turb.CtLookup.Value,'r','LineWidth',1)
             plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value,'--k','LineWidth',1)
-%             plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value.^3,':k','LineWidth',1)
+            %             plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value.^3,':k','LineWidth',1)
             legend('$C_p$','$C_t$','$C_p/C_t$','$C_p/C_t^3$')
             xlabel 'TSR'
             ylabel 'Coefficient'
             ylim([0 inf])
             set(gca,'FontSize',12)
-            
+
             % Rotor Performance Surface
             vApp = 0.1:0.01:vAppMax;
             idx = 10*turb.optTSR.Value;
-            
+
             TSR = turb.optTSR.Value;
             TSRRef = turb.RPMref.Value;
             ind = find(TSR==TSRRef);
             cP = turb.CpLookup.Value;
             cT = turb.CtLookup.Value;
-            
+
             tRot = 1/2*1000.*vApp.^3*pi/4*diam^2.*cP(ind)./(vApp.*TSR/(pi*diam)*2*pi);
             tRot(tRot>tauLim) = tauLim;
             cTau = turb.tauCoefLookup.Value;
             cTauLookup = turb.tauCoefTSR.Value;
-            
+
             cTauReq = tRot./(pi*diam^3/8*1/2*1000.*vApp.^2);
-            
+
             gamma = interp1(cTau,cTauLookup,cTauReq);
             gamma(isnan(gamma))=TSR;
             cPRot = interp1(TSRRef,cP,gamma);
-            
+
             rotPow = 1/2*1000*vApp.^3*pi/4*diam^2.*cPRot;
             RPM = gamma.*vApp*60/(pi*diam);
             gbLoss = RPM*obj.gearBoxLoss.Value;
@@ -401,12 +401,12 @@ classdef vehicleM < dynamicprops
             genCurrent = genTorque./obj.genKt.Value;
             genLoss = genCurrent.^2*obj.genR.Value;
             genPowerOut = rotPow-genLoss-gbLoss;
-            
+
             if ~exist('imp')
                 imp = 0;
                 fprintf('Plotting in metric units by default. Declare imp = 1 in function call to plot in imperial units\n')
             end
-            
+
             if imp == 1
                 tRot = tRot/1.356;
                 xlab = 'Rotor Torque [ft-lbf]';
@@ -416,18 +416,18 @@ classdef vehicleM < dynamicprops
                 xlab = 'Rotor Torque [Nm]';
                 xlabV = 'Apparent Velocity [m/s]';
             end
-            
+
             %         figure
             %         plot(vApp,tRot)
             %         xlabel(xlabV)
             %         ylabel(xlab)
-            
+
             figure
             plot(vApp,RPM)
             xlabel(xlabV)
             ylabel('Rotor Speed [RPM]')
-            
-            
+
+
             figure
             plot(RPM,genPowerOut./rotPow,'DisplayName','System')
             hold on
@@ -439,8 +439,8 @@ classdef vehicleM < dynamicprops
             xlim([0 inf])
             legend
             grid on
-            
-                        figure
+
+            figure
             plot(vApp,genPowerOut./rotPow,'DisplayName','System')
             hold on
             plot(vApp,1-gbLoss./rotPow,'DisplayName','Gearbox Efficiency')
@@ -451,11 +451,11 @@ classdef vehicleM < dynamicprops
             xlim([0 inf])
             legend
             grid on
-            
+
             figure(459)
             hold on
             plot(vApp,genPowerOut)
-            
+
             figure
             tiledlayout(2,1)
             nexttile
@@ -482,7 +482,7 @@ classdef vehicleM < dynamicprops
                 obj.buoyFactor.Value,...
                 'Unit','kg','Description','Vehicle mass');
         end
-        
+
         %Moment Arms
         function val = get.fluidMomentArms(obj)
             arms=zeros(3,4);
@@ -535,10 +535,10 @@ classdef vehicleM < dynamicprops
         function val = get.rCM_B(obj)
             val = SIM.parameter('Value',-obj.rB_LE.Value + obj.rCM_LE.Value,'Unit','m');
         end
-        
+
         % Tether attachment points
         function val = get.thrAttchPts_B(obj)
-            
+
             for ii = 1:obj.numTethers.Value
                 val(ii,1) = OCT.thrAttch;
             end
@@ -554,7 +554,7 @@ classdef vehicleM < dynamicprops
                         %                         + [max(obj.hsChord.Value,obj.vsChord.Value);0;0] ...
                     %                         -[obj.hsChord];
                     stbd_thr = port_thr.*[1;-1;1];
-                    
+
                     val(1).setPosVec(port_thr,'m');
                     val(2).setPosVec(aft_thr,'m');
                     val(3).setPosVec(stbd_thr,'m');
@@ -562,14 +562,14 @@ classdef vehicleM < dynamicprops
                     error('No get method programmed for %d tether attachment points',obj.numTethers.Value);
             end
         end
-        
+
         % aerodynamic reference area
         function val = get.fluidRefArea(obj)
             Sref = 2 * obj.portWing.planformArea.Value;
             val = SIM.parameter('Value',Sref,'Unit','m^2',...
                 'Description','Reference area for aerodynamic calculations');
         end
-        
+
         function val = get.M6x6_B(obj)
             S=@(v) [0 -v(3) v(2);v(3) 0 -v(1);-v(2) v(1) 0];
             M=zeros(6,6);
@@ -588,12 +588,12 @@ classdef vehicleM < dynamicprops
             val = SIM.parameter('Value',M,'Unit','','Description',...
                 '6x6 Mass-Inertia Matrix with origin at Wing LE Mid-Span');
         end
-        
+
         function val = get.Ma6x6_LE(obj)
             mat = [obj.Ma6x6_LEUL.Value obj.Ma6x6_LEUR.Value;obj.Ma6x6_LELL.Value obj.Ma6x6_LELR.Value;];
             val = SIM.parameter('Value',mat,'Unit','','Description','6x6 Added Mass Matrix. Created from scaled quadrant matrices');
         end
-        
+
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
             eta_s = 1;%.6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
@@ -608,7 +608,7 @@ classdef vehicleM < dynamicprops
             margin = hn - [obj.rBridle_LE.Value(1);obj.rCM_LE.Value(1)];% / obj.portWing.MACLength.Value;
             val = SIM.parameter('Unit','','Value',margin,'Description','Static Margin of Stability relative to the [bridle;CM], Percent MAC.');
         end
-        
+
         function val = get.contactPoints(obj)
             % Calculate location of points at the edges of the body where
             % we will calculate forces and moments from contact with ground
@@ -620,7 +620,7 @@ classdef vehicleM < dynamicprops
                 obj.fuse.rEnd_LE.Value-[0 0 obj.fuse.diameter.Value/2]'];% Fuselage tail - diameter/2 (in body z)
             val = SIM.parameter('Unit','m','Value',ptsMat,'Description','Points where contact forces are modeled');
         end
-        
+
         %% other methods
         % Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
@@ -629,11 +629,11 @@ classdef vehicleM < dynamicprops
                 obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
             end
         end
-        
+
         %Sets initial conditions on the path at the specified pathVariable
         function setICsOnPath(obj,initPathVar,pathFunc,geomParams,pathCntrPt,speed) %#ok<INUSL>
             % Sets initial conditions of the vehicle to be on the path
-            
+
             [initPos,initVel] = eval(sprintf('%s(initPathVar,geomParams,pathCntrPt)',pathFunc))
             obj.setInitPosVecGnd(initPos,'m');
             obj.setInitVelVecBdy([-speed 0 0],'m/s');
@@ -648,7 +648,7 @@ classdef vehicleM < dynamicprops
             % Initial angular velocity is zero
             obj.setInitAngVelVec([0 0 0],'rad/s');
         end
-        
+
         %Update individual wing values
         %Called by setters on wing properties
         function updateWings(obj)
@@ -675,7 +675,7 @@ classdef vehicleM < dynamicprops
             %vector is in the negative body Y direction, but alpha still
             %increases as apparent velocity rotates about the negative body Y axis.
             obj.portWing.setIncAlphaUnitVecSurf([0;1;0],'');
-            
+
             obj.stbdWing.setRSurfLE_WingLEBdy([0;0;0],'m');
             obj.stbdWing.setSpanUnitVec([0;1;0],'');
             obj.stbdWing.setChordUnitVec([1;0;0],'');
@@ -695,7 +695,7 @@ classdef vehicleM < dynamicprops
             obj.stbdWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
             obj.stbdWing.setIncAlphaUnitVecSurf([0;-1;0],'');
         end
-        
+
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
             fileLoc = which(obj.fluidCoeffsFileName.Value);
@@ -838,7 +838,7 @@ classdef vehicleM < dynamicprops
                 aeroStruct(4).CL    = CLvStab;
                 aeroStruct(4).CD    = CDvStab+.0035;
             end
-            
+
             obj.portWing.setCL(aeroStruct(1).CL,'');
             obj.portWing.setCD(aeroStruct(1).CD,'');
             obj.portWing.setAlpha(aeroStruct(1).alpha,'deg');
@@ -847,7 +847,7 @@ classdef vehicleM < dynamicprops
             obj.portWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.portWing.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.portWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-            
+
             obj.stbdWing.setCL(aeroStruct(2).CL,'');
             obj.stbdWing.setCD(aeroStruct(2).CD,'');
             obj.stbdWing.setAlpha(aeroStruct(2).alpha,'deg');
@@ -856,7 +856,7 @@ classdef vehicleM < dynamicprops
             obj.stbdWing.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.stbdWing.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.stbdWing.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-            
+
             obj.hStab.setCL(aeroStruct(3).CL,'');
             obj.hStab.setCD(aeroStruct(3).CD,'');
             obj.hStab.setAlpha(aeroStruct(3).alpha,'deg');
@@ -865,7 +865,7 @@ classdef vehicleM < dynamicprops
             obj.hStab.setMaxCtrlDef(obj.allMaxCtrlDef.Value,'deg')
             obj.hStab.setMinCtrlDef(obj.allMinCtrlDef.Value,'deg')
             obj.hStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
-            
+
             obj.vStab.setCL(aeroStruct(4).CL,'');
             obj.vStab.setCD(aeroStruct(4).CD,'');
             obj.vStab.setAlpha(aeroStruct(4).alpha,'deg');
@@ -876,7 +876,7 @@ classdef vehicleM < dynamicprops
             obj.vStab.setMaxCtrlDefSpeed(obj.allMaxCtrlDefSpeed.Value,'deg/s')
         end
         function h = plot(obj,varargin)
-            
+
             p = inputParser;
             addParameter(p,'FigHandle',[],@(x) isa(x,'matlab.ui.Figure'));
             addParameter(p,'AxHandle',[],@(x) isa(x,'matlab.graphics.axis.Axes'));
@@ -885,22 +885,22 @@ classdef vehicleM < dynamicprops
             addParameter(p,'fuseRings',8,@isnumeric);
             addParameter(p,'Basic',false,@islogical) % Only plots aero surfaces if true
             parse(p,varargin{:})
-            
+
             R = rotation_sequence(p.Results.EulerAngles);
-            
+
             if isempty(p.Results.FigHandle) && isempty(p.Results.AxHandle)
                 h.fig = figure;
                 h.fig.Name ='Design';
             else
                 h.fig = p.Results.FigHandle;
             end
-            
+
             if isempty(p.Results.AxHandle)
                 h.ax = gca;
             else
                 h.ax = p.Results.AxHandle;
             end
-            
+
             fs = obj.getPropsByClass("OCT.aeroSurf");
             % Aero surfaces (and fuselage)
             for ii = 1:4
@@ -937,7 +937,7 @@ classdef vehicleM < dynamicprops
                 end
                 y(end+1:end+numextra) = reshape(repmat(y(2:perSlice),2,1),[1 numextra]);
                 z(end+1:end+numextra) = reshape(repmat(z(2:perSlice),2,1),[1 numextra]);
-                
+
                 [sx, sy, sz]=sphere;
                 sx = reshape(obj.fuse.diameter.Value/2*sx,[1 numel(sx)]);
                 sy = reshape(obj.fuse.diameter.Value/2*sy,[1 numel(sy)]);
@@ -948,15 +948,15 @@ classdef vehicleM < dynamicprops
                 %                 x(end+1:end+numel(nosex))=nosex;
                 %                 y(end+1:end+numel(nosey))=nosey;
                 %                 z(end+1:end+numel(nosez))=nosez;
-                
+
                 endx = sy(ceil(numel(sx)/2):end)+obj.fuse.rEnd_LE.Value(1)-obj.fuse.diameter.Value/2;
                 endy = sx(ceil(numel(sx)/2):end)+obj.fuse.rNose_LE.Value(2);
                 endz = sz(ceil(numel(sx)/2):end)+obj.fuse.rNose_LE.Value(3);
                 %                 x(end+1:end+numel(endx))=endx;
                 %                 y(end+1:end+numel(endy))=endy;
                 %                 z(end+1:end+numel(endz))=endz;
-                
-                
+
+
                 h.surf{5}=plot3(h.ax,x,y,z,'LineWidth',.2,'Color','k','LineStyle','-',...
                     'DisplayName','Fluid Dynamic Surfaces');
                 h.surf{6}=plot3(h.ax,nosex,nosey,nosez,'LineWidth',.2,'Color','k','LineStyle','-',...
@@ -964,7 +964,7 @@ classdef vehicleM < dynamicprops
                 h.surf{7}=plot3(h.ax,endx,endy,endz,'LineWidth',.2,'Color','k','LineStyle','-',...
                     'DisplayName','Fluid Dynamic Surfaces');
             end
-            
+
             if ~p.Results.Basic
                 % Tether attachment points
                 for ii = 1:obj.numTethers.Value
@@ -984,7 +984,7 @@ classdef vehicleM < dynamicprops
                         pts(3)+p.Results.Position(3),...
                         'm+','DisplayName','Turbine Attachment Point');
                 end
-                
+
                 for ii = 1:4
                     pts = R*obj.fluidMomentArms.Value(:,ii);
                     h.momArms{ii} = plot3(h.ax,...
@@ -992,7 +992,7 @@ classdef vehicleM < dynamicprops
                         pts(2)+p.Results.Position(2),...
                         pts(3)+p.Results.Position(3),...
                         'b+','DisplayName','Fluid Dynamic Center');
-                    
+
                 end
                 % Center of mass
                 h.centOfMass = plot3(h.ax,...
@@ -1010,13 +1010,13 @@ classdef vehicleM < dynamicprops
             ylabel('Y (m)')
             zlabel('Z (m)')
             view(-45,30)
-            
+
             set(gca,'DataAspectRatio',[1 1 1])
         end
-        
+
         function plotCoeffPolars(obj)
             fh = findobj( 'Type', 'Figure', 'Name', 'Partitioned Aero Coeffs');
-            
+
             if isempty(fh)
                 fh = figure;
                 fh.Position =[102 92 3*560 2*420];
@@ -1024,19 +1024,19 @@ classdef vehicleM < dynamicprops
             else
                 figure(fh);
             end
-            
+
             % left wing
             ax1 = subplot(4,4,1);
             plot(obj.portWing.alpha.Value,obj.portWing.CL.Value);
             hWingCL_ax = gca;
-            
+
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
             title('Port Wing')
             xlim([-20 20])
             grid on
             hold on
-            
+
             ax5 = subplot(4,4,5);
             plot(obj.portWing.alpha.Value,obj.portWing.CD.Value);
             xlabel('$\alpha$ [deg]')
@@ -1045,7 +1045,7 @@ classdef vehicleM < dynamicprops
             hold on
             xlim([-20 20])
             hWingCD_ax = gca;
-            
+
             ax9 = subplot(4,4,9);
             plot(obj.portWing.alpha.Value,obj.portWing.CL.Value(:)./obj.portWing.CD.Value(:))
             xlabel('$\alpha$ [deg]')
@@ -1053,7 +1053,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax13 = subplot(4,4,13);
             plot(obj.portWing.alpha.Value,(obj.portWing.CL.Value(:).^3)./(obj.portWing.CD.Value(:).^2))
             xlabel('$\alpha$ [deg]')
@@ -1061,20 +1061,20 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             linkaxes([ax1,ax5,ax9,ax13],'x');
-            
+
             % right wing
             ax2 = subplot(4,4,2);
             plot(obj.stbdWing.alpha.Value,obj.stbdWing.CL.Value);
-            
+
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
             title('Starboard Wing')
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax6 = subplot(4,4,6);
             plot(obj.stbdWing.alpha.Value,obj.stbdWing.CD.Value);
             xlabel('$\alpha$ [deg]')
@@ -1082,7 +1082,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax10 = subplot(4,4,10);
             plot(obj.stbdWing.alpha.Value,obj.stbdWing.CL.Value(:)./obj.stbdWing.CD.Value(:))
             xlabel('$\alpha$ [deg]')
@@ -1090,7 +1090,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax14 = subplot(4,4,14);
             plot(obj.stbdWing.alpha.Value,(obj.stbdWing.CL.Value(:).^3)./(obj.stbdWing.CD.Value(:).^2))
             xlabel('$\alpha$ [deg]')
@@ -1098,21 +1098,21 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             linkaxes([ax2,ax6,ax10,ax14],'x');
-            
+
             % HS
             ax3 = subplot(4,4,3);
             plot(obj.hStab.alpha.Value,obj.hStab.CL.Value);
             hhStabCL_ax = gca;
-            
+
             xlabel('$\alpha$ [deg]')
             ylabel('$C_{L}$')
             title('Horizontal stabilizer')
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax7 = subplot(4,4,7);
             plot(obj.hStab.alpha.Value,obj.hStab.CD.Value);
             hhStabCD_ax = gca;
@@ -1121,7 +1121,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax11 = subplot(4,4,11);
             plot(obj.hStab.alpha.Value,obj.hStab.CL.Value(:)./obj.hStab.CD.Value(:))
             xlabel('$\alpha$ [deg]')
@@ -1129,7 +1129,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax15 = subplot(4,4,15);
             plot(obj.hStab.alpha.Value,(obj.hStab.CL.Value(:).^3)./(obj.hStab.CD.Value(:).^3))
             xlabel('$\alpha$ [deg]')
@@ -1137,9 +1137,9 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             linkaxes([ax3,ax7,ax11,ax15],'x');
-            
+
             % VS
             ax4 = subplot(4,4,4);
             plot(obj.vStab.alpha.Value,obj.vStab.CL.Value);
@@ -1150,7 +1150,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax8 = subplot(4,4,8);
             plot(obj.vStab.alpha.Value,obj.vStab.CD.Value);
             hvStabCD_ax = gca;
@@ -1159,7 +1159,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax12 = subplot(4,4,12);
             plot(obj.vStab.alpha.Value,obj.vStab.CL.Value(:)./obj.vStab.CD.Value(:))
             xlabel('$\alpha$ [deg]')
@@ -1167,7 +1167,7 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             ax16 = subplot(4,4,16);
             plot(obj.vStab.alpha.Value,(obj.vStab.CL.Value(:).^3)./(obj.vStab.CD.Value(:).^3))
             xlabel('$\alpha$ [deg]')
@@ -1175,74 +1175,74 @@ classdef vehicleM < dynamicprops
             grid on
             hold on
             xlim([-20 20])
-            
+
             linkaxes([ax4,ax8,ax12,ax16],'x');
-            
+
             %             axis([ax1 ax2 ax3 ax4],[-20 20 ...
             %                 min([hWingCL_ax.YLim(1),hhStabCL_ax.YLim(1),hvStabCL_ax.YLim(1)])...
             %                 max([hWingCL_ax.YLim(2),hhStabCL_ax.YLim(2),hvStabCL_ax.YLim(2)])]);
             %             axis([ax5 ax6 ax7 ax8],[-20 20 ...
             %                 min([hWingCD_ax.YLim(1),hhStabCD_ax.YLim(1),hvStabCD_ax.YLim(1)])...
             %                 max([hWingCD_ax.YLim(2),hhStabCD_ax.YLim(2),hvStabCD_ax.YLim(2)])]);
-            
+
         end
-        
+
         %Get a struct of parameters of the desired class
         [output,varargout] = struct(obj,className);
-        
+
         %get aggregate CL and CD
         function [CL,CD] = getCLCD(obj,thr,thrL)
-        alpha = obj.portWing.alpha.Value;
-        alpha1 = obj.hStab.alpha.Value;
-        Aref = obj.fluidRefArea.Value;
-        Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
-            (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
-        Athr = thr.tether1.diameter.Value*thrL/4;
-        
-        CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref;
-        fuseFactor = 1;
-        if isempty(obj.fuse.alpha.Value)
-            CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
-                obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
-        else
-            CDfuse = obj.fuse.CD.Value;
+            alpha = obj.portWing.alpha.Value;
+            alpha1 = obj.hStab.alpha.Value;
+            Aref = obj.fluidRefArea.Value;
+            Afuse = pi/4*obj.fuse.diameter.Value^2.*cosd(alpha)+...
+                (pi/4*obj.fuse.diameter.Value^2+obj.fuse.diameter.Value*obj.fuse.length.Value).*(1-cosd(alpha));
+            Athr = thr.tether1.diameter.Value*thrL/4;
+
+            CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref;
+            fuseFactor = 1;
+            if isempty(obj.fuse.alpha.Value)
+                CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
+                    obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
+            else
+                CDfuse = obj.fuse.CD.Value;
+            end
+
+            CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
+            CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha);%*(1-0.2753));%*0.8^2;
+            CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
+            CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha);%*(1-0.2753));%*0.8^2;
+            CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
+
+            % Turbine CD
+            turbTSR = obj.turb1.optTSR.Value;
+            ind = find(turbTSR==obj.turb1.RPMref.Value);
+            CT = obj.turb1.CtLookup.Value(ind);
+            turbArea = pi*obj.turb1.diameter.Value^2/4;
+            N = obj.numTurbines.Value;
+            CDturb = CT*turbArea/Aref*N;
+
+
+
+            CL = CLwing+CLstab;
+            CD.kite = CDwing+CDstab+CDvert+CDfuse;
+            CD.kiteTurb = CDwing+CDstab+CDvert+CDfuse+CDturb;
+            CD.kiteThr = CDwing+CDstab+CDvert+CDfuse+CDthr;
+            CD.sys = CDwing+CDstab+CDvert+CDfuse+CDthr+CDturb;
         end
-        
-        CLwing = obj.portWing.CL.Value+obj.stbdWing.CL.Value;
-        CLstab = interp1(alpha1,obj.hStab.CL.Value,alpha)%*(1-0.2753));%*0.8^2;
-        CDwing = obj.portWing.CD.Value+obj.stbdWing.CD.Value;
-        CDstab = interp1(alpha1,obj.hStab.CD.Value,alpha)%*(1-0.2753));%*0.8^2;
-        CDvert = interp1(alpha1,obj.vStab.CD.Value,alpha);
-        
-        % Turbine CD
-        turbTSR = obj.turb1.optTSR.Value;
-        ind = find(turbTSR==obj.turb1.RPMref.Value);
-        CT = obj.turb1.CtLookup.Value(ind);
-        turbArea = pi*obj.turb1.diameter.Value^2/4;
-        N = obj.numTurbines.Value;
-        CDturb = CT*turbArea/Aref*N;
-        
-        
-        
-        CL = CLwing+CLstab;
-        CD.kite = CDwing+CDstab+CDvert+CDfuse;
-        CD.kiteTurb = CDwing+CDstab+CDvert+CDfuse+CDturb;
-        CD.kiteThr = CDwing+CDstab+CDvert+CDfuse+CDthr;
-        CD.sys = CDwing+CDstab+CDvert+CDfuse+CDthr+CDturb;
-    end
-    %returns a cell array of properties of the desired class
-    output = getPropsByClass(obj,className);
-    
-    % calculate max equilibrium speed at a given azimuth, elevation, and
-    % flow velocity vector
-    [sp,tanRoll,velAng] = eqSpeed(obj,vf,az,el)
-    
-    % Functions to animate the vehicle
-    val = animateSim(obj,tsc,timeStep,varargin)
-    val = animateBody(obj,tsc,timeStep,varargin)
-    
-    
-    
-    
-end % methods
+        %returns a cell array of properties of the desired class
+        output = getPropsByClass(obj,className);
+
+        % calculate max equilibrium speed at a given azimuth, elevation, and
+        % flow velocity vector
+        [sp,tanRoll,velAng] = eqSpeed(obj,vf,az,el)
+
+        % Functions to animate the vehicle
+        val = animateSim(obj,tsc,timeStep,varargin)
+        val = animateBody(obj,tsc,timeStep,varargin)
+
+
+
+
+    end % methods
 end
