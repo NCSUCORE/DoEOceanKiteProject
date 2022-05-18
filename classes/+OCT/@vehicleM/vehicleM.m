@@ -56,6 +56,11 @@ classdef vehicleM < dynamicprops
         hydroChracterization
 
         optAlpha
+        
+         
+        downwash
+        wakeEffect
+        wakeFactor
     end
 
     properties (Dependent)
@@ -76,6 +81,8 @@ classdef vehicleM < dynamicprops
         staticMargin
 
         contactPoints
+        
+        downwashCoef
     end
 
     methods
@@ -165,11 +172,30 @@ classdef vehicleM < dynamicprops
 
             obj.hydroChracterization    = SIM.parameter('Value',1,'Unit','','Description','1 = AVL; 2 = XFoil; 3 = XFlr');
             obj.optAlpha                = SIM.parameter('Unit','deg','Description','Optimal constant angle of attack');
+           
+            %Downwash and wake effect 
+                
+            obj.downwash    =SIM.parameter('Value',1,'Unit','','Description','Binary to turn on/off downwash effect on horizantal stabilizer (1=on 0=off)');
+            obj.wakeEffect  =SIM.parameter('Value',1,'Unit','','Description','Binary to turn on/off wake effect on horizantal stabilizer (1=on 0=off)');
+            obj.wakeFactor  =SIM.parameter('Value',0.8,'Unit','','Description','Fraction of flow speed that reaches horizantal stabilizer (1=no wake effect)');
+
+            
+            
+            
+            
+            
             %Legacy Properties
 
         end
 
         %% setters
+        
+        function setdownwashCoef(obj,val,units)
+            obj.downwashCoef.setValue(val,units);
+        end
+
+        
+        
         function obj = build(obj,varargin)
             defTurbName = {};
             for ii = 1:obj.numTurbines.Value
@@ -350,6 +376,29 @@ classdef vehicleM < dynamicprops
         end
 
         %% getters
+        
+                
+          function val = get.downwashCoef(obj)
+              AR=2*obj.stbdWing.AR.Value;
+              Ka=1/AR - 1/(1+AR^1.7);
+              TR=obj.stbdWing.TR.Value;
+              Kl=(10-3*TR)/7;
+              b=obj.portWing.halfSpan.Value*2;
+              Hh=obj.hStab.rAeroCent_SurfLE.Value(3)+obj.hStab.rSurfLE_WingLEBdy.Value(3)-obj.stbdWing.rAeroCent_SurfLE.Value(3);
+              Lh=obj.hStab.rAeroCent_SurfLE.Value(1)+obj.hStab.rSurfLE_WingLEBdy.Value(1)-obj.stbdWing.rAeroCent_SurfLE.Value(1);
+              Kh=(1-abs(Hh/b))/((2*Lh/b)^(1/3));
+              sweep=obj.stbdWing.sweep.Value*pi/180;
+              %downwash=4.44*(Ka*Kl*Kh*cos(sweep)^0.5)^(1.19);%if fluid is
+              %compressable
+              downwash=4.44*(Ka*cos(sweep)^0.5)^(1.19);%Assumes fluid is not compressable
+
+              val = SIM.parameter('Value',downwash,...
+                'Unit','','Description','Coefficent used to model downwash effects on stabs');
+        end
+
+        
+    
+        
         function plotTurbPerformance(obj,vAppMax,imp)
 
             if ~exist('vAppMax')
@@ -596,15 +645,19 @@ classdef vehicleM < dynamicprops
 
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
+            if obj.wakeEffect.Value
+              eta_s = obj.wakeFactor.Value^2;  
+            else
             eta_s = 1;%.6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html
+            end
             hStabArea = obj.hStab.planformArea.Value;
             wingArea = obj.fluidRefArea.Value;
             cla_wing = 2*(obj.portWing.CL.Value(ceil(end/2)+1)-obj.portWing.CL.Value(ceil(end/2)-1))/(obj.portWing.alpha.Value(ceil(end/2)+1)-obj.portWing.alpha.Value(ceil(end/2)-1));
             cla_hs = (obj.hStab.CL.Value(ceil(end/2)+1)-obj.hStab.CL.Value(ceil(end/2)-1))/(obj.hStab.alpha.Value(ceil(end/2)+1)-obj.hStab.alpha.Value(ceil(end/2)-1));
             %             V_s = (hStabArea * (obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(wingArea * obj.portWing.MACLength.Value);
             V_s = ((obj.hStab.rSurfLE_WingLEBdy.Value(1) - obj.portWing.rootChord.Value))/(obj.portWing.MACLength.Value);
-            depsilon_dalpha = .5;
-            hn = h0 + eta_s*V_s*(cla_hs/cla_wing);%*(1-depsilon_dalpha)
+            depsilon_dalpha = obj.downwash.Value.*obj.downwashCoef.Value;
+            hn = h0 + eta_s*V_s*(cla_hs/cla_wing)*(1-depsilon_dalpha);
             margin = hn - [obj.rBridle_LE.Value(1);obj.rCM_LE.Value(1)];% / obj.portWing.MACLength.Value;
             val = SIM.parameter('Unit','','Value',margin,'Description','Static Margin of Stability relative to the [bridle;CM], Percent MAC.');
         end
