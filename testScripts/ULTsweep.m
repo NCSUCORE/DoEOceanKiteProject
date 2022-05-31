@@ -13,9 +13,9 @@ Simulink.sdi.clear
 % 7 - Animate
 % 8 - Plotting
 %%             1 2 3 4 5 6     7     8
-simScenario = [1 1 1 3 1 1==0  1==0 1==1];
-thrSweep = 500;500:500:5000
-altSweep = 0;1000;200:200:1600
+simScenario = [1 1 1 3 1 1==1  1==0 1==1];
+thrSweep = 1;500:500:5000
+altSweep = 200:200:2000
 tauLim = 35
 defl = -1
 flwSweep = 1;0.5:0.25:2;
@@ -26,7 +26,7 @@ powGen = zeros(n,m,r);
 pathErr = zeros(n,m,r);
 dragRatio = zeros(n,m,r);
 Pow = cell(n,m,r);
-fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy05-10-2022\';
+fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy05-27-2022\';
 %%
 if ~exist(fpath,'dir')
     mkdir(fpath)
@@ -60,24 +60,29 @@ for i = 1:n
             fprintf(sprintf('%.2f Percent Complete\n',((i-1)*m*r+(j-1)*r+k)/(n*m*r)*100))
             Simulink.sdi.clear
             %%  Set Test Parameters
-            tFinal = 1200;      tSwitch = 10000;                        %   s - maximum sim duration
+            tFinal = 5000;      tSwitch = 10000;                        %   s - maximum sim duration
             flwSpd = flwSweep(k);                                              %   m/s - Flow speed
             altitude = altSweep(i);     initAltitude = 100;                     %   m/m - cross-current and initial altitude
-            thrLength = thrSweep(j);    initThrLength = 200;
+            thrLength = altitude*2;thrSweep(j);    initThrLength = 200;
             el = asin(altitude/thrLength);                              %   rad - Initial elevation angle
             if el*180/pi >= 50
                 continue
             end
 %             if i == 1
-                b = 20;
-                a = 60;
+%                 b = 20;
+%                 a = 60;
 %             else
-%                 b = 40;
-%                 a = 200;
+                b = 40;
+                a = 200;
 %             end
-
-            loadComponent('ultDoeKite')
+            d = 1.2
+            loadComponent('ultDoeKiteTSR')
+            vhcl.turb1.setDiameter(d,'m')
+            vhcl.turb2.setDiameter(d,'m')
+            vhcl.turb3.setDiameter(d,'m')
+            vhcl.turb4.setDiameter(d,'m')
             VEHICLE = 'vhcl4turb'
+            
             loadComponent('constBoothLem');
             hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters
                 thrLength],'[rad rad rad rad m]');
@@ -88,6 +93,7 @@ for i = 1:n
             thr.tether1.numNodes.setValue(max([10 thrLength/200]),'');
             thr.tether1.setDensity(1000,'kg/m^3')
             thr.tether1.diameter.setValue(0.022,'m')
+            thr.tether1.dragCoeff.setValue(1.2,'')
             loadComponent('ConstXYZT');                         %   Constant flow
             ENVIRONMENT = 'env4turb';                           %   Two turbines
             env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
@@ -150,7 +156,7 @@ for i = 1:n
 
 %                 fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
             end
-            filename = sprintf(strcat('ConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);
+            filename = sprintf(strcat('BPConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);
             if simScenario(6)
                 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
             end
