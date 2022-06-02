@@ -411,7 +411,13 @@ classdef signalcontainer < dynamicprops
             Pow.loydNT = mean(PLoydKite)*1e-3;
             Pow.turb = mean(obj.turbPow.Data(1,1,ran))*1e-3;
             Pow.elec = mean(obj.elecPow.Data(1,1,ran))*1e-3;
-            Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;
+            try
+                Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;
+                winchPwr = obj.winchPower.Data(ran)*1e-3;
+            catch
+                Pow.winch = 0;
+                winchPwr = zeros(size(ran))';
+            end
             Pow.ctrl = mean(obj.ctrlPowLoss.Data(1,1,ran))*1e-3;
             try
                 Rthr = thr.tether1.resistance.Value;
@@ -420,9 +426,9 @@ classdef signalcontainer < dynamicprops
                 Rthr = 14;
                 Ithr = obj.elecPow.Data(1,1,ran)/1e3;
             end
-            Pow.loss = mean(Rthr*Ithr.^2)*1e-3;
+            Pow.loss = mean(Rthr*Ithr.^2);
             Pnet = (squeeze(obj.elecPow.Data(1,1,ran))-squeeze(Rthr*Ithr.^2)...
-                -squeeze(obj.ctrlPowLoss.Data(1,1,ran))+squeeze(obj.winchPower.Data(ran)))*1e-3;
+                -squeeze(obj.ctrlPowLoss.Data(1,1,ran))+winchPwr)*1e-3;
             Pow.net = mean(Pnet);
             Pow.max = max(Pnet);
             Pow.min = min(Pnet);
