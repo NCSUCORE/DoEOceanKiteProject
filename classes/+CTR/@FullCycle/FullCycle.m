@@ -4,10 +4,12 @@ classdef FullCycle < handle
     properties (SetAccess = private)
         % State machine 
         shiftLaps 
+        
+        
         % FPID controllers
         
         % Saturations
-        
+        preCCAlt
         % Path Following 
         
         % Spooling
@@ -20,6 +22,7 @@ classdef FullCycle < handle
         function obj = FullCycle
             % State machine 
            obj.shiftLaps = SIM.parameter('Value',5,'Description','Number of laps to shift Azimuth back to center','Unit','');
+           obj.preCCAlt  = CTR.sat('upperLim',15,'lowerLim',20,'Unit','m');
         end
        
         
