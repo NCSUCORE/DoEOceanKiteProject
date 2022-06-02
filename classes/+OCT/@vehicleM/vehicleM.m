@@ -23,6 +23,12 @@ classdef vehicleM < dynamicprops
         Ma6x6_LELR
         D6x6_LE
 
+        Ma6x6_LEUL_Fuse
+        Ma6x6_LEUR_Fuse
+        Ma6x6_LELL_Fuse
+        Ma6x6_LELR_Fuse
+        D6x6_LE_Fuse
+        
         allMaxCtrlDef
         allMinCtrlDef
         allMaxCtrlDefSpeed
@@ -77,6 +83,7 @@ classdef vehicleM < dynamicprops
         fluidRefArea
         M6x6_B
         Ma6x6_LE
+        Ma6x6_LE_Fuse
 
         staticMargin
 
@@ -114,7 +121,15 @@ classdef vehicleM < dynamicprops
             obj.Ma6x6_LELL        = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
             obj.Ma6x6_LELR        = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
             obj.D6x6_LE           = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
-
+           
+            %Fuse Added Mass Mats
+            obj.Ma6x6_LEUL_Fuse   = SIM.parameter('Value',zeros(3),'Unit','kg','Description','Upper left quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LEUR_Fuse   = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Upper right quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LELL_Fuse   = SIM.parameter('Value',zeros(3),'Unit','kg*m','Description','Lower left quadrant 6x6 Added Mass Matrix');
+            obj.Ma6x6_LELR_Fuse   = SIM.parameter('Value',zeros(3),'Unit','kg*m^2','Description','Lower right quadrant 6x6 Added Mass Matrix');
+            obj.D6x6_LE_Fuse      = SIM.parameter('Value',zeros(6),'Unit','','Description','6x6 Damping Matrix');
+            
+            
             %Control Surface Deflections
             obj.allMaxCtrlDef     = SIM.parameter('Value',30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the positive direction');
             obj.allMinCtrlDef     = SIM.parameter('Value',-30,'Unit','deg','Description','Largest control surface deflection for all surfaces in the negative direction');
@@ -278,6 +293,21 @@ classdef vehicleM < dynamicprops
             obj.D6x6_LE.setValue(val,units);
         end
 
+        function setMa6x6_LE_Fuse(obj,val,units)
+            if isempty(units)
+                obj.Ma6x6_LEUL_Fuse.setValue(val(1:3,1:3),'kg');
+                obj.Ma6x6_LEUR_Fuse.setValue(val(1:3,4:6),'kg*m');
+                obj.Ma6x6_LELL_Fuse.setValue(val(4:6,1:3),'kg*m');
+                obj.Ma6x6_LELR_Fuse.setValue(val(4:6,4:6),'kg*m^2');
+            else
+                error('Units for Ma6x6_LE should be '''', the setter will define the partial matrix units')
+            end
+        end
+
+        function setD6x6_LE_Fuse(obj,val,units)
+            obj.D6x6_LE_Fuse.setValue(val,units);
+        end        
+        
         function setAllMaxCtrlDef(obj,val,units)
             obj.allMaxCtrlDef.setValue(val,units);
         end
@@ -642,7 +672,11 @@ classdef vehicleM < dynamicprops
             mat = [obj.Ma6x6_LEUL.Value obj.Ma6x6_LEUR.Value;obj.Ma6x6_LELL.Value obj.Ma6x6_LELR.Value;];
             val = SIM.parameter('Value',mat,'Unit','','Description','6x6 Added Mass Matrix. Created from scaled quadrant matrices');
         end
-
+        function val = get.Ma6x6_LE_Fuse(obj)
+            mat = [obj.Ma6x6_LEUL_Fuse.Value obj.Ma6x6_LEUR_Fuse.Value;obj.Ma6x6_LELL_Fuse.Value obj.Ma6x6_LELR_Fuse.Value;];
+            val = SIM.parameter('Value',mat,'Unit','','Description','6x6 Added Mass Matrix for Fuse Alone. Created from scaled quadrant matrices');
+        end
+        
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
             if obj.wakeEffect.Value
