@@ -1,4 +1,4 @@
-function [MA] = getAddedMass(Input,vhcl)
+function [MA MAfuse] = getAddedMass(Input,vhcl)
 
 
 %%  These can possibly change: For reference
@@ -53,8 +53,11 @@ cv.fuse.RNose_LE = vhcl.fuse.rNose_LE.Value;
 
 runname = 'fullSizeKiteComp';
 savefigs = false;
-MA = addedMassKiteVehicle(cv,runname,savefigs);
+[MA dummy MAfuse] = addedMassKiteVehicleTest(cv,runname,savefigs);
+%[MA] = addedMassKiteVehicle(cv,runname,savefigs);
+
 MA(abs(MA)<1e-10) = 0;
+MAfuse(abs(MAfuse)<1e-10) = 0;
 % MA = round(MA);
 
 if false % checks with previous baseline. Change to true if check is needed 
