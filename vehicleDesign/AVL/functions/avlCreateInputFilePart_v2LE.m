@@ -98,6 +98,7 @@ setAirfoil(fileID,w_afile)
 % Cname, Cgain, Xhinge, HingeVec, SgnDup
 Cgain_ail = 1;
 Xhinge_ail = 0.75;
+Xhinge_elv = 0.6;
 HingeVecAil = [0;0;0];
 SgnDup_ail = 1;
 claf_w = 1;
@@ -170,7 +171,7 @@ defineSection(fileID,0,0,0,c_r_hs,0,0,0);
 setAirfoil(fileID,hs_afile);
 
 % elevator (defined as aileron)
-defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_ail,...
+defineCtrlSurface(fileID,'aileron',Cgain_ail,Xhinge_elv,...
     HingeVecAil,SgnDup_ail);
 
 % CLAF
