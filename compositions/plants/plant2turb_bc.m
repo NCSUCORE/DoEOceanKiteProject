@@ -199,13 +199,13 @@ elems(22).Complexity = 'real';
 elems(22).Unit = 'N';
 
 elems(23) = Simulink.BusElement;
-elems(23).Name = 'rotorRPM';
+elems(23).Name = 'rotorSpeed';
 elems(23).Dimensions = [2 1];
 elems(23).DimensionsMode = 'Fixed';
 elems(23).DataType = 'double';
 elems(23).SampleTime = -1;
 elems(23).Complexity = 'real';
-elems(23).Unit = '';
+elems(23).Unit = 'rad/s';
 
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;

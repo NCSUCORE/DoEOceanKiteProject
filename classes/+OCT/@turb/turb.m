@@ -3,6 +3,8 @@ classdef turb < handle
     %   Detailed explanation goes here
     
     properties
+        turbMassStated
+        turbInertiaStated
         numBlades
         hubMass
         bladeMass
@@ -35,6 +37,10 @@ classdef turb < handle
     
     methods
         function obj = turb
+            obj.turbMassStated       = SIM.parameter('Unit','kg','Description',...
+                'Turbine Assembly Mass Derived from CAD. Supersedes analytical mass approximation if declared','Value',[]);
+            obj.turbInertiaStated       = SIM.parameter('Unit','kg*m^2','Description',...
+                'Turbine Assembly Inertia about the rotational axis. Derived from CAD. Supersedes analytical inertia approximation if declared','Value',[]);
             obj.numBlades            = SIM.parameter('Unit','','Description','Number of blades');
             obj.hubMass              = SIM.parameter('Unit','kg','Description','Hub mass');
             obj.bladeMass            = SIM.parameter('Unit','kg','Description','Blade mass');
@@ -103,7 +109,14 @@ classdef turb < handle
         end
         
         function val = get.mass(obj)
-            val = SIM.parameter('Value',obj.numBlades.Value*obj.bladeMass.Value+obj.hubMass.Value,'Unit','kg','Description','Total turbine mass');
+            unit = 'kg';
+            desc = 'Total Turbine Mass';
+            if ~isempty(obj.turbMassStated.Value)
+                val = SIM.parameter('Value',obj.turbMassStated.Value,'Unit',unit,'Description',desc);
+            else
+                massTurb = obj.numBlades.Value*obj.bladeMass.Value+obj.hubMass.Value;
+                val = SIM.parameter('Value',massTurb,'Unit',unit,'Description',desc);
+            end
         end
         
         function val = get.torqueCoefLookup(obj)
@@ -143,9 +156,17 @@ classdef turb < handle
         end
         
         function val = get.momentOfInertia(obj)
-            Jhub = 1/2*obj.hubMass.Value*(obj.hubDiameter.Value/2)^2;
-            Jblade = 1/3*obj.bladeMass.Value*((obj.diameter.Value-obj.hubDiameter.Value)/2)^2;
-            val = SIM.parameter('Value',Jhub+Jblade*obj.numBlades.Value,'Unit','kg*m^2');
+            unit = 'kg*m^2';
+            desc = 'Moment of inertia about rotational axis';
+            inertia = obj.turbInertiaStated.Value;
+            if ~isempty(inertia)
+                val = SIM.parameter('Value',inertia,'Unit',unit,'Description',desc);
+            else
+                n = obj.numBlades.Value;
+                Jhub = 1/2*obj.hubMass.Value*(obj.hubDiameter.Value/2)^2;
+                Jblade = 1/3*obj.bladeMass.Value*((obj.diameter.Value-obj.hubDiameter.Value)/2)^2;
+                val = SIM.parameter('Value',Jhub+Jblade*n,'Unit','kg*m^2','Description',desc);
+            end
         end
         
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)

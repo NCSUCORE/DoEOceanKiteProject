@@ -37,7 +37,7 @@ elems(4).SampleTime = -1;
 elems(4).Complexity = 'real';
 elems(4).Unit = 'm/s';
 
-n = evalin('base','vhcl.numTurbines.Value')
+n = evalin('base','vhcl.numTurbines.Value');
 elems(5) = Simulink.BusElement;
 elems(5).Name = 'turbOnOff';
 elems(5).Dimensions = 1+n;
