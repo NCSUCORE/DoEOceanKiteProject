@@ -38,9 +38,9 @@ classdef turb < handle
     methods
         function obj = turb
             obj.turbMassStated       = SIM.parameter('Unit','kg','Description',...
-                'Turbine Assembly Mass Derived from CAD. Supersedes analytical mass approximation if declared','Value',[]);
+                'Turbine Assembly Mass Derived from CAD. Supersedes analytical mass approximation if declared','Value',0);
             obj.turbInertiaStated       = SIM.parameter('Unit','kg*m^2','Description',...
-                'Turbine Assembly Inertia about the rotational axis. Derived from CAD. Supersedes analytical inertia approximation if declared','Value',[]);
+                'Turbine Assembly Inertia about the rotational axis. Derived from CAD. Supersedes analytical inertia approximation if declared','Value',0);
             obj.numBlades            = SIM.parameter('Unit','','Description','Number of blades');
             obj.hubMass              = SIM.parameter('Unit','kg','Description','Hub mass');
             obj.bladeMass            = SIM.parameter('Unit','kg','Description','Blade mass');
@@ -111,7 +111,7 @@ classdef turb < handle
         function val = get.mass(obj)
             unit = 'kg';
             desc = 'Total Turbine Mass';
-            if ~isempty(obj.turbMassStated.Value)
+            if obj.turbMassStated.Value ~= 0
                 val = SIM.parameter('Value',obj.turbMassStated.Value,'Unit',unit,'Description',desc);
             else
                 massTurb = obj.numBlades.Value*obj.bladeMass.Value+obj.hubMass.Value;
@@ -159,7 +159,7 @@ classdef turb < handle
             unit = 'kg*m^2';
             desc = 'Moment of inertia about rotational axis';
             inertia = obj.turbInertiaStated.Value;
-            if ~isempty(inertia)
+            if inertia~=0
                 val = SIM.parameter('Value',inertia,'Unit',unit,'Description',desc);
             else
                 n = obj.numBlades.Value;
