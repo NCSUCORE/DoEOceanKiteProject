@@ -169,8 +169,8 @@ for i = 1:n
             turbTableData2=vhcl.turb1.tauCoefLookup.Value(end:-1:1);
             turbBreakpoints2=vhcl.turb1.tauCoefTSR.Value(end:-1:1);
 
-            turbTableData=vhcl.turb1.tauCoefTSR.Value;
-            turbBreakpoints=vhcl.turb1.tauCoefLookup.Value;
+            turbTableData=vhcl.turb1.tauCoefTSR.Value(1:end-1);
+            turbBreakpoints=vhcl.turb1.tauCoefLookup.Value(1:end-1);
             
             turbDiameterCubedOver8xPi=pi*vhcl.turb1.diameter.Value.^3/8;
             turbRadius=vhcl.turb1.diameter.Value/2;
