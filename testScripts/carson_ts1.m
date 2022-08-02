@@ -1,4 +1,4 @@
-%% Test script for John to control the kite model
+%% Carson test script 1 - simple run of the kite, from Jacob (used in HIL testing)
 % clear all;
 clc;
 % close all;
