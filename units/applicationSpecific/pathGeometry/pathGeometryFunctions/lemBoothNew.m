@@ -20,10 +20,11 @@ cntrPos = reshape(cntrPos,[],1);
 
 w =      geomParams(1);
 h =      geomParams(2);
-height = geomParams(3);
-theta0 = -geomParams(3);
+alt = geomParams(3);
+% theta0 = -geomParams(3);
 phi0 =   geomParams(4);
 radius = geomParams(5);
+theta0 = - asin(alt/radius);
 % theta0 = -asin(height/radius);
 %%%%
 % Convert path specification into the form that the lemniscate of booth can

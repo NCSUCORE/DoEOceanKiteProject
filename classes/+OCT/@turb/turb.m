@@ -22,6 +22,11 @@ classdef turb < handle
         CtLookup
         RPMref
         torqueLim
+        etaLookup
+        thrLookup
+        velWLookup
+        tsrLookup
+        AoALookup
     end
     properties (Dependent)
         mass
@@ -58,6 +63,11 @@ classdef turb < handle
             obj.CtLookup             = SIM.parameter('Unit','','Description','Turbine thrust coefficient lookup');
             obj.RPMref               = SIM.parameter('Unit','','Description','Turbine lookup table reference vector for tip-speed-ratio');
             obj.torqueLim            = SIM.parameter('Unit','(N*m)','Description','Turbine Torque Limit');
+            obj.etaLookup            = SIM.parameter('Unit','','Description','Eta Lookup');
+            obj.thrLookup            = SIM.parameter('Unit','m','Description','Effective Tether Length Lookup');
+            obj.velWLookup           = SIM.parameter('Unit','m/s','Description','Effective Wind Velocity Lookup');
+            obj.tsrLookup            = SIM.parameter('Unit','','Description','Tip Speed Ratio Lookup');
+            obj.AoALookup            = SIM.parameter('Unit','','Description','AoA Lookup');
         end
         
         function setHubMass(obj,val,units)
@@ -134,7 +144,9 @@ classdef turb < handle
         end
         
         function val = get.tauCoefLookup(obj)
-            ind = find(obj.RPMref.Value==obj.optTSR.Value);
+%             ind = find(obj.RPMref.Value==obj.optTSR.Value);
+            cpct = obj.CpLookup.Value./obj.CtLookup.Value;
+            ind = find(cpct == max(cpct));
             %             x = Simulink.LookupTable;
             %             x.Breakpoints.Value = obj.torqueCoefLookup.Value(end:-1:ind);
             %             x.Table.Value = obj.RPMref.Value(end:-1:ind);
@@ -145,7 +157,9 @@ classdef turb < handle
         
         
         function val = get.tauCoefTSR(obj)
-            ind = find(obj.RPMref.Value==obj.optTSR.Value);
+%             ind = find(obj.RPMref.Value==obj.optTSR.Value);
+            cpct = obj.CpLookup.Value./obj.CtLookup.Value;
+            ind = find(cpct == max(cpct));
             val = SIM.parameter('Value',obj.RPMref.Value(end:-1:ind),...
                 'Unit','','Description','Torque Coef Lookup Breakpoint');
         end
@@ -159,7 +173,7 @@ classdef turb < handle
             unit = 'kg*m^2';
             desc = 'Moment of inertia about rotational axis';
             inertia = obj.turbInertiaStated.Value;
-            if inertia~=0
+            if inertia ~= 0
                 val = SIM.parameter('Value',inertia,'Unit',unit,'Description',desc);
             else
                 n = obj.numBlades.Value;

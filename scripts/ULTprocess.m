@@ -11,7 +11,7 @@ Simulink.sdi.clear
 % 7 - Animate
 % 8 - Plotting
 %%             1 2 3 4 5 6     7     8
-thrSweep = [400 600 800 1200 1600 2000 2400 2800 3200 3600 4000 4400 4800]
+thrSweep = [400 800 1200 1600 2000 2400 2800 3200 3600 4000 4400 4800]
 flwSweep = 1;
 altSweep = 1%thrSweep/2%100:50:450
 x = meshgrid(thrSweep,flwSweep,altSweep);
@@ -20,7 +20,7 @@ powGen = zeros(n,m,r);
 pathErr = zeros(n,m,r);
 dragRatio = zeros(n,m,r);
 Pow = cell(n,m,r);
-fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy04-08-2022\';
+fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy07-13-2022\';
 fpathOut = 'C:\Users\adabney\iCloudDrive\NCSU HW Uploads\ULTPaper\'
 clear mech loyd
 for i = 1:2
@@ -59,7 +59,7 @@ for i = 1:2
             [idx1,idx2] = tsc.getLapIdxs(lastLap-1);
             ran = idx1:idx2;
             drag = squeeze(tsc.nodeDrag.mag.Data(1,:,ran));
-            vApp = squeeze(tsc.velCMvec.mag.Data(1,1,ran))';
+            vApp = squeeze(tsc.vhclVapp.mag.Data(1,1,ran))';
 %             drag = squeeze(tsc.nodeDrag.mag.Data(1,:,:));
 %             vApp = squeeze(tsc.velCMvec.mag.Data(1,1,:))';
             ratio = drag./vApp.^2;
@@ -81,13 +81,15 @@ end
 % end
 %%
 
+thrLP = thrSweep
+thrLP(isnan(mech(:,1))) = NaN;
 figure('Position',[100 100 1500 500])
 tL = tiledlayout(1,3)
 nexttile
 hold on
-plot(thrSweep,mech(:,1),'-k','DisplayName','60m x 20 m','LineWidth',1.5)
-plot(thrSweep,mech(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrSweep,loyd(:,1),':k','DisplayName','Loyd','LineWidth',1.5)
+plot(thrLP,mech(:,1),'-k','DisplayName','60m x 20 m','LineWidth',1.5)
+plot(thrLP,mech(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+plot(thrLP,loyd(:,1),':k','DisplayName','Loyd','LineWidth',1.5)
 % plot(thrSweep,loyd(:,2)/max([loyd mech],[],'all'),':r','DisplayName','Loyd','MarkerFaceColor','k','LineWidth',1.5)
 xlabel 'Tether Length [m]'
 ylabel 'Lap-Averaged Power [kW]'
@@ -97,9 +99,9 @@ grid on
 
 nexttile
 hold on
-plot(thrSweep,thrLen(:,1),'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
-plot(thrSweep,thrLen(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrSweep,thrSweep/4,':k','DisplayName','Loyd','LineWidth',1.5)
+plot(thrLP,thrLen(:,1),'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
+plot(thrLP,thrLen(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+plot(thrLP,thrSweep/4,':k','DisplayName','Loyd','LineWidth',1.5)
 
 xlabel 'Tether Length [m]'
 ylabel '$l_{\mu,eff}$'
@@ -111,9 +113,9 @@ tL.TileSpacing = 'compact'
 
 nexttile
 hold on
-plot(thrSweep,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
-plot(thrSweep,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrSweep,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
+plot(thrLP,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
+plot(thrLP,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+plot(thrLP,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
 xlabel 'Tether Length [m]'
 ylabel '$||l_{\mu,eff}||$'
 legend
@@ -127,9 +129,9 @@ saveas(gcf,[fpathOut fName],'eps')
 
 figure
 hold on
-plot(thrSweep,cos(asin(thrSweep/2./thrSweep)).^3,'-k','LineWidth',1.5)
-plot(thrSweep,.18^2./(.18+1.2*thrLen(:,1)*0.022/9).^2,'--k','LineWidth',1.5)
-plot(thrSweep,.18^2./(.18+1.2*thrLen(:,1)*0.022/9).^2.*cos(asin(thrSweep/2./thrSweep)).^3,':k','LineWidth',1.5)
+plot(thrLP,cos(asin(thrSweep/2./thrSweep)).^3,'-k','LineWidth',1.5)
+plot(thrLP,.18^2./(.18+1.2*thrLen(:,1)*0.022/9).^2,'--k','LineWidth',1.5)
+plot(thrLP,.18^2./(.18+1.2*thrLen(:,1)*0.022/9).^2.*cos(asin(thrSweep/2./thrSweep)).^3,':k','LineWidth',1.5)
 xlabel 'Tether Length [m]'
 ylabel 'Efficiency'
 legend('$\eta_1$','$\eta_2$','$\eta_1\eta_2$','FontSize',15)
@@ -146,7 +148,7 @@ saveas(gcf,[fpathOut fName],'eps')
 
 h = figure
 hold on
-plot(thrSweep,cos(asin(300./thrSweep)).^3,'-k','LineWidth',1.5)
+plot(thrLP,cos(asin(thrSweep/2./thrSweep)).^3,'-k','LineWidth',1.5)
 ylabel '$\eta_1$'
 ylim([0 1])
 yticks([0:0.1:1])
@@ -170,7 +172,7 @@ saveas(gcf,[fpathOut fName],'eps')
 
 %Constant Altitude
 
-thrSweep = [400 600 800 1200 1600 2000 2400 2800 3200 3600 4000 4400 4800]
+thrSweep = [400  800 1200 1600 2000 2400 2800 3200 3600 4000 4400 4800]
 flwSweep = 1;
 altSweep = 300%100:50:450
 x = meshgrid(thrSweep,flwSweep,altSweep);
@@ -179,7 +181,7 @@ powGen = zeros(n,m,r);
 pathErr = zeros(n,m,r);
 dragRatio = zeros(n,m,r);
 Pow = cell(n,m,r);
-fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy04-08-2022\';
+% fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy04-08-2022\';
 
 clear mech loyd thrLen
 for i = 1:2
@@ -215,21 +217,22 @@ for i = 1:2
             [idx1,idx2] = tsc.getLapIdxs(lastLap-1);
             ran = idx1:idx2;
             drag = squeeze(tsc.nodeDrag.mag.Data(1,:,ran));
-            vApp = squeeze(tsc.velCMvec.mag.Data(1,1,ran))';
+            vApp = squeeze(tsc.vhclVapp.mag.Data(1,1,ran))';
             ratio = drag./vApp.^2;
             thrLen(j,i) = mean(sum(2/(1000*1.2*0.022)*ratio));
         end
     end
 end
 %%
-
+thrLP = thrSweep
+thrLP(isnan(mech(:,1))) = NaN;
 figure('Position',[100 100 1500 500])
 tL = tiledlayout(1,3)
 nexttile
 hold on
-plot(thrSweep,mech(:,1),'-k','DisplayName','60m x 20 m','LineWidth',1.5)
-plot(thrSweep,mech(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrSweep,loyd(:,1),':k','DisplayName','Loyd','LineWidth',1.5)
+plot(thrLP,mech(:,1),'-k','DisplayName','60m x 20 m','LineWidth',1.5)
+plot(thrLP,mech(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+plot(thrLP,loyd(:,1),':k','DisplayName','Loyd','LineWidth',1.5)
 % plot(thrSweep,loyd(:,2)/max([loyd mech],[],'all'),':r','DisplayName','Loyd','MarkerFaceColor','k','LineWidth',1.5)
 xlabel 'Tether Length [m]'
 ylabel 'Lap-Averaged Power [kW]'
@@ -239,9 +242,9 @@ grid on
 
 nexttile
 hold on
-plot(thrSweep,thrLen(:,1),'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
-plot(thrSweep,thrLen(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrSweep,thrSweep/4,':k','DisplayName','Loyd','LineWidth',1.5)
+plot(thrLP,thrLen(:,1),'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
+plot(thrLP,thrLen(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+plot(thrLP,thrSweep/4,':k','DisplayName','Loyd','LineWidth',1.5)
 
 xlabel 'Tether Length [m]'
 ylabel '$l_{\mu,eff}$'
@@ -253,9 +256,9 @@ tL.TileSpacing = 'compact'
 
 nexttile
 hold on
-plot(thrSweep,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
-plot(thrSweep,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrSweep,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
+plot(thrLP,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
+plot(thrLP,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+plot(thrLP,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
 xlabel 'Tether Length [m]'
 ylabel '$||l_{\mu,eff}||$'
 legend
@@ -270,13 +273,13 @@ saveas(gcf,[fpathOut fName],'eps')
 
 h = figure
 hold on
-plot(thrSweep,cos(asin(300./thrSweep)).^3,'-k','LineWidth',1.5)
+plot(thrLP,cos(asin(300./thrSweep)).^3,'-k','LineWidth',1.5)
 ylabel '$\eta_1$'
 ylim([0 1])
 yticks([0:0.1:1])
 yyaxis right
-plot(thrSweep,.18^2./(.18+1.2*thrLen(:,1)*0.022/(9)).^2,'--k','LineWidth',1.5)
-plot(thrSweep,.18^2./(.18+1.2*thrLen(:,1)*0.022/(9)).^2.*cos(asin(thrSweep/2./thrSweep)).^3,':k','LineWidth',1.5)
+plot(thrLP,.18^2./(.18+1.2*thrLen(:,1)*0.022/(9)).^2,'--k','LineWidth',1.5)
+% plot(thrLP,.18^2./(.18+1.2*thrLen(:,1)*0.022/(9)).^2.*cos(asin(thrSweep/2./thrSweep)).^3,':k','LineWidth',1.5)
 set(gca,'YColor','k')
 ylim([0 .1])
 yticks([0:0.01:.1])
@@ -312,7 +315,7 @@ end
 grid on
 xlabel 'X [m]'
 ylabel 'Y [m]'
-ylim([-200 200])
+ylim([-30 30])
 set(gca,'YScale','lin')
 set(gca,'FontSize',15)
 set(gca,'ColorOrder',C(1:5,:))

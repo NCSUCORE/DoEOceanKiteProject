@@ -91,9 +91,12 @@ else
     PLoyd = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDtot.^2.*(C1.*C2).^3;
     vLoyd = LiftDrag.*env.water.speed.Value.*(C1.*C2)*2/3;
 end
-figure();
+
+%%Being Plotting
+figure('Position',[100 100 800 800]);
+tL = tiledlayout(R,C);
 %%  Plot Power Output
-ax1 = subplot(R,C,1);
+nexttile
 hold on; grid on
 yyaxis left
 if lap
@@ -120,7 +123,8 @@ else
     plot(time,energy,'r-');  ylabel('Energy [kWh]');  set(gca,'YColor',[1 0 0]);  xlim(lim);
 end
 %%  Plot Tether Tension
-ax2 = subplot(R,C,2); hold on; grid on;
+nexttile
+hold on; grid on;
 if p.Results.maxTension
     Tmax = (fltCtrl.Tmax.Value/0.92)*ones(numel(time),1)*1e3;
 else
@@ -140,7 +144,7 @@ else
 
 end
 %%  Plot Speed
-ax3 = subplot(R,C,3); hold on; grid on;
+nexttile; hold on; grid on;
 if lap
     if con
         if turb
@@ -174,7 +178,7 @@ else
     end
 end
 %%  Plot Angle of attack
-ax4 = subplot(R,C,4); hold on; grid on
+nexttile; hold on; grid on
 if lap
     if con
         if p.Results.AoASP
@@ -208,7 +212,7 @@ else
 end
 
 %%  Plot Ctrl Surface Deflection 
-ax5 = subplot(R,C,6); hold on; grid on
+nexttile(6); hold on; grid on
 if lap
     if con
         plot(data(ran),squeeze(obj.ctrlSurfDefl.Data(ran,1)),'b-');  xlabel('Path Position');  ylabel('Deflection [deg]');
@@ -226,7 +230,7 @@ else
 end
 legend('P-Aileron','Elevator','Rudder')
 %%  Plot Lift-Drag ratio
-ax6 = subplot(R,C,5); hold on; grid on
+nexttile(5); hold on; grid on
 yyaxis left
 if lap
     if con
@@ -256,7 +260,7 @@ end
 % figure; hold on; grid on
 % plot(data(ran),CDtot(ran),'r-');  xlabel('Path Position');  ylabel('');
 % plot(data(ran),CLsurf(ran),'b-');  xlabel('Path Position');  ylabel('');
-linkaxes([ax1 ax2 ax3 ax4 ax5 ax6],'x');
+% linkaxes([ax1 ax2 ax3 ax4 ax5 ax6],'x');
 % legend('CD','CL')
 %%  Plot Drag Characteristics 
 if turb && p.Results.dragChar && con
@@ -315,3 +319,5 @@ if p.Results.cross
         plot(time,squeeze(obj.MFluidBdy.Data(1,1,:)),'b-');   xlabel('Time [s]');  ylabel('Roll Moment [N]');  legend('Desired','Actual');  xlim(lim);
     end
 end
+tL.Padding = 'compact';
+tL.TileSpacing = 'compact';

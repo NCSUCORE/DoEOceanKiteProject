@@ -18,7 +18,13 @@ classdef FPID < handle
             obj.kd  = SIM.parameter('Value',0,'Unit',sprintf('(%s)/(%s/s)',outUnits,inUnits),'Description','Derivative gain');
             obj.tau = SIM.parameter('Value',1,'Unit','s','Description','Time Constant');
         end
-        
+        function print(obj)
+            fprintf('FPID Controller with the following parameters\n')
+            fprintf(sprintf('Kp = %.2e %s\n',obj.kp.Value,obj.kp.Unit))
+            fprintf(sprintf('Ki = %.2e %s\n',obj.ki.Value,obj.ki.Unit))
+            fprintf(sprintf('Kd = %.2e %s\n',obj.kd.Value,obj.kd.Unit))
+            fprintf(sprintf('Tau = %.2e %s\n',obj.tau.Value,obj.tau.Unit))
+        end
         % Function to scale the object
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = properties(obj);

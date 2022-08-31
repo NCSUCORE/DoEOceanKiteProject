@@ -358,7 +358,7 @@ end
 % Set the plot limits to zoom in on the body
 if p.Results.ZoomIn
     xlim(tscTmp.positionVec.Data(1,:,1)*[.8 1.1])
-    ylim(tscTmp.positionVec.Data(2,:,1)*2*[-1 1])
+    ylim(1.2*[min(path(2,:)) max(path(2,:))])
     zlim(tscTmp.positionVec.Data(3,:,1)*[.8 1.1])
 end
 
