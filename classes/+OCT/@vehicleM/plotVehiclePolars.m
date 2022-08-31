@@ -23,6 +23,14 @@ fuseFactor = p.Results.fuseFactor;
 [CL,CD] = obj.getCLCD(thr,thrL);
 alpha = obj.portWing.alpha.Value;
 
+%Find CP at max CP/CT
+tsrStar = obj.turb1.optTSR.Value;
+diam = obj.turb1.diameter.Value;
+tsr = obj.turb1.RPMref.Value;
+cp = obj.turb1.CpLookup.Value(tsr==tsrStar)*(2*pi*diam^2/4)/obj.fluidRefArea.Value;
+ct = obj.turb1.CtLookup.Value(tsr==tsrStar)*(2*pi*diam^2/4)/obj.fluidRefArea.Value;
+
+
 h = figure(fig);
 subplot(2,2,1);hold on;grid on;
 plot(alpha,CL,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
@@ -33,15 +41,16 @@ subplot(2,2,2);hold on;grid on;
 plot(alpha,CD.kite,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
 plot(alpha,CD.kiteTurb,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
 plot(alpha,CD.sys,'color',p.Results.color,'LineStyle',':','Marker',p.Results.marker);
+plot(alpha,(CD.kiteTurb-CD.kite),'color',p.Results.color,'LineStyle','-.','Marker',p.Results.marker)
 xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_D}$');  xlim(p.Results.xLim);
-legend('Kite','Kite+Turb','Sys')
+legend('Kite','Kite+Turb','Sys','Turb')
 set(gca,'FontSize',12);
 
 subplot(2,2,3);hold on;grid on; 
-plot(alpha,CL.^3./CD.kite.^2,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
-plot(alpha,CL.^3./CD.kiteTurb.^2,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
-plot(alpha,CL.^3./CD.sys.^2,'color',p.Results.color,'LineStyle',':','Marker',p.Results.marker);
-xlabel('$\alpha$ [deg]');  ylabel('$\mathrm{C_L^3/C_D^2}$');  xlim(p.Results.xLim);
+plot(alpha,4/27*CL.^3./CD.kite.^2.*cp/ct,'color',p.Results.color,'LineStyle',p.Results.lineStyle,'Marker',p.Results.marker);
+plot(alpha,CL.^3./CD.kiteTurb.^3.*cp,'color',p.Results.color,'LineStyle','--','Marker',p.Results.marker);
+plot(alpha,CL.^3./CD.sys.^3.*cp,'color',p.Results.color,'LineStyle',':','Marker',p.Results.marker);
+xlabel('$\alpha$ [deg]');  ylabel('Power Factor');  xlim(p.Results.xLim);
 set(gca,'FontSize',12);
 
 subplot(2,2,4);hold on;grid on;
