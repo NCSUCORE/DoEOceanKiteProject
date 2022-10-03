@@ -206,7 +206,7 @@ classdef vehicleM < dynamicprops
         %% setters
         
         function setdownwashCoef(obj,val,units)
-            obj.downwashCoef.setValue(val,units);
+            obj.cot.setValue(val,units);
         end
 
         
@@ -937,13 +937,18 @@ classdef vehicleM < dynamicprops
                         'r+','DisplayName','Tether Attachment Point');
                 end
                 % Turbines
+                turb = obj.struct('OCT.turb');
                 for ii = 1:obj.numTurbines.Value
+                    diam = turb(ii).diameter;
                     pts = eval(sprintf('R*obj.turb%d.attachPtVec.Value',ii));
+                    phi = 0:2*pi/100:2*pi;
+                    zTurb = diam/2*cos(phi);
+                    yTurb = diam/2*sin(phi);
                     h.turb{ii} = plot3(h.ax,...
-                        pts(1)+p.Results.Position(1),...
-                        pts(2)+p.Results.Position(2),...
-                        pts(3)+p.Results.Position(3),...
-                        'm+','DisplayName','Turbine Attachment Point');
+                        pts(1)+p.Results.Position(1)+zeros(101,1),...
+                        pts(2)+p.Results.Position(2)+yTurb,...
+                        pts(3)+p.Results.Position(3)+zTurb,...
+                        'k--','DisplayName','Turbine');
                 end
 
                 for ii = 1:4

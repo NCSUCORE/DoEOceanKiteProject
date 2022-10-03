@@ -83,16 +83,16 @@ end
 
 thrLP = thrSweep
 thrLP(isnan(mech(:,1))) = NaN;
-figure('Position',[100 100 1500 500])
-tL = tiledlayout(1,3)
+figure('Position',[100 100 550 600])
+tL = tiledlayout(2,1)
 nexttile
 hold on
 plot(thrLP,mech(:,1),'-k','DisplayName','60m x 20 m','LineWidth',1.5)
 plot(thrLP,mech(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
 plot(thrLP,loyd(:,1),':k','DisplayName','Loyd','LineWidth',1.5)
 % plot(thrSweep,loyd(:,2)/max([loyd mech],[],'all'),':r','DisplayName','Loyd','MarkerFaceColor','k','LineWidth',1.5)
-xlabel 'Tether Length [m]'
-ylabel 'Lap-Averaged Power [kW]'
+% xlabel 'Tether Length [m]'
+ylabel({'Lap-Averaged','Power [kW]'})
 set(gca,'FontSize',15)
 grid on
 grid on
@@ -104,23 +104,23 @@ plot(thrLP,thrLen(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
 plot(thrLP,thrSweep/4,':k','DisplayName','Loyd','LineWidth',1.5)
 
 xlabel 'Tether Length [m]'
-ylabel '$l_{\mu,eff}$'
+ylabel '$l_{\mu,eff} [m]$'
 % legend
 set(gca,'FontSize',15)
 grid on
 tL.Padding = 'compact'
 tL.TileSpacing = 'compact'
 
-nexttile
-hold on
-plot(thrLP,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
-plot(thrLP,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrLP,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
-xlabel 'Tether Length [m]'
-ylabel '$||l_{\mu,eff}||$'
-legend
-set(gca,'FontSize',15)
-grid on
+% nexttile
+% hold on
+% plot(thrLP,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
+% plot(thrLP,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+% plot(thrLP,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
+% xlabel 'Tether Length [m]'
+% ylabel '$||l_{\mu,eff}||$'
+legend('Location','northwest')
+% set(gca,'FontSize',15)
+% grid on
 
 fName = 'ULTconstEl';
 
@@ -143,8 +143,8 @@ ylim([0 1])
 
 fName = 'constElLossCoeff';
 
-saveas(gcf,[fpathOut fName],'fig')
-saveas(gcf,[fpathOut fName],'eps')
+% saveas(gcf,[fpathOut fName],'fig')
+% saveas(gcf,[fpathOut fName],'eps')
 
 h = figure
 hold on
@@ -166,8 +166,8 @@ grid on
 
 fName = 'constElLossCoeff1';
 
-saveas(gcf,[fpathOut fName],'fig')
-saveas(gcf,[fpathOut fName],'eps')
+% saveas(gcf,[fpathOut fName],'fig')
+% saveas(gcf,[fpathOut fName],'eps')
 %%             1 2 3 4 5 6     7     8
 
 %Constant Altitude
@@ -226,16 +226,16 @@ end
 %%
 thrLP = thrSweep
 thrLP(isnan(mech(:,1))) = NaN;
-figure('Position',[100 100 1500 500])
-tL = tiledlayout(1,3)
+figure('Position',[100 100 550 600])
+tL = tiledlayout(2,1)
 nexttile
 hold on
 plot(thrLP,mech(:,1),'-k','DisplayName','60m x 20 m','LineWidth',1.5)
 plot(thrLP,mech(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
 plot(thrLP,loyd(:,1),':k','DisplayName','Loyd','LineWidth',1.5)
 % plot(thrSweep,loyd(:,2)/max([loyd mech],[],'all'),':r','DisplayName','Loyd','MarkerFaceColor','k','LineWidth',1.5)
-xlabel 'Tether Length [m]'
-ylabel 'Lap-Averaged Power [kW]'
+% xlabel 'Tether Length [m]'
+ylabel({'Lap-Averaged','Power [kW]'})
 set(gca,'FontSize',15)
 grid on
 grid on
@@ -247,23 +247,23 @@ plot(thrLP,thrLen(:,2),'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
 plot(thrLP,thrSweep/4,':k','DisplayName','Loyd','LineWidth',1.5)
 
 xlabel 'Tether Length [m]'
-ylabel '$l_{\mu,eff}$'
+ylabel '$l_{\mu,eff} [m]$'
 % legend
 set(gca,'FontSize',15)
 grid on
 tL.Padding = 'compact'
 tL.TileSpacing = 'compact'
 
-nexttile
-hold on
-plot(thrLP,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
-plot(thrLP,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
-plot(thrLP,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
-xlabel 'Tether Length [m]'
-ylabel '$||l_{\mu,eff}||$'
-legend
-set(gca,'FontSize',15)
-grid on
+% nexttile
+% hold on
+% plot(thrLP,thrLen(:,1)'./thrSweep,'-k','DisplayName','60 m x 20 m','LineWidth',1.5)
+% plot(thrLP,thrLen(:,2)'./thrSweep,'--k','DisplayName','200 m x 40 m','LineWidth',1.5)
+% plot(thrLP,thrSweep./(4*thrSweep),':k','DisplayName','Loyd','LineWidth',1.5)
+% xlabel 'Tether Length [m]'
+% ylabel '$||l_{\mu,eff}||$'
+legend('Location','northwest')
+% set(gca,'FontSize',15)
+% grid on
 
 fName = 'ULTconstAlt';
 

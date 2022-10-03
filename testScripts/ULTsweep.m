@@ -13,8 +13,8 @@ Simulink.sdi.clear
 % 7 - Animate
 % 8 - Plotting
 %%             1 2 3 4 5 6     7     8
-simScenario = [1 1 1 3 1 1==1  1==0 1==1];
-thrSweep = 400:400:4800;
+simScenario = [1 1 1 3 1 1==0  1==0 1==1];
+thrSweep = 2000;
 altSweep = 1;
 flwSweep = [1 1];%0.5:0.25:2;
 x = meshgrid(thrSweep,altSweep,flwSweep);
@@ -54,7 +54,7 @@ for i = 1:n
             if k < 1
                 continue
             end
-for ii = 1:2
+for ii = 1%:2
             fprintf(sprintf('%.2f Percent Complete\n',((i-1)*m*r+(j-1)*r+k)/(n*m*r)*100))
             Simulink.sdi.clear
             %%  Set Test Parameters

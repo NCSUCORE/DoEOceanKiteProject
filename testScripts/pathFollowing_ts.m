@@ -37,11 +37,11 @@ loadComponent('fullScale1thr');
 loadComponent('ConstXYZT');
 
 %% Environment IC's and dependant properties
-env.water.setflowVec([-2 0 0],'m/s')
+env.water.setflowVec([-0.5 0 0],'m/s')
 
 %% Set basis parameters for high level controller
 % hiLvlCtrl.initBasisParams.setValue([0.8,1.4,-20*pi/180,0*pi/180,125],'[]') % Lemniscate of Booth
-hiLvlCtrl.basisParams.setValue([1.5,2.3,-.3,180*pi/180,125],'[rad rad rad rad m]') % Lemniscate of Booth
+hiLvlCtrl.basisParams.setValue([1.5,2.3,-.3,180*pi/180,2000],'[rad rad rad rad m]') % Lemniscate of Booth
 %% Ground Station IC's and dependant properties
 gndStn.setPosVec([0 0 200],'m')
 gndStn.initAngPos.setValue(0,'rad');
@@ -63,11 +63,12 @@ thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
 
 thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
 thr.tether1.initAirNodeVel.setValue(vhcl.initVelVecBdy.Value(:),'m/s');
-
+thr.numNodes.setValue(20,'')
+thr.tether1.numNodes.setValue(20,'')
 thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
 %% Winches IC's and dependant properties
 % wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
- wnch.winch1.initLength.setValue(1.240302277935769e+02,'m')
+ wnch.winch1.initLength.setValue(2000,'m')
 %% Controller User Def. Parameters and dependant properties
 fltCtrl.setFcnName(PATHGEOMETRY,''); % PATHGEOMETRY is defined in fig8ILC_bs.m
 % vhcl.addedMass.setValue(zeros(3,3),'kg')

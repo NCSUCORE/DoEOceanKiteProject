@@ -94,8 +94,8 @@ fltCtrl.elevatorReelInDef.setValue(0,'deg')
 % fltCtrl.rollMoment.kp.setValue(5000,'(N*m)/(rad)');
 % fltCtrl.rollMoment.ki.setValue(00,'(N*m)/(rad*s)');
 % fltCtrl.rollMoment.kd.setValue(20000,'(N*m)/(rad/s)');
-% fltCtrl.rollMoment.tau.setValue(0.001,'s');
-%
+fltCtrl.rollMoment.tau.setValue(1,'s');
+% 
 % fltCtrl.tanRoll.kp.setValue(0.2,'(rad)/(rad)');
 % fltCtrl.tanRoll.ki.setValue(0,'(rad)/(rad*s)');
 % fltCtrl.tanRoll.kd.setValue(0,'(rad)/(rad/s)');

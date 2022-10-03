@@ -53,6 +53,9 @@ classdef vehicle < dynamicprops
         initAngVelVec
         
         hydroCharacterization
+        downwash
+        wakeEffect
+        wakeFactor
     end
     
     properties (Dependent)
@@ -75,6 +78,7 @@ classdef vehicle < dynamicprops
         staticMargin
         
         contactPoints
+        downwashCoef
     end
     
     methods
@@ -157,8 +161,10 @@ classdef vehicle < dynamicprops
             obj.initVelVecBdy           = SIM.parameter('Unit','m/s','Description','Initial CM velocity represented in the body frame ');
             obj.initEulAng              = SIM.parameter('Unit','rad','Description','Initial Euler angles');
             obj.initAngVelVec           = SIM.parameter('Unit','rad/s','Description','Initial angular velocity vector');
-            
-            %Legacy Properties
+            obj.downwash                =SIM.parameter('Value',0,'Unit','','Description','Binary to turn on/off downwash effect on horizantal stabilizer (1=on 0=off)');
+            obj.wakeEffect              =SIM.parameter('Value',0,'Unit','','Description','Binary to turn on/off wake effect on horizantal stabilizer (1=on 0=off)');
+            obj.wakeFactor              =SIM.parameter('Value',1,'Unit','','Description','Fraction of flow speed that reaches horizantal stabilizer (1=no wake effect)');
+           %Legacy Properties
             
         end
         
@@ -270,6 +276,8 @@ classdef vehicle < dynamicprops
             obj.rCM_LE.setValue(val(:),units);
         end
         
+
+
         function setRBridle_LE(obj,val,units)
             obj.rBridle_LE.setValue(val(:),units);
         end
@@ -494,6 +502,24 @@ classdef vehicle < dynamicprops
             val = SIM.parameter('Value',mat,'Unit','','Description','6x6 Added Mass Matrix. Created from scaled quadrant matrices');
         end
         
+          function val = get.downwashCoef(obj)
+              AR=2*obj.stbdWing.AR.Value;
+              Ka=1/AR - 1/(1+AR^1.7);
+              TR=obj.stbdWing.TR.Value;
+              Kl=(10-3*TR)/7;
+              b=obj.portWing.halfSpan.Value*2;
+              Hh=obj.hStab.rAeroCent_SurfLE.Value(3)+obj.hStab.rSurfLE_WingLEBdy.Value(3)-obj.stbdWing.rAeroCent_SurfLE.Value(3);
+              Lh=obj.hStab.rAeroCent_SurfLE.Value(1)+obj.hStab.rSurfLE_WingLEBdy.Value(1)-obj.stbdWing.rAeroCent_SurfLE.Value(1);
+              Kh=(1-abs(Hh/b))/((2*Lh/b)^(1/3));
+              sweep=obj.stbdWing.sweep.Value*pi/180;
+              %downwash=4.44*(Ka*Kl*Kh*cos(sweep)^0.5)^(1.19);%if fluid is
+              %compressable
+              downwash=4.44*(Ka*cos(sweep)^0.5)^(1.19);%Assumes fluid is not compressable
+
+              val = SIM.parameter('Value',downwash,...
+                'Unit','','Description','Coefficent used to model downwash effects on stabs');
+        end
+
         function val = get.staticMargin(obj)
             h0 = obj.portWing.rAeroCent_SurfLE.Value(1)/obj.portWing.MACLength.Value;
             eta_s = .6; %standard  http://ciurpita.tripod.com/rc/notes/neutralPt.html

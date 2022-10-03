@@ -7,7 +7,7 @@
 
 % the script saves the variable 'thr' to a 'pathFollowingTether.mat'
 
-TETHERS               = 'tether000';
+TETHERS               = 'tetherFaired';
 
 %% Tethers
 % Create

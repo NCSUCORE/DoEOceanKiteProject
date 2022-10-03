@@ -8,7 +8,7 @@ distFreq = 0;distAmp = 0;pertVec = [0 1 0];flwSpd = -2
 % loadComponent('pathFollowingCtrlAddedMass');
 loadComponent('pathFollowingCtrlForILC');
 % FLIGHTCONTROLLER = 'pathFollowingCtrlAoATurb';
-fltCtrl.rudderGain.setValue(-1,'')
+% fltCtrl.rudderGain.setValue(-1,'')
 % SPOOLINGCONTROLLER = 'netZeroSpoolingControllerEllipsePath';
 SPOOLINGCONTROLLER = 'netZeroSpoolingController';
 % Ground station controller

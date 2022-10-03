@@ -69,9 +69,9 @@ classdef tetherF < handle
         function obj = setDampingRatio(obj,val,units)
             obj.dampingRatio.setValue(val,units);
         end
-        function obj = setDragCoeff(obj,val,units)
-            obj.dragCoeff.setValue(val,units);
-        end
+%         function obj = setDragCoeff(obj,val,units)
+%             obj.dragCoeff.setValue(val,units);
+%         end
         function obj = setDensity(obj,val,units)
             obj.density.setValue(val,units);
         end
@@ -87,6 +87,7 @@ classdef tetherF < handle
         function obj = setInitAirNodeVel(obj,val,units)
             obj.initAirNodeVel.setValue(val,units);
         end
+
         function obj = setInit.setValueAirNodeVel(obj,val,units)
             % note rodney mitchell this looks like the same as above. DO we
             % need both methods?
@@ -101,6 +102,7 @@ classdef tetherF < handle
         function obj = setNumNodes(obj,val,units)
             obj.numNodes.setValue(val,units);
         end
+
         function obj = setDragEnable(obj,val,units)
             if ~islogical(val)
                 warning('Value is not logical, converting to %s',num2str(logical(val)))
@@ -108,6 +110,7 @@ classdef tetherF < handle
             end
             obj.dragEnable.setValue(val,units);
         end
+
         function obj = setSpringDamperEnable(obj,val,units)
             if ~islogical(val)
                 warning('Value is not logical, converting to %s',num2str(logical(val)))
@@ -145,7 +148,11 @@ classdef tetherF < handle
         end
         
         function val = get.fairLinkLength(obj)
-            length = ones(1,obj.fairedLinks.Value)*obj.fairedLength.Value/obj.fairedLinks.Value;
+            if obj.fairedLinks.Value ~= 0
+                length = ones(1,obj.fairedLinks.Value)*obj.fairedLength.Value/obj.fairedLinks.Value;
+            else
+                length = [];
+            end
             val = SIM.parameter('Value',length,'Description','Unstretched Lengths of Faired Tether Links','Unit','m');
         end
         

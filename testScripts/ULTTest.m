@@ -14,7 +14,7 @@ Simulink.sdi.clear
 % 8 - Plotting
 %%             1 2 3 4 5 6     7     8
 simScenario = [1 1 1 3 1 1==0 1==0 1==1];
-thrSweep = 2400%[400 600 800:400:4800]
+thrSweep = 400%[400 600 800:400:4800]
 altSweep = 300%thrSweep/2
 tauLim = 35
 defl = -1
@@ -44,7 +44,7 @@ else
     end
 end
 tauRPM = 0
-for i = 1:2
+for i = 2%:2
     if i < 1
         continue
     end
