@@ -3,8 +3,11 @@
 
 % to select correctly, look at equation 3.18-3.22 in rapp paper. Solve
 % systems of equations here
+
+
+
 vaI = 5 ;
-alphaaI= 8; % not dummy
+alphaaI= deg2rad(5); % not dummy
 betaaI = 0 ; % not dummy 
 phitI =0  ;
 thetatI = 0 ;
@@ -13,8 +16,8 @@ pbI = 0  ;
 qbI = 0 ;
 rbI = 0 ;
 azI = 0 ;  %dummy
-elI =  30; %dummy
-htI = 100 ;
+elI =  deg2rad(30); %dummy
+htI = 120 ;
 
 
 %% system parameters
@@ -28,20 +31,18 @@ Jinv = inv(J);
 
 vW = 1; %water speed
 
-%% Dummy parameters to test linearization
-
-aileronCmd = 0;
-elevatorCmd = 4;
-rudderCmd = 0 ;
-fThrTanZConstant = 10000 ;
 
 
+
+%% Trim condition selector
+alpha_a_trim = deg2rad(5);
+beta_a_trim = 0; 
+az_trim = 0; 
+el_trim = deg2rad(30);
+ht_trim = 125; 
+[op] = trimConditionFinder(alpha_a_trim,beta_a_trim,az_trim,el_trim,ht_trim)
 
 %% Linearize
-
-mdl = 'kiteModelNoAddedMassRapp';
-
-op = operpoint('kiteModelNoAddedMassRapp');
 
 io(1)  = linio('kiteModelNoAddedMassRapp/inputBlock',1,'input'); % aileron
 io(2)  = linio('kiteModelNoAddedMassRapp/inputBlock',2,'input'); % elevator
