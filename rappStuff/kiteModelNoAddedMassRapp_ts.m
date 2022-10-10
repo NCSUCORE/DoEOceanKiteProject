@@ -4,7 +4,7 @@
 % to select correctly, look at equation 3.18-3.22 in rapp paper. Solve
 % systems of equations here
 
-
+%Test
 
 vaI = 5 ;
 alphaaI= deg2rad(5); % not dummy
