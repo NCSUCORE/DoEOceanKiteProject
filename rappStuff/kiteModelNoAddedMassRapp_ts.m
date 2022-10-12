@@ -4,20 +4,19 @@
 % to select correctly, look at equation 3.18-3.22 in rapp paper. Solve
 % systems of equations here
 
-%Test
 
-vaI = 5 ;
+vaI =   3.0471;
 alphaaI= deg2rad(5); % not dummy
 betaaI = 0 ; % not dummy 
-phitI =0  ;
-thetatI = 0 ;
+phitI =4.3688e-05;
+thetatI =   -1.1345;
 psitI = 0 ;
-pbI = 0  ;
-qbI = 0 ;
-rbI = 0 ;
-azI = 0 ;  %dummy
+pbI = 0.48496;
+qbI = 0;
+rbI = 0.30471 ;
+azI =  0.10017;  %dummy
 elI =  deg2rad(30); %dummy
-htI = 120 ;
+htI = 100 ;
 
 
 %% system parameters
@@ -35,12 +34,14 @@ vW = 1; %water speed
 
 
 %% Trim condition selector
-alpha_a_trim = deg2rad(5);
+pathRadius=10;%m
+alpha_a = deg2rad(5);
 beta_a_trim = 0; 
-az_trim = 0; 
+az_trim =  0.10017; 
 el_trim = deg2rad(30);
-ht_trim = 125; 
-[op] = trimConditionFinder(alpha_a_trim,beta_a_trim,az_trim,el_trim,ht_trim)
+ht_trim = 100; 
+%[op] = trimConditionFinder(alpha_a_trim,beta_a_trim,az_trim,el_trim,ht_trim,vW,vhcl)
+[op] = trimConditionFinderwithAssu(alpha_a,beta_a_trim,az_trim,el_trim,ht_trim,vW,pathRadius,vhcl)
 
 %% Linearize
 
