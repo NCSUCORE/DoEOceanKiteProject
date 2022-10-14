@@ -4,20 +4,32 @@
 % to select correctly, look at equation 3.18-3.22 in rapp paper. Solve
 % systems of equations here
 
+% 
+% vaI =   3.0471;
+% alphaaI= deg2rad(5); % not dummy
+% betaaI = 0 ; % not dummy 
+% phitI =4.3688e-05;
+% thetatI =   -1.1345;
+% psitI = 0 ;
+% pbI = 0.48496;
+% qbI = 0;
+% rbI = 0.30471 ;
+% azI =  0.10017;  %dummy
+% elI =  deg2rad(30); %dummy
+% htI = 100 ;
 
-vaI =   3.0471;
+vA =   3.0471;
 alphaaI= deg2rad(5); % not dummy
 betaaI = 0 ; % not dummy 
 phitI =4.3688e-05;
-thetatI =   -1.1345;
-psitI = 0 ;
-pbI = 0.48496;
-qbI = 0;
-rbI = 0.30471 ;
-azI =  0.10017;  %dummy
-elI =  deg2rad(30); %dummy
-htI = 100 ;
-
+theta =   -1.1345;
+psi = 0 ;
+pb = 0.48496;
+qb = 0;
+rb = 0.30471 ;
+azu =  0.10017;  %dummy
+el =  deg2rad(30); %dummy
+ht = 100 ;
 
 %% system parameters
 loadComponent('fullScale1thr');
