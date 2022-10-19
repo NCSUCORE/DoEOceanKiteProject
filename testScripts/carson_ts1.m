@@ -15,6 +15,14 @@ Simulink.sdi.clear
 %%             1 2 3 4 5 6     7     8
 simScenario = [1 1 1 3 1 1==0  1==0 1==1];
 
+runSim = 1;
+
+% load files for hydroelastic solver lookup tables
+load alfaZLTable_20221016.mat
+load cdTable_20221016.mat
+load cmTable_20221016.mat
+load alphaSweep_20221016.mat
+load reSweep_20221016.mat
 
 
 %Change to a 1 to run on speedgoat
@@ -36,24 +44,24 @@ powGen = zeros(n,m,r);
 pathErr = zeros(n,m,r);
 dragRatio = zeros(n,m,r);
 Pow = cell(n,m,r);
-fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy05-27-2022\';
+%fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy05-27-2022\';
 %%
 if simScenario(6)
-if ~exist(fpath,'dir')
-    mkdir(fpath)
-else
-    if simScenario(6)
-        fprintf(['These Sims are set to save. Do you want to save even if it may overwrite existing data']);
-        str = input('(Y/N): \n','s');
-        if isempty(str)
-            str = 'Y';
-        end
-        if ~strcmpi(str,'Y')
-            simScenario(6) = (1==0);
-        end
+    if ~exist(fpath,'dir')
+        mkdir(fpath)
     else
+        if simScenario(6)
+            fprintf(['These Sims are set to save. Do you want to save even if it may overwrite existing data']);
+            str = input('(Y/N): \n','s');
+            if isempty(str)
+                str = 'Y';
+            end
+            if ~strcmpi(str,'Y')
+                simScenario(6) = (1==0);
+            end
+        else
+        end
     end
-end
 end
 tauRPM = 0
 for i = 1:n
@@ -73,8 +81,8 @@ for i = 1:n
             Simulink.sdi.clear
             %%  Set Test Parameters
             %How long to run simulation
-            tFinal = 1000;    
-            
+            tFinal = 800;
+
             tSwitch = 10000;                        %   s - maximum sim duration
             flwSpd = flwSweep(k);                                              %   m/s - Flow speed
             altitude = altSweep(i);     initAltitude = 100;                     %   m/m - cross-current and initial altitude
@@ -83,13 +91,13 @@ for i = 1:n
             if el*180/pi >= 50
                 continue
             end
-%             if i == 1
-                b = 20;
-                a = 60;
-%             else
-%                 b = 40;
-%                 a = 200;
-%             end
+            %             if i == 1
+            b = 20;
+            a = 60;
+            %             else
+            %                 b = 40;
+            %                 a = 200;
+            %             end
             d = 1.2
             loadComponent('ultDoeKiteTSR')
             vhcl.turb1.setDiameter(d,'m')
@@ -97,21 +105,21 @@ for i = 1:n
             vhcl.turb3.setDiameter(d,'m')
             vhcl.turb4.setDiameter(d,'m')
             VEHICLE = 'vhcl4turb'
-            
+
             loadComponent('constBoothLem');
             hiLvlCtrl.basisParams.setValue([a,b,el,0*pi/180,... %   Initialize basis parameters
                 thrLength],'[rad rad rad rad m]');
 
             loadComponent('pathFollowWithAoACtrlDOE');             %   Path-following controller with AoA control
-            loadComponent('pathFollowingTether'); 
-            
-            
+            loadComponent('pathFollowingTether');
+
+
             thr.tether1.numNodes.setValue(numNodes,'')
             thr.numNodes.setValue(numNodes,'')
-            
+
             %   Manta Ray tether
-%             thr.numNodes.setValue(max([10 thrLength/200]),'');
-%             thr.tether1.numNodes.setValue(max([10 thrLength/200]),'');
+            %             thr.numNodes.setValue(max([10 thrLength/200]),'');
+            %             thr.tether1.numNodes.setValue(max([10 thrLength/200]),'');
             thr.tether1.setDensity(1000,'kg/m^3')
             thr.tether1.diameter.setValue(0.022,'m')
             thr.tether1.dragCoeff.setValue(1.2,'')
@@ -171,7 +179,7 @@ for i = 1:n
 
             turbTableData=vhcl.turb1.tauCoefTSR.Value(1:end-1);
             turbBreakpoints=vhcl.turb1.tauCoefLookup.Value(1:end-1);
-            
+
             turbDiameterCubedOver8xPi=pi*vhcl.turb1.diameter.Value.^3/8;
             turbRadius=vhcl.turb1.diameter.Value/2;
             turbRsquared=turbRadius^2;
@@ -179,57 +187,57 @@ for i = 1:n
             turbArea=turbRsquared*pi;
 
             %If sim is to be run on speedgoat make sure you select fixed
-            %time solver with Auto in SLRT menu 
+            %time solver with Auto in SLRT menu
             if onSpeedgoat
                 tg = slrealtime;
-% creates target object tg for the default target computer
+                % creates target object tg for the default target computer
 
-connect(tg);
-% connects Simulink Real-Time to the target computer
+                connect(tg);
+                % connects Simulink Real-Time to the target computer
 
-slbuild('OCTModel');
-% builds the real-time application from the model
+                slbuild('OCTModel');
+                % builds the real-time application from the model
 
-hInst = slrealtime.Instrument('OCTModel');
-hInst.addSignal('OCTModel/sensors',1)
-addInstrument(tg,hInst,'updateWhileRunning');
+                hInst = slrealtime.Instrument('OCTModel');
+                hInst.addSignal('OCTModel/sensors',1)
+                addInstrument(tg,hInst,'updateWhileRunning');
 
-load(tg,'OCTModel');
-% installs the real-time application and loads 
-% it on the target computer
+                load(tg,'OCTModel');
+                % installs the real-time application and loads
+                % it on the target computer
 
-%Comment the below line out if the instrument was already created
-%addInstrument(tg,hInst,'updateWhileRunning')
+                %Comment the below line out if the instrument was already created
+                %addInstrument(tg,hInst,'updateWhileRunning')
 
-hInst.AxesTimeSpan = 10;
+                hInst.AxesTimeSpan = 10;
 
-hInst.AxesTimeSpanOverrun = 'wrap';
+                hInst.AxesTimeSpanOverrun = 'wrap';
 
-hInst.AxesTimeSpan = Inf;
-start(tg);
+                hInst.AxesTimeSpan = Inf;
+                start(tg);
 
-% starts the real-time application run
+                % starts the real-time application run
 
-            else
-            simWithMonitor('OCTModel','timeStep',2,'minRate',1)
-            
-            %%  Log Results
-            tsc = signalcontainer(logsout);
-            %             tsc = tsc.resample(0:0.1:tsc.positionVec.Time(end));
-            %             plotRotorInfo
-% %             lap = max(tsc.lapNumS.Data)-1;
-%             tsc.plotFlightResults(vhcl,env,thr,fltCtrl,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
-            if simScenario(3) == 1
-                                Pow{i,j,k} = tsc.rotPowerSummary(vhcl,env,thr);
-                [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+            elseif runSim
+                simWithMonitor('OCTModel','timeStep',5,'minRate',0)
 
-%                 fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
-            end
-            filename = sprintf(strcat('BPConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);
-            if simScenario(6)
-                save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+                %%  Log Results            
+                tsc = signalcontainer(logsout);
+                %             tsc = tsc.resample(0:0.1:tsc.positionVec.Time(end));
+                %             plotRotorInfo
+                % %             lap = max(tsc.lapNumS.Data)-1;
+                %             tsc.plotFlightResults(vhcl,env,thr,fltCtrl,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+                if simScenario(3) == 1
+                    Pow{i,j,k} = tsc.rotPowerSummary(vhcl,env,thr);
+                    [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
+
+                    %                 fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
+                end
+                filename = sprintf(strcat('BPConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);
+                if simScenario(6)
+                    save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
+                end
             end
         end
     end
-end
 end
