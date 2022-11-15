@@ -1,5 +1,5 @@
 clear val ind
-loadComponent('ultDoeKite')
+loadComponent('ultDoeKiteTSR')
 loadComponent('pathFollowingTether');                       %   Manta Ray tether
 thr.tether1.setDensity(1000,'kg/m^3')
 thr.tether1.diameter.setValue(0.022,'m')

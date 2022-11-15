@@ -16,12 +16,12 @@ Simulink.sdi.clear
 load tsrMod.mat 
 ctrlSwitch = 0
 simScenario = [1 1 1 3 1 1==0 1==0 1==1];
-thrSweep = 400%[400 600 800:400:4800]
+thrSweep = 800%[400 600 800:400:4800]
 altSweep = 300%thrSweep/2
 tauLim = 35
 defl = -1
 thrSwitch = 0
-flwSweep = 1%0.5:-0.05:0.15;
+flwSweep = 2%0.5:-0.05:0.15;
 x = meshgrid(thrSweep,altSweep,flwSweep);
 [n,m,r] = size(x);
 numCase = n*m*r;
@@ -77,6 +77,10 @@ for i = 1%:2
             end
             
             loadComponent('ultDoeKiteTSR')
+            vhcl.turb1.diameter.setValue(0.4,'m')
+            vhcl.turb2.diameter.setValue(0.4,'m')
+            vhcl.turb3.diameter.setValue(0.4,'m')
+            vhcl.turb4.diameter.setValue(0.4,'m')
             VEHICLE = 'vhcl4turb';
             loadComponent('constBoothLem');
             hiLvlCtrl.basisParams.setValue([a,b,altitude,0*pi/180,... %   Initialize basis parameters
@@ -140,28 +144,57 @@ for i = 1%:2
             fprintf(progress)
             simWithMonitor('OCTModel','timeStep',2,'minRate',1)
             tsc = signalcontainer(logsout);
-            %%  Log Results
-            ctrlSwitch = 1;
+                        ctrlSwitch = 1;
+
+            simWithMonitor('OCTModel','timeStep',2,'minRate',1)
+            tsc2 = signalcontainer(logsout);
+            %%  Log Results        
+            [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-2);  
+            ran = Idx1:Idx2; t1 = tsc.netPow1.Time(Idx1)
+            [Idx1,Idx2,lapCheck] = tsc2.getLapIdxs(max(tsc2.lapNumS.Data)-2);  
+            ran2 = Idx1:Idx2; t2 = tsc2.netPow1.Time(Idx1)
+
+            figure;
+            plotsq(tsc.netPow1.Time(ran)-t1,tsc.netPow1.Data(:,:,ran),'k','LineWidth',1.5)
+            hold on
+            plotsq(tsc2.netPow1.Time(ran2)-t2,tsc2.netPow1.Data(:,:,ran2),'r','LineWidth',1.5)
+            grid on
+            xlabel 'Time [s]'
+            ylabel 'Power [w]'
+            legend  ('Max $C_P/C_T$ Ratio','PTO Optimization Control')
+            set(gca,'FontSize',14)
+
+            figure;
+            plotsq(tsc.netPow1.Time(ran)-t1,tsc.rotorSpeed.Data(1,1,ran),'k','LineWidth',1.5)
+            hold on
             
-            %             plotRotorInfo
-            lap = max(tsc.lapNumS.Data)-1;
-            %             tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
-            if simScenario(3) == 1
-                Pow{i,j,k} = tsc.rotPowerSummary(vhcl,env,thr);
-                [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-                AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-                airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
-                gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-                ten = max([max(airNode(ran)) max(gndNode(ran))]);
-                fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
-            end
-            if i == 1
-                filename = sprintf(strcat('ConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);
-            else
-                filename = sprintf(strcat('BPConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);            end
-            if simScenario(6)
-                save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
-            end
+%             plotsq(tsc.netPow1.Time(ran)-t1,tsc.rtrCtrlDia.Data(1,1,ran),'k--','LineWidth',1.5)
+            plotsq(tsc2.netPow1.Time(ran2)-t2,tsc2.rotorSpeed.Data(1,1,ran2),'r','LineWidth',1.5)
+%             plotsq(tsc2.netPow1.Time(ran2)-t2,tsc2.rtrCtrlDia.Data(1,1,ran2),'r--','LineWidth',1.5)
+
+            grid on
+            xlabel 'Time [s]'
+            ylabel 'Rotor Speed [rad/s]'
+            legend  ('Max $C_P/C_T$ Ratio','PTO Optimization Control')
+            set(gca,'FontSize',14)
+
+                   figure;
+            plotsq(tsc.netPow1.Time(ran)-t1,tsc.TSR.Data(1,1,ran),'k','LineWidth',1.5)
+            hold on
+            
+            plotsq(tsc.netPow1.Time(ran)-t1,tsc.rtrCtrlDia.Data(1,1,ran),'k--','LineWidth',1.5)
+            plotsq(tsc2.netPow1.Time(ran2)-t2,tsc2.TSR.Data(1,1,ran2),'r','LineWidth',1.5)
+            plotsq(tsc2.netPow1.Time(ran2)-t2,tsc2.rtrCtrlDia.Data(1,1,ran2),'r--','LineWidth',1.5)
+
+            grid on
+            xlabel 'Time [s]'
+            ylabel 'Tip Speed Ratio ($\gamma$)'
+            legend  ('Max $C_P/C_T$ Ratio','Max $C_P/C_T$ Ratio SP','PTO Optimization Control','PTO Optimization Control SP')
+            set(gca,'FontSize',14)
+            ylim([0 4.5])
+            
+            tsc.rotPowerSummary(vhcl,env,thr);
+            tsc2.rotPowerSummary(vhcl,env,thr);
         end
     end
 end

@@ -1,4 +1,4 @@
-function [g,ceq] = constFun(AoA,eta,velW,vhcl,thr,thrL,u)
+function [g,ceq] = constFun(AoA,eta,velW,vhcl,thr,thrCD,u)
 alpha = AoA;
 TSR = u(1:end);
 eta = [eta; -eta];
@@ -8,8 +8,8 @@ rho = 1000;
 % thr.tether1.setDensity(1000,'kg/m^3');
 % thr.tether1.setDiameter(0.018,'m');
 
-[CL,CD] = vhcl.getCLCD(thr,thrL*4);
-CD = CD.kiteThr;
+[CL,CD] = vhcl.getCLCD(thr,0);
+CD = CD.kiteThr+thrCD;
 alphaVhc = vhcl.stbdWing.alpha.Value;
 
 CP = vhcl.turb1.CpLookup.Value;

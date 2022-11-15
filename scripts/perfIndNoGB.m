@@ -4,10 +4,6 @@ alpha = AoA;
 TSR = u(1:end);
 eta = [eta; -eta];
 %Initialize Vehicle Parameters
-gbLoss = vhcl.gearBoxLoss.Value; %Gearbox loss W/RPM
-kt = vhcl.genKt.Value; %Armature torque constant Nm/A
-R = vhcl.genR.Value; %Motor resistance Ohms
-gbRat = vhcl.gearBoxRatio.Value; %gearbox ratio
 
 %Assumed fluid density
 rho = 1000;
@@ -41,30 +37,11 @@ ct = N*interp1(refTSR,CT,TSR)*areaRatio.*cos((12-alpha)*pi/180).^3;
 %flight)
 ctVal = sum(ct.*(1+eta).^2);
 glideRatio = cl./(ctVal+cd);
-vApp = velW.*glideRatio;
-vAppTurb = vApp.*(1+eta);
-
-% Term used to normalize coefficients in future calculations
-powNorm = 1/2*rho*vApp.^3*refArea;
-
-%Gearbox Losses
-RPM = TSR.*vAppTurb*(60/(pi*turbDiam));
-gbEta = RPM.*gbLoss./powNorm;
-
-%Generator Losses
-motOmega = RPM*gbRat*2*pi/60;
-genPow = (cp-gbEta)/N.*powNorm;
-genT = genPow./motOmega/1.3558*12*16;
-genC = genT/kt;
-genL = genC.^2*R;
-genEta = N*genL./powNorm;
 
 %Calculate effective coefficient of power accounting for gearbox and
 %generator efficiencies
 Cp = sum((1+eta).^3.*cp);
-Cpeff = Cp-sum(gbEta-genEta);
-Cpeff(Cpeff<0) = 0;
-cpSys = glideRatio.^3.*Cpeff;
+cpSys = glideRatio.^3.*Cp;
 
 %Calculate power
-J = -1/2*1000*velW.^3.*cpSys*refArea;
+J = -cpSys;

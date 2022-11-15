@@ -1,6 +1,6 @@
 %% Test script for John to control the kite model
-% clear all;
-% clc;
+clear all;
+% clc
 % close all;
 Simulink.sdi.clear
 %% Simulation Setup
@@ -13,15 +13,10 @@ Simulink.sdi.clear
 % 7 - Animate
 % 8 - Plotting
 %%             1 2 3 4 5 6     7     8
-load tsrMod.mat 
-ctrlSwitch = 0
-simScenario = [1 1 1 3 1 1==0 1==0 1==1];
-thrSweep = 400%[400 600 800:400:4800]
-altSweep = 300%thrSweep/2
-tauLim = 35
-defl = -1
-thrSwitch = 0
-flwSweep = 1%0.5:-0.05:0.15;
+simScenario = [1 1 1 3 1 1==0  1==0 1==1];
+thrSweep = 2000;
+altSweep = 1;
+flwSweep = [1];%0.5:0.25:2;
 x = meshgrid(thrSweep,altSweep,flwSweep);
 [n,m,r] = size(x);
 numCase = n*m*r;
@@ -29,13 +24,13 @@ powGen = zeros(n,m,r);
 pathErr = zeros(n,m,r);
 dragRatio = zeros(n,m,r);
 Pow = cell(n,m,r);
-fpath = 'C:\Users\adabney\Documents\Results\longTetherStudy04-08-2022\';
+fpath = ['C:\Users\adabney\Documents\Results\longTetherStudy07-13-2022\'];
 %%
 if ~exist(fpath,'dir')
     mkdir(fpath)
 else
     if simScenario(6)
-        fprintf(['These Sims are set to save. Do you want to save even if it may overwrite existing data']);
+        fprintf('These Sims are set to save. Do you want to save even if it may overwrite existing data');
         str = input('(Y/N): \n','s');
         if isempty(str)
             str = 'Y';
@@ -46,8 +41,8 @@ else
     else
     end
 end
-tauRPM = 0
-for i = 1%:2
+
+for i = 1:n
     if i < 1
         continue
     end
@@ -59,48 +54,63 @@ for i = 1%:2
             if k < 1
                 continue
             end
-            
+for ii = 1%:2
             fprintf(sprintf('%.2f Percent Complete\n',((i-1)*m*r+(j-1)*r+k)/(n*m*r)*100))
             Simulink.sdi.clear
             %%  Set Test Parameters
             tFinal = 1000;      tSwitch = 10000;                        %   s - maximum sim duration
             flwSpd = flwSweep(k);                                              %   m/s - Flow speed
-            altitude = thrSweep(j)/2;%altSweep(i);     initAltitude = 100;                     %   m/m - cross-current and initial altitude
-            thrLength = thrSweep(j);    initThrLength = 200;
+            if k == 1
+                altitude = thrSweep(j)/2;                   %   m/m - cross-current and initial altitude
+            else
+                altitude = 300;
+            end
+            thrLength = thrSweep(j);
             el = asin(altitude/thrLength);                              %   rad - Initial elevation angle
-            if i == 1
+            if el*180/pi >= 50
+                continue
+            end
+            
+%             height = 0:50:5000;
+%             hNom = altitude;
+%             flow = 0.25*flwSpd*ones(size(height));
+%             flow(height>= hNom-100 & height<= hNom+100) = flwSpd ;
+       
+            if ii == 1
                 b = 20;
                 a = 60;
             else
                 b = 40;
                 a = 200;
             end
-            
-            loadComponent('ultDoeKiteTSR')
+            d = 1;
+            loadComponent('ultDoeKite')
+%             vhcl.turb1.setDiameter(d,'m')
+%             vhcl.turb2.setDiameter(d,'m')
+%             vhcl.turb3.setDiameter(d,'m')
+%             vhcl.turb4.setDiameter(d,'m')
+%             vhcl.turb1.set34e322
             VEHICLE = 'vhcl4turb';
+            
             loadComponent('constBoothLem');
             hiLvlCtrl.basisParams.setValue([a,b,altitude,0*pi/180,... %   Initialize basis parameters
                 thrLength],'[rad rad rad rad m]');
-            
+
             loadComponent('pathFollowWithAoACtrlDOE');             %   Path-following controller with AoA control
             loadComponent('pathFollowingTether');                       %   Manta Ray tether
-            thr.numNodes.setValue(max([10 thrLength/200]),'');
-            thr.tether1.numNodes.setValue(max([10 thrLength/200]),'');
-            thr.tether1.setDensity(1000,'kg/m^3')
-            thr.tether1.diameter.setValue(0.022,'m')
             loadComponent('ConstXYZT');                         %   Constant flow
             ENVIRONMENT = 'env4turb';                           %   Two turbines
             env.water.setflowVec([flwSpd 0 0],'m/s');           %   m/s - Flow speed vector
             loadComponent('oneDoFGSCtrlBasic');                         %   Ground station controller
-            loadComponent('oneThrGndStn000');    
+            loadComponent('oneThrGndStn000');
             GROUNDSTATION = 'GroundStation000';%   Ground station
-            loadComponent('oneWnch');  
+            loadComponent('oneWnch');
             WINCH = 'constThr';%   Winches
             loadComponent('idealSensors')                               %   Sensors
             loadComponent('idealSensorProcessing')                      %   Sensor processing
             %             SENSORS = 'deadRecPos'
             %%  Vehicle Initial Conditions
-                                 %   Constant basis parameters
+            %   Constant basis parameters
             PATHGEOMETRY = 'lemBoothNew';
             if simScenario(3) == 1
                 if simScenario(2) == 4
@@ -121,9 +131,16 @@ for i = 1%:2
             thr.tether1.initAirNodeVel.setValue(rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value(:),'m/s');
             thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
             thr.tether1.dragCoeff.setValue(1.2,'')
+            thr.numNodes.setValue(max([10 thrLength/200]),'');
+            thr.tether1.numNodes.setValue(max([10 thrLength/200]),'');
+%             thr.tether1.dragCoeff.setValue(2,'')
+%             thr.numNodes.setValue(2,'');
+%             thr.tether1.numNodes.setValue(2,'');
+            thr.tether1.setDensity(1000,'kg/m^3');
+            thr.tether1.diameter.setValue(0.022,'m');
             %%  Winches Properties
             wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-%             wnch.winch1.LaRspeed.setValue(1,'m/s');
+            %             wnch.winch1.LaRspeed.setValue(1,'m/s');
             %%  Controller User Def. Parameters and dependant properties
             fltCtrl.setFcnName(PATHGEOMETRY,'');
             if simScenario(2) == 4
@@ -131,38 +148,53 @@ for i = 1%:2
             else
                 fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
             end
-            fltCtrl.tanRoll.kp.setValue(1.2,fltCtrl.tanRoll.kp.Unit)
-            fltCtrl.tanRoll.kd.setValue(0.6,fltCtrl.tanRoll.kd.Unit)
+            fltCtrl.pitchMoment.kp.setValue(120000,fltCtrl.pitchMoment.kp.Unit)
+            fltCtrl.pitchMoment.ki.setValue(10000,fltCtrl.pitchMoment.ki.Unit)
+            fltCtrl.AoAConst.setValue(18*pi/180,'deg')
+            fltCtrl.perpErrorVal.setValue(0.4,'rad')
+
+            turbAng = 0;
+            turbAngVec = [cosd(turbAng);0;sind(turbAng)];
+            vhcl.turb1.axisUnitVec.setValue(turbAngVec,'')
+            vhcl.turb2.axisUnitVec.setValue(-turbAngVec,'')
+            vhcl.turb3.axisUnitVec.setValue(turbAngVec,'')
+            vhcl.turb4.axisUnitVec.setValue(-turbAngVec,'')
             %%  Set up critical system parameters and run simulation
+%                  FLOWCALCULATION = 'flowColumnSpec';
             simParams = SIM.simParams;  simParams.setDuration(tFinal,'s');  dynamicCalc = '';
             progress = sprintf('%d Thr %.1f Altitude %.2f Flow Speed\n',...
                 thrLength,altitude,flwSpd);
             fprintf(progress)
             simWithMonitor('OCTModel','timeStep',2,'minRate',1)
-            tsc = signalcontainer(logsout);
             %%  Log Results
-            ctrlSwitch = 1;
-            
+            tsc = signalcontainer(logsout);
+                            SIXDOFDYNAMICS = "fiveDoFDynamicsCoupledFossenTurbDynamics";
+                simWithMonitor('OCTModel','timeStep',2,'minRate',1)
+                tsc2 = signalcontainer(logsout);
+            %             tsc = tsc.resample(0:0.1:tsc.positionVec.Time(end));
             %             plotRotorInfo
-            lap = max(tsc.lapNumS.Data)-1;
-            %             tsc.plotFlightResults(vhcl,env,thr,'plot1Lap',1==0,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
+% %             lap = max(tsc.lapNumS.Data)-1;
+%             tsc.plotFlightResults(vhcl,env,thr,fltCtrl,'plot1Lap',1==1,'plotS',1==0,'lapNum',lap,'dragChar',1==0,'cross',1==0)
             if simScenario(3) == 1
-                Pow{i,j,k} = tsc.rotPowerSummary(vhcl,env,thr);
+                                Pow{i,j,k} = tsc.rotPowerSummary(vhcl,env,thr);
                 [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-                AoA = mean(squeeze(tsc.vhclAngleOfAttack.Data(:,:,ran)));
-                airNode = squeeze(sqrt(sum(tsc.airTenVecs.Data.^2,1)))*1e-3;
-                gndNode = squeeze(sqrt(sum(tsc.gndNodeTenVecs.Data.^2,1)))*1e-3;
-                ten = max([max(airNode(ran)) max(gndNode(ran))]);
-                fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
+
+%                 fprintf('Average AoA = %.3f;\t Max Tension = %.1f kN\n\n',AoA,ten);
             end
-            if i == 1
-                filename = sprintf(strcat('ConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);
+            if k == 1
+                fString = 'ConstEl';
             else
-                filename = sprintf(strcat('BPConstAlt_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength);            end
+                fString = 'ConstAlt';
+            end
+            if ii == 2
+                fString = ['BP' fString];
+            end
+            filename = sprintf(strcat(fString,'_V-%.2f_Alt-%d_thr-%d.mat'),flwSpd,altitude,thrLength)
+            
             if simScenario(6)
                 save(strcat(fpath,filename),'tsc','vhcl','thr','fltCtrl','env','simParams','LIBRARY','gndStn')
             end
         end
     end
 end
-
+end
