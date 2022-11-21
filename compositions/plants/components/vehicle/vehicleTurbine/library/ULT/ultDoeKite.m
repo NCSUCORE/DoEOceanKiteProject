@@ -69,7 +69,7 @@ vhcl.hStab.setRootChord(.5,'m');
 vhcl.hStab.setTR(.8,'');
 vhcl.hStab.setHalfSpanGivenAR(4/.45,''); %Span 4, hspan 2
 vhcl.hStab.setSweep(2.8624,'deg');
-vhcl.hStab.setIncidence(0,'deg');
+vhcl.hStab.setIncidence(-13.50,'deg');
 vhcl.hStab.setAirfoil('NACA0015','');
 vhcl.hStab.setClMin(-1.7,'');
 vhcl.hStab.setClMax(1.7,'');

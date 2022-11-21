@@ -13,10 +13,10 @@ if  ismember(props{1},{'portWing','stbdWing','hStab','vStab'})
     props{3} = 'hStab';
     props{4} = 'vStab';
 end
+
+%List the sub-properties of the class
 subProps = properties(obj.(props{1}));
-% if any(contains(subProps,'CL'))
-%     subProps =  {"CL" "CD" "alpha" "gainCL" "gainCD" "RSurf2Bdy" "maxCtrlDefSpeed" "maxCtrlDef" "minCtrlDef", "incAlphaUnitVecSurf"};
-% end
+
 if numel(obj.(props{1})) == 1
     for ii = 1:length(props)
         try
@@ -26,7 +26,7 @@ if numel(obj.(props{1})) == 1
                 end
             end
         catch
-            disp(1);
+            disp(jj);
         end
     end
 else

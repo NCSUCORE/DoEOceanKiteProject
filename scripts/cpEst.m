@@ -1,4 +1,3 @@
-
 function J = cpEst(turb,a)
 a = [a; 1];
 gam = turb.RPMref.Value;

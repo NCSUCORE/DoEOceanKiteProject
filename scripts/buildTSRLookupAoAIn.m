@@ -1,6 +1,6 @@
-clear all
-close all
-clc
+% clear all
+% close all
+% clc
 thrCD = 0:.1:1;
 AoA = 5:1:20;
 %Initialize Vehicle
