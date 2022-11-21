@@ -1,21 +1,26 @@
-clear all
-close all
-clc
-thrL = 40:20:100;
-AoA = 4:2:16;
+% clear all
+% close all
+% clc
+thrCD = 0:.1:1;
+AoA = 5:1:20;
 %Initialize Vehicle
-loadComponent('Manta71522');
+loadComponent('ultDoeKiteTSR');
+
+vhcl.turb1.diameter.setValue(0.4,'m')
+vhcl.turb2.diameter.setValue(0.4,'m')
+vhcl.turb3.diameter.setValue(0.4,'m')
+vhcl.turb4.diameter.setValue(0.4,'m')
 loadComponent('pathFollowingTether');
 % vhcl.gearBoxLoss.setValue(0,'');
 thr.tether1.setDensity(1000,'kg/m^3');
-thr.tether1.setDiameter(0.018,'m');
-gamma0 = [vhcl.turb1.optTSR.Value*ones(2,1)];
+thr.tether1.setDiameter(0.022,'m');
+gamma0 = vhcl.turb1.optTSR.Value*ones(2,1);
 
-eta = 0:0.025:.1;
+eta = 0;%:0.025:.1;
 rho = 1000;
-velW = 0.2:0.05:0.5;
-lb = [vhcl.turb1.optTSR.Value*ones(2,1)];
-ub = [7;7];
+velW = 1;
+lb = vhcl.turb1.optTSR.Value*ones(2,1);
+ub = [8.5;8.5];
 opts = optimoptions('fmincon','Display','none');
 opts1 = optimoptions('fminunc','Display','none');
 vhcl.turb1.torqueLim.setValue(42,'(N*m)')
@@ -23,23 +28,22 @@ vhcl.turb1.torqueLim.setValue(42,'(N*m)')
 for j = 1:numel(eta)
     fprintf(sprintf('%d Percent Complete\n',round((j-1)/numel(eta)*100)))
     for k = 1:numel(velW)
-        for ii = 1:numel(thrL)
+        for ii = 1:numel(thrCD)
             for i = 1:numel(AoA)
                 if i == 1
                     u0 = gamma0;
                 else
                     u0 = TSR;
                 end
-            J = @(u)perfInd(AoA(i),eta(j),velW(k),vhcl,thr,thrL(ii),u);
-            g = @(u)constFun(AoA(i),eta(j),velW(k),vhcl,thr,thrL(ii),u);
+            J = @(u)perfIndNoGB(AoA(i),eta(j),velW(k),vhcl,thr,thrCD(ii),u);
+            g = @(u)constFun(AoA(i),eta(j),velW(k),vhcl,thr,thrCD(ii),u);
             [TSR,pow(j,k,ii,i),exitCond(j,k,ii)] = fmincon(J,u0,[],[],[],[],lb,ub,g,opts);
-            [TSRunc,powUnc(j,k,ii,i)] = fminunc(J,u0,opts1);
+            [TSRbnd,powbnd(j,k,ii,i)] = fminbnd(J,vhcl.turb1.optTSR.Value,8.5);
             powNiave(j,k,ii,i) = J(gamma0);
             gamStbd(j,k,ii,i) = TSR(1);
             gamPort(j,k,ii,i) = TSR(2);
-%             alpha(j,k,ii,i) = TSR(3);
-            gamUnc(j,k,ii,i) = TSRunc(1);
-%             alphaUnc(j,k,ii,i) = TSRunc(3);
+            gamBnd(j,k,ii,i) = TSRbnd;
+%             gamUnc(j,k,ii,i) = TSRunc(1);
             end
         end
     end
@@ -47,99 +51,36 @@ end
 
 
 fprintf('Finished!')
-squeeze(-pow)
-squeeze(-powUnc)
-squeeze(gamStbd)
-squeeze(gamUnc)
-squeeze(alpha)
-squeeze(alphaUnc)
+% squeeze(-pow)
+% squeeze(-powbnd)
+% squeeze(gamStbd)
+gammaDes = squeeze(gamBnd)
+% squeeze(alpha)
+% squeeze(alphaUnc)
+
 %%
-
-[x,y] = meshgrid(velW,thrL(thrL>=0))
-
-% ind1 = find(alpha>=4)
-ind2 = find(eta==0)
-ind3 = find(velW>0)
-ind4 = find(thrL>=0)
-
-
-figure('Position',[100 100 1200 500])
-tL1 = tiledlayout(1,3);
-ax(1)=nexttile;
-contour(y,x,squeeze(alpha(ind2,ind3,ind4,1))','Fill','on','LineColor','k')
-h1 = colorbar
-h1.Label.Interpreter = 'latex';
-h1.Label.FontSize = 12
-xlabel 'Tether Length [m]'
-ylabel 'Flow Velocity [m/s]'
-h1.Label.String = 'AoA [deg]';
-set(gca,"FontSize",14)
-ax(2)=nexttile;
-contour(y,x,squeeze(gamStbd(ind2,ind3,ind4,1))','Fill','on','LineColor','k')
+figure('Position',[100 100 800 500])
+tl = tiledlayout(1,2);
+nexttile
+contourf(AoA,thrCD,(squeeze(-powbnd./-powNiave)-1)*100)
+ylabel '$C_{D_{thr}}$'
+xlabel 'Angle of Attack [deg]'
 h = colorbar;
-xlabel 'Tether Length [m]'
-% ylabel 'Flow Velocity [m/s]'
-h.Label.String = 'Tip Speed Ratio';
+h.Label.String =  'Percent Improvement in $C_{P_{Sys}}$';
 h.Label.Interpreter = 'latex';
-h.Label.FontSize = 12
-title ''
-% set(ax, 'CLim', [0.9 1.1])
-tL1.Padding = 'compact';
-tL1.TileSpacing = 'compact';
-set(gca,"FontSize",14)
-
-ax(3)=nexttile;
-contour(y,x,-squeeze(pow(ind2,ind3,ind4,1))','Fill','on','LineColor','k')
-h = colorbar;
-xlabel 'Tether Length [m]'
-% ylabel 'Flow Velocity [m/s]'
-h.Label.String = 'Power [W]';
-h.Label.Interpreter = 'latex';
-h.Label.FontSize = 12
-title ''
-% set(ax, 'CLim', [0.9 1.1])
-tL1.Padding = 'compact';
-tL1.TileSpacing = 'compact';
+% h.Location = 'southoutside';
 set(gca,'FontSize',14)
-% title(tL1,'Effective Tether Length = 500m','Interpreter','Latex','FontSize',20)
-%%
-
-figure('Position',[100 100 600 600])
-contour(y,x,squeeze(powUnc(ind1,ind2,ind3,ind4,1))'./squeeze(powNiave(ind1,ind2,ind3,ind4,1))','Fill','on','LineColor','k')
-h1 = colorbar;
-h1.Label.String = 'Tip Speed Ratio';
-h1.Label.Interpreter = 'latex';
-title 'Constrained $\tau_{max} = 65$ Nm'
-xlabel 'Wind Velocity [m/s]'
-ylabel 'Angle of Attack [deg]'
-%%
-
-figure('Position',[100 100 1200 500])
-tL1 = tiledlayout(1,2);
-ax(1)=nexttile;
-contour(y,x,squeeze(gamStbd(ind1,ind2,ind3,ind4,1))','Fill','on','LineColor','k')
-h1 = colorbar;
-h1.Label.String = 'Tip Speed Ratio';
-h1.Label.Interpreter = 'latex';
-title 'Constrained $\tau_{max} = 65$ Nm'
-xlabel 'Effective Tether Length [m]'
-ylabel 'Angle of Attack [deg]'
-set(gca,'FontSize',12)
-ax(2)=nexttile;
-set(gca,'CLim', [2.5 7.5])
-contour(y,x,squeeze(gamUnc(ind1,ind2,ind3,ind4,1))','Fill','on','LineColor','k')
-
-% contour(y,x,(squeeze(powUnc(ind1,ind2,ind3,ind4,1)./powNiave(ind1,ind2,ind3,ind4,1))'-1)*100,'Fill','on','LineColor','k')
+nexttile
+contourf(AoA,thrCD,squeeze(gamBnd))
+ylabel '$C_{D_{thr}}$'
+xlabel 'Angle of Attack [deg]'
 h = colorbar;
-set(gca, 'CLim', [2.5 7.5])
-xlabel 'Effective Tether Length [m]'
-% ylabel 'Angle of Attack [deg]'
-h.Label.String = 'Tip Speed Ratio';
+% h.Location = 'southoutside';
+h.Label.String =  '$\gamma$';
 h.Label.Interpreter = 'latex';
-h.Ticks = [2.5:.5:7.5];
-h.LimitsMode = 'manual'
-h.Limits = [2.5 7.5]
-title 'Unconstrained'
-tL1.Padding = 'compact';
-tL1.TileSpacing = 'compact';
-set(gca,'FontSize',12)
+set(gca,'FontSize',14)
+
+tl.Padding = 'compact';
+tl.TileSpacing = 'compact';
+save tsrMod.mat gammaDes thrCD AoA
+%%

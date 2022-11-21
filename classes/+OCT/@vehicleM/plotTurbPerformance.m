@@ -13,7 +13,7 @@ plot(turb.RPMref.Value,turb.CpLookup.Value,'k','LineWidth',1)
 plot(turb.RPMref.Value,turb.CtLookup.Value,'r','LineWidth',1)
 plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value,'--k','LineWidth',1)
 %             plot(turb.RPMref.Value,turb.CpLookup.Value./turb.CtLookup.Value.^3,':k','LineWidth',1)
-legend('$C_p$','$C_t$','$C_p/C_t$','$C_p/C_t^3$')
+legend('$C_\mathrm{P}$','$C_\mathrm{T}$','$C_\mathrm{P}/C_\mathrm{T}$','$C_p/C_t^3$')
 xlabel 'TSR'
 ylabel 'Coefficient'
 ylim([0 inf])

@@ -4,11 +4,11 @@ clc
 thrL = [0 20 40 60 80 100];
 
 %Initialize Vehicle
-loadComponent('Manta71522');
+loadComponent('ultDoeKiteTSR');
 loadComponent('pathFollowingTether');
 % vhcl.gearBoxLoss.setValue(0,'');
 thr.tether1.setDensity(1000,'kg/m^3');
-thr.tether1.setDiameter(0.018,'m');
+thr.tether1.setDiameter(0.022,'m');
 gamma0 = [vhcl.turb1.optTSR.Value*ones(2,1); 10];
 
 eta = 0:0.025:0.2;

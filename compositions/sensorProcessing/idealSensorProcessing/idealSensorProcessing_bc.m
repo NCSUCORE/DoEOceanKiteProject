@@ -118,9 +118,10 @@ elems(13).SampleTime = -1;
 elems(13).Complexity = 'real';
 elems(13).Unit = 'N';
 
+n = evalin('base','vhcl.numTurbines.Value');
 elems(14) = Simulink.BusElement;
 elems(14).Name = 'rotorSpeed';
-elems(14).Dimensions = [2 1];
+elems(14).Dimensions = [n 1];
 elems(14).DimensionsMode = 'Fixed';
 elems(14).DataType = 'double';
 elems(14).SampleTime = -1;
