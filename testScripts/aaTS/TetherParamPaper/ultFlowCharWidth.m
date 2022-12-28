@@ -13,7 +13,12 @@ Simulink.sdi.clear
 % 7 - Animate
 % 8 - Plotting
 %%             1 2 3 4 5 6     7     8
-simScenario = [1 1 1 3 1 1==1 1==0 1==1];
+A = 0
+B = 0
+phi = 0
+lapMax = 1000
+load tsrMod.mat
+simScenario = [1 4 1 3 1 1==1 1==0 1==1];
 thrSweep = 2000;
 altSweep = 1;
 flwSweep = 1;%[.7:.1:2]
@@ -34,15 +39,15 @@ for i = 1:n
             continue
         end
         k = 1;
-        bVec = [60];
+        bVec = [40:5:100];
         for k = 1:numel(bVec)
             for ii = 1
                 fprintf(sprintf('%.2f Percent Complete\n',((i-1)*m*r+(j-1)*r+k)/(n*m*r)*100))
                 Simulink.sdi.clear
                 %  Set Test Parameters
-                tFinal = 1500;%+200*k;      tSwitch = 10000;                        %   s - maximum sim duration
+                tFinal = 15000;%+200*k;      tSwitch = 10000;                        %   s - maximum sim duration
                 flwSpd = flwSweep;%(k);                                              %   m/s - Flow speed
-                altitude = thrSweep(j)/2;                   %   m/m - cross-current and initial altitude
+                altitude = thrSweep(j)/3;                   %   m/m - cross-current and initial altitude
 
                 thrLength = thrSweep(j);
                 el = asin(altitude/thrLength);                              %   rad - Initial elevation angle
@@ -50,7 +55,7 @@ for i = 1:n
 
                 hNom = altitude;
                 v = [0.25 1]*flwSpd;
-                z = [hNom-200*1 hNom];
+                z = [hNom-200 hNom];
                 flow = flowDist(height,z,v);
 
                 if ii == 1
@@ -64,9 +69,14 @@ for i = 1:n
                 loadComponent('ultDoeKite')
                 VEHICLE = 'vhcl4turb';
 
+                %                 vhcl.turb1.diameter.setValue(0.5,'m')
+                %                 vhcl.turb2.diameter.setValue(0.5,'m')
+                %                 vhcl.turb3.diameter.setValue(0.5,'m')
+                %                 vhcl.turb4.diameter.setValue(0.5,'m')
                 loadComponent('constBoothLem');
+                %                 HILVLCONTROLLER = 'ilcPathOptThrTen'
                 hiLvlCtrl.basisParams.setValue([a,b,altitude,0*pi/180,... %   Initialize basis parameters
-                    thrLength],'[rad rad rad rad m]');
+                    thrLength],hiLvlCtrl.basisParams.Unit);
 
                 loadComponent('pathFollowWithAoACtrlDOE');             %   Path-following controller with AoA control
                 loadComponent('pathFollowingTether');                       %   Manta Ray tether
@@ -84,111 +94,104 @@ for i = 1:n
                 %%  Vehicle Initial Conditions
                 %   Constant basis parameters
                 PATHGEOMETRY = 'lemBoothNew';
-                if simScenario(3) == 1
-                    if simScenario(2) == 4
-                        vhcl.setICsOnPath(0.875,PATHGEOMETRY,hiLvlCtrl.initBasisParams.Value,gndStn.posVec.Value,2*flwSpd)
-                    else
-                        vhcl.setICsOnPath(0.875,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,2*flwSpd)
-                    end
-                else
-                    vhcl.setICsOnPath(0,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,0)
-                    vhcl.setInitEulAng([0,0,0]*pi/180,'rad')
-                end
-                %%  Tethers Properties
-                %   kN - candidate tether tension limits
-                fltCtrl.Tmax.setValue(55,'kN');
-                %                 TETHERS = 'tetherFaired'
-                thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
-                thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
-                    +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
-                thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
-                thr.tether1.initAirNodeVel.setValue(rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value(:),'m/s');
-                thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
-                %Choose Tether
-                %                                 thr.tether1.dragCoeff.setValue(0.3,'')
-                %                 thr.numNodes.setValue(2,'');
-                %                 thr.tether1.numNodes.setValue(2,'');
-                thr.tether1.dragCoeff.setValue(1.2,'')
-                thr.numNodes.setValue(10,'');
-                thr.tether1.numNodes.setValue(10,'');
-                thr.tether1.setDensity(1000,'kg/m^3');
-                thr.tether1.diameter.setValue(0.022,'m');
-                %%  Winches Properties
-                wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
-                %             wnch.winch1.LaRspeed.setValue(1,'m/s');
-                %%  Controller User Def. Parameters and dependant properties
-                fltCtrl.setFcnName(PATHGEOMETRY,'');
-                if simScenario(2) == 4
-                    fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.initBasisParams.Value,gndStn.posVec.Value);
-                else
-                    fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
-                end
-                %                                 fltCtrl.rollMoment.kp.setValue(1e6,fltCtrl.rollMoment.kp.Unit)
-%                 fltCtrl.pitchMoment.kp.setValue(240000,fltCtrl.pitchMoment.kp.Unit)
-                %             fltCtrl.pitchMoment.ki.setValue(5000,fltCtrl.pitchMoment.ki.Unit)
-                fltCtrl.AoAConst.setValue(18*pi/180,'deg')
-                fltCtrl.perpErrorVal.setValue(0.4,'rad')
 
-                fltCtrl.rollMoment.kp.setValue(1e5,fltCtrl.rollMoment.kp.Unit)
-                fltCtrl.rollMoment.kd.setValue(1e5,fltCtrl.rollMoment.kd.Unit)
-
-                fltCtrl.pitchMoment.kp.setValue(1e5,fltCtrl.rollMoment.kp.Unit)
-                fltCtrl.pitchMoment.kd.setValue(1e5,fltCtrl.rollMoment.kd.Unit)
+                vhcl.setICsOnPath(0.875,PATHGEOMETRY,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value,2*flwSpd)
 
 
-                turbAng = 0;
-                turbAngVec = [cosd(turbAng);0;sind(turbAng)];
-                vhcl.turb1.axisUnitVec.setValue(turbAngVec,'')
-                vhcl.turb2.axisUnitVec.setValue(-turbAngVec,'')
-                vhcl.turb3.axisUnitVec.setValue(turbAngVec,'')
-                vhcl.turb4.axisUnitVec.setValue(-turbAngVec,'')
-                fltCtrl.yawMoment.kp.setValue(-5e4,fltCtrl.yawMoment.kp.Unit)
-                %%  Set up critical system parameters and run simulation
-                FLOWCALCULATION = 'flowColumnSpec';
-                thrSwitch = 1
-                simParams = SIM.simParams;  simParams.setDuration(1000,'s');  dynamicCalc = '';
-                simWithMonitor('OCTModel','timeStep',2,'minRate',1)
-                tsc = signalcontainer(logsout);
-                %%  Log Results
-                simParams.setDuration(3000,'s');
+            %%  Tethers Properties
+            %   kN - candidate tether tension limits
+            fltCtrl.Tmax.setValue(55,'kN');
+            %                 TETHERS = 'tetherFaired'
+            thr.tether1.initGndNodePos.setValue(gndStn.thrAttch1.posVec.Value(:)+gndStn.posVec.Value(:),'m');
+            thr.tether1.initAirNodePos.setValue(vhcl.initPosVecGnd.Value(:)...
+                +rotation_sequence(vhcl.initEulAng.Value)*vhcl.thrAttchPts_B.posVec.Value,'m');
+            thr.tether1.initGndNodeVel.setValue([0 0 0]','m/s');
+            thr.tether1.initAirNodeVel.setValue(rotation_sequence(vhcl.initEulAng.Value)*vhcl.initVelVecBdy.Value(:),'m/s');
+            thr.tether1.vehicleMass.setValue(vhcl.mass.Value,'kg');
+            %Choose Tether
+            %                                 thr.tether1.dragCoeff.setValue(0.3,'')
+            %                 thr.numNodes.setValue(2,'');
+            %                 thr.tether1.numNodes.setValue(2,'');
+            thr.tether1.dragCoeff.setValue(1.2,'')
+            thr.numNodes.setValue(10,'');
+            thr.tether1.numNodes.setValue(10,'');
+            thr.tether1.setDensity(1000,'kg/m^3');
+            thr.tether1.diameter.setValue(0.022,'m');
+            %%  Winches Properties
+            wnch.setTetherInitLength(vhcl,gndStn.posVec.Value,env,thr,env.water.flowVec.Value);
+            %             wnch.winch1.LaRspeed.setValue(1,'m/s');
+            %%  Controller User Def. Parameters and dependant properties
+            fltCtrl.setFcnName(PATHGEOMETRY,'');
 
-%                 fltCtrl.yawMoment.kp.setValue(-5e4,fltCtrl.yawMoment.kp.Unit)
-                thrSwitch = 0;
-                thr.tether1.dragCoeff.setValue(0,'')
-                thr.numNodes.setValue(2,'');
-                thr.tether1.numNodes.setValue(2,'');    
-                SIXDOFDYNAMICS = "sixDoFDynamicsCoupledFossenTurbDynamics";
-                simWithMonitor('OCTModel','timeStep',2,'minRate',1)
-                tsc2 = signalcontainer(logsout);
+                fltCtrl.setInitPathVar(vhcl.initPosVecGnd.Value,hiLvlCtrl.basisParams.Value,gndStn.posVec.Value);
 
-%                 fltCtrl.yawMoment.kp.setValue(-4e5,fltCtrl.yawMoment.kp.Unit)
-                thrSwitch = 0;
-                thr.tether1.dragCoeff.setValue(0,'')
-                thr.numNodes.setValue(2,'');
-                thr.tether1.numNodes.setValue(2,'');    
-                SIXDOFDYNAMICS = "fiveDoFDynamicsCoupledFossenTurbDynamics";
-                simWithMonitor('OCTModel','timeStep',2,'minRate',1)
-                tsc3 = signalcontainer(logsout);
+            %                                 fltCtrl.rollMoment.kp.setValue(1e6,fltCtrl.rollMoment.kp.Unit)
+            %                 fltCtrl.pitchMoment.kp.setValue(240000,fltCtrl.pitchMoment.kp.Unit)
+            %             fltCtrl.pitchMoment.ki.setValue(5000,fltCtrl.pitchMoment.ki.Unit)
+            fltCtrl.AoAConst.setValue(18*pi/180,'deg')
+            fltCtrl.perpErrorVal.setValue(0.4,'rad')
 
-                if simScenario(3) == 1
-                    p = tsc.rotPowerSummary(vhcl,env,thr);
-                    p2 = tsc2.rotPowerSummary(vhcl,env,thr);
-%                     p3 = tsc3.rotPowerSummary(vhcl,env,thr);
-                    powerNom(k) = p.turb;
-                    powerNew(k) = p2.turb;
-%                     powerNew2(k) = p3.turb;
-%                     [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
-                end
+            fltCtrl.rollMoment.kp.setValue(1e5,fltCtrl.rollMoment.kp.Unit)
+            fltCtrl.rollMoment.kd.setValue(1e5,fltCtrl.rollMoment.kd.Unit)
+
+            fltCtrl.pitchMoment.kp.setValue(1e5,fltCtrl.rollMoment.kp.Unit)
+            fltCtrl.pitchMoment.kd.setValue(1e5,fltCtrl.rollMoment.kd.Unit)
+
+
+            turbAng = 0;
+            turbAngVec = [cosd(turbAng);0;sind(turbAng)];
+            vhcl.turb1.axisUnitVec.setValue(turbAngVec,'')
+            vhcl.turb2.axisUnitVec.setValue(-turbAngVec,'')
+            vhcl.turb3.axisUnitVec.setValue(turbAngVec,'')
+            vhcl.turb4.axisUnitVec.setValue(-turbAngVec,'')
+            fltCtrl.yawMoment.kp.setValue(-5e4,fltCtrl.yawMoment.kp.Unit)
+            %%  Set up critical system parameters and run simulation
+            FLOWCALCULATION = 'flowColumnSpec';
+            thrSwitch = 1
+            simParams = SIM.simParams;  simParams.setDuration(4000,'s');  dynamicCalc = '';
+            initTSR = 4*ones(10,1);
+            simWithMonitor('OCTModel','timeStep',2,'minRate',1)
+
+            tsc = signalcontainer(logsout);
+            %%
+
+            %%  Log Results
+
+            simParams.setDuration(1000,'s');
+            %
+            %                                 fltCtrl.yawMoment.kp.setValue(-5e4,fltCtrl.yawMoment.kp.Unit)
+            thrSwitch = 0;
+            thr.tether1.dragCoeff.setValue(0,'')
+            thr.numNodes.setValue(2,'');
+            thr.tether1.numNodes.setValue(2,'');
+            SIXDOFDYNAMICS = "sixDoFDynamicsCoupledFossenTurbDynamics";
+            simWithMonitor('OCTModel','timeStep',2,'minRate',1)
+            tsc2 = signalcontainer(logsout);
+            %
+            % %                 fltCtrl.yawMoment.kp.setValue(-4e5,fltCtrl.yawMoment.kp.Unit)
+            SIXDOFDYNAMICS = "fiveDoFDynamicsCoupledFossenTurbDynamics";
+            simWithMonitor('OCTModel','timeStep',2,'minRate',1)
+            tsc3 = signalcontainer(logsout);
+
+            if simScenario(3) == 1
+                p = tsc.rotPowerSummary(vhcl,env,thr);
+                p2 = tsc2.rotPowerSummary(vhcl,env,thr);
+                p3 = tsc3.rotPowerSummary(vhcl,env,thr);
+                powerNom(k) = p.turb;
+                powerNew(k) = p2.turb;
+                powerNew2(k) = p3.turb;
+                %                     [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
             end
-%             k = k+1;
         end
+        k = k+1;
     end
+end
 end
 %%
 
 [Idx1,Idx2,lapCheck] = tsc.getLapIdxs(max(tsc.lapNumS.Data)-1);  ran = Idx1:Idx2;
 [Idx1,Idx2,lapCheck] = tsc2.getLapIdxs(max(tsc2.lapNumS.Data)-1);  ran1 = Idx1:Idx2;
-% [Idx1,Idx2,lapCheck] = tsc3.getLapIdxs(max(tsc3.lapNumS.Data)-1);  ran2 = Idx1:Idx2;
+[Idx1,Idx2,lapCheck] = tsc3.getLapIdxs(max(tsc3.lapNumS.Data)-1);  ran2 = Idx1:Idx2;
 
 
 close all
@@ -196,7 +199,7 @@ figure
 tsc.velocityVec.mag.plot
 hold on
 tsc2.velocityVec.mag.plot
-% tsc3.velocityVec.mag.plot
+tsc3.velocityVec.mag.plot
 xlabel 'Time [s]'
 ylabel 'Velocity Magnitude [m/s]'
 legend('6DoF Full Tether','6DoF Tether Regression Model','Location','north')
@@ -204,89 +207,44 @@ legend('6DoF Full Tether','6DoF Tether Regression Model','Location','north')
 
 figure
 tL = tiledlayout(3,1);
-tL.Title.String = 'HStab Force';
+tL.Title.String = 'Thr Force';
 ylab = {'$x_g$ [m]','$y_g$ [m]','$z_g$ [m]'};
 for i = 1:3
     nexttile
     hold on
-    plotsq(tsc.positionVec.Time(ran)-tsc.positionVec.Time(ran(1)),tsc.hStabForce.Data(i,:,ran));
-    plotsq(tsc2.positionVec.Time(ran1)-tsc2.positionVec.Time(ran1(1)),tsc2.hStabForce.Data(i,:,ran1))
-%     plotsq(tsc3.positionVec.Time(ran2)-tsc3.positionVec.Time(ran2(1)),tsc3.positionVec.Data(i,:,ran2))
+    plotsq(tsc.closestPathVariable.Data(ran),tsc.FThrNetBdy.Data(i,:,ran));
+    plotsq(tsc2.closestPathVariable.Data(ran1),tsc2.FThrNetBdy.Data(i,:,ran1))
+    plotsq(tsc3.closestPathVariable.Data(ran2),tsc3.FThrNetBdy.Data(i,:,ran2))
     ylabel(ylab{i})
 end
 xlabel 'Time [s]'
 legend('6DoF Full Tether','6DoF Tether Regression Model','5DoF Tether Regression Model','Location','north')
 
+
 figure
 tL = tiledlayout(3,1);
-tL.Title.String = 'Fluid Moment';
+tL.Title.String = 'Thr Force';
 ylab = {'$x_g$ [m]','$y_g$ [m]','$z_g$ [m]'};
 for i = 1:3
     nexttile
     hold on
-    plotsq(tsc.positionVec.Time(ran)-tsc.positionVec.Time(ran(1)),tsc.MNetBdy.Data(i,:,ran));
-    plotsq(tsc2.positionVec.Time(ran1)-tsc2.positionVec.Time(ran1(1)),tsc2.MNetBdy.Data(i,:,ran1))
-%     plotsq(tsc3.positionVec.Time(ran2)-tsc3.positionVec.Time(ran2(1)),tsc3.positionVec.Data(i,:,ran2))
+    plotsq(tsc.closestPathVariable.Time(ran)-tsc.closestPathVariable.Time(ran(1)),tsc.positionVec.Data(i,:,ran));
+    plotsq(tsc2.closestPathVariable.Time(ran1)-tsc2.closestPathVariable.Time(ran1(1)),tsc2.positionVec.Data(i,:,ran1))
+    plotsq(tsc3.closestPathVariable.Time(ran2)-tsc3.closestPathVariable.Time(ran2(1)),tsc3.positionVec.Data(i,:,ran2))
     ylabel(ylab{i})
 end
 xlabel 'Time [s]'
 legend('6DoF Full Tether','6DoF Tether Regression Model','5DoF Tether Regression Model','Location','north')
 
+%%
+num = 0
 figure
-tL = tiledlayout(3,1);
-tL.Title.String = 'Tether Moment';
-ylab = {'$x_g$ [m]','$y_g$ [m]','$z_g$ [m]'};
-for i = 1:3
-    nexttile
-    hold on
-    plotsq(tsc.positionVec.Time(ran)-tsc.positionVec.Time(ran(1)),tsc.MThrNetBdy.Data(i,:,ran));
-    plotsq(tsc2.positionVec.Time(ran1)-tsc2.positionVec.Time(ran1(1)),tsc2.MThrNetBdy.Data(i,:,ran1))
-%     plotsq(tsc3.positionVec.Time(ran2)-tsc3.positionVec.Time(ran2(1)),tsc3.positionVec.Data(i,:,ran2))
-    ylabel(ylab{i})
-end
-xlabel 'Time [s]'
-legend('6DoF Full Tether','6DoF Tether Regression Model','5DoF Tether Regression Model','Location','north')
+scatter(powerNom,powerNew2,50,bVec','filled')
+xlabel 'Full Tether Power [kW]'
+ylabel 'Reduced Tether Power [kW]'
+h = colorbar
+h.Label.String = 'Path Width [m]'
+h.Label.Interpreter = 'latex'
 
-figure
-tL = tiledlayout(3,1);
-ylab = {'Roll [deg]','Pitch [deg]','Yaw [deg]'};
-for i = 1:3
-    tL.Title.String = 'Euler Angles';
-    nexttile
-    hold on
-    plotsq(tsc.positionVec.Time(ran)-tsc.positionVec.Time(ran(1)),tsc.eulerAngles.Data(i,:,ran)*180/pi);
-    plotsq(tsc2.positionVec.Time(ran1)-tsc2.positionVec.Time(ran1(1)),tsc2.eulerAngles.Data(i,:,ran1)*180/pi)
-%     plotsq(tsc3.positionVec.Time(ran2)-tsc3.positionVec.Time(ran2(1)),tsc3.eulerAngles.Data(i,:,ran2)*180/pi)
-    ylabel(ylab{i})
-end
-xlabel 'Time [s]'
-legend('6DoF Full Tether','6DoF Tether Regression Model','5DoF Tether Regression Model','Location','north')
-
-figure
-tL = tiledlayout(3,1);
-tL.Title.String = 'Velocity';
-ylab = {'$u$ [m/s]','$v$ [m/s]','$w$ [m/s]'};
-for i = 1:3
-    nexttile
-    hold on
-    plotsq(tsc.positionVec.Time(ran)-tsc.positionVec.Time(ran(1)),tsc.velocityVec.Data(i,:,ran));
-    plotsq(tsc2.positionVec.Time(ran1)-tsc2.positionVec.Time(ran1(1)),tsc2.velocityVec.Data(i,:,ran1))
-%     plotsq(tsc3.positionVec.Time(ran2)-tsc3.positionVec.Time(ran2(1)),tsc3.velocityVec.Data(i,:,ran2))
-    ylabel(ylab{i})
-end
-xlabel 'Time [s]'
-legend('6DoF Full Tether','6DoF Tether Regression Model','6DoF Tether Regression Model','Location','north')
-
-figure('Position',[100 100 600 600]); 
-
-scatter(powerNom,powerNew,[],bVec,'filled')
-hold on
-
-scatter(powerNom,powerNew2,[],bVec,'s','filled')
-xlabel 'Full Model Power [kW]'
-ylabel 'Reduced Model Power [kW]'
-h = colorbar;
-h.Label.String = 'Path Width [m]';
-h.Label.Interpreter = 'latex';
-h.FontSize = 12;
-set(gca,'FontSize',12)
+% tsc.lapNumS.max
+% [idx1,idx2] = tsc.getLapIdxs(tsc.lapNumS.max-1)

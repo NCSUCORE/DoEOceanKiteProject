@@ -130,13 +130,22 @@ elems(14).Complexity = 'real';
 elems(14).Unit = 'rad/s';
 
 elems(15) = Simulink.BusElement;
-elems(15).Name = 'flowVelocityVec';
-elems(15).Dimensions = [3 1];
+elems(15).Name = 'rotorPower';
+elems(15).Dimensions = 1;
 elems(15).DimensionsMode = 'Fixed';
 elems(15).DataType = 'double';
 elems(15).SampleTime = -1;
 elems(15).Complexity = 'real';
-elems(15).Unit = 'm/s';
+elems(15).Unit = 'W';
+
+elems(16) = Simulink.BusElement;
+elems(16).Name = 'flowVelocityVec';
+elems(16).Dimensions = [3 1];
+elems(16).DimensionsMode = 'Fixed';
+elems(16).DataType = 'double';
+elems(16).SampleTime = -1;
+elems(16).Complexity = 'real';
+elems(16).Unit = 'm/s';
 
 BUS = Simulink.Bus;
 BUS.Elements = elems;
