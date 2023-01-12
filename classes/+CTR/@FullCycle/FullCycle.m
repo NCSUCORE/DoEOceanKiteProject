@@ -2,20 +2,9 @@ classdef FullCycle < handle
     %   MantaFullCycle: Class definition for the Manta Ray full-cycle controller 
     
     properties (SetAccess = private)
-        % State machine 
         shiftLaps 
-        
-        
-        % FPID controllers
-        
-        % Saturations
         preCCAlt
-        % Path Following 
-        
-        % Spooling
-        
-        % Setpoint method ctrl 
-       
+        Ts        
     end
     
     methods
@@ -23,6 +12,7 @@ classdef FullCycle < handle
             % State machine 
            obj.shiftLaps = SIM.parameter('Value',5,'Description','Number of laps to shift Azimuth back to center','Unit','');
            obj.preCCAlt  = CTR.sat('upperLim',15,'lowerLim',20,'Unit','m');
+           obj.Ts        = SIM.parameter('Value',0.01,'Unit','s','Description','Time step for discrete time implementation');
         end
        
         
