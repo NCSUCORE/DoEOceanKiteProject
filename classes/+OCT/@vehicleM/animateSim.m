@@ -266,7 +266,11 @@ end
 
 % Plot the path
 if ~isempty(p.Results.PathFunc)
+<<<<<<< HEAD
     initBasisParams = tscTmp.basisParams.Data(1,:);
+=======
+    initBasisParams = tscTmp.pathParams.Data(:,:,1);
+>>>>>>> 235507af65cec79c01225d6f4f0f7a4771e8e48e
     initBasisParams(5) = sqrt(sum((tscTmp.gndStnPositionVec.getsamples(1).Data(:) - tscTmp.positionVec.getsamples(1).Data(:)).^2));
     path = eval(sprintf('%s(linspace(0,1,1000),initBasisParams,tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
@@ -295,7 +299,7 @@ if p.Results.NavigationVecs
     posData = squeeze(tscTmp.positionVec.Data)';
     %     r = sqrt(sum(posData.^2,2));
     len = obj.fuse.length.Value;
-    pathPt = eval(sprintf('%s(tscTmp.currentPathVar.Data(1),tscTmp.basisParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
+    pathPt = eval(sprintf('%s(tscTmp.currentPathVar.Data(1),tscTmp.pathParams.Data(:,:,1),tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
     h.tanVec = quiver3(...
         pathPt(1),pathPt(2),pathPt(3),...
@@ -681,7 +685,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
     % Update the path
     if ~isempty(p.Results.PathFunc)
         % Get basis parameters
-        currentBasisParams = tscTmp.basisParams.getdatasamplesholdlast(ii);
+        currentBasisParams = tscTmp.pathParams.getdatasamplesholdlast(ii);
         % Overwrite the last one with radius
         currentBasisParams(end) = norm(...
             tscTmp.positionVec.getsamples(ii).Data...
