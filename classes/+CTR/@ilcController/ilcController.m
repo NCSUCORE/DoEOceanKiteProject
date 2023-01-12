@@ -19,14 +19,15 @@ classdef ilcController < dynamicprops
         trustRegion
         excitationAmp
         subspaceDims
-        normalizationValue
+        upperLim
+        lowerLim
     end
 
     methods
         function obj = ilcController()
             %ilcController Construct an instance of this class
             %   Add apprpriate properties
-            obj.initBasisParams = SIM.parameter('Unit','','Description','Initial Path Parameters')
+            obj.initBasisParams = SIM.parameter('Unit','','Description','Initial Path Parameters');
             obj.switching = SIM.parameter('Unit','','Description','seILC - 1, eILC - 0');
             obj.forgettingFactor = SIM.parameter('Unit','','Description','Exponential Forgetting Factor','Value',0.98);
             obj.numInitLaps = SIM.parameter('Unit','','Description','Number of laps allowed for transients to settle before ILC begins');
@@ -56,7 +57,7 @@ classdef ilcController < dynamicprops
             end
         end
 
-        function val = get.normalizationValue(obj)
+        function val = get.upperLim(obj)
             %Put sctructure into an array
             x = struct2array(obj.parameterSpace);
 
@@ -66,7 +67,21 @@ classdef ilcController < dynamicprops
             %Loop through subspaces to build initial parameters
             val = [];
             for i = 1:n
-                val = [val x(i).normalizationValue.Value];
+                val = [val x(i).upperLim.Value];
+            end
+        end
+
+        function val = get.lowerLim(obj)
+            %Put sctructure into an array
+            x = struct2array(obj.parameterSpace);
+
+            % Get number of subspaces
+            n = numel(x);
+
+            %Loop through subspaces to build initial parameters
+            val = [];
+            for i = 1:n
+                val = [val x(i).lowerLim.Value];
             end
         end
 

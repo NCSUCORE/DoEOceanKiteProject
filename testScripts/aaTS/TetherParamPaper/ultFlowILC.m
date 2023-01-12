@@ -1,7 +1,7 @@
 %% Test script for John to control the kite model
 % clear all% powerNom powerNew;
 clc
-% close all;
+close all;
 Simulink.sdi.clear
 %% Simulation Setup
 % 1 - Vehicle Model:         1 = AR8b8, 2 = AR9b9, 3 = AR9b10
@@ -29,7 +29,7 @@ powGen = zeros(n,m,r);
 pathErr = zeros(n,m,r);
 dragRatio = zeros(n,m,r);
 Pow = cell(n,m,r);
-
+laps2opt = 40;
 for i = 1:n
     if i < 1
         continue
@@ -47,7 +47,7 @@ for i = 1:n
                 %  Set Test Parameters
                 tFinal = 15000;%+200*k;      tSwitch = 10000;                        %   s - maximum sim duration
                 flwSpd = flwSweep;%(k);                                              %   m/s - Flow speed
-                altitude = thrSweep(j)/3;                   %   m/m - cross-current and initial altitude
+                altitude = thrSweep(j)/2;                   %   m/m - cross-current and initial altitude
 
                 thrLength = thrSweep(j);
                 el = asin(altitude/thrLength);                              %   rad - Initial elevation angle
@@ -55,7 +55,7 @@ for i = 1:n
 
                 hNom = altitude;
                 v = [0.25 1]*flwSpd;
-                z = [hNom-200 hNom];
+                z = [hNom-600 hNom];
                 flow = flowDist(height,z,v);
 
                 if ii == 1
@@ -69,10 +69,10 @@ for i = 1:n
                 loadComponent('ultDoeKiteTSR')
                 VEHICLE = 'vhcl4turb';
                 
-%                 vhcl.turb1.diameter.setValue(0.5,'m')
-%                 vhcl.turb2.diameter.setValue(0.5,'m')
-%                 vhcl.turb3.diameter.setValue(0.5,'m')
-%                 vhcl.turb4.diameter.setValue(0.5,'m');%ts
+                vhcl.turb1.diameter.setValue(0.75,'m')
+                vhcl.turb2.diameter.setValue(0.75,'m')
+                vhcl.turb3.diameter.setValue(0.75,'m')
+                vhcl.turb4.diameter.setValue(0.75,'m');
                 loadComponent('seILC');
                 %                 HILVLCONTROLLER = 'ilcPathOptThrTen'
                 hiLvlCtrl.initBasisParams.setValue([a,b,altitude,0*pi/180,... %   Initialize basis parameters
@@ -94,6 +94,7 @@ for i = 1:n
                 %%  Vehicle Initial Conditions
                 %   Constant basis parameters
                 PATHGEOMETRY = 'lemBoothNew';
+                FLIGHTCONTROLLER = 'pathFollowingControllerManta'
                 if simScenario(3) == 1
                     if simScenario(2) == 4
                         vhcl.setICsOnPath(0.875,PATHGEOMETRY,hiLvlCtrl.initBasisParams.Value,gndStn.posVec.Value,2*flwSpd)
@@ -136,15 +137,21 @@ for i = 1:n
                 %                                 fltCtrl.rollMoment.kp.setValue(1e6,fltCtrl.rollMoment.kp.Unit)
                 %                 fltCtrl.pitchMoment.kp.setValue(240000,fltCtrl.pitchMoment.kp.Unit)
                 %             fltCtrl.pitchMoment.ki.setValue(5000,fltCtrl.pitchMoment.ki.Unit)
-                fltCtrl.AoAConst.setValue(18*pi/180,'deg')
-                fltCtrl.perpErrorVal.setValue(0.4,'rad')
+                fltCtrl.AoAConst.setValue(15*pi/180,'deg')
+                fltCtrl.perpErrorVal.setValue(0.025,'rad')
 
-                fltCtrl.rollMoment.kp.setValue(1e5,fltCtrl.rollMoment.kp.Unit)
-                fltCtrl.rollMoment.kd.setValue(1e5,fltCtrl.rollMoment.kd.Unit)
+                fltCtrl.rollMoment.kp.setValue(1e6,fltCtrl.rollMoment.kp.Unit)
+                fltCtrl.rollMoment.kd.setValue(1e6,fltCtrl.rollMoment.kd.Unit)
+%                 
+                fltCtrl.tanRoll.kp.setValue(.8,fltCtrl.tanRoll.kp.Unit)
+                fltCtrl.tanRoll.kd.setValue(.4,fltCtrl.tanRoll.kd.Unit)
+                
+%                 fltCtrl.yawMoment.kp.setValue(0,fltCtrl.yawMoment.kp.Unit)
 
-                fltCtrl.pitchMoment.kp.setValue(1e5,fltCtrl.rollMoment.kp.Unit)
-                fltCtrl.pitchMoment.kd.setValue(1e5,fltCtrl.rollMoment.kd.Unit)
-
+                fltCtrl.pitchMoment.kp.setValue(5e5,fltCtrl.rollMoment.kp.Unit)
+                fltCtrl.pitchMoment.ki.setValue(.5e4,fltCtrl.rollMoment.ki.Unit)
+                fltCtrl.pitchMoment.kd.setValue(2e6,fltCtrl.rollMoment.kd.Unit)
+                fltCtrl.searchSize.setValue(.125,'')
 
                 turbAng = 0;
                 turbAngVec = [cosd(turbAng);0;sind(turbAng)];
@@ -155,30 +162,35 @@ for i = 1:n
                 fltCtrl.yawMoment.kp.setValue(-5e4,fltCtrl.yawMoment.kp.Unit)
                 %%  Set up critical system parameters and run simulation
                 FLOWCALCULATION = 'flowColumnSpec';
-                thrSwitch = 1
+                thrSwitch = 1;
                 simParams = SIM.simParams;  simParams.setDuration(10000,'s');  dynamicCalc = '';
-                
-                
-                initTSR = vhcl.turb1.optTSR.Value*ones(10,1);
-                simWithMonitor('OCTModel','timeStep',2,'minRate',1)
-                
+                set_param('OCTModel', 'MinimalZcImpactIntegration', 'on')
+                hiLvlCtrl.switching.setValue(1,'');
+                simWithMonitor('OCTModel','timeStep',2,'minRate',7)             
                 tsc = signalcontainer(logsout);
+                if sum(hiLvlCtrl.subspaceDims)~=10
+                hiLvlCtrl.switching.setValue(0,'');
+                simWithMonitor('OCTModel','timeStep',2,'minRate',1)
+                tsc2 = signalcontainer(logsout);
+                end
                 %%
-                fpath = 'C:\Users\adabney\iCloudDrive\NCSU HW Uploads\estimationPaper\figs\'
+                fpath = 'C:\Users\adabney\iCloudDrive\NCSU HW Uploads\estimationPaper\figs\';
                 close all
-                lapInt = [8 10 15 25 38 45]
+                if sum(hiLvlCtrl.subspaceDims)==10
+                maxLap = tsc.lapNumS.max;
+                lapInt = [8 10 15 25 maxLap-1];
                 figure('Position',[100 100 600 550]); hold on; grid on;
-                j = 1
-                lineorder = {'-','-','-','--',':','-.','-'}
-                markerorder = {'none','s','^','none','none','none','none'}
+                j = 1;
+                lineorder = {'-','-','-','--',':','-.','-'};
+                markerorder = {'none','s','^','none','none','none','none'};
                 stairs(0:.1:1,2.88*ones(11,1),'k','LineStyle',lineorder{j},'Marker',markerorder{j},'LineWidth',1.5);
-                j = j+1
+                j = j+1;
                 for i = lapInt(1:end-1)
-                    iter = i-7
+                    iter = i-7;
                 [id1,id2] = tsc.getLapIdxs(i); 
                 ran = id1:id2;
-                stairs(0:.05:.5,[tsc.basisVecIter.Data(iter,3:end) tsc.basisVecIter.Data(iter,end)],'k','LineStyle',lineorder{j},'Marker',markerorder{j},'LineWidth',1.5)
-                legEnt{1} = 'Initial Condition'
+                stairs(0:.05:.5,[tsc.basisVecIter.Data(iter,1:end) tsc.basisVecIter.Data(iter,end)],'k','LineStyle',lineorder{j},'Marker',markerorder{j},'LineWidth',1.5)
+                legEnt{1} = 'Initial Condition';
                 hold on;
 %                 plotsq(tsc.closestPathVariable.Data(ran),tsc.TSR.Data(1,4,ran))
                 newPow = tsc.netPow1.getsamples(ran);
@@ -199,63 +211,17 @@ for i = 1:n
                 legend(legEnt,'NumColumns',2,'Location','northwest');
                 xlabel 'Path Position'
                 ylabel 'TSR'
-                ylim([2.8 4])
+                ylim([2.8 4.2])
                 xlim([0 0.5])
                 set(gca,'FontSize',14)
                 saveas(gcf,[fpath 'rotorProf'],'fig')
                 saveas(gcf,[fpath 'rotorProf'],'epsc')
                 %%              
-                figure; hold on; grid on;
-                j = 1
-                for i = lapInt
-                [id1,id2] = tsc.getLapIdxs(i); 
-                ran = id1:id2;
-                plotsq(tsc.closestPathVariable.Data(ran),tsc.rotorTorque.Data(1,1,ran),'LineWidth',1.5)
-                hold on;
-%                 plotsq(tsc.closestPathVariable.Data(ran),tsc.TSR.Data(1,4,ran))
-                newPow = tsc.netPow1.getsamples(ran);
-                legEnt{j} = sprintf('Iteration %d',i-4);
-%                 lapAvg(j) = newPow.mean
-                j = j+1;
-                i
-                end
-                legEnt{end} = 'Physics Based Law';
-                legend(legEnt);
-                xlabel 'Path Position'
-                ylabel 'Rotor Speed [rad/s]'
-             
-                clear legEnt
-                figure; hold on; grid on;
-                j = 1
-                for i = lapInt
-                [id1,id2] = tsc.getLapIdxs(i); 
-                ran = id1:id2;
-                plotsq(tsc.closestPathVariable.Data(ran),tsc.netPow1.Data(ran),'LineWidth',1.5)
-                hold on;
-%                 plotsq(tsc.closestPathVariable.Data(ran),tsc.TSR.Data(1,4,ran))
-                newPow = tsc.netPow1.getsamples(ran);
-                if i ~= 41
-                legEnt{j} = sprintf('Iteration %d, Lap Averaged Power %.0f kW',i-4,newPow.mean);
-                else
-                legEnt{j} = sprintf('Omniscient Control, Lap Averaged Power %.0f W',newPow.mean);
-                end
-%                 lapAvg(j) = newPow.mean
-                j = j+1;
-                i
-                end
-%                 legEnt{end} = 'Omnicient Command';
-                legend(legEnt);
-                xlabel 'Path Position'
-                ylabel 'Rotor Mechanical Power [W]'
-                ylim([-inf 5000])
-%                 ylim([2.75 4])
-%                 legend('Command','Acheived')
-
                 figure('Position',[100 100 600 300]);
                 stairs([tsc.iter.Data; tsc.iter.Data(end)+1]-1,[tsc.J.Data; tsc.J.Data(end)],'k','LineWidth',1.5)
                 hold on 
                 plot([0 30],[lapAvg(end) lapAvg(end)],'--k')
-                ylabel 'Iteration Averaged Power [W]'
+                ylabel 'Lap-Averaged Power [W]'
                 xlabel 'Iteration'
                 legend('eILC','Physics Based Law','location','southeast')
                 set(gca,'FontSize',14)
@@ -264,42 +230,49 @@ for i = 1:n
                 grid on
                 saveas(gcf,[fpath 'rotorPerf'],'fig')
                 saveas(gcf,[fpath 'rotorPerf'],'epsc')
-
+                else
+%%
                 figure
                 perfTSR = tsc.J.Data;
-                gradSwitch = tsc.gradSwitch.Data;
-                perfPath = perfTSR;
-                perfPath(gradSwitch == 2) = NaN;
-                perfTSR(gradSwitch ~= 2) = NaN;
+                gradSwitch = tsc.gradSwitch.Data(1:end-1);
+                perfWidth = perfTSR;
+                perfHeight = perfTSR;
+                perfWidth([1==0; gradSwitch ~= 1]) = NaN;
+                perfHeight([1==0; gradSwitch ~= 2]) = NaN;
+                perfTSR([1==0; gradSwitch ~= 3]) = NaN;
                 figure('Position',[100 100 600 300]);
-                stairs(tsc.iter.Data-1,perfPath,'.k','MarkerSize',15)
+                stairs(tsc.iter.Data-1,perfWidth,'.k','MarkerSize',15)
                 hold on
-                stairs(tsc.iter.Data-1,perfTSR,'sk')
+                stairs(tsc.iter.Data-1,perfHeight,'sk')
+                stairs(tsc.iter.Data-1,perfTSR,'^k')
+                stairs(tsc2.iter.Data-1,tsc2.J.Data,'k')
                 grid on
-                ylabel 'Iteration Averaged Power [W]'
+                ylabel 'Lap-Averaged Power [W]'
 %                 yyaxis right
 %                 plot(tsc.iter.Data,tsc.gradSwitch.Data,'LineWidth',1.5,'--k')
                 xlabel 'Iteration'
-                ylim([3300 3900])
+%                 ylim([3300 3900])
 %                 ylabel 'Parameter Subspace'
 %                 xlim([0 30])
-                legend('Path Move','TSR Move','Location','southeast')
+                legend('Width Move','Height Move','TSR Move','eILC','Location','southeast')
                 set(gca,'FontSize',14)
-%                 saveas(gcf,[fpath 'switchingPerf'],'fig')
-%                 saveas(gcf,[fpath 'switchingPerf'],'epsc')
+                saveas(gcf,[fpath 'switchingPerf'],'fig')
+                saveas(gcf,[fpath 'switchingPerf'],'epsc')
 
                 figure('Position',[100 100 600 300])
-                plot(tsc.iter.Data,tsc.basisVecIter.Data(:,1),'k','LineWidth',1.5)
+                stairs(tsc.iter.Data,tsc.basisVecIter.Data(:,1),'k','LineWidth',1.5)
                 hold on
-                plot(tsc.iter.Data,tsc.basisVecIter.Data(:,2),':k','LineWidth',1.5)
+                stairs(tsc.iter.Data,tsc.basisVecIter.Data(:,2),'k','LineWidth',1.5)
+                stairs(tsc2.iter.Data,tsc2.basisVecIter.Data(:,1),'k','LineWidth',.5)
+                stairs(tsc2.iter.Data,tsc2.basisVecIter.Data(:,2),'k','LineWidth',.5)
                 grid on
                 xlabel 'Iteration'
                 ylabel 'Path Parameters [m]'
-                legend('Path Width','Path Height')
+                legend('seILC Path Width','seILC Path Height','eILC Path Width','eILC Path Height')
 %                 set(gca,'FontSize',14)
 %                 saveas(gcf,[fpath 'pathMoves'],'fig')
 %                 saveas(gcf,[fpath 'pathMoves'],'epsc')
-                
+                end
             end
         end
     end

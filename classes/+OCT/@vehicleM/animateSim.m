@@ -266,7 +266,7 @@ end
 
 % Plot the path
 if ~isempty(p.Results.PathFunc)
-    initBasisParams = tscTmp.basisParams.Data(:,:,1);
+    initBasisParams = tscTmp.basisParams.Data(1,:);
     initBasisParams(5) = sqrt(sum((tscTmp.gndStnPositionVec.getsamples(1).Data(:) - tscTmp.positionVec.getsamples(1).Data(:)).^2));
     path = eval(sprintf('%s(linspace(0,1,1000),initBasisParams,tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
