@@ -14,17 +14,18 @@ hiLvlCtrl.pathVarLowerLim.Value = 2.5000e-02
 hiLvlCtrl.pathVarLowerLim.Unit is unitless or has no unit specified
 hiLvlCtrl.pathVarLowerLim.NoScale = false
 hiLvlCtrl.pathVarLowerLim.Description = 'Lower limit on s for lap counter'
-hiLvlCtrl.parameterSpace is non-string and non-numeric and takes up 3.5200e+02 bytes
-hiLvlCtrl.forgettingFactor.Value = 9.8000e-01
+hiLvlCtrl.parameterSpace is non-string and non-numeric and takes up 1.7600e+02 bytes
+hiLvlCtrl.forgettingFactor.Value = 9.9500e-01
 hiLvlCtrl.forgettingFactor.Unit is unitless or has no unit specified
 hiLvlCtrl.forgettingFactor.NoScale = false
 hiLvlCtrl.forgettingFactor.Description = 'Exponential Forgetting Factor'
 hiLvlCtrl.initBasisParams.Unit is unitless or has no unit specified
 hiLvlCtrl.initBasisParams.NoScale = false
 hiLvlCtrl.initBasisParams.Description = 'Initial Path Parameters'
-hiLvlCtrl.initParameters = [80 20 2.88 2.88 2.88 2.88 2.88 2.88 2.88 2.88 2.88 2.88]
-hiLvlCtrl.learningGain = [0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005]
-hiLvlCtrl.trustRegion = [0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05 0.05]
-hiLvlCtrl.excitationAmp = [0.005 0.005 0.005 0.005 0.005 0.005 0.005 0.005 0.005 0.005 0.005 0.005]
-hiLvlCtrl.subspaceDims = [2 10]
-hiLvlCtrl.normalizationValue = [80 20 4 4 4 4 4 4 4 4 4 4]
+hiLvlCtrl.initParameters = [2.88 2.88 2.88 2.88 2.88 2.88 2.88 2.88 2.88 2.88]
+hiLvlCtrl.learningGain = [0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005 0.0005]
+hiLvlCtrl.trustRegion = [0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1]
+hiLvlCtrl.excitationAmp = [0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01 0.01]
+hiLvlCtrl.subspaceDims = 1.0000e+01
+hiLvlCtrl.upperLim = [4 4 4 4 4 4 4 4 4 4]
+hiLvlCtrl.lowerLim = [0 0 0 0 0 0 0 0 0 0]

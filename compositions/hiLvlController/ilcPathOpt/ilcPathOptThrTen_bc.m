@@ -16,9 +16,15 @@ elems(1).SampleTime = -1;
 elems(1).Complexity = 'real';
 elems(1).Unit = '';
 
+n = evalin('base','sum(hiLvlCtrl.subspaceDims)');
+if n > 12
+    xDim = 20;
+else
+    xDim = 10;
+end
 elems(2) = Simulink.BusElement;
 elems(2).Name = 'dragFitParams';
-elems(2).Dimensions = [10 1];%;basisParamsDims;
+elems(2).Dimensions = [xDim 1];%;basisParamsDims;
 elems(2).DimensionsMode = 'Fixed';
 elems(2).DataType = 'double';
 elems(2).SampleTime = -1;
