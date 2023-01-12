@@ -94,6 +94,8 @@ vhcl.fuse.setREnd_LE([max(vhcl.hStab.rSurfLE_WingLEBdy.Value(1),vhcl.vStab.rSurf
 %% Turbines
 vhcl.setNumTurbines(4,'');
 vhcl.build('TurbClass','turb');
+% T1 = readtable('Andrew_TurbineCT_12_9_22.txt'); T1 = table2array(T1);
+% T2 = readtable('Andrew_TurbineCP_12_9_22.txt'); T2 = table2array(T2);
 
 T1 = readtable('Andrew_04m_CT_05-13-2022.txt'); T1 = table2array(T1);
 T2 = readtable('Andrew_04m_CP_05-13-2022.txt'); T2 = table2array(T2);

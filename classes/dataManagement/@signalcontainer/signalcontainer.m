@@ -39,7 +39,7 @@ classdef signalcontainer < dynamicprops
                         % Deal with duplicate signal names
                         if isa(ts,'Simulink.SimulationData.Dataset')
                             if p.Results.Verbose
-                                warning('Duplicate signal names: ''%s''.  Taking first found signal.',ts{1}.Name)
+%                                 warning('Duplicate signal names: ''%s''.  Taking first found signal.',ts{1}.Name)
                             end
                             ts = ts{1};
                         end
@@ -409,7 +409,7 @@ classdef signalcontainer < dynamicprops
             PLoydKite = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDnoThr.^2.*(C1.*C2).^3;%*.5;
             Pow.loyd = mean(PLoyd)*1e-3;
             Pow.loydNT = mean(PLoydKite)*1e-3;
-            Pow.turb = mean(obj.turbPow.Data(1,1,ran))*1e-3;
+            Pow.turb = mean(obj.turbPow.Data(ran,1))*1e-3;
             Pow.elec = mean(obj.elecPow.Data(1,1,ran))*1e-3;
             try
                 Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;

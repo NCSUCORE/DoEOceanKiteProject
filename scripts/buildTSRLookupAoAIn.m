@@ -5,11 +5,11 @@ thrCD = 0:.1:1;
 AoA = 5:1:20;
 %Initialize Vehicle
 loadComponent('ultDoeKiteTSR');
-
-vhcl.turb1.diameter.setValue(0.4,'m')
-vhcl.turb2.diameter.setValue(0.4,'m')
-vhcl.turb3.diameter.setValue(0.4,'m')
-vhcl.turb4.diameter.setValue(0.4,'m')
+% 
+% vhcl.turb1.diameter.setValue(0.5,'m')
+% vhcl.turb2.diameter.setValue(0.5,'m')
+% vhcl.turb3.diameter.setValue(0.5,'m')
+% vhcl.turb4.diameter.setValue(0.5,'m')
 loadComponent('pathFollowingTether');
 % vhcl.gearBoxLoss.setValue(0,'');
 thr.tether1.setDensity(1000,'kg/m^3');

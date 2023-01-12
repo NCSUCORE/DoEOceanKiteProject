@@ -7,10 +7,9 @@ function Xi = sparsifyDynamics(Theta,dXdt,lambda,n)
 
 % compute Sparse regression: sequential least squares
 Xi = Theta\dXdt;  % initial guess: Least-squares
-m = numel(Xi);
 % lambda is our sparsification knob.
 for k=1:10
-    smallinds = (abs(Xi)<lambda);% | ((1:m)>m-6)' | ((1:m)==5)' | ((1:m)==6)');   % find small coefficients
+    smallinds = (abs(Xi)<lambda);
     Xi(smallinds)=0;                % and threshold
     for ind = 1:n                   % n is state dimension
         biginds = ~smallinds(:,ind);

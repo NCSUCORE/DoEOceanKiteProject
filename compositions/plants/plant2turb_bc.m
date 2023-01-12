@@ -208,6 +208,15 @@ elems(23).SampleTime = -1;
 elems(23).Complexity = 'real';
 elems(23).Unit = 'rad/s';
 
+elems(24) = Simulink.BusElement;
+elems(24).Name = 'rotorPower';
+elems(24).Dimensions = 1;
+elems(24).DimensionsMode = 'Fixed';
+elems(24).DataType = 'double';
+elems(24).SampleTime = -1;
+elems(24).Complexity = 'real';
+elems(24).Unit = 'W';
+
 CONTROL = Simulink.Bus;
 CONTROL.Elements = elems;
 CONTROL.Description = 'Bus containing signals produced by the plant model';
