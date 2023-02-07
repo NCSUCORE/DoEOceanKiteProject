@@ -1,0 +1,1 @@
+You cannot use MATLAB without a MATLAB license. To download and use the project, you do not need a special license, just a MATLAB license with the addons. 
