@@ -1,1 +1,1 @@
-You cannot use MATLAB without a MATLAB license. To download and use the project, you do not need a special license, just a MATLAB license with the addons. 
+You cannot use MATLAB without a MATLAB license. To download and use the project, you do not need a special license, just a MATLAB license. You may need to also have the aerospace toolbox (https://www.mathworks.com/products/aerospace-toolbox.html) and the DSP system toolbox (https://www.mathworks.com/products/dsp-system.html). 
