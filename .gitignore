@@ -1,14 +1,29 @@
-output
+# MATLAB & Simulink backup
 *.asv
-dump/
-# Windows default autosave extension
-*.asv
+*.original
+*.autosave
 
 # OSX / *nix default autosave extension
 *.m~
 
 # Compiled MEX binaries (all platforms)
 *.mex*
+
+# Simulink cache/compiled
+*.slxc
+
+# Simulink Embedded Coder outputs
+*.dwo
+*.out
+*.hex
+
+# Simulink Embedded Coder intermediate
+*.d
+*.obj
+*.dmr
+slprj/
+sccprj/
+*_rtw/
 
 # Packaged app and toolbox files
 *.mlappinstall
@@ -17,120 +32,35 @@ dump/
 # Generated helpsearch folders
 helpsearch*/
 
-# Simulink code generation folders
-slprj/
-sccprj/
-
 # Matlab code generation folders
 codegen/
-
-# Simulink autosave extension
-*.autosave
 
 # Octave session info
 octave-workspace
 
-# Video files
-*.avi
-*.gif
+output
+dump/
 
-# compiled simulink models
-*.slxc
+# Simulink session settings
+*.mldatx
+
+# Linux/ROS temp file
+*.swp
+*.swo
+*.log
+
+# temp file
+~$*.docx
+~$*.xlsx
+~$*.sldprt
 
 # images and videos
-.gif
-.GIF
-.png
-.PNG
-.jpeg
-.JPEG
-.fig
-.FIG
-280 snaps.png
-03262021/data_26_Mar_2021_13_03_44.mat
-03262021/data_26_Mar_2021_12_57_12.mat
-03262021/data_26_Mar_2021_12_32_53.mat
-03262021/data_26_Mar_2021_12_28_52.mat
-03262021/data_26_Mar_2021_12_25_43.mat
-03262021/data_26_Mar_2021_12_19_25.mat
-03262021/data_26_Mar_2021_12_16_13.mat
-03262021/data_26_Mar_2021_12_12_14.mat
-03262021/data_26_Mar_2021_12_07_41.mat
-03262021/data_26_Mar_2021_12_04_40.mat
-03262021/data_26_Mar_2021_12_01_55.mat
-03262021/data_26_Mar_2021_11_46_14.mat
-03262021/data_26_Mar_2021_11_42_49.mat
-03262021/data_26_Mar_2021_11_39_53.mat
-03262021/data_26_Mar_2021_11_36_42.mat
-03262021/data_26_Mar_2021_11_33_41.mat
-03262021/data_26_Mar_2021_11_30_08.mat
-03262021/data_26_Mar_2021_11_27_19.mat
-03262021/data_26_Mar_2021_11_24_02.mat
-03262021/data_26_Mar_2021_11_21_02.mat
-03262021/data_26_Mar_2021_11_05_42.mat
-03262021/data_26_Mar_2021_11_02_49.mat
-03262021/data_26_Mar_2021_11_00_13.mat
-03262021/data_26_Mar_2021_10_57_16.mat
-03262021/data_26_Mar_2021_10_54_17.mat
-03262021/data_26_Mar_2021_10_51_06.mat
-03262021/data_26_Mar_2021_10_45_50.mat
-03262021/data_26_Mar_2021_10_40_37.mat
-03262021/data_26_Mar_2021_10_37_44.mat
-03262021/data_26_Mar_2021_10_34_51.mat
-03262021/data_26_Mar_2021_10_26_46.mat
-03262021/data_26_Mar_2021_10_21_56.mat
-03192021/data_19_Mar_2021_13_30_55.mat
-03192021/data_19_Mar_2021_13_28_06.mat
-03192021/data_19_Mar_2021_13_25_37.mat
-03192021/data_19_Mar_2021_13_21_41.mat
-03192021/data_19_Mar_2021_13_19_24.mat
-03192021/data_19_Mar_2021_13_16_23.mat
-03192021/data_19_Mar_2021_13_13_39.mat
-03192021/data_19_Mar_2021_13_10_28.mat
-03192021/data_19_Mar_2021_13_07_41.mat
-03192021/data_19_Mar_2021_12_58_27.mat
-03192021/data_19_Mar_2021_12_54_00.mat
-03192021/data_19_Mar_2021_12_50_35.mat
-03192021/data_19_Mar_2021_12_48_06.mat
-03192021/data_19_Mar_2021_12_44_35.mat
-03192021/data_19_Mar_2021_12_41_04.mat
-03192021/data_19_Mar_2021_12_38_22.mat
-03192021/data_19_Mar_2021_12_35_33.mat
-03192021/data_19_Mar_2021_12_32_30.mat
-03192021/data_19_Mar_2021_12_23_59.mat
-03192021/data_19_Mar_2021_12_20_27.mat
-03192021/data_19_Mar_2021_12_16_55.mat
-03192021/data_19_Mar_2021_12_13_55.mat
-03192021/data_19_Mar_2021_12_11_04.mat
-03192021/data_19_Mar_2021_12_06_17.mat
-03192021/data_19_Mar_2021_12_03_25.mat
-03192021/data_19_Mar_2021_11_54_14.mat
-03192021/data_19_Mar_2021_11_46_33.mat
-03192021/data_19_Mar_2021_11_42_09.mat
-03192021/data_19_Mar_2021_11_38_55.mat
-03192021/data_19_Mar_2021_11_31_21.mat
-03192021/data_19_Mar_2021_11_24_36.mat
-03192021/data_19_Mar_2021_11_21_23.mat
-03192021/data_19_Mar_2021_11_11_51.mat
-03192021/data_19_Mar_2021_10_58_55.mat
-03192021/data_19_Mar_2021_10_34_42.mat
-03192021/data_19_Mar_2021_10_26_04.mat
-03192021/data_19_Mar_2021_10_16_28.mat
-03192021/data_19_Mar_2021_10_08_09.mat
-03122021/data_12_Mar_2021_13_16_07.mat
-03122021/data_12_Mar_2021_13_10_42.mat
-03122021/data_12_Mar_2021_12_51_02.mat
-03122021/data_12_Mar_2021_12_44_03.mat
-03122021/data_12_Mar_2021_12_31_53.mat
-03122021/data_12_Mar_2021_12_28_46.mat
-03122021/data_12_Mar_2021_12_19_34.mat
-03122021/data_12_Mar_2021_12_13_30.mat
-03122021/data_12_Mar_2021_12_08_56.mat
-03122021/data_12_Mar_2021_12_03_15.mat
-03122021/data_12_Mar_2021_11_58_17.mat
-03122021/data_12_Mar_2021_11_54_36.mat
-03122021/data_12_Mar_2021_11_51_02.mat
-03122021/data_12_Mar_2021_11_13_17.mat
-03122021/data_12_Mar_2021_11_06_47.mat
-03122021/data_12_Mar_2021_10_55_23.mat
-03122021/data_12_Mar_2021_10_41_33.mat
+*.avi
+*.gif
+*.GIF
+*.png
+*.PNG
+*.jpeg
+*.JPEG
+*.fig
+*.FIG
