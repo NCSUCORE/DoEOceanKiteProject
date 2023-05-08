@@ -1,4 +1,4 @@
-function idealSensorProcessing_bc()
+function externalInputSensorProcessing_bc()
 sz = getBusDims;
 
 elems(1) = Simulink.BusElement;
@@ -122,7 +122,7 @@ elems(14) = Simulink.BusElement;
 elems(14).Name = 'state';
 elems(14).Dimensions = [1 1];
 elems(14).DimensionsMode = 'Fixed';
-elems(14).DataType = 'double';
+elems(14).DataType = 'uint8';
 elems(14).SampleTime = -1;
 elems(14).Complexity = 'real';
 elems(14).Unit = '';

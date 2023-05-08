@@ -37,6 +37,9 @@ classdef vehicleM < dynamicprops
         rCM_LE
         rBridle_LE
         rCentOfBuoy_LE
+        rUSBL2LE % Posisition vector of kite origin wrt USBL 
+        rGnd2USBL % Position vector of master USBL wrt boat origin
+        rADV2LE % Position vector of kite origin wrt ADV sensor volume
 
         wingRootChord
         wingAR
@@ -139,7 +142,11 @@ classdef vehicleM < dynamicprops
             obj.rB_LE          = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the body frame');
             obj.rCM_LE         = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the Center of Mass');
             obj.rBridle_LE     = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to bridle point');
-            obj.rCentOfBuoy_LE = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
+            obj.rCentOfBuoy_LE = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to center of buoyancy');
+            obj.rUSBL2LE       = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Posisition vector of kite origin wrt USBL','NoScale',true); 
+            obj.rGnd2USBL      = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Position vector of master USBL wrt boat origin','NoScale',true);
+            obj.rADV2LE        = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Position vector of kite origin wrt ADV sensor volume','NoScale',true);
+
 
             % Overall Wing Properties (Used to create portWing and stbdWing
             obj.wingRootChord  = SIM.parameter('Unit','m','Description','Wing root chord');
@@ -587,7 +594,13 @@ classdef vehicleM < dynamicprops
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = findAttrValue(obj,'SetAccess','private');
             for ii = 1:numel(props)
-                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+                try
+          
+                    obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+
+                catch
+ bb=1;
+                end
             end
         end
 

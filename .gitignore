@@ -64,3 +64,6 @@ dump/
 *.JPEG
 *.fig
 *.FIG
+
+data*.mat
+*.mat
