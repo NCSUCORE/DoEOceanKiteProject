@@ -217,7 +217,7 @@ classdef signalcontainer < dynamicprops
             dThr = thr.tether1.diameter.Value;
             LThr = sqrt(sum(vhcl.initPosVecGnd.Value.^2));
             Aref = vhcl.fluidRefArea.Value;
-            Afuse = vhcl.fluidRefArea.Value;
+            Afuse = squeeze(obj.Afuse.Data);
             Athr = LThr*dThr/4;
             CDfuse = squeeze(obj.CDfuse.Data).*Afuse/Aref;
             CDthr = thr.tether1.dragCoeff.Value(end).*Athr/Aref;
@@ -409,7 +409,7 @@ classdef signalcontainer < dynamicprops
             PLoydKite = 2/27*env.water.density.Value*env.water.speed.Value^3*vhcl.fluidRefArea.Value*CLsurf.^3./CDnoThr.^2.*(C1.*C2).^3;%*.5;
             Pow.loyd = mean(PLoyd)*1e-3;
             Pow.loydNT = mean(PLoydKite)*1e-3;
-            Pow.turb = mean(obj.turbPow.Data(ran))*1e-3;
+            Pow.turb = mean(obj.turbPow.Data(ran,1))*1e-3;
             Pow.elec = mean(obj.elecPow.Data(1,1,ran))*1e-3;
             try
                 Pow.winch = mean(obj.winchPower.Data(ran))*1e-3;

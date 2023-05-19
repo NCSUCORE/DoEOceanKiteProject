@@ -1,4 +1,4 @@
-function idealSensorProcessing_bc()
+function externalInputSensorProcessing_bc()
 sz = getBusDims;
 
 elems(1) = Simulink.BusElement;

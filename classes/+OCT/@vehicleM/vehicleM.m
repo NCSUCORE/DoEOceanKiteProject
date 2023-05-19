@@ -37,6 +37,9 @@ classdef vehicleM < dynamicprops
         rCM_LE
         rBridle_LE
         rCentOfBuoy_LE
+        rUSBL2LE % Posisition vector of kite origin wrt USBL 
+        rGnd2USBL % Position vector of master USBL wrt boat origin
+        rADV2LE % Position vector of kite origin wrt ADV sensor volume
 
         wingRootChord
         wingAR
@@ -139,7 +142,11 @@ classdef vehicleM < dynamicprops
             obj.rB_LE          = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the body frame');
             obj.rCM_LE         = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to the Center of Mass');
             obj.rBridle_LE     = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from the Wing LE to bridle point');
-            obj.rCentOfBuoy_LE = SIM.parameter('Unit','m','Description','Vector going from CM to center of buoyancy');
+            obj.rCentOfBuoy_LE = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Vector going from CM to center of buoyancy');
+            obj.rUSBL2LE       = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Posisition vector of kite origin wrt USBL','NoScale',true); 
+            obj.rGnd2USBL      = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Position vector of master USBL wrt boat origin','NoScale',true);
+            obj.rADV2LE        = SIM.parameter('Value',[0;0;0],'Unit','m','Description','Position vector of kite origin wrt ADV sensor volume','NoScale',true);
+
 
             % Overall Wing Properties (Used to create portWing and stbdWing
             obj.wingRootChord  = SIM.parameter('Unit','m','Description','Wing root chord');
@@ -587,7 +594,13 @@ classdef vehicleM < dynamicprops
         function obj = scale(obj,lengthScaleFactor,densityScaleFactor)
             props = findAttrValue(obj,'SetAccess','private');
             for ii = 1:numel(props)
-                obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+                try
+          
+                    obj.(props{ii}).scale(lengthScaleFactor,densityScaleFactor);
+
+                catch
+ bb=1;
+                end
             end
         end
 
@@ -660,27 +673,40 @@ classdef vehicleM < dynamicprops
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
             fileLoc = which(obj.fluidCoeffsFileName.Value);
+            askfirst=0;% set t 0 to run unattended
             if ~isfile(fileLoc)
-                fprintf(['The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                    'Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                str = input('(Y/N): \n','s');
-                if isempty(str);  str = 'Y';  end
+                if askfirst
+                    fprintf(['The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                        'Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                    str = input('(Y/N): \n','s');
+                    if isempty(str);  str = 'Y';  end
+                else
+                    str = 'Y';
+                end
                 if strcmpi(str,'Y')
                     aeroStruct = runAVL(obj);
                 else
                     warning('Simulation won''t run without valid aero coefficient values')
                 end
             else
-                fprintf(['The file conaining the fluid dynamic coefficient data "%s" already exists.\n',...
-                    'Would you like to overwrite?\n'],obj.fluidCoeffsFileName.Value);
-                str = input('(Y/N): \n','s');
-                if isempty(str);  str = 'Y';  end
+                if askfirst
+                    fprintf(['The file conaining the fluid dynamic coefficient data "%s" already exists.\n',...
+                        'Would you like to overwrite?\n'],obj.fluidCoeffsFileName.Value);
+                    str = input('(Y/N): \n','s');
+                    if isempty(str);  str = 'Y';  end
+                else
+                    str = 'N';
+                end
                 if strcmpi(str,'Y')
                     aeroStruct = runAVL(obj);
                 else
-                    fprintf('Would you like to create a new file?\n');
-                    str1 = input('(Y/N): \n','s');
-                    if isempty(str1);  str1 = 'Y';  end
+                    if askfirst
+                        fprintf('Would you like to create a new file?\n');
+                        str1 = input('(Y/N): \n','s');
+                        if isempty(str1);  str1 = 'Y';  end
+                    else
+                        str1 = 'N';
+                    end
                     if strcmpi(str1,'Y')
                         newName = input('New filename (excluding ".mat"): \n','s');
                         obj.setFluidCoeffsFileName(newName,'');

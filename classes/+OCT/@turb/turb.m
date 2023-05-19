@@ -78,6 +78,12 @@ classdef turb < handle
         function setBladeMass(obj,val,units)
             obj.bladeMass.setValue(val,units)
         end
+        
+        function obj = setMass(obj,val,units)
+            % obj.hubMass.setValue(0.25*val,units)
+            % obj.bladeMass.setValue(0.75*val/obj.numBlades.Value,units)
+            obj.turbMassStated.setValue(val,units);
+        end
 
         function setDiameter(obj,val,units)
             obj.diameter.setValue(val,units)
