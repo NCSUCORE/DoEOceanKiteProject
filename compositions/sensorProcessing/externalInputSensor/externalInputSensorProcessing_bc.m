@@ -163,6 +163,15 @@ elems(18).SampleTime = -1;
 elems(18).Complexity = 'real';
 elems(18).Unit = 'rad/s';
 
+elems(19) = Simulink.BusElement;
+elems(19).Name = 'ctrlOverride';
+elems(19).Dimensions = [1 1];
+elems(19).DimensionsMode = 'Fixed';
+elems(19).DataType = 'uint8';
+elems(19).SampleTime = -1;
+elems(19).Complexity = 'real';
+elems(19).Unit = '';
+
 BUS = Simulink.Bus;
 BUS.Elements = elems;
 BUS.Description = 'Bus containing signals from the sensor processing';
