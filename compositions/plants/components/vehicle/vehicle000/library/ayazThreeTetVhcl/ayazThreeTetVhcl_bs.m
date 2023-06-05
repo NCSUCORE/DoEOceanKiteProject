@@ -31,22 +31,27 @@ rCB_LE = [7.38;0;1.023]*1e-3;
 % % % volume and inertias
 vhcl.setVolume(10238.171*1e-9*(1/Lscale^3),'m^3');
 MiCoeff = 1;
-vhcl.setIxx(MiCoeff*8.308*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIyy(MiCoeff*9.474*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIzz(MiCoeff*18.738*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIxy(0,'kg*m^2');
-vhcl.setIxz(MiCoeff*0.402*1e-6*(1/Lscale^5),'kg*m^2');
-vhcl.setIyz(0,'kg*m^2');
-vhcl.setCentOfBuoy((rCB_LE-rCM_LE)*(1/Lscale),'m');
-vhcl.setRbridle_cm([0;0;0],'m');
+if 0
+  vhcl.setIxx(MiCoeff*8.308*1e-6*(1/Lscale^5),'kg*m^2');
+  vhcl.setIyy(MiCoeff*9.474*1e-6*(1/Lscale^5),'kg*m^2');
+  vhcl.setIzz(MiCoeff*18.738*1e-6*(1/Lscale^5),'kg*m^2');
+  vhcl.setIxy(0,'kg*m^2');
+  vhcl.setIxz(MiCoeff*0.402*1e-6*(1/Lscale^5),'kg*m^2');
+  vhcl.setIyz(0,'kg*m^2');
+  vhcl.setCentOfBuoy((rCB_LE-rCM_LE)*(1/Lscale),'m');
+  vhcl.setRbridle_cm([0;0;0],'m');
+  vhcl.setRwingLE_cm(-rCM_LE*(1/Lscale),'m');
+else
+  vhcl.setInertia_CM(MiCoeff*[8.308,0,0.4022;0,9.474,0;0.402,0,18.738]*1e-6,'kg*m^2');
+  vhcl.setRCentOfBuoy_LE((rCB_LE-rCM_LE)*(1/Lscale),'m');
+  vhcl.setRBridle_LE([0;0;0],'m');
+  vhcl.setRCM_LE(-rCM_LE*(1/Lscale),'m');
+end
 vhcl.setAddedMISwitch(true,'');
 
 % % % wing
 Clmax = 2;
 
-% vhcl.
-
-vhcl.setRwingLE_cm(-rCM_LE*(1/Lscale),'m');
 vhcl.setWingChord(15e-3*(1/Lscale),'m');
 vhcl.setWingAR(10,'');
 vhcl.setWingTR(0.8,'');
