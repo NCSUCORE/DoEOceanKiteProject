@@ -10,7 +10,7 @@ classdef vehicle < dynamicprops
         oldFluidMomentArms
         
         numTurbines
-        %         turbDiam
+        turbDiam% note: was commented out, but required by fullScale1thrMod_bs, ayazThreeTetVhcl_bs
         
         volume
         inertia_CM
@@ -94,7 +94,7 @@ classdef vehicle < dynamicprops
             
             %Turbines
             obj.numTurbines = SIM.parameter('Description','Number of turbines','NoScale',true);
-            %             obj.turbDiam    = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');
+            obj.turbDiam    = SIM.parameter('Value',0,'Unit','m','Description','Turbine Diameter');% note: was commented out, but required by fullScale1thrMod_bs, ayazThreeTetVhcl_bs
             
             % mass, volume and inertia
             obj.volume         = SIM.parameter('Unit','m^3','Description','volume');
@@ -180,7 +180,7 @@ classdef vehicle < dynamicprops
             addParameter(p,'TurbClass','turb',@(x) any(strcmp(x,{'turb'})))
             parse(p,varargin{:})
             
-            % Create tturbines
+            % Create turbines
             for ii = 1:obj.numTurbines.Value
                 obj.addprop(p.Results.TurbNames{ii});
                 obj.(p.Results.TurbNames{ii}) = eval(sprintf('OCT.%s',p.Results.TurbClass));
@@ -222,12 +222,12 @@ classdef vehicle < dynamicprops
             %             end
         end
         
-        %         function setTurbDiam(obj,val,units)
-        %             obj.turbDiam.setValue(val,units);
-        %             if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
-        %                 warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
-        %             end
-        %         end
+        function setTurbDiam(obj,val,units)% note: was commented out, but required by fullScale1thrMod_bs, ayazThreeTetVhcl_bs
+            obj.turbDiam.setValue(val,units);
+            if obj.numTurbines.Value ~=  0 && obj.turbDiam.Value ~= 0
+                warning("The vehicle is being constructed with non-zero diameter turbines using hardcoded values in the OCT.Vehicle.get.turbines method")
+            end
+        end
         
         function setOldFluidMomentArms(obj,val,units)
             obj.oldFluidMomentArms.setValue(val,units);
@@ -623,14 +623,19 @@ classdef vehicle < dynamicprops
         % fluid dynamic coefficient data
         function calcFluidDynamicCoefffs(obj)
             fileLoc = which(obj.fluidCoeffsFileName.Value);
+            askfirst=0;% set t 0 to run unattended
             
             switch obj.hydroCharacterization.Value
                 case 1
                     if ~isfile(fileLoc)
-                        fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                            ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                        str = input('(Y/N): \n','s');
-                        if isempty(str)
+                        if askfirst
+                            fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                                ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                            str = input('(Y/N): \n','s');
+                            if isempty(str)
+                                str = 'Y';
+                            end
+                        else
                             str = 'Y';
                         end
                         if strcmpi(str,'Y')
@@ -639,11 +644,15 @@ classdef vehicle < dynamicprops
                             warning('Simulation won''t run without valid aero coefficient values')
                         end
                     else
-                        fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
-                            'Would you like to create a new file?\n']);
-                        str = input('(Y/N): \n','s');
-                        if isempty(str)
-                            str = 'Y';
+                        if askfirst
+                            fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                                'Would you like to create a new file?\n']);
+                            str = input('(Y/N): \n','s');
+                            if isempty(str)
+                                str = 'Y';
+                            end
+                        else
+                            str = 'N';
                         end
                         if strcmpi(str,'Y')
                             newName = input('New filename (excluding ".mat"): \n','s');
@@ -658,10 +667,14 @@ classdef vehicle < dynamicprops
                     
                 case 3
                     if ~isfile(fileLoc)
-                        fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
-                            ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
-                        str = input('(Y/N): \n','s');
-                        if isempty(str)
+                        if askfirst
+                            fprintf([' The file containing the fluid dynamic coefficient data file does not exist.\n',...
+                                ' Would you like to run AVL and create data file ''%s'' ?\n'],obj.fluidCoeffsFileName.Value);
+                            str = input('(Y/N): \n','s');
+                            if isempty(str)
+                                str = 'Y';
+                            end
+                        else
                             str = 'Y';
                         end
                         if strcmpi(str,'Y')
@@ -670,11 +683,15 @@ classdef vehicle < dynamicprops
                             warning('Simulation won''t run without valid aero coefficient values')
                         end
                     else
-                        fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
-                            'Would you like to create a new file?\n']);
-                        str = input('(Y/N): \n','s');
-                        if isempty(str)
-                            str = 'Y';
+                        if askfirst
+                            fprintf(['The file conaining the fluid dynamic coefficient data file already exists.\n',...
+                                'Would you like to create a new file?\n']);
+                            str = input('(Y/N): \n','s');
+                            if isempty(str)
+                                str = 'Y';
+                            end
+                        else
+                            str = 'N';
                         end
                         if strcmpi(str,'Y')
                             newName = input('Enter new filename (excluding ".mat"): \n','s');
