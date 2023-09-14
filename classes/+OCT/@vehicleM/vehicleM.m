@@ -1167,7 +1167,7 @@ classdef vehicleM < dynamicprops
 
             CDthr = thr.tether1.dragCoeff.Value(1)*Athr/Aref;
             fuseFactor = 1;
-            if isempty(obj.fuse.alpha.Value)
+            if isempty(obj.fuse.CD.Value)
                 CDfuse = (obj.fuse.endDragCoeff.Value.*cosd(alpha)+...
                     obj.fuse.sideDragCoeff.Value.*(1-cosd(alpha))).*Afuse/Aref*fuseFactor;
             else

@@ -193,6 +193,8 @@ if ~isempty(p.Results.ScrollPlots)
     end
 end
 axes(h.ax)
+
+
 % Get the "nominal" positions of the aerodynamic surfaces from that plot
 for ii = 1:length(h.surf)
     hStatic{ii}.x = h.surf{ii}.XData;
@@ -266,11 +268,8 @@ end
 
 % Plot the path
 if ~isempty(p.Results.PathFunc)
-<<<<<<< HEAD
     initBasisParams = tscTmp.basisParams.Data(1,:);
-=======
     initBasisParams = tscTmp.pathParams.Data(:,:,1);
->>>>>>> 235507af65cec79c01225d6f4f0f7a4771e8e48e
     initBasisParams(5) = sqrt(sum((tscTmp.gndStnPositionVec.getsamples(1).Data(:) - tscTmp.positionVec.getsamples(1).Data(:)).^2));
     path = eval(sprintf('%s(linspace(0,1,1000),initBasisParams,tscTmp.gndStnPositionVec.Data(:,:,1))',...
         p.Results.PathFunc));
@@ -637,7 +636,7 @@ for ii = 1:numel(tscTmp.positionVec.Time)
         end
     end
     
-    
+
     % Update the tracer
     if p.Results.PlotTracer
         delete(h.tracer(1));
