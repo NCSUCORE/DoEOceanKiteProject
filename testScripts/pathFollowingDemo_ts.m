@@ -1,4 +1,3 @@
-%% Test script for John to control the kite model
 clear all;
 clc;
 % close all;
