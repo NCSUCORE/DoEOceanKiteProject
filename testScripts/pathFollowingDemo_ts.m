@@ -12,7 +12,7 @@ Simulink.sdi.clear
 % 7 - Animate
 % 8 - Plotting
 %%             1 2 3 4 5 6     7   
-simScenario = [1 1 1 3 1 1==0  1==0];
+simScenario = [1 1 1 3 1 1==0  1==1];
 
 thrSweep = 500;%Tether Lengths to Sweep Through
 altSweep = 250;%Altitudes to sweep through
@@ -160,5 +160,5 @@ end
 
 %% Animate Simulation
 if simScenario(7)
-    vhcl.animateSim(tsc,2,'tracerDuration',500)
+    vhcl.animateSim(tsc,2,'tracerDuration',100)
 end
